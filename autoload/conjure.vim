@@ -17,7 +17,7 @@ function! s:UpsertJob()
 
     if id == -1
       echoerr "conjure: failed to start job"
-      return 1
+      return -1
     else
       let s:jobid = id
 
