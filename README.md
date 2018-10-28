@@ -1,4 +1,4 @@
-# vim-conjure
+# Conjure
 
 Work in progress. Will hopefully be a Clojure socket REPL integration for Neovim.
 
