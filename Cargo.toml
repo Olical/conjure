@@ -1,0 +1,7 @@
+[package]
+name = "conjure"
+version = "0.1.0"
+authors = ["Oliver Caldwell <olliec87@gmail.com>"]
+
+[dependencies]
+neovim-lib = "0.5.4"
