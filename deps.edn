@@ -1,0 +1,9 @@
+{:paths ["src/clojure"]
+
+ :deps
+ {org.clojure/clojure {:mvn/version "1.10.0-beta2"}}
+ 
+ :aliases
+ {:default {:main-opts ["conjure.repl.default"]}
+  :node {:main-opts ["conjure.repl.node"]}
+  :figwheel {:main-opts ["conjure.repl.figwheel"]}}}
