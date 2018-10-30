@@ -1,3 +1,5 @@
+extern crate edn;
+
 use std::io;
 use std::io::prelude::*;
 use std::net;
@@ -14,7 +16,9 @@ pub fn start() {
         let reader = io::BufReader::new(stream);
 
         for line in reader.lines() {
-            println!("=> {}", line.unwrap());
+            let s = line.unwrap();
+            let mut parser = edn::parser::Parser::new(&s[..]);
+            println!("=> {:?}", parser.read());
         }
     } else {
         println!("Nope");

@@ -5,3 +5,4 @@ authors = ["Oliver Caldwell <olliec87@gmail.com>"]
 
 [dependencies]
 neovim-lib = "0.5.4"
+edn = "0.3.0"
