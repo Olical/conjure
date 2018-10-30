@@ -22,6 +22,7 @@ try_wget() {
 download() {
     echo "Downloading target/release/${name}..."
     url=https://github.com/Olical/${name}/releases/download/$version/${1}
+    mkdir -p target/release
     if (try_curl "$url" || try_wget "$url"); then
         chmod a+x target/release/$name
         return
