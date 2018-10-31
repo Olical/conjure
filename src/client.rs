@@ -1,5 +1,3 @@
-extern crate edn;
-
 use std::io;
 use std::io::prelude::*;
 use std::net;

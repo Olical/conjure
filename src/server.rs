@@ -1,54 +1,55 @@
-extern crate neovim_lib as neovim;
+use neovim;
+use neovim::session;
 
-use std::sync::mpsc;
+// TODO Connect should be std::net sockets and regexes.
+// TODO Replace unwrap with some eprintln.
 
-pub fn start() {
-    let mut session = neovim::Session::new_parent().expect("failed to create session");
+type HandlerFn = fn(Message) -> Result<neovim::Value, neovim::Value>;
 
-    let (sender, receiver) = mpsc::channel();
+pub fn start(handler: HandlerFn) {
+    let mut session = session::Session::new_parent().expect("can't create neovim session");
+    session.start_event_loop_handler(Handler::new(handler));
+}
 
-    session.start_event_loop_handler(Handler::new(sender));
+pub enum Message<'a> {
+    Exit,
+    Connect { addr: &'a str, expr: &'a str },
+    Unknown(&'a str),
+}
 
-    for event in receiver {
-        match event {
-            Event::Quit => break,
+impl<'a> Message<'a> {
+    fn from(name: &str, args: Vec<neovim::Value>) -> Message {
+        match name {
+            "exit" => Message::Exit,
+            "connect" => Message::Connect {
+                addr: args[0].as_str().unwrap(),
+                expr: args[1].as_str().unwrap(),
+            },
+            _ => Message::Unknown(name),
         }
     }
 }
 
-enum Event {
-    Quit,
-}
-
 struct Handler {
-    sender: mpsc::Sender<Event>,
+    handler: HandlerFn,
 }
 
 impl Handler {
-    fn new(sender: mpsc::Sender<Event>) -> Handler {
-        Handler { sender }
+    fn new(handler: HandlerFn) -> Handler {
+        Handler { handler }
     }
 }
 
 impl neovim::Handler for Handler {
-    fn handle_notify(&mut self, name: &str, _args: Vec<neovim::Value>) {
-        match name {
-            "quit" => self
-                .sender
-                .send(Event::Quit)
-                .expect("failed to send quit message"),
-            _ => {}
-        }
+    fn handle_notify(&mut self, name: &str, args: Vec<neovim::Value>) {
+        (self.handler)(Message::from(name, args)).unwrap();
     }
 
     fn handle_request(
         &mut self,
         name: &str,
-        _args: Vec<neovim::Value>,
+        args: Vec<neovim::Value>,
     ) -> Result<neovim::Value, neovim::Value> {
-        match name {
-            "connect" => Ok(neovim::Value::from(10)),
-            _ => Err(neovim::Value::from("unknown request")),
-        }
+        (self.handler)(Message::from(name, args))
     }
 }

@@ -5,9 +5,9 @@ endif
 let s:scriptdir = resolve(expand('<sfile>:p:h') . '/..')
 let s:bin = s:scriptdir . '/target/release/conjure'
 
-function! conjure#connect(addr)
+function! conjure#connect(addr, expr)
   if conjure#upsert_job() == 0
-    return rpcrequest(s:jobid, 'connect', a:addr)
+    return rpcrequest(s:jobid, 'connect', a:addr, a:expr)
   endif
 endfunction
 
@@ -37,7 +37,7 @@ function! conjure#stop_job()
       autocmd!
     augroup END
 
-    call rpcnotify(s:jobid, 'quit')
+    call rpcnotify(s:jobid, 'exit')
     let result = jobwait([s:jobid], 500)
 
     if result == [-1]
