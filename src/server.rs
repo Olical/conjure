@@ -11,21 +11,21 @@ pub fn start(handler: HandlerFn) {
     session.start_event_loop_handler(Handler::new(handler));
 }
 
-pub enum Message<'a> {
+pub enum Message {
     Exit,
-    Connect { addr: &'a str, expr: &'a str },
-    Unknown(&'a str),
+    Connect { addr: String, expr: String },
+    Unknown(String),
 }
 
-impl<'a> Message<'a> {
+impl Message {
     fn from(name: &str, args: Vec<neovim::Value>) -> Message {
         match name {
             "exit" => Message::Exit,
             "connect" => Message::Connect {
-                addr: args[0].as_str().unwrap(),
-                expr: args[1].as_str().unwrap(),
+                addr: args[0].as_str().unwrap().to_owned(),
+                expr: args[1].as_str().unwrap().to_owned(),
             },
-            _ => Message::Unknown(name),
+            _ => Message::Unknown(name.to_owned()),
         }
     }
 }
