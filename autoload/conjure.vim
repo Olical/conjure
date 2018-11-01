@@ -13,7 +13,11 @@ endfunction
 
 function! conjure#upsert_job()
   if s:jobid == 0
-    let id = jobstart([s:bin], { 'rpc': v:true, 'on_stderr': function('s:OnStderr') })
+    let id = jobstart([s:bin], {
+          \ 'rpc': v:true,
+          \ 'on_stderr': function('s:OnStderr'),
+          \ 'on_exit': function('s:OnExit')
+          \ })
 
     if id == -1
       echoerr "conjure: failed to start job"
@@ -43,8 +47,6 @@ function! conjure#stop_job()
     if result == [-1]
       call jobstop(s:jobid)
     endif
-
-    let s:jobid = 0
   endif
 endfunction
 
@@ -57,4 +59,8 @@ function! s:OnStderr(id, data, event) dict
   if len(a:data) > 0 && len(a:data[0]) > 0
     echoerr 'conjure: ' . a:id . ' ' . a:event . ' ' . join(a:data, "\n")
   endif
+endfunction
+
+function! s:OnExit(id, data, event) dict
+  let s:jobid = 0
 endfunction
