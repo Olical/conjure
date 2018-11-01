@@ -1,5 +1,6 @@
 extern crate edn;
 extern crate neovim_lib as neovim;
+extern crate regex;
 
 mod client;
 mod server;

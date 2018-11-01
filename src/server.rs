@@ -1,9 +1,7 @@
 use neovim;
 use neovim::session;
-use std::net::{SocketAddr, ToSocketAddrs};
-
-// TODO Connect should be std::net sockets and regexes.
-// TODO Replace unwrap with some eprintln.
+use regex;
+use std::net;
 
 type HandlerFn = fn(Request) -> Result<neovim::Value, neovim::Value>;
 
@@ -15,11 +13,14 @@ pub fn start(handler: HandlerFn) -> session::Session {
 
 pub enum Request {
     Exit,
-    Connect { addr: SocketAddr, expr: String },
+    Connect {
+        addr: net::SocketAddr,
+        expr: regex::Regex,
+    },
     Error(String),
 }
 
-fn extract_and_parse<T: std::str::FromStr>(args: &Vec<neovim::Value>, index: usize) -> Option<T> {
+fn parse_index<T: std::str::FromStr>(args: &Vec<neovim::Value>, index: usize) -> Option<T> {
     args.get(index)?.as_str()?.parse().ok()
 }
 
@@ -28,8 +29,7 @@ impl Request {
         match name {
             "exit" => Request::Exit,
             "connect" => {
-                if let Some(addr) = extract_and_parse(&args, 0) {
-                    let expr = String::new();
+                if let (Some(addr), Some(expr)) = (parse_index(&args, 0), parse_index(&args, 1)) {
                     Request::Connect { addr, expr }
                 } else {
                     Request::Error("addr should be a valid socket address".to_owned())
