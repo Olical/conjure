@@ -37,7 +37,7 @@ function! conjure#stop_job()
       autocmd!
     augroup END
 
-    call rpcnotify(s:jobid, 'exit')
+    call rpcrequest(s:jobid, 'exit')
     let result = jobwait([s:jobid], 500)
 
     if result == [-1]

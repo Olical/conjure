@@ -8,13 +8,13 @@ use std::process;
 
 fn main() {
     server::start(|event| match event {
-        server::Message::Exit => process::exit(0),
-        server::Message::Connect { addr, expr } => {
+        server::Request::Exit => process::exit(0),
+        server::Request::Connect { addr, expr } => {
             eprintln!("Connect to {} for {}", addr, expr);
             Ok(neovim::Value::Nil)
         }
-        server::Message::Unknown(name) => {
-            eprintln!("Unknown command: {}", name);
+        server::Request::Error(msg) => {
+            eprintln!("Error while handling request: {}", msg);
             Ok(neovim::Value::Nil)
         }
     });

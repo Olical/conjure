@@ -4,28 +4,29 @@ use neovim::session;
 // TODO Connect should be std::net sockets and regexes.
 // TODO Replace unwrap with some eprintln.
 
-type HandlerFn = fn(Message) -> Result<neovim::Value, neovim::Value>;
+type HandlerFn = fn(Request) -> Result<neovim::Value, neovim::Value>;
 
-pub fn start(handler: HandlerFn) {
+pub fn start(handler: HandlerFn) -> session::Session {
     let mut session = session::Session::new_parent().expect("can't create neovim session");
     session.start_event_loop_handler(Handler::new(handler));
+    session
 }
 
-pub enum Message {
+pub enum Request {
     Exit,
     Connect { addr: String, expr: String },
-    Unknown(String),
+    Error(String),
 }
 
-impl Message {
-    fn from(name: &str, args: Vec<neovim::Value>) -> Message {
+impl Request {
+    fn from(name: &str, args: Vec<neovim::Value>) -> Request {
         match name {
-            "exit" => Message::Exit,
-            "connect" => Message::Connect {
+            "exit" => Request::Exit,
+            "connect" => Request::Connect {
                 addr: args[0].as_str().unwrap().to_owned(),
                 expr: args[1].as_str().unwrap().to_owned(),
             },
-            _ => Message::Unknown(name.to_owned()),
+            _ => Request::Error(format!("unknown request name `{}`", name)),
         }
     }
 }
@@ -41,8 +42,8 @@ impl Handler {
 }
 
 impl neovim::Handler for Handler {
-    fn handle_notify(&mut self, name: &str, args: Vec<neovim::Value>) {
-        (self.handler)(Message::from(name, args)).unwrap();
+    fn handle_notify(&mut self, _name: &str, _args: Vec<neovim::Value>) {
+        eprintln!("notify not supported, use request");
     }
 
     fn handle_request(
@@ -50,6 +51,6 @@ impl neovim::Handler for Handler {
         name: &str,
         args: Vec<neovim::Value>,
     ) -> Result<neovim::Value, neovim::Value> {
-        (self.handler)(Message::from(name, args))
+        (self.handler)(Request::from(name, args))
     }
 }
