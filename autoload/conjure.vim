@@ -50,7 +50,7 @@ endfunction
 
 function! conjure#restart_job()
   call conjure#stop_job()
-  call conjure#start_job()
+  call conjure#upsert_job()
 endfunction
 
 function! s:OnStderr(id, data, event) dict
