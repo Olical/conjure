@@ -55,9 +55,7 @@ impl neovim_lib::Handler for Handler {
     fn handle_request(&mut self, name: &str, args: Vec<Value>) -> Result<Value, Value> {
         match Request::from(name, args) {
             Ok(request) => (self.handler)(request),
-            Err(msg) => Err(Value::String(
-                format!("Error while parsing request: {}", msg).into(),
-            )),
+            Err(msg) => Err(Value::from(format!("Error while parsing request: {}", msg))),
         }
     }
 }
