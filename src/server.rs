@@ -1,9 +1,9 @@
 use neovim;
-use neovim::session;
+use neovim::{session, Value};
 use regex;
 use std::net;
 
-type HandlerFn = fn(Request) -> Result<neovim::Value, neovim::Value>;
+type HandlerFn = fn(Request) -> Result<Value, Value>;
 
 pub fn start(handler: HandlerFn) -> session::Session {
     let mut session = session::Session::new_parent().expect("can't create neovim session");
@@ -17,25 +17,24 @@ pub enum Request {
         addr: net::SocketAddr,
         expr: regex::Regex,
     },
-    Error(String),
 }
 
-fn parse_index<T: std::str::FromStr>(args: &Vec<neovim::Value>, index: usize) -> Option<T> {
+fn parse_index<T: std::str::FromStr>(args: &Vec<Value>, index: usize) -> Option<T> {
     args.get(index)?.as_str()?.parse().ok()
 }
 
 impl Request {
-    fn from(name: &str, args: Vec<neovim::Value>) -> Request {
+    fn from(name: &str, args: Vec<Value>) -> Result<Request, String> {
         match name {
-            "exit" => Request::Exit,
+            "exit" => Ok(Request::Exit),
             "connect" => {
                 if let (Some(addr), Some(expr)) = (parse_index(&args, 0), parse_index(&args, 1)) {
-                    Request::Connect { addr, expr }
+                    Ok(Request::Connect { addr, expr })
                 } else {
-                    Request::Error("connect expects an address and expression".to_owned())
+                    Err("connect expects an address and expression".to_owned())
                 }
             }
-            _ => Request::Error(format!("unknown request name `{}`", name)),
+            _ => Err(format!("unknown request name `{}`", name)),
         }
     }
 }
@@ -51,15 +50,16 @@ impl Handler {
 }
 
 impl neovim::Handler for Handler {
-    fn handle_notify(&mut self, _name: &str, _args: Vec<neovim::Value>) {
+    fn handle_notify(&mut self, _name: &str, _args: Vec<Value>) {
         eprintln!("notify not supported, use request");
     }
 
-    fn handle_request(
-        &mut self,
-        name: &str,
-        args: Vec<neovim::Value>,
-    ) -> Result<neovim::Value, neovim::Value> {
-        (self.handler)(Request::from(name, args))
+    fn handle_request(&mut self, name: &str, args: Vec<Value>) -> Result<Value, Value> {
+        match Request::from(name, args) {
+            Ok(request) => (self.handler)(request),
+            Err(msg) => Err(Value::String(
+                format!("Error while parsing request: {}", msg).into(),
+            )),
+        }
     }
 }

@@ -5,18 +5,15 @@ extern crate regex;
 mod client;
 mod server;
 
+use neovim::Value;
+use server::Request;
 use std::process;
 
 fn main() {
     server::start(|event| match event {
-        server::Request::Exit => process::exit(0),
-        server::Request::Connect { addr, expr } => {
-            eprintln!("Connect to {} for {}", addr, expr);
-            Ok(neovim::Value::Nil)
-        }
-        server::Request::Error(msg) => {
-            eprintln!("Error while handling request: {}", msg);
-            Ok(neovim::Value::Nil)
-        }
+        Request::Exit => process::exit(0),
+        Request::Connect { addr, expr } => Ok(Value::String(
+            format!("Connected to {} for files matching {}", addr, expr).into(),
+        )),
     });
 }
