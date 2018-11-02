@@ -26,13 +26,12 @@ impl Request {
     fn from(name: &str, args: Vec<Value>) -> Result<Request, String> {
         match name {
             "exit" => Ok(Request::Exit),
-            "connect" => {
-                if let (Some(addr), Some(expr)) = (parse_index(&args, 0), parse_index(&args, 1)) {
-                    Ok(Request::Connect { addr, expr })
-                } else {
-                    Err("connect expects an address and expression".to_owned())
-                }
-            }
+            "connect" => match (parse_index(&args, 0), parse_index(&args, 1)) {
+                (Some(addr), Some(expr)) => Ok(Request::Connect { addr, expr }),
+                (None, None) => Err("failed to parse addr or expr".to_owned()),
+                (Some(_), None) => Err("failed to parse expr".to_owned()),
+                (None, Some(_)) => Err("failed to parse addr".to_owned()),
+            },
             _ => Err(format!("unknown request name `{}`", name)),
         }
     }
