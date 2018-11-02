@@ -1,11 +1,11 @@
 extern crate edn;
-extern crate neovim_lib as neovim;
+extern crate neovim_lib;
 extern crate regex;
 
 mod client;
 mod server;
 
-use neovim::Value;
+use neovim_lib::Value;
 use server::Request;
 use std::process;
 

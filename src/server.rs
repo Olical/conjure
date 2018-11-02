@@ -1,5 +1,4 @@
-use neovim;
-use neovim::{session, Value};
+use neovim_lib::{session, Value};
 use regex;
 use std::net;
 
@@ -49,7 +48,7 @@ impl Handler {
     }
 }
 
-impl neovim::Handler for Handler {
+impl neovim_lib::Handler for Handler {
     fn handle_notify(&mut self, _name: &str, _args: Vec<Value>) {
         eprintln!("notify not supported, use request");
     }
