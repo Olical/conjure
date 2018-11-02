@@ -32,7 +32,7 @@ impl Request {
                 if let (Some(addr), Some(expr)) = (parse_index(&args, 0), parse_index(&args, 1)) {
                     Request::Connect { addr, expr }
                 } else {
-                    Request::Error("addr should be a valid socket address".to_owned())
+                    Request::Error("connect expects an address and expression".to_owned())
                 }
             }
             _ => Request::Error(format!("unknown request name `{}`", name)),
