@@ -1,12 +1,10 @@
-extern crate edn;
+extern crate conjure;
 extern crate neovim_lib;
 extern crate regex;
 
-mod client;
-mod server;
-
+use conjure::server;
+use conjure::server::Request;
 use neovim_lib::Value;
-use server::Request;
 use std::process;
 
 fn main() {
@@ -17,4 +15,6 @@ fn main() {
             addr, expr
         ))),
     });
+
+    loop {}
 }
