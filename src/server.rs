@@ -9,13 +9,15 @@ pub struct Server {
     session: session::Session,
 }
 
+type Sender = mpsc::Sender<Result<Event, String>>;
+
 impl Server {
     pub fn new() -> Server {
         let session = session::Session::new_parent().expect("can't create neovim session");
         Server { session }
     }
 
-    pub fn start(&mut self, tx: mpsc::Sender<Event>) {
+    pub fn start(&mut self, tx: Sender) {
         self.session.start_event_loop_handler(Handler::new(tx));
     }
 }
@@ -65,24 +67,21 @@ impl Event {
 }
 
 struct Handler {
-    tx: mpsc::Sender<Event>,
+    tx: Sender,
 }
 
 impl Handler {
-    fn new(tx: mpsc::Sender<Event>) -> Handler {
+    fn new(tx: Sender) -> Handler {
         Handler { tx }
     }
 }
 
 impl neovim_lib::Handler for Handler {
     fn handle_notify(&mut self, name: &str, args: Vec<Value>) {
-        match Event::from(name, args) {
-            Ok(event) => self
-                .tx
-                .send(event)
-                .expect("could not send event through channel"),
-            Err(msg) => error!("invalid event: {}", msg),
-        }
+        let event = Event::from(name, args);
+        self.tx
+            .send(event)
+            .expect("could not send event through channel");
     }
 
     fn handle_request(&mut self, _name: &str, _args: Vec<Value>) -> Result<Value, Value> {

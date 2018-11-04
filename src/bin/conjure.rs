@@ -23,12 +23,19 @@ fn main() {
 
     info!("starting event channel loop");
     for event in rx.iter() {
-        info!("got event: {}", event);
-
         match event {
-            Event::Quit => break,
-            Event::Connect { addr, expr } => {
-                eprintln!("connected to {} for files matching {}", addr, expr)
+            Ok(event) => {
+                info!("got event: {}", event);
+
+                match event {
+                    Event::Quit => break,
+                    Event::Connect { addr, expr } => {
+                        eprintln!("connected to {} for files matching {}", addr, expr)
+                    }
+                }
+            }
+            Err(msg) => {
+                error!("got error: {}", msg);
             }
         }
     }
