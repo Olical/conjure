@@ -1,12 +1,14 @@
 use std::io;
 use std::io::prelude::*;
 use std::net;
+use std::sync::mpsc;
+use std::thread;
 
-enum Value {
-    Return,
-    Out,
-    Tap,
-    Error,
+pub enum Value {
+    Return(String),
+    Out(String),
+    Tap(String),
+    Error(String),
 }
 
 // {:tag :ret
@@ -22,10 +24,47 @@ enum Value {
 // {:tag :tap
 //  :val val} ;values from tap>
 
-trait Client {
-    fn new(addr: &'static str) -> Self;
-    fn write(&mut self, &str) -> io::Result<usize>;
-    fn iter(&mut self) -> Iterator<Item = Result<edn::Value, edn::parser::Error>>;
+pub struct Client {
+    itx: mpsc::Sender<String>,
+}
+
+impl Client {
+    pub fn connect(
+        addr: &'static str,
+        tx: mpsc::Sender<Result<Value, String>>,
+    ) -> io::Result<Self> {
+        match net::TcpStream::connect(addr) {
+            Ok(stream) => {
+                let (itx, irx) = mpsc::channel();
+
+                thread::spawn(move || {
+                    let reader = io::BufReader::new(stream);
+
+                    for line in reader.lines() {
+                        match line {
+                            Ok(line) => {
+                                let _parser = edn::parser::Parser::new(&line);
+                                tx.send(Err(String::from("foo")));
+                            }
+                            Err(msg) => {
+                                tx.send(Err(String::from("bar")));
+                            }
+                        }
+                    }
+                });
+
+                Ok(Client { itx })
+            }
+            Err(msg) => Err(msg),
+        }
+    }
+
+    pub fn eval(&mut self, code: &str) {
+        match self.itx.send(format!("{}\n", code)) {
+            Err(msg) => error!("error sending to itx: {}", msg),
+            _ => (),
+        }
+    }
 }
 
 pub fn start() {
