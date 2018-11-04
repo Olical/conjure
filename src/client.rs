@@ -24,66 +24,54 @@ pub enum Value {
 // {:tag :tap
 //  :val val} ;values from tap>
 
-pub struct Client {
-    itx: mpsc::Sender<String>,
-}
+type Sender = mpsc::Sender<String>;
+type Receiver = mpsc::Receiver<Value>;
 
-impl Client {
-    pub fn connect(
-        addr: &'static str,
-        tx: mpsc::Sender<Result<Value, String>>,
-    ) -> io::Result<Self> {
-        match net::TcpStream::connect(addr) {
-            Ok(stream) => {
-                let (itx, irx) = mpsc::channel();
+// pub fn connect(addr: &'static str) -> Result<(Sender, Receiver), String> {
+//     match net::TcpStream::connect(addr) {
+//         Ok(stream) => {
+//             let (tx, rx) = mpsc::channel();
+//             let itx = tx.clone();
 
-                thread::spawn(move || {
-                    let reader = io::BufReader::new(stream);
+//             thread::spawn(move || {
+//                 let reader = io::BufReader::new(stream);
 
-                    for line in reader.lines() {
-                        match line {
-                            Ok(line) => {
-                                let _parser = edn::parser::Parser::new(&line);
-                                tx.send(Err(String::from("foo")));
-                            }
-                            Err(msg) => {
-                                tx.send(Err(String::from("bar")));
-                            }
-                        }
-                    }
-                });
+//                 for line in reader.lines() {
+//                     match line {
+//                         Ok(line) => {
+//                             let _parser = edn::parser::Parser::new(&line);
+//                             itx.send(Value::Return(String::from(line)));
+//                         }
+//                         Err(msg) => {
+//                             itx.send(Value::Return(format!("ohno: {}", msg)));
+//                         }
+//                     }
+//                 }
+//             });
 
-                Ok(Client { itx })
-            }
-            Err(msg) => Err(msg),
-        }
-    }
+//             Ok((tx, rx))
+//         }
+//         Err(msg) => Err(format!("Couldn't connect to `{}`: {}", addr, msg)),
+//     }
+// }
 
-    pub fn eval(&mut self, code: &str) {
-        match self.itx.send(format!("{}\n", code)) {
-            Err(msg) => error!("error sending to itx: {}", msg),
-            _ => (),
-        }
-    }
-}
+// pub fn start() {
+//     if let Ok(mut stream) = net::TcpStream::connect("127.0.0.1:5555") {
+//         println!("Connected!");
 
-pub fn start() {
-    if let Ok(mut stream) = net::TcpStream::connect("127.0.0.1:5555") {
-        println!("Connected!");
+//         let code = "(prn \"Hello from Rust!\")";
+//         println!("Evaluating `{}` through a Clojure socket pREPL", code);
 
-        let code = "(prn \"Hello from Rust!\")";
-        println!("Evaluating `{}` through a Clojure socket pREPL", code);
+//         stream.write(format!("{}\n", code).as_bytes()).unwrap();
 
-        stream.write(format!("{}\n", code).as_bytes()).unwrap();
+//         let reader = io::BufReader::new(stream);
 
-        let reader = io::BufReader::new(stream);
-
-        for line in reader.lines() {
-            let s = line.unwrap();
-            let mut parser = edn::parser::Parser::new(&s[..]);
-            println!("=> {:?}", parser.read());
-        }
-    } else {
-        println!("Nope");
-    }
-}
+//         for line in reader.lines() {
+//             let s = line.unwrap();
+//             let mut parser = edn::parser::Parser::new(&s[..]);
+//             println!("=> {:?}", parser.read());
+//         }
+//     } else {
+//         println!("Nope");
+//     }
+// }
