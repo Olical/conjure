@@ -12,7 +12,7 @@ pub struct Server {
 type Sender = mpsc::Sender<Result<Event, String>>;
 
 impl Server {
-    pub fn new(tx: Sender) -> Server {
+    pub fn new(tx: Sender) -> Self {
         let mut session = session::Session::new_parent().expect("can't create neovim session");
         session.start_event_loop_handler(Handler::new(tx));
         let nvim = Neovim::new(session);
