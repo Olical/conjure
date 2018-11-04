@@ -1,6 +1,6 @@
 use neovim_lib::{session, Value};
 use regex;
-use std::fmt::Display;
+use std::fmt;
 use std::net;
 use std::str::FromStr;
 use std::sync::mpsc;
@@ -20,6 +20,7 @@ impl Server {
     }
 }
 
+#[derive(Debug)]
 pub enum Event {
     Quit,
     Connect {
@@ -28,9 +29,15 @@ pub enum Event {
     },
 }
 
+impl fmt::Display for Event {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "{:?}", self)
+    }
+}
+
 fn parse_index<T: FromStr>(args: &[Value], index: usize) -> Result<T, String>
 where
-    T::Err: Display,
+    T::Err: fmt::Display,
 {
     args.get(index)
         .ok_or_else(|| format!("expected argument at position {}", index + 1))?
@@ -74,12 +81,12 @@ impl neovim_lib::Handler for Handler {
                 .tx
                 .send(event)
                 .expect("could not send event through channel"),
-            Err(msg) => eprintln!("invalid event: {}", msg),
+            Err(msg) => error!("invalid event: {}", msg),
         }
     }
 
     fn handle_request(&mut self, _name: &str, _args: Vec<Value>) -> Result<Value, Value> {
-        eprintln!("request not supported, use notify");
+        error!("request not supported, use notify");
         Err(Value::from(false))
     }
 }
