@@ -5,9 +5,7 @@ use std::net;
 use std::str::FromStr;
 use std::sync::mpsc;
 
-type Sender = mpsc::Sender<Event>;
-
-pub fn start(tx: Sender) -> session::Session {
+pub fn start(tx: mpsc::Sender<Event>) -> session::Session {
     let mut session = session::Session::new_parent().expect("can't create neovim session");
     session.start_event_loop_handler(Handler::new(tx));
     session
@@ -51,11 +49,11 @@ impl Event {
 }
 
 struct Handler {
-    tx: Sender,
+    tx: mpsc::Sender<Event>,
 }
 
 impl Handler {
-    fn new(tx: Sender) -> Handler {
+    fn new(tx: mpsc::Sender<Event>) -> Handler {
         Handler { tx }
     }
 }
