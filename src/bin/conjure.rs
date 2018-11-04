@@ -8,7 +8,8 @@ use std::sync::mpsc;
 
 fn main() {
     let (tx, rx) = mpsc::channel();
-    let _session = server::start(tx);
+    let mut server = server::Server::new();
+    server.start(tx);
 
     for event in rx.iter() {
         match event {

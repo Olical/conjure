@@ -5,10 +5,19 @@ use std::net;
 use std::str::FromStr;
 use std::sync::mpsc;
 
-pub fn start(tx: mpsc::Sender<Event>) -> session::Session {
-    let mut session = session::Session::new_parent().expect("can't create neovim session");
-    session.start_event_loop_handler(Handler::new(tx));
-    session
+pub struct Server {
+    session: session::Session,
+}
+
+impl Server {
+    pub fn new() -> Server {
+        let session = session::Session::new_parent().expect("can't create neovim session");
+        Server { session }
+    }
+
+    pub fn start(&mut self, tx: mpsc::Sender<Event>) {
+        self.session.start_event_loop_handler(Handler::new(tx));
+    }
 }
 
 pub enum Event {
