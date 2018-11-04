@@ -7,7 +7,7 @@ let s:bin = s:scriptdir . '/target/release/conjure'
 
 function! conjure#connect(addr, expr)
   if conjure#upsert_job() == 0
-    return rpcnotify(s:jobid, 'connect', a:addr, a:expr)
+    call rpcnotify(s:jobid, 'connect', a:addr, a:expr)
   endif
 endfunction
 
