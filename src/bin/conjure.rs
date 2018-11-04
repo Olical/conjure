@@ -18,24 +18,25 @@ fn main() {
     let (tx, rx) = mpsc::channel();
 
     info!("starting Neovim RPC server");
-    let mut server = server::Server::new();
-    server.start(tx);
+    let mut server = server::Server::new(tx);
 
     info!("starting event channel loop");
     for event in rx.iter() {
         match event {
             Ok(event) => {
-                info!("got event: {}", event);
+                info!("event from server: {}", event);
 
                 match event {
                     Event::Quit => break,
-                    Event::Connect { addr, expr } => {
-                        eprintln!("connected to {} for files matching {}", addr, expr)
-                    }
+                    Event::Connect { addr, expr } => server.echo(&format!(
+                        "Connected to {} for files matching {}",
+                        addr, expr
+                    )),
                 }
             }
             Err(msg) => {
-                error!("got error: {}", msg);
+                error!("error from server: {}", msg);
+                server.echoerr(&format!("Error parsing command: {}", msg))
             }
         }
     }
@@ -46,9 +47,7 @@ fn initialise_logger() {
         path.set_file_name("conjure.log");
 
         if let Ok(log_file) = File::create(path) {
-            match WriteLogger::init(LevelFilter::Trace, Config::default(), log_file) {
-                _ => (),
-            }
+            let _ = WriteLogger::init(LevelFilter::Trace, Config::default(), log_file);
         }
     }
 }

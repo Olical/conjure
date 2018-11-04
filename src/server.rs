@@ -1,4 +1,4 @@
-use neovim_lib::{session, Value};
+use neovim_lib::{session, Neovim, NeovimApi, Value};
 use regex;
 use std::fmt;
 use std::net;
@@ -6,19 +6,25 @@ use std::str::FromStr;
 use std::sync::mpsc;
 
 pub struct Server {
-    session: session::Session,
+    nvim: Neovim,
 }
 
 type Sender = mpsc::Sender<Result<Event, String>>;
 
 impl Server {
-    pub fn new() -> Server {
-        let session = session::Session::new_parent().expect("can't create neovim session");
-        Server { session }
+    pub fn new(tx: Sender) -> Server {
+        let mut session = session::Session::new_parent().expect("can't create neovim session");
+        session.start_event_loop_handler(Handler::new(tx));
+        let nvim = Neovim::new(session);
+        Server { nvim }
     }
 
-    pub fn start(&mut self, tx: Sender) {
-        self.session.start_event_loop_handler(Handler::new(tx));
+    pub fn echo(&mut self, msg: &str) {
+        let _ = self.nvim.out_write(&format!("{}\n", msg));
+    }
+
+    pub fn echoerr(&mut self, msg: &str) {
+        let _ = self.nvim.err_write(&format!("{}\n", msg));
     }
 }
 
@@ -79,9 +85,10 @@ impl Handler {
 impl neovim_lib::Handler for Handler {
     fn handle_notify(&mut self, name: &str, args: Vec<Value>) {
         let event = Event::from(name, args);
-        self.tx
-            .send(event)
-            .expect("could not send event through channel");
+        match self.tx.send(event) {
+            Err(msg) => error!("could not send event through channel: {}", msg),
+            _ => (),
+        }
     }
 
     fn handle_request(&mut self, _name: &str, _args: Vec<Value>) -> Result<Value, Value> {
