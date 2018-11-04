@@ -3,18 +3,19 @@ extern crate neovim_lib;
 extern crate regex;
 
 use conjure::server;
-use conjure::server::Request;
-use neovim_lib::Value;
-use std::process;
+use conjure::server::Event;
+use std::sync::mpsc;
 
 fn main() {
-    server::start(|event| match event {
-        Request::Exit => process::exit(0),
-        Request::Connect { addr, expr } => Ok(Value::from(format!(
-            "Connected to {} for files matching {}",
-            addr, expr
-        ))),
-    });
+    let (tx, rx) = mpsc::channel();
+    let _session = server::start(tx);
 
-    loop {}
+    for event in rx.iter() {
+        match event {
+            Event::Quit => break,
+            Event::Connect { addr, expr } => {
+                eprintln!("connected to {} for files matching {}", addr, expr)
+            }
+        }
+    }
 }

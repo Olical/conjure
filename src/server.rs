@@ -1,61 +1,78 @@
 use neovim_lib::{session, Value};
 use regex;
+use std::fmt::Display;
 use std::net;
+use std::str::FromStr;
+use std::sync::mpsc;
 
-type HandlerFn = fn(Request) -> Result<Value, Value>;
+type Sender = mpsc::Sender<Event>;
 
-pub fn start(handler: HandlerFn) -> session::Session {
+pub fn start(tx: Sender) -> session::Session {
     let mut session = session::Session::new_parent().expect("can't create neovim session");
-    session.start_event_loop_handler(Handler::new(handler));
+    session.start_event_loop_handler(Handler::new(tx));
     session
 }
 
-pub enum Request {
-    Exit,
+pub enum Event {
+    Quit,
     Connect {
         addr: net::SocketAddr,
         expr: regex::Regex,
     },
 }
 
-fn parse_index<T: std::str::FromStr>(args: &Vec<Value>, index: usize) -> Option<T> {
-    args.get(index)?.as_str()?.parse().ok()
+fn parse_index<T: FromStr>(args: &[Value], index: usize) -> Result<T, String>
+where
+    T::Err: Display,
+{
+    args.get(index)
+        .ok_or_else(|| format!("expected argument at position {}", index + 1))?
+        .as_str()
+        .ok_or_else(|| String::from("expr must be a string"))?
+        .parse()
+        .map_err(|e| format!("expr parse error: {}", e))
 }
 
-impl Request {
-    fn from(name: &str, args: Vec<Value>) -> Result<Request, String> {
-        match name {
-            "exit" => Ok(Request::Exit),
-            "connect" => match (parse_index(&args, 0), parse_index(&args, 1)) {
-                (Some(addr), Some(expr)) => Ok(Request::Connect { addr, expr }),
-                (None, None) => Err("failed to parse addr or expr".to_owned()),
-                (Some(_), None) => Err("failed to parse expr".to_owned()),
-                (None, Some(_)) => Err("failed to parse addr".to_owned()),
-            },
-            _ => Err(format!("unknown request name `{}`", name)),
-        }
+impl Event {
+    fn from(name: &str, args: Vec<Value>) -> Result<Event, String> {
+        let event = match name {
+            "exit" => Event::Quit,
+            "connect" => {
+                let addr = parse_index(&args, 0).map_err(|e| format!("invalid addr: {}", e))?;
+                let expr = parse_index(&args, 1).map_err(|e| format!("invalid expr: {}", e))?;
+
+                Event::Connect { addr, expr }
+            }
+            _ => return Err(format!("unknown request name `{}`", name)),
+        };
+
+        Ok(event)
     }
 }
 
 struct Handler {
-    handler: HandlerFn,
+    tx: Sender,
 }
 
 impl Handler {
-    fn new(handler: HandlerFn) -> Handler {
-        Handler { handler }
+    fn new(tx: Sender) -> Handler {
+        Handler { tx }
     }
 }
 
 impl neovim_lib::Handler for Handler {
-    fn handle_notify(&mut self, _name: &str, _args: Vec<Value>) {
-        eprintln!("notify not supported, use request");
+    fn handle_notify(&mut self, name: &str, args: Vec<Value>) {
+        match Event::from(name, args) {
+            Ok(event) => self
+                .tx
+                .send(event)
+                .expect("could not send event through channel"),
+            Err(msg) => eprintln!("invalid event: {}", msg),
+        }
     }
 
-    fn handle_request(&mut self, name: &str, args: Vec<Value>) -> Result<Value, Value> {
-        match Request::from(name, args) {
-            Ok(request) => (self.handler)(request),
-            Err(msg) => Err(Value::from(format!("Error while parsing request: {}", msg))),
-        }
+    fn handle_request(&mut self, _name: &str, _args: Vec<Value>) -> Result<Value, Value> {
+        eprintln!("request not supported, use notify");
+        Err(Value::from(false))
     }
 }
