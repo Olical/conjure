@@ -1,8 +1,6 @@
 use std::io;
 use std::io::prelude::*;
-use std::net;
-use std::sync::mpsc;
-use std::thread;
+use std::net::TcpStream;
 
 pub enum Value {
     Return(String),
@@ -24,36 +22,22 @@ pub enum Value {
 // {:tag :tap
 //  :val val} ;values from tap>
 
-type Sender = mpsc::Sender<String>;
-type Receiver = mpsc::Receiver<Value>;
+pub struct Client {
+    stream: TcpStream,
+}
 
-// pub fn connect(addr: &'static str) -> Result<(Sender, Receiver), String> {
-//     match net::TcpStream::connect(addr) {
-//         Ok(stream) => {
-//             let (tx, rx) = mpsc::channel();
-//             let itx = tx.clone();
+impl Client {
+    pub fn connect(addr: &'static str) -> Result<Client, String> {
+        match TcpStream::connect(addr) {
+            Ok(stream) => Ok(Client { stream }),
+            Err(msg) => Err(format!("Couldn't connect to `{}`: {}", addr, msg)),
+        }
+    }
 
-//             thread::spawn(move || {
-//                 let reader = io::BufReader::new(stream);
-
-//                 for line in reader.lines() {
-//                     match line {
-//                         Ok(line) => {
-//                             let _parser = edn::parser::Parser::new(&line);
-//                             itx.send(Value::Return(String::from(line)));
-//                         }
-//                         Err(msg) => {
-//                             itx.send(Value::Return(format!("ohno: {}", msg)));
-//                         }
-//                     }
-//                 }
-//             });
-
-//             Ok((tx, rx))
-//         }
-//         Err(msg) => Err(format!("Couldn't connect to `{}`: {}", addr, msg)),
-//     }
-// }
+    pub fn eval(&mut self, code: &str) -> io::Result<usize> {
+        self.stream.write(format!("{}\n", code).as_bytes())
+    }
+}
 
 // pub fn start() {
 //     if let Ok(mut stream) = net::TcpStream::connect("127.0.0.1:5555") {
