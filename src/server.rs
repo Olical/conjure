@@ -86,9 +86,9 @@ impl Handler {
 impl neovim_lib::Handler for Handler {
     fn handle_notify(&mut self, name: &str, args: Vec<Value>) {
         let event = Event::from(name, args);
-        match self.tx.send(event) {
-            Err(msg) => error!("Could not send event through channel: {}", msg),
-            _ => (),
+
+        if let Err(msg) = self.tx.send(event) {
+            error!("Could not send event through channel: {}", msg);
         }
     }
 
