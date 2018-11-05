@@ -1,3 +1,4 @@
+use bufstream::BufStream;
 use std::io;
 use std::io::prelude::*;
 use std::net::TcpStream;
@@ -23,13 +24,16 @@ pub enum Value {
 //  :val val} ;values from tap>
 
 pub struct Client {
-    stream: TcpStream,
+    stream: BufStream<TcpStream>,
 }
 
 impl Client {
     pub fn connect(addr: &'static str) -> Result<Client, String> {
         match TcpStream::connect(addr) {
-            Ok(stream) => Ok(Client { stream }),
+            Ok(raw_stream) => {
+                let stream = BufStream::new(raw_stream);
+                Ok(Client { stream })
+            }
             Err(msg) => Err(format!("Couldn't connect to `{}`: {}", addr, msg)),
         }
     }
