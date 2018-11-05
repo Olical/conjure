@@ -9,22 +9,29 @@ use conjure::server::Event;
 use simplelog::*;
 use std::env;
 use std::fs::File;
+use std::io;
 use std::sync::mpsc;
 
 fn main() {
     initialise_logger();
 
-    info!("starting Conjure");
+    info!("==========================");
+
+    if let Err(msg) = start() {
+        error!("Error from start: {}", msg);
+    }
+}
+
+fn start() -> Result<(), io::Error> {
+    info!("Starting Neovim RPC server");
     let (tx, rx) = mpsc::channel();
+    let mut server = server::Server::start(tx)?;
 
-    info!("starting Neovim RPC server");
-    let mut server = server::Server::new(tx);
-
-    info!("starting event channel loop");
+    info!("Starting event channel loop");
     for event in rx.iter() {
         match event {
             Ok(event) => {
-                info!("event from server: {}", event);
+                info!("Event from server: {}", event);
 
                 match event {
                     Event::Quit => break,
@@ -35,11 +42,13 @@ fn main() {
                 }
             }
             Err(msg) => {
-                error!("error from server: {}", msg);
+                error!("Error from server: {}", msg);
                 server.echoerr(&format!("Error parsing command: {}", msg))
             }
         }
     }
+
+    Ok(())
 }
 
 fn initialise_logger() {

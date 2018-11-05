@@ -1,6 +1,7 @@
 use neovim_lib::{session, Neovim, NeovimApi, Value};
 use regex;
 use std::fmt;
+use std::io;
 use std::net;
 use std::str::FromStr;
 use std::sync::mpsc;
@@ -12,11 +13,11 @@ pub struct Server {
 type Sender = mpsc::Sender<Result<Event, String>>;
 
 impl Server {
-    pub fn new(tx: Sender) -> Self {
-        let mut session = session::Session::new_parent().expect("can't create neovim session");
+    pub fn start(tx: Sender) -> Result<Self, io::Error> {
+        let mut session = session::Session::new_parent()?;
         session.start_event_loop_handler(Handler::new(tx));
         let nvim = Neovim::new(session);
-        Server { nvim }
+        Ok(Server { nvim })
     }
 
     pub fn echo(&mut self, msg: &str) {
@@ -86,13 +87,13 @@ impl neovim_lib::Handler for Handler {
     fn handle_notify(&mut self, name: &str, args: Vec<Value>) {
         let event = Event::from(name, args);
         match self.tx.send(event) {
-            Err(msg) => error!("could not send event through channel: {}", msg),
+            Err(msg) => error!("Could not send event through channel: {}", msg),
             _ => (),
         }
     }
 
     fn handle_request(&mut self, _name: &str, _args: Vec<Value>) -> Result<Value, Value> {
-        error!("request not supported, use notify");
+        error!("Request not supported, use notify");
         Err(Value::from(false))
     }
 }
