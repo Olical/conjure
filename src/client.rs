@@ -54,7 +54,7 @@ pub struct Client {
 }
 
 impl Client {
-    pub fn connect(addr: &'static str) -> Result<Client, String> {
+    pub fn connect(addr: &str) -> Result<Client, String> {
         let raw_stream = TcpStream::connect(addr)
             .map_err(|msg| format!("Couldn't connect to `{}`: {}", addr, msg))?;
 
