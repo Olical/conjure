@@ -1,33 +1,53 @@
 use bufstream::BufStream;
+use edn::parser::Parser;
+use edn::Value;
 use std::io;
 use std::io::prelude::*;
 use std::net::TcpStream;
 
-pub enum Value {
+pub enum Response {
     Return(String),
     Out(String),
     Tap(String),
     Error(String),
 }
 
-impl Value {
-    fn from(_value: edn::Value) -> Self {
-        Value::Return("foo".to_owned())
-    }
+fn keyword(name: &str) -> Value {
+    Value::Keyword(name.to_owned())
 }
 
-// {:tag :ret
-//  :val val ;;eval result
-//  :ns ns-name-string
-//  :ms long ;;eval time in milliseconds
-//  :form string ;;iff successfully read
-// }
-// {:tag :out
-//  :val string} ;chars from during-eval *out*
-// {:tag :err
-//  :val string} ;chars from during-eval *err*
-// {:tag :tap
-//  :val val} ;values from tap>
+impl Response {
+    fn from(value: Value) -> Result<Self, String> {
+        if let Value::Map(msg) = value {
+            let tag = msg
+                .get(&keyword("tag"))
+                .ok_or_else(|| format!("failed to get tag from: {:?}", msg))?;
+
+            let val = msg
+                .get(&keyword("val"))
+                .ok_or_else(|| format!("failed to get val from: {:?}", msg))?;
+
+            if let (Value::Keyword(tag), Value::String(val)) = (tag, val) {
+                let val = val.to_owned();
+
+                match tag.as_ref() {
+                    "out" => Ok(Response::Out(val)),
+                    "ret" => Ok(Response::Return(val)),
+                    "err" => Ok(Response::Error(val)),
+                    "tap" => Ok(Response::Tap(val)),
+                    _ => Err(format!("unknown tag type: {}", tag)),
+                }
+            } else {
+                Err(format!(
+                    "tag should be a keyword and val should be a string: {:?}",
+                    msg
+                ))
+            }
+        } else {
+            Err(format!("is not a map: {:?}", value))
+        }
+    }
+}
 
 pub struct Client {
     stream: BufStream<TcpStream>,
@@ -35,26 +55,25 @@ pub struct Client {
 
 impl Client {
     pub fn connect(addr: &'static str) -> Result<Client, String> {
-        match TcpStream::connect(addr) {
-            Ok(raw_stream) => {
-                let stream = BufStream::new(raw_stream);
-                Ok(Client { stream })
-            }
-            Err(msg) => Err(format!("Couldn't connect to `{}`: {}", addr, msg)),
-        }
+        let raw_stream = TcpStream::connect(addr)
+            .map_err(|msg| format!("Couldn't connect to `{}`: {}", addr, msg))?;
+
+        Ok(Client {
+            stream: BufStream::new(raw_stream),
+        })
     }
 
-    pub fn read(&mut self) -> Result<Value, String> {
+    pub fn read(&mut self) -> Result<Response, String> {
         let mut buf = String::new();
 
         self.stream
             .read_line(&mut buf)
             .map_err(|msg| format!("failed to read line: {}", msg))?;
 
-        let mut parser = edn::parser::Parser::new(&buf);
+        let mut parser = Parser::new(&buf);
 
         match parser.read() {
-            Some(Ok(value)) => Ok(Value::from(value)),
+            Some(Ok(value)) => Response::from(value),
             Some(Err(msg)) => Err(format!("failed to parse response as EDN: {:?}", msg)),
             None => Err("didn't get anything from the EDN parser".to_owned()),
         }
@@ -64,24 +83,3 @@ impl Client {
         self.stream.write(format!("{}\n", code).as_bytes())
     }
 }
-
-// pub fn start() {
-//     if let Ok(mut stream) = net::TcpStream::connect("127.0.0.1:5555") {
-//         println!("Connected!");
-
-//         let code = "(prn \"Hello from Rust!\")";
-//         println!("Evaluating `{}` through a Clojure socket pREPL", code);
-
-//         stream.write(format!("{}\n", code).as_bytes()).unwrap();
-
-//         let reader = io::BufReader::new(stream);
-
-//         for line in reader.lines() {
-//             let s = line.unwrap();
-//             let mut parser = edn::parser::Parser::new(&s[..]);
-//             println!("=> {:?}", parser.read());
-//         }
-//     } else {
-//         println!("Nope");
-//     }
-// }
