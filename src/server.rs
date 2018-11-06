@@ -21,11 +21,15 @@ impl Server {
     }
 
     pub fn echo(&mut self, msg: &str) {
-        let _ = self.nvim.out_write(&format!("{}\n", msg));
+        if let Err(msg) = self.nvim.out_write(&format!("{}\n", msg)) {
+            error!("Failed to echo {}", msg);
+        }
     }
 
     pub fn echoerr(&mut self, msg: &str) {
-        let _ = self.nvim.err_write(&format!("{}\n", msg));
+        if let Err(msg) = self.nvim.err_write(&format!("{}\n", msg)) {
+            error!("Failed to echoerr {}", msg);
+        }
     }
 }
 
