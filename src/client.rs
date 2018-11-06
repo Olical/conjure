@@ -10,6 +10,12 @@ pub enum Value {
     Error(String),
 }
 
+impl Value {
+    fn from(_value: edn::Value) -> Self {
+        Value::Return("foo".to_owned())
+    }
+}
+
 // {:tag :ret
 //  :val val ;;eval result
 //  :ns ns-name-string
@@ -38,7 +44,24 @@ impl Client {
         }
     }
 
-    pub fn eval(&mut self, code: &str) -> io::Result<usize> {
+    pub fn read(&mut self) -> Result<Value, String> {
+        let mut buf = String::new();
+
+        match self.stream.read_line(&mut buf) {
+            Ok(_) => {
+                let mut parser = edn::parser::Parser::new(&buf);
+
+                match parser.read() {
+                    Some(Ok(value)) => Ok(Value::from(value)),
+                    Some(Err(msg)) => Err(format!("failed to parse response as EDN: {:?}", msg)),
+                    None => Err("didn't get anything from the EDN parser".to_owned()),
+                }
+            }
+            Err(msg) => Err(format!("failed to read line: {}", msg)),
+        }
+    }
+
+    pub fn write(&mut self, code: &str) -> io::Result<usize> {
         self.stream.write(format!("{}\n", code).as_bytes())
     }
 }
