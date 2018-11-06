@@ -47,17 +47,16 @@ impl Client {
     pub fn read(&mut self) -> Result<Value, String> {
         let mut buf = String::new();
 
-        match self.stream.read_line(&mut buf) {
-            Ok(_) => {
-                let mut parser = edn::parser::Parser::new(&buf);
+        self.stream
+            .read_line(&mut buf)
+            .map_err(|msg| format!("failed to read line: {}", msg))?;
 
-                match parser.read() {
-                    Some(Ok(value)) => Ok(Value::from(value)),
-                    Some(Err(msg)) => Err(format!("failed to parse response as EDN: {:?}", msg)),
-                    None => Err("didn't get anything from the EDN parser".to_owned()),
-                }
-            }
-            Err(msg) => Err(format!("failed to read line: {}", msg)),
+        let mut parser = edn::parser::Parser::new(&buf);
+
+        match parser.read() {
+            Some(Ok(value)) => Ok(Value::from(value)),
+            Some(Err(msg)) => Err(format!("failed to parse response as EDN: {:?}", msg)),
+            None => Err("didn't get anything from the EDN parser".to_owned()),
         }
     }
 
