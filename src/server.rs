@@ -61,7 +61,7 @@ where
 }
 
 impl Event {
-    fn from(name: &str, args: Vec<Value>) -> Result<Event, String> {
+    fn from(name: &str, args: &[Value]) -> Result<Event, String> {
         let event = match name {
             "exit" => Event::Quit,
             "connect" => {
@@ -89,7 +89,7 @@ impl Handler {
 
 impl neovim_lib::Handler for Handler {
     fn handle_notify(&mut self, name: &str, args: Vec<Value>) {
-        let event = Event::from(name, args);
+        let event = Event::from(name, &args);
 
         if let Err(msg) = self.tx.send(event) {
             error!("Could not send event through channel: {}", msg);
