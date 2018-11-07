@@ -45,8 +45,8 @@ pub enum Event {
         index: usize,
     },
     Eval {
-        path: String,
         code: String,
+        path: String,
     },
 }
 
@@ -56,7 +56,7 @@ impl fmt::Display for Event {
     }
 }
 
-fn parse_index<T: FromStr>(args: &[Value], index: usize, name: &str) -> Result<T, String>
+fn parse_arg_str<T: FromStr>(args: &[Value], index: usize, name: &str) -> Result<T, String>
 where
     T::Err: fmt::Display,
 {
@@ -68,25 +68,32 @@ where
         .map_err(|e| format!("{} parse error: {}", name, e))
 }
 
+fn parse_arg_u64(args: &[Value], index: usize, name: &str) -> Result<u64, String> {
+    args.get(index)
+        .ok_or_else(|| format!("expected argument at position {}", index + 1))?
+        .as_u64()
+        .ok_or_else(|| format!("{} must be a u64", name))
+}
+
 impl Event {
     fn from(name: &str, args: &[Value]) -> Result<Event, String> {
         let event = match name {
             "exit" => Event::Quit,
             "list" => Event::List,
             "connect" => {
-                let addr = parse_index(&args, 0, "addr")?;
-                let expr = parse_index(&args, 1, "expr")?;
+                let addr = parse_arg_str(&args, 0, "addr")?;
+                let expr = parse_arg_str(&args, 1, "expr")?;
 
                 Event::Connect { addr, expr }
             }
             "disconnect" => {
-                let index = parse_index(&args, 0, "index")?;
+                let index = parse_arg_u64(&args, 0, "index")? as usize;
                 Event::Disconnect { index }
             }
             "eval" => {
-                let path = parse_index(&args, 0, "path")?;
-                let code = parse_index(&args, 0, "code")?;
-                Event::Eval { path, code }
+                let code = parse_arg_str(&args, 0, "code")?;
+                let path = parse_arg_str(&args, 1, "path")?;
+                Event::Eval { code, path }
             }
             _ => return Err(format!("unknown request name: {}", name)),
         };

@@ -87,9 +87,9 @@ fn start() -> Result<(), io::Error> {
                             ));
                         }
                     }
-                    Event::Eval { path, code } => {
+                    Event::Eval { code, path } => {
                         let conn = connections.iter().find(|c| c.expr.is_match(&path));
-                        server.echoerr("Would eval here... not doing that yet...");
+                        server.echoerr(&format!("Would eval {} for {}", code, path));
                     }
                 }
             }

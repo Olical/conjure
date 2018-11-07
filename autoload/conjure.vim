@@ -19,7 +19,13 @@ endfunction
 
 function! conjure#disconnect(index)
   if conjure#upsert_job() == 0
-    call rpcnotify(s:jobid, 'disconnect', a:incex)
+    call rpcnotify(s:jobid, 'disconnect', a:index)
+  endif
+endfunction
+
+function! conjure#eval(code, path)
+  if conjure#upsert_job() == 0
+    call rpcnotify(s:jobid, 'eval', a:code, a:path)
   endif
 endfunction
 
