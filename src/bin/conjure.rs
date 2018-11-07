@@ -56,10 +56,15 @@ fn start() -> Result<(), io::Error> {
 
                 match event {
                     Event::Quit => break,
+                    Event::List => {
+                        for (index, conn) in connections.iter().enumerate() {
+                            server.echo(&format!("{}: {} [{}]", index, conn.addr, conn.expr))
+                        }
+                    }
                     Event::Connect { addr, expr } => {
                         match Connection::connect(addr, expr.clone()) {
-                            Ok(connection) => {
-                                connections.push(connection);
+                            Ok(conn) => {
+                                connections.push(conn);
                                 server.echo(&format!(
                                     "Connected to {} for files matching {}",
                                     addr, expr
@@ -67,6 +72,24 @@ fn start() -> Result<(), io::Error> {
                             }
                             Err(msg) => server.echoerr(&format!("Connection failed: {}", msg)),
                         }
+                    }
+                    Event::Disconnect { index } => {
+                        if let Some(_) = connections.get(index) {
+                            let conn = connections.remove(index);
+                            server.echo(&format!(
+                                "Disconnected from {} for files matching {}",
+                                conn.addr, conn.expr
+                            ));
+                        } else {
+                            server.echoerr(&format!(
+                                "Connection {} doesn't exist, try listing them",
+                                index
+                            ));
+                        }
+                    }
+                    Event::Eval { path, code } => {
+                        let conn = connections.iter().find(|c| c.expr.is_match(&path));
+                        server.echoerr("Would eval here... not doing that yet...");
                     }
                 }
             }
