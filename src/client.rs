@@ -3,7 +3,7 @@ use edn::parser::Parser;
 use edn::Value;
 use std::io;
 use std::io::prelude::*;
-use std::net::TcpStream;
+use std::net::{SocketAddr, TcpStream};
 
 pub enum Response {
     Return(String),
@@ -54,7 +54,7 @@ pub struct Client {
 }
 
 impl Client {
-    pub fn connect(addr: &str) -> Result<Self, String> {
+    pub fn connect(addr: SocketAddr) -> Result<Self, String> {
         let raw_stream = TcpStream::connect(addr)
             .map_err(|msg| format!("Couldn't connect to `{}`: {}", addr, msg))?;
 
