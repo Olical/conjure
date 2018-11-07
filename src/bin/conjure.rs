@@ -74,7 +74,7 @@ fn start() -> Result<(), io::Error> {
                         }
                     }
                     Event::Disconnect { index } => {
-                        if let Some(_) = connections.get(index) {
+                        if connections.get(index).is_some() {
                             let conn = connections.remove(index);
                             server.echo(&format!(
                                 "Disconnected from {} for files matching {}",
@@ -88,7 +88,7 @@ fn start() -> Result<(), io::Error> {
                         }
                     }
                     Event::Eval { code, path } => {
-                        let conn = connections.iter().find(|c| c.expr.is_match(&path));
+                        let mut conn = connections.iter().find(|c| c.expr.is_match(&path));
                         server.echoerr(&format!("Would eval {} for {}", code, path));
                     }
                 }
