@@ -88,7 +88,7 @@ impl Event {
                 let code = parse_index(&args, 0, "code")?;
                 Event::Eval { path, code }
             }
-            _ => return Err(format!("unknown request name `{}`", name)),
+            _ => return Err(format!("unknown request name: {}", name)),
         };
 
         Ok(event)

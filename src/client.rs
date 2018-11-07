@@ -56,7 +56,7 @@ pub struct Client {
 impl Client {
     pub fn connect(addr: SocketAddr) -> Result<Self, String> {
         let raw_stream = TcpStream::connect(addr)
-            .map_err(|msg| format!("Couldn't connect to `{}`: {}", addr, msg))?;
+            .map_err(|msg| format!("Couldn't connect to {}: {}", addr, msg))?;
 
         Ok(Self {
             stream: BufStream::new(raw_stream),

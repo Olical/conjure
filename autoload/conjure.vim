@@ -5,9 +5,21 @@ endif
 let s:scriptdir = resolve(expand('<sfile>:p:h') . '/..')
 let s:bin = s:scriptdir . '/target/release/conjure'
 
+function! conjure#list()
+  if conjure#upsert_job() == 0
+    call rpcnotify(s:jobid, 'list')
+  endif
+endfunction
+
 function! conjure#connect(addr, expr)
   if conjure#upsert_job() == 0
     call rpcnotify(s:jobid, 'connect', a:addr, a:expr)
+  endif
+endfunction
+
+function! conjure#disconnect(index)
+  if conjure#upsert_job() == 0
+    call rpcnotify(s:jobid, 'disconnect', a:incex)
   endif
 endfunction
 
