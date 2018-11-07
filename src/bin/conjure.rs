@@ -29,15 +29,15 @@ fn main() {
 }
 
 struct Connection {
-    main: Client,
+    eval: Client,
     addr: SocketAddr,
     expr: Regex,
 }
 
 impl Connection {
     fn connect(addr: SocketAddr, expr: Regex) -> Result<Self, String> {
-        let main = Client::connect(addr)?;
-        Ok(Self { main, addr, expr })
+        let eval = Client::connect(addr)?;
+        Ok(Self { eval, addr, expr })
     }
 }
 
@@ -58,10 +58,14 @@ fn start() -> Result<(), io::Error> {
                     Event::Quit => break,
                     Event::List => {
                         for (index, conn) in connections.iter().enumerate() {
-                            server.echo(&format!("{}: {} [{}]", index, conn.addr, conn.expr))
+                            server.echo(&format!(
+                                "[{}] {} for files matching {}",
+                                index, conn.addr, conn.expr
+                            ))
                         }
                     }
                     Event::Connect { addr, expr } => {
+                        // TODO Don't connect if duplicate, or leave it up to the user?
                         match Connection::connect(addr, expr.clone()) {
                             Ok(conn) => {
                                 connections.push(conn);
@@ -88,7 +92,17 @@ fn start() -> Result<(), io::Error> {
                         }
                     }
                     Event::Eval { code, path } => {
-                        let mut conn = connections.iter().find(|c| c.expr.is_match(&path));
+                        // TODO Move this connection finding into it's own fn.
+                        let mut _conn = connections.iter().find(|c| c.expr.is_match(&path));
+
+                        // TODO Warn if we don't find a suitable connection.
+                        // TODO Disconnect if it fails? Or leave it up to the user?
+                        // TODO Read until we see an out and print it.
+
+                        // These calls are fire and forget. There should be some other thread
+                        // consuming these connections looking for their specific jobs. So one
+                        // connection is actually many sockets that each have their own specific
+                        // jobs.
                         server.echoerr(&format!("Would eval {} for {}", code, path));
                     }
                 }
