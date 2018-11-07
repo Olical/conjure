@@ -17,7 +17,7 @@ impl Server {
         let mut session = session::Session::new_parent()?;
         session.start_event_loop_handler(Handler::new(tx));
         let nvim = Neovim::new(session);
-        Ok(Server { nvim })
+        Ok(Self { nvim })
     }
 
     pub fn echo(&mut self, msg: &str) {

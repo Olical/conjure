@@ -58,7 +58,7 @@ impl Client {
         let raw_stream = TcpStream::connect(addr)
             .map_err(|msg| format!("Couldn't connect to `{}`: {}", addr, msg))?;
 
-        Ok(Client {
+        Ok(Self {
             stream: BufStream::new(raw_stream),
         })
     }
