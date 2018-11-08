@@ -20,9 +20,9 @@ use std::sync::mpsc;
 fn main() {
     initialise_logger();
 
-    info!("===================");
-    info!("= Conjure things! =");
-    info!("===================");
+    info!("==============");
+    info!("== Conjure! ==");
+    info!("==============");
 
     if let Err(msg) = start() {
         error!("Error from start: {}", msg);
