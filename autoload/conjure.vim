@@ -11,15 +11,15 @@ function! conjure#list()
   endif
 endfunction
 
-function! conjure#connect(addr, expr)
+function! conjure#connect(key, addr, expr)
   if conjure#upsert_job() == 0
-    call rpcnotify(s:jobid, 'connect', a:addr, a:expr)
+    call rpcnotify(s:jobid, 'connect', a:key, a:addr, a:expr)
   endif
 endfunction
 
-function! conjure#disconnect(index)
+function! conjure#disconnect(key)
   if conjure#upsert_job() == 0
-    call rpcnotify(s:jobid, 'disconnect', a:index)
+    call rpcnotify(s:jobid, 'disconnect', a:key)
   endif
 endfunction
 

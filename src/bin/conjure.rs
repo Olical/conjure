@@ -10,6 +10,7 @@ use conjure::server;
 use conjure::server::Event;
 use regex::Regex;
 use simplelog::*;
+use std::collections::HashMap;
 use std::env;
 use std::fs::File;
 use std::io;
@@ -42,7 +43,7 @@ impl Connection {
 }
 
 fn start() -> Result<(), io::Error> {
-    let mut connections: Vec<Connection> = Vec::new();
+    let mut connections: HashMap<String, Connection> = HashMap::new();
 
     info!("Starting Neovim RPC server");
     let (tx, rx) = mpsc::channel();
@@ -57,43 +58,50 @@ fn start() -> Result<(), io::Error> {
                 match event {
                     Event::Quit => break,
                     Event::List => {
-                        for (index, conn) in connections.iter().enumerate() {
+                        for (key, conn) in connections.iter() {
                             server.echo(&format!(
                                 "[{}] {} for files matching {}",
-                                index, conn.addr, conn.expr
+                                key, conn.addr, conn.expr
                             ))
                         }
                     }
-                    Event::Connect { addr, expr } => {
-                        // TODO Don't connect if duplicate, or leave it up to the user?
-                        match Connection::connect(addr, expr.clone()) {
-                            Ok(conn) => {
-                                connections.push(conn);
-                                server.echo(&format!(
-                                    "Connected to {} for files matching {}",
-                                    addr, expr
-                                ))
+                    Event::Connect { key, addr, expr } => {
+                        if connections.contains_key(&key) {
+                            server.echoerr(&format!("[{}] Connection exists already.", key));
+                        } else {
+                            match Connection::connect(addr, expr.clone()) {
+                                Ok(conn) => {
+                                    let e_key = key.clone();
+                                    connections.insert(key, conn);
+                                    server.echo(&format!(
+                                        "[{}] Connected to {} for files matching {}",
+                                        e_key, addr, expr
+                                    ))
+                                }
+                                Err(msg) => {
+                                    server.echoerr(&format!("[{}] Connection failed: {}", key, msg))
+                                }
                             }
-                            Err(msg) => server.echoerr(&format!("Connection failed: {}", msg)),
                         }
                     }
-                    Event::Disconnect { index } => {
-                        if connections.get(index).is_some() {
-                            let conn = connections.remove(index);
-                            server.echo(&format!(
-                                "Disconnected from {} for files matching {}",
-                                conn.addr, conn.expr
-                            ));
+                    Event::Disconnect { key } => {
+                        if connections.contains_key(&key) {
+                            if let Some(conn) = connections.remove(&key) {
+                                server.echo(&format!(
+                                    "[{}] Disconnected from {} for files matching {}",
+                                    key, conn.addr, conn.expr
+                                ));
+                            }
                         } else {
                             server.echoerr(&format!(
                                 "Connection {} doesn't exist, try listing them",
-                                index
+                                key
                             ));
                         }
                     }
                     Event::Eval { code, path } => {
                         // TODO Move this connection finding into it's own fn.
-                        let mut _conn = connections.iter().find(|c| c.expr.is_match(&path));
+                        let mut _conn = connections.iter().find(|(k, c)| c.expr.is_match(&path));
 
                         // TODO Warn if we don't find a suitable connection.
                         // TODO Disconnect if it fails? Or leave it up to the user?
@@ -108,7 +116,7 @@ fn start() -> Result<(), io::Error> {
                 }
             }
             Err(msg) => {
-                error!("Error from server: {}", msg);
+                error!("Error from Neovim: {}", msg);
                 server.echoerr(&format!("Error parsing command: {}", msg))
             }
         }
