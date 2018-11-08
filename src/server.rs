@@ -117,9 +117,4 @@ impl neovim_lib::Handler for Handler {
             error!("Could not send event through channel: {}", msg);
         }
     }
-
-    fn handle_request(&mut self, _name: &str, _args: Vec<Value>) -> Result<Value, Value> {
-        error!("Request not supported, use notify");
-        Err(Value::from(false))
-    }
 }
