@@ -61,21 +61,24 @@ fn start() -> Result<(), io::Error> {
                         let lines: Vec<String> = connections
                             .iter()
                             .map(|(key, conn)| {
-                                format!("[{}] {} for files matching {}", key, conn.addr, conn.expr)
+                                format!(
+                                    "[{}] {} for files matching '{}'",
+                                    key, conn.addr, conn.expr
+                                )
                             }).collect();
 
                         server.echo(&lines.join("\n"));
                     }
                     Event::Connect { key, addr, expr } => {
                         if connections.contains_key(&key) {
-                            server.echoerr(&format!("[{}] Connection exists already.", key));
+                            server.echoerr(&format!("[{}] Connection exists already", key));
                         } else {
                             match Connection::connect(addr, expr.clone()) {
                                 Ok(conn) => {
                                     let e_key = key.clone();
                                     connections.insert(key, conn);
                                     server.echo(&format!(
-                                        "[{}] Connected to {} for files matching {}",
+                                        "[{}] Connected to {} for files matching '{}'",
                                         e_key, addr, expr
                                     ))
                                 }
@@ -89,7 +92,7 @@ fn start() -> Result<(), io::Error> {
                         if connections.contains_key(&key) {
                             if let Some(conn) = connections.remove(&key) {
                                 server.echo(&format!(
-                                    "[{}] Disconnected from {} for files matching {}",
+                                    "[{}] Disconnected from {} for files matching '{}'",
                                     key, conn.addr, conn.expr
                                 ));
                             }
