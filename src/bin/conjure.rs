@@ -58,12 +58,12 @@ fn start() -> Result<(), io::Error> {
                 match event {
                     Event::Quit => break,
                     Event::List => {
-                        // TODO Fix multi line echo. Probably want it in :messages too?
                         let lines: Vec<String> = connections
                             .iter()
                             .map(|(key, conn)| {
                                 format!("[{}] {} for files matching {}", key, conn.addr, conn.expr)
                             }).collect();
+
                         server.echo(&lines.join("\n"));
                     }
                     Event::Connect { key, addr, expr } => {

@@ -20,16 +20,18 @@ impl Server {
         Ok(Self { nvim })
     }
 
-    pub fn echo(&mut self, msg: &str) {
-        if let Err(msg) = self.nvim.out_write(&format!("{}\n", msg)) {
-            error!("Failed to echo {}", msg);
+    pub fn command(&mut self, cmd: &str) {
+        if let Err(msg) = self.nvim.command(cmd) {
+            error!("Command failed ({}): {}", cmd, msg);
         }
     }
 
+    pub fn echo(&mut self, msg: &str) {
+        self.command(&format!("echo \"{}\"", msg));
+    }
+
     pub fn echoerr(&mut self, msg: &str) {
-        if let Err(msg) = self.nvim.err_write(&format!("{}\n", msg)) {
-            error!("Failed to echoerr {}", msg);
-        }
+        self.command(&format!("echoerr \"{}\"", msg));
     }
 }
 
