@@ -58,16 +58,20 @@ fn start() -> Result<(), io::Error> {
                 match event {
                     Event::Quit => break,
                     Event::List => {
-                        let lines: Vec<String> = connections
-                            .iter()
-                            .map(|(key, conn)| {
-                                format!(
-                                    "[{}] {} for files matching '{}'",
-                                    key, conn.addr, conn.expr
-                                )
-                            }).collect();
+                        if connections.is_empty() {
+                            server.echo("No connections");
+                        } else {
+                            let lines: Vec<String> = connections
+                                .iter()
+                                .map(|(key, conn)| {
+                                    format!(
+                                        "[{}] {} for files matching '{}'",
+                                        key, conn.addr, conn.expr
+                                    )
+                                }).collect();
 
-                        server.echo(&lines.join("\n"));
+                            server.echo(&lines.join("\n"));
+                        }
                     }
                     Event::Connect { key, addr, expr } => {
                         if connections.contains_key(&key) {
