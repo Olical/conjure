@@ -1,4 +1,4 @@
-use neovim_lib::{session, Neovim, NeovimApi, Value};
+use neovim_lib::{session, Neovim, NeovimApiAsync, Value};
 use regex;
 use std::fmt;
 use std::io;
@@ -21,9 +21,13 @@ impl Server {
     }
 
     pub fn command(&mut self, cmd: &str) {
-        if let Err(msg) = self.nvim.command(cmd) {
-            error!("Command failed ({}): {}", cmd, msg);
-        }
+        self.nvim
+            .command_async(cmd)
+            .cb(|res| {
+                if let Err(msg) = res {
+                    error!("Command failed: {}", msg);
+                }
+            }).call();
     }
 
     pub fn echo(&mut self, msg: &str) {
