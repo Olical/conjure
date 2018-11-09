@@ -7,10 +7,10 @@ use std::net::{SocketAddr, TcpStream};
 use std::time::Duration;
 
 pub enum Response {
-    Return(String),
-    Out(String),
+    Ret(String),
     Tap(String),
-    Error(String),
+    Out(String),
+    Err(String),
 }
 
 fn keyword(name: &str) -> Value {
@@ -32,10 +32,10 @@ impl Response {
                 let val = val.to_owned();
 
                 match tag.as_ref() {
-                    "out" => Ok(Response::Out(val)),
-                    "ret" => Ok(Response::Return(val)),
-                    "err" => Ok(Response::Error(val)),
+                    "ret" => Ok(Response::Ret(val)),
                     "tap" => Ok(Response::Tap(val)),
+                    "out" => Ok(Response::Out(val)),
+                    "err" => Ok(Response::Err(val)),
                     _ => Err(format!("unknown tag type: {}", tag)),
                 }
             } else {
