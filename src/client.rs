@@ -6,6 +6,7 @@ use std::io::prelude::*;
 use std::net::{SocketAddr, TcpStream};
 use std::time::Duration;
 
+#[derive(Debug)]
 pub enum Response {
     Ret(String),
     Tap(String),
@@ -54,6 +55,29 @@ pub struct Client {
     stream: BufStream<TcpStream>,
 }
 
+type ReadResponse = Result<Response, String>;
+
+impl IntoIterator for Client {
+    type Item = ReadResponse;
+    type IntoIter = ClientIntoIter;
+
+    fn into_iter(self) -> Self::IntoIter {
+        ClientIntoIter { client: self }
+    }
+}
+
+pub struct ClientIntoIter {
+    client: Client,
+}
+
+impl Iterator for ClientIntoIter {
+    type Item = ReadResponse;
+
+    fn next(&mut self) -> Option<ReadResponse> {
+        self.client.read()
+    }
+}
+
 impl Client {
     pub fn connect(addr: SocketAddr) -> Result<Self, String> {
         let raw_stream = TcpStream::connect_timeout(&addr, Duration::from_secs(5))
@@ -68,20 +92,21 @@ impl Client {
         })
     }
 
-    pub fn read(&mut self) -> Result<Response, String> {
+    pub fn read(&mut self) -> Option<Result<Response, String>> {
         let mut buf = String::new();
 
-        self.stream
-            .read_line(&mut buf)
-            .map_err(|msg| format!("failed to read line: {}", msg))?;
+        if let Err(msg) = self.stream.read_line(&mut buf) {
+            error!("Failed to read line from stream: {}", msg);
+            return None;
+        }
 
         let mut parser = Parser::new(&buf);
 
-        match parser.read() {
+        Some(match parser.read() {
             Some(Ok(value)) => Response::from(value),
             Some(Err(msg)) => Err(format!("failed to parse response as EDN: {:?}", msg)),
             None => Err("didn't get anything from the EDN parser".to_owned()),
-        }
+        })
     }
 
     pub fn write(&mut self, code: &str) -> io::Result<()> {
