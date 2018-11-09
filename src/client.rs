@@ -4,6 +4,8 @@ use edn::Value;
 use std::io;
 use std::io::prelude::*;
 use std::net::{SocketAddr, TcpStream};
+use std::sync::mpsc;
+use std::thread;
 use std::time::Duration;
 
 #[derive(Debug)]
@@ -55,29 +57,6 @@ pub struct Client {
     stream: BufStream<TcpStream>,
 }
 
-type ReadResponse = Result<Response, String>;
-
-impl IntoIterator for Client {
-    type Item = ReadResponse;
-    type IntoIter = ClientIntoIter;
-
-    fn into_iter(self) -> Self::IntoIter {
-        ClientIntoIter { client: self }
-    }
-}
-
-pub struct ClientIntoIter {
-    client: Client,
-}
-
-impl Iterator for ClientIntoIter {
-    type Item = ReadResponse;
-
-    fn next(&mut self) -> Option<ReadResponse> {
-        self.client.read()
-    }
-}
-
 impl Client {
     pub fn connect(addr: SocketAddr) -> Result<Self, String> {
         let raw_stream = TcpStream::connect_timeout(&addr, Duration::from_secs(5))
@@ -86,6 +65,10 @@ impl Client {
         raw_stream
             .set_write_timeout(Some(Duration::from_secs(5)))
             .map_err(|msg| format!("failed to set write timeout: {}", msg))?;
+
+        raw_stream
+            .set_read_timeout(Some(Duration::from_millis(200)))
+            .or_else(|msg| Err(format!("failed to set read timeout: {}", msg)))?;
 
         Ok(Self {
             stream: BufStream::new(raw_stream),
@@ -113,4 +96,30 @@ impl Client {
         self.stream.write_all(format!("{}\n", code).as_bytes())?;
         self.stream.flush()
     }
+
+    pub fn channels(mut self) -> (Writer, Reader) {
+        let (w_tx, w_rx) = mpsc::channel();
+        let (r_tx, r_rx) = mpsc::channel();
+
+        thread::spawn(move || loop {
+            for value in w_rx.try_iter() {
+                let value: String = value;
+
+                if let Err(msg) = self.write(&value) {
+                    error!("Error writing from Sender channel: {}", msg);
+                }
+            }
+
+            if let Some(resp) = self.read() {
+                if let Err(msg) = r_tx.send(resp) {
+                    error!("Error while sending to Reader channel: {}", msg);
+                }
+            }
+        });
+
+        (w_tx, r_rx)
+    }
 }
+
+pub type Writer = mpsc::Sender<String>;
+pub type Reader = mpsc::Receiver<Result<Response, String>>;
