@@ -131,6 +131,7 @@ fn start() -> Result<(), io::Error> {
                             server.echo(&format!("[{}] Evaluating: {}", key, code_sample));
 
                             if let Err(msg) = connection.eval.write(&code) {
+                                // TODO Make sure this actually prints if the client is dead.
                                 server.echoerr(&format!("Error writing to eval client: {}", msg));
                             }
                         } else {

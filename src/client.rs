@@ -4,6 +4,7 @@ use edn::Value;
 use std::io;
 use std::io::prelude::*;
 use std::net::{SocketAddr, TcpStream};
+use std::time::Duration;
 
 pub enum Response {
     Return(String),
@@ -55,8 +56,12 @@ pub struct Client {
 
 impl Client {
     pub fn connect(addr: SocketAddr) -> Result<Self, String> {
-        let raw_stream = TcpStream::connect(addr)
-            .map_err(|msg| format!("Couldn't connect to {}: {}", addr, msg))?;
+        let raw_stream = TcpStream::connect_timeout(&addr, Duration::from_secs(5))
+            .map_err(|msg| format!("couldn't connect to {}: {}", addr, msg))?;
+
+        raw_stream
+            .set_write_timeout(Some(Duration::from_secs(5)))
+            .map_err(|msg| format!("failed to set write timeout: {}", msg))?;
 
         Ok(Self {
             stream: BufStream::new(raw_stream),
@@ -79,7 +84,8 @@ impl Client {
         }
     }
 
-    pub fn write(&mut self, code: &str) -> io::Result<usize> {
-        self.stream.write(format!("{}\n", code).as_bytes())
+    pub fn write(&mut self, code: &str) -> io::Result<()> {
+        self.stream.write_all(format!("{}\n", code).as_bytes())?;
+        self.stream.flush()
     }
 }
