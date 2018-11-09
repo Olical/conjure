@@ -12,6 +12,10 @@ pub struct Server {
 
 type Sender = mpsc::Sender<Result<Event, String>>;
 
+fn escape_quotes(s: &str) -> String {
+    s.replace("\"", "\\\"")
+}
+
 impl Server {
     pub fn start(tx: Sender) -> Result<Self, io::Error> {
         let mut session = session::Session::new_parent()?;
@@ -31,11 +35,11 @@ impl Server {
     }
 
     pub fn echo(&mut self, msg: &str) {
-        self.command(&format!("echo \"{}\"", msg));
+        self.command(&format!("echo \"{}\"", escape_quotes(msg)));
     }
 
     pub fn echoerr(&mut self, msg: &str) {
-        self.command(&format!("echoerr \"{}\"", msg));
+        self.command(&format!("echoerr \"{}\"", escape_quotes(msg)));
     }
 }
 

@@ -42,6 +42,15 @@ impl Connection {
     }
 }
 
+fn connnection_for_path<'a>(
+    connections: &'a mut HashMap<String, Connection>,
+    path: &str,
+) -> Option<(&'a String, &'a mut Connection)> {
+    connections
+        .iter_mut()
+        .find(|(_key, connection)| connection.expr.is_match(&path))
+}
+
 fn start() -> Result<(), io::Error> {
     let mut connections: HashMap<String, Connection> = HashMap::new();
 
@@ -108,18 +117,25 @@ fn start() -> Result<(), io::Error> {
                         }
                     }
                     Event::Eval { code, path } => {
-                        // TODO Move this connection finding into it's own fn.
-                        let mut _conn = connections.iter().find(|(k, c)| c.expr.is_match(&path));
+                        if let Some((key, connection)) =
+                            connnection_for_path(&mut connections, &path)
+                        {
+                            let mut code_sample = code.replace("\n", "");
+                            let pre_truncate = code_sample.len();
+                            code_sample.truncate(20);
 
-                        // TODO Warn if we don't find a suitable connection.
-                        // TODO Disconnect if it fails? Or leave it up to the user?
-                        // TODO Read until we see an out and print it.
+                            if pre_truncate < code_sample.len() {
+                                code_sample.push_str("…");
+                            }
 
-                        // These calls are fire and forget. There should be some other thread
-                        // consuming these connections looking for their specific jobs. So one
-                        // connection is actually many sockets that each have their own specific
-                        // jobs.
-                        server.echoerr(&format!("Would eval {} for {}", code, path));
+                            server.echo(&format!("[{}] Evaluating: {}", key, code_sample));
+
+                            if let Err(msg) = connection.eval.write(&code) {
+                                server.echoerr(&format!("Error writing to eval client: {}", msg));
+                            }
+                        } else {
+                            server.echoerr(&format!("No connection found for path: {}", path));
+                        }
                     }
                 }
             }
