@@ -118,3 +118,10 @@ impl neovim_lib::Handler for Handler {
         }
     }
 }
+
+impl neovim_lib::RequestHandler for Handler {
+    fn handle_request(&mut self, _name: &str, _args: Vec<Value>) -> Result<Value, Value> {
+        error!("Requests are not supports, use notify");
+        Err(Value::Nil)
+    }
+}

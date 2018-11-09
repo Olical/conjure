@@ -82,7 +82,7 @@ dependencies = [
 [[package]]
 name = "neovim-lib"
 version = "0.5.4"
-source = "git+https://github.com/Olical/neovim-lib?branch=prevent-send-panic#1d1bcdb1a0d3ccc5810056caef1121cfd88a8b61"
+source = "git+https://github.com/Olical/neovim-lib?branch=prevent-send-panic#c317b16cdeff26e926ef684b0c2d24fe997efdd1"
 dependencies = [
  "log 0.4.6 (registry+https://github.com/rust-lang/crates.io-index)",
  "rmp 0.8.7 (registry+https://github.com/rust-lang/crates.io-index)",
