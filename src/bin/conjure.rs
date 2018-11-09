@@ -30,15 +30,19 @@ fn main() {
 }
 
 struct Connection {
-    eval: Client,
+    default: Client,
     addr: SocketAddr,
     expr: Regex,
 }
 
 impl Connection {
     fn connect(addr: SocketAddr, expr: Regex) -> Result<Self, String> {
-        let eval = Client::connect(addr)?;
-        Ok(Self { eval, addr, expr })
+        let default = Client::connect(addr)?;
+        Ok(Self {
+            default,
+            addr,
+            expr,
+        })
     }
 }
 
@@ -130,8 +134,9 @@ fn start() -> Result<(), io::Error> {
 
                             server.echo(&format!("[{}] Evaluating: {}", key, code_sample));
 
-                            if let Err(msg) = connection.eval.write(&code) {
-                                server.echoerr(&format!("Error writing to eval client: {}", msg));
+                            if let Err(msg) = connection.default.write(&code) {
+                                server
+                                    .echoerr(&format!("Error writing to default client: {}", msg));
                             }
                         } else {
                             server.echoerr(&format!("No connection found for path: {}", path));
