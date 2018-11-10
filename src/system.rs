@@ -9,19 +9,21 @@ use std::thread;
 
 pub struct System {
     conns: HashMap<String, Connection>,
+    server: Server,
 }
 
 impl System {
     pub fn new() -> Self {
         Self {
             conns: HashMap::new(),
+            server: Server::new(),
         }
     }
 
     pub fn start(&mut self) -> Result<(), io::Error> {
         info!("Starting Neovim RPC server");
         let (tx, rx) = mpsc::channel();
-        let mut server = Server::start(tx)?;
+        self.server.start(tx)?;
 
         info!("Starting event channel loop");
         for event in rx.iter() {
@@ -33,7 +35,7 @@ impl System {
                         Event::Quit => break,
                         Event::List => {
                             if self.conns.is_empty() {
-                                server.echo("No connections");
+                                self.server.echo("No connections");
                             } else {
                                 let lines: Vec<String> = self
                                     .conns
@@ -45,23 +47,25 @@ impl System {
                                         )
                                     }).collect();
 
-                                server.echo(&lines.join("\n"));
+                                self.server.echo(&lines.join("\n"));
                             }
                         }
                         Event::Connect { key, addr, expr } => {
                             if self.conns.contains_key(&key) {
-                                server.echoerr(&format!("[{}] Connection exists already", key));
+                                self.server
+                                    .echoerr(&format!("[{}] Connection exists already", key));
                             } else {
                                 match Connection::connect(addr, expr.clone()) {
                                     Ok(conn) => {
                                         let e_key = key.clone();
                                         self.conns.insert(key, conn);
-                                        server.echo(&format!(
+                                        self.server.echo(&format!(
                                             "[{}] Connected to {} for files matching '{}'",
                                             e_key, addr, expr
                                         ));
                                     }
-                                    Err(msg) => server
+                                    Err(msg) => self
+                                        .server
                                         .echoerr(&format!("[{}] Connection failed: {}", key, msg)),
                                 }
                             }
@@ -69,13 +73,13 @@ impl System {
                         Event::Disconnect { key } => {
                             if self.conns.contains_key(&key) {
                                 if let Some(conn) = self.conns.remove(&key) {
-                                    server.echo(&format!(
+                                    self.server.echo(&format!(
                                         "[{}] Disconnected from {} for files matching '{}'",
                                         key, conn.addr, conn.expr
                                     ));
                                 }
                             } else {
-                                server.echoerr(&format!(
+                                self.server.echoerr(&format!(
                                     "Connection {} doesn't exist, try listing them",
                                     key
                                 ));
@@ -89,7 +93,7 @@ impl System {
 
                             for (_, conn) in matches {
                                 if let Err(msg) = conn.default.write(&code) {
-                                    server.echoerr(&format!(
+                                    self.server.echoerr(&format!(
                                         "Error writing to default client: {}",
                                         msg
                                     ));
@@ -100,7 +104,8 @@ impl System {
                 }
                 Err(msg) => {
                     error!("Error from Neovim: {}", msg);
-                    server.echoerr(&format!("Error parsing command: {}", msg))
+                    self.server
+                        .echoerr(&format!("Error parsing command: {}", msg))
                 }
             }
         }

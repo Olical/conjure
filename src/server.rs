@@ -1,4 +1,5 @@
-use neovim_lib::{session, Neovim, NeovimApiAsync, Value};
+use neovim_lib::session::Session;
+use neovim_lib::{Neovim, NeovimApiAsync, Value};
 use regex;
 use std::fmt;
 use std::io;
@@ -7,7 +8,7 @@ use std::str::FromStr;
 use std::sync::mpsc;
 
 pub struct Server {
-    nvim: Neovim,
+    nvim: Option<Neovim>,
 }
 
 type Sender = mpsc::Sender<Result<Event, String>>;
@@ -17,21 +18,28 @@ fn escape_quotes(s: &str) -> String {
 }
 
 impl Server {
-    pub fn start(tx: Sender) -> Result<Self, io::Error> {
-        let mut session = session::Session::new_parent()?;
+    pub fn new() -> Self {
+        Self { nvim: None }
+    }
+
+    pub fn start(&mut self, tx: Sender) -> Result<(), io::Error> {
+        let mut session = Session::new_parent()?;
         session.start_event_loop_handler(Handler::new(tx));
-        let nvim = Neovim::new(session);
-        Ok(Self { nvim })
+        self.nvim = Some(Neovim::new(session));
+        Ok(())
     }
 
     pub fn command(&mut self, cmd: &str) {
-        self.nvim
-            .command_async(cmd)
-            .cb(|res| {
-                if let Err(msg) = res {
-                    error!("Command failed: {}", msg);
-                }
-            }).call();
+        if let Some(nvim) = self.nvim.as_mut() {
+            nvim.command_async(cmd)
+                .cb(|res| {
+                    if let Err(msg) = res {
+                        error!("Command failed: {}", msg);
+                    }
+                }).call();
+        } else {
+            error!("Start the server before executing commands")
+        }
     }
 
     pub fn echo(&mut self, msg: &str) {
