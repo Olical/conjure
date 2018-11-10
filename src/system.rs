@@ -19,6 +19,8 @@ impl Connection {
         let eval = Client::connect(addr)?;
         let eval_read = eval.try_clone()?;
 
+        // TODO Implement a heartbeat for connections.
+
         thread::spawn(|| {
             // TODO These should log to the Conjure buffer.
             for response in eval_read.responses() {
