@@ -7,6 +7,32 @@ use std::net::SocketAddr;
 use std::sync::mpsc;
 use std::thread;
 
+struct Connection {
+    default: Client,
+    addr: SocketAddr,
+    expr: Regex,
+}
+
+impl Connection {
+    fn connect(addr: SocketAddr, expr: Regex) -> Result<Self, String> {
+        let default = Client::connect(addr)?;
+        let default_reader = default.try_clone()?;
+
+        thread::spawn(|| {
+            // TODO These should log to the Conjure buffer.
+            for response in default_reader.responses() {
+                info!("RESPONSE: {:?}", response);
+            }
+        });
+
+        Ok(Self {
+            default,
+            addr,
+            expr,
+        })
+    }
+}
+
 pub struct System {
     conns: HashMap<String, Connection>,
     server: Server,
@@ -114,31 +140,5 @@ impl System {
                     .echoerr(&format!("Error writing to default client: {}", msg));
             }
         }
-    }
-}
-
-struct Connection {
-    default: Client,
-    addr: SocketAddr,
-    expr: Regex,
-}
-
-impl Connection {
-    fn connect(addr: SocketAddr, expr: Regex) -> Result<Self, String> {
-        let default = Client::connect(addr)?;
-        let default_reader = default.try_clone()?;
-
-        thread::spawn(|| {
-            // TODO These should log to the Conjure buffer.
-            for response in default_reader.responses() {
-                info!("RESPONSE: {:?}", response);
-            }
-        });
-
-        Ok(Self {
-            default,
-            addr,
-            expr,
-        })
     }
 }
