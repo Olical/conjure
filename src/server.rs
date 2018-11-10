@@ -1,5 +1,5 @@
 use neovim_lib::session::Session;
-use neovim_lib::{Neovim, NeovimApiAsync, Value};
+use neovim_lib::{Neovim, NeovimApi, NeovimApiAsync, Value};
 use regex::Regex;
 use std::fmt;
 use std::io;
@@ -29,17 +29,19 @@ impl Server {
         Ok(())
     }
 
+    fn get_nvim(&mut self) -> &mut Neovim {
+        self.nvim.as_mut().expect("server not started")
+    }
+
     pub fn command(&mut self, cmd: &str) {
-        if let Some(nvim) = self.nvim.as_mut() {
-            nvim.command_async(cmd)
-                .cb(|res| {
-                    if let Err(msg) = res {
-                        error!("Command failed: {}", msg);
-                    }
-                }).call();
-        } else {
-            error!("Start the server before executing commands")
-        }
+        let nvim = self.get_nvim();
+
+        nvim.command_async(cmd)
+            .cb(|res| {
+                if let Err(msg) = res {
+                    error!("Command failed: {}", msg);
+                }
+            }).call();
     }
 
     pub fn echo(&mut self, msg: &str) {
@@ -48,6 +50,20 @@ impl Server {
 
     pub fn echoerr(&mut self, msg: &str) {
         self.command(&format!("echoerr \"{}\"", escape_quotes(msg)));
+    }
+
+    pub fn buffer_log(&mut self, name: &str, msg: &str) {
+        let nvim = self.get_nvim();
+
+        // TODO Implement upsert buffer for this log thing. Maybe move more output to it like the
+        // connection listing. Keep all Neovim stuff in here but slight config like the name of it
+        // in system. Or if I'm only going to have one, hard code it all in here so I can just say
+        // "print this!" whenever I want and forget about it.
+
+        match nvim.list_bufs() {
+            Ok(bufs) => info!("{:?}", bufs),
+            Err(msg) => error!("Failed to get buffers: {}", msg),
+        }
     }
 }
 

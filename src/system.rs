@@ -5,7 +5,8 @@ use std::collections::HashMap;
 use std::io;
 use std::net::SocketAddr;
 use std::sync::mpsc;
-use std::thread;
+
+// TODO Implement a heartbeat for connections.
 
 struct Connection {
     eval: Client,
@@ -16,19 +17,12 @@ struct Connection {
 
 impl Connection {
     fn connect(addr: SocketAddr, expr: Regex) -> Result<Self, String> {
-        let eval = Client::connect(addr)?;
-        let eval_read = eval.try_clone()?;
+        Ok(Self {
+            eval: Client::connect(addr)?,
 
-        // TODO Implement a heartbeat for connections.
-
-        thread::spawn(|| {
-            // TODO These should log to the Conjure buffer.
-            for response in eval_read.responses() {
-                info!("RESPONSE: {:?}", response);
-            }
-        });
-
-        Ok(Self { eval, addr, expr })
+            addr,
+            expr,
+        })
     }
 }
 
