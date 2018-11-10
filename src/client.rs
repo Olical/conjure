@@ -1,11 +1,8 @@
-use bufstream::BufStream;
 use edn::parser::Parser;
 use edn::Value;
-use std::io;
 use std::io::prelude::*;
+use std::io::{self, BufReader};
 use std::net::{SocketAddr, TcpStream};
-use std::sync::mpsc;
-use std::thread;
 use std::time::Duration;
 
 #[derive(Debug)]
@@ -54,72 +51,65 @@ impl Response {
 }
 
 pub struct Client {
-    stream: BufStream<TcpStream>,
+    stream: TcpStream,
 }
 
 impl Client {
     pub fn connect(addr: SocketAddr) -> Result<Self, String> {
-        let raw_stream = TcpStream::connect_timeout(&addr, Duration::from_secs(5))
+        let stream = TcpStream::connect_timeout(&addr, Duration::from_secs(5))
             .map_err(|msg| format!("couldn't connect to {}: {}", addr, msg))?;
 
-        raw_stream
+        stream
             .set_write_timeout(Some(Duration::from_secs(5)))
             .map_err(|msg| format!("failed to set write timeout: {}", msg))?;
 
-        raw_stream
-            .set_read_timeout(Some(Duration::from_millis(200)))
-            .or_else(|msg| Err(format!("failed to set read timeout: {}", msg)))?;
-
-        Ok(Self {
-            stream: BufStream::new(raw_stream),
-        })
+        Ok(Self { stream })
     }
 
-    pub fn read(&mut self) -> Option<Result<Response, String>> {
-        let mut buf = String::new();
+    pub fn try_clone(&self) -> Result<Self, String> {
+        let stream = self
+            .stream
+            .try_clone()
+            .map_err(|msg| format!("failed to clone stream: {}", msg))?;
 
-        if let Err(msg) = self.stream.read_line(&mut buf) {
-            error!("Failed to read line from stream: {}", msg);
-            return None;
-        }
+        Ok(Self { stream })
+    }
 
-        let mut parser = Parser::new(&buf);
+    pub fn responses(self) -> Box<Iterator<Item = Response>> {
+        let reader = BufReader::new(self.stream);
+        let responses = reader.lines().filter_map(|line| match line {
+            Ok(line) => {
+                let mut parser = Parser::new(&line);
 
-        Some(match parser.read() {
-            Some(Ok(value)) => Response::from(value),
-            Some(Err(msg)) => Err(format!("failed to parse response as EDN: {:?}", msg)),
-            None => Err("didn't get anything from the EDN parser".to_owned()),
-        })
+                match parser.read() {
+                    Some(Ok(value)) => match Response::from(value) {
+                        Ok(response) => Some(response),
+                        Err(msg) => {
+                            error!("Failed to build response: {}", msg);
+                            None
+                        }
+                    },
+                    Some(Err(msg)) => {
+                        warn!("Failed to parse response as EDN: {:?}", msg);
+                        None
+                    }
+                    None => {
+                        warn!("Didn't get anything from the EDN parser");
+                        None
+                    }
+                }
+            }
+            Err(msg) => {
+                error!("reading line from stream failed: {}", msg);
+                None
+            }
+        });
+
+        Box::new(responses)
     }
 
     pub fn write(&mut self, code: &str) -> io::Result<()> {
         self.stream.write_all(format!("{}\n", code).as_bytes())?;
         self.stream.flush()
     }
-
-    pub fn channels(mut self) -> (Writer, Reader) {
-        let (w_tx, w_rx) = mpsc::channel();
-        let (r_tx, r_rx) = mpsc::channel();
-
-        thread::spawn(move || loop {
-            for value in w_rx.try_iter() {
-                let value: String = value;
-
-                if let Err(msg) = self.write(&value) {
-                    error!("Error writing from Sender channel: {}", msg);
-                }
-            }
-
-            if let Some(resp) = self.read() {
-                if let Err(msg) = r_tx.send(resp) {
-                    error!("Error while sending to Reader channel: {}", msg);
-                }
-            }
-        });
-
-        (w_tx, r_rx)
-    }
 }
-
-pub type Writer = mpsc::Sender<String>;
-pub type Reader = mpsc::Receiver<Result<Response, String>>;

@@ -5,7 +5,6 @@ extern crate simplelog;
 
 extern crate conjure;
 
-use conjure::client;
 use conjure::client::Client;
 use conjure::server;
 use conjure::server::Event;
@@ -32,7 +31,7 @@ fn main() {
 }
 
 struct Connection {
-    default: client::Writer,
+    default: Client,
     addr: SocketAddr,
     expr: Regex,
 }
@@ -40,16 +39,16 @@ struct Connection {
 impl Connection {
     fn connect(addr: SocketAddr, expr: Regex) -> Result<Self, String> {
         let default = Client::connect(addr)?;
-        let (w_default, r_default) = default.channels();
+        let default_reader = default.try_clone()?;
 
         thread::spawn(|| {
-            for value in r_default {
-                info!("Value from default: {:?}", value);
+            for response in default_reader.responses() {
+                info!("RESPONSE: {:?}", response);
             }
         });
 
         Ok(Self {
-            default: w_default,
+            default,
             addr,
             expr,
         })
@@ -144,7 +143,7 @@ fn start() -> Result<(), io::Error> {
 
                             server.echo(&format!("[{}] Evaluating: {}", key, code_sample));
 
-                            if let Err(msg) = connection.default.send(code) {
+                            if let Err(msg) = connection.default.write(&code) {
                                 server
                                     .echoerr(&format!("Error writing to default client: {}", msg));
                             }
