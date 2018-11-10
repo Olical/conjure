@@ -8,28 +8,25 @@ use std::sync::mpsc;
 use std::thread;
 
 struct Connection {
-    default: Client,
+    eval: Client,
+
     addr: SocketAddr,
     expr: Regex,
 }
 
 impl Connection {
     fn connect(addr: SocketAddr, expr: Regex) -> Result<Self, String> {
-        let default = Client::connect(addr)?;
-        let default_reader = default.try_clone()?;
+        let eval = Client::connect(addr)?;
+        let eval_read = eval.try_clone()?;
 
         thread::spawn(|| {
             // TODO These should log to the Conjure buffer.
-            for response in default_reader.responses() {
+            for response in eval_read.responses() {
                 info!("RESPONSE: {:?}", response);
             }
         });
 
-        Ok(Self {
-            default,
-            addr,
-            expr,
-        })
+        Ok(Self { eval, addr, expr })
     }
 }
 
@@ -135,9 +132,9 @@ impl System {
             .filter(|(_, conn)| conn.expr.is_match(&path));
 
         for (_, conn) in matches {
-            if let Err(msg) = conn.default.write(&code) {
+            if let Err(msg) = conn.eval.write(&code) {
                 self.server
-                    .echoerr(&format!("Error writing to default client: {}", msg));
+                    .echoerr(&format!("Error writing to eval client: {}", msg));
             }
         }
     }
