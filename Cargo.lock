@@ -38,7 +38,7 @@ dependencies = [
  "bufstream 0.1.4 (registry+https://github.com/rust-lang/crates.io-index)",
  "edn 0.3.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "log 0.4.6 (registry+https://github.com/rust-lang/crates.io-index)",
- "neovim-lib 0.5.4 (git+https://github.com/Olical/neovim-lib?branch=prevent-send-panic)",
+ "neovim-lib 0.5.4 (git+https://github.com/Olical/neovim-lib?branch=naming-fixes)",
  "regex 1.0.6 (registry+https://github.com/rust-lang/crates.io-index)",
  "simplelog 0.5.3 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
@@ -82,7 +82,7 @@ dependencies = [
 [[package]]
 name = "neovim-lib"
 version = "0.5.4"
-source = "git+https://github.com/Olical/neovim-lib?branch=prevent-send-panic#c317b16cdeff26e926ef684b0c2d24fe997efdd1"
+source = "git+https://github.com/Olical/neovim-lib?branch=naming-fixes#c4478290a8815a4943a0e03e8fcbf8973ad47386"
 dependencies = [
  "log 0.4.6 (registry+https://github.com/rust-lang/crates.io-index)",
  "rmp 0.8.7 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -282,7 +282,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 "checksum libc 0.2.43 (registry+https://github.com/rust-lang/crates.io-index)" = "76e3a3ef172f1a0b9a9ff0dd1491ae5e6c948b94479a3021819ba7d860c8645d"
 "checksum log 0.4.6 (registry+https://github.com/rust-lang/crates.io-index)" = "c84ec4b527950aa83a329754b01dbe3f58361d1c5efacd1f6d68c494d08a17c6"
 "checksum memchr 2.1.1 (registry+https://github.com/rust-lang/crates.io-index)" = "0a3eb002f0535929f1199681417029ebea04aadc0c7a4224b46be99c7f5d6a16"
-"checksum neovim-lib 0.5.4 (git+https://github.com/Olical/neovim-lib?branch=prevent-send-panic)" = "<none>"
+"checksum neovim-lib 0.5.4 (git+https://github.com/Olical/neovim-lib?branch=naming-fixes)" = "<none>"
 "checksum num-integer 0.1.39 (registry+https://github.com/rust-lang/crates.io-index)" = "e83d528d2677f0518c570baf2b7abdcf0cd2d248860b68507bdcb3e91d4c0cea"
 "checksum num-traits 0.1.43 (registry+https://github.com/rust-lang/crates.io-index)" = "92e5113e9fd4cc14ded8e499429f396a20f98c772a47cc8622a736e1ec843c31"
 "checksum num-traits 0.2.6 (registry+https://github.com/rust-lang/crates.io-index)" = "0b3a5d7cc97d6d30d8b9bc8fa19bf45349ffe46241e8816f50f62f6d6aaabee1"
