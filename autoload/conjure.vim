@@ -45,7 +45,7 @@ function! conjure#upsert_job()
 
       augroup conjure
         autocmd!
-        autocmd VimLeavePre * :call s:StopJob()
+        autocmd VimLeavePre * :call conjure#stop_job()
       augroup END
     endif
   endif
