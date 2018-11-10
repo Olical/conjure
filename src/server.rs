@@ -1,9 +1,9 @@
 use neovim_lib::session::Session;
 use neovim_lib::{Neovim, NeovimApiAsync, Value};
-use regex;
+use regex::Regex;
 use std::fmt;
 use std::io;
-use std::net;
+use std::net::SocketAddr;
 use std::str::FromStr;
 use std::sync::mpsc;
 
@@ -57,8 +57,8 @@ pub enum Event {
     List,
     Connect {
         key: String,
-        addr: net::SocketAddr,
-        expr: regex::Regex,
+        addr: SocketAddr,
+        expr: Regex,
     },
     Disconnect {
         key: String,
