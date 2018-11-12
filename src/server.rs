@@ -1,3 +1,4 @@
+use neovim_lib::neovim_api::Buffer;
 use neovim_lib::session::Session;
 use neovim_lib::{Neovim, NeovimApi, NeovimApiAsync, Value};
 use regex::Regex;
@@ -29,11 +30,11 @@ impl Server {
         Ok(())
     }
 
-    fn get_nvim(&mut self) -> &mut Neovim {
-        self.nvim.as_mut().expect("server not started")
+    fn get_nvim(&self) -> &Neovim {
+        &self.nvim.expect("server not started")
     }
 
-    pub fn command(&mut self, cmd: &str) {
+    pub fn command_async(&mut self, cmd: &str) {
         let nvim = self.get_nvim();
 
         nvim.command_async(cmd)
@@ -44,26 +45,55 @@ impl Server {
             }).call();
     }
 
+    pub fn command(&mut self, cmd: &str) -> Result<(), String> {
+        self.get_nvim()
+            .command(cmd)
+            .map_err(|msg| format!("command failed: {}", msg))
+    }
+
     pub fn echo(&mut self, msg: &str) {
-        self.command(&format!("echo \"{}\"", escape_quotes(msg)));
+        self.command_async(&format!("echo \"{}\"", escape_quotes(msg)));
     }
 
     pub fn echoerr(&mut self, msg: &str) {
-        self.command(&format!("echoerr \"{}\"", escape_quotes(msg)));
+        self.command_async(&format!("echoerr \"{}\"", escape_quotes(msg)));
     }
 
-    pub fn buffer_log(&mut self, name: &str, msg: &str) {
+    fn find_buf(&mut self, name: &str) -> Result<Option<&Buffer>, String> {
+        let bufs = self
+            .nvim
+            .as_mut()
+            .unwrap()
+            .list_bufs()
+            .map_err(|msg| format!("failed to get buffers: {}", msg))?;
+
+        Ok(bufs.iter().find(|buf| {
+            &buf.get_name(self.nvim.as_mut().unwrap())
+                .unwrap_or("".to_owned())
+                == name
+        }))
+    }
+
+    fn find_or_create_buf(&mut self, name: &str) -> Result<&Buffer, String> {
+        if let Some(buf) = self.find_buf(name)? {
+            return Ok(buf);
+        }
+
+        self.command("badd /tmp/conjure.cljc")?;
+
+        match self.find_buf(name)? {
+            Some(buf) => Ok(buf),
+            None => Err("failed to create buffer".to_owned()),
+        }
+    }
+
+    pub fn display(&mut self, msg: &str) {
         let nvim = self.get_nvim();
 
         // TODO Implement upsert buffer for this log thing. Maybe move more output to it like the
         // connection listing. Keep all Neovim stuff in here but slight config like the name of it
         // in system. Or if I'm only going to have one, hard code it all in here so I can just say
         // "print this!" whenever I want and forget about it.
-
-        match nvim.list_bufs() {
-            Ok(bufs) => info!("{:?}", bufs),
-            Err(msg) => error!("Failed to get buffers: {}", msg),
-        }
     }
 }
 
