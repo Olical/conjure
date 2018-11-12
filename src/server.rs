@@ -79,11 +79,11 @@ impl Server {
         }
     }
 
-    pub fn display(&mut self, msg: &str) {
+    pub fn display(&mut self, lines: Vec<String>) {
         if let Err(msg) = self
             .find_or_create_buf(DISPLAY_BUFFER_NAME)
             .and_then(|buf| {
-                buf.set_lines(&mut self.nvim, 0, 0, true, vec![format!("=> {}", msg)])
+                buf.set_lines(&mut self.nvim, 0, 0, true, lines)
                     .map_err(|msg| format!("could not set lines: {}", msg))
             }) {
             error!("Failed to display: {}", msg)

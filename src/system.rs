@@ -69,16 +69,19 @@ impl System {
 
     fn handle_list(&mut self) {
         if self.conns.is_empty() {
-            self.server.display("No connections");
+            self.server.display(vec![";; No connections".to_owned()]);
         } else {
             let lines: Vec<String> = self
                 .conns
                 .iter()
                 .map(|(key, conn)| {
-                    format!("[{}] {} for files matching '{}'", key, conn.addr, conn.expr)
+                    format!(
+                        ";; [{}] {} for files matching '{}'",
+                        key, conn.addr, conn.expr
+                    )
                 }).collect();
 
-            self.server.display(&lines.join("\n"));
+            self.server.display(lines);
         }
     }
 
