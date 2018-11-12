@@ -80,6 +80,8 @@ impl Server {
     }
 
     pub fn display(&mut self, lines: Vec<String>) {
+        // TODO Make this window smaller by default and toggleable with a command.
+
         if let Err(msg) = self
             .find_or_create_buf(DISPLAY_BUFFER_NAME)
             .and_then(|buf| {
