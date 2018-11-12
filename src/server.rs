@@ -71,6 +71,7 @@ impl Server {
             return Ok(buf);
         }
 
+        // TODO Make this not have to save. Make it more scratch like.
         self.command(&format!("10new {}", name))?;
 
         match self.find_buf(name)? {
