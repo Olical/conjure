@@ -71,7 +71,7 @@ impl Server {
             return Ok(buf);
         }
 
-        self.command(&format!("new {}", name))?;
+        self.command(&format!("10new {}", name))?;
 
         match self.find_buf(name)? {
             Some(buf) => Ok(buf),
