@@ -32,19 +32,14 @@ pub struct System {
 }
 
 impl System {
-    pub fn new() -> Self {
-        Self {
-            conns: HashMap::new(),
-            server: Server::new(),
-        }
-    }
-
-    pub fn start(&mut self) -> Result<(), io::Error> {
-        info!("Starting Neovim RPC server");
+    pub fn start() -> Result<Self, io::Error> {
         let (tx, rx) = mpsc::channel();
-        self.server.start(tx)?;
+        let server = Server::start(tx)?;
+        let mut system = Self {
+            conns: HashMap::new(),
+            server: server,
+        };
 
-        info!("Starting event channel loop");
         for event in rx.iter() {
             match event {
                 Ok(event) => {
@@ -52,26 +47,29 @@ impl System {
 
                     match event {
                         Event::Quit => break,
-                        Event::List => self.handle_list(),
-                        Event::Connect { key, addr, expr } => self.handle_connect(key, addr, expr),
-                        Event::Disconnect { key } => self.handle_disconnect(key),
-                        Event::Eval { code, path } => self.handle_eval(code, path),
+                        Event::List => system.handle_list(),
+                        Event::Connect { key, addr, expr } => {
+                            system.handle_connect(key, addr, expr)
+                        }
+                        Event::Disconnect { key } => system.handle_disconnect(key),
+                        Event::Eval { code, path } => system.handle_eval(code, path),
                     }
                 }
                 Err(msg) => {
                     error!("Error from Neovim: {}", msg);
-                    self.server
+                    system
+                        .server
                         .echoerr(&format!("Error parsing command: {}", msg))
                 }
             }
         }
 
-        Ok(())
+        Ok(system)
     }
 
     fn handle_list(&mut self) {
         if self.conns.is_empty() {
-            self.server.echo("No connections");
+            self.server.display("No connections");
         } else {
             let lines: Vec<String> = self
                 .conns
@@ -80,7 +78,7 @@ impl System {
                     format!("[{}] {} for files matching '{}'", key, conn.addr, conn.expr)
                 }).collect();
 
-            self.server.echo(&lines.join("\n"));
+            self.server.display(&lines.join("\n"));
         }
     }
 

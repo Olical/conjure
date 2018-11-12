@@ -16,9 +16,7 @@ fn main() {
     info!("== Conjure! ==");
     info!("==============");
 
-    let mut system = System::new();
-
-    if let Err(msg) = system.start() {
+    if let Err(msg) = System::start() {
         error!("Error from start: {}", msg);
     }
 }

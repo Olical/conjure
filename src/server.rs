@@ -8,8 +8,10 @@ use std::net::SocketAddr;
 use std::str::FromStr;
 use std::sync::mpsc;
 
+const DISPLAY_BUFFER_NAME: &str = "/tmp/conjure.cljc";
+
 pub struct Server {
-    nvim: Option<Neovim>,
+    nvim: Neovim,
 }
 
 type Sender = mpsc::Sender<Result<Event, String>>;
@@ -19,25 +21,18 @@ fn escape_quotes(s: &str) -> String {
 }
 
 impl Server {
-    pub fn new() -> Self {
-        Self { nvim: None }
-    }
-
-    pub fn start(&mut self, tx: Sender) -> Result<(), io::Error> {
+    pub fn start(tx: Sender) -> Result<Self, io::Error> {
         let mut session = Session::new_parent()?;
         session.start_event_loop_handler(Handler::new(tx));
-        self.nvim = Some(Neovim::new(session));
-        Ok(())
-    }
 
-    fn get_nvim(&self) -> &Neovim {
-        &self.nvim.expect("server not started")
+        Ok(Self {
+            nvim: Neovim::new(session),
+        })
     }
 
     pub fn command_async(&mut self, cmd: &str) {
-        let nvim = self.get_nvim();
-
-        nvim.command_async(cmd)
+        self.nvim
+            .command_async(cmd)
             .cb(|res| {
                 if let Err(msg) = res {
                     error!("Command failed: {}", msg);
@@ -46,7 +41,7 @@ impl Server {
     }
 
     pub fn command(&mut self, cmd: &str) -> Result<(), String> {
-        self.get_nvim()
+        self.nvim
             .command(cmd)
             .map_err(|msg| format!("command failed: {}", msg))
     }
@@ -59,27 +54,24 @@ impl Server {
         self.command_async(&format!("echoerr \"{}\"", escape_quotes(msg)));
     }
 
-    fn find_buf(&mut self, name: &str) -> Result<Option<&Buffer>, String> {
+    fn find_buf(&mut self, name: &str) -> Result<Option<Buffer>, String> {
         let bufs = self
             .nvim
-            .as_mut()
-            .unwrap()
             .list_bufs()
             .map_err(|msg| format!("failed to get buffers: {}", msg))?;
 
-        Ok(bufs.iter().find(|buf| {
-            &buf.get_name(self.nvim.as_mut().unwrap())
-                .unwrap_or("".to_owned())
-                == name
-        }))
+        Ok(bufs
+            .iter()
+            .find(|buf| &buf.get_name(&mut self.nvim).unwrap_or("".to_owned()) == name)
+            .map(|buf| buf.clone()))
     }
 
-    fn find_or_create_buf(&mut self, name: &str) -> Result<&Buffer, String> {
+    fn find_or_create_buf(&mut self, name: &str) -> Result<Buffer, String> {
         if let Some(buf) = self.find_buf(name)? {
             return Ok(buf);
         }
 
-        self.command("badd /tmp/conjure.cljc")?;
+        self.command(&format!("new {}", name))?;
 
         match self.find_buf(name)? {
             Some(buf) => Ok(buf),
@@ -88,12 +80,14 @@ impl Server {
     }
 
     pub fn display(&mut self, msg: &str) {
-        let nvim = self.get_nvim();
-
-        // TODO Implement upsert buffer for this log thing. Maybe move more output to it like the
-        // connection listing. Keep all Neovim stuff in here but slight config like the name of it
-        // in system. Or if I'm only going to have one, hard code it all in here so I can just say
-        // "print this!" whenever I want and forget about it.
+        if let Err(msg) = self
+            .find_or_create_buf(DISPLAY_BUFFER_NAME)
+            .and_then(|buf| {
+                buf.set_lines(&mut self.nvim, 0, 0, true, vec![format!("=> {}", msg)])
+                    .map_err(|msg| format!("could not set lines: {}", msg))
+            }) {
+            error!("Failed to display: {}", msg)
+        }
     }
 }
 
