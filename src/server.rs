@@ -64,11 +64,11 @@ impl Server {
 
         info!("Creating log buffer");
         self.command(&format!("10new {}", LOG_BUFFER_NAME))?;
-        self.command(&format!("setlocal wfh"))?;
-        self.command(&format!("setlocal buftype=nofile"))?;
-        self.command(&format!("setlocal bufhidden=hide"))?;
-        self.command(&format!("setlocal noswapfile"))?;
-        self.command(&format!("normal! "))?;
+        self.command("setlocal wfh")?;
+        self.command("setlocal buftype=nofile")?;
+        self.command("setlocal bufhidden=hide")?;
+        self.command("setlocal noswapfile")?;
+        self.command("normal! ")?;
 
         match self.find_log_buf()? {
             Some(buf) => Ok(buf),
