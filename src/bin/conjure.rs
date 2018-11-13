@@ -19,6 +19,8 @@ fn main() {
     if let Err(msg) = System::start() {
         error!("Error from start: {}", msg);
     }
+
+    info!("Process exiting");
 }
 
 fn initialise_logger() {

@@ -22,6 +22,7 @@ fn escape_quotes(s: &str) -> String {
 
 impl Server {
     pub fn start(tx: Sender) -> Result<Self, io::Error> {
+        info!("Starting Neovim event loop handler");
         let mut session = Session::new_parent()?;
         session.start_event_loop_handler(Handler::new(tx));
 
@@ -36,9 +37,13 @@ impl Server {
             .map_err(|msg| format!("command failed: {}", msg))
     }
 
-    pub fn echoerr(&mut self, err: &str) {
-        if let Err(msg) = self.command(&format!("echoerr \"{}\"", escape_quotes(err))) {
-            error!("Failed to echoerr ({}): {}", msg, err);
+    pub fn echoerr(&mut self, msg: &str) {
+        // TODO Why does echoerr not print now!?
+
+        error!("Echoerr: {}", msg);
+
+        if let Err(msg) = self.command(&format!("echoerr \"{}\"", escape_quotes(msg))) {
+            error!("Failed to echoerr: {}", msg);
         }
     }
 
@@ -59,6 +64,7 @@ impl Server {
             return Ok(buf);
         }
 
+        info!("Creating log buffer");
         self.command(&format!("10new {}", name))?;
         self.command(&format!("setlocal buftype=nofile"))?;
         self.command(&format!("setlocal bufhidden=hide"))?;

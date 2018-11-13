@@ -57,12 +57,9 @@ impl System {
                         Event::Eval { code, path } => system.handle_eval(code, path),
                     }
                 }
-                Err(msg) => {
-                    error!("Error from server: {}", msg);
-                    system
-                        .server
-                        .echoerr(&format!("Error parsing command: {}", msg))
-                }
+                Err(msg) => system
+                    .server
+                    .echoerr(&format!("Error parsing command: {}", msg)),
             }
         }
 
