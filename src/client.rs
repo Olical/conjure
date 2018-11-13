@@ -75,54 +75,19 @@ impl Client {
         Ok(Self { stream })
     }
 
-    // pub fn responses(self) -> Box<Iterator<Item = Result<Response, String>>> {
-    pub fn responses(self) -> Box<Iterator<Item = Response>> {
+    pub fn responses(self) -> Box<Iterator<Item = Result<Response, String>>> {
         let reader = BufReader::new(self.stream);
-        let responses = reader.lines().filter_map(|line| match line {
-            Ok(line) => {
-                let mut parser = Parser::new(&line);
 
-                match parser.read() {
-                    Some(Ok(value)) => match Response::from(value) {
-                        Ok(response) => Some(response),
-                        Err(msg) => {
-                            error!("Failed to build response: {}", msg);
-                            None
-                        }
-                    },
-                    Some(Err(msg)) => {
-                        warn!("Failed to parse response as EDN: {:?}", msg);
-                        None
-                    }
-                    None => {
-                        warn!("Didn't get anything from the EDN parser");
-                        None
-                    }
-                }
-            }
-            Err(msg) => {
-                error!("reading line from stream failed: {}", msg);
-                None
-            }
+        let responses = reader.lines().map(|line| {
+            line.map_err(|msg| format!("failed to read line from client: {}", msg))
+                .and_then(|line| {
+                    Parser::new(&line)
+                        .read()
+                        .ok_or("nothing to read".to_owned())
+                }).and_then(|value| {
+                    value.map_err(|msg| format!("failed to parse client output: {:?}", msg))
+                }).and_then(|value| Response::from(value))
         });
-
-        // TODO Use this to simplify this function and pass errors up.
-        // The only errors that shouldn't be sent to vim are those that failed sending to vim, and
-        // those are logged anyway. The client, for example, should always return results that the
-        // system can send to vim.
-
-        // let responses = reader.lines().map(|line| {
-        //     line.map_err(|msg| format!("error from stream: {}", msg))
-        //         .and_then(|line| {
-        //             Parser::new(&line)
-        //                 .read()
-        //                 .ok_or("EDN parser returned nothing".to_owned())
-        //         }).and_then(|value| {
-        //             value
-        //                 .map_err(|msg| format!("error from parser: {:?}", msg))
-        //                 .map(|value| Response::from(value))
-        //         })
-        // });
 
         Box::new(responses)
     }
