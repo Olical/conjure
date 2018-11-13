@@ -9,7 +9,6 @@ use std::thread;
 static DEFAULT_TAG: &str = "Conjure";
 
 // TODO Implement a heartbeat for connections.
-// TODO Command to open the log window.
 
 struct Connection {
     eval: Client,
@@ -25,7 +24,12 @@ impl Connection {
 
         thread::spawn(move || {
             for response in eval_out.responses() {
-                // I need access to a tx that writes to the log buffer.
+                // TODO I need access to a tx that writes to the log buffer.
+                // This may require BurntSushi's chan or something so I can have multiple channels
+                // being waited upon in the main thread. So it can support:
+                // Neovim <- Conjure -> Clojure
+                // As opposed to:
+                // Neovim -> Conjure -> Clojure
             }
         });
 
@@ -60,6 +64,7 @@ impl System {
                     match event {
                         Event::Quit => break,
                         Event::List => system.handle_list(),
+                        Event::ShowLog => system.handle_show_log(),
                         Event::Connect { key, addr, expr } => {
                             system.handle_connect(key, addr, expr)
                         }
@@ -94,6 +99,13 @@ impl System {
                 }).collect();
 
             self.server.log_writelns(DEFAULT_TAG, &lines);
+        }
+    }
+
+    fn handle_show_log(&mut self) {
+        if let Err(msg) = self.server.display_or_create_log_window() {
+            self.server
+                .err_writeln(&format!("Failed to show the log window: {}", msg))
         }
     }
 

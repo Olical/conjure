@@ -58,18 +58,23 @@ impl Server {
             }).map(|buf| buf.clone()))
     }
 
-    fn find_or_create_log_buf(&mut self) -> Result<Buffer, String> {
-        if let Some(buf) = self.find_log_buf()? {
-            return Ok(buf);
-        }
-
-        info!("Creating log buffer");
+    pub fn display_or_create_log_window(&mut self) -> Result<(), String> {
         self.command(&format!("10new {}", LOG_BUFFER_NAME))?;
         self.command("setlocal wfh")?;
         self.command("setlocal buftype=nofile")?;
         self.command("setlocal bufhidden=hide")?;
         self.command("setlocal noswapfile")?;
         self.command("normal! ")?;
+
+        Ok(())
+    }
+
+    fn find_or_create_log_buf(&mut self) -> Result<Buffer, String> {
+        if let Some(buf) = self.find_log_buf()? {
+            return Ok(buf);
+        }
+
+        self.display_or_create_log_window()?;
 
         match self.find_log_buf()? {
             Some(buf) => Ok(buf),
@@ -100,6 +105,7 @@ impl Server {
 pub enum Event {
     Quit,
     List,
+    ShowLog,
     Connect {
         key: String,
         addr: SocketAddr,
@@ -137,6 +143,7 @@ impl Event {
         let event = match name {
             "exit" => Event::Quit,
             "list" => Event::List,
+            "show_log" => Event::ShowLog,
             "connect" => {
                 let key = parse_arg(&args, 0, "key")?;
                 let addr = parse_arg(&args, 1, "addr")?;
