@@ -8,17 +8,13 @@ use std::net::SocketAddr;
 use std::str::FromStr;
 use std::sync::mpsc;
 
-const LOG_BUFFER_NAME: &str = "conjure_log.cljc";
+const LOG_BUFFER_NAME: &str = "/tmp/conjure_log.cljc";
 
 pub struct Server {
     nvim: Neovim,
 }
 
 type Sender = mpsc::Sender<Result<Event, String>>;
-
-fn escape_quotes(s: &str) -> String {
-    s.replace("\"", "\\\"")
-}
 
 impl Server {
     pub fn start(tx: Sender) -> Result<Self, io::Error> {
@@ -31,23 +27,21 @@ impl Server {
         })
     }
 
-    pub fn command(&mut self, cmd: &str) -> Result<String, String> {
+    pub fn command(&mut self, cmd: &str) -> Result<(), String> {
         self.nvim
-            .command_output(cmd)
+            .command(cmd)
             .map_err(|msg| format!("command failed: {}", msg))
     }
 
-    pub fn echoerr(&mut self, msg: &str) {
-        // TODO Why does echoerr not print now!?
+    pub fn err_writeln(&mut self, msg: &str) {
+        error!("Error written: {}", msg);
 
-        error!("Echoerr: {}", msg);
-
-        if let Err(msg) = self.command(&format!("echoerr \"{}\"", escape_quotes(msg))) {
-            error!("Failed to echoerr: {}", msg);
+        if let Err(msg) = self.nvim.err_writeln(msg) {
+            error!("Failed to write error line: {}", msg);
         }
     }
 
-    fn find_log_buf(&mut self, name: &str) -> Result<Option<Buffer>, String> {
+    fn find_log_buf(&mut self) -> Result<Option<Buffer>, String> {
         let bufs = self
             .nvim
             .list_bufs()
@@ -55,40 +49,46 @@ impl Server {
 
         Ok(bufs
             .iter()
-            .find(|buf| &buf.get_name(&mut self.nvim).unwrap_or("".to_owned()) == name)
-            .map(|buf| buf.clone()))
+            .find(|buf| {
+                &buf.get_name(&mut self.nvim).unwrap_or_else(|_| {
+                    warn!("Couldn't get buffer name");
+                    "".to_owned()
+                }) == LOG_BUFFER_NAME
+            }).map(|buf| buf.clone()))
     }
 
-    fn find_or_create_log_buf(&mut self, name: &str) -> Result<Buffer, String> {
-        if let Some(buf) = self.find_log_buf(name)? {
+    fn find_or_create_log_buf(&mut self) -> Result<Buffer, String> {
+        if let Some(buf) = self.find_log_buf()? {
             return Ok(buf);
         }
 
         info!("Creating log buffer");
-        self.command(&format!("10new {}", name))?;
+        self.command(&format!("10new {}", LOG_BUFFER_NAME))?;
+        self.command(&format!("setlocal wfh"))?;
         self.command(&format!("setlocal buftype=nofile"))?;
         self.command(&format!("setlocal bufhidden=hide"))?;
         self.command(&format!("setlocal noswapfile"))?;
         self.command(&format!("normal! "))?;
 
-        match self.find_log_buf(name)? {
+        match self.find_log_buf()? {
             Some(buf) => Ok(buf),
             None => Err("failed to create buffer".to_owned()),
         }
     }
 
-    pub fn log_write(&mut self, lines: Vec<String>) {
-        // TODO Work out why multiple windows appear.
-        // TODO Add different ways to log like line, error, block, async (temp and replace).
+    pub fn log_writelns(&mut self, lines: Vec<String>) {
+        // TODO Add more structure around the logs and async (temp and replace).
 
-        if let Err(msg) = self
-            .find_or_create_log_buf(LOG_BUFFER_NAME)
-            .and_then(|buf| {
-                buf.set_lines(&mut self.nvim, 0, 0, true, lines)
-                    .map_err(|msg| format!("could not set lines: {}", msg))
-            }) {
-            error!("Failed to log: {}", msg)
+        if let Err(msg) = self.find_or_create_log_buf().and_then(|buf| {
+            buf.set_lines(&mut self.nvim, 0, 0, true, lines)
+                .map_err(|msg| format!("could not set lines: {}", msg))
+        }) {
+            self.err_writeln(&format!("Failed to log: {}", msg))
         }
+    }
+
+    pub fn log_writeln(&mut self, line: String) {
+        self.log_writelns(vec![line]);
     }
 }
 

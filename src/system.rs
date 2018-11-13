@@ -59,7 +59,7 @@ impl System {
                 }
                 Err(msg) => system
                     .server
-                    .echoerr(&format!("Error parsing command: {}", msg)),
+                    .err_writeln(&format!("Error parsing command: {}", msg)),
             }
         }
 
@@ -70,7 +70,7 @@ impl System {
 
     fn handle_list(&mut self) {
         if self.conns.is_empty() {
-            self.server.log_write(vec![";; No connections".to_owned()]);
+            self.server.log_writeln(";; No connections".to_owned());
         } else {
             let lines: Vec<String> = self
                 .conns
@@ -82,27 +82,27 @@ impl System {
                     )
                 }).collect();
 
-            self.server.log_write(lines);
+            self.server.log_writelns(lines);
         }
     }
 
     fn handle_connect(&mut self, key: String, addr: SocketAddr, expr: Regex) {
         if self.conns.contains_key(&key) {
             self.server
-                .echoerr(&format!("[{}] Connection exists already", key));
+                .err_writeln(&format!("[{}] Connection exists already", key));
         } else {
             match Connection::connect(addr, expr.clone()) {
                 Ok(conn) => {
                     let e_key = key.clone();
                     self.conns.insert(key, conn);
-                    self.server.log_write(vec![format!(
+                    self.server.log_writeln(format!(
                         ";; [{}] Connected to {} for files matching '{}'",
                         e_key, addr, expr
-                    )]);
+                    ));
                 }
                 Err(msg) => self
                     .server
-                    .echoerr(&format!("[{}] Connection failed: {}", key, msg)),
+                    .err_writeln(&format!("[{}] Connection failed: {}", key, msg)),
             }
         }
     }
@@ -110,13 +110,13 @@ impl System {
     fn handle_disconnect(&mut self, key: String) {
         if self.conns.contains_key(&key) {
             if let Some(conn) = self.conns.remove(&key) {
-                self.server.log_write(vec![format!(
+                self.server.log_writeln(format!(
                     "[{}] Disconnected from {} for files matching '{}'",
                     key, conn.addr, conn.expr
-                )]);
+                ));
             }
         } else {
-            self.server.echoerr(&format!(
+            self.server.err_writeln(&format!(
                 "Connection {} doesn't exist, try listing them",
                 key
             ));
@@ -132,7 +132,7 @@ impl System {
         for (_, conn) in matches {
             if let Err(msg) = conn.eval.write(&code) {
                 self.server
-                    .echoerr(&format!("Error writing to eval client: {}", msg));
+                    .err_writeln(&format!("Error writing to eval client: {}", msg));
             }
         }
     }
