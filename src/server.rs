@@ -8,7 +8,7 @@ use std::net::SocketAddr;
 use std::str::FromStr;
 use std::sync::mpsc;
 
-const LOG_BUFFER_NAME: &str = "/tmp/conjure_log.cljc";
+const LOG_BUFFER_NAME: &str = "/tmp/conjure.cljc";
 
 pub struct Server {
     nvim: Neovim,
