@@ -1,6 +1,6 @@
 use neovim_lib::neovim_api::Buffer;
 use neovim_lib::session::Session;
-use neovim_lib::{Neovim, NeovimApi, NeovimApiAsync, Value};
+use neovim_lib::{Neovim, NeovimApi, Value};
 use regex::Regex;
 use std::fmt;
 use std::io;
@@ -30,28 +30,16 @@ impl Server {
         })
     }
 
-    pub fn command_async(&mut self, cmd: &str) {
+    pub fn command(&mut self, cmd: &str) -> Result<String, String> {
         self.nvim
-            .command_async(cmd)
-            .cb(|res| {
-                if let Err(msg) = res {
-                    error!("Command failed: {}", msg);
-                }
-            }).call();
-    }
-
-    pub fn command(&mut self, cmd: &str) -> Result<(), String> {
-        self.nvim
-            .command(cmd)
+            .command_output(cmd)
             .map_err(|msg| format!("command failed: {}", msg))
     }
 
-    pub fn echo(&mut self, msg: &str) {
-        self.command_async(&format!("echo \"{}\"", escape_quotes(msg)));
-    }
-
-    pub fn echoerr(&mut self, msg: &str) {
-        self.command_async(&format!("echoerr \"{}\"", escape_quotes(msg)));
+    pub fn echoerr(&mut self, err: &str) {
+        if let Err(msg) = self.command(&format!("echoerr \"{}\"", escape_quotes(err))) {
+            error!("Failed to echoerr ({}): {}", msg, err);
+        }
     }
 
     fn find_log_buf(&mut self, name: &str) -> Result<Option<Buffer>, String> {
@@ -84,6 +72,9 @@ impl Server {
     }
 
     pub fn log_write(&mut self, lines: Vec<String>) {
+        // TODO Work out why multiple windows appear.
+        // TODO Add different ways to log like line, error, block, async (temp and replace).
+
         if let Err(msg) = self
             .find_or_create_log_buf(LOG_BUFFER_NAME)
             .and_then(|buf| {

@@ -33,6 +33,7 @@ pub struct System {
 
 impl System {
     pub fn start() -> Result<Self, io::Error> {
+        info!("Starting system");
         let (tx, rx) = mpsc::channel();
         let server = Server::start(tx)?;
         let mut system = Self {
@@ -40,6 +41,7 @@ impl System {
             server: server,
         };
 
+        info!("Starting server event loop");
         for event in rx.iter() {
             match event {
                 Ok(event) => {
@@ -56,13 +58,15 @@ impl System {
                     }
                 }
                 Err(msg) => {
-                    error!("Error from Neovim: {}", msg);
+                    error!("Error from server: {}", msg);
                     system
                         .server
                         .echoerr(&format!("Error parsing command: {}", msg))
                 }
             }
         }
+
+        info!("Broke out of server event loop");
 
         Ok(system)
     }
@@ -94,10 +98,10 @@ impl System {
                 Ok(conn) => {
                     let e_key = key.clone();
                     self.conns.insert(key, conn);
-                    self.server.echo(&format!(
-                        "[{}] Connected to {} for files matching '{}'",
+                    self.server.log_write(vec![format!(
+                        ";; [{}] Connected to {} for files matching '{}'",
                         e_key, addr, expr
-                    ));
+                    )]);
                 }
                 Err(msg) => self
                     .server
@@ -109,10 +113,10 @@ impl System {
     fn handle_disconnect(&mut self, key: String) {
         if self.conns.contains_key(&key) {
             if let Some(conn) = self.conns.remove(&key) {
-                self.server.echo(&format!(
+                self.server.log_write(vec![format!(
                     "[{}] Disconnected from {} for files matching '{}'",
                     key, conn.addr, conn.expr
-                ));
+                )]);
             }
         } else {
             self.server.echoerr(&format!(
