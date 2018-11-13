@@ -1,3 +1,4 @@
+use chrono::Local;
 use neovim_lib::neovim_api::Buffer;
 use neovim_lib::session::Session;
 use neovim_lib::{Neovim, NeovimApi, Value};
@@ -8,7 +9,7 @@ use std::net::SocketAddr;
 use std::str::FromStr;
 use std::sync::mpsc;
 
-const LOG_BUFFER_NAME: &str = "/tmp/conjure.cljc";
+static LOG_BUFFER_NAME: &str = "/tmp/conjure.cljc";
 
 pub struct Server {
     nvim: Neovim,
@@ -76,19 +77,22 @@ impl Server {
         }
     }
 
-    pub fn log_writelns(&mut self, lines: Vec<String>) {
-        // TODO Add more structure around the logs and async (temp and replace).
+    pub fn log_writelns(&mut self, tag: &str, lines: &[String]) {
+        let timestamp = Local::now().format("%T");
+        let mut lines = lines.to_vec();
+        lines.insert(0, format!(";; {} @ {}", tag, timestamp));
+        lines.push("".to_owned());
 
         if let Err(msg) = self.find_or_create_log_buf().and_then(|buf| {
-            buf.set_lines(&mut self.nvim, 0, 0, true, lines)
+            buf.set_lines(&mut self.nvim, 0, 0, false, lines)
                 .map_err(|msg| format!("could not set lines: {}", msg))
         }) {
             self.err_writeln(&format!("Failed to log: {}", msg))
         }
     }
 
-    pub fn log_writeln(&mut self, line: String) {
-        self.log_writelns(vec![line]);
+    pub fn log_writeln(&mut self, tag: &str, line: String) {
+        self.log_writelns(tag, &[line]);
     }
 }
 

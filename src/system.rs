@@ -6,6 +6,8 @@ use std::io;
 use std::net::SocketAddr;
 use std::sync::mpsc;
 
+static DEFAULT_TAG: &str = "Conjure";
+
 // TODO Implement a heartbeat for connections.
 
 struct Connection {
@@ -42,7 +44,7 @@ impl System {
 
         system
             .server
-            .log_writeln(";; Welcome to Conjure!".to_owned());
+            .log_writeln(DEFAULT_TAG, ";; Welcome!".to_owned());
 
         info!("Starting server event loop");
         for event in rx.iter() {
@@ -73,7 +75,8 @@ impl System {
 
     fn handle_list(&mut self) {
         if self.conns.is_empty() {
-            self.server.log_writeln(";; No connections".to_owned());
+            self.server
+                .log_writeln(DEFAULT_TAG, ";; No connections".to_owned());
         } else {
             let lines: Vec<String> = self
                 .conns
@@ -85,7 +88,7 @@ impl System {
                     )
                 }).collect();
 
-            self.server.log_writelns(lines);
+            self.server.log_writelns(DEFAULT_TAG, &lines);
         }
     }
 
@@ -98,10 +101,13 @@ impl System {
                 Ok(conn) => {
                     let e_key = key.clone();
                     self.conns.insert(key, conn);
-                    self.server.log_writeln(format!(
-                        ";; [{}] Connected to {} for files matching '{}'",
-                        e_key, addr, expr
-                    ));
+                    self.server.log_writeln(
+                        DEFAULT_TAG,
+                        format!(
+                            ";; [{}] Connected to {} for files matching '{}'",
+                            e_key, addr, expr
+                        ),
+                    );
                 }
                 Err(msg) => self
                     .server
@@ -113,10 +119,13 @@ impl System {
     fn handle_disconnect(&mut self, key: String) {
         if self.conns.contains_key(&key) {
             if let Some(conn) = self.conns.remove(&key) {
-                self.server.log_writeln(format!(
-                    "[{}] Disconnected from {} for files matching '{}'",
-                    key, conn.addr, conn.expr
-                ));
+                self.server.log_writeln(
+                    DEFAULT_TAG,
+                    format!(
+                        "[{}] Disconnected from {} for files matching '{}'",
+                        key, conn.addr, conn.expr
+                    ),
+                );
             }
         } else {
             self.server.err_writeln(&format!(
