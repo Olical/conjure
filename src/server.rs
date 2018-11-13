@@ -4,7 +4,6 @@ use neovim_lib::session::Session;
 use neovim_lib::{Neovim, NeovimApi, Value};
 use regex::Regex;
 use std::fmt;
-use std::io;
 use std::net::SocketAddr;
 use std::str::FromStr;
 use std::sync::mpsc;
@@ -18,9 +17,10 @@ pub struct Server {
 type Sender = mpsc::Sender<Result<Event, String>>;
 
 impl Server {
-    pub fn start(tx: Sender) -> Result<Self, io::Error> {
+    pub fn start(tx: Sender) -> Result<Self, String> {
         info!("Starting Neovim event loop handler");
-        let mut session = Session::new_parent()?;
+        let mut session = Session::new_parent()
+            .map_err(|msg| format!("error creating Neovim session: {}", msg))?;
         session.start_event_loop_handler(Handler::new(tx));
 
         Ok(Self {

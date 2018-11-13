@@ -2,13 +2,14 @@ use client::Client;
 use regex::Regex;
 use server::{Event, Server};
 use std::collections::HashMap;
-use std::io;
 use std::net::SocketAddr;
 use std::sync::mpsc;
+use std::thread;
 
 static DEFAULT_TAG: &str = "Conjure";
 
 // TODO Implement a heartbeat for connections.
+// TODO Command to open the log window.
 
 struct Connection {
     eval: Client,
@@ -34,7 +35,7 @@ pub struct System {
 }
 
 impl System {
-    pub fn start() -> Result<Self, io::Error> {
+    pub fn start() -> Result<Self, String> {
         info!("Starting system");
         let (tx, rx) = mpsc::channel();
         let mut system = Self {
