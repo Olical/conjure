@@ -35,11 +35,14 @@ impl System {
     pub fn start() -> Result<Self, io::Error> {
         info!("Starting system");
         let (tx, rx) = mpsc::channel();
-        let server = Server::start(tx)?;
         let mut system = Self {
             conns: HashMap::new(),
-            server: server,
+            server: Server::start(tx)?,
         };
+
+        system
+            .server
+            .log_writeln(";; Welcome to Conjure!".to_owned());
 
         info!("Starting server event loop");
         for event in rx.iter() {
