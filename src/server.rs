@@ -8,7 +8,7 @@ use std::net::SocketAddr;
 use std::str::FromStr;
 use std::sync::mpsc;
 
-const DISPLAY_BUFFER_NAME: &str = "/tmp/conjure.cljc";
+const LOG_BUFFER_NAME: &str = "conjure_log.cljc";
 
 pub struct Server {
     nvim: Neovim,
@@ -54,7 +54,7 @@ impl Server {
         self.command_async(&format!("echoerr \"{}\"", escape_quotes(msg)));
     }
 
-    fn find_buf(&mut self, name: &str) -> Result<Option<Buffer>, String> {
+    fn find_log_buf(&mut self, name: &str) -> Result<Option<Buffer>, String> {
         let bufs = self
             .nvim
             .list_bufs()
@@ -66,30 +66,31 @@ impl Server {
             .map(|buf| buf.clone()))
     }
 
-    fn find_or_create_buf(&mut self, name: &str) -> Result<Buffer, String> {
-        if let Some(buf) = self.find_buf(name)? {
+    fn find_or_create_log_buf(&mut self, name: &str) -> Result<Buffer, String> {
+        if let Some(buf) = self.find_log_buf(name)? {
             return Ok(buf);
         }
 
-        // TODO Make this not have to save. Make it more scratch like.
         self.command(&format!("10new {}", name))?;
+        self.command(&format!("setlocal buftype=nofile"))?;
+        self.command(&format!("setlocal bufhidden=hide"))?;
+        self.command(&format!("setlocal noswapfile"))?;
+        self.command(&format!("normal! "))?;
 
-        match self.find_buf(name)? {
+        match self.find_log_buf(name)? {
             Some(buf) => Ok(buf),
             None => Err("failed to create buffer".to_owned()),
         }
     }
 
-    pub fn display(&mut self, lines: Vec<String>) {
-        // TODO Make this window smaller by default and toggleable with a command.
-
+    pub fn log_write(&mut self, lines: Vec<String>) {
         if let Err(msg) = self
-            .find_or_create_buf(DISPLAY_BUFFER_NAME)
+            .find_or_create_log_buf(LOG_BUFFER_NAME)
             .and_then(|buf| {
                 buf.set_lines(&mut self.nvim, 0, 0, true, lines)
                     .map_err(|msg| format!("could not set lines: {}", msg))
             }) {
-            error!("Failed to display: {}", msg)
+            error!("Failed to log: {}", msg)
         }
     }
 }

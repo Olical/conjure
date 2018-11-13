@@ -69,7 +69,7 @@ impl System {
 
     fn handle_list(&mut self) {
         if self.conns.is_empty() {
-            self.server.display(vec![";; No connections".to_owned()]);
+            self.server.log_write(vec![";; No connections".to_owned()]);
         } else {
             let lines: Vec<String> = self
                 .conns
@@ -81,7 +81,7 @@ impl System {
                     )
                 }).collect();
 
-            self.server.display(lines);
+            self.server.log_write(lines);
         }
     }
 
