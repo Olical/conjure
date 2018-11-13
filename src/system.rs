@@ -20,12 +20,16 @@ struct Connection {
 
 impl Connection {
     fn connect(addr: SocketAddr, expr: Regex) -> Result<Self, String> {
-        Ok(Self {
-            eval: Client::connect(addr)?,
+        let eval = Client::connect(addr)?;
+        let eval_out = eval.try_clone()?;
 
-            addr,
-            expr,
-        })
+        thread::spawn(move || {
+            for response in eval_out.responses() {
+                // I need access to a tx that writes to the log buffer.
+            }
+        });
+
+        Ok(Self { eval, addr, expr })
     }
 }
 
