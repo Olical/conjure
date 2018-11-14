@@ -6,12 +6,13 @@ use regex::Regex;
 use std::fmt;
 use std::net::SocketAddr;
 use std::str::FromStr;
-use std::sync::mpsc;
+use std::sync::{mpsc, Arc, Mutex};
 
 static LOG_BUFFER_NAME: &str = "/tmp/conjure.cljc";
 
+#[derive(Clone)]
 pub struct Server {
-    nvim: Neovim,
+    nvim: Arc<Mutex<Neovim>>,
 }
 
 type Sender = mpsc::Sender<Result<Event, String>>;
@@ -24,38 +25,53 @@ impl Server {
         session.start_event_loop_handler(Handler::new(tx));
 
         Ok(Self {
-            nvim: Neovim::new(session),
+            nvim: Arc::new(Mutex::new(Neovim::new(session))),
         })
     }
 
     pub fn command(&mut self, cmd: &str) -> Result<(), String> {
         self.nvim
-            .command(cmd)
-            .map_err(|msg| format!("command failed: {}", msg))
+            .lock()
+            .map_err(|msg| format!("could not get nvim lock: {}", msg))
+            .and_then(|mut nvim| {
+                nvim.command(cmd)
+                    .map_err(|msg| format!("command failed: {}", msg))
+            })
     }
 
     pub fn err_writeln(&mut self, msg: &str) {
         error!("Error written: {}", msg);
 
-        if let Err(msg) = self.nvim.err_writeln(msg) {
+        if let Err(msg) = self
+            .nvim
+            .lock()
+            .map_err(|msg| format!("could not get nvim lock: {}", msg))
+            .and_then(|mut nvim| {
+                nvim.err_writeln(msg)
+                    .map_err(|msg| format!("could not write to error output: {}", msg))
+            }) {
             error!("Failed to write error line: {}", msg);
         }
     }
 
     fn find_log_buf(&mut self) -> Result<Option<Buffer>, String> {
-        let bufs = self
-            .nvim
-            .list_bufs()
-            .map_err(|msg| format!("failed to get buffers: {}", msg))?;
+        self.nvim
+            .lock()
+            .map_err(|msg| format!("could not get nvim lock: {}", msg))
+            .map(|mut nvim| {
+                let bufs = nvim
+                    .list_bufs()
+                    .map_err(|msg| format!("failed to get buffers: {}", msg))?;
 
-        Ok(bufs
-            .iter()
-            .find(|buf| {
-                &buf.get_name(&mut self.nvim).unwrap_or_else(|_| {
-                    warn!("Couldn't get buffer name");
-                    "".to_owned()
-                }) == LOG_BUFFER_NAME
-            }).map(|buf| buf.clone()))
+                Ok(bufs
+                    .iter()
+                    .find(|buf| {
+                        &buf.get_name(&mut nvim).unwrap_or_else(|_| {
+                            warn!("Couldn't get buffer name");
+                            "".to_owned()
+                        }) == LOG_BUFFER_NAME
+                    }).map(|buf| buf.clone()))
+            })?
     }
 
     pub fn display_or_create_log_window(&mut self) -> Result<(), String> {
@@ -89,8 +105,13 @@ impl Server {
         lines.push("".to_owned());
 
         if let Err(msg) = self.find_or_create_log_buf().and_then(|buf| {
-            buf.set_lines(&mut self.nvim, 0, 0, false, lines)
-                .map_err(|msg| format!("could not set lines: {}", msg))
+            self.nvim
+                .lock()
+                .map_err(|msg| format!("could not get nvim lock: {}", msg))
+                .and_then(|mut nvim| {
+                    buf.set_lines(&mut nvim, 0, 0, false, lines)
+                        .map_err(|msg| format!("could not set lines: {}", msg))
+                })
         }) {
             self.err_writeln(&format!("Failed to log: {}", msg))
         }

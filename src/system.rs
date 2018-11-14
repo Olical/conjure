@@ -1,4 +1,4 @@
-use client::Client;
+use client::{Client, Response};
 use regex::Regex;
 use server::{Event, Server};
 use std::collections::HashMap;
@@ -19,21 +19,31 @@ struct Connection {
 
 impl Connection {
     fn connect(addr: SocketAddr, expr: Regex) -> Result<Self, String> {
-        let eval = Client::connect(addr)?;
-        let eval_out = eval.try_clone()?;
+        Ok(Self {
+            eval: Client::connect(addr)?,
+            addr,
+            expr,
+        })
+    }
+
+    fn start_response_loops(&self, key: String, server: &Server) -> Result<(), String> {
+        let eval = self.eval.try_clone()?;
+        let mut eval_server = server.clone();
+        let eval_key = key.clone();
 
         thread::spawn(move || {
-            for response in eval_out.responses() {
-                // TODO I need access to a tx that writes to the log buffer.
-                // This may require BurntSushi's chan or something so I can have multiple channels
-                // being waited upon in the main thread. So it can support:
-                // Neovim <- Conjure -> Clojure
-                // As opposed to:
-                // Neovim -> Conjure -> Clojure
+            for response in eval.responses() {
+                match response {
+                    Ok(Response::Ret(msg)) => eval_server.log_writeln(&eval_key, msg),
+
+                    // TODO This should really be in the system so it can kill the connection.
+                    Err(msg) => eval_server.err_writeln(&format!("ohno: {}", msg)),
+                    _ => (),
+                }
             }
         });
 
-        Ok(Self { eval, addr, expr })
+        Ok(())
     }
 }
 
@@ -114,9 +124,13 @@ impl System {
             self.server
                 .err_writeln(&format!("[{}] Connection exists already", key));
         } else {
-            match Connection::connect(addr, expr.clone()) {
-                Ok(conn) => {
-                    let e_key = key.clone();
+            let e_key = key.clone();
+
+            if let Err(msg) = Connection::connect(addr, expr.clone())
+                .and_then(|conn| {
+                    conn.start_response_loops(format!("[{}]", key), &self.server)?;
+                    Ok(conn)
+                }).map(|conn| {
                     self.conns.insert(key, conn);
                     self.server.log_writeln(
                         DEFAULT_TAG,
@@ -125,10 +139,9 @@ impl System {
                             e_key, addr, expr
                         ),
                     );
-                }
-                Err(msg) => self
-                    .server
-                    .err_writeln(&format!("[{}] Connection failed: {}", key, msg)),
+                }) {
+                self.server
+                    .err_writeln(&format!("[{}] Connection failed: {}", e_key, msg))
             }
         }
     }
