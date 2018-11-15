@@ -1,6 +1,6 @@
-use client::{Client, Response};
+use editor::{Event, Server};
 use regex::Regex;
-use server::{Event, Server};
+use repl::{Client, Response};
 use std::collections::HashMap;
 use std::net::SocketAddr;
 use std::sync::mpsc;
