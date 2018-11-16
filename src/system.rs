@@ -10,6 +10,7 @@ static DEFAULT_TAG: &str = "Conjure";
 
 // TODO Implement a heartbeat for connections.
 // TODO Split connection management into another module.
+// TODO Never suppress errors in repl/editor, flow them ALL up to system.
 
 struct Connection {
     eval: Client,

@@ -8,8 +8,6 @@ use std::net::SocketAddr;
 use std::str::FromStr;
 use std::sync::{mpsc, Arc, Mutex};
 
-// TODO Refactor so this can be shared between threads easily. (channels?)
-
 static LOG_BUFFER_NAME: &str = "/tmp/conjure.cljc";
 
 #[derive(Clone)]
@@ -82,7 +80,7 @@ impl Server {
         self.command("setlocal buftype=nofile")?;
         self.command("setlocal bufhidden=hide")?;
         self.command("setlocal noswapfile")?;
-        self.command("normal! ")?;
+        self.command("normal! gg")?;
 
         Ok(())
     }
