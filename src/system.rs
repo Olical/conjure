@@ -9,6 +9,11 @@ use std::thread;
 static DEFAULT_TAG: &str = "Conjure";
 
 // TODO Implement a heartbeat for connections.
+// TODO Split connection management into another module.
+
+// I would like the connections to send more instructions to this module through a channel. Maybe I
+// use a multiple producer and consumer channel like Clojure's then have one central thread that
+// awaits multiple different things.
 
 struct Connection {
     eval: Client,
@@ -32,13 +37,24 @@ impl Connection {
         let eval_key = key.clone();
 
         thread::spawn(move || {
+            let log = |server: &mut Server, tag_suffix, line_prefix, msg: String| {
+                let lines: Vec<String> = msg
+                    .split("\n")
+                    .map(|line| format!("{}{}", line_prefix, line))
+                    .collect();
+
+                server.log_writelns(&format!("{} {}", eval_key, tag_suffix), &lines);
+            };
+
             for response in eval.responses() {
                 match response {
-                    Ok(Response::Ret(msg)) => eval_server.log_writeln(&eval_key, msg),
+                    Ok(Response::Ret(msg)) => log(&mut eval_server, "ret", "", msg),
+                    Ok(Response::Tap(msg)) => log(&mut eval_server, "tap", ";; ", msg),
+                    Ok(Response::Out(msg)) => log(&mut eval_server, "out", ";; ", msg),
+                    Ok(Response::Err(msg)) => log(&mut eval_server, "err", ";; ", msg),
 
                     // TODO This should really be in the system so it can kill the connection.
-                    Err(msg) => eval_server.err_writeln(&format!("ohno: {}", msg)),
-                    _ => (),
+                    Err(msg) => eval_server.err_writeln(&format!("Error from eval: {}", msg)),
                 }
             }
         });

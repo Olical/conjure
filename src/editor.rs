@@ -8,6 +8,8 @@ use std::net::SocketAddr;
 use std::str::FromStr;
 use std::sync::{mpsc, Arc, Mutex};
 
+// TODO Refactor so this can be shared between threads easily. (channels?)
+
 static LOG_BUFFER_NAME: &str = "/tmp/conjure.cljc";
 
 #[derive(Clone)]
