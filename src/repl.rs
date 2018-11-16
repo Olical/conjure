@@ -92,8 +92,15 @@ impl Client {
         Box::new(responses)
     }
 
-    pub fn write(&mut self, code: &str) -> io::Result<()> {
-        self.stream.write_all(format!("{}\n", code).as_bytes())?;
-        self.stream.flush()
+    pub fn write(&mut self, code: &str) -> Result<(), String> {
+        self.stream
+            .write_all(format!("{}\n", code).as_bytes())
+            .map_err(|msg| format!("error on write: {}", msg))?;
+
+        self.stream
+            .flush()
+            .map_err(|msg| format!("error on flush: {}", msg))?;
+
+        Ok(())
     }
 }

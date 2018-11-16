@@ -107,9 +107,7 @@ impl Pool {
             .filter(|(_, conn)| conn.expr.is_match(&path));
 
         for (_, conn) in matches {
-            conn.eval
-                .write(&code)
-                .map_err(|msg| format!("write error: {}", msg))?;
+            conn.eval.write(&code)?;
         }
 
         Ok(())
