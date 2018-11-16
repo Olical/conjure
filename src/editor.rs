@@ -6,9 +6,7 @@ use regex::Regex;
 use std::fmt;
 use std::net::SocketAddr;
 use std::str::FromStr;
-use std::sync::{mpsc, Arc, Mutex};
-
-// TODO Use ? more to return errors from editor functions.
+use std::sync::{mpsc, Arc, Mutex, MutexGuard};
 
 static LOG_BUFFER_NAME: &str = "/tmp/conjure.cljc";
 
@@ -31,49 +29,36 @@ impl Server {
         })
     }
 
-    pub fn command(&mut self, cmd: &str) -> Result<(), String> {
+    fn nvim(&self) -> Result<MutexGuard<Neovim>, String> {
         self.nvim
             .lock()
             .map_err(|msg| format!("could not get nvim lock: {}", msg))
-            .and_then(|mut nvim| {
-                nvim.command(cmd)
-                    .map_err(|msg| format!("command failed: {}", msg))
-            })
     }
 
-    pub fn err_writeln(&mut self, msg: &str) {
-        error!("Error written: {}", msg);
+    pub fn command(&mut self, cmd: &str) -> Result<(), String> {
+        let mut nvim = self.nvim()?;
 
-        if let Err(msg) = self
-            .nvim
-            .lock()
-            .map_err(|msg| format!("could not get nvim lock: {}", msg))
-            .and_then(|mut nvim| {
-                nvim.err_writeln(msg)
-                    .map_err(|msg| format!("could not write to error output: {}", msg))
-            }) {
-            error!("Failed to write error line: {}", msg);
-        }
+        nvim.command(cmd)
+            .map_err(|msg| format!("command failed: {}", msg))
     }
 
     fn find_log_buf(&mut self) -> Result<Option<Buffer>, String> {
-        self.nvim
-            .lock()
-            .map_err(|msg| format!("could not get nvim lock: {}", msg))
-            .map(|mut nvim| {
-                let bufs = nvim
-                    .list_bufs()
-                    .map_err(|msg| format!("failed to get buffers: {}", msg))?;
+        let mut nvim = self.nvim()?;
 
-                Ok(bufs
-                    .iter()
-                    .find(|buf| {
-                        &buf.get_name(&mut nvim).unwrap_or_else(|_| {
-                            warn!("Couldn't get buffer name");
-                            "".to_owned()
-                        }) == LOG_BUFFER_NAME
-                    }).map(|buf| buf.clone()))
-            })?
+        let bufs = nvim
+            .list_bufs()
+            .map_err(|msg| format!("failed to get buffers: {}", msg))?;
+
+        let buf = bufs
+            .iter()
+            .find(|buf| {
+                &buf.get_name(&mut nvim).unwrap_or_else(|_| {
+                    warn!("Couldn't get buffer name");
+                    "".to_owned()
+                }) == LOG_BUFFER_NAME
+            }).map(|buf| buf.clone());
+
+        Ok(buf)
     }
 
     pub fn display_or_create_log_window(&mut self) -> Result<(), String> {
@@ -94,9 +79,18 @@ impl Server {
 
         self.display_or_create_log_window()?;
 
-        match self.find_log_buf()? {
-            Some(buf) => Ok(buf),
-            None => Err("failed to create buffer".to_owned()),
+        self.find_log_buf()
+            .map(|buf| buf.ok_or("failed to create buffer".to_owned()))?
+    }
+
+    pub fn err_writeln(&mut self, msg: &str) {
+        error!("Error written: {}", msg);
+
+        if let Err(msg) = self.nvim().and_then(|mut nvim| {
+            nvim.err_writeln(msg)
+                .map_err(|msg| format!("could not write to error output: {}", msg))
+        }) {
+            error!("Failed to write error line: {}", msg);
         }
     }
 
@@ -107,13 +101,10 @@ impl Server {
         lines.push("".to_owned());
 
         if let Err(msg) = self.find_or_create_log_buf().and_then(|buf| {
-            self.nvim
-                .lock()
-                .map_err(|msg| format!("could not get nvim lock: {}", msg))
-                .and_then(|mut nvim| {
-                    buf.set_lines(&mut nvim, 0, 0, false, lines)
-                        .map_err(|msg| format!("could not set lines: {}", msg))
-                })
+            let mut nvim = self.nvim()?;
+
+            buf.set_lines(&mut nvim, 0, 0, false, lines)
+                .map_err(|msg| format!("could not set lines: {}", msg))
         }) {
             self.err_writeln(&format!("Failed to log: {}", msg))
         }
