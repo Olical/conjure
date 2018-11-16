@@ -63,8 +63,8 @@ impl Pool {
         }
     }
 
-    pub fn is_empty(&self) -> bool {
-        self.conns.is_empty()
+    pub fn has_connections(&self) -> bool {
+        !self.conns.is_empty()
     }
 
     pub fn iter(&self) -> hash_map::Iter<String, Connection> {

@@ -7,7 +7,6 @@ use std::sync::mpsc;
 static DEFAULT_TAG: &str = "Conjure";
 
 // TODO Implement a heartbeat for connections.
-// TODO Never suppress errors in repl/editor, flow them ALL up to system.
 
 pub struct System {
     pool: Pool,
@@ -56,10 +55,7 @@ impl System {
     }
 
     fn handle_list(&mut self) {
-        if self.pool.is_empty() {
-            self.server
-                .log_writeln(DEFAULT_TAG, ";; No connections".to_owned());
-        } else {
+        if self.pool.has_connections() {
             let lines: Vec<String> = self
                 .pool
                 .iter()
@@ -71,6 +67,9 @@ impl System {
                 }).collect();
 
             self.server.log_writelns(DEFAULT_TAG, &lines);
+        } else {
+            self.server
+                .log_writeln(DEFAULT_TAG, ";; No connections".to_owned());
         }
     }
 
