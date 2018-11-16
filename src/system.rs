@@ -11,10 +11,6 @@ static DEFAULT_TAG: &str = "Conjure";
 // TODO Implement a heartbeat for connections.
 // TODO Split connection management into another module.
 
-// I would like the connections to send more instructions to this module through a channel. Maybe I
-// use a multiple producer and consumer channel like Clojure's then have one central thread that
-// awaits multiple different things.
-
 struct Connection {
     eval: Client,
 
@@ -53,7 +49,6 @@ impl Connection {
                     Ok(Response::Out(msg)) => log(&mut eval_server, "out", ";; ", msg),
                     Ok(Response::Err(msg)) => log(&mut eval_server, "err", ";; ", msg),
 
-                    // TODO This should really be in the system so it can kill the connection.
                     Err(msg) => eval_server.err_writeln(&format!("Error from eval: {}", msg)),
                 }
             }
