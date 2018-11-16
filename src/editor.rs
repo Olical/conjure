@@ -8,6 +8,8 @@ use std::net::SocketAddr;
 use std::str::FromStr;
 use std::sync::{mpsc, Arc, Mutex};
 
+// TODO Use ? more to return errors from editor functions.
+
 static LOG_BUFFER_NAME: &str = "/tmp/conjure.cljc";
 
 #[derive(Clone)]

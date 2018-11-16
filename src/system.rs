@@ -1,66 +1,16 @@
 use editor::{Event, Server};
+use pool::Pool;
 use regex::Regex;
-use repl::{Client, Response};
-use std::collections::HashMap;
 use std::net::SocketAddr;
 use std::sync::mpsc;
-use std::thread;
 
 static DEFAULT_TAG: &str = "Conjure";
 
 // TODO Implement a heartbeat for connections.
-// TODO Split connection management into another module.
 // TODO Never suppress errors in repl/editor, flow them ALL up to system.
 
-struct Connection {
-    eval: Client,
-
-    addr: SocketAddr,
-    expr: Regex,
-}
-
-impl Connection {
-    fn connect(addr: SocketAddr, expr: Regex) -> Result<Self, String> {
-        Ok(Self {
-            eval: Client::connect(addr)?,
-            addr,
-            expr,
-        })
-    }
-
-    fn start_response_loops(&self, key: String, server: &Server) -> Result<(), String> {
-        let eval = self.eval.try_clone()?;
-        let mut eval_server = server.clone();
-        let eval_key = key.clone();
-
-        thread::spawn(move || {
-            let log = |server: &mut Server, tag_suffix, line_prefix, msg: String| {
-                let lines: Vec<String> = msg
-                    .split("\n")
-                    .map(|line| format!("{}{}", line_prefix, line))
-                    .collect();
-
-                server.log_writelns(&format!("{} {}", eval_key, tag_suffix), &lines);
-            };
-
-            for response in eval.responses() {
-                match response {
-                    Ok(Response::Ret(msg)) => log(&mut eval_server, "ret", "", msg),
-                    Ok(Response::Tap(msg)) => log(&mut eval_server, "tap", ";; ", msg),
-                    Ok(Response::Out(msg)) => log(&mut eval_server, "out", ";; ", msg),
-                    Ok(Response::Err(msg)) => log(&mut eval_server, "err", ";; ", msg),
-
-                    Err(msg) => eval_server.err_writeln(&format!("Error from eval: {}", msg)),
-                }
-            }
-        });
-
-        Ok(())
-    }
-}
-
 pub struct System {
-    conns: HashMap<String, Connection>,
+    pool: Pool,
     server: Server,
 }
 
@@ -69,7 +19,7 @@ impl System {
         info!("Starting system");
         let (tx, rx) = mpsc::channel();
         let mut system = Self {
-            conns: HashMap::new(),
+            pool: Pool::new(),
             server: Server::start(tx)?,
         };
 
@@ -106,12 +56,12 @@ impl System {
     }
 
     fn handle_list(&mut self) {
-        if self.conns.is_empty() {
+        if self.pool.is_empty() {
             self.server
                 .log_writeln(DEFAULT_TAG, ";; No connections".to_owned());
         } else {
             let lines: Vec<String> = self
-                .conns
+                .pool
                 .iter()
                 .map(|(key, conn)| {
                     format!(
@@ -132,62 +82,28 @@ impl System {
     }
 
     fn handle_connect(&mut self, key: String, addr: SocketAddr, expr: Regex) {
-        if self.conns.contains_key(&key) {
+        if let Err(msg) = self.pool.connect(&key, &self.server, addr, expr) {
             self.server
-                .err_writeln(&format!("[{}] Connection exists already", key));
+                .err_writeln(&format!("[{}] Connection error: {}", key, msg))
         } else {
-            let e_key = key.clone();
-
-            if let Err(msg) = Connection::connect(addr, expr.clone())
-                .and_then(|conn| {
-                    conn.start_response_loops(format!("[{}]", key), &self.server)?;
-                    Ok(conn)
-                }).map(|conn| {
-                    self.conns.insert(key, conn);
-                    self.server.log_writeln(
-                        DEFAULT_TAG,
-                        format!(
-                            ";; [{}] Connected to {} for files matching '{}'",
-                            e_key, addr, expr
-                        ),
-                    );
-                }) {
-                self.server
-                    .err_writeln(&format!("[{}] Connection failed: {}", e_key, msg))
-            }
+            self.server
+                .log_writeln(DEFAULT_TAG, format!(";; [{}] Connected", key));
         }
     }
 
     fn handle_disconnect(&mut self, key: String) {
-        if self.conns.contains_key(&key) {
-            if let Some(conn) = self.conns.remove(&key) {
-                self.server.log_writeln(
-                    DEFAULT_TAG,
-                    format!(
-                        "[{}] Disconnected from {} for files matching '{}'",
-                        key, conn.addr, conn.expr
-                    ),
-                );
-            }
+        if let Err(msg) = self.pool.disconnect(&key) {
+            self.server
+                .err_writeln(&format!("[{}] Disconnection error: {}", key, msg))
         } else {
-            self.server.err_writeln(&format!(
-                "Connection {} doesn't exist, try listing them",
-                key
-            ));
+            self.server
+                .log_writeln(DEFAULT_TAG, format!("[{}] Disconnected", key));
         }
     }
 
     fn handle_eval(&mut self, code: String, path: String) {
-        let matches = self
-            .conns
-            .iter_mut()
-            .filter(|(_, conn)| conn.expr.is_match(&path));
-
-        for (_, conn) in matches {
-            if let Err(msg) = conn.eval.write(&code) {
-                self.server
-                    .err_writeln(&format!("Error writing to eval client: {}", msg));
-            }
+        if let Err(msg) = self.pool.eval(&code, &path) {
+            self.server.err_writeln(&format!("Eval error: {}", msg));
         }
     }
 }
