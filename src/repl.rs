@@ -1,7 +1,7 @@
 use edn::parser::Parser;
 use edn::Value;
 use std::io::prelude::*;
-use std::io::{self, BufReader};
+use std::io::BufReader;
 use std::net::{SocketAddr, TcpStream};
 use std::time::Duration;
 
