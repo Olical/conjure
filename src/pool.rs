@@ -150,6 +150,7 @@ impl Pool {
     }
 
     pub fn eval(&mut self, code: &str, path: &str) -> Result<(), String> {
+        // TODO Look up the ns symbol and use in-ns before every eval.
         let matches = self
             .conns
             .iter_mut()
