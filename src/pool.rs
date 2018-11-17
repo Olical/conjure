@@ -6,7 +6,8 @@ use std::net::SocketAddr;
 use std::thread;
 
 pub struct Connection {
-    pub eval: Client,
+    eval: Client,
+    doc: Client,
 
     pub addr: SocketAddr,
     pub expr: Regex,
@@ -16,6 +17,8 @@ impl Connection {
     pub fn connect(addr: SocketAddr, expr: Regex) -> Result<Self, String> {
         Ok(Self {
             eval: Client::connect(addr)?,
+            doc: Client::connect(addr)?,
+
             addr,
             expr,
         })
@@ -44,6 +47,52 @@ impl Connection {
                     Ok(Response::Err(msg)) => log(&mut eval_server, "err", ";; ", msg),
 
                     Err(msg) => eval_server.err_writeln(&format!("Error from eval: {}", msg)),
+                }
+            }
+        });
+
+        let doc = self.doc.try_clone()?;
+        let mut doc_server = server.clone();
+        let doc_key = key.clone();
+
+        thread::spawn(move || {
+            let mut out_acc: String = String::new();
+
+            // TODO DRY this.
+            let log = |server: &mut Server, tag_suffix, line_prefix, msg: &str| {
+                let lines: Vec<String> = msg
+                    .split("\n")
+                    .map(|line| format!("{}{}", line_prefix, line))
+                    .collect();
+
+                server.log_writelns(&format!("{} {}", doc_key, tag_suffix), &lines);
+            };
+
+            for response in doc.responses() {
+                match response {
+                    Ok(Response::Out(msg)) => {
+                        if msg != "-------------------------\n" {
+                            out_acc.push_str(&msg);
+                        }
+                    }
+                    Ok(Response::Ret(msg)) => {
+                        if msg != "nil" {
+                            out_acc.push_str(&msg);
+                        } else {
+                            out_acc.pop();
+                        }
+
+                        log(&mut doc_server, "doc", ";; ", &out_acc);
+
+                        out_acc.truncate(0);
+                    }
+                    Ok(Response::Err(msg)) => {
+                        log(&mut doc_server, "doc err", ";; ", &msg);
+                        out_acc.truncate(0);
+                    }
+                    Ok(Response::Tap(_)) => (),
+
+                    Err(msg) => doc_server.err_writeln(&format!("Error from doc: {}", msg)),
                 }
             }
         });
@@ -108,6 +157,20 @@ impl Pool {
 
         for (_, conn) in matches {
             conn.eval.write(&code)?;
+        }
+
+        Ok(())
+    }
+
+    pub fn doc(&mut self, symbol: &str, path: &str) -> Result<(), String> {
+        // TODO DRY this.
+        let matches = self
+            .conns
+            .iter_mut()
+            .filter(|(_, conn)| conn.expr.is_match(&path));
+
+        for (_, conn) in matches {
+            conn.doc.write(&format!("(doc {})", symbol))?;
         }
 
         Ok(())
