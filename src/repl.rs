@@ -1,5 +1,6 @@
 use edn::parser::Parser;
 use edn::Value;
+use ohno::{Error, Result};
 use std::io::prelude::*;
 use std::io::BufReader;
 use std::net::{SocketAddr, TcpStream};
@@ -17,16 +18,40 @@ fn keyword(name: &str) -> Value {
     Value::Keyword(name.to_owned())
 }
 
-impl Response {
-    fn from(value: Value) -> Result<Self, String> {
-        if let Value::Map(msg) = value {
-            let tag = msg
-                .get(&keyword("tag"))
-                .ok_or_else(|| format!("failed to get tag from: {:?}", msg))?;
+#[derive(Debug, Fail)]
+enum ResponseError {
+    #[fail(
+        display = "missing keyword `{:?}` in REPL response: {:?}",
+        keyword,
+        value
+    )]
+    MissingKeyword { value: Value, keyword: Value },
 
+    #[fail(display = "unknown tag: {:?}", tag)]
+    UnknownTag { tag: String },
+
+    #[fail(display = "response type was not as expected: {:?}", value)]
+    TypeMismatch { value: Value },
+}
+
+impl Response {
+    fn from(value: Value) -> Result<Self> {
+        if let Value::Map(msg) = value {
+            let tag_kw = keyword("tag");
+            let tag = msg
+                .get(&tag_kw)
+                .ok_or_else(|| ResponseError::MissingKeyword {
+                    keyword: tag_kw,
+                    value,
+                })?;
+
+            let val_kw = keyword("val");
             let val = msg
-                .get(&keyword("val"))
-                .ok_or_else(|| format!("failed to get val from: {:?}", msg))?;
+                .get(&val_kw)
+                .ok_or_else(|| ResponseError::MissingKeyword {
+                    keyword: val_kw,
+                    value,
+                })?;
 
             if let (Value::Keyword(tag), Value::String(val)) = (tag, val) {
                 let val = val.to_owned();
@@ -36,16 +61,15 @@ impl Response {
                     "tap" => Ok(Response::Tap(val)),
                     "out" => Ok(Response::Out(val)),
                     "err" => Ok(Response::Err(val)),
-                    _ => Err(format!("unknown tag type: {}", tag)),
+                    _ => Err(Error::from(ResponseError::UnknownTag {
+                        tag: tag.to_owned(),
+                    })),
                 }
             } else {
-                Err(format!(
-                    "tag should be a keyword and val should be a string: {:?}",
-                    msg
-                ))
+                Err(Error::from(ResponseError::TypeMismatch { value }))
             }
         } else {
-            Err(format!("is not a map: {:?}", value))
+            Err(Error::from(ResponseError::TypeMismatch { value }))
         }
     }
 }
@@ -55,44 +79,35 @@ pub struct Client {
 }
 
 impl Client {
-    pub fn connect(addr: SocketAddr) -> Result<Self, String> {
-        let stream = TcpStream::connect_timeout(&addr, Duration::from_secs(5))
-            .map_err(|msg| format!("couldn't connect to {}: {}", addr, msg))?;
-
-        stream
-            .set_write_timeout(Some(Duration::from_secs(5)))
-            .map_err(|msg| format!("failed to set write timeout: {}", msg))?;
+    pub fn connect(addr: SocketAddr) -> Result<Self> {
+        let stream = TcpStream::connect_timeout(&addr, Duration::from_secs(5))?;
+        stream.set_write_timeout(Some(Duration::from_secs(5)))?;
 
         Ok(Self { stream })
     }
 
-    pub fn try_clone(&self) -> Result<Self, String> {
-        let stream = self
-            .stream
-            .try_clone()
-            .map_err(|msg| format!("failed to clone stream: {}", msg))?;
+    pub fn try_clone(&self) -> Result<Self> {
+        let stream = self.stream.try_clone()?;
 
         Ok(Self { stream })
     }
 
-    pub fn responses(self) -> Box<Iterator<Item = Result<Response, String>>> {
+    pub fn responses(self) -> Box<Iterator<Item = Result<Response>>> {
         let reader = BufReader::new(self.stream);
 
         let responses = reader.lines().map(|line| {
-            line.map_err(|msg| format!("failed to read line from client: {}", msg))
-                .and_then(|line| {
-                    Parser::new(&line)
-                        .read()
-                        .ok_or("nothing to read".to_owned())
-                }).and_then(|value| {
-                    value.map_err(|msg| format!("failed to parse client output: {:?}", msg))
-                }).and_then(|value| Response::from(value))
+            line.and_then(|line| {
+                Parser::new(&line)
+                    .read()
+                    .ok_or("nothing to read".to_owned())
+            }).and_then(|value| value)
+            .and_then(|value| Response::from(value))
         });
 
         Box::new(responses)
     }
 
-    pub fn write(&mut self, code: &str) -> Result<(), String> {
+    pub fn write(&mut self, code: &str) -> Result<()> {
         self.stream
             .write_all(format!("{}\n", code).as_bytes())
             .map_err(|msg| format!("error on write: {}", msg))?;
