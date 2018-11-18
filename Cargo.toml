@@ -4,9 +4,10 @@ version = "0.1.0"
 authors = ["Oliver Caldwell <olliec87@gmail.com>"]
 
 [dependencies]
-neovim-lib = { git = "https://github.com/daa84/neovim-lib", branch = "master"}
-edn = "0.3.0"
-regex = "1.0.5"
-log = "0.4.6"
-simplelog = "0.5.3"
 chrono = "0.4.6"
+edn = "0.3.0"
+failure = "0.1.3"
+log = "0.4.6"
+neovim-lib = { git = "https://github.com/daa84/neovim-lib", branch = "master"}
+regex = "1.0.5"
+simplelog = "0.5.3"
