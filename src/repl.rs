@@ -1,6 +1,6 @@
 use edn::parser::Parser;
 use edn::Value;
-use ohno::{Error, Result};
+use ohno::{from, Result};
 use std::io::prelude::*;
 use std::io::BufReader;
 use std::net::{SocketAddr, TcpStream};
@@ -19,7 +19,7 @@ fn keyword(name: &str) -> Value {
 }
 
 #[derive(Debug, Fail)]
-enum ResponseError {
+enum Error {
     #[fail(
         display = "missing keyword `{:?}` in REPL response: {:?}",
         keyword,
@@ -44,20 +44,16 @@ impl Response {
     fn from(value: Value) -> Result<Self> {
         if let Value::Map(msg) = value {
             let tag_kw = keyword("tag");
-            let tag = msg
-                .get(&tag_kw)
-                .ok_or_else(|| ResponseError::MissingKeyword {
-                    keyword: tag_kw,
-                    value,
-                })?;
+            let tag = msg.get(&tag_kw).ok_or_else(|| Error::MissingKeyword {
+                keyword: tag_kw,
+                value,
+            })?;
 
             let val_kw = keyword("val");
-            let val = msg
-                .get(&val_kw)
-                .ok_or_else(|| ResponseError::MissingKeyword {
-                    keyword: val_kw,
-                    value,
-                })?;
+            let val = msg.get(&val_kw).ok_or_else(|| Error::MissingKeyword {
+                keyword: val_kw,
+                value,
+            })?;
 
             if let (Value::Keyword(tag), Value::String(val)) = (tag, val) {
                 let val = val.to_owned();
@@ -67,15 +63,15 @@ impl Response {
                     "tap" => Ok(Response::Tap(val)),
                     "out" => Ok(Response::Out(val)),
                     "err" => Ok(Response::Err(val)),
-                    _ => Err(Error::from(ResponseError::UnknownTag {
+                    _ => Err(from(Error::UnknownTag {
                         tag: tag.to_owned(),
                     })),
                 }
             } else {
-                Err(Error::from(ResponseError::TypeMismatch { value }))
+                Err(from(Error::TypeMismatch { value }))
             }
         } else {
-            Err(Error::from(ResponseError::TypeMismatch { value }))
+            Err(from(Error::TypeMismatch { value }))
         }
     }
 }
@@ -104,8 +100,8 @@ impl Client {
         let responses = reader.lines().map(|line| {
             line.map(|line| match Parser::new(&line).read() {
                 Some(Ok(value)) => Ok(Response::from(value)),
-                Some(Err(err)) => Err(ResponseError::ParseError { err }),
-                None => Err(ResponseError::EmptyParseResult),
+                Some(Err(err)) => Err(Error::ParseError { err }),
+                None => Err(Error::EmptyParseResult),
             })
         });
 
