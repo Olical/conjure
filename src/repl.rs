@@ -32,6 +32,12 @@ enum ResponseError {
 
     #[fail(display = "response type was not as expected: {:?}", value)]
     TypeMismatch { value: Value },
+
+    #[fail(display = "empty result from EDN parse")]
+    EmptyParseResult,
+
+    #[fail(display = "error parsing EDN: {:?}", err)]
+    ParseError { err: edn::parser::Error },
 }
 
 impl Response {
@@ -96,25 +102,19 @@ impl Client {
         let reader = BufReader::new(self.stream);
 
         let responses = reader.lines().map(|line| {
-            line.and_then(|line| {
-                Parser::new(&line)
-                    .read()
-                    .ok_or("nothing to read".to_owned())
-            }).and_then(|value| value)
-            .and_then(|value| Response::from(value))
+            line.map(|line| match Parser::new(&line).read() {
+                Some(Ok(value)) => Ok(Response::from(value)),
+                Some(Err(err)) => Err(ResponseError::ParseError { err }),
+                None => Err(ResponseError::EmptyParseResult),
+            })
         });
 
         Box::new(responses)
     }
 
     pub fn write(&mut self, code: &str) -> Result<()> {
-        self.stream
-            .write_all(format!("{}\n", code).as_bytes())
-            .map_err(|msg| format!("error on write: {}", msg))?;
-
-        self.stream
-            .flush()
-            .map_err(|msg| format!("error on flush: {}", msg))?;
+        self.stream.write_all(format!("{}\n", code).as_bytes())?;
+        self.stream.flush()?;
 
         Ok(())
     }
