@@ -11,6 +11,27 @@ use std::sync::{mpsc, Arc, Mutex, MutexGuard};
 
 static LOG_BUFFER_NAME: &str = "/tmp/conjure.cljc";
 
+#[derive(Debug, Fail)]
+enum Error {
+    #[fail(display = "could not lock nvim instance")]
+    NoNvimLock,
+
+    #[fail(display = "could not create log buffer")]
+    LogBufferCreateFailed,
+
+    #[fail(display = "expected argument at position: {}", position)]
+    ExpectedArgumentAtPosition { position: usize },
+
+    #[fail(display = "expected `{}` to be a string", name)]
+    ExpectedString { name: String },
+
+    #[fail(display = "failed to parse `{}`: {}", name, err)]
+    ParseError { name: String, err: String },
+
+    #[fail(display = "unknown request name: {}", name)]
+    UnknownRequestName { name: String },
+}
+
 #[derive(Clone)]
 pub struct Server {
     nvim: Arc<Mutex<Neovim>>,
@@ -30,24 +51,19 @@ impl Server {
     }
 
     fn nvim(&self) -> Result<MutexGuard<Neovim>> {
-        self.nvim
-            .lock()
-            .map_err(|msg| format!("could not get nvim lock: {}", msg))
+        self.nvim.lock().map_err(|_| from(Error::NoNvimLock))
     }
 
     pub fn command(&mut self, cmd: &str) -> Result<()> {
         let mut nvim = self.nvim()?;
 
-        nvim.command(cmd)
-            .map_err(|msg| format!("command failed: {}", msg))
+        nvim.command(cmd).map_err(from)
     }
 
     fn find_log_buf(&mut self) -> Result<Option<Buffer>> {
         let mut nvim = self.nvim()?;
 
-        let bufs = nvim
-            .list_bufs()
-            .map_err(|msg| format!("failed to get buffers: {}", msg))?;
+        let bufs = nvim.list_bufs()?;
 
         let buf = bufs
             .iter()
@@ -80,16 +96,16 @@ impl Server {
         self.display_or_create_log_window()?;
 
         self.find_log_buf()
-            .map(|buf| buf.ok_or("failed to create buffer".to_owned()))?
+            .map(|buf| buf.ok_or_else(|| from(Error::LogBufferCreateFailed)))?
     }
 
     pub fn err_writeln(&mut self, msg: &str) {
         error!("Error written: {}", msg);
 
-        if let Err(msg) = self.nvim().and_then(|mut nvim| {
-            nvim.err_writeln(msg)
-                .map_err(|msg| format!("could not write to error output: {}", msg))
-        }) {
+        if let Err(msg) = self
+            .nvim()
+            .and_then(|mut nvim| nvim.err_writeln(msg).map_err(from))
+        {
             error!("Failed to write error line: {}", msg);
         }
     }
@@ -103,8 +119,7 @@ impl Server {
         if let Err(msg) = self.find_or_create_log_buf().and_then(|buf| {
             let mut nvim = self.nvim()?;
 
-            buf.set_lines(&mut nvim, 0, 0, false, lines)
-                .map_err(|msg| format!("could not set lines: {}", msg))
+            buf.set_lines(&mut nvim, 0, 0, false, lines).map_err(from)
         }) {
             self.err_writeln(&format!("Failed to log: {}", msg))
         }
@@ -149,11 +164,22 @@ where
     T::Err: fmt::Display,
 {
     args.get(index)
-        .ok_or_else(|| format!("expected argument at position {}", index + 1))?
-        .as_str()
-        .ok_or_else(|| format!("{} must be a string", name))?
-        .parse()
-        .map_err(|e| format!("{} parse error: {}", name, e))
+        .ok_or_else(|| {
+            from(Error::ExpectedArgumentAtPosition {
+                position: index + 1,
+            })
+        })?.as_str()
+        .ok_or_else(|| {
+            from(Error::ExpectedString {
+                name: name.to_owned(),
+            })
+        })?.parse()
+        .map_err(|err| {
+            from(Error::ParseError {
+                name: name.to_owned(),
+                err: format!("{}", err),
+            })
+        })
 }
 
 impl Event {
@@ -183,7 +209,11 @@ impl Event {
                 let path = parse_arg(&args, 1, "path")?;
                 Event::Doc { symbol, path }
             }
-            _ => return Err(format!("unknown request name: {}", name)),
+            _ => {
+                return Err(from(Error::UnknownRequestName {
+                    name: name.to_owned(),
+                }))
+            }
         };
 
         Ok(event)
