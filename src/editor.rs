@@ -2,6 +2,7 @@ use chrono::Local;
 use neovim_lib::neovim_api::Buffer;
 use neovim_lib::session::Session;
 use neovim_lib::{Neovim, NeovimApi, Value};
+use ohno::{from, Result};
 use regex::Regex;
 use std::fmt;
 use std::net::SocketAddr;
@@ -15,13 +16,12 @@ pub struct Server {
     nvim: Arc<Mutex<Neovim>>,
 }
 
-type Sender = mpsc::Sender<Result<Event, String>>;
+type Sender = mpsc::Sender<Result<Event>>;
 
 impl Server {
-    pub fn start(tx: Sender) -> Result<Self, String> {
+    pub fn start(tx: Sender) -> Result<Self> {
         info!("Starting Neovim event loop handler");
-        let mut session = Session::new_parent()
-            .map_err(|msg| format!("error creating Neovim session: {}", msg))?;
+        let mut session = Session::new_parent()?;
         session.start_event_loop_handler(Handler::new(tx));
 
         Ok(Self {
@@ -29,20 +29,20 @@ impl Server {
         })
     }
 
-    fn nvim(&self) -> Result<MutexGuard<Neovim>, String> {
+    fn nvim(&self) -> Result<MutexGuard<Neovim>> {
         self.nvim
             .lock()
             .map_err(|msg| format!("could not get nvim lock: {}", msg))
     }
 
-    pub fn command(&mut self, cmd: &str) -> Result<(), String> {
+    pub fn command(&mut self, cmd: &str) -> Result<()> {
         let mut nvim = self.nvim()?;
 
         nvim.command(cmd)
             .map_err(|msg| format!("command failed: {}", msg))
     }
 
-    fn find_log_buf(&mut self) -> Result<Option<Buffer>, String> {
+    fn find_log_buf(&mut self) -> Result<Option<Buffer>> {
         let mut nvim = self.nvim()?;
 
         let bufs = nvim
@@ -61,7 +61,7 @@ impl Server {
         Ok(buf)
     }
 
-    pub fn display_or_create_log_window(&mut self) -> Result<(), String> {
+    pub fn display_or_create_log_window(&mut self) -> Result<()> {
         self.command(&format!("10new {}", LOG_BUFFER_NAME))?;
         self.command("setlocal wfh")?;
         self.command("setlocal buftype=nofile")?;
@@ -72,7 +72,7 @@ impl Server {
         Ok(())
     }
 
-    fn find_or_create_log_buf(&mut self) -> Result<Buffer, String> {
+    fn find_or_create_log_buf(&mut self) -> Result<Buffer> {
         if let Some(buf) = self.find_log_buf()? {
             return Ok(buf);
         }
@@ -144,7 +144,7 @@ impl fmt::Display for Event {
     }
 }
 
-fn parse_arg<T: FromStr>(args: &[Value], index: usize, name: &str) -> Result<T, String>
+fn parse_arg<T: FromStr>(args: &[Value], index: usize, name: &str) -> Result<T>
 where
     T::Err: fmt::Display,
 {
@@ -157,7 +157,7 @@ where
 }
 
 impl Event {
-    fn from(name: &str, args: &[Value]) -> Result<Event, String> {
+    fn from(name: &str, args: &[Value]) -> Result<Event> {
         let event = match name {
             "exit" => Event::Quit,
             "list" => Event::List,
@@ -211,7 +211,11 @@ impl neovim_lib::Handler for Handler {
 }
 
 impl neovim_lib::RequestHandler for Handler {
-    fn handle_request(&mut self, _name: &str, _args: Vec<Value>) -> Result<Value, Value> {
+    fn handle_request(
+        &mut self,
+        _name: &str,
+        _args: Vec<Value>,
+    ) -> std::result::Result<Value, Value> {
         error!("Requests are not supports, use notify");
         Err(Value::Nil)
     }

@@ -1,4 +1,5 @@
 use editor::{Event, Server};
+use ohno::Result;
 use pool::Pool;
 use regex::Regex;
 use std::net::SocketAddr;
@@ -14,7 +15,7 @@ pub struct System {
 }
 
 impl System {
-    pub fn start() -> Result<Self, String> {
+    pub fn start() -> Result<Self> {
         info!("Starting system");
         let (tx, rx) = mpsc::channel();
         let mut system = Self {
