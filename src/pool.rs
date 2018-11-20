@@ -41,6 +41,7 @@ impl Connection {
 
         // TODO Prevent this bootstrap process from printing things out.
         // This may fall out of rethinking how eval works with the output capturing.
+        // TODO This won't handle CLJC macros. Need some hammock time.
         eval.write(&format!("{} (conjure.bootstrap/init)", BOOTSTRAP_CLJC))?;
 
         thread::spawn(move || {
