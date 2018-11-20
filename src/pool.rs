@@ -1,4 +1,5 @@
 use editor::Server;
+use ohno::{from, Result};
 use regex::Regex;
 use repl::{Client, Response};
 use std::collections::{hash_map, HashMap};
@@ -13,8 +14,17 @@ pub struct Connection {
     pub expr: Regex,
 }
 
+#[derive(Debug, Fail)]
+enum Error {
+    #[fail(display = "connection already exists for that key: {}", key)]
+    ConnectionExists { key: String },
+
+    #[fail(display = "connection doesn't exist for that key: {}", key)]
+    ConnectionMissing { key: String },
+}
+
 impl Connection {
-    pub fn connect(addr: SocketAddr, expr: Regex) -> Result<Self, String> {
+    pub fn connect(addr: SocketAddr, expr: Regex) -> Result<Self> {
         Ok(Self {
             eval: Client::connect(addr)?,
             doc: Client::connect(addr)?,
@@ -24,7 +34,7 @@ impl Connection {
         })
     }
 
-    pub fn start_response_loops(&self, key: String, server: &Server) -> Result<(), String> {
+    pub fn start_response_loops(&self, key: String, server: &Server) -> Result<()> {
         let eval = self.eval.try_clone()?;
         let mut eval_server = server.clone();
         let eval_key = key.clone();
@@ -126,9 +136,11 @@ impl Pool {
         server: &Server,
         addr: SocketAddr,
         expr: Regex,
-    ) -> Result<(), String> {
+    ) -> Result<()> {
         if self.conns.contains_key(key) {
-            return Err("connection already exists".to_owned());
+            return Err(from(Error::ConnectionExists {
+                key: key.to_owned(),
+            }));
         } else {
             Connection::connect(addr, expr.clone())
                 .and_then(|conn| {
@@ -140,16 +152,18 @@ impl Pool {
         }
     }
 
-    pub fn disconnect(&mut self, key: &str) -> Result<(), String> {
+    pub fn disconnect(&mut self, key: &str) -> Result<()> {
         if self.conns.contains_key(key) {
             self.conns.remove(key);
             Ok(())
         } else {
-            return Err(format!("{} doesn't exist", key));
+            return Err(from(Error::ConnectionMissing {
+                key: key.to_owned(),
+            }));
         }
     }
 
-    pub fn eval(&mut self, code: &str, path: &str) -> Result<(), String> {
+    pub fn eval(&mut self, code: &str, path: &str) -> Result<()> {
         // TODO Look up the ns symbol and use in-ns before every eval.
         let matches = self
             .conns
@@ -163,7 +177,7 @@ impl Pool {
         Ok(())
     }
 
-    pub fn doc(&mut self, symbol: &str, path: &str) -> Result<(), String> {
+    pub fn doc(&mut self, symbol: &str, path: &str) -> Result<()> {
         // TODO DRY this.
         let matches = self
             .conns
