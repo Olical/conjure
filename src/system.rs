@@ -42,7 +42,6 @@ impl System {
                         }
                         Event::Disconnect { key } => system.handle_disconnect(key),
                         Event::Eval { code, path } => system.handle_eval(code, path),
-                        Event::Doc { symbol, path } => system.handle_doc(symbol, path),
                     }
                 }
                 Err(msg) => system
@@ -105,12 +104,6 @@ impl System {
     fn handle_eval(&mut self, code: String, path: String) {
         if let Err(msg) = self.pool.eval(&code, &path) {
             self.server.err_writeln(&format!("Eval error: {}", msg));
-        }
-    }
-
-    fn handle_doc(&mut self, symbol: String, path: String) {
-        if let Err(msg) = self.pool.doc(&symbol, &path) {
-            self.server.err_writeln(&format!("Doc error: {}", msg));
         }
     }
 }
