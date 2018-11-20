@@ -42,17 +42,19 @@ enum Error {
 
 impl Response {
     fn from(value: Value) -> Result<Self> {
+        let e_value = value.clone();
+
         if let Value::Map(msg) = value {
             let tag_kw = keyword("tag");
             let tag = msg.get(&tag_kw).ok_or_else(|| Error::MissingKeyword {
                 keyword: tag_kw,
-                value,
+                value: e_value.clone(),
             })?;
 
             let val_kw = keyword("val");
             let val = msg.get(&val_kw).ok_or_else(|| Error::MissingKeyword {
                 keyword: val_kw,
-                value,
+                value: e_value.clone(),
             })?;
 
             if let (Value::Keyword(tag), Value::String(val)) = (tag, val) {
@@ -68,7 +70,9 @@ impl Response {
                     })),
                 }
             } else {
-                Err(from(Error::TypeMismatch { value }))
+                Err(from(Error::TypeMismatch {
+                    value: e_value.clone(),
+                }))
             }
         } else {
             Err(from(Error::TypeMismatch { value }))
@@ -99,10 +103,11 @@ impl Client {
 
         let responses = reader.lines().map(|line| {
             line.map(|line| match Parser::new(&line).read() {
-                Some(Ok(value)) => Ok(Response::from(value)),
-                Some(Err(err)) => Err(Error::ParseError { err }),
-                None => Err(Error::EmptyParseResult),
-            })
+                Some(Ok(value)) => Response::from(value),
+                Some(Err(err)) => Err(from(Error::ParseError { err })),
+                None => Err(from(Error::EmptyParseResult)),
+            }).map_err(from)
+            .and_then(|x| x)
         });
 
         Box::new(responses)
