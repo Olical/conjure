@@ -94,18 +94,21 @@ impl Client {
         Ok(Self { stream })
     }
 
-    pub fn responses(self) -> Box<Iterator<Item = Result<Response>>> {
+    pub fn responses<F>(
+        self,
+    ) -> std::iter::Map<std::io::Lines<std::io::BufReader<std::net::TcpStream>>, F>
+    where
+        F: FnMut(std::io::Result<String>) -> Result<Response>,
+    {
         let reader = BufReader::new(self.stream);
 
-        let responses = reader.lines().map(|line| {
+        reader.lines().map(|line| {
             line.map(|line| match Parser::new(&line).read() {
-                Some(Ok(value)) => Ok(Response::from(value)),
-                Some(Err(err)) => Err(Error::ParseError { err }),
-                None => Err(Error::EmptyParseResult),
+                Some(Ok(value)) => Response::from(value),
+                Some(Err(err)) => Err(from(Error::ParseError { err })),
+                None => Err(from(Error::EmptyParseResult)),
             })
-        });
-
-        Box::new(responses)
+        })
     }
 
     pub fn write(&mut self, code: &str) -> Result<()> {
