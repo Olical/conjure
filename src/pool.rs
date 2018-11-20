@@ -7,6 +7,9 @@ use std::env::current_exe;
 use std::net::SocketAddr;
 use std::thread;
 
+// TODO What if someone sends :repl/quit?
+// TODO What if a REPL dies?
+
 pub struct Connection {
     eval: Client,
 
@@ -31,8 +34,10 @@ fn clojure_path(file: &str) -> Result<String> {
     let mut exe = current_exe()?;
     exe.pop();
 
-    match exe.join(prefix).join(file).to_str() {
-        Some(result) => Ok(result.to_owned()),
+    let path = exe.join(prefix).join(file).canonicalize()?;
+
+    match path.to_str() {
+        Some(path) => Ok(path.to_owned()),
         None => Err(error(Error::NoConjureCljcPath)),
     }
 }
@@ -53,6 +58,8 @@ impl Connection {
         let eval_key = key.clone();
 
         let core_path = clojure_path("conjure/core.cljc")?;
+        info!("Core path: {}", core_path);
+
         eval.write(&format!("(load-file \"{}\")", core_path))?;
 
         thread::spawn(move || {
@@ -140,7 +147,8 @@ impl Pool {
             .filter(|(_, conn)| conn.expr.is_match(&path));
 
         for (_, conn) in matches {
-            conn.eval.write(&code)?;
+            conn.eval
+                .write(&format!("(conjure.core/wrapped-eval '(do {}))", code))?;
         }
 
         Ok(())

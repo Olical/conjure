@@ -21,10 +21,6 @@ impl System {
             server: Server::start(tx)?,
         };
 
-        system
-            .server
-            .log_writeln(DEFAULT_TAG, ";; Welcome!".to_owned());
-
         info!("Starting server event loop");
         for event in rx.iter() {
             match event {
@@ -95,7 +91,7 @@ impl System {
                 .err_writeln(&format!("[{}] Disconnection error: {}", key, msg))
         } else {
             self.server
-                .log_writeln(DEFAULT_TAG, format!("[{}] Disconnected", key));
+                .log_writeln(DEFAULT_TAG, format!(";; [{}] Disconnected", key));
         }
     }
 
