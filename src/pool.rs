@@ -11,7 +11,7 @@ use std::thread;
 // TODO What if a REPL dies?
 
 pub struct Connection {
-    eval: Client,
+    user: Client,
 
     pub addr: SocketAddr,
     pub expr: Regex,
@@ -45,7 +45,7 @@ fn clojure_path(file: &str) -> Result<String> {
 impl Connection {
     pub fn connect(addr: SocketAddr, expr: Regex) -> Result<Self> {
         Ok(Self {
-            eval: Client::connect(addr)?,
+            user: Client::connect(addr)?,
 
             addr,
             expr,
@@ -53,14 +53,14 @@ impl Connection {
     }
 
     pub fn start_response_loops(&self, key: String, server: &Server) -> Result<()> {
-        let mut eval = self.eval.try_clone()?;
-        let mut eval_server = server.clone();
-        let eval_key = key.clone();
+        let mut user = self.user.try_clone()?;
+        let mut user_server = server.clone();
+        let user_key = key.clone();
 
         let core_path = clojure_path("conjure/core.cljc")?;
         info!("Core path: {}", core_path);
 
-        eval.write(&format!("(load-file \"{}\")", core_path))?;
+        user.write(&format!("(load-file \"{}\")", core_path))?;
 
         thread::spawn(move || {
             let log = |server: &mut Server, tag_suffix, line_prefix, msg: String| {
@@ -69,17 +69,19 @@ impl Connection {
                     .map(|line| format!("{}{}", line_prefix, line))
                     .collect();
 
-                server.log_writelns(&format!("{} {}", eval_key, tag_suffix), &lines);
+                server.log_writelns(&format!("{} {}", user_key, tag_suffix), &lines);
             };
 
-            for response in eval.responses() {
+            for response in user.responses() {
                 match response {
-                    Ok(Response::Ret(msg)) => log(&mut eval_server, "ret", "", msg),
-                    Ok(Response::Tap(msg)) => log(&mut eval_server, "tap", "", msg),
-                    Ok(Response::Out(msg)) => log(&mut eval_server, "out", ";; ", msg),
-                    Ok(Response::Err(msg)) => log(&mut eval_server, "err", ";; ", msg),
+                    Ok(Response::Ret(msg)) => log(&mut user_server, "ret", "", msg),
+                    Ok(Response::Tap(msg)) => log(&mut user_server, "tap", "", msg),
+                    Ok(Response::Out(msg)) => log(&mut user_server, "out", ";; ", msg),
+                    Ok(Response::Err(msg)) => log(&mut user_server, "err", ";; ", msg),
 
-                    Err(msg) => eval_server.err_writeln(&format!("Error from eval: {}", msg)),
+                    Err(msg) => {
+                        user_server.err_writeln(&format!("Error from user connection: {}", msg))
+                    }
                 }
             }
         });
@@ -147,7 +149,7 @@ impl Pool {
             .filter(|(_, conn)| conn.expr.is_match(&path));
 
         for (_, conn) in matches {
-            conn.eval
+            conn.user
                 .write(&format!("(conjure.core/wrapped-eval '(do {}))", code))?;
         }
 
