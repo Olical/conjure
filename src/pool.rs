@@ -3,10 +3,9 @@ use regex::Regex;
 use repl::{Client, Response};
 use result::{error, Result};
 use std::collections::{hash_map, HashMap};
+use std::env::current_exe;
 use std::net::SocketAddr;
 use std::thread;
-
-static BOOTSTRAP_CLJC: &'static str = include_str!("../clojure/conjure/bootstrap.cljc");
 
 pub struct Connection {
     eval: Client,
@@ -22,6 +21,20 @@ enum Error {
 
     #[fail(display = "connection doesn't exist for that key: {}", key)]
     ConnectionMissing { key: String },
+
+    #[fail(display = "couldn't build the conjure.cljc path")]
+    NoConjureCljcPath,
+}
+
+fn clojure_path(file: &str) -> Result<String> {
+    let prefix = "../../clojure/";
+    let mut exe = current_exe()?;
+    exe.pop();
+
+    match exe.join(prefix).join(file).to_str() {
+        Some(result) => Ok(result.to_owned()),
+        None => Err(error(Error::NoConjureCljcPath)),
+    }
 }
 
 impl Connection {
@@ -39,10 +52,8 @@ impl Connection {
         let mut eval_server = server.clone();
         let eval_key = key.clone();
 
-        // TODO Prevent this bootstrap process from printing things out.
-        // This may fall out of rethinking how eval works with the output capturing.
-        // TODO This won't handle CLJC macros. Need some hammock time.
-        eval.write(&format!("{} (conjure.bootstrap/init)", BOOTSTRAP_CLJC))?;
+        let core_path = clojure_path("conjure/core.cljc")?;
+        eval.write(&format!("(load-file \"{}\")", core_path))?;
 
         thread::spawn(move || {
             let log = |server: &mut Server, tag_suffix, line_prefix, msg: String| {
@@ -57,7 +68,7 @@ impl Connection {
             for response in eval.responses() {
                 match response {
                     Ok(Response::Ret(msg)) => log(&mut eval_server, "ret", "", msg),
-                    Ok(Response::Tap(msg)) => log(&mut eval_server, "tap", ";; ", msg),
+                    Ok(Response::Tap(msg)) => log(&mut eval_server, "tap", "", msg),
                     Ok(Response::Out(msg)) => log(&mut eval_server, "out", ";; ", msg),
                     Ok(Response::Err(msg)) => log(&mut eval_server, "err", ";; ", msg),
 
@@ -123,7 +134,6 @@ impl Pool {
     }
 
     pub fn eval(&mut self, code: &str, path: &str) -> Result<()> {
-        // TODO Look up the ns symbol and use in-ns before every eval.
         let matches = self
             .conns
             .iter_mut()

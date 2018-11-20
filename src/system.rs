@@ -7,8 +7,6 @@ use std::sync::mpsc;
 
 static DEFAULT_TAG: &str = "Conjure";
 
-// TODO Implement a heartbeat for connections.
-
 pub struct System {
     pool: Pool,
     server: Server,
