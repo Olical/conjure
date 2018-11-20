@@ -1,0 +1,1 @@
+nnoremap <buffer> <localleader>rC :source autoload/conjure.vim<CR>:call conjure#restart_job()<CR>:call conjure#connect("default", "127.0.0.1:5555", "cljc?$")<CR>
