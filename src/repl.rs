@@ -1,6 +1,6 @@
 use edn::parser::Parser;
 use edn::Value;
-use ohno::{from, Result};
+use result::{error, Result};
 use std::io::prelude::*;
 use std::io::BufReader;
 use std::net::{SocketAddr, TcpStream};
@@ -65,17 +65,17 @@ impl Response {
                     "tap" => Ok(Response::Tap(val)),
                     "out" => Ok(Response::Out(val)),
                     "err" => Ok(Response::Err(val)),
-                    _ => Err(from(Error::UnknownTag {
+                    _ => Err(error(Error::UnknownTag {
                         tag: tag.to_owned(),
                     })),
                 }
             } else {
-                Err(from(Error::TypeMismatch {
+                Err(error(Error::TypeMismatch {
                     value: e_value.clone(),
                 }))
             }
         } else {
-            Err(from(Error::TypeMismatch { value }))
+            Err(error(Error::TypeMismatch { value }))
         }
     }
 }
@@ -104,9 +104,9 @@ impl Client {
         let responses = reader.lines().map(|line| {
             line.map(|line| match Parser::new(&line).read() {
                 Some(Ok(value)) => Response::from(value),
-                Some(Err(err)) => Err(from(Error::ParseError { err })),
-                None => Err(from(Error::EmptyParseResult)),
-            }).map_err(from)
+                Some(Err(err)) => Err(error(Error::ParseError { err })),
+                None => Err(error(Error::EmptyParseResult)),
+            }).map_err(error)
             .and_then(|x| x)
         });
 

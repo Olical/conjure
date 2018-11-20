@@ -1,7 +1,7 @@
 use editor::{Event, Server};
-use ohno::Result;
 use pool::Pool;
 use regex::Regex;
+use result::Result;
 use std::net::SocketAddr;
 use std::sync::mpsc;
 

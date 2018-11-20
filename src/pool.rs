@@ -1,7 +1,7 @@
 use editor::Server;
-use ohno::{from, Result};
 use regex::Regex;
 use repl::{Client, Response};
+use result::{error, Result};
 use std::collections::{hash_map, HashMap};
 use std::net::SocketAddr;
 use std::thread;
@@ -97,7 +97,7 @@ impl Pool {
         expr: Regex,
     ) -> Result<()> {
         if self.conns.contains_key(key) {
-            return Err(from(Error::ConnectionExists {
+            return Err(error(Error::ConnectionExists {
                 key: key.to_owned(),
             }));
         } else {
@@ -116,7 +116,7 @@ impl Pool {
             self.conns.remove(key);
             Ok(())
         } else {
-            return Err(from(Error::ConnectionMissing {
+            return Err(error(Error::ConnectionMissing {
                 key: key.to_owned(),
             }));
         }
