@@ -6,6 +6,8 @@ use std::collections::{hash_map, HashMap};
 use std::net::SocketAddr;
 use std::thread;
 
+static BOOTSTRAP_CLJC: &'static str = include_str!("../clojure/conjure/bootstrap.cljc");
+
 pub struct Connection {
     eval: Client,
 
@@ -33,9 +35,13 @@ impl Connection {
     }
 
     pub fn start_response_loops(&self, key: String, server: &Server) -> Result<()> {
-        let eval = self.eval.try_clone()?;
+        let mut eval = self.eval.try_clone()?;
         let mut eval_server = server.clone();
         let eval_key = key.clone();
+
+        // TODO Prevent this bootstrap process from printing things out.
+        // This may fall out of rethinking how eval works with the output capturing.
+        eval.write(&format!("{} (conjure.bootstrap/init)", BOOTSTRAP_CLJC))?;
 
         thread::spawn(move || {
             let log = |server: &mut Server, tag_suffix, line_prefix, msg: String| {
