@@ -9,6 +9,7 @@ use std::thread;
 
 // TODO What if someone sends :repl/quit?
 // TODO What if a REPL dies?
+// TODO Pass paths to Clojure for it to look up namespaces and in-ns on them.
 
 pub struct Connection {
     user: Client,
@@ -150,9 +151,13 @@ impl Pool {
 
         for (_, conn) in matches {
             conn.user
-                .write(&format!("(conjure.core/wrapped-eval '(do {}))", code))?;
+                .write(&format!("(conjure.core/magic-eval '(do {}))", code))?;
         }
 
         Ok(())
+    }
+
+    pub fn doc(&mut self, symbol: &str, path: &str) -> Result<()> {
+        self.eval(&format!("(conjure.core/doc {})", symbol), path)
     }
 }
