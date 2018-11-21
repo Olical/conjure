@@ -58,10 +58,10 @@ impl Connection {
         let mut user_server = server.clone();
         let user_key = key.clone();
 
-        let core_path = clojure_path("conjure/core.cljc")?;
-        info!("Core path: {}", core_path);
+        let repl_ns_path = clojure_path("conjure/repl.cljc")?;
+        info!("REPL NS path: {}", repl_ns_path);
 
-        user.write(&format!("(load-file \"{}\")", core_path))?;
+        user.write(&format!("(load-file \"{}\")", repl_ns_path))?;
 
         thread::spawn(move || {
             let log = |server: &mut Server, tag_suffix, line_prefix, msg: String| {
@@ -151,13 +151,13 @@ impl Pool {
 
         for (_, conn) in matches {
             conn.user
-                .write(&format!("(conjure.core/magic-eval '(do {}))", code))?;
+                .write(&format!("(conjure.repl/magic-eval '(do {}))", code))?;
         }
 
         Ok(())
     }
 
     pub fn doc(&mut self, symbol: &str, path: &str) -> Result<()> {
-        self.eval(&format!("(conjure.core/doc {})", symbol), path)
+        self.eval(&format!("(conjure.repl/doc {})", symbol), path)
     }
 }

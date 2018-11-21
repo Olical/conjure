@@ -1,4 +1,4 @@
-(ns conjure.core
+(ns conjure.repl
   (:require [clojure.repl :as repl]))
 
 (defn magic-eval
