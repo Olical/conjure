@@ -8,9 +8,8 @@ use std::thread;
 use util;
 
 // TODO What if someone sends :repl/quit?
-// TODO What if a REPL dies?
+// TODO What if a REPL dies? (heartbeat?)
 // TODO Pass paths to Clojure for it to look up namespaces and in-ns on them.
-// TODO Maybe use pst to print the stack trace?
 // TODO Show some sort of placeholder while evaling.
 
 pub struct Connection {

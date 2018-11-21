@@ -35,28 +35,24 @@ pub fn clojure_path(file: &str) -> Result<String> {
     }
 }
 
-// TODO Make this neater?
-pub fn clojure_namespace(source: &str) -> Result<String> {
+pub fn clojure_namespace(source: &str) -> Result<Option<String>> {
     let form = match Parser::new(&source).read() {
-        Some(Ok(form)) => Ok(form),
+        Some(Ok(form)) => Ok(Some(form)),
         Some(Err(err)) => Err(Error::ParseError { err }),
-        None => Err(Error::NoNamespace),
+        None => Ok(None),
     }?;
 
-    let list = match form {
-        Value::List(list) => Ok(list),
-        _ => Err(Error::NoNamespace),
-    }?;
-
-    if let (Some(Value::Symbol(symbol)), Some(Value::Symbol(namespace))) =
-        (list.get(0), list.get(1))
-    {
-        if symbol == "ns" {
-            return Ok(namespace.to_owned());
+    if let Some(Value::List(list)) = form {
+        if let (Some(Value::Symbol(symbol)), Some(Value::Symbol(namespace))) =
+            (list.get(0), list.get(1))
+        {
+            if symbol == "ns" {
+                return Ok(Some(namespace.to_owned()));
+            }
         }
     }
 
-    Err(error(Error::NoNamespace))
+    Ok(None)
 }
 
 // TODO Write and slightly test this function.
@@ -74,15 +70,20 @@ mod tests {
 
     #[test]
     fn parsing_a_clojure_ns() {
-        assert_eq!(clojure_namespace("(ns foo.my-ns)").unwrap(), "foo.my-ns");
         assert_eq!(
-            clojure_namespace("(ns foo.my-ns \"docs\") :boop").unwrap(),
+            clojure_namespace("(ns foo.my-ns)").unwrap().unwrap(),
+            "foo.my-ns"
+        );
+        assert_eq!(
+            clojure_namespace("(ns foo.my-ns \"docs\") :boop")
+                .unwrap()
+                .unwrap(),
             "foo.my-ns"
         );
 
         match clojure_namespace("nope") {
-            Err(_) => assert!(true),
-            Ok(namespace) => panic!("expected an error, got a namespace: {}", namespace),
+            Ok(None) => assert!(true),
+            Ok(Some(namespace)) => panic!("expected an error, got a namespace: {}", namespace),
         }
     }
 }
