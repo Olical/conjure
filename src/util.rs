@@ -2,6 +2,8 @@ use edn::parser::Parser;
 use edn::Value;
 use result::{error, Result};
 use std::env::current_exe;
+use std::fs::File;
+use std::io::prelude::*;
 use std::path::PathBuf;
 
 #[derive(Debug, Fail)]
@@ -81,9 +83,9 @@ mod tests {
             "foo.my-ns"
         );
 
-        match clojure_namespace("nope") {
-            Ok(None) => assert!(true),
-            Ok(Some(namespace)) => panic!("expected an error, got a namespace: {}", namespace),
+        match clojure_namespace("nope").unwrap() {
+            None => assert!(true),
+            Some(namespace) => panic!("expected an error, got a namespace: {}", namespace),
         }
     }
 }
