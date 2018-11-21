@@ -23,17 +23,17 @@
 (defmacro doc
   "Looks up doc for the symbol and captures the out string which is re-printed in one go."
 
-  [sym]
+  [name]
 
   #?(:clj
      ;; If you're wondering why this is like this, check out the source of doc.
      ;; It prints through a series of prns which Conjure interprets as separate outputs.
      ;; So you end up with gaps between each part of the doc with timestamps.
-     `(println (with-out-str (repl/doc ~sym)))
+     `(println (with-out-str (repl/doc ~name)))
 
      :cljs
      ;; ClojureScript already captures and prints in one go.
-     `(repl/doc ~sym)))
+     `(repl/doc ~name)))
 
 ;; This last form is displayed in the log buffer, it's a handy check that
 ;; everything worked as expected and you're in the correct _kind_ of REPL.

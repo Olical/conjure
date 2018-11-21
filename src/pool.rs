@@ -144,7 +144,7 @@ impl Pool {
         Ok(())
     }
 
-    pub fn doc(&mut self, symbol: &str, path: &str) -> Result<()> {
-        self.eval(&format!("(conjure.repl/doc {})", symbol), path)
+    pub fn doc(&mut self, name: &str, path: &str) -> Result<()> {
+        self.eval(&format!("(conjure.repl/doc {})", name), path)
     }
 }

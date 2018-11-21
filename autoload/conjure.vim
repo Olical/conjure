@@ -35,6 +35,12 @@ function! conjure#eval(code, path)
   endif
 endfunction
 
+function! conjure#doc(name, path)
+  if conjure#upsert_job() == 0
+    call rpcnotify(s:jobid, 'doc', a:name, a:path)
+  endif
+endfunction
+
 function! conjure#upsert_job()
   if s:jobid == 0
     let id = jobstart([s:bin], {
