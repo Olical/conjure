@@ -11,9 +11,6 @@ enum Error {
     #[fail(display = "couldn't convert path to string: {:?}", path)]
     NoPathString { path: PathBuf },
 
-    #[fail(display = "couldn't find namespace")]
-    NoNamespace,
-
     #[fail(display = "error parsing source: {:?}", err)]
     ParseError { err: edn::parser::Error },
 }
@@ -57,8 +54,14 @@ pub fn clojure_namespace(source: &str) -> Result<Option<String>> {
     Ok(None)
 }
 
-// TODO Write and slightly test this function.
-// pub fn clojure_file_namespace(path: &str) -> Result<String> {}
+pub fn clojure_file_namespace(path: &str) -> Result<Option<String>> {
+    let mut file = File::open(path)?;
+
+    let mut source = String::new();
+    file.read_to_string(&mut source)?;
+
+    clojure_namespace(&source)
+}
 
 #[cfg(test)]
 mod tests {
@@ -87,5 +90,15 @@ mod tests {
             None => assert!(true),
             Some(namespace) => panic!("expected an error, got a namespace: {}", namespace),
         }
+    }
+
+    #[test]
+    fn parsing_a_clojure_ns_from_a_file() {
+        assert_eq!(
+            clojure_file_namespace("clojure/conjure/repl.cljc")
+                .unwrap()
+                .unwrap(),
+            "conjure.repl"
+        );
     }
 }
