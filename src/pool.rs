@@ -3,9 +3,9 @@ use regex::Regex;
 use repl::{Client, Response};
 use result::{error, Result};
 use std::collections::{hash_map, HashMap};
-use std::env::current_exe;
 use std::net::SocketAddr;
 use std::thread;
+use util;
 
 // TODO What if someone sends :repl/quit?
 // TODO What if a REPL dies?
@@ -25,22 +25,6 @@ enum Error {
 
     #[fail(display = "connection doesn't exist for that key: {}", key)]
     ConnectionMissing { key: String },
-
-    #[fail(display = "couldn't build the conjure.cljc path")]
-    NoConjureCljcPath,
-}
-
-fn clojure_path(file: &str) -> Result<String> {
-    let prefix = "../../clojure/";
-    let mut exe = current_exe()?;
-    exe.pop();
-
-    let path = exe.join(prefix).join(file).canonicalize()?;
-
-    match path.to_str() {
-        Some(path) => Ok(path.to_owned()),
-        None => Err(error(Error::NoConjureCljcPath)),
-    }
 }
 
 impl Connection {
@@ -58,7 +42,7 @@ impl Connection {
         let mut user_server = server.clone();
         let user_key = key.clone();
 
-        let repl_ns_path = clojure_path("conjure/repl.cljc")?;
+        let repl_ns_path = util::clojure_path("conjure/repl.cljc")?;
         info!("REPL NS path: {}", repl_ns_path);
 
         user.write(&format!("(load-file \"{}\")", repl_ns_path))?;
@@ -150,8 +134,11 @@ impl Pool {
             .filter(|(_, conn)| conn.expr.is_match(&path));
 
         for (_, conn) in matches {
-            conn.user
-                .write(&format!("(conjure.repl/magic-eval '(do {}))", code))?;
+            conn.user.write(&format!(
+                "(conjure.repl/magic-eval '(do {}) \"{}\")",
+                code,
+                util::escape_quotes(path)
+            ))?;
         }
 
         Ok(())
