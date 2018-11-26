@@ -7,11 +7,6 @@ use std::net::SocketAddr;
 use std::thread;
 use util;
 
-// High priority...
-// TODO Somehow eval in a specific namespace (already looked it up).
-// TODO Clojure and ClojureScript eval.
-
-// Low priority...
 // TODO What if someone sends :repl/quit?
 // TODO What if a REPL dies? (heartbeat?)
 // TODO Show some sort of placeholder while evaling.
@@ -148,8 +143,10 @@ impl Pool {
         };
 
         for (_, conn) in matches {
-            conn.user
-                .write(&format!("(conjure.repl/magic-eval '(do {})", code))?;
+            conn.user.write(&format!(
+                "(conjure.repl/magic-eval '(do {}) '{})",
+                code, namespace
+            ))?;
         }
 
         Ok(())
