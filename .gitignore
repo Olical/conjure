@@ -2,3 +2,4 @@
 /.cpcache/
 **/*.rs.bk
 /out/
+/.cljs_node_repl/

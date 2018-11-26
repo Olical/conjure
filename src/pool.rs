@@ -10,6 +10,7 @@ use util;
 // TODO What if someone sends :repl/quit?
 // TODO What if a REPL dies? (heartbeat?)
 // TODO Show some sort of placeholder while evaling.
+// TODO Fix ClojureScript, looks like the pREPL and eval work weirdly.
 
 pub struct Connection {
     user: Client,
