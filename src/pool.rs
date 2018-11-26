@@ -134,9 +134,19 @@ impl Pool {
             .iter_mut()
             .filter(|(_, conn)| conn.expr.is_match(&path));
 
+        let namespace = match util::clojure_file_namespace(path) {
+            Ok(Some(namespace)) => namespace,
+            _ => if path.ends_with("cljs") {
+                "cljs.user".to_owned()
+            } else {
+                "user".to_owned()
+            },
+        };
+
         for (_, conn) in matches {
             conn.user.write(&format!(
-                "(conjure.repl/magic-eval '(do {}) \"{}\")",
+                "(conjure.repl/magic-eval '(do (in-ns '{}) {}) \"{}\")",
+                namespace,
                 code,
                 util::escape_quotes(path)
             ))?;

@@ -2,10 +2,9 @@
   (:require [#?(:clj clojure.repl, :cljs cljs.repl) :as repl]))
 
 (defn magic-eval
-  "Evaluates the form and catches any errors, the errors are printed to stdout as a string.
-  Path is used to determine the namespace of the file you're evaluating, it falls back to user."
+  "Evaluates the form and catches any errors, the errors are printed to stdout as a string."
 
-  [form path]
+  [form]
 
   (try
     (eval form)
