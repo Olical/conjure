@@ -11,10 +11,6 @@ enum Error {
     NoPathString { path: PathBuf },
 }
 
-pub fn escape_quotes(s: &str) -> String {
-    s.replace("\"", "\\\"")
-}
-
 pub fn clojure_path(file: &str) -> Result<String> {
     let prefix = "../../clojure/";
     let mut exe = current_exe()?;
@@ -56,12 +52,6 @@ pub fn clojure_file_namespace(path: &str) -> Result<Option<String>> {
 #[cfg(test)]
 mod tests {
     use super::*;
-
-    #[test]
-    fn escaping_quotes() {
-        assert_eq!(escape_quotes("'foo'"), "'foo'");
-        assert_eq!(escape_quotes("\"foo\""), "\\\"foo\\\"");
-    }
 
     #[test]
     fn parsing_a_clojure_ns() {

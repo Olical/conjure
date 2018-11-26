@@ -7,9 +7,13 @@ use std::net::SocketAddr;
 use std::thread;
 use util;
 
+// High priority...
+// TODO Somehow eval in a specific namespace (already looked it up).
+// TODO Clojure and ClojureScript eval.
+
+// Low priority...
 // TODO What if someone sends :repl/quit?
 // TODO What if a REPL dies? (heartbeat?)
-// TODO Pass paths to Clojure for it to look up namespaces and in-ns on them.
 // TODO Show some sort of placeholder while evaling.
 
 pub struct Connection {
@@ -144,12 +148,8 @@ impl Pool {
         };
 
         for (_, conn) in matches {
-            conn.user.write(&format!(
-                "(conjure.repl/magic-eval '(do (in-ns '{}) {}) \"{}\")",
-                namespace,
-                code,
-                util::escape_quotes(path)
-            ))?;
+            conn.user
+                .write(&format!("(conjure.repl/magic-eval '(do {})", code))?;
         }
 
         Ok(())
