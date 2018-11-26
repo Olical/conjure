@@ -5,4 +5,4 @@ node-prepl:
 	clj -J-Dclojure.server.repl="{:port 6666 :accept cljs.server.node/prepl}"
 
 browser-prepl:
-	clj -J-Dclojure.server.repl="{:port 6666 :accept cljs.server.browser/prepl}"
+	clj -J-Dclojure.server.repl="{:port 7777 :accept cljs.server.browser/prepl}"
