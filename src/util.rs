@@ -1,5 +1,4 @@
-use edn::parser::Parser;
-use edn::Value;
+use regex::Regex;
 use result::{error, Result};
 use std::env::current_exe;
 use std::fs::File;
@@ -10,9 +9,6 @@ use std::path::PathBuf;
 enum Error {
     #[fail(display = "couldn't convert path to string: {:?}", path)]
     NoPathString { path: PathBuf },
-
-    #[fail(display = "error parsing source: {:?}", err)]
-    ParseError { err: edn::parser::Error },
 }
 
 pub fn escape_quotes(s: &str) -> String {
@@ -34,24 +30,18 @@ pub fn clojure_path(file: &str) -> Result<String> {
     }
 }
 
-pub fn clojure_namespace(source: &str) -> Result<Option<String>> {
-    let form = match Parser::new(&source).read() {
-        Some(Ok(form)) => Ok(Some(form)),
-        Some(Err(err)) => Err(Error::ParseError { err }),
-        None => Ok(None),
-    }?;
-
-    if let Some(Value::List(list)) = form {
-        if let (Some(Value::Symbol(symbol)), Some(Value::Symbol(namespace))) =
-            (list.get(0), list.get(1))
-        {
-            if symbol == "ns" {
-                return Ok(Some(namespace.to_owned()));
-            }
-        }
+pub fn clojure_namespace(source: &str) -> Option<String> {
+    lazy_static! {
+        static ref clojure_namespace_re: Regex =
+            Regex::new(r"\(\s*ns\s+(\D[[[:word:]]\.\*\+!\-'?]*)\s*")
+                .expect("failed to compile namespace regex");
     }
 
-    Ok(None)
+    for cap in clojure_namespace_re.captures_iter(source) {
+        return cap.get(1).map(|ns| ns.as_str().to_owned());
+    }
+
+    None
 }
 
 pub fn clojure_file_namespace(path: &str) -> Result<Option<String>> {
@@ -60,7 +50,7 @@ pub fn clojure_file_namespace(path: &str) -> Result<Option<String>> {
     let mut source = String::new();
     file.read_to_string(&mut source)?;
 
-    clojure_namespace(&source)
+    Ok(clojure_namespace(&source))
 }
 
 #[cfg(test)]
@@ -75,21 +65,19 @@ mod tests {
 
     #[test]
     fn parsing_a_clojure_ns() {
+        assert_eq!(clojure_namespace("(ns foo.my-ns)").unwrap(), "foo.my-ns");
+        assert_eq!(clojure_namespace("(ns foo.my-ns))").unwrap(), "foo.my-ns");
         assert_eq!(
-            clojure_namespace("(ns foo.my-ns)").unwrap().unwrap(),
+            clojure_namespace("(ns foo.my-ns \"docs\") :boop").unwrap(),
             "foo.my-ns"
         );
+        assert!(clojure_namespace("nope").is_none());
         assert_eq!(
-            clojure_namespace("(ns foo.my-ns \"docs\") :boop")
-                .unwrap()
-                .unwrap(),
-            "foo.my-ns"
+            clojure_namespace(
+                "( \n\n \n ns \n\n   \n foo__123.my-ns!?. \n\"lol docs?\" ¯\\_(ツ)_/¯)"
+            ).unwrap(),
+            "foo__123.my-ns!?."
         );
-
-        match clojure_namespace("nope").unwrap() {
-            None => assert!(true),
-            Some(namespace) => panic!("expected an error, got a namespace: {}", namespace),
-        }
     }
 
     #[test]

@@ -4,6 +4,9 @@ extern crate log;
 #[macro_use]
 extern crate failure;
 
+#[macro_use]
+extern crate lazy_static;
+
 extern crate chrono;
 extern crate edn;
 extern crate neovim_lib;

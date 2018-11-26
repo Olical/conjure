@@ -11,3 +11,4 @@ log = "0.4.6"
 neovim-lib = { git = "https://github.com/daa84/neovim-lib", branch = "master"}
 regex = "1.0.5"
 simplelog = "0.5.3"
+lazy_static = "1.2.0"
