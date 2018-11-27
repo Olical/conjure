@@ -13,6 +13,7 @@ use util;
 // TODO Go to definition.
 // TODO Completions.
 // TODO Macros don't work with CLJS (doc), need to do two step eval?
+// TODO Send :repl/quit on drop to clean up ClojureScript connections.
 
 pub struct Connection {
     user: Client,
