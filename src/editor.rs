@@ -10,6 +10,7 @@ use std::str::FromStr;
 use std::sync::{mpsc, Arc, Mutex, MutexGuard};
 
 static LOG_BUFFER_NAME: &str = "/tmp/conjure.cljc";
+static LOG_BUFFER_MAX_LENGTH: i64 = 20_000;
 
 #[derive(Debug, Fail)]
 enum Error {
@@ -110,6 +111,21 @@ impl Server {
         }
     }
 
+    pub fn log_trim(&mut self) {
+        if let Err(msg) = self.find_or_create_log_buf().and_then(|buf| {
+            let mut nvim = self.nvim()?;
+            let count = buf.line_count(&mut nvim)?;
+
+            if count > LOG_BUFFER_MAX_LENGTH {
+                buf.set_lines(&mut nvim, LOG_BUFFER_MAX_LENGTH, count, false, vec![])?
+            }
+
+            Ok(())
+        }) {
+            self.err_writeln(&format!("Failed to trim log: {}", msg))
+        }
+    }
+
     pub fn log_writelns(&mut self, tag: &str, lines: &[String]) {
         let timestamp = Local::now().format("%T");
         let mut lines = lines.to_vec();
@@ -118,11 +134,13 @@ impl Server {
 
         if let Err(msg) = self.find_or_create_log_buf().and_then(|buf| {
             let mut nvim = self.nvim()?;
-
-            buf.set_lines(&mut nvim, 0, 0, false, lines).map_err(error)
+            buf.set_lines(&mut nvim, 0, 0, false, lines)?;
+            Ok(())
         }) {
             self.err_writeln(&format!("Failed to log: {}", msg))
         }
+
+        self.log_trim();
     }
 
     pub fn log_writeln(&mut self, tag: &str, line: String) {
