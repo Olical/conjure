@@ -7,10 +7,11 @@ use std::net::SocketAddr;
 use std::thread;
 use util;
 
-// TODO What if someone sends :repl/quit?
-// TODO What if a REPL dies? (heartbeat?)
+// TODO What if a REPL server or socket dies? (heartbeat?)
 // TODO Show some sort of placeholder while evaling.
-// TODO Fix ClojureScript, looks like the pREPL and eval work weirdly.
+// TODO the Vim commands and bindings.
+// TODO Go to definition.
+// TODO Completions.
 
 pub struct Connection {
     user: Client,
@@ -21,9 +22,6 @@ pub struct Connection {
 
 #[derive(Debug, Fail)]
 enum Error {
-    #[fail(display = "connection already exists for that key: {}", key)]
-    ConnectionExists { key: String },
-
     #[fail(display = "connection doesn't exist for that key: {}", key)]
     ConnectionMissing { key: String },
 }
@@ -102,19 +100,13 @@ impl Pool {
         addr: SocketAddr,
         expr: Regex,
     ) -> Result<()> {
-        if self.conns.contains_key(key) {
-            return Err(error(Error::ConnectionExists {
-                key: key.to_owned(),
-            }));
-        } else {
-            Connection::connect(addr, expr.clone())
-                .and_then(|conn| {
-                    conn.start_response_loops(format!("[{}]", key), server)?;
-                    Ok(conn)
-                }).map(|conn| {
-                    self.conns.insert(key.to_owned(), conn);
-                })
-        }
+        Connection::connect(addr, expr.clone())
+            .and_then(|conn| {
+                conn.start_response_loops(format!("[{}]", key), server)?;
+                Ok(conn)
+            }).map(|conn| {
+                self.conns.insert(key.to_owned(), conn);
+            })
     }
 
     pub fn disconnect(&mut self, key: &str) -> Result<()> {
