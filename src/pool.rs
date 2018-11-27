@@ -12,6 +12,7 @@ use util;
 // TODO the Vim commands and bindings.
 // TODO Go to definition.
 // TODO Completions.
+// TODO Macros don't work with CLJS (doc), need to do two step eval?
 
 pub struct Connection {
     user: Client,
