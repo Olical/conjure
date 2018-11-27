@@ -1,29 +1,14 @@
 (ns conjure.repl
   (:require [#?(:clj clojure.repl, :cljs cljs.repl) :as repl]))
 
-;; ClojureScript requires a little dance to get it self-evaluating.
-;; @mfikes to the rescue yet again! https://gist.github.com/mfikes/66a120e18b75b6f4a3ecd0db8a976d84
-#?(:cljs
-   (do
-     (require 'cljs.js)
-
-     (let [eval *eval*
-           st (cljs.js/empty-state)]
-       (set! *eval*
-             (fn [form]
-               (binding [cljs.env/*compiler* st
-                         cljs.js/*eval-fn* cljs.js/js-eval]
-                 (eval form)))))))
-
-(defn magic-eval
-  "Evaluates the form and catches any errors, the errors are printed to stdout as a string.
+(defn safe-call
+  "Executes the given function and catches any errors, the errors are printed to stdout as a string.
   target-ns is the symbol of the namespace you want the code evaluated in."
 
-  [form target-ns]
+  [f target-ns]
 
   (try
-    (binding [*ns* (find-ns target-ns)]
-      (eval form))
+    (f)
 
     #?(:clj
        (catch Throwable e

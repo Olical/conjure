@@ -145,7 +145,7 @@ impl Pool {
 
         for (_, conn) in matches {
             conn.user.write(&format!(
-                "(conjure.repl/magic-eval '(do {}) '{})",
+                "(conjure.repl/safe-call (fn [] {}) '{})",
                 code, namespace
             ))?;
         }
