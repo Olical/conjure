@@ -13,7 +13,7 @@
     #?(:clj
        (catch Throwable e
          (binding [*out* *err*]
-           (prn e)))
+           (println e)))
 
        :cljs
        ;; ClojureScript gives us :default as a catch all.
