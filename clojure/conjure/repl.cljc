@@ -41,7 +41,7 @@
 ;; Clojure's load-file will show the last form in the file.
 ;; ClojureScript is weirdly async so we delay it and prn
 #?(:clj
-   (greet)
+   (println (greet))
 
    :cljs
-   (js/setTimeout #(prn (greet)) 0))
+   (js/setTimeout #(println (greet)) 0))

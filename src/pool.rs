@@ -7,13 +7,13 @@ use std::net::SocketAddr;
 use std::thread;
 use util;
 
+// TODO Macros don't work with CLJS (doc), need to do two step eval?
+// TODO the Vim commands and bindings.
+// TODO Move Connection drop to Client.
 // TODO What if a REPL server or socket dies? (heartbeat?)
 // TODO Show some sort of placeholder while evaling.
-// TODO the Vim commands and bindings.
 // TODO Go to definition.
 // TODO Completions.
-// TODO Macros don't work with CLJS (doc), need to do two step eval?
-// TODO Send :repl/quit on drop to clean up ClojureScript connections.
 
 pub struct Connection {
     user: Client,
@@ -76,7 +76,6 @@ impl Connection {
     }
 }
 
-// TODO This should move to repl.rs really.
 impl Drop for Connection {
     fn drop(&mut self) {
         if let Err(msg) = self.user.quit() {
