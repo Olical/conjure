@@ -7,10 +7,8 @@ use std::net::SocketAddr;
 use std::thread;
 use util;
 
-// TODO Macros don't work with CLJS (doc), need to do two step eval? Can I do doc as a function and
-// avoid all macros?
+// TODO Need self hosted cljs for macros.
 
-// TODO Single line print over println for logs.
 // TODO the Vim commands and bindings.
 // TODO Move Connection drop to Client.
 // TODO What if a REPL server or socket dies? (heartbeat?)
