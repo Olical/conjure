@@ -76,6 +76,15 @@ impl Connection {
     }
 }
 
+// TODO This should move to repl.rs really.
+impl Drop for Connection {
+    fn drop(&mut self) {
+        if let Err(msg) = self.user.quit() {
+            error!("Failed to quit REPL cleanly: {}", msg);
+        }
+    }
+}
+
 pub struct Pool {
     conns: HashMap<String, Connection>,
 }
