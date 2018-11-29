@@ -11,6 +11,10 @@ enum Error {
     NoPathString { path: PathBuf },
 }
 
+pub fn escape_quotes(s: &str) -> String {
+    s.replace("\"", "\\\"")
+}
+
 pub fn clojure_path(file: &str) -> Result<String> {
     let prefix = "../../clojure/";
     let mut exe = current_exe()?;
@@ -26,27 +30,26 @@ pub fn clojure_path(file: &str) -> Result<String> {
     }
 }
 
-pub fn clojure_namespace(source: &str) -> Option<String> {
+pub fn clojure_src(file: &str) -> Result<String> {
+    let path = clojure_path(file)?;
+
+    let mut file = File::open(path)?;
+    let mut src = String::new();
+    file.read_to_string(&mut src)?;
+    Ok(src)
+}
+
+pub fn clojure_ns(source: &str) -> Option<String> {
     lazy_static! {
-        static ref clojure_namespace_re: Regex =
-            Regex::new(r"\(\s*ns\s+(\D[[[:word:]]\.\*\+!\-'?]*)\s*")
-                .expect("failed to compile namespace regex");
+        static ref clojure_ns_re: Regex = Regex::new(r"\(\s*ns\s+(\D[[[:word:]]\.\*\+!\-'?]*)\s*")
+            .expect("failed to compile ns regex");
     }
 
-    for cap in clojure_namespace_re.captures_iter(source) {
+    for cap in clojure_ns_re.captures_iter(source) {
         return cap.get(1).map(|ns| ns.as_str().to_owned());
     }
 
     None
-}
-
-pub fn clojure_file_namespace(path: &str) -> Result<Option<String>> {
-    let mut file = File::open(path)?;
-
-    let mut source = String::new();
-    file.read_to_string(&mut source)?;
-
-    Ok(clojure_namespace(&source))
 }
 
 #[cfg(test)]
@@ -54,29 +57,24 @@ mod tests {
     use super::*;
 
     #[test]
-    fn parsing_a_clojure_ns() {
-        assert_eq!(clojure_namespace("(ns foo.my-ns)").unwrap(), "foo.my-ns");
-        assert_eq!(clojure_namespace("(ns foo.my-ns))").unwrap(), "foo.my-ns");
-        assert_eq!(
-            clojure_namespace("(ns foo.my-ns \"docs\") :boop").unwrap(),
-            "foo.my-ns"
-        );
-        assert!(clojure_namespace("nope").is_none());
-        assert_eq!(
-            clojure_namespace(
-                "( \n\n \n ns \n\n   \n foo__123.my-ns!?. \n\"lol docs?\" ¯\\_(ツ)_/¯)"
-            ).unwrap(),
-            "foo__123.my-ns!?."
-        );
+    fn escaping_quotes() {
+        assert_eq!(escape_quotes("'foo'"), "'foo'");
+        assert_eq!(escape_quotes("\"foo\""), "\\\"foo\\\"");
     }
 
     #[test]
-    fn parsing_a_clojure_ns_from_a_file() {
+    fn parsing_a_clojure_ns() {
+        assert_eq!(clojure_ns("(ns foo.my-ns)").unwrap(), "foo.my-ns");
+        assert_eq!(clojure_ns("(ns foo.my-ns))").unwrap(), "foo.my-ns");
         assert_eq!(
-            clojure_file_namespace("clojure/conjure/repl.cljc")
-                .unwrap()
+            clojure_ns("(ns foo.my-ns \"docs\") :boop").unwrap(),
+            "foo.my-ns"
+        );
+        assert!(clojure_ns("nope").is_none());
+        assert_eq!(
+            clojure_ns("( \n\n \n ns \n\n   \n foo__123.my-ns!?. \n\"lol docs?\" ¯\\_(ツ)_/¯)")
                 .unwrap(),
-            "conjure.repl"
+            "foo__123.my-ns!?."
         );
     }
 }

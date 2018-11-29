@@ -1,2 +1,2 @@
-nnoremap ,rp :call conjure#list()<CR>
-nnoremap ,rl :call conjure#show_log()<CR>
+nnoremap <localleader>rp :call conjure#list()<CR>
+nnoremap <localleader>rl :call conjure#show_log()<CR>

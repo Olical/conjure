@@ -82,7 +82,7 @@ impl System {
                 .err_writeln(&format!("[{}] Connection error: {}", key, msg))
         } else {
             self.server
-                .log_writeln(DEFAULT_TAG, format!(";; [{}] Loading conjure.repl...", key));
+                .log_writeln(DEFAULT_TAG, format!(";; [{}] Connected", key));
         }
     }
 

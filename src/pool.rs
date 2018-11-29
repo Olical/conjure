@@ -7,8 +7,6 @@ use std::net::SocketAddr;
 use std::thread;
 use util;
 
-// TODO Need self hosted cljs for macros.
-
 // TODO the Vim commands and bindings.
 // TODO Move Connection drop to Client.
 // TODO What if a REPL server or socket dies? (heartbeat?)
@@ -44,10 +42,8 @@ impl Connection {
         let mut user_server = server.clone();
         let user_key = key.clone();
 
-        let repl_ns_path = util::clojure_path("conjure/repl.cljc")?;
-        info!("REPL NS path: {}", repl_ns_path);
-
-        user.write(&format!("(load-file \"{}\")", repl_ns_path))?;
+        let repl_path = util::clojure_path("repl.cljc")?;
+        user.write(&format!("(load-file \"{}\")", repl_path))?;
 
         thread::spawn(move || {
             let log = |server: &mut Server, tag_suffix, line_prefix, msg: String| {
@@ -137,19 +133,16 @@ impl Pool {
             .iter_mut()
             .filter(|(_, conn)| conn.expr.is_match(&path));
 
-        let namespace = match util::clojure_file_namespace(path) {
-            Ok(Some(namespace)) => namespace,
-            _ => if path.ends_with("cljs") {
-                "cljs.user".to_owned()
-            } else {
-                "user".to_owned()
-            },
-        };
+        let src = util::clojure_src(path).unwrap_or("".to_owned());
+        let ns = util::clojure_ns(&src).unwrap_or("user".to_owned());
 
         for (_, conn) in matches {
             conn.user.write(&format!(
-                "(conjure.repl/safe-call (fn [] {}) '{})",
-                code, namespace
+                "
+                (binding [*ns* (or (find-ns '{}) (create-ns '{}))]
+                  {})
+                ",
+                ns, ns, code
             ))?;
         }
 
@@ -157,6 +150,16 @@ impl Pool {
     }
 
     pub fn doc(&mut self, name: &str, path: &str) -> Result<()> {
-        self.eval(&format!("(conjure.repl/doc {})", name), path)
+        self.eval(
+            &format!(
+                "
+                (println
+                  (with-out-str
+                    (#?(:clj doc, :cljs cljs.repl/doc) {})))
+                ",
+                name
+            ),
+            path,
+        )
     }
 }
