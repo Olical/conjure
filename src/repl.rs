@@ -98,8 +98,9 @@ impl Client {
         Ok(Self { stream })
     }
 
-    pub fn responses(self) -> Box<Iterator<Item = Result<Response>>> {
-        let reader = BufReader::new(self.stream);
+    pub fn responses(self) -> Result<Box<Iterator<Item = Result<Response>>>> {
+        let stream = self.stream.try_clone().map_err(error)?;
+        let reader = BufReader::new(stream);
 
         let responses = reader.lines().map(|line| {
             line.map(|line| match Parser::new(&line).read() {
@@ -110,7 +111,7 @@ impl Client {
             .and_then(|x| x)
         });
 
-        Box::new(responses)
+        Ok(Box::new(responses))
     }
 
     pub fn write(&mut self, code: &str) -> Result<()> {
@@ -128,5 +129,13 @@ impl Client {
     pub fn quit(&mut self) -> Result<()> {
         self.write(":repl/quit")?;
         self.wait()
+    }
+}
+
+impl Drop for Client {
+    fn drop(&mut self) {
+        if let Err(msg) = self.quit() {
+            error!("Failed to quit REPL cleanly: {}", msg);
+        }
     }
 }

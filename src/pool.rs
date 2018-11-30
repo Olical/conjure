@@ -8,7 +8,6 @@ use std::net::SocketAddr;
 use std::thread;
 use util;
 
-// TODO Move Connection drop to Client.
 // TODO What if a REPL server or socket dies? (heartbeat?)
 // TODO Show some sort of placeholder while evaling.
 // TODO Go to definition.
@@ -60,7 +59,7 @@ impl Connection {
                 server.log_writelns(&format!("{} {}", user_key, tag_suffix), &lines);
             };
 
-            for response in user.responses() {
+            for response in user.responses().expect("couldn't get responses") {
                 match response {
                     Ok(Response::Ret(msg)) => log(&mut user_server, "ret", "", msg),
                     Ok(Response::Tap(msg)) => log(&mut user_server, "tap", "", msg),
@@ -75,14 +74,6 @@ impl Connection {
         });
 
         Ok(())
-    }
-}
-
-impl Drop for Connection {
-    fn drop(&mut self) {
-        if let Err(msg) = self.user.quit() {
-            error!("Failed to quit REPL cleanly: {}", msg);
-        }
     }
 }
 
