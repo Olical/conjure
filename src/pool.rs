@@ -8,7 +8,6 @@ use std::net::SocketAddr;
 use std::thread;
 use util;
 
-// TODO the Vim commands and bindings.
 // TODO Move Connection drop to Client.
 // TODO What if a REPL server or socket dies? (heartbeat?)
 // TODO Show some sort of placeholder while evaling.
