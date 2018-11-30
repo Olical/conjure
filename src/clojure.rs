@@ -28,8 +28,8 @@ impl FromStr for Lang {
 
 pub fn bootstrap() -> String {
     "
-      #?(:cljs (require 'cljs.repl))
-      (str \"Ready to evaluate \" #?(:clj \"Clojure\", :cljs \"ClojureScript\"))
+    #?(:cljs (require 'cljs.repl))
+    (str \"Ready to evaluate \" #?(:clj \"Clojure\", :cljs \"ClojureScript\") \"!\")
     ".to_owned()
 }
 
