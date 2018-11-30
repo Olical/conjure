@@ -120,13 +120,13 @@ impl Client {
         Ok(())
     }
 
+    pub fn wait(&mut self) -> Result<()> {
+        self.stream.read(&mut [])?;
+        Ok(())
+    }
+
     pub fn quit(&mut self) -> Result<()> {
         self.write(":repl/quit")?;
-
-        // This is used so we wait for the REPL to close the connection first after :repl/quit.
-        // Without this, ClojureScript REPLs throw errors when we close the connection.
-        self.stream.read(&mut [])?;
-
-        Ok(())
+        self.wait()
     }
 }

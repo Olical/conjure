@@ -1,4 +1,5 @@
 use chrono::Local;
+use clojure;
 use neovim_lib::neovim_api::Buffer;
 use neovim_lib::session::Session;
 use neovim_lib::{Neovim, NeovimApi, Value};
@@ -157,6 +158,7 @@ pub enum Event {
         key: String,
         addr: SocketAddr,
         expr: Regex,
+        lang: clojure::Lang,
     },
     Disconnect {
         key: String,
@@ -210,8 +212,14 @@ impl Event {
                 let key = parse_arg(&args, 0, "key")?;
                 let addr = parse_arg(&args, 1, "addr")?;
                 let expr = parse_arg(&args, 2, "expr")?;
+                let lang = parse_arg(&args, 3, "lang")?;
 
-                Event::Connect { key, addr, expr }
+                Event::Connect {
+                    key,
+                    addr,
+                    expr,
+                    lang,
+                }
             }
             "disconnect" => {
                 let key = parse_arg(&args, 0, "key")?;

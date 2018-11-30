@@ -1,3 +1,4 @@
+use clojure;
 use editor::Server;
 use regex::Regex;
 use repl::{Client, Response};
@@ -19,6 +20,7 @@ pub struct Connection {
 
     pub addr: SocketAddr,
     pub expr: Regex,
+    pub lang: clojure::Lang,
 }
 
 #[derive(Debug, Fail)]
@@ -28,12 +30,13 @@ enum Error {
 }
 
 impl Connection {
-    pub fn connect(addr: SocketAddr, expr: Regex) -> Result<Self> {
+    pub fn connect(addr: SocketAddr, expr: Regex, lang: clojure::Lang) -> Result<Self> {
         Ok(Self {
             user: Client::connect(addr)?,
 
             addr,
             expr,
+            lang,
         })
     }
 
@@ -42,8 +45,11 @@ impl Connection {
         let mut user_server = server.clone();
         let user_key = key.clone();
 
-        let repl_path = util::clojure_path("repl.cljc")?;
-        user.write(&format!("(load-file \"{}\")", repl_path))?;
+        user.write(&clojure::eval(
+            &clojure::bootstrap(),
+            "conjure.repl",
+            &self.lang,
+        ))?;
 
         thread::spawn(move || {
             let log = |server: &mut Server, tag_suffix, line_prefix, msg: String| {
@@ -106,8 +112,9 @@ impl Pool {
         server: &Server,
         addr: SocketAddr,
         expr: Regex,
+        lang: clojure::Lang,
     ) -> Result<()> {
-        Connection::connect(addr, expr.clone())
+        Connection::connect(addr, expr.clone(), lang)
             .and_then(|conn| {
                 conn.start_response_loops(format!("[{}]", key), server)?;
                 Ok(conn)
@@ -137,29 +144,13 @@ impl Pool {
         let ns = util::clojure_ns(&src).unwrap_or("user".to_owned());
 
         for (_, conn) in matches {
-            conn.user.write(&format!(
-                "
-                (binding [*ns* (or (find-ns '{}) (create-ns '{}))]
-                  {})
-                ",
-                ns, ns, code
-            ))?;
+            conn.user.write(&clojure::eval(code, &ns, &conn.lang))?
         }
 
         Ok(())
     }
 
     pub fn doc(&mut self, name: &str, path: &str) -> Result<()> {
-        self.eval(
-            &format!(
-                "
-                (println
-                  (with-out-str
-                    (#?(:clj doc, :cljs cljs.repl/doc) {})))
-                ",
-                name
-            ),
-            path,
-        )
+        self.eval(&clojure::doc(name), path)
     }
 }

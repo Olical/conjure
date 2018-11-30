@@ -12,6 +12,7 @@ extern crate edn;
 extern crate neovim_lib;
 extern crate regex;
 
+pub mod clojure;
 pub mod editor;
 pub mod pool;
 pub mod repl;

@@ -17,9 +17,9 @@ function! conjure#show_log()
   endif
 endfunction
 
-function! conjure#connect(key, addr, expr)
+function! conjure#connect(key, addr, expr, lang)
   if conjure#upsert_job() == 0
-    call rpcnotify(s:jobid, 'connect', a:key, a:addr, a:expr)
+    call rpcnotify(s:jobid, 'connect', a:key, a:addr, a:expr, a:lang)
   endif
 endfunction
 

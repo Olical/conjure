@@ -1,3 +1,4 @@
+use clojure;
 use editor::{Event, Server};
 use pool::Pool;
 use regex::Regex;
@@ -31,9 +32,12 @@ impl System {
                         Event::Quit => break,
                         Event::List => system.handle_list(),
                         Event::ShowLog => system.handle_show_log(),
-                        Event::Connect { key, addr, expr } => {
-                            system.handle_connect(key, addr, expr)
-                        }
+                        Event::Connect {
+                            key,
+                            addr,
+                            expr,
+                            lang,
+                        } => system.handle_connect(key, addr, expr, lang),
                         Event::Disconnect { key } => system.handle_disconnect(key),
                         Event::Eval { code, path } => system.handle_eval(code, path),
                         Event::Doc { name, path } => system.handle_doc(name, path),
@@ -76,8 +80,8 @@ impl System {
         }
     }
 
-    fn handle_connect(&mut self, key: String, addr: SocketAddr, expr: Regex) {
-        if let Err(msg) = self.pool.connect(&key, &self.server, addr, expr) {
+    fn handle_connect(&mut self, key: String, addr: SocketAddr, expr: Regex, lang: clojure::Lang) {
+        if let Err(msg) = self.pool.connect(&key, &self.server, addr, expr, lang) {
             self.server
                 .err_writeln(&format!("[{}] Connection error: {}", key, msg))
         } else {
