@@ -45,11 +45,11 @@ pub fn clojure_ns(source: &str) -> Option<String> {
             .expect("failed to compile ns regex");
     }
 
-    for cap in clojure_ns_re.captures_iter(source) {
-        return cap.get(1).map(|ns| ns.as_str().to_owned());
+    if let Some(cap) = clojure_ns_re.captures_iter(source).next() {
+        cap.get(1).map(|ns| ns.as_str().to_owned())
+    } else {
+        None
     }
-
-    None
 }
 
 #[cfg(test)]

@@ -38,10 +38,10 @@ impl Connection {
         })
     }
 
-    pub fn start_response_loops(&self, key: String, server: &Server) -> Result<()> {
+    pub fn start_response_loops(&self, key: &str, server: &Server) -> Result<()> {
         let mut user = self.user.try_clone()?;
         let mut user_server = server.clone();
-        let user_key = key.clone();
+        let user_key = key.to_string();
 
         user.write(&clojure::eval(
             &clojure::bootstrap(),
@@ -52,7 +52,7 @@ impl Connection {
         thread::spawn(move || {
             let log = |server: &mut Server, tag_suffix, line_prefix, msg: String| {
                 let lines: Vec<String> = msg
-                    .split("\n")
+                    .split('\n')
                     .map(|line| format!("{}{}", line_prefix, line))
                     .collect();
 
@@ -77,6 +77,7 @@ impl Connection {
     }
 }
 
+#[derive(Default)]
 pub struct Pool {
     conns: HashMap<String, Connection>,
 }
@@ -101,12 +102,12 @@ impl Pool {
         key: &str,
         server: &Server,
         addr: SocketAddr,
-        expr: Regex,
+        expr: &Regex,
         lang: clojure::Lang,
     ) -> Result<()> {
         Connection::connect(addr, expr.clone(), lang)
             .and_then(|conn| {
-                conn.start_response_loops(format!("[{}]", key), server)?;
+                conn.start_response_loops(&format!("[{}]", key), server)?;
                 Ok(conn)
             }).map(|conn| {
                 self.conns.insert(key.to_owned(), conn);
@@ -118,9 +119,9 @@ impl Pool {
             self.conns.remove(key);
             Ok(())
         } else {
-            return Err(error(Error::ConnectionMissing {
+            Err(error(Error::ConnectionMissing {
                 key: key.to_owned(),
-            }));
+            }))
         }
     }
 
@@ -130,8 +131,8 @@ impl Pool {
             .iter_mut()
             .filter(|(_, conn)| conn.expr.is_match(&path));
 
-        let src = util::clojure_src(path).unwrap_or("".to_owned());
-        let ns = util::clojure_ns(&src).unwrap_or("user".to_owned());
+        let src = util::clojure_src(path).unwrap_or_else(|_| "".to_owned());
+        let ns = util::clojure_ns(&src).unwrap_or_else(|| "user".to_owned());
 
         for (_, conn) in matches {
             conn.user.write(&clojure::eval(code, &ns, &conn.lang))?

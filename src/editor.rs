@@ -28,7 +28,7 @@ enum Error {
     ExpectedString { name: String },
 
     #[fail(display = "failed to parse `{}`: {}", name, err)]
-    ParseError { name: String, err: String },
+    ParseFailed { name: String, err: String },
 
     #[fail(display = "unknown request name: {}", name)]
     UnknownRequestName { name: String },
@@ -70,11 +70,11 @@ impl Server {
         let buf = bufs
             .iter()
             .find(|buf| {
-                &buf.get_name(&mut nvim).unwrap_or_else(|_| {
+                buf.get_name(&mut nvim).unwrap_or_else(|_| {
                     warn!("Couldn't get buffer name");
                     "".to_owned()
                 }) == LOG_BUFFER_NAME
-            }).map(|buf| buf.clone());
+            }).cloned();
 
         Ok(buf)
     }
@@ -195,7 +195,7 @@ where
             })
         })?.parse()
         .map_err(|err| {
-            error(Error::ParseError {
+            error(Error::ParseFailed {
                 name: name.to_owned(),
                 err: format!("{}", err),
             })

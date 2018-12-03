@@ -2,12 +2,29 @@
 extern crate log;
 extern crate simplelog;
 
-extern crate conjure;
+#[macro_use]
+extern crate failure;
 
-use conjure::system::System;
+#[macro_use]
+extern crate lazy_static;
+
+extern crate chrono;
+extern crate edn;
+extern crate neovim_lib;
+extern crate regex;
+
+pub mod clojure;
+pub mod editor;
+pub mod pool;
+pub mod repl;
+pub mod result;
+pub mod system;
+pub mod util;
+
 use simplelog::*;
 use std::env;
 use std::fs::File;
+use system::System;
 
 fn main() {
     initialise_logger();

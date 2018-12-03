@@ -37,10 +37,10 @@ impl System {
                             addr,
                             expr,
                             lang,
-                        } => system.handle_connect(key, addr, expr, lang),
-                        Event::Disconnect { key } => system.handle_disconnect(key),
-                        Event::Eval { code, path } => system.handle_eval(code, path),
-                        Event::Doc { name, path } => system.handle_doc(name, path),
+                        } => system.handle_connect(&key, addr, &expr, lang),
+                        Event::Disconnect { key } => system.handle_disconnect(&key),
+                        Event::Eval { code, path } => system.handle_eval(&code, &path),
+                        Event::Doc { name, path } => system.handle_doc(&name, &path),
                     }
                 }
                 Err(msg) => system
@@ -80,8 +80,8 @@ impl System {
         }
     }
 
-    fn handle_connect(&mut self, key: String, addr: SocketAddr, expr: Regex, lang: clojure::Lang) {
-        if let Err(msg) = self.pool.connect(&key, &self.server, addr, expr, lang) {
+    fn handle_connect(&mut self, key: &str, addr: SocketAddr, expr: &Regex, lang: clojure::Lang) {
+        if let Err(msg) = self.pool.connect(&key, &self.server, addr, &expr, lang) {
             self.server
                 .err_writeln(&format!("[{}] Connection error: {}", key, msg))
         } else {
@@ -90,7 +90,7 @@ impl System {
         }
     }
 
-    fn handle_disconnect(&mut self, key: String) {
+    fn handle_disconnect(&mut self, key: &str) {
         if let Err(msg) = self.pool.disconnect(&key) {
             self.server
                 .err_writeln(&format!("[{}] Disconnection error: {}", key, msg))
@@ -100,14 +100,14 @@ impl System {
         }
     }
 
-    fn handle_eval(&mut self, code: String, path: String) {
-        if let Err(msg) = self.pool.eval(&code, &path) {
+    fn handle_eval(&mut self, code: &str, path: &str) {
+        if let Err(msg) = self.pool.eval(code, path) {
             self.server.err_writeln(&format!("Eval error: {}", msg));
         }
     }
 
-    fn handle_doc(&mut self, name: String, path: String) {
-        if let Err(msg) = self.pool.doc(&name, &path) {
+    fn handle_doc(&mut self, name: &str, path: &str) {
+        if let Err(msg) = self.pool.doc(name, path) {
             self.server.err_writeln(&format!("Doc error: {}", msg));
         }
     }

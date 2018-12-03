@@ -37,7 +37,7 @@ enum Error {
     EmptyParseResult,
 
     #[fail(display = "error parsing EDN: {:?}", err)]
-    ParseError { err: edn::parser::Error },
+    ParseFailed { err: edn::parser::Error },
 }
 
 impl Response {
@@ -105,7 +105,7 @@ impl Client {
         let responses = reader.lines().map(|line| {
             line.map(|line| match Parser::new(&line).read() {
                 Some(Ok(value)) => Response::from(value),
-                Some(Err(err)) => Err(error(Error::ParseError { err })),
+                Some(Err(err)) => Err(error(Error::ParseFailed { err })),
                 None => Err(error(Error::EmptyParseResult)),
             }).map_err(error)
             .and_then(|x| x)
@@ -122,7 +122,7 @@ impl Client {
     }
 
     pub fn wait(&mut self) -> Result<()> {
-        self.stream.read(&mut [])?;
+        self.stream.read_exact(&mut [])?;
         Ok(())
     }
 
