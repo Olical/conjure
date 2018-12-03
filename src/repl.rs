@@ -80,6 +80,7 @@ impl Response {
     }
 }
 
+#[derive(Debug)]
 pub struct Client {
     stream: TcpStream,
 }
@@ -117,25 +118,17 @@ impl Client {
     pub fn write(&mut self, code: &str) -> Result<()> {
         self.stream.write_all(format!("{}\n", code).as_bytes())?;
         self.stream.flush()?;
-
         Ok(())
     }
 
     pub fn wait(&mut self) -> Result<()> {
-        self.stream.read_exact(&mut [])?;
+        let _ = self.stream.read(&mut []);
         Ok(())
     }
 
     pub fn quit(&mut self) -> Result<()> {
+        info!("Sending :repl/quit to: {:?}", self);
         self.write(":repl/quit")?;
         self.wait()
-    }
-}
-
-impl Drop for Client {
-    fn drop(&mut self) {
-        if let Err(msg) = self.quit() {
-            error!("Failed to quit REPL cleanly: {}", msg);
-        }
     }
 }

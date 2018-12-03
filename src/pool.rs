@@ -8,11 +8,13 @@ use std::net::SocketAddr;
 use std::thread;
 use util;
 
+// TODO CLJS returns for every expression, three rets for a doc.
 // TODO What if a REPL server or socket dies? (heartbeat?)
 // TODO Show some sort of placeholder while evaling.
 // TODO Go to definition.
 // TODO Completions.
 
+#[derive(Debug)]
 pub struct Connection {
     user: Client,
 
@@ -39,15 +41,9 @@ impl Connection {
     }
 
     pub fn start_response_loops(&self, key: &str, server: &Server) -> Result<()> {
-        let mut user = self.user.try_clone()?;
+        let user = self.user.try_clone()?;
         let mut user_server = server.clone();
         let user_key = key.to_string();
-
-        user.write(&clojure::eval(
-            &clojure::bootstrap(),
-            "conjure.repl",
-            &self.lang,
-        ))?;
 
         thread::spawn(move || {
             let log = |server: &mut Server, tag_suffix, line_prefix, msg: String| {
@@ -74,6 +70,14 @@ impl Connection {
         });
 
         Ok(())
+    }
+}
+
+impl Drop for Connection {
+    fn drop(&mut self) {
+        if let Err(msg) = self.user.quit() {
+            error!("Failed to quit REPL cleanly: {}", msg);
+        }
     }
 }
 
@@ -135,13 +139,10 @@ impl Pool {
         let ns = util::clojure_ns(&src).unwrap_or_else(|| "user".to_owned());
 
         for (_, conn) in matches {
+            info!("Evaluating through: {:?}", conn);
             conn.user.write(&clojure::eval(code, &ns, &conn.lang))?
         }
 
         Ok(())
-    }
-
-    pub fn doc(&mut self, name: &str, path: &str) -> Result<()> {
-        self.eval(&clojure::doc(name), path)
     }
 }

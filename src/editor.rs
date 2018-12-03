@@ -167,10 +167,6 @@ pub enum Event {
         code: String,
         path: String,
     },
-    Doc {
-        name: String,
-        path: String,
-    },
 }
 
 impl fmt::Display for Event {
@@ -229,11 +225,6 @@ impl Event {
                 let code = parse_arg(&args, 0, "code")?;
                 let path = parse_arg(&args, 1, "path")?;
                 Event::Eval { code, path }
-            }
-            "doc" => {
-                let name = parse_arg(&args, 0, "name")?;
-                let path = parse_arg(&args, 1, "path")?;
-                Event::Doc { name, path }
             }
             _ => {
                 return Err(error(Error::UnknownRequestName {
