@@ -46,7 +46,7 @@ function! conjure#doc(name, path)
 endfunction
 
 function! conjure#load_file(path)
-  call conjure#eval(printf('(load-file "%s")', a:path), a:path)
+  call conjure#eval(printf('(clojure.core/load-file "%s")', a:path), a:path)
 endfunction
 
 function! conjure#upsert_job()

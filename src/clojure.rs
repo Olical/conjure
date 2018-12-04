@@ -31,11 +31,11 @@ pub fn greeting() -> String {
 }
 
 pub fn eval(code: &str, ns: &str, lang: &Lang) -> String {
-    let wrapped = format!("(in-ns '{}) {}", ns, code);
+    let wrapped = format!("(clojure.core/in-ns '{}) {}", ns, code);
 
     match lang {
         Lang::Clojure => format!(
-            "(eval (read-string {{:read-cond :allow}} \"(do {})\"))",
+            "(clojure.core/eval (clojure.core/read-string {{:read-cond :allow}} \"(clojure.core/do {})\"))",
             util::escape_quotes(&wrapped),
         ),
         Lang::ClojureScript => wrapped,
