@@ -35,7 +35,7 @@ pub fn eval(code: &str, ns: &str, lang: &Lang) -> String {
 
     match lang {
         Lang::Clojure => format!(
-            "(clojure.core/eval (clojure.core/read-string {{:read-cond :allow}} \"(clojure.core/do {})\"))",
+            "(clojure.core/eval (clojure.core/read-string {{:read-cond :allow}} \"(do {})\"))",
             util::escape_quotes(&wrapped),
         ),
         Lang::ClojureScript => wrapped,
