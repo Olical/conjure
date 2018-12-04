@@ -12,7 +12,7 @@ enum Error {
 }
 
 pub fn escape_quotes(s: &str) -> String {
-    s.replace("\"", "\\\"")
+    s.replace("\\", "\\\\").replace("\"", "\\\"")
 }
 
 pub fn clojure_path(file: &str) -> Result<String> {
