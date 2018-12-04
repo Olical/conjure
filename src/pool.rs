@@ -135,8 +135,10 @@ impl Pool {
             .iter_mut()
             .filter(|(_, conn)| conn.expr.is_match(&path));
 
-        let src = util::clojure_src(path).unwrap_or_else(|_| "".to_owned());
-        let ns = util::clojure_ns(&src).unwrap_or_else(|| "user".to_owned());
+        let src = util::slurp(path).unwrap_or_else(|_| "".to_owned());
+        let ns = util::ns(&src).unwrap_or_else(|| "user".to_owned());
+
+        info!("PATH {}", path);
 
         for (_, conn) in matches {
             info!("Evaluating through: {:?}", conn);

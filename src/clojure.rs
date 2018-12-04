@@ -31,6 +31,7 @@ pub fn greeting() -> String {
 }
 
 pub fn eval(code: &str, ns: &str, lang: &Lang) -> String {
+    info!("Evaluating in {}", ns);
     let wrapped = format!("(in-ns '{}) {}", ns, code);
 
     match lang {
