@@ -38,7 +38,7 @@ endfunction
 function! conjure#doc(name, path)
   call conjure#eval(printf("
         \#?(:cljs (require 'cljs.repl))
-        \(print
+        \(println
         \  (with-out-str
         \    (#?(:clj doc, :cljs cljs.repl/doc) %s)))
         \", a:name),
