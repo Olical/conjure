@@ -40,13 +40,22 @@ function! conjure#doc(name, path)
         \#?(:cljs (require 'cljs.repl))
         \(println
         \  (with-out-str
-        \    (#?(:clj doc, :cljs cljs.repl/doc) %s)))
+        \    (#?(:clj clojure.repl/doc, :cljs cljs.repl/doc) %s)))
         \", a:name),
         \a:path)
 endfunction
 
 function! conjure#load_file(path)
   call conjure#eval(printf('(clojure.core/load-file "%s")', a:path), a:path)
+endfunction
+
+function! conjure#run_tests(path)
+  call conjure#load_file(a:path)
+  call conjure#eval('
+        \(println
+        \  (with-out-str
+        \    (#?(:clj clojure.test/run-tests, :cljs cljs.test/run-tests))))
+        \', a:path)
 endfunction
 
 function! conjure#upsert_job()

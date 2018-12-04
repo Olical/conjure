@@ -71,4 +71,5 @@ autocmd FileType clojure call s:MapAction('Eval', 'cp')
 autocmd FileType clojure nnoremap cpp :normal mscpaf<cr>`s
 autocmd FileType clojure nnoremap <localleader>re :normal mscpaF<cr>`s
 autocmd FileType clojure nnoremap <localleader>rf :call conjure#load_file(expand('%'))<cr>
+autocmd FileType clojure nnoremap <localleader>rt :call conjure#run_tests(expand('%'))<cr>
 autocmd FileType clojure nnoremap K :call conjure#doc(expand('<cword>'), expand('%'))<cr>
