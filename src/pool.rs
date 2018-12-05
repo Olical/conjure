@@ -8,18 +8,6 @@ use std::net::SocketAddr;
 use std::thread;
 use util;
 
-// Quality:
-// TODO Scroll to top of log on focus/blur or write.
-// TODO Clojure test doesn't seem to print output, maybe only in CLJC?
-
-// Features:
-// TODO Pretty print errors.
-// TODO Go to definition.
-// TODO Completions.
-// TODO Load changed namespaces.
-// TODO Show some sort of placeholder while evaling.
-// TODO Heartbeat connection, check for things dying and clean up.
-
 #[derive(Debug)]
 pub struct Connection {
     user: Client,
