@@ -83,6 +83,7 @@ impl Server {
         self.command(&format!("10new {}", LOG_BUFFER_NAME))?;
         self.command("setlocal winfixheight")?;
         self.command("setlocal winfixwidth")?;
+        self.command("setlocal nowrap")?;
         self.command("setlocal buftype=nofile")?;
         self.command("setlocal bufhidden=hide")?;
         self.command("setlocal noswapfile")?;
