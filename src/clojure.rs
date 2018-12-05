@@ -26,8 +26,12 @@ impl FromStr for Lang {
     }
 }
 
-pub fn greeting() -> String {
-    "(str \"Ready to evaluate \" #?(:clj \"Clojure\", :cljs \"ClojureScript\") \"!\")".to_owned()
+pub fn bootstrap() -> String {
+    "
+    (set! *print-length* 50)
+    (require '#?(:clj clojure.repl, :cljs cljs.repl))
+    (str \"Ready to evaluate \" #?(:clj \"Clojure\", :cljs \"ClojureScript\") \"!\")
+    ".to_owned()
 }
 
 pub fn eval(code: &str, ns: &str, lang: &Lang) -> String {

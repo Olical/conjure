@@ -8,16 +8,16 @@ use std::net::SocketAddr;
 use std::thread;
 use util;
 
-// TODO CLJS returns for every expression, three rets for a doc.
-// TODO What if a REPL server or socket dies? (heartbeat?)
-// TODO Show some sort of placeholder while evaling.
+// Quality:
+// TODO Scroll to top of log on focus/blur or write.
+
+// Features:
+// TODO Pretty print errors.
 // TODO Go to definition.
 // TODO Completions.
-// TODO Ensure there is a nice error if no connections matched.
-// TODO (set! *print-length* 25)
-// TODO Errors need pretty printing.
-// TODO Tests don't show output, just the result.
-// TODO clojure.repl might not be loaded.
+// TODO Load changed namespaces.
+// TODO Show some sort of placeholder while evaling.
+// TODO Heartbeat connection, check for things dying and clean up.
 
 #[derive(Debug)]
 pub struct Connection {
@@ -46,9 +46,11 @@ impl Connection {
     }
 
     pub fn start_response_loops(&self, key: &str, server: &Server) -> Result<()> {
-        let user = self.user.try_clone()?;
+        let mut user = self.user.try_clone()?;
         let mut user_server = server.clone();
         let user_key = key.to_string();
+
+        user.write(&clojure::eval(&clojure::bootstrap(), "user", &self.lang))?;
 
         thread::spawn(move || {
             let log = |server: &mut Server, tag_suffix, line_prefix, msg: String| {
