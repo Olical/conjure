@@ -6,7 +6,8 @@
   (prn "This is Clojure!"))
 
 (comment
-  (run))
+  (run)
+  (nope))
 
 #"(this is a regex)"
 

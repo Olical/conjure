@@ -35,18 +35,18 @@ function! conjure#eval(code, path)
   endif
 endfunction
 
-function! conjure#wrapped_eval(code, path)
+function! conjure#eval_with_out_str(code, path)
   call conjure#eval(printf('
-  \(let [result! (atom nil)]
-  \  (println
-  \    (with-out-str
-  \      (reset! result! (do %s))))
-  \  @result!)
-  \', a:code), a:path)
+        \(let [result! (atom nil)]
+        \  (println
+        \    (with-out-str
+        \      (reset! result! (do %s))))
+        \  @result!)
+        \', a:code), a:path)
 endfunction
 
 function! conjure#doc(name, path)
-  call conjure#wrapped_eval(printf('(#?(:clj clojure.repl/doc, :cljs cljs.repl/doc) %s)', a:name), a:path)
+  call conjure#eval_with_out_str(printf('(#?(:clj clojure.repl/doc, :cljs cljs.repl/doc) %s)', a:name), a:path)
 endfunction
 
 function! conjure#load_file(path)
@@ -55,16 +55,17 @@ endfunction
 
 function! conjure#run_tests(path)
   call conjure#load_file(a:path)
-  call conjure#wrapped_eval('
+  call conjure#eval_with_out_str('
         \#?(:clj (binding [clojure.test/*test-out* *out*] (clojure.test/run-tests))
         \   :cljs (cljs.test/run-tests))', a:path)
 endfunction
 
 function! conjure#run_all_tests(path)
   call conjure#load_file(a:path)
-  call conjure#wrapped_eval('
+  call conjure#eval_with_out_str('
         \#?(:clj (binding [clojure.test/*test-out* *out*] (clojure.test/run-all-tests))
-        \   :cljs (cljs.test/run-all-tests))', a:path)
+        \   :cljs (cljs.test/run-all-tests))
+        \', a:path)
 endfunction
 
 function! conjure#upsert_job()
