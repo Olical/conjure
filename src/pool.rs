@@ -10,6 +10,7 @@ use util;
 
 // Quality:
 // TODO Scroll to top of log on focus/blur or write.
+// TODO Clojure test doesn't seem to print output, maybe only in CLJC?
 
 // Features:
 // TODO Pretty print errors.
