@@ -14,6 +14,7 @@ use util;
 // TODO Go to definition.
 // TODO Completions.
 // TODO Ensure there is a nice error if no connections matched.
+// TODO (set! *print-length* 25)
 
 #[derive(Debug)]
 pub struct Connection {
