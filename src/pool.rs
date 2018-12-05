@@ -13,6 +13,7 @@ use util;
 // TODO Show some sort of placeholder while evaling.
 // TODO Go to definition.
 // TODO Completions.
+// TODO Ensure there is a nice error if no connections matched.
 
 #[derive(Debug)]
 pub struct Connection {
