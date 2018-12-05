@@ -58,6 +58,11 @@ function! conjure#run_tests(path)
   call conjure#wrapped_eval('(#?(:clj clojure.test/run-tests, :cljs cljs.test/run-tests))', a:path)
 endfunction
 
+function! conjure#run_all_tests(path)
+  call conjure#load_file(a:path)
+  call conjure#wrapped_eval('(#?(:clj clojure.test/run-all-tests, :cljs cljs.test/run-all-tests))', a:path)
+endfunction
+
 function! conjure#upsert_job()
   if s:jobid == 0
     let id = jobstart([s:bin], {
