@@ -81,7 +81,8 @@ impl Server {
 
     pub fn display_or_create_log_window(&mut self) -> Result<()> {
         self.command(&format!("10new {}", LOG_BUFFER_NAME))?;
-        self.command("setlocal wfh")?;
+        self.command("setlocal winfixheight")?;
+        self.command("setlocal winfixwidth")?;
         self.command("setlocal buftype=nofile")?;
         self.command("setlocal bufhidden=hide")?;
         self.command("setlocal noswapfile")?;
