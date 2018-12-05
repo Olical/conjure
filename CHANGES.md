@@ -4,4 +4,4 @@
 
  * Initial release, super early and only for my use.
  * No documentation or configuration.
- * Allows you to eval, doc and load-file.
+ * Allows you to eval, doc, run-tests and load-file.
