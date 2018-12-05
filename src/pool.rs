@@ -15,6 +15,8 @@ use util;
 // TODO Completions.
 // TODO Ensure there is a nice error if no connections matched.
 // TODO (set! *print-length* 25)
+// TODO Errors need pretty printing.
+// TODO Tests don't show output, just the result.
 
 #[derive(Debug)]
 pub struct Connection {
