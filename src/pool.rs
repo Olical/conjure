@@ -17,6 +17,7 @@ use util;
 // TODO (set! *print-length* 25)
 // TODO Errors need pretty printing.
 // TODO Tests don't show output, just the result.
+// TODO clojure.repl might not be loaded.
 
 #[derive(Debug)]
 pub struct Connection {
