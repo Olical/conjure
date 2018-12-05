@@ -52,9 +52,11 @@ endfunction
 function! conjure#run_tests(path)
   call conjure#load_file(a:path)
   call conjure#eval('
-        \(println
-        \  (with-out-str
-        \    (#?(:clj clojure.test/run-tests, :cljs cljs.test/run-tests))))
+        \#?(:clj
+        \   (clojure.test/run-tests)
+        \
+        \   :cljs
+        \    (println (with-out-str (cljs.test/run-tests))))
         \', a:path)
 endfunction
 
