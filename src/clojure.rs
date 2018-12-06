@@ -30,7 +30,6 @@ pub fn bootstrap() -> String {
     "
     (set! *print-length* 50)
     (require '#?(:clj clojure.repl, :cljs cljs.repl))
-    #?(:clj (require 'clojure.stacktrace))
     (str \"Ready to evaluate \" #?(:clj \"Clojure\", :cljs \"ClojureScript\") \"!\")
     ".to_owned()
 }
@@ -45,6 +44,7 @@ pub fn eval(code: &str, ns: &str, lang: &Lang) -> String {
               (clojure.core/eval (clojure.core/read-string {{:read-cond :allow}} \"(do {})\"))
               (catch Throwable e
                 (binding [*out* *err*]
+                  (require 'clojure.stacktrace)
                   (clojure.stacktrace/print-stack-trace e)
                   (println))))
             ",
