@@ -35,21 +35,22 @@ pub fn bootstrap() -> String {
 }
 
 pub fn eval(code: &str, ns: &str, lang: &Lang) -> String {
-    let wrapped = format!("(clojure.core/in-ns '{}) {}", ns, code);
-
     match lang {
         Lang::Clojure => format!(
             "
-            (try
-              (clojure.core/eval (clojure.core/read-string {{:read-cond :allow}} \"(do {})\"))
-              (catch Throwable e
-                (binding [*out* *err*]
-                  (require 'clojure.stacktrace)
-                  (clojure.stacktrace/print-stack-trace e)
-                  (println))))
+            (do
+              (ns {})
+              (require 'clojure.stacktrace)
+              (try
+                (clojure.core/eval (clojure.core/read-string {{:read-cond :allow}} \"(do {})\"))
+                (catch Throwable e
+                  (binding [*out* *err*]
+                    (clojure.stacktrace/print-stack-trace e)
+                    (println)))))
             ",
-            util::escape_quotes(&wrapped),
+            ns,
+            util::escape_quotes(code),
         ),
-        Lang::ClojureScript => wrapped,
+        Lang::ClojureScript => format!("(in-ns '{}) {}", ns, code),
     }
 }

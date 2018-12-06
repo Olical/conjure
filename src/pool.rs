@@ -135,7 +135,7 @@ impl Pool {
         let ns = util::ns(&src).unwrap_or_else(|| "user".to_owned());
 
         info!("Eval path: {}", path);
-        info!("Eval ns: {}", ns);
+        info!("Eval ns: {:?}", ns);
 
         for (_, conn) in matches {
             info!("Evaluating through: {:?}", conn);
