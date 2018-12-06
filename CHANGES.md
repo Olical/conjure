@@ -1,5 +1,10 @@
 # Conjure changes
 
+## 0.3.0
+
+ * Ensure `clojure.stacktrace` is loaded for Clojure.
+ * Improve the eval wrapper to handle errors in the `user` namespace better.
+
 ## 0.2.0
 
  * Fix testing output.
