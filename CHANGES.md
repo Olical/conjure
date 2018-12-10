@@ -1,5 +1,9 @@
 # Conjure changes
 
+## 0.4.0
+
+ * Scroll the log window to the top whenever it's written to.
+
 ## 0.3.0
 
  * Ensure `clojure.stacktrace` is loaded for Clojure.
