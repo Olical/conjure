@@ -129,6 +129,25 @@ impl Server {
         }
     }
 
+    pub fn scroll_log_windows_to_top(&mut self) {
+        if let Err(msg) = self.find_or_create_log_buf().and_then(|buf| {
+            {
+                let mut nvim = self.nvim()?;
+                let wins = nvim.list_wins()?;
+
+                for win in wins.iter() {
+                    if win.get_buf(&mut nvim)? == buf {
+                        win.set_cursor(&mut nvim, (1, 0))?
+                    }
+                }
+            }
+
+            Ok(())
+        }) {
+            self.err_writeln(&format!("Failed to scroll log windows to top: {}", msg))
+        }
+    }
+
     pub fn log_writelns(&mut self, tag: &str, lines: &[String]) {
         let timestamp = Local::now().format("%T");
         let mut lines = lines.to_vec();
@@ -144,6 +163,7 @@ impl Server {
         }
 
         self.log_trim();
+        self.scroll_log_windows_to_top();
     }
 
     pub fn log_writeln(&mut self, tag: &str, line: String) {
