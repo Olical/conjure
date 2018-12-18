@@ -6,7 +6,8 @@
      :cljs (prn "This is ClojureScript!")))
 
 (comment
-  (run))
+  (run)
+  (throw (#?(:clj Error., :cljs js/Error.) "ohno")))
 
 (t/deftest foo
   (t/testing "some-thing"

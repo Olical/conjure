@@ -40,13 +40,13 @@ pub fn eval(code: &str, ns: &str, lang: &Lang) -> String {
             "
             (do
               (ns {})
-              (require 'clojure.stacktrace)
+              (require 'clojure.main)
               (try
                 (clojure.core/eval (clojure.core/read-string {{:read-cond :allow}} \"(do {})\"))
                 (catch Throwable e
                   (binding [*out* *err*]
-                    (clojure.stacktrace/print-stack-trace e)
-                    (println)))))
+                    (print (-> e Throwable->map clojure.main/ex-triage clojure.main/ex-str))
+                    (flush)))))
             ",
             ns,
             util::escape_quotes(code),
