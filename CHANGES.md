@@ -1,5 +1,9 @@
 # Conjure changes
 
+## 0.5.0
+
+ * Use new 1.10.0 [error formatting tools](http://insideclojure.org/2018/12/17/errors/).
+
 ## 0.4.0
 
  * Scroll the log window to the top whenever it's written to.
