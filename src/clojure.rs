@@ -41,14 +41,13 @@ pub fn eval(code: &str, ns: &str, lang: &Lang) -> String {
     match lang {
         Lang::Clojure => format!(
             "
-            (do
+            (try
               (ns {})
-              (try
-                (clojure.core/eval (clojure.core/read-string {{:read-cond :allow}} \"(do {})\"))
-                (catch Throwable e
-                  (binding [*out* *err*]
-                    (print (-> e Throwable->map clojure.main/ex-triage clojure.main/ex-str))
-                    (flush)))))
+              (clojure.core/eval (clojure.core/read-string {{:read-cond :allow}} \"(do {})\"))
+              (catch Throwable e
+                (binding [*out* *err*]
+                  (print (-> e Throwable->map clojure.main/ex-triage clojure.main/ex-str))
+                  (flush))))
             ",
             ns,
             util::escape_quotes(code),
