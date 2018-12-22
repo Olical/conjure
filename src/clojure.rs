@@ -37,6 +37,10 @@ pub fn bootstrap() -> String {
     ".to_owned()
 }
 
+pub fn definition(name: &str) -> String {
+    format!("(map (meta #'{}) [:file :line :column])", name)
+}
+
 pub fn eval(code: &str, ns: &str, lang: &Lang) -> String {
     match lang {
         Lang::Clojure => format!(

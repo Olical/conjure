@@ -10,7 +10,8 @@ use util;
 
 #[derive(Debug)]
 pub struct Connection {
-    user: Client,
+    eval: Client,
+    go_to_definition: Client,
 
     pub addr: SocketAddr,
     pub expr: Regex,
@@ -23,10 +24,35 @@ enum Error {
     ConnectionMissing { key: String },
 }
 
+fn parse_location(locs: &str) -> Option<(String, i64, i64)> {
+    lazy_static! {
+        static ref loc_re: Regex =
+            Regex::new(r#"^\("(.*)" (\d+) (\d+)\)$"#).expect("failed to compile location regex");
+    }
+
+    if let Some(cap) = loc_re.captures_iter(locs).next() {
+        match (cap.get(1), cap.get(2), cap.get(3)) {
+            (Some(path), Some(row), Some(col)) => Some((
+                path.as_str().to_owned(),
+                row.as_str().parse().unwrap_or(1),
+                col.as_str().parse().unwrap_or(1),
+            )),
+            _ => {
+                warn!("Couldn't extract capture groups: {}", locs);
+                None
+            }
+        }
+    } else {
+        warn!("Result didn't match expression: {}", locs);
+        None
+    }
+}
+
 impl Connection {
     pub fn connect(addr: SocketAddr, expr: Regex, lang: clojure::Lang) -> Result<Self> {
         Ok(Self {
-            user: Client::connect(addr)?,
+            eval: Client::connect(addr)?,
+            go_to_definition: Client::connect(addr)?,
 
             addr,
             expr,
@@ -35,11 +61,11 @@ impl Connection {
     }
 
     pub fn start_response_loops(&self, key: &str, server: &Server) -> Result<()> {
-        let mut user = self.user.try_clone()?;
-        let mut user_server = server.clone();
-        let user_key = key.to_string();
+        let mut eval = self.eval.try_clone()?;
+        let mut eval_server = server.clone();
+        let eval_key = key.to_string();
 
-        user.write(&clojure::eval(&clojure::bootstrap(), "user", &self.lang))?;
+        eval.write(&clojure::eval(&clojure::bootstrap(), "user", &self.lang))?;
 
         thread::spawn(move || {
             let log = |server: &mut Server, tag_suffix, line_prefix, msg: String| {
@@ -48,19 +74,47 @@ impl Connection {
                     .map(|line| format!("{}{}", line_prefix, line))
                     .collect();
 
-                server.log_writelns(&format!("{} {}", user_key, tag_suffix), &lines);
+                server.log_writelns(&format!("{} {}", eval_key, tag_suffix), &lines);
             };
 
-            for response in user.responses().expect("couldn't get responses") {
+            for response in eval.responses().expect("couldn't get responses") {
                 match response {
-                    Ok(Response::Ret(msg)) => log(&mut user_server, "ret", "", msg),
-                    Ok(Response::Tap(msg)) => log(&mut user_server, "tap", "", msg),
-                    Ok(Response::Out(msg)) => log(&mut user_server, "out", ";; ", msg),
-                    Ok(Response::Err(msg)) => log(&mut user_server, "err", ";; ", msg),
+                    Ok(Response::Ret(msg)) => log(&mut eval_server, "ret", "", msg),
+                    Ok(Response::Tap(msg)) => log(&mut eval_server, "tap", "", msg),
+                    Ok(Response::Out(msg)) => log(&mut eval_server, "out", ";; ", msg),
+                    Ok(Response::Err(msg)) => log(&mut eval_server, "err", ";; ", msg),
 
                     Err(msg) => {
-                        user_server.err_writeln(&format!("Error from user connection: {}", msg))
+                        eval_server.err_writeln(&format!("Error from eval connection: {}", msg))
                     }
+                }
+            }
+        });
+
+        let go_to_definition = self.go_to_definition.try_clone()?;
+        let mut go_to_definition_server = server.clone();
+
+        thread::spawn(move || {
+            for response in go_to_definition
+                .responses()
+                .expect("couldn't get responses")
+            {
+                match response {
+                    Ok(Response::Ret(msg)) => if let Some(loc) = parse_location(&msg) {
+                        if let Err(msg) = go_to_definition_server.go_to(loc) {
+                            go_to_definition_server
+                                .err_writeln(&format!("Error while going to definition: {}", msg))
+                        }
+                    } else {
+                        go_to_definition_server.err_writeln("Location unknown");
+                    },
+                    Ok(Response::Err(msg)) => go_to_definition_server
+                        .err_writeln(&format!("Error from definition connection: {}", msg)),
+                    Ok(Response::Tap(_)) => (),
+                    Ok(Response::Out(_)) => (),
+
+                    Err(msg) => go_to_definition_server
+                        .err_writeln(&format!("Error from definition connection: {}", msg)),
                 }
             }
         });
@@ -71,7 +125,7 @@ impl Connection {
 
 impl Drop for Connection {
     fn drop(&mut self) {
-        if let Err(msg) = self.user.quit() {
+        if let Err(msg) = self.eval.quit() {
             error!("Failed to quit REPL cleanly: {}", msg);
         }
     }
@@ -134,12 +188,29 @@ impl Pool {
         let src = util::slurp(path).unwrap_or_else(|_| "".to_owned());
         let ns = util::ns(&src).unwrap_or_else(|| "user".to_owned());
 
-        info!("Eval path: {}", path);
-        info!("Eval ns: {:?}", ns);
-
         for (_, conn) in matches {
             info!("Evaluating through: {:?}", conn);
-            conn.user.write(&clojure::eval(code, &ns, &conn.lang))?
+            conn.eval.write(&clojure::eval(code, &ns, &conn.lang))?
+        }
+
+        Ok(())
+    }
+
+    pub fn go_to_definition(&mut self, name: &str, path: &str) -> Result<()> {
+        if let Some((_, conn)) = self
+            .conns
+            .iter_mut()
+            .find(|(_, conn)| conn.expr.is_match(&path))
+        {
+            let src = util::slurp(path).unwrap_or_else(|_| "".to_owned());
+            let ns = util::ns(&src).unwrap_or_else(|| "user".to_owned());
+
+            info!("Looking up definition through: {:?}", conn);
+            conn.go_to_definition.write(&clojure::eval(
+                &clojure::definition(&name),
+                &ns,
+                &conn.lang,
+            ))?;
         }
 
         Ok(())

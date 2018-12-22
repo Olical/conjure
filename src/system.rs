@@ -40,6 +40,9 @@ impl System {
                         } => system.handle_connect(&key, addr, &expr, lang),
                         Event::Disconnect { key } => system.handle_disconnect(&key),
                         Event::Eval { code, path } => system.handle_eval(&code, &path),
+                        Event::GoToDefinition { name, path } => {
+                            system.handle_go_to_definition(&name, &path)
+                        }
                     }
                 }
                 Err(msg) => system
@@ -102,6 +105,13 @@ impl System {
     fn handle_eval(&mut self, code: &str, path: &str) {
         if let Err(msg) = self.pool.eval(code, path) {
             self.server.err_writeln(&format!("Eval error: {}", msg));
+        }
+    }
+
+    fn handle_go_to_definition(&mut self, name: &str, path: &str) {
+        if let Err(msg) = self.pool.go_to_definition(name, path) {
+            self.server
+                .err_writeln(&format!("Definition lookup error: {}", msg));
         }
     }
 }

@@ -169,6 +169,15 @@ impl Server {
     pub fn log_writeln(&mut self, tag: &str, line: String) {
         self.log_writelns(tag, &[line]);
     }
+
+    pub fn go_to(&mut self, loc: (String, i64, i64)) -> Result<()> {
+        info!("Going to definition {} @ {}:{}", loc.0, loc.1, loc.2);
+        self.command(&format!("edit {}", loc.0))?;
+        let mut nvim = self.nvim()?;
+        let win = nvim.get_current_win()?;
+        win.set_cursor(&mut nvim, (loc.1, loc.2))?;
+        Ok(())
+    }
 }
 
 #[derive(Debug)]
@@ -187,6 +196,10 @@ pub enum Event {
     },
     Eval {
         code: String,
+        path: String,
+    },
+    GoToDefinition {
+        name: String,
         path: String,
     },
 }
@@ -247,6 +260,11 @@ impl Event {
                 let code = parse_arg(&args, 0, "code")?;
                 let path = parse_arg(&args, 1, "path")?;
                 Event::Eval { code, path }
+            }
+            "go_to_definition" => {
+                let name = parse_arg(&args, 0, "name")?;
+                let path = parse_arg(&args, 1, "path")?;
+                Event::GoToDefinition { name, path }
             }
             _ => {
                 return Err(error(Error::UnknownRequestName {

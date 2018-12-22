@@ -49,6 +49,12 @@ function! conjure#doc(name, path)
   call conjure#eval_with_out_str(printf('(#?(:clj clojure.repl/doc, :cljs cljs.repl/doc) %s)', a:name), a:path)
 endfunction
 
+function! conjure#go_to_definition(name, path)
+  if conjure#upsert_job() == 0
+    call rpcnotify(s:jobid, "go_to_definition", a:name, a:path)
+  endif
+endfunction
+
 function! conjure#load_file(path)
   call conjure#eval(printf('(clojure.core/load-file "%s")', a:path), a:path)
 endfunction
