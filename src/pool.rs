@@ -24,30 +24,6 @@ enum Error {
     ConnectionMissing { key: String },
 }
 
-fn parse_location(locs: &str) -> Option<(String, i64, i64)> {
-    lazy_static! {
-        static ref loc_re: Regex =
-            Regex::new(r#"^\("(.*)" (\d+) (\d+)\)$"#).expect("failed to compile location regex");
-    }
-
-    if let Some(cap) = loc_re.captures_iter(locs).next() {
-        match (cap.get(1), cap.get(2), cap.get(3)) {
-            (Some(path), Some(row), Some(col)) => Some((
-                path.as_str().to_owned(),
-                row.as_str().parse().unwrap_or(1),
-                col.as_str().parse().unwrap_or(1),
-            )),
-            _ => {
-                warn!("Couldn't extract capture groups: {}", locs);
-                None
-            }
-        }
-    } else {
-        warn!("Result didn't match expression: {}", locs);
-        None
-    }
-}
-
 impl Connection {
     pub fn connect(addr: SocketAddr, expr: Regex, lang: clojure::Lang) -> Result<Self> {
         Ok(Self {
@@ -100,7 +76,7 @@ impl Connection {
                 .expect("couldn't get responses")
             {
                 match response {
-                    Ok(Response::Ret(msg)) => if let Some(loc) = parse_location(&msg) {
+                    Ok(Response::Ret(msg)) => if let Some(loc) = util::parse_location(&msg) {
                         if let Err(msg) = go_to_definition_server.go_to(loc) {
                             go_to_definition_server
                                 .err_writeln(&format!("Error while going to definition: {}", msg))

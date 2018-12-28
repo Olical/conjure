@@ -28,7 +28,7 @@ impl FromStr for Lang {
 
 pub fn bootstrap() -> String {
     "
-    (require #?@(:clj ['clojure.repl 'clojure.main]
+    (require #?@(:clj ['clojure.repl 'clojure.main 'clojure.java.io 'clojure.string]
                  :cljs ['cljs.repl]))
 
     (do
@@ -38,7 +38,18 @@ pub fn bootstrap() -> String {
 }
 
 pub fn definition(name: &str) -> String {
-    format!("(map (meta #'{}) [:file :line :column])", name)
+    format!(
+        "
+        (update
+          (mapv (meta #'{}) [:file :line :column])
+          0
+          #?(:cljs identity
+             :clj #(-> (clojure.java.io/resource %)
+                       (str)
+                       (clojure.string/replace #\"^jar:file\" \"zipfile\")
+                       (clojure.string/replace #\"\\.jar!/\" \".jar::\"))))
+        ",
+        name)
 }
 
 pub fn eval(code: &str, ns: &str, lang: &Lang) -> String {

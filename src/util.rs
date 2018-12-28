@@ -27,6 +27,30 @@ pub fn ns(source: &str) -> Option<String> {
     }
 }
 
+pub fn parse_location(locs: &str) -> Option<(String, i64, i64)> {
+    lazy_static! {
+        static ref loc_re: Regex =
+            Regex::new(r#"^\["(.*)" (\d+) (\d+)\]$"#).expect("failed to compile location regex");
+    }
+
+    if let Some(cap) = loc_re.captures_iter(locs).next() {
+        match (cap.get(1), cap.get(2), cap.get(3)) {
+            (Some(path), Some(row), Some(col)) => Some((
+                path.as_str().to_owned(),
+                row.as_str().parse().unwrap_or(1),
+                col.as_str().parse().unwrap_or(1),
+            )),
+            _ => {
+                warn!("Couldn't extract capture groups: {}", locs);
+                None
+            }
+        }
+    } else {
+        warn!("Result didn't match expression: {}", locs);
+        None
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
