@@ -84,8 +84,7 @@ impl Connection {
                     } else {
                         go_to_definition_server.err_writeln("Location unknown");
                     },
-                    Ok(Response::Err(msg)) => go_to_definition_server
-                        .err_writeln(&format!("Error from definition connection: {}", msg)),
+                    Ok(Response::Err(_)) => (),
                     Ok(Response::Tap(_)) => (),
                     Ok(Response::Out(_)) => (),
 
