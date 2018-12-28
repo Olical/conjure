@@ -1,5 +1,10 @@
 # Conjure changes
 
+## 0.6.0
+
+ * Add go to definition for symbols.
+ * Tidy up mappings to ensure they're buffer local.
+
 ## 0.5.0
 
  * Use new 1.10.0 [error formatting tools](http://insideclojure.org/2018/12/17/errors/).
