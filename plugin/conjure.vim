@@ -53,25 +53,25 @@ function! s:ActionSetup(algorithm)
 endfunction
 
 function! s:MapAction(algorithm, key)
-  exe 'nnoremap <silent> <Plug>actions'    .a:algorithm.' :<C-U>call <SID>ActionSetup("'.a:algorithm.'")<CR>g@'
-  exe 'xnoremap <silent> <Plug>actions'    .a:algorithm.' :<C-U>call <SID>DoAction("'.a:algorithm.'",visualmode())<CR>'
-  exe 'nnoremap <silent> <Plug>actionsLine'.a:algorithm.' :<C-U>call <SID>DoAction("'.a:algorithm.'",v:count1)<CR>'
-  exe 'nmap '.a:key.'  <Plug>actions'.a:algorithm
-  exe 'xmap '.a:key.'  <Plug>actions'.a:algorithm
-  exe 'nmap '.a:key.a:key[strlen(a:key)-1].' <Plug>actionsLine'.a:algorithm
+  exe 'nnoremap <buffer> <Plug>actions'.a:algorithm.' :<C-U>call <SID>ActionSetup("'.a:algorithm.'")<CR>g@'
+  exe 'xnoremap <buffer> <Plug>actions'.a:algorithm.' :<C-U>call <SID>DoAction("'.a:algorithm.'",visualmode())<CR>'
+  exe 'nnoremap <buffer> <Plug>actionsLine'.a:algorithm.' :<C-U>call <SID>DoAction("'.a:algorithm.'",v:count1)<CR>'
+  exe 'nmap <buffer> '.a:key.' <Plug>actions'.a:algorithm
+  exe 'xmap <buffer> '.a:key.' <Plug>actions'.a:algorithm
+  exe 'nmap <buffer> '.a:key.a:key[strlen(a:key)-1].' <Plug>actionsLine'.a:algorithm
 endfunction
 
 function! s:Eval(str)
   call conjure#eval(a:str, expand('%'))
 endfunction
 
-autocmd FileType clojure nnoremap <localleader>rp :call conjure#list()<cr>
-autocmd FileType clojure nnoremap <localleader>rl :call conjure#show_log()<cr>
+autocmd FileType clojure nnoremap <buffer> <localleader>rp :call conjure#list()<cr>
+autocmd FileType clojure nnoremap <buffer> <localleader>rl :call conjure#show_log()<cr>
 autocmd FileType clojure call s:MapAction('Eval', 'cp')
-autocmd FileType clojure nnoremap cpp :normal mscpaf<cr>`s
-autocmd FileType clojure nnoremap <localleader>re :normal mscpaF<cr>`s
-autocmd FileType clojure nnoremap <localleader>rf :call conjure#load_file(expand('%'))<cr>
-autocmd FileType clojure nnoremap <localleader>rt :call conjure#run_tests(expand('%'))<cr>
-autocmd FileType clojure nnoremap <localleader>rT :call conjure#run_all_tests(expand('%'))<cr>
-autocmd FileType clojure nnoremap K :call conjure#doc(expand('<cword>'), expand('%'))<cr>
-autocmd FileType clojure nnoremap gd :call conjure#go_to_definition(expand('<cword>'), expand('%'))<cr>
+autocmd FileType clojure nnoremap <buffer> cpp :normal mscpaf<cr>`s
+autocmd FileType clojure nnoremap <buffer> <localleader>re :normal mscpaF<cr>`s
+autocmd FileType clojure nnoremap <buffer> <localleader>rf :call conjure#load_file(expand('%'))<cr>
+autocmd FileType clojure nnoremap <buffer> <localleader>rt :call conjure#run_tests(expand('%'))<cr>
+autocmd FileType clojure nnoremap <buffer> <localleader>rT :call conjure#run_all_tests(expand('%'))<cr>
+autocmd FileType clojure nnoremap <buffer> K :call conjure#doc(expand('<cword>'), expand('%'))<cr>
+autocmd FileType clojure nnoremap <buffer> gd :call conjure#go_to_definition(expand('<cword>'), expand('%'))<cr>
