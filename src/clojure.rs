@@ -40,16 +40,23 @@ pub fn bootstrap() -> String {
 pub fn definition(name: &str) -> String {
     format!(
         "
-        (update
-          (mapv (meta #'{}) [:file :line :column])
-          0
-          #?(:cljs identity
-             :clj #(-> (clojure.java.io/resource %)
-                       (str)
-                       (clojure.string/replace #\"^jar:file\" \"zipfile\")
-                       (clojure.string/replace #\"\\.jar!/\" \".jar::\"))))
+        (when-let [loc (if-let [sym (resolve '{})]
+                         (mapv (meta sym) [:file :line :column])
+                         (when-let [syms #?(:cljs (ns-interns '{})
+                                            :clj (some-> (find-ns '{}) ns-interns))]
+                           [(:file (meta (-> syms first second))) 1 1]))]
+          (-> loc
+              (update
+                0
+                #?(:cljs identity
+                   :clj #(-> (clojure.java.io/resource %)
+                             (str)
+                             (clojure.string/replace #\"^jar:file\" \"zipfile\")
+                             (clojure.string/replace #\"\\.jar!/\" \".jar::\"))))
+              (update 2 dec)))
         ",
-        name)
+        name, name, name
+    )
 }
 
 pub fn eval(code: &str, ns: &str, lang: &Lang) -> String {
