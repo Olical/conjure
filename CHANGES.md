@@ -1,5 +1,9 @@
 # Conjure changes
 
+## 0.7.0
+
+ * Add go to definition for namespaces and improve the base functionality.
+
 ## 0.6.0
 
  * Add go to definition for symbols.
