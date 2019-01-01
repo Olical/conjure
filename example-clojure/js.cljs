@@ -5,6 +5,7 @@
   (prn "This is ClojureScript!"))
 
 (comment
-  (run))
+  (run)
+  (nope))
 
 (set/difference #{1 2 3 4} #{3 4 5 6})

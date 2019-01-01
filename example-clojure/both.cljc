@@ -1,5 +1,5 @@
 (ns hybrid.stuff
-  (:require [#?(:clj clojure.test, :cljs cljs.test) :as t]))
+  (:require [clojure.test :as t]))
 
 (defn run []
   #?(:clj (prn "This is Clojure!")

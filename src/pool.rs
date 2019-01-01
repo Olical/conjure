@@ -81,7 +81,7 @@ impl Connection {
                             go_to_definition_server
                                 .err_writeln(&format!("Error while going to definition: {}", msg))
                         }
-                    } else {
+                    } else if msg == ":unknown" {
                         go_to_definition_server.err_writeln("Location unknown");
                     },
                     Ok(Response::Err(_)) => (),

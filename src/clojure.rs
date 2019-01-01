@@ -40,11 +40,12 @@ pub fn bootstrap() -> String {
 pub fn definition(name: &str) -> String {
     format!(
         "
-        (when-let [loc (if-let [sym (resolve '{})]
-                         (mapv (meta sym) [:file :line :column])
-                         (when-let [syms #?(:cljs (ns-interns '{})
-                                            :clj (some-> (find-ns '{}) ns-interns))]
-                           [(:file (meta (-> syms first second))) 1 1]))]
+        (if-let [loc (if-let [sym (and (not (find-ns '{})) (resolve '{}))]
+                       (mapv (meta sym) [:file :line :column])
+                       (when-let [syms #?(:cljs (ns-interns '{})
+                                          :clj (some-> (find-ns '{}) ns-interns))]
+                         (when-let [file (:file (meta (-> syms first second)))]
+                           [file 1 1])))]
           (-> loc
               (update
                 0
@@ -53,9 +54,10 @@ pub fn definition(name: &str) -> String {
                              (str)
                              (clojure.string/replace #\"^jar:file\" \"zipfile\")
                              (clojure.string/replace #\"\\.jar!/\" \".jar::\"))))
-              (update 2 dec)))
+              (update 2 dec))
+          :unknown)
         ",
-        name, name, name
+        name, name, name, name
     )
 }
 
