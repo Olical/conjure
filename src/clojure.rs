@@ -44,7 +44,7 @@ pub fn definition(name: &str) -> String {
                        (mapv (meta sym) [:file :line :column])
                        (when-let [syms #?(:cljs (ns-interns '{})
                                           :clj (some-> (find-ns '{}) ns-interns))]
-                         (when-let [file (:file (meta (-> syms first second)))]
+                         (when-let [file (:file (meta (-> syms first val)))]
                            [file 1 1])))]
           (-> loc
               (update
