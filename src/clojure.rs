@@ -61,6 +61,12 @@ pub fn definition(name: &str) -> String {
     )
 }
 
+pub fn complete(name: &str) -> String {
+    format!(
+        "(str \\[ (apply str (interpose \", \" (map #(str \' % \') [\"henlo\" \"fren\"]))) \\])"
+    )
+}
+
 pub fn eval(code: &str, ns: &str, lang: &Lang) -> String {
     match lang {
         Lang::Clojure => format!(

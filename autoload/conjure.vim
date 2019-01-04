@@ -5,6 +5,15 @@ endif
 let s:scriptdir = resolve(expand("<sfile>:p:h") . "/..")
 let s:bin = s:scriptdir . "/target/debug/conjure"
 
+func! conjure#prev_cword()
+  let [clnum, ccol] = searchpos('\<\k*\%(\k\@!.\)*\%#', 'bcWn')
+  if ccol >= 1
+    return matchstr(strpart(getline(clnum), ccol-1), '^\k*')
+  else
+    return ""
+  endif
+endfunc
+
 function! conjure#list()
   if conjure#upsert_job() == 0
     call rpcnotify(s:jobid, "list")
@@ -36,22 +45,28 @@ function! conjure#eval(code, path)
 endfunction
 
 function! conjure#eval_with_out_str(code, path)
-  call conjure#eval(printf('
+  call conjure#eval(printf("
         \(let [result! (atom nil)]
         \  (println
         \    (with-out-str
         \      (reset! result! (do %s))))
         \  @result!)
-        \', a:code), a:path)
+        \", a:code), a:path)
 endfunction
 
 function! conjure#doc(name, path)
-  call conjure#eval_with_out_str(printf('(#?(:clj clojure.repl/doc, :cljs cljs.repl/doc) %s)', a:name), a:path)
+  call conjure#eval_with_out_str(printf("(#?(:clj clojure.repl/doc, :cljs cljs.repl/doc) %s)", a:name), a:path)
 endfunction
 
 function! conjure#go_to_definition(name, path)
   if conjure#upsert_job() == 0
     call rpcnotify(s:jobid, "go_to_definition", a:name, a:path)
+  endif
+endfunction
+
+function! conjure#complete(name, path)
+  if len(a:name) > 1 && conjure#upsert_job() == 0
+    call rpcnotify(s:jobid, "complete", a:name, a:path)
   endif
 endfunction
 
@@ -61,17 +76,17 @@ endfunction
 
 function! conjure#run_tests(path)
   call conjure#load_file(a:path)
-  call conjure#eval_with_out_str('
+  call conjure#eval_with_out_str("
         \#?(:clj (binding [clojure.test/*test-out* *out*] (clojure.test/run-tests))
-        \   :cljs (cljs.test/run-tests))', a:path)
+        \   :cljs (cljs.test/run-tests))", a:path)
 endfunction
 
 function! conjure#run_all_tests(path)
   call conjure#load_file(a:path)
-  call conjure#eval_with_out_str('
+  call conjure#eval_with_out_str("
         \#?(:clj (binding [clojure.test/*test-out* *out*] (clojure.test/run-all-tests))
         \   :cljs (cljs.test/run-all-tests))
-        \', a:path)
+        \", a:path)
 endfunction
 
 function! conjure#upsert_job()

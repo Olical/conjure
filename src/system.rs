@@ -43,6 +43,7 @@ impl System {
                         Event::GoToDefinition { name, path } => {
                             system.handle_go_to_definition(&name, &path)
                         }
+                        Event::Complete { name, path } => system.handle_complete(&name, &path),
                     }
                 }
                 Err(msg) => system
@@ -112,6 +113,13 @@ impl System {
         if let Err(msg) = self.pool.go_to_definition(name, path) {
             self.server
                 .err_writeln(&format!("Definition lookup error: {}", msg));
+        }
+    }
+
+    fn handle_complete(&mut self, name: &str, path: &str) {
+        if let Err(msg) = self.pool.complete(name, path) {
+            self.server
+                .err_writeln(&format!("Completion error: {}", msg))
         }
     }
 }

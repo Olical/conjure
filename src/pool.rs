@@ -12,6 +12,7 @@ use util;
 pub struct Connection {
     eval: Client,
     go_to_definition: Client,
+    complete: Client,
 
     pub addr: SocketAddr,
     pub expr: Regex,
@@ -29,6 +30,7 @@ impl Connection {
         Ok(Self {
             eval: Client::connect(addr)?,
             go_to_definition: Client::connect(addr)?,
+            complete: Client::connect(addr)?,
 
             addr,
             expr,
@@ -90,6 +92,29 @@ impl Connection {
 
                     Err(msg) => go_to_definition_server
                         .err_writeln(&format!("Error from definition connection: {}", msg)),
+                }
+            }
+        });
+
+        let complete = self.complete.try_clone()?;
+        let mut complete_server = server.clone();
+
+        thread::spawn(move || {
+            for response in complete.responses().expect("couldn't get responses") {
+                match response {
+                    Ok(Response::Ret(msg)) => if let Some(completions) =
+                        util::parse_completions(&msg)
+                    {
+                        if let Err(msg) = complete_server.complete(completions) {
+                            complete_server.err_writeln(&format!("Error while completing: {}", msg))
+                        }
+                    },
+                    Ok(Response::Err(_)) => (),
+                    Ok(Response::Tap(_)) => (),
+                    Ok(Response::Out(_)) => (),
+
+                    Err(msg) => complete_server
+                        .err_writeln(&format!("Error from completion connection: {}", msg)),
                 }
             }
         });
@@ -186,6 +211,22 @@ impl Pool {
                 &ns,
                 &conn.lang,
             ))?;
+        }
+
+        Ok(())
+    }
+
+    pub fn complete(&mut self, name: &str, path: &str) -> Result<()> {
+        if let Some((_, conn)) = self
+            .conns
+            .iter_mut()
+            .find(|(_, conn)| conn.expr.is_match(&path))
+        {
+            let src = util::slurp(path).unwrap_or_else(|_| "".to_owned());
+            let ns = util::ns(&src).unwrap_or_else(|| "user".to_owned());
+
+            conn.complete
+                .write(&clojure::eval(&clojure::complete(&name), &ns, &conn.lang))?;
         }
 
         Ok(())

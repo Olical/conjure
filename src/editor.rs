@@ -178,6 +178,11 @@ impl Server {
         win.set_cursor(&mut nvim, (loc.1, loc.2))?;
         Ok(())
     }
+
+    pub fn complete(&mut self, completions: String) -> Result<()> {
+        self.command(&format!("call complete(col('.'), {})", completions))?;
+        Ok(())
+    }
 }
 
 #[derive(Debug)]
@@ -199,6 +204,10 @@ pub enum Event {
         path: String,
     },
     GoToDefinition {
+        name: String,
+        path: String,
+    },
+    Complete {
         name: String,
         path: String,
     },
@@ -265,6 +274,11 @@ impl Event {
                 let name = parse_arg(&args, 0, "name")?;
                 let path = parse_arg(&args, 1, "path")?;
                 Event::GoToDefinition { name, path }
+            }
+            "complete" => {
+                let name = parse_arg(&args, 0, "name")?;
+                let path = parse_arg(&args, 1, "path")?;
+                Event::Complete { name, path }
             }
             _ => {
                 return Err(error(Error::UnknownRequestName {

@@ -1,5 +1,5 @@
 " Copied from http://vim.wikia.com/wiki/Act_on_text_objects_with_custom_functions
-" Adapted from unimpaired.vim by Tim Pope.
+" Adapted from tpope/vim-unimpaired
 function! s:DoAction(algorithm,type)
   " backup settings that we will change
   let sel_save = &selection
@@ -65,13 +65,18 @@ function! s:Eval(str)
   call conjure#eval(a:str, expand('%'))
 endfunction
 
-autocmd FileType clojure nnoremap <buffer> <localleader>rp :call conjure#list()<cr>
-autocmd FileType clojure nnoremap <buffer> <localleader>rl :call conjure#show_log()<cr>
-autocmd FileType clojure call s:MapAction('Eval', 'cp')
-autocmd FileType clojure nnoremap <buffer> cpp :normal mscpaf<cr>`s
-autocmd FileType clojure nnoremap <buffer> <localleader>re :normal mscpaF<cr>`s
-autocmd FileType clojure nnoremap <buffer> <localleader>rf :call conjure#load_file(expand('%'))<cr>
-autocmd FileType clojure nnoremap <buffer> <localleader>rt :call conjure#run_tests(expand('%'))<cr>
-autocmd FileType clojure nnoremap <buffer> <localleader>rT :call conjure#run_all_tests(expand('%'))<cr>
-autocmd FileType clojure nnoremap <buffer> K :call conjure#doc(expand('<cword>'), expand('%'))<cr>
-autocmd FileType clojure nnoremap <buffer> gd :call conjure#go_to_definition(expand('<cword>'), expand('%'))<cr>
+augroup conjure_bindings
+  autocmd!
+  autocmd FileType clojure nnoremap <buffer> <localleader>rp :call conjure#list()<cr>
+  autocmd FileType clojure nnoremap <buffer> <localleader>rl :call conjure#show_log()<cr>
+  autocmd FileType clojure call s:MapAction('Eval', 'cp')
+  autocmd FileType clojure nnoremap <buffer> cpp :normal mscpaf<cr>`s
+  autocmd FileType clojure nnoremap <buffer> <localleader>re :normal mscpaF<cr>`s
+  autocmd FileType clojure nnoremap <buffer> <localleader>rf :call conjure#load_file(expand('%'))<cr>
+  autocmd FileType clojure nnoremap <buffer> <localleader>rt :call conjure#run_tests(expand('%'))<cr>
+  autocmd FileType clojure nnoremap <buffer> <localleader>rT :call conjure#run_all_tests(expand('%'))<cr>
+  autocmd FileType clojure nnoremap <buffer> K :call conjure#doc(expand('<cword>'), expand('%'))<cr>
+  autocmd FileType clojure nnoremap <buffer> gd :call conjure#go_to_definition(expand('<cword>'), expand('%'))<cr>
+  autocmd FileType clojure autocmd! TextChangedI <buffer> call conjure#complete(conjure#prev_cword(), expand('%'))
+  autocmd FileType clojure autocmd! TextChangedP <buffer> call conjure#complete(conjure#prev_cword(), expand('%'))
+augroup END
