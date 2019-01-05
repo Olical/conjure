@@ -63,7 +63,7 @@ pub fn definition(name: &str) -> String {
 
 pub fn complete(name: &str) -> String {
     format!(
-        "(str \\[ (apply str (interpose \", \" (map #(str \' % \') [\"henlo\" \"fren\"]))) \\])"
+        "(str \\[ (clojure.string/join \", \" (map #(str \\' % \\') [\"henlo\" \"fren\"])) \\])"
     )
 }
 
