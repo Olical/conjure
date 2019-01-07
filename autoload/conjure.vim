@@ -64,9 +64,17 @@ function! conjure#go_to_definition(name, path)
   endif
 endfunction
 
-function! conjure#complete(name, path)
-  if len(a:name) > 1 && conjure#upsert_job() == 0
-    call rpcnotify(s:jobid, "complete", a:name, a:path)
+function! conjure#omnicomplete(name, path)
+  if conjure#upsert_job() == 0
+    if a:findstart
+      let line = getline('.')[0 : col('.')-2]
+      return col('.') - strlen(matchstr(line, '\k\+$')) - 1
+    else
+      call rpcnotify(s:jobid, "complete", a:name, a:path)
+
+      " Maybe we have a Neovim local cache that we filter here.
+      return []
+    endif
   endif
 endfunction
 

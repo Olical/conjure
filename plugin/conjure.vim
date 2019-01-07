@@ -77,6 +77,5 @@ augroup conjure_bindings
   autocmd FileType clojure nnoremap <buffer> <localleader>rT :call conjure#run_all_tests(expand('%'))<cr>
   autocmd FileType clojure nnoremap <buffer> K :call conjure#doc(expand('<cword>'), expand('%'))<cr>
   autocmd FileType clojure nnoremap <buffer> gd :call conjure#go_to_definition(expand('<cword>'), expand('%'))<cr>
-  autocmd FileType clojure autocmd! TextChangedI <buffer> call conjure#complete(conjure#prev_cword(), expand('%'))
-  autocmd FileType clojure autocmd! TextChangedP <buffer> call conjure#complete(conjure#prev_cword(), expand('%'))
+  autocmd FileType clojure setlocal omnifunc=conjure#omnicomplete
 augroup END
