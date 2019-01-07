@@ -70,10 +70,7 @@ function! conjure#omnicomplete(name, path)
       let line = getline('.')[0 : col('.')-2]
       return col('.') - strlen(matchstr(line, '\k\+$')) - 1
     else
-      call rpcnotify(s:jobid, "complete", a:name, a:path)
-
-      " Maybe we have a Neovim local cache that we filter here.
-      return []
+      return call rpcrequest(s:jobid, "complete", a:name, a:path)
     endif
   endif
 endfunction
