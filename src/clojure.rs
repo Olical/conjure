@@ -66,7 +66,7 @@ pub fn completions(ns: &str) -> String {
     // * (clojure|cljs).core (probably only once per connection)
     // * all included namespace symbols by alias
     // * keywords
-    format!("(keys (#?(:clj ns-map, :cljs ns-interns) '{}))", ns)
+    format!("(keys (ns-interns '{}))", ns)
 }
 
 pub fn eval(code: &str, ns: &str, lang: &Lang) -> String {
