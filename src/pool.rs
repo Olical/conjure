@@ -12,7 +12,7 @@ use util;
 pub struct Connection {
     eval: Client,
     go_to_definition: Client,
-    complete: Client,
+    completions: Client,
 
     pub addr: SocketAddr,
     pub expr: Regex,
@@ -30,7 +30,7 @@ impl Connection {
         Ok(Self {
             eval: Client::connect(addr)?,
             go_to_definition: Client::connect(addr)?,
-            complete: Client::connect(addr)?,
+            completions: Client::connect(addr)?,
 
             addr,
             expr,
@@ -86,7 +86,7 @@ impl Connection {
                     } else if msg == ":unknown" {
                         go_to_definition_server.err_writeln("Location unknown");
                     },
-                    Ok(Response::Err(_)) => (),
+                    Ok(Response::Err(msg)) => error!("Error message from go to location: {}", msg),
                     Ok(Response::Tap(_)) => (),
                     Ok(Response::Out(_)) => (),
 
@@ -96,24 +96,25 @@ impl Connection {
             }
         });
 
-        let complete = self.complete.try_clone()?;
-        let mut complete_server = server.clone();
+        let completions = self.completions.try_clone()?;
+        let mut completions_server = server.clone();
 
         thread::spawn(move || {
-            for response in complete.responses().expect("couldn't get responses") {
+            for response in completions.responses().expect("couldn't get responses") {
                 match response {
-                    Ok(Response::Ret(msg)) => if let Some(completions) =
-                        util::parse_completions(&msg)
-                    {
-                        if let Err(msg) = complete_server.update_completions(&vec![completions]) {
-                            complete_server.err_writeln(&format!("Error while completing: {}", msg))
+                    Ok(Response::Ret(msg)) => {
+                        if let Some(completions) = util::parse_completions(&msg) {
+                            if let Err(msg) = completions_server.update_completions(&completions) {
+                                completions_server
+                                    .err_writeln(&format!("Error while completing: {}", msg))
+                            }
                         }
-                    },
-                    Ok(Response::Err(_)) => (),
+                    }
+                    Ok(Response::Err(msg)) => error!("Error message from completions: {}", msg),
                     Ok(Response::Tap(_)) => (),
                     Ok(Response::Out(_)) => (),
 
-                    Err(msg) => complete_server
+                    Err(msg) => completions_server
                         .err_writeln(&format!("Error from completion connection: {}", msg)),
                 }
             }
@@ -216,7 +217,7 @@ impl Pool {
         Ok(())
     }
 
-    pub fn complete(&mut self, name: &str, path: &str) -> Result<()> {
+    pub fn update_completions(&mut self, path: &str) -> Result<()> {
         if let Some((_, conn)) = self
             .conns
             .iter_mut()
@@ -225,8 +226,8 @@ impl Pool {
             let src = util::slurp(path).unwrap_or_else(|_| "".to_owned());
             let ns = util::ns(&src).unwrap_or_else(|| "user".to_owned());
 
-            conn.complete
-                .write(&clojure::eval(&clojure::complete(&name), &ns, &conn.lang))?;
+            conn.completions
+                .write(&clojure::eval(&clojure::completions(&ns), &ns, &conn.lang))?;
         }
 
         Ok(())

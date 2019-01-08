@@ -64,14 +64,25 @@ function! conjure#go_to_definition(name, path)
   endif
 endfunction
 
-function! conjure#omnicomplete(name, path)
+" Adapted from tpope/vim-fireplace
+function! conjure#omnicomplete(findstart, base)
   if conjure#upsert_job() == 0
     if a:findstart
       let line = getline('.')[0 : col('.')-2]
       return col('.') - strlen(matchstr(line, '\k\+$')) - 1
     else
-      return call rpcrequest(s:jobid, "complete", a:name, a:path)
+      if exists("b:conjure_completions")
+        return filter(b:conjure_completions, 'a:base ==# "" || a:base ==# v:val[0 : strlen(a:base)-1]')
+      else
+        return []
+      endif
     endif
+  endif
+endfunction
+
+function! conjure#update_completions(path)
+  if conjure#upsert_job() == 0
+    call rpcnotify(s:jobid, "update_completions", a:path)
   endif
 endfunction
 

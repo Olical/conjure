@@ -78,4 +78,5 @@ augroup conjure_bindings
   autocmd FileType clojure nnoremap <buffer> K :call conjure#doc(expand('<cword>'), expand('%'))<cr>
   autocmd FileType clojure nnoremap <buffer> gd :call conjure#go_to_definition(expand('<cword>'), expand('%'))<cr>
   autocmd FileType clojure setlocal omnifunc=conjure#omnicomplete
+  autocmd CursorHold * if &ft ==# 'clojure' | call conjure#update_completions(expand('%'))
 augroup END

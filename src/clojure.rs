@@ -61,10 +61,12 @@ pub fn definition(name: &str) -> String {
     )
 }
 
-pub fn complete(name: &str) -> String {
-    format!(
-        "(str \\[ (clojure.string/join \", \" (map #(str \\' % \\') [\"henlo\" \"fren\"])) \\])"
-    )
+pub fn completions(ns: &str) -> String {
+    // Things I want to look up:
+    // * (clojure|cljs).core (probably only once per connection)
+    // * all included namespace symbols by alias
+    // * keywords
+    format!("(keys (#?(:clj ns-map, :cljs ns-interns) '{}))", ns)
 }
 
 pub fn eval(code: &str, ns: &str, lang: &Lang) -> String {

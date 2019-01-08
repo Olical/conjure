@@ -43,7 +43,9 @@ impl System {
                         Event::GoToDefinition { name, path } => {
                             system.handle_go_to_definition(&name, &path)
                         }
-                        Event::Complete { name, path } => system.handle_complete(&name, &path),
+                        Event::UpdateCompletions { path } => {
+                            system.handle_update_completions(&path)
+                        }
                     }
                 }
                 Err(msg) => system
@@ -116,8 +118,8 @@ impl System {
         }
     }
 
-    fn handle_complete(&mut self, name: &str, path: &str) {
-        if let Err(msg) = self.pool.complete(name, path) {
+    fn handle_update_completions(&mut self, path: &str) {
+        if let Err(msg) = self.pool.update_completions(path) {
             self.server
                 .err_writeln(&format!("Completion error: {}", msg))
         }

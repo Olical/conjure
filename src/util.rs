@@ -51,15 +51,15 @@ pub fn parse_location(loc_str: &str) -> Option<(String, i64, i64)> {
     }
 }
 
-pub fn parse_completions(completions_str: &str) -> Option<String> {
+pub fn parse_completions(completions_str: &str) -> Option<Vec<&str>> {
     lazy_static! {
         static ref completions_re: Regex =
-            Regex::new(r#"^"(\[.*\])"$"#).expect("failed to compile completions regex");
+            Regex::new(r#"^\((.*)\)$"#).expect("failed to compile completions regex");
     }
 
     if let Some(cap) = completions_re.captures_iter(completions_str).next() {
         match cap.get(1) {
-            Some(completions) => Some(completions.as_str().to_owned()),
+            Some(completions) => Some(completions.as_str().split(" ").collect()),
             _ => {
                 warn!("Couldn't extract capture groups: {}", completions_str);
                 None

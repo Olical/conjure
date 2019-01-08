@@ -179,8 +179,11 @@ impl Server {
         Ok(())
     }
 
-    pub fn update_completions(&mut self, completions: &[String]) -> Result<()> {
-        // TODO Update a var with the new completion strings.
+    pub fn update_completions(&mut self, completions: &[&str]) -> Result<()> {
+        let mut nvim = self.nvim()?;
+        let completion_values: Vec<Value> = completions.iter().map(|x| Value::from(x.to_owned())).collect();
+        let buf = nvim.get_current_buf()?;
+        buf.set_var(&mut nvim, "conjure_completions", Value::from(completion_values))?;
         Ok(())
     }
 }
@@ -207,8 +210,7 @@ pub enum Event {
         name: String,
         path: String,
     },
-    Complete {
-        name: String,
+    UpdateCompletions {
         path: String,
     },
 }
@@ -275,10 +277,9 @@ impl Event {
                 let path = parse_arg(&args, 1, "path")?;
                 Event::GoToDefinition { name, path }
             }
-            "complete" => {
-                let name = parse_arg(&args, 0, "name")?;
-                let path = parse_arg(&args, 1, "path")?;
-                Event::Complete { name, path }
+            "update_completions" => {
+                let path = parse_arg(&args, 0, "path")?;
+                Event::UpdateCompletions { path }
             }
             _ => {
                 return Err(error(Error::UnknownRequestName {
