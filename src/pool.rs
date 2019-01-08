@@ -105,7 +105,7 @@ impl Connection {
                     Ok(Response::Ret(msg)) => if let Some(completions) =
                         util::parse_completions(&msg)
                     {
-                        if let Err(msg) = complete_server.complete(completions) {
+                        if let Err(msg) = complete_server.update_completions(&vec![completions]) {
                             complete_server.err_writeln(&format!("Error while completing: {}", msg))
                         }
                     },

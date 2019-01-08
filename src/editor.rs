@@ -179,9 +179,8 @@ impl Server {
         Ok(())
     }
 
-    pub fn complete(&mut self, completions: String) -> Result<()> {
-        // Probably need col('.') - length of suggestion... maybe...
-        self.command(&format!("call complete(col('.'), {})", completions))?;
+    pub fn update_completions(&mut self, completions: &[String]) -> Result<()> {
+        // TODO Update a var with the new completion strings.
         Ok(())
     }
 }
