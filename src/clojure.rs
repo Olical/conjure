@@ -52,6 +52,7 @@ pub fn definition(name: &str) -> String {
                 #?(:cljs identity
                    :clj #(-> (clojure.java.io/resource %)
                              (str)
+                             (clojure.string/replace #\"^file:\" \"\")
                              (clojure.string/replace #\"^jar:file\" \"zipfile\")
                              (clojure.string/replace #\"\\.jar!/\" \".jar::\"))))
               (update 2 dec))
