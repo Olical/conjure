@@ -68,16 +68,21 @@ pub fn completions(ns: &str, core_ns: &str) -> String {
     // Symbols of those namespaces prefixed by your aliases
     format!(
         "#?(:clj (let [nss (map (comp symbol str) (all-ns))
-                       ns-syms (->> (map (comp vals ns-publics) nss) (apply concat) (map symbol))]
+                       ns-syms (->> (map (comp vals ns-publics) nss) (apply concat) (map symbol))
+                       ns-alias-syms (->> (map (fn [a]
+                                                 (map #(symbol (str (key a)) (name (symbol %)))
+                                                      (vals (ns-publics (-> (val a) str symbol)))))
+                                               (ns-aliases '{}))
+                                          (apply concat))]
                    (-> (keys (ns-map '{}))
-                       (concat nss ns-syms)
-                       (dedupe)
+                       (concat nss ns-syms ns-alias-syms)
+                       (distinct)
                        (sort)))
             :cljs (-> (keys (ns-interns '{}))
                       (concat (keys (ns-publics '{})))
-                      (dedupe)
+                      (distinct)
                       (sort)))",
-        ns, ns, core_ns
+        ns, ns, ns, core_ns
     )
 }
 
