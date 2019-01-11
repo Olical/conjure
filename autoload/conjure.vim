@@ -65,15 +65,13 @@ function! conjure#go_to_definition(name, path)
 endfunction
 
 function! conjure#omnicomplete(findstart, base)
-  if conjure#upsert_job() == 0
-    if a:findstart
-      return searchpos('\<', 'bnW', line('.'))[1] - 1
+  if a:findstart
+    return searchpos('\<', 'bnW', line('.'))[1] - 1
+  else
+    if exists("b:conjure_completions")
+      return { 'words': filter(copy(b:conjure_completions), 'v:val =~# "\\V\\^' . a:base . '"') }
     else
-      if exists("b:conjure_completions")
-        return { 'words': filter(copy(b:conjure_completions), 'v:val =~# "\\V\\^' . a:base . '"') }
-      else
-        return { 'words': [] }
-      endif
+      return { 'words': [] }
     endif
   endif
 endfunction
