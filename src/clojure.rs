@@ -63,10 +63,11 @@ pub fn definition(name: &str) -> String {
 }
 
 pub fn completions(ns: &str) -> String {
-    // Things I want to look up:
-    // * (clojure|cljs).core (probably only once per connection)
-    // * all included namespace symbols by alias
-    // * keywords
+    // What should be completed:
+    // All of core
+    // Current namespace symbols
+    // Local namespace symbols and aliases
+    // Symbols of those namespaces prefixed by your aliases
     format!(
         "(concat (keys (ns-interns '{})) (keys (ns-interns 'clojure.core)))",
         ns
