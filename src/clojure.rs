@@ -62,15 +62,15 @@ pub fn definition(name: &str) -> String {
     )
 }
 
-pub fn completions(ns: &str) -> String {
+pub fn completions(ns: &str, core_ns: &str) -> String {
     // What should be completed:
-    // All of core
-    // Current namespace symbols
     // Local namespace symbols and aliases
     // Symbols of those namespaces prefixed by your aliases
     format!(
-        "(concat (keys (ns-interns '{})) (keys (ns-interns 'clojure.core)))",
-        ns
+        "(-> (keys (ns-interns '{}))
+             (concat (keys (ns-publics '{})))
+             (dedupe))",
+        ns, core_ns
     )
 }
 

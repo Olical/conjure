@@ -15,6 +15,7 @@ pub struct Connection {
     completions: Client,
 
     pub user_ns: String,
+    pub core_ns: String,
     pub addr: SocketAddr,
     pub expr: Regex,
     pub lang: clojure::Lang,
@@ -36,6 +37,10 @@ impl Connection {
             user_ns: match lang {
                 clojure::Lang::Clojure => "user".to_owned(),
                 clojure::Lang::ClojureScript => "cljs.user".to_owned(),
+            },
+            core_ns: match lang {
+                clojure::Lang::Clojure => "clojure.core".to_owned(),
+                clojure::Lang::ClojureScript => "cljs.core".to_owned(),
             },
             addr,
             expr,
@@ -113,6 +118,8 @@ impl Connection {
                 match response {
                     Ok(Response::Ret(msg)) => {
                         if let Some(completions) = util::parse_completions(&msg) {
+                            info!("Updating {} completions!", completions.len());
+
                             if let Err(msg) = completions_server.update_completions(&completions) {
                                 completions_server
                                     .err_writeln(&format!("Error while completing: {}", msg))
@@ -236,8 +243,11 @@ impl Pool {
             let src = util::slurp(path).unwrap_or_else(|_| "".to_owned());
             let ns = util::ns(&src).unwrap_or_else(|| conn.user_ns.clone());
 
-            conn.completions
-                .write(&clojure::eval(&clojure::completions(&ns), &ns, &conn.lang))?;
+            conn.completions.write(&clojure::eval(
+                &clojure::completions(&ns, &conn.core_ns),
+                &ns,
+                &conn.lang,
+            ))?;
         }
 
         Ok(())

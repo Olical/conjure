@@ -181,9 +181,16 @@ impl Server {
 
     pub fn update_completions(&mut self, completions: &[&str]) -> Result<()> {
         let mut nvim = self.nvim()?;
-        let completion_values: Vec<Value> = completions.iter().map(|x| Value::from(x.to_owned())).collect();
+        let completion_values: Vec<Value> = completions
+            .iter()
+            .map(|x| Value::from(x.to_owned()))
+            .collect();
         let buf = nvim.get_current_buf()?;
-        buf.set_var(&mut nvim, "conjure_completions", Value::from(completion_values))?;
+        buf.set_var(
+            &mut nvim,
+            "conjure_completions",
+            Value::from(completion_values),
+        )?;
         Ok(())
     }
 }
