@@ -68,13 +68,12 @@ endfunction
 function! conjure#omnicomplete(findstart, base)
   if conjure#upsert_job() == 0
     if a:findstart
-      let line = getline('.')[0 : col('.')-2]
-      return col('.') - strlen(matchstr(line, '\k\+$')) - 1
+      return searchpos('\<', 'bnW', line('.'))[1] - 1
     else
       if exists("b:conjure_completions")
-        return filter(b:conjure_completions, 'a:base ==# "" || a:base ==# v:val[0 : strlen(a:base)-1]')
+        return { 'words': filter(copy(b:conjure_completions), 'v:val =~# "\\V\\^' . a:base . '"') }
       else
-        return -2
+        return { 'words': [] }
       endif
     endif
   endif
