@@ -64,7 +64,6 @@ function! conjure#go_to_definition(name, path)
   endif
 endfunction
 
-" Adapted from tpope/vim-fireplace
 function! conjure#omnicomplete(findstart, base)
   if conjure#upsert_job() == 0
     if a:findstart
