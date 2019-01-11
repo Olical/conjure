@@ -67,10 +67,11 @@ pub fn completions(ns: &str, core_ns: &str) -> String {
     // Local namespace symbols and aliases
     // Symbols of those namespaces prefixed by your aliases
     format!(
-        "(-> (keys (ns-interns '{}))
-             (concat (keys (ns-publics '{})))
-             (dedupe))",
-        ns, core_ns
+        "#?(:clj (keys (ns-map '{}))
+            :cljs (-> (keys (ns-interns '{}))
+                      (concat (keys (ns-publics '{})))
+                      (dedupe)))",
+        ns, ns, core_ns
     )
 }
 

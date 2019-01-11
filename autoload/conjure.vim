@@ -74,7 +74,7 @@ function! conjure#omnicomplete(findstart, base)
       if exists("b:conjure_completions")
         return filter(b:conjure_completions, 'a:base ==# "" || a:base ==# v:val[0 : strlen(a:base)-1]')
       else
-        return []
+        return -2
       endif
     endif
   endif
