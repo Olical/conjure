@@ -14,6 +14,7 @@ pub struct Connection {
     go_to_definition: Client,
     completions: Client,
 
+    pub user_ns: String,
     pub addr: SocketAddr,
     pub expr: Regex,
     pub lang: clojure::Lang,
@@ -32,6 +33,10 @@ impl Connection {
             go_to_definition: Client::connect(addr)?,
             completions: Client::connect(addr)?,
 
+            user_ns: match lang {
+                clojure::Lang::Clojure => "user".to_owned(),
+                clojure::Lang::ClojureScript => "cljs.user".to_owned(),
+            },
             addr,
             expr,
             lang,
@@ -43,7 +48,11 @@ impl Connection {
         let mut eval_server = server.clone();
         let eval_key = key.to_string();
 
-        eval.write(&clojure::eval(&clojure::bootstrap(), "user", &self.lang))?;
+        eval.write(&clojure::eval(
+            &clojure::bootstrap(),
+            &self.user_ns,
+            &self.lang,
+        ))?;
 
         thread::spawn(move || {
             let log = |server: &mut Server, tag_suffix, line_prefix, msg: String| {
@@ -187,10 +196,11 @@ impl Pool {
             .filter(|(_, conn)| conn.expr.is_match(&path));
 
         let src = util::slurp(path).unwrap_or_else(|_| "".to_owned());
-        let ns = util::ns(&src).unwrap_or_else(|| "user".to_owned());
+        let ns_opt = util::ns(&src);
 
         for (_, conn) in matches {
             info!("Evaluating through: {:?}", conn);
+            let ns = ns_opt.clone().unwrap_or_else(|| conn.user_ns.clone());
             conn.eval.write(&clojure::eval(code, &ns, &conn.lang))?
         }
 
@@ -204,7 +214,7 @@ impl Pool {
             .find(|(_, conn)| conn.expr.is_match(&path))
         {
             let src = util::slurp(path).unwrap_or_else(|_| "".to_owned());
-            let ns = util::ns(&src).unwrap_or_else(|| "user".to_owned());
+            let ns = util::ns(&src).unwrap_or_else(|| conn.user_ns.clone());
 
             info!("Looking up definition through: {:?}", conn);
             conn.go_to_definition.write(&clojure::eval(
@@ -224,7 +234,7 @@ impl Pool {
             .find(|(_, conn)| conn.expr.is_match(&path))
         {
             let src = util::slurp(path).unwrap_or_else(|_| "".to_owned());
-            let ns = util::ns(&src).unwrap_or_else(|| "user".to_owned());
+            let ns = util::ns(&src).unwrap_or_else(|| conn.user_ns.clone());
 
             conn.completions
                 .write(&clojure::eval(&clojure::completions(&ns), &ns, &conn.lang))?;
