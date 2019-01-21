@@ -11,7 +11,7 @@ use std::str::FromStr;
 use std::sync::{mpsc, Arc, Mutex, MutexGuard};
 
 static LOG_BUFFER_NAME: &str = "/tmp/conjure.cljc";
-static LOG_BUFFER_MAX_LENGTH: i64 = 20_000;
+static LOG_BUFFER_MAX_LENGTH: i64 = 10_000;
 
 #[derive(Debug, Fail)]
 enum Error {
