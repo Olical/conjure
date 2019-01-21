@@ -196,37 +196,30 @@ impl Pool {
         }
     }
 
-    pub fn eval(&mut self, code: &str, path: &str) -> Result<()> {
+    pub fn eval(&mut self, code: &str, ns: &str, path: &str) -> Result<()> {
         let matches = self
             .conns
             .iter_mut()
             .filter(|(_, conn)| conn.expr.is_match(&path));
 
-        let src = util::slurp(path).unwrap_or_else(|_| "".to_owned());
-        let ns_opt = util::ns(&src);
-
         for (_, conn) in matches {
             info!("Evaluating through: {:?}", conn);
-            let ns = ns_opt.clone().unwrap_or_else(|| conn.user_ns.clone());
-            conn.eval.write(&clojure::eval(code, &ns, &conn.lang))?
+            conn.eval.write(&clojure::eval(code, ns, &conn.lang))?
         }
 
         Ok(())
     }
 
-    pub fn go_to_definition(&mut self, name: &str, path: &str) -> Result<()> {
+    pub fn go_to_definition(&mut self, name: &str, ns: &str, path: &str) -> Result<()> {
         if let Some((_, conn)) = self
             .conns
             .iter_mut()
             .find(|(_, conn)| conn.expr.is_match(&path))
         {
-            let src = util::slurp(path).unwrap_or_else(|_| "".to_owned());
-            let ns = util::ns(&src).unwrap_or_else(|| conn.user_ns.clone());
-
             info!("Looking up definition through: {:?}", conn);
             conn.go_to_definition.write(&clojure::eval(
                 &clojure::definition(&name),
-                &ns,
+                ns,
                 &conn.lang,
             ))?;
         }
@@ -234,18 +227,15 @@ impl Pool {
         Ok(())
     }
 
-    pub fn update_completions(&mut self, path: &str) -> Result<()> {
+    pub fn update_completions(&mut self, ns: &str, path: &str) -> Result<()> {
         if let Some((_, conn)) = self
             .conns
             .iter_mut()
             .find(|(_, conn)| conn.expr.is_match(&path))
         {
-            let src = util::slurp(path).unwrap_or_else(|_| "".to_owned());
-            let ns = util::ns(&src).unwrap_or_else(|| conn.user_ns.clone());
-
             conn.completions.write(&clojure::eval(
                 &clojure::completions(&ns, &conn.core_ns),
-                &ns,
+                ns,
                 &conn.lang,
             ))?;
         }

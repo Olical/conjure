@@ -39,12 +39,12 @@ impl System {
                             lang,
                         } => system.handle_connect(&key, addr, &expr, lang),
                         Event::Disconnect { key } => system.handle_disconnect(&key),
-                        Event::Eval { code, path } => system.handle_eval(&code, &path),
-                        Event::GoToDefinition { name, path } => {
-                            system.handle_go_to_definition(&name, &path)
+                        Event::Eval { code, ns, path } => system.handle_eval(&code, &ns, &path),
+                        Event::GoToDefinition { name, ns, path } => {
+                            system.handle_go_to_definition(&name, &ns, &path)
                         }
-                        Event::UpdateCompletions { path } => {
-                            system.handle_update_completions(&path)
+                        Event::UpdateCompletions { ns, path } => {
+                            system.handle_update_completions(&ns, &path)
                         }
                     }
                 }
@@ -105,21 +105,21 @@ impl System {
         }
     }
 
-    fn handle_eval(&mut self, code: &str, path: &str) {
-        if let Err(msg) = self.pool.eval(code, path) {
+    fn handle_eval(&mut self, code: &str, ns: &str, path: &str) {
+        if let Err(msg) = self.pool.eval(code, ns, path) {
             self.server.err_writeln(&format!("Eval error: {}", msg));
         }
     }
 
-    fn handle_go_to_definition(&mut self, name: &str, path: &str) {
-        if let Err(msg) = self.pool.go_to_definition(name, path) {
+    fn handle_go_to_definition(&mut self, name: &str, ns: &str, path: &str) {
+        if let Err(msg) = self.pool.go_to_definition(name, ns, path) {
             self.server
                 .err_writeln(&format!("Definition lookup error: {}", msg));
         }
     }
 
-    fn handle_update_completions(&mut self, path: &str) {
-        if let Err(msg) = self.pool.update_completions(path) {
+    fn handle_update_completions(&mut self, ns: &str, path: &str) {
+        if let Err(msg) = self.pool.update_completions(ns, path) {
             self.server
                 .err_writeln(&format!("Completion error: {}", msg))
         }

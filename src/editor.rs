@@ -211,13 +211,16 @@ pub enum Event {
     },
     Eval {
         code: String,
+        ns: String,
         path: String,
     },
     GoToDefinition {
         name: String,
+        ns: String,
         path: String,
     },
     UpdateCompletions {
+        ns: String,
         path: String,
     },
 }
@@ -276,17 +279,20 @@ impl Event {
             }
             "eval" => {
                 let code = parse_arg(&args, 0, "code")?;
-                let path = parse_arg(&args, 1, "path")?;
-                Event::Eval { code, path }
+                let ns = parse_arg(&args, 1, "ns")?;
+                let path = parse_arg(&args, 2, "path")?;
+                Event::Eval { code, ns, path }
             }
             "go_to_definition" => {
                 let name = parse_arg(&args, 0, "name")?;
-                let path = parse_arg(&args, 1, "path")?;
-                Event::GoToDefinition { name, path }
+                let ns = parse_arg(&args, 1, "ns")?;
+                let path = parse_arg(&args, 2, "path")?;
+                Event::GoToDefinition { name, ns, path }
             }
             "update_completions" => {
-                let path = parse_arg(&args, 0, "path")?;
-                Event::UpdateCompletions { path }
+                let ns = parse_arg(&args, 0, "ns")?;
+                let path = parse_arg(&args, 1, "path")?;
+                Event::UpdateCompletions { ns, path }
             }
             _ => {
                 return Err(error(Error::UnknownRequestName {
