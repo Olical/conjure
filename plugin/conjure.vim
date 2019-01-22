@@ -62,7 +62,7 @@ function! s:MapAction(algorithm, key)
 endfunction
 
 function! s:Eval(str)
-  call conjure#eval(a:str, expand('%'))
+  call conjure#eval(a:str)
 endfunction
 
 augroup conjure_bindings
@@ -72,11 +72,11 @@ augroup conjure_bindings
   autocmd FileType clojure call s:MapAction('Eval', 'cp')
   autocmd FileType clojure nnoremap <buffer> cpp :normal mscpaf<cr>`s
   autocmd FileType clojure nnoremap <buffer> <localleader>re :normal mscpaF<cr>`s
-  autocmd FileType clojure nnoremap <buffer> <localleader>rf :call conjure#load_file(expand('%'))<cr>
-  autocmd FileType clojure nnoremap <buffer> <localleader>rt :call conjure#run_tests(expand('%'))<cr>
-  autocmd FileType clojure nnoremap <buffer> <localleader>rT :call conjure#run_all_tests(expand('%'))<cr>
-  autocmd FileType clojure nnoremap <buffer> K :call conjure#doc(expand('<cword>'), expand('%'))<cr>
-  autocmd FileType clojure nnoremap <buffer> gd :call conjure#go_to_definition(expand('<cword>'), expand('%'))<cr>
+  autocmd FileType clojure nnoremap <buffer> <localleader>rf :call conjure#load_file()<cr>
+  autocmd FileType clojure nnoremap <buffer> <localleader>rt :call conjure#run_tests()<cr>
+  autocmd FileType clojure nnoremap <buffer> <localleader>rT :call conjure#run_all_tests()<cr>
+  autocmd FileType clojure nnoremap <buffer> K :call conjure#doc(expand('<cword>'))<cr>
+  autocmd FileType clojure nnoremap <buffer> gd :call conjure#go_to_definition(expand('<cword>'))<cr>
   autocmd FileType clojure setlocal omnifunc=conjure#omnicomplete
-  autocmd CursorHold * if &ft ==# 'clojure' | call conjure#update_completions(expand('%'))
+  autocmd CursorHold * if &ft ==# 'clojure' | call conjure#update_completions()
 augroup END

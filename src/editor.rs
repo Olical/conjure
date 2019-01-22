@@ -74,7 +74,8 @@ impl Server {
                     warn!("Couldn't get buffer name");
                     "".to_owned()
                 }) == LOG_BUFFER_NAME
-            }).cloned();
+            })
+            .cloned();
 
         Ok(buf)
     }
@@ -211,18 +212,11 @@ pub enum Event {
     },
     Eval {
         code: String,
-        ns: String,
-        path: String,
     },
     GoToDefinition {
         name: String,
-        ns: String,
-        path: String,
     },
-    UpdateCompletions {
-        ns: String,
-        path: String,
-    },
+    UpdateCompletions,
 }
 
 impl fmt::Display for Event {
@@ -240,12 +234,14 @@ where
             error(Error::ExpectedArgumentAtPosition {
                 position: index + 1,
             })
-        })?.as_str()
+        })?
+        .as_str()
         .ok_or_else(|| {
             error(Error::ExpectedString {
                 name: name.to_owned(),
             })
-        })?.parse()
+        })?
+        .parse()
         .map_err(|err| {
             error(Error::ParseFailed {
                 name: name.to_owned(),
@@ -279,25 +275,17 @@ impl Event {
             }
             "eval" => {
                 let code = parse_arg(&args, 0, "code")?;
-                let ns = parse_arg(&args, 1, "ns")?;
-                let path = parse_arg(&args, 2, "path")?;
-                Event::Eval { code, ns, path }
+                Event::Eval { code }
             }
             "go_to_definition" => {
                 let name = parse_arg(&args, 0, "name")?;
-                let ns = parse_arg(&args, 1, "ns")?;
-                let path = parse_arg(&args, 2, "path")?;
-                Event::GoToDefinition { name, ns, path }
+                Event::GoToDefinition { name }
             }
-            "update_completions" => {
-                let ns = parse_arg(&args, 0, "ns")?;
-                let path = parse_arg(&args, 1, "path")?;
-                Event::UpdateCompletions { ns, path }
-            }
+            "update_completions" => Event::UpdateCompletions,
             _ => {
                 return Err(error(Error::UnknownRequestName {
                     name: name.to_owned(),
-                }))
+                }));
             }
         };
 

@@ -92,14 +92,18 @@ impl Connection {
                 .expect("couldn't get responses")
             {
                 match response {
-                    Ok(Response::Ret(msg)) => if let Some(loc) = util::parse_location(&msg) {
-                        if let Err(msg) = go_to_definition_server.go_to(loc) {
-                            go_to_definition_server
-                                .err_writeln(&format!("Error while going to definition: {}", msg))
+                    Ok(Response::Ret(msg)) => {
+                        if let Some(loc) = util::parse_location(&msg) {
+                            if let Err(msg) = go_to_definition_server.go_to(loc) {
+                                go_to_definition_server.err_writeln(&format!(
+                                    "Error while going to definition: {}",
+                                    msg
+                                ))
+                            }
+                        } else if msg == ":unknown" {
+                            go_to_definition_server.err_writeln("Location unknown");
                         }
-                    } else if msg == ":unknown" {
-                        go_to_definition_server.err_writeln("Location unknown");
-                    },
+                    }
                     Ok(Response::Err(msg)) => error!("Error message from go to location: {}", msg),
                     Ok(Response::Tap(_)) => (),
                     Ok(Response::Out(_)) => (),
@@ -180,7 +184,8 @@ impl Pool {
             .and_then(|conn| {
                 conn.start_response_loops(&format!("[{}]", key), server)?;
                 Ok(conn)
-            }).map(|conn| {
+            })
+            .map(|conn| {
                 self.conns.insert(key.to_owned(), conn);
             })
     }
@@ -196,7 +201,7 @@ impl Pool {
         }
     }
 
-    pub fn eval(&mut self, code: &str, ns: &str, path: &str) -> Result<()> {
+    pub fn eval(&mut self, code: &str, path: &str, ns: Option<&str>) -> Result<()> {
         let matches = self
             .conns
             .iter_mut()
@@ -204,13 +209,17 @@ impl Pool {
 
         for (_, conn) in matches {
             info!("Evaluating through: {:?}", conn);
-            conn.eval.write(&clojure::eval(code, ns, &conn.lang))?
+            conn.eval.write(&clojure::eval(
+                code,
+                ns.unwrap_or(&conn.user_ns),
+                &conn.lang,
+            ))?
         }
 
         Ok(())
     }
 
-    pub fn go_to_definition(&mut self, name: &str, ns: &str, path: &str) -> Result<()> {
+    pub fn go_to_definition(&mut self, name: &str, path: &str, ns: Option<&str>) -> Result<()> {
         if let Some((_, conn)) = self
             .conns
             .iter_mut()
@@ -219,7 +228,7 @@ impl Pool {
             info!("Looking up definition through: {:?}", conn);
             conn.go_to_definition.write(&clojure::eval(
                 &clojure::definition(&name),
-                ns,
+                ns.unwrap_or(&conn.user_ns),
                 &conn.lang,
             ))?;
         }
@@ -227,12 +236,13 @@ impl Pool {
         Ok(())
     }
 
-    pub fn update_completions(&mut self, ns: &str, path: &str) -> Result<()> {
+    pub fn update_completions(&mut self, path: &str, ns: Option<&str>) -> Result<()> {
         if let Some((_, conn)) = self
             .conns
             .iter_mut()
             .find(|(_, conn)| conn.expr.is_match(&path))
         {
+            let ns = ns.unwrap_or(&conn.user_ns);
             conn.completions.write(&clojure::eval(
                 &clojure::completions(&ns, &conn.core_ns),
                 ns,

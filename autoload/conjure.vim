@@ -38,29 +38,29 @@ function! conjure#disconnect(key)
   endif
 endfunction
 
-function! conjure#eval(code, path)
+function! conjure#eval(code)
   if conjure#upsert_job() == 0
-    call rpcnotify(s:jobid, "eval", a:code, a:path)
+    call rpcnotify(s:jobid, "eval", a:code)
   endif
 endfunction
 
-function! conjure#eval_with_out_str(code, path)
+function! conjure#eval_with_out_str(code)
   call conjure#eval(printf("
         \(let [result! (atom nil)]
         \  (println
         \    (with-out-str
         \      (reset! result! (do %s))))
         \  @result!)
-        \", a:code), a:path)
+        \", a:code))
 endfunction
 
-function! conjure#doc(name, path)
-  call conjure#eval_with_out_str(printf("(#?(:clj clojure.repl/doc, :cljs cljs.repl/doc) %s)", a:name), a:path)
+function! conjure#doc(name)
+  call conjure#eval_with_out_str(printf("(#?(:clj clojure.repl/doc, :cljs cljs.repl/doc) %s)", a:name))
 endfunction
 
-function! conjure#go_to_definition(name, path)
+function! conjure#go_to_definition(name)
   if conjure#upsert_job() == 0
-    call rpcnotify(s:jobid, "go_to_definition", a:name, a:path)
+    call rpcnotify(s:jobid, "go_to_definition", a:name)
   endif
 endfunction
 
@@ -76,29 +76,29 @@ function! conjure#omnicomplete(findstart, base)
   endif
 endfunction
 
-function! conjure#update_completions(path)
+function! conjure#update_completions()
   if conjure#upsert_job() == 0
-    call rpcnotify(s:jobid, "update_completions", a:path)
+    call rpcnotify(s:jobid, "update_completions")
   endif
 endfunction
 
-function! conjure#load_file(path)
-  call conjure#eval(printf('(clojure.core/load-file "%s")', a:path), a:path)
+function! conjure#load_file()
+  call conjure#eval(printf('(clojure.core/load-file "%s")', expand("%")))
 endfunction
 
-function! conjure#run_tests(path)
-  call conjure#load_file(a:path)
+function! conjure#run_tests()
+  call conjure#load_file()
   call conjure#eval_with_out_str("
         \#?(:clj (binding [clojure.test/*test-out* *out*] (clojure.test/run-tests))
-        \   :cljs (cljs.test/run-tests))", a:path)
+        \   :cljs (cljs.test/run-tests))")
 endfunction
 
-function! conjure#run_all_tests(path)
-  call conjure#load_file(a:path)
+function! conjure#run_all_tests()
+  call conjure#load_file()
   call conjure#eval_with_out_str("
         \#?(:clj (binding [clojure.test/*test-out* *out*] (clojure.test/run-all-tests))
         \   :cljs (cljs.test/run-all-tests))
-        \", a:path)
+        \")
 endfunction
 
 function! conjure#upsert_job()
