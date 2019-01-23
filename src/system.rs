@@ -39,13 +39,9 @@ impl System {
                             lang,
                         } => system.handle_connect(&key, addr, &expr, lang),
                         Event::Disconnect { key } => system.handle_disconnect(&key),
-                        Event::Eval { code, path, ns } => system.handle_eval(&code, &path, ns),
-                        Event::GoToDefinition { name, path, ns } => {
-                            system.handle_go_to_definition(&name, &path, ns)
-                        }
-                        Event::UpdateCompletions { path, ns } => {
-                            system.handle_update_completions(&path, ns)
-                        }
+                        Event::Eval { code } => system.handle_eval(&code),
+                        Event::GoToDefinition { name } => system.handle_go_to_definition(&name),
+                        Event::UpdateCompletions => system.handle_update_completions(),
                     }
                 }
                 Err(msg) => system
@@ -69,8 +65,7 @@ impl System {
                         ";; [{}] {} for files matching '{}'",
                         key, conn.addr, conn.expr
                     )
-                })
-                .collect();
+                }).collect();
 
             self.server.log_writelns(DEFAULT_TAG, &lines);
         } else {
@@ -106,20 +101,32 @@ impl System {
         }
     }
 
-    fn handle_eval(&mut self, code: &str, path: &str, ns: Option<&str>) {
+    fn handle_eval(&mut self, code: &str) {
+        // TODO
+        let path = "";
+        let ns = None;
+
         if let Err(msg) = self.pool.eval(code, path, ns) {
             self.server.err_writeln(&format!("Eval error: {}", msg));
         }
     }
 
-    fn handle_go_to_definition(&mut self, name: &str, path: &str, ns: Option<&str>) {
+    fn handle_go_to_definition(&mut self, name: &str) {
+        // TODO
+        let path = "";
+        let ns = None;
+
         if let Err(msg) = self.pool.go_to_definition(name, path, ns) {
             self.server
                 .err_writeln(&format!("Definition lookup error: {}", msg));
         }
     }
 
-    fn handle_update_completions(&mut self, path: &str, ns: Option<&str>) {
+    fn handle_update_completions(&mut self) {
+        // TODO
+        let path = "";
+        let ns = None;
+
         if let Err(msg) = self.pool.update_completions(path, ns) {
             self.server
                 .err_writeln(&format!("Completion error: {}", msg))

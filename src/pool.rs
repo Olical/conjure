@@ -184,8 +184,7 @@ impl Pool {
             .and_then(|conn| {
                 conn.start_response_loops(&format!("[{}]", key), server)?;
                 Ok(conn)
-            })
-            .map(|conn| {
+            }).map(|conn| {
                 self.conns.insert(key.to_owned(), conn);
             })
     }
