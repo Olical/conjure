@@ -9,6 +9,7 @@ use std::fmt;
 use std::net::SocketAddr;
 use std::str::FromStr;
 use std::sync::{mpsc, Arc, Mutex, MutexGuard};
+use util;
 
 static LOG_BUFFER_NAME: &str = "/tmp/conjure.cljc";
 static LOG_BUFFER_MAX_LENGTH: i64 = 10_000;
@@ -32,6 +33,17 @@ enum Error {
 
     #[fail(display = "unknown request name: {}", name)]
     UnknownRequestName { name: String },
+}
+
+pub struct Context {
+    pub path: String,
+    pub ns: Option<String>,
+}
+
+impl Context {
+    fn new(path: String, ns: Option<String>) -> Self {
+        Self { path, ns }
+    }
 }
 
 #[derive(Clone)]
@@ -193,6 +205,25 @@ impl Server {
             Value::from(completion_values),
         )?;
         Ok(())
+    }
+
+    fn try_context(&mut self) -> Result<Context> {
+        let mut nvim = self.nvim()?;
+        let buf = nvim.get_current_buf()?;
+        let path = buf.get_name(&mut nvim)?;
+        let head = buf.get_lines(&mut nvim, 0, 100, false)?;
+
+        Ok(Context::new(path, util::ns(&head.join("\n"))))
+    }
+
+    pub fn context(&mut self) -> Context {
+        match self.try_context() {
+            Ok(ctx) => ctx,
+            Err(msg) => {
+                error!("Failed to create context (returning a default): {}", msg);
+                Context::new("unknown.clj".to_owned(), None)
+            }
+        }
     }
 }
 

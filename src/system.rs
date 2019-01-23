@@ -8,17 +8,6 @@ use std::sync::mpsc;
 
 static DEFAULT_TAG: &str = "Conjure";
 
-pub struct Context {
-    pub path: String,
-    pub ns: Option<String>,
-}
-
-impl Context {
-    fn new(path: String, ns: Option<String>) -> Self {
-        Self { path, ns }
-    }
-}
-
 pub struct System {
     pool: Pool,
     server: Server,
@@ -66,10 +55,6 @@ impl System {
         Ok(system)
     }
 
-    fn context(&mut self) -> Context {
-        Context::new("foo.clj".to_owned(), Some("user".to_owned()))
-    }
-
     fn handle_list(&mut self) {
         if self.pool.has_connections() {
             let lines: Vec<String> = self
@@ -80,7 +65,8 @@ impl System {
                         ";; [{}] {} for files matching '{}'",
                         key, conn.addr, conn.expr
                     )
-                }).collect();
+                })
+                .collect();
 
             self.server.log_writelns(DEFAULT_TAG, &lines);
         } else {
@@ -117,7 +103,7 @@ impl System {
     }
 
     fn handle_eval(&mut self, code: &str) {
-        let ctx = self.context();
+        let ctx = self.server.context();
 
         if let Err(msg) = self.pool.eval(code, ctx) {
             self.server.err_writeln(&format!("Eval error: {}", msg));
@@ -125,7 +111,7 @@ impl System {
     }
 
     fn handle_go_to_definition(&mut self, name: &str) {
-        let ctx = self.context();
+        let ctx = self.server.context();
 
         if let Err(msg) = self.pool.go_to_definition(name, ctx) {
             self.server
@@ -134,7 +120,7 @@ impl System {
     }
 
     fn handle_update_completions(&mut self) {
-        let ctx = self.context();
+        let ctx = self.server.context();
 
         if let Err(msg) = self.pool.update_completions(ctx) {
             self.server

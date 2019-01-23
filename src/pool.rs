@@ -1,12 +1,11 @@
 use clojure;
-use editor::Server;
+use editor::{Context, Server};
 use regex::Regex;
 use repl::{Client, Response};
 use result::{error, Result};
 use std::collections::{hash_map, HashMap};
 use std::net::SocketAddr;
 use std::thread;
-use system::Context;
 use util;
 
 #[derive(Debug)]
