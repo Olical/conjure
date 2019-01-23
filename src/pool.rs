@@ -6,6 +6,7 @@ use result::{error, Result};
 use std::collections::{hash_map, HashMap};
 use std::net::SocketAddr;
 use std::thread;
+use system::Context;
 use util;
 
 #[derive(Debug)]
@@ -200,17 +201,17 @@ impl Pool {
         }
     }
 
-    pub fn eval(&mut self, code: &str, path: &str, ns: Option<&str>) -> Result<()> {
+    pub fn eval(&mut self, code: &str, ctx: Context) -> Result<()> {
         let matches = self
             .conns
             .iter_mut()
-            .filter(|(_, conn)| conn.expr.is_match(&path));
+            .filter(|(_, conn)| conn.expr.is_match(&ctx.path));
 
         for (_, conn) in matches {
             info!("Evaluating through: {:?}", conn);
             conn.eval.write(&clojure::eval(
                 code,
-                ns.unwrap_or(&conn.user_ns),
+                &ctx.ns.clone().unwrap_or(conn.user_ns.clone()),
                 &conn.lang,
             ))?
         }
@@ -218,16 +219,16 @@ impl Pool {
         Ok(())
     }
 
-    pub fn go_to_definition(&mut self, name: &str, path: &str, ns: Option<&str>) -> Result<()> {
+    pub fn go_to_definition(&mut self, name: &str, ctx: Context) -> Result<()> {
         if let Some((_, conn)) = self
             .conns
             .iter_mut()
-            .find(|(_, conn)| conn.expr.is_match(&path))
+            .find(|(_, conn)| conn.expr.is_match(&ctx.path))
         {
             info!("Looking up definition through: {:?}", conn);
             conn.go_to_definition.write(&clojure::eval(
                 &clojure::definition(&name),
-                ns.unwrap_or(&conn.user_ns),
+                &ctx.ns.unwrap_or(conn.user_ns.clone()),
                 &conn.lang,
             ))?;
         }
@@ -235,13 +236,13 @@ impl Pool {
         Ok(())
     }
 
-    pub fn update_completions(&mut self, path: &str, ns: Option<&str>) -> Result<()> {
+    pub fn update_completions(&mut self, ctx: Context) -> Result<()> {
         if let Some((_, conn)) = self
             .conns
             .iter_mut()
-            .find(|(_, conn)| conn.expr.is_match(&path))
+            .find(|(_, conn)| conn.expr.is_match(&ctx.path))
         {
-            let ns = ns.unwrap_or(&conn.user_ns);
+            let ns = &ctx.ns.unwrap_or(conn.user_ns.clone());
             conn.completions.write(&clojure::eval(
                 &clojure::completions(&ns, &conn.core_ns),
                 ns,

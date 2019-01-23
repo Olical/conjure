@@ -8,6 +8,17 @@ use std::sync::mpsc;
 
 static DEFAULT_TAG: &str = "Conjure";
 
+pub struct Context {
+    pub path: String,
+    pub ns: Option<String>,
+}
+
+impl Context {
+    fn new(path: String, ns: Option<String>) -> Self {
+        Self { path, ns }
+    }
+}
+
 pub struct System {
     pool: Pool,
     server: Server,
@@ -53,6 +64,10 @@ impl System {
         info!("Broke out of server event loop");
 
         Ok(system)
+    }
+
+    fn context(&mut self) -> Context {
+        Context::new("foo.clj".to_owned(), Some("user".to_owned()))
     }
 
     fn handle_list(&mut self) {
@@ -102,32 +117,26 @@ impl System {
     }
 
     fn handle_eval(&mut self, code: &str) {
-        // TODO
-        let path = "";
-        let ns = None;
+        let ctx = self.context();
 
-        if let Err(msg) = self.pool.eval(code, path, ns) {
+        if let Err(msg) = self.pool.eval(code, ctx) {
             self.server.err_writeln(&format!("Eval error: {}", msg));
         }
     }
 
     fn handle_go_to_definition(&mut self, name: &str) {
-        // TODO
-        let path = "";
-        let ns = None;
+        let ctx = self.context();
 
-        if let Err(msg) = self.pool.go_to_definition(name, path, ns) {
+        if let Err(msg) = self.pool.go_to_definition(name, ctx) {
             self.server
                 .err_writeln(&format!("Definition lookup error: {}", msg));
         }
     }
 
     fn handle_update_completions(&mut self) {
-        // TODO
-        let path = "";
-        let ns = None;
+        let ctx = self.context();
 
-        if let Err(msg) = self.pool.update_completions(path, ns) {
+        if let Err(msg) = self.pool.update_completions(ctx) {
             self.server
                 .err_writeln(&format!("Completion error: {}", msg))
         }
