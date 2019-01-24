@@ -70,7 +70,10 @@ function! conjure#omnicomplete(findstart, base)
       let line = getline('.')[0 : col('.')-2]
       return col('.') - strlen(matchstr(line, '\k\+$')) - 1
     else
-      return filter(copy(b:conjure_completions), 'a:base ==# "" || a:base ==# v:val[0 : strlen(a:base)-1]')
+      let results = copy(b:conjure_completions)
+      call filter(results, 'a:base ==# "" || a:base ==# v:val[0 : strlen(a:base)-1]')
+      call map(results, '{ "word": v:val }')
+      return { 'words': results, 'refresh': 'always' }
     endif
   else
     return -2
