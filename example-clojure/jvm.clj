@@ -5,6 +5,8 @@
 (defn run []
   (prn "This is Clojure!"))
 
+::foo
+
 (comment
   (run)
   (nope))

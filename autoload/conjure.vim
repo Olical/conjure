@@ -67,9 +67,10 @@ endfunction
 function! conjure#omnicomplete(findstart, base)
   if exists("b:conjure_completions")
     if a:findstart
-      return searchpos('\<', 'bnW', line('.'))[1] - 1
+      let line = getline('.')[0 : col('.')-2]
+      return col('.') - strlen(matchstr(line, '\k\+$')) - 1
     else
-      return filter(copy(b:conjure_completions), 'v:val =~# "\\V\\^' . a:base . '"')
+      return filter(copy(b:conjure_completions), 'a:base ==# "" || a:base ==# v:val[0 : strlen(a:base)-1]')
     endif
   else
     return -2
