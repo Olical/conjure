@@ -87,6 +87,10 @@ function! conjure#eval_file()
   call conjure#eval(printf('(clojure.core/load-file "%s")', expand("%")))
 endfunction
 
+function! conjure#eval_buffer()
+  call conjure#eval(join(getline(1, '$'), "\n"))
+endfunction
+
 function! conjure#run_tests()
   call conjure#eval_file()
   call conjure#eval_with_out_str("

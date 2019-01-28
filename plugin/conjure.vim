@@ -73,6 +73,7 @@ augroup conjure_bindings
   autocmd FileType clojure nnoremap <buffer> cpp :normal mscpaf<cr>`s
   autocmd FileType clojure nnoremap <buffer> <localleader>re :normal mscpaF<cr>`s
   autocmd FileType clojure nnoremap <buffer> <localleader>rf :call conjure#eval_file()<cr>
+  autocmd FileType clojure nnoremap <buffer> <localleader>rb :call conjure#eval_buffer()<cr>
   autocmd FileType clojure nnoremap <buffer> <localleader>rt :call conjure#run_tests()<cr>
   autocmd FileType clojure nnoremap <buffer> <localleader>rT :call conjure#run_all_tests()<cr>
   autocmd FileType clojure nnoremap <buffer> K :call conjure#doc(expand('<cword>'))<cr>
