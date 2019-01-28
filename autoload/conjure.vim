@@ -106,6 +106,29 @@ function! conjure#run_all_tests()
         \")
 endfunction
 
+function! conjure#refresh()
+  call conjure#eval_with_out_str(printf("
+        \#?(:clj (do
+        \          (in-ns 'conjure.repl)
+        \          (require 'clojure.tools.namespace.repl)
+        \          (clojure.tools.namespace.repl/set-refresh-dirs %s)
+        \          (defn after-refresh [] %s)
+        \          (clojure.tools.namespace.repl/refresh :after 'conjure.repl/after-refresh))
+        \   :cljs (prn \"ClojureScript doesn't support refreshing.\"))
+        \", g:conjure_refresh_dirs, g:conjure_refresh_after))
+endfunction
+
+function! conjure#refresh_all()
+  call conjure#eval_with_out_str(printf("
+        \#?(:clj (do
+        \          (require 'clojure.tools.namespace.repl)
+        \          (clojure.tools.namespace.repl/set-refresh-dirs %s)
+        \          (clojure.tools.namespace.repl/clear)
+        \          (clojure.tools.namespace.repl/refresh-all :after '%s))
+        \   :cljs (prn \"ClojureScript doesn't support refreshing.\"))
+        \", g:conjure_refresh_dirs, g:conjure_refresh_after))
+endfunction
+
 function! conjure#upsert_job()
   if s:jobid == 0
     let id = jobstart([s:bin], {

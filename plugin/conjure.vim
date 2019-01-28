@@ -65,19 +65,30 @@ function! s:Eval(str)
   call conjure#eval(a:str)
 endfunction
 
+let g:conjure_refresh_dirs = ["src"]
+let g:conjure_refresh_after = ":noop"
+
 augroup conjure_bindings
   autocmd!
   autocmd FileType clojure nnoremap <buffer> <localleader>rp :call conjure#list()<cr>
   autocmd FileType clojure nnoremap <buffer> <localleader>rl :call conjure#show_log()<cr>
+
   autocmd FileType clojure call s:MapAction('Eval', 'cp')
   autocmd FileType clojure nnoremap <buffer> cpp :normal mscpaf<cr>`s
   autocmd FileType clojure nnoremap <buffer> <localleader>re :normal mscpaF<cr>`s
+
   autocmd FileType clojure nnoremap <buffer> <localleader>rf :call conjure#eval_file()<cr>
   autocmd FileType clojure nnoremap <buffer> <localleader>rb :call conjure#eval_buffer()<cr>
+
   autocmd FileType clojure nnoremap <buffer> <localleader>rt :call conjure#run_tests()<cr>
   autocmd FileType clojure nnoremap <buffer> <localleader>rT :call conjure#run_all_tests()<cr>
+
+  autocmd FileType clojure nnoremap <buffer> <localleader>rr :call conjure#refresh()<cr>
+  autocmd FileType clojure nnoremap <buffer> <localleader>rR :call conjure#refresh_all()<cr>
+
   autocmd FileType clojure nnoremap <buffer> K :call conjure#doc(expand('<cword>'))<cr>
   autocmd FileType clojure nnoremap <buffer> gd :call conjure#go_to_definition(expand('<cword>'))<cr>
+
   autocmd FileType clojure setlocal omnifunc=conjure#omnicomplete
   autocmd CursorHold * if &ft ==# 'clojure' | call conjure#update_completions()
 augroup END
