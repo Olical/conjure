@@ -25,6 +25,9 @@ pub struct Connection {
 enum Error {
     #[fail(display = "connection doesn't exist for that key: {}", key)]
     ConnectionMissing { key: String },
+
+    #[fail(display = "no matching connections for path: {}", path)]
+    NoMatchingConnections { path: String },
 }
 
 impl Connection {
@@ -184,7 +187,8 @@ impl Pool {
             .and_then(|conn| {
                 conn.start_response_loops(&format!("[{}]", key), server)?;
                 Ok(conn)
-            }).map(|conn| {
+            })
+            .map(|conn| {
                 self.conns.insert(key.to_owned(), conn);
             })
     }
@@ -201,21 +205,28 @@ impl Pool {
     }
 
     pub fn eval(&mut self, code: &str, ctx: Context) -> Result<()> {
-        let matches = self
+        let mut matches = self
             .conns
             .iter_mut()
-            .filter(|(_, conn)| conn.expr.is_match(&ctx.path));
+            .filter(|(_, conn)| conn.expr.is_match(&ctx.path))
+            .peekable();
 
-        for (_, conn) in matches {
-            info!("Evaluating through: {:?}", conn);
-            conn.eval.write(&clojure::eval(
-                code,
-                &ctx.ns.clone().unwrap_or(conn.user_ns.clone()),
-                &conn.lang,
-            ))?
+        if matches.peek().is_some() {
+            for (_, conn) in matches {
+                info!("Evaluating through: {:?}", conn);
+                conn.eval.write(&clojure::eval(
+                    code,
+                    &ctx.ns.clone().unwrap_or(conn.user_ns.clone()),
+                    &conn.lang,
+                ))?
+            }
+
+            Ok(())
+        } else {
+            Err(error(Error::NoMatchingConnections {
+                path: ctx.path.clone(),
+            }))
         }
-
-        Ok(())
     }
 
     pub fn go_to_definition(&mut self, name: &str, ctx: Context) -> Result<()> {
@@ -230,9 +241,13 @@ impl Pool {
                 &ctx.ns.unwrap_or(conn.user_ns.clone()),
                 &conn.lang,
             ))?;
-        }
 
-        Ok(())
+            Ok(())
+        } else {
+            Err(error(Error::NoMatchingConnections {
+                path: ctx.path.clone(),
+            }))
+        }
     }
 
     pub fn update_completions(&mut self, ctx: Context) -> Result<()> {
