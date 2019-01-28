@@ -83,19 +83,19 @@ function! conjure#update_completions()
   endif
 endfunction
 
-function! conjure#load_file()
+function! conjure#eval_file()
   call conjure#eval(printf('(clojure.core/load-file "%s")', expand("%")))
 endfunction
 
 function! conjure#run_tests()
-  call conjure#load_file()
+  call conjure#eval_file()
   call conjure#eval_with_out_str("
         \#?(:clj (binding [clojure.test/*test-out* *out*] (clojure.test/run-tests))
         \   :cljs (cljs.test/run-tests))")
 endfunction
 
 function! conjure#run_all_tests()
-  call conjure#load_file()
+  call conjure#eval_file()
   call conjure#eval_with_out_str("
         \#?(:clj (binding [clojure.test/*test-out* *out*] (clojure.test/run-all-tests))
         \   :cljs (cljs.test/run-all-tests))
