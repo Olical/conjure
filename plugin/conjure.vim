@@ -66,7 +66,7 @@ function! s:Eval(str)
 endfunction
 
 let g:conjure_refresh_dirs = ["src"]
-let g:conjure_refresh_after = ":noop"
+let g:conjure_refresh_args = ""
 
 augroup conjure_bindings
   autocmd!

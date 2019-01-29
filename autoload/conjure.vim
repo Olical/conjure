@@ -5,15 +5,6 @@ endif
 let s:scriptdir = resolve(expand("<sfile>:p:h") . "/..")
 let s:bin = s:scriptdir . "/target/debug/conjure"
 
-func! conjure#prev_cword()
-  let [clnum, ccol] = searchpos('\<\k*\%(\k\@!.\)*\%#', 'bcWn')
-  if ccol >= 1
-    return matchstr(strpart(getline(clnum), ccol-1), '^\k*')
-  else
-    return ""
-  endif
-endfunc
-
 function! conjure#list()
   if conjure#upsert_job() == 0
     call rpcnotify(s:jobid, "list")
@@ -106,27 +97,29 @@ function! conjure#run_all_tests()
         \")
 endfunction
 
-function! conjure#refresh()
-  call conjure#eval_with_out_str(printf("
+function! s:RefreshTemplate(body)
+  let dirs = join(map(copy(g:conjure_refresh_dirs), '"\"" . v:val . "\""'), " ")
+
+  return printf("
         \#?(:clj (do
-        \          (in-ns 'conjure.repl)
         \          (require 'clojure.tools.namespace.repl)
-        \          (clojure.tools.namespace.repl/set-refresh-dirs %s)
-        \          (defn after-refresh [] %s)
-        \          (clojure.tools.namespace.repl/refresh :after 'conjure.repl/after-refresh))
-        \   :cljs (prn \"ClojureScript doesn't support refreshing.\"))
-        \", g:conjure_refresh_dirs, g:conjure_refresh_after))
+        \          ((resolve 'clojure.tools.namespace.repl/set-refresh-dirs) %s)
+        \          %s)
+        \   :cljs (prn \"ClojureScript doesn't support refreshing, sorry!\"))
+        \", dirs, a:body)
+endfunction
+
+function! conjure#refresh()
+  call conjure#eval(<SID>RefreshTemplate(printf("
+        \((resolve 'clojure.tools.namespace.repl/refresh) %s)
+        \", g:conjure_refresh_args)))
 endfunction
 
 function! conjure#refresh_all()
-  call conjure#eval_with_out_str(printf("
-        \#?(:clj (do
-        \          (require 'clojure.tools.namespace.repl)
-        \          (clojure.tools.namespace.repl/set-refresh-dirs %s)
-        \          (clojure.tools.namespace.repl/clear)
-        \          (clojure.tools.namespace.repl/refresh-all :after '%s))
-        \   :cljs (prn \"ClojureScript doesn't support refreshing.\"))
-        \", g:conjure_refresh_dirs, g:conjure_refresh_after))
+  call conjure#eval(<SID>RefreshTemplate(printf("
+        \((resolve 'clojure.tools.namespace.repl/clear))
+        \((resolve 'clojure.tools.namespace.repl/refresh-all) %s)
+        \", g:conjure_refresh_args)))
 endfunction
 
 function! conjure#upsert_job()
