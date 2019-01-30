@@ -67,6 +67,7 @@ endfunction
 
 let g:conjure_refresh_dirs = ["src"]
 let g:conjure_refresh_args = ""
+let g:conjure_logging = 0
 
 augroup conjure_bindings
   autocmd!

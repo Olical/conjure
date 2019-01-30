@@ -27,7 +27,16 @@ use std::fs::File;
 use system::System;
 
 fn main() {
-    initialise_logger();
+    let args: Vec<String> = env::args().collect();
+
+    if let Some(logging) = args.get(1) {
+        if logging == "1" {
+            initialise_logger();
+        }
+    } else {
+        initialise_logger();
+        warn!("Initialised the logger because I couldn't check if I should initialise it or not (first CLI arg 1/0)");
+    }
 
     info!("==============");
     info!("== Conjure! ==");

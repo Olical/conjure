@@ -124,7 +124,7 @@ endfunction
 
 function! conjure#upsert_job()
   if s:jobid == 0
-    let id = jobstart([s:bin], {
+    let id = jobstart([s:bin, g:conjure_logging], {
           \ "rpc": v:true,
           \ "on_stderr": function("s:OnStderr"),
           \ "on_exit": function("s:OnExit")
