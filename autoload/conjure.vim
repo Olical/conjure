@@ -69,8 +69,15 @@ function! conjure#omnicomplete(findstart, base)
 endfunction
 
 function! conjure#update_completions()
-  if conjure#upsert_job() == 0
-    call rpcnotify(s:jobid, "update_completions")
+  if s:jobid != 0
+    if exists("b:conjure_last_completion_changedtick") == 0
+      let b:conjure_last_completion_changedtick = -1
+    endif
+
+    if b:conjure_last_completion_changedtick < g:conjure_changedtick
+      call rpcnotify(s:jobid, "update_completions")
+      let b:conjure_last_completion_changedtick = g:conjure_changedtick
+    endif
   endif
 endfunction
 
