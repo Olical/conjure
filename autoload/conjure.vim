@@ -74,7 +74,7 @@ function! conjure#update_completions()
       let b:conjure_last_completion_changedtick = -1
     endif
 
-    if b:conjure_last_completion_changedtick < g:conjure_changedtick
+    if b:conjure_last_completion_changedtick != g:conjure_changedtick
       call rpcnotify(s:jobid, "update_completions")
       let b:conjure_last_completion_changedtick = g:conjure_changedtick
     endif
