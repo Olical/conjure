@@ -77,6 +77,22 @@ if !exists('g:conjure_logging')
   let g:conjure_logging = 0
 endif
 
+if !exists('g:conjure_use_default_mappings')
+  let g:conjure_use_default_mappings = 1
+endif
+
+if !exists('g:conjure_mapping_prefix')
+  let g:conjure_mapping_prefix = "<localleader>r"
+endif
+
+if !exists('g:conjure_eval_mapping_prefix')
+  let g:conjure_eval_mapping_prefix = "cp"
+endif
+
+if !exists('g:conjure_use_omnicomplete')
+  let g:conjure_use_omnicomplete = 1
+endif
+
 if !exists('g:conjure_eval_count')
   let g:conjure_eval_count = 0
 endif
@@ -102,25 +118,29 @@ augroup conjure_bindings
   autocmd FileType clojure command! -buffer -bar -nargs=+ ConjureConnect call conjure#connect(<f-args>)
   autocmd FileType clojure command! -buffer -bar -nargs=1 ConjureDisconnect call conjure#disconnect(<f-args>)
 
-  autocmd FileType clojure nnoremap <buffer> <localleader>rp :ConjureList<CR>
-  autocmd FileType clojure nnoremap <buffer> <localleader>rl :ConjureShowLog<CR>
+  if g:conjure_use_default_mappings
+    autocmd FileType clojure execute "nnoremap <buffer>" g:conjure_mapping_prefix . "p" ":ConjureList<CR>"
+    autocmd FileType clojure execute "nnoremap <buffer>" g:conjure_mapping_prefix . "l" ":ConjureShowLog<CR>"
 
-  autocmd FileType clojure call s:MapAction('Eval', 'cp')
-  autocmd FileType clojure nnoremap <buffer> cpp :normal mscpaf<CR>`s
-  autocmd FileType clojure nnoremap <buffer> <localleader>re :normal mscpaF<CR>`s
+    autocmd FileType clojure call s:MapAction('Eval', g:conjure_eval_mapping_prefix)
+    autocmd FileType clojure execute "nnoremap <buffer>" g:conjure_eval_mapping_prefix . "p" ":normal mscpaf<CR>`s"
+    autocmd FileType clojure execute "nnoremap <buffer>" g:conjure_mapping_prefix . "e" ":normal mscpaF<CR>`s"
 
-  autocmd FileType clojure nnoremap <buffer> <localleader>rf :ConjureEvalFile<CR>
-  autocmd FileType clojure nnoremap <buffer> <localleader>rb :ConjureEvalBuffer<CR>
+    autocmd FileType clojure execute "nnoremap <buffer>" g:conjure_mapping_prefix . "f" ":ConjureEvalFile<CR>"
+    autocmd FileType clojure execute "nnoremap <buffer>" g:conjure_mapping_prefix . "b" ":ConjureEvalBuffer<CR>"
 
-  autocmd FileType clojure nnoremap <buffer> <localleader>rt :ConjureRunTests<CR>
-  autocmd FileType clojure nnoremap <buffer> <localleader>rT :ConjureRunAllTests<CR>
+    autocmd FileType clojure execute "nnoremap <buffer>" g:conjure_mapping_prefix . "t" ":ConjureRunTests<CR>"
+    autocmd FileType clojure execute "nnoremap <buffer>" g:conjure_mapping_prefix . "T" ":ConjureRunAllTests<CR>"
 
-  autocmd FileType clojure nnoremap <buffer> <localleader>rr :ConjureRefresh<CR>
-  autocmd FileType clojure nnoremap <buffer> <localleader>rR :ConjureRefreshAll<CR>
+    autocmd FileType clojure execute "nnoremap <buffer>" g:conjure_mapping_prefix . "r" ":ConjureRefresh<CR>"
+    autocmd FileType clojure execute "nnoremap <buffer>" g:conjure_mapping_prefix . "R" ":ConjureRefreshAll<CR>"
 
-  autocmd FileType clojure nnoremap <buffer> K :ConjureDoc <C-R><C-W><CR>
-  autocmd FileType clojure nnoremap <buffer> gd :ConjureGoToDefinition <C-R><C-W><CR>
+    autocmd FileType clojure nnoremap <buffer> K :ConjureDoc <C-R><C-W><CR>
+    autocmd FileType clojure nnoremap <buffer> gd :ConjureGoToDefinition <C-R><C-W><CR>
+  endif
 
-  autocmd FileType clojure setlocal omnifunc=conjure#omnicomplete
-  autocmd CursorHold * if &ft ==# 'clojure' | call conjure#update_completions()
+  if g:conjure_use_omnicomplete
+    autocmd FileType clojure setlocal omnifunc=conjure#omnicomplete
+    autocmd CursorHold * if &ft ==# 'clojure' | call conjure#update_completions()
+  endif
 augroup END
