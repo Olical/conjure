@@ -4,6 +4,8 @@
 (defn run []
   (prn "This is ClojureScript!"))
 
+(print "hopefully this prints despite no new line")
+
 (comment
   (run)
   (nope))

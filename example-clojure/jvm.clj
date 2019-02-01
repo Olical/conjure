@@ -7,6 +7,8 @@
 
 ::foo
 
+(print "hopefully this prints despite no new line")
+
 (comment
   (run)
   (nope))

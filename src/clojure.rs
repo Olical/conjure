@@ -34,7 +34,8 @@ pub fn bootstrap() -> String {
     (do
       (set! *print-length* 50)
       (str \"Ready to evaluate \" #?(:clj \"Clojure\", :cljs \"ClojureScript\") \"!\"))
-    ".to_owned()
+    "
+    .to_owned()
 }
 
 pub fn definition(name: &str) -> String {
@@ -95,8 +96,9 @@ pub fn eval(code: &str, ns: &str, lang: &Lang) -> String {
               (clojure.core/eval (clojure.core/read-string {{:read-cond :allow}} \"(do {})\"))
               (catch Throwable e
                 (binding [*out* *err*]
-                  (print (-> e Throwable->map clojure.main/ex-triage clojure.main/ex-str))
-                  (flush))))
+                  (print (-> e Throwable->map clojure.main/ex-triage clojure.main/ex-str))))
+              (finally
+                (flush)))
             ",
             ns,
             util::escape_quotes(code),
