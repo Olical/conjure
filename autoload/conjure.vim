@@ -3,7 +3,7 @@ if ! exists("s:jobid")
 endif
 
 let s:scriptdir = resolve(expand("<sfile>:p:h") . "/..")
-let s:bin = s:scriptdir . "/target/debug/conjure"
+let s:bin = s:scriptdir . "/bin/conjure"
 
 function! conjure#list()
   if conjure#upsert_job() == 0
