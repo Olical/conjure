@@ -83,25 +83,44 @@ endif
 
 augroup conjure_bindings
   autocmd!
-  autocmd FileType clojure nnoremap <buffer> <localleader>rp :call conjure#list()<cr>
-  autocmd FileType clojure nnoremap <buffer> <localleader>rl :call conjure#show_log()<cr>
+
+  autocmd FileType clojure command! -buffer -bar -nargs=0 ConjureList call conjure#list()
+  autocmd FileType clojure command! -buffer -bar -nargs=0 ConjureShowLog call conjure#show_log()
+  autocmd FileType clojure command! -buffer -bar -nargs=0 ConjureEvalFile call conjure#eval_file()
+  autocmd FileType clojure command! -buffer -bar -nargs=0 ConjureEvalBuffer call conjure#eval_buffer()
+  autocmd FileType clojure command! -buffer -bar -nargs=0 ConjureRunTests call conjure#run_tests()
+  autocmd FileType clojure command! -buffer -bar -nargs=0 ConjureRunAllTests call conjure#run_all_tests()
+  autocmd FileType clojure command! -buffer -bar -nargs=0 ConjureRefresh call conjure#refresh()
+  autocmd FileType clojure command! -buffer -bar -nargs=0 ConjureRefreshAll call conjure#refresh_all()
+  autocmd FileType clojure command! -buffer -bar -nargs=1 ConjureDoc call conjure#doc(<f-args>)
+  autocmd FileType clojure command! -buffer -bar -nargs=1 ConjureGoToDefinition call conjure#go_to_definition(<f-args>)
+  autocmd FileType clojure command! -buffer -bar -nargs=1 ConjureEval call conjure#eval(<f-args>)
+  autocmd FileType clojure command! -buffer -bar -nargs=0 ConjureUpdateCompletions call conjure#update_completions()
+  autocmd FileType clojure command! -buffer -bar -nargs=0 ConjureUpsertJob call conjure#upsert_job()
+  autocmd FileType clojure command! -buffer -bar -nargs=0 ConjureStopJob call conjure#stop_job()
+  autocmd FileType clojure command! -buffer -bar -nargs=0 ConjureRestartJob call conjure#restart_job()
+  autocmd FileType clojure command! -buffer -bar -nargs=+ ConjureConnect call conjure#connect(<f-args>)
+  autocmd FileType clojure command! -buffer -bar -nargs=1 ConjureDisconnect call conjure#disconnect(<f-args>)
+
+  autocmd FileType clojure nnoremap <buffer> <localleader>rp :ConjureList<CR>
+  autocmd FileType clojure nnoremap <buffer> <localleader>rl :ConjureShowLog<CR>
 
   autocmd FileType clojure call s:MapAction('Eval', 'cp')
-  autocmd FileType clojure nnoremap <buffer> cpp :normal mscpaf<cr>`s
-  autocmd FileType clojure nnoremap <buffer> <localleader>re :normal mscpaF<cr>`s
+  autocmd FileType clojure nnoremap <buffer> cpp :normal mscpaf<CR>`s
+  autocmd FileType clojure nnoremap <buffer> <localleader>re :normal mscpaF<CR>`s
 
-  autocmd FileType clojure nnoremap <buffer> <localleader>rf :call conjure#eval_file()<cr>
-  autocmd FileType clojure nnoremap <buffer> <localleader>rb :call conjure#eval_buffer()<cr>
+  autocmd FileType clojure nnoremap <buffer> <localleader>rf :ConjureEvalFile<CR>
+  autocmd FileType clojure nnoremap <buffer> <localleader>rb :ConjureEvalBuffer<CR>
 
-  autocmd FileType clojure nnoremap <buffer> <localleader>rt :call conjure#run_tests()<cr>
-  autocmd FileType clojure nnoremap <buffer> <localleader>rT :call conjure#run_all_tests()<cr>
+  autocmd FileType clojure nnoremap <buffer> <localleader>rt :ConjureRunTests<CR>
+  autocmd FileType clojure nnoremap <buffer> <localleader>rT :ConjureRunAllTests<CR>
 
-  autocmd FileType clojure nnoremap <buffer> <localleader>rr :call conjure#refresh()<cr>
-  autocmd FileType clojure nnoremap <buffer> <localleader>rR :call conjure#refresh_all()<cr>
+  autocmd FileType clojure nnoremap <buffer> <localleader>rr :ConjureRefresh<CR>
+  autocmd FileType clojure nnoremap <buffer> <localleader>rR :ConjureRefreshAll<CR>
 
-  autocmd FileType clojure nnoremap <buffer> K :call conjure#doc(expand('<cword>'))<cr>
-  autocmd FileType clojure nnoremap <buffer> gd :call conjure#go_to_definition(expand('<cword>'))<cr>
+  autocmd FileType clojure nnoremap <buffer> K :ConjureDoc <C-R><C-W><CR>
+  autocmd FileType clojure nnoremap <buffer> gd :ConjureGoToDefinition <C-R><C-W><CR>
 
   autocmd FileType clojure setlocal omnifunc=conjure#omnicomplete
-  autocmd CursorHold * if &ft ==# 'clojure' | call conjure#update_completions()
+  autocmd CursorHold * if &ft ==# 'clojure' | ConjureUpdateCompletions
 augroup END
