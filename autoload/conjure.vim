@@ -90,14 +90,14 @@ function! conjure#eval_buffer()
 endfunction
 
 function! conjure#run_tests()
-  call conjure#eval_file()
+  call conjure#eval_buffer()
   call conjure#eval_with_out_str("
         \#?(:clj (binding [clojure.test/*test-out* *out*] (clojure.test/run-tests))
         \   :cljs (cljs.test/run-tests))")
 endfunction
 
 function! conjure#run_all_tests()
-  call conjure#eval_file()
+  call conjure#eval_buffer()
   call conjure#eval_with_out_str("
         \#?(:clj (binding [clojure.test/*test-out* *out*] (clojure.test/run-all-tests))
         \   :cljs (cljs.test/run-all-tests))
