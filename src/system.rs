@@ -103,10 +103,26 @@ impl System {
     }
 
     fn handle_eval(&mut self, code: &str) {
-        let ctx = self.server.context();
+        lazy_static! {
+            static ref whitespace_re: Regex =
+                Regex::new(r"\s+").expect("failed to compile whitespace regex");
+        }
 
-        if let Err(msg) = self.pool.eval(code, ctx) {
-            self.server.err_writeln(&format!("Eval error: {}", msg));
+        let ctx = self.server.context();
+        let flat_code = whitespace_re.replace_all(code, " ").to_string();
+        let max_sample_length = 70;
+        let sample = if flat_code.len() >= max_sample_length {
+            format!("{}...", flat_code.split_at(max_sample_length).0)
+        } else {
+            flat_code
+        };
+
+        match self.pool.eval(code, ctx) {
+            Ok(names) => self.server.log_writeln(
+                &format!("eval => {}", names.join(", ")),
+                format!(";; {}", sample),
+            ),
+            Err(msg) => self.server.err_writeln(&format!("Eval error: {}", msg)),
         }
     }
 

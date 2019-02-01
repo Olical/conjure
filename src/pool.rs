@@ -208,24 +208,28 @@ impl Pool {
         }
     }
 
-    pub fn eval(&mut self, code: &str, ctx: Context) -> Result<()> {
+    pub fn eval(&mut self, code: &str, ctx: Context) -> Result<Vec<String>> {
         let mut matches = self
             .conns
             .iter_mut()
             .filter(|(_, conn)| conn.expr.is_match(&ctx.path))
             .peekable();
 
+        let mut names = vec![];
+
         if matches.peek().is_some() {
-            for (_, conn) in matches {
+            for (name, conn) in matches {
                 info!("Evaluating through: {:?}", conn);
                 conn.eval.write(&clojure::eval(
                     code,
                     &ctx.ns.clone().unwrap_or(conn.user_ns.clone()),
                     &conn.lang,
-                ))?
+                ))?;
+
+                names.push(name.clone());
             }
 
-            Ok(())
+            Ok(names)
         } else {
             Err(error(Error::NoMatchingConnections {
                 path: ctx.path.clone(),
