@@ -122,5 +122,5 @@ augroup conjure_bindings
   autocmd FileType clojure nnoremap <buffer> gd :ConjureGoToDefinition <C-R><C-W><CR>
 
   autocmd FileType clojure setlocal omnifunc=conjure#omnicomplete
-  autocmd CursorHold * if &ft ==# 'clojure' | ConjureUpdateCompletions
+  autocmd CursorHold * if &ft ==# 'clojure' | call conjure#update_completions()
 augroup END
