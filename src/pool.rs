@@ -63,7 +63,7 @@ impl Connection {
         ))?;
 
         thread::spawn(move || {
-            let log = |server: &mut Server, tag_suffix, line_prefix, msg: String| {
+            let log = |server: &mut Server, tag_suffix: &str, line_prefix: &str, msg: String| {
                 let lines: Vec<String> = msg
                     .split('\n')
                     .map(|line| format!("{}{}", line_prefix, line))
@@ -74,8 +74,12 @@ impl Connection {
 
             for response in eval.responses().expect("couldn't get responses") {
                 match response {
-                    Ok(Response::Ret(msg)) => log(&mut eval_server, "ret", "", msg),
-                    Ok(Response::Tap(msg)) => log(&mut eval_server, "tap", "", msg),
+                    Ok(Response::Ret(msg, ms)) => {
+                        log(&mut eval_server, &format!("ret {}ms", ms), "", msg)
+                    }
+                    Ok(Response::Tap(msg, ms)) => {
+                        log(&mut eval_server, &format!("tap {}ms", ms), "", msg)
+                    }
                     Ok(Response::Out(msg)) => log(&mut eval_server, "out", ";; ", msg),
                     Ok(Response::Err(msg)) => log(&mut eval_server, "err", ";; ", msg),
 
@@ -95,7 +99,7 @@ impl Connection {
                 .expect("couldn't get responses")
             {
                 match response {
-                    Ok(Response::Ret(msg)) => {
+                    Ok(Response::Ret(msg, _)) => {
                         if let Some(loc) = util::parse_location(&msg) {
                             if let Err(msg) = go_to_definition_server.go_to(loc) {
                                 go_to_definition_server.err_writeln(&format!(
@@ -108,7 +112,7 @@ impl Connection {
                         }
                     }
                     Ok(Response::Err(msg)) => error!("Error message from go to location: {}", msg),
-                    Ok(Response::Tap(_)) => (),
+                    Ok(Response::Tap(_, _)) => (),
                     Ok(Response::Out(_)) => (),
 
                     Err(msg) => go_to_definition_server
@@ -123,7 +127,7 @@ impl Connection {
         thread::spawn(move || {
             for response in completions.responses().expect("couldn't get responses") {
                 match response {
-                    Ok(Response::Ret(msg)) => {
+                    Ok(Response::Ret(msg, _)) => {
                         if let Some(completions) = util::parse_completions(&msg) {
                             info!("Updating {} completions!", completions.len());
 
@@ -134,7 +138,7 @@ impl Connection {
                         }
                     }
                     Ok(Response::Err(msg)) => error!("Error message from completions: {}", msg),
-                    Ok(Response::Tap(_)) => (),
+                    Ok(Response::Tap(_, _)) => (),
                     Ok(Response::Out(_)) => (),
 
                     Err(msg) => completions_server

@@ -8,8 +8,8 @@ use std::time::Duration;
 
 #[derive(Debug)]
 pub enum Response {
-    Ret(String),
-    Tap(String),
+    Ret(String, i64),
+    Tap(String, i64),
     Out(String),
     Err(String),
 }
@@ -22,8 +22,7 @@ fn keyword(name: &str) -> Value {
 enum Error {
     #[fail(
         display = "missing keyword `{:?}` in REPL response: {:?}",
-        keyword,
-        value
+        keyword, value
     )]
     MissingKeyword { value: Value, keyword: Value },
 
@@ -57,12 +56,17 @@ impl Response {
                 value: e_value.clone(),
             })?;
 
+            let ms = match msg.get(&keyword("ms")) {
+                Some(Value::Integer(ms)) => ms.clone(),
+                _ => -1,
+            };
+
             if let (Value::Keyword(tag), Value::String(val)) = (tag, val) {
                 let val = val.to_owned();
 
                 match tag.as_ref() {
-                    "ret" => Ok(Response::Ret(val)),
-                    "tap" => Ok(Response::Tap(val)),
+                    "ret" => Ok(Response::Ret(val, ms)),
+                    "tap" => Ok(Response::Tap(val, ms)),
                     "out" => Ok(Response::Out(val)),
                     "err" => Ok(Response::Err(val)),
                     _ => Err(error(Error::UnknownTag {
@@ -108,7 +112,8 @@ impl Client {
                 Some(Ok(value)) => Response::from(value),
                 Some(Err(err)) => Err(error(Error::ParseFailed { err })),
                 None => Err(error(Error::EmptyParseResult)),
-            }).map_err(error)
+            })
+            .map_err(error)
             .and_then(|x| x)
         });
 
