@@ -11,7 +11,13 @@
 
 (comment
   (run)
-  (nope))
+  (nope)
+
+  (do
+    (prn "before")
+    (Thread/sleep 3000)
+    (prn "after")))
+
 
 #"(this is a regex)"
 

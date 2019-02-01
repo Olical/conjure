@@ -1,3 +1,6 @@
+source autoload/conjure.vim
+source plugin/conjure.vim
+
 nnoremap <localleader>t
 \ :source autoload/conjure.vim<CR>
 \ :source plugin/conjure.vim<CR>
