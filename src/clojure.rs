@@ -94,11 +94,12 @@ pub fn eval(code: &str, ns: &str, lang: &Lang) -> String {
             (try
               (ns {})
               (clojure.core/eval (clojure.core/read-string {{:read-cond :allow}} \"(do {})\"))
-              (flush)
               (catch Throwable e
                 (binding [*out* *err*]
                   (print (-> e Throwable->map clojure.main/ex-triage clojure.main/ex-str))
-                  (flush))))
+                  (flush)))
+              (finally
+                (flush)))
             ",
             ns,
             util::escape_quotes(code),
