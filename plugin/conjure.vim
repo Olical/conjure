@@ -65,10 +65,21 @@ function! s:Eval(str)
   call conjure#eval(a:str)
 endfunction
 
-let g:conjure_refresh_dirs = ["src"]
-let g:conjure_refresh_args = ""
-let g:conjure_logging = 0
-let g:conjure_eval_count = 0
+if !exists('g:conjure_refresh_dirs')
+  let g:conjure_refresh_dirs = ["src"]
+endif
+
+if !exists('g:conjure_refresh_args')
+  let g:conjure_refresh_args = ""
+endif
+
+if !exists('g:conjure_logging')
+  let g:conjure_logging = 0
+endif
+
+if !exists('g:conjure_eval_count')
+  let g:conjure_eval_count = 0
+endif
 
 augroup conjure_bindings
   autocmd!
