@@ -68,7 +68,7 @@ endfunction
 let g:conjure_refresh_dirs = ["src"]
 let g:conjure_refresh_args = ""
 let g:conjure_logging = 0
-let g:conjure_changedtick = 0
+let g:conjure_eval_count = 0
 
 augroup conjure_bindings
   autocmd!
@@ -93,6 +93,4 @@ augroup conjure_bindings
 
   autocmd FileType clojure setlocal omnifunc=conjure#omnicomplete
   autocmd CursorHold * if &ft ==# 'clojure' | call conjure#update_completions()
-  autocmd TextChanged * if &ft ==# 'clojure' | let g:conjure_changedtick += 1
-  autocmd TextChangedI * if &ft ==# 'clojure' | let g:conjure_changedtick += 1
 augroup END

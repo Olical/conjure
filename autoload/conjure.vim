@@ -32,6 +32,7 @@ endfunction
 function! conjure#eval(code)
   if conjure#upsert_job() == 0
     call rpcnotify(s:jobid, "eval", a:code)
+    let g:conjure_eval_count += 1
   endif
 endfunction
 
@@ -70,13 +71,13 @@ endfunction
 
 function! conjure#update_completions()
   if s:jobid != 0
-    if exists("b:conjure_last_completion_changedtick") == 0
-      let b:conjure_last_completion_changedtick = -1
+    if exists("b:conjure_completion_guard") == 0
+      let b:conjure_completion_guard = -1
     endif
 
-    if b:conjure_last_completion_changedtick != g:conjure_changedtick
+    if b:conjure_completion_guard != g:conjure_eval_count
       call rpcnotify(s:jobid, "update_completions")
-      let b:conjure_last_completion_changedtick = g:conjure_changedtick
+      let b:conjure_completion_guard = g:conjure_eval_count
     endif
   endif
 endfunction
