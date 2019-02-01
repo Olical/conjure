@@ -97,26 +97,26 @@ if !exists('g:conjure_eval_count')
   let g:conjure_eval_count = 0
 endif
 
+command! -bar -nargs=0 ConjureList call conjure#list()
+command! -bar -nargs=0 ConjureShowLog call conjure#show_log()
+command! -bar -nargs=0 ConjureEvalFile call conjure#eval_file()
+command! -bar -nargs=0 ConjureEvalBuffer call conjure#eval_buffer()
+command! -bar -nargs=0 ConjureRunTests call conjure#run_tests()
+command! -bar -nargs=0 ConjureRunAllTests call conjure#run_all_tests()
+command! -bar -nargs=0 ConjureRefresh call conjure#refresh()
+command! -bar -nargs=0 ConjureRefreshAll call conjure#refresh_all()
+command! -bar -nargs=1 ConjureDoc call conjure#doc(<f-args>)
+command! -bar -nargs=1 ConjureGoToDefinition call conjure#go_to_definition(<f-args>)
+command! -bar -nargs=1 ConjureEval call conjure#eval(<f-args>)
+command! -bar -nargs=0 ConjureUpdateCompletions call conjure#update_completions()
+command! -bar -nargs=0 ConjureUpsertJob call conjure#upsert_job()
+command! -bar -nargs=0 ConjureStopJob call conjure#stop_job()
+command! -bar -nargs=0 ConjureRestartJob call conjure#restart_job()
+command! -bar -nargs=+ ConjureConnect call conjure#connect(<f-args>)
+command! -bar -nargs=1 ConjureDisconnect call conjure#disconnect(<f-args>)
+
 augroup conjure_bindings
   autocmd!
-
-  autocmd FileType clojure command! -buffer -bar -nargs=0 ConjureList call conjure#list()
-  autocmd FileType clojure command! -buffer -bar -nargs=0 ConjureShowLog call conjure#show_log()
-  autocmd FileType clojure command! -buffer -bar -nargs=0 ConjureEvalFile call conjure#eval_file()
-  autocmd FileType clojure command! -buffer -bar -nargs=0 ConjureEvalBuffer call conjure#eval_buffer()
-  autocmd FileType clojure command! -buffer -bar -nargs=0 ConjureRunTests call conjure#run_tests()
-  autocmd FileType clojure command! -buffer -bar -nargs=0 ConjureRunAllTests call conjure#run_all_tests()
-  autocmd FileType clojure command! -buffer -bar -nargs=0 ConjureRefresh call conjure#refresh()
-  autocmd FileType clojure command! -buffer -bar -nargs=0 ConjureRefreshAll call conjure#refresh_all()
-  autocmd FileType clojure command! -buffer -bar -nargs=1 ConjureDoc call conjure#doc(<f-args>)
-  autocmd FileType clojure command! -buffer -bar -nargs=1 ConjureGoToDefinition call conjure#go_to_definition(<f-args>)
-  autocmd FileType clojure command! -buffer -bar -nargs=1 ConjureEval call conjure#eval(<f-args>)
-  autocmd FileType clojure command! -buffer -bar -nargs=0 ConjureUpdateCompletions call conjure#update_completions()
-  autocmd FileType clojure command! -buffer -bar -nargs=0 ConjureUpsertJob call conjure#upsert_job()
-  autocmd FileType clojure command! -buffer -bar -nargs=0 ConjureStopJob call conjure#stop_job()
-  autocmd FileType clojure command! -buffer -bar -nargs=0 ConjureRestartJob call conjure#restart_job()
-  autocmd FileType clojure command! -buffer -bar -nargs=+ ConjureConnect call conjure#connect(<f-args>)
-  autocmd FileType clojure command! -buffer -bar -nargs=1 ConjureDisconnect call conjure#disconnect(<f-args>)
 
   if g:conjure_use_default_mappings
     autocmd FileType clojure execute "nnoremap <buffer>" g:conjure_mapping_prefix . "p" ":ConjureList<CR>"
@@ -141,6 +141,6 @@ augroup conjure_bindings
 
   if g:conjure_use_omnicomplete
     autocmd FileType clojure setlocal omnifunc=conjure#omnicomplete
-    autocmd CursorHold * if &ft ==# 'clojure' | call conjure#update_completions()
+    autocmd CursorHold * if &ft ==# 'clojure' | ConjureUpdateCompletions
   endif
 augroup END
