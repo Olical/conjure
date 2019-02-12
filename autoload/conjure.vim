@@ -39,7 +39,7 @@ endfunction
 function! conjure#eval_with_out_str(code)
   call conjure#eval(printf("
         \(let [result! (atom nil)]
-        \  (println
+        \  (print
         \    (with-out-str
         \      (reset! result! (do %s))))
         \  @result!)
