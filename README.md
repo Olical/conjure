@@ -1,6 +1,6 @@
 # Conjure
 
-Work in progress. Will hopefully be a Clojure socket REPL integration for Neovim.
+Clojure(Script) Neovim integration via prepl, a work in progress. Follow me on twitter for updates [@OliverCaldwell](https://twitter.com/OliverCaldwell).
 
 ## Unlicenced
 
