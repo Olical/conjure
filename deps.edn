@@ -1,3 +1,7 @@
-{:deps {org.clojure/clojure {:mvn/version "1.10.0"}
-        org.clojure/clojurescript {:mvn/version "1.10.516"}
-        org.clojure/tools.namespace {:mvn/version "0.3.0-alpha4"}}}
+{:paths ["src"]
+
+ :deps {org.clojure/clojure {:mvn/version "1.10.0"}
+        org.clojure/clojurescript {:mvn/version "1.10.520"}}
+
+ :aliases {:test {:extra-deps {org.clojure/tools.namespace {:mvn/version "0.3.0-alpha4"}}}
+           :dev {:extra-paths ["dev"]}}}

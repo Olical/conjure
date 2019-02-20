@@ -1,0 +1,6 @@
+{:output-to "rplugin/node/conjure.js"
+ :output-dir "target"
+ :target :node
+ :optimizations :advanced
+ :verbose true
+ :parallel-build true}
