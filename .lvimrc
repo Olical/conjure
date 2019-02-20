@@ -1,9 +1,0 @@
-source autoload/conjure.vim
-source plugin/conjure.vim
-
-nnoremap <localleader>t
-\ :source autoload/conjure.vim<CR>
-\ :source plugin/conjure.vim<CR>
-\ :ConjureRestartJob<CR>
-\ :ConjureConnect jvm 127.0.0.1:5555 cljc?$ clj<CR>
-\ :ConjureConnect node 127.0.0.1:5556 clj(s\\|c)$ cljs<CR>
