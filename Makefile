@@ -9,11 +9,11 @@ rplugin/node/conjure.js: deps.edn $(SRC_FILES)
 	nvim +UpdateRemotePlugins +q
 
 nvim:
-	NVIM_NODE_LOG_FILE=logs/node.log NVIM_LISTEN_ADDRESS=/tmp/nvim nvim
+	NVIM_LISTEN_ADDRESS=/tmp/conjure-nvim NVIM_NODE_LOG_FILE=logs/node.log nvim
 
 dev:
 	(echo "(require 'conjure.dev) (conjure.dev/connect!)" && cat) |\
-		NVIM_LISTEN_ADDRESS=/tmp/nvim \
+		NVIM_LISTEN_ADDRESS=/tmp/conjure-nvim \
 		clj -Adev\
 		-J-Dclojure.server.dev="{:port 5885 :accept cljs.server.node/prepl}"\
 		--eval "(clojure.core.server/remote-prepl \"127.0.0.1\" 5885 *in* prn :valf identity)"

@@ -2,7 +2,9 @@
 
  :deps {org.clojure/clojure {:mvn/version "1.10.0"}
         org.clojure/clojurescript {:mvn/version "1.10.520"}
-        funcool/promesa {:mvn/version "2.0.0"}}
+        funcool/promesa {:mvn/version "2.0.0"}
+        applied-science/js-interop {:git/url "https://github.com/appliedsciencestudio/js-interop"
+                                    :sha "58b0ff8fdd4fcaa160d79e7b221d3f9da674f627"}}
 
- :aliases {:test {:extra-deps {org.clojure/tools.namespace {:mvn/version "0.3.0-alpha4"}}}
-           :dev {:extra-paths ["dev"]}}}
+        :aliases {:test {:extra-deps {org.clojure/tools.namespace {:mvn/version "0.3.0-alpha4"}}}
+                  :dev {:extra-paths ["dev"]}}}

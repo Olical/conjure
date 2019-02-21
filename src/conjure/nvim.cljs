@@ -1,14 +1,14 @@
 (ns conjure.nvim
-  (:require [goog.object :as go]))
+  (:require [applied-science.js-interop :as j]))
 
 (defonce api! (atom nil))
 
 (defn hello []
-  (let [append (go/getValueByKeys @api! #js ["buffer" "append"])]
-    (append "Hello, World! From Conjure ClojureScript!")))
+  (-> (j/get-in @api! [:buffer :append])
+      (apply "Hello, World! From Conjure ClojureScript!")))
 
 (defn setup! [plugin]
-  (reset! api! (go/get plugin "nvim"))
+  (reset! api! (j/get plugin :nvim))
 
-  (let [register-command (go/get plugin "registerCommand")]
+  (let [register-command (j/get plugin :registerCommand)]
     (register-command plugin "ConjureCLJS" hello)))

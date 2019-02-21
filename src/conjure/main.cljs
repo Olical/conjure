@@ -1,8 +1,11 @@
 (ns conjure.main
-  (:require [goog.object :as go]
+  (:require [cljs.nodejs :as nodejs]
+            [applied-science.js-interop :as j]
             [conjure.nvim :as nvim]))
 
+(nodejs/enable-util-print!)
+
 (defn -main []
-  (go/set js/module "exports" nvim/setup!))
+  (j/assoc! js/module :exports nvim/setup!))
 
 (set! *main-cli-fn* -main)
