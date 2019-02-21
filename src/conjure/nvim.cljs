@@ -4,11 +4,9 @@
 (defonce api! (atom nil))
 
 (defn hello []
-  (-> (j/get-in @api! [:buffer :append])
-      (apply "Hello, World! From Conjure ClojureScript!")))
+  (-> (j/get-in @api! [:buffer])
+      (j/call :append "Hello, World! From Conjure ClojureScript!")))
 
 (defn setup! [plugin]
   (reset! api! (j/get plugin :nvim))
-
-  (let [register-command (j/get plugin :registerCommand)]
-    (register-command plugin "ConjureCLJS" hello)))
+  (j/call plugin :registerCommand "ConjureCLJS" hello))
