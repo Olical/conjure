@@ -9,7 +9,7 @@ rplugin/node/conjure.js: deps.edn $(SRC_FILES)
 	nvim +UpdateRemotePlugins +q
 
 nvim:
-	NVIM_LISTEN_ADDRESS=/tmp/nvim nvim
+	NVIM_NODE_LOG_FILE=logs/node.log NVIM_LISTEN_ADDRESS=/tmp/nvim nvim
 
 dev:
 	(echo "(require 'conjure.dev) (conjure.dev/connect!)" && cat) |\
