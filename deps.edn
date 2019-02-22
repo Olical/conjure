@@ -7,4 +7,5 @@
                                     :sha "96780f0d8a4cd5b5e61d39e0d96e3ace5c20abb9"}}
 
         :aliases {:test {:extra-deps {org.clojure/tools.namespace {:mvn/version "0.3.0-alpha4"}}}
-                  :dev {:extra-paths ["dev"]}}}
+                  :dev {:extra-paths ["dev"]
+                        :extra-deps {tubular {:mvn/version "1.3.0"}}}}}

@@ -14,10 +14,10 @@ nvim:
 
 dev:
 	(echo "(require 'conjure.dev) (conjure.dev/connect!)" && cat) |\
-		NVIM_LISTEN_ADDRESS=/tmp/conjure-nvim \
+		NVIM_LISTEN_ADDRESS=/tmp/conjure-nvim\
 		clj -Adev\
 		-J-Dclojure.server.dev="{:port 5885 :accept cljs.server.node/prepl}"\
-		--eval "(clojure.core.server/remote-prepl \"127.0.0.1\" 5885 *in* prn :valf identity)"
+		--main tubular.core --port 5885
 
 test-prepls:
 	clj -Atest\
