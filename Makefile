@@ -5,6 +5,7 @@ SRC_FILES = $(shell find src -type f -name '*')
 build: rplugin/node/conjure.js
 
 rplugin/node/conjure.js: deps.edn $(SRC_FILES)
+	npm install
 	clojure --main cljs.main --compile-opts cljsc_opts.edn --compile conjure.main
 	nvim +UpdateRemotePlugins +q
 

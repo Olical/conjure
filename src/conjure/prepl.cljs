@@ -2,9 +2,11 @@
   (:require [cljs.nodejs :as node]
             [cljs.core.async :as a]
             [cljs.reader :as reader]
-            [applied-science.js-interop :as j]))
+            [applied-science.js-interop :as j]
+            [byline]))
 
 (defonce net (node/require "net"))
+
 (defonce conn-id! (atom 0))
 (defonce conns! (atom []))
 
@@ -12,7 +14,7 @@
   @conns!)
 
 (defn destroy! [id]
-  (let [{:keys [socket read eval events] :as conn}
+  (let [{:keys [socket lines read eval events] :as conn}
         (first (filter #(= id (:id %)) (conns)))]
 
     (when conn
@@ -21,6 +23,7 @@
                (filterv #(not= % conn) conns)))
 
       (j/call socket :destroy)
+      (j/call lines :destroy)
 
       (doseq [c [read eval events]]
         (a/close! c))
@@ -30,11 +33,13 @@
 (defn connect! [opts]
   (let [id (swap! conn-id! inc)
         socket (j/call net :connect (clj->js (select-keys opts #{:host :port})))
+        lines (j/call byline :createStream)
         [read eval events] (repeatedly a/chan)
         conn (merge
                (select-keys opts #{:name :expression :language})
                {:id id
                 :socket socket
+                :lines lines
                 :read read
                 :eval eval
                 :events events})]
@@ -42,6 +47,8 @@
     (swap! conns! conj conn)
 
     (doto socket
+      (j/call :setEncoding "utf8")
+
       (j/call :on "close"
               (fn [error?]
                 (a/go
@@ -68,7 +75,8 @@
       (j/call :on "ready"
               (fn []
                 (a/go
-                  (a/>! events {:type :ready}))))
+                  (a/>! events {:type :ready})
+                  (j/call socket :pipe lines))))
 
       (j/call :on "timeout"
               (fn []
@@ -87,14 +95,15 @@
                                 :error error
                                 :address address
                                 :family family
-                                :host host}))))
+                                :host host})))))
 
+    (doto lines
       (j/call :on "data"
-              (fn [body]
-                (a/go
-                  (a/>! read (reader/read-string (j/call body :toString)))
-                  (a/>! events {:type :data
-                                :body body})))))
+        (fn [body]
+          (a/go
+            (a/>! read (reader/read-string body))
+            (a/>! events {:type :data
+                          :body body})))))
 
     (a/go-loop []
       (when-let [code (a/<! eval)]
@@ -127,4 +136,4 @@
         (prn "=== event" event)
         (recur))))
 
-  (a/go (a/>! (:eval conn) "(+ 10 10)\n")))
+  (a/go (a/>! (:eval conn) "(+ 10 10)")))
