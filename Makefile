@@ -9,6 +9,7 @@ rplugin/node/conjure.js: deps.edn $(SRC_FILES)
 	nvim +UpdateRemotePlugins +q
 
 nvim:
+	mkdir -p logs
 	NVIM_LISTEN_ADDRESS=/tmp/conjure-nvim NVIM_NODE_LOG_FILE=logs/node.log nvim
 
 dev:

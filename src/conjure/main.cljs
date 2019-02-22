@@ -13,7 +13,4 @@
   (n/store-plugin! plugin)
   (n/register-command :ConjureCLJS hello))
 
-(defn -main []
-  (j/assoc! js/module :exports setup!))
-
-(set! *main-cli-fn* -main)
+(j/assoc! js/module :exports setup!)
