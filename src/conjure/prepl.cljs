@@ -119,12 +119,16 @@
     (destroy! id))
 
   (do
+    ;; make test-prepls
+    ;; clj 5555
+    ;; cljs 5556
+    ;; browser 5557
     (def conn (connect!
                 {:name "test"
-                 :expression #"clj(s|c)$"
-                 :language :cljs
+                 :expression #"cljc?$"
+                 :language :clj
                  :host "localhost"
-                 :port 5885}))
+                 :port 5556}))
 
     (a/go-loop []
       (when-let [res (<! (:read conn))]
@@ -136,4 +140,4 @@
         (prn "=== event" event)
         (recur))))
 
-  (a/go (a/>! (:eval conn) "(+ 10 10)")))
+  (a/go (a/>! (:eval conn) "(+ 10 10)\n")))
