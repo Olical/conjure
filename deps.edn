@@ -2,6 +2,7 @@
 
  :deps {org.clojure/clojure {:mvn/version "1.10.0"}
         org.clojure/clojurescript {:mvn/version "1.10.520"}
+        org.clojure/core.async {:mvn/version "0.4.490"}
         funcool/promesa {:mvn/version "2.0.0"}
         applied-science/js-interop {:git/url "https://github.com/appliedsciencestudio/js-interop"
                                     :sha "96780f0d8a4cd5b5e61d39e0d96e3ace5c20abb9"}}

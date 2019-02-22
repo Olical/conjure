@@ -1,9 +1,9 @@
 (ns conjure.main
-  (:require [cljs.nodejs :as nodejs]
+  (:require [cljs.nodejs :as node]
             [applied-science.js-interop :as j]
             [conjure.nvim :as n]))
 
-(nodejs/enable-util-print!)
+(node/enable-util-print!)
 
 (defn hello []
   (-> (n/buffer)
