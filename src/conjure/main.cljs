@@ -10,7 +10,7 @@
       (n/append "Hello, World! From Conjure ClojureScript!")))
 
 (defn setup! [plugin]
-  (n/store-plugin! plugin)
+  (n/reset-plugin! plugin)
   (n/register-command :ConjureCLJS hello))
 
 (j/assoc! js/module :exports setup!)

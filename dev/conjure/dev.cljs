@@ -7,4 +7,4 @@
 
 (defn connect! []
   (->> (node/require "neovim/scripts/nvim")
-       (p/map n/store-api!)))
+       (p/map n/reset-api!)))

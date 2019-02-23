@@ -81,25 +81,3 @@
      :read read
      :eval eval
      :events events}))
-
-(comment
-  (do
-    ;; make test-prepls
-    ;; jvm 5555
-    ;; node 5556
-    ;; browser 5557
-    (def prepl (connect! {:host "localhost", :port 5555}))
-
-    (a/go-loop []
-      (when-let [res (<! (:read prepl))]
-        (prn "=== res" res)
-        (recur)))
-
-    (a/go-loop []
-      (when-let [event (<! (:events prepl))]
-        (prn "=== event" event)
-        (recur))))
-
-  (a/go (a/>! (:eval prepl) "(+ 10 10)"))
-
-  (destroy! prepl))

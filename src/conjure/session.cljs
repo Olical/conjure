@@ -12,10 +12,10 @@
     (destroy! conn)
     (swap! conns! dissoc tag)))
 
-(defn add! [{:keys [tag path-expr host port]}]
+(defn add! [{:keys [tag path-expr host port] :or {:host "localhost"}}]
   (remove! tag)
 
   (let [conn {:tag tag
               :path-expr path-expr
-              :prepls {:user (prepl/connect! {:host host, :port port})}}]
+              :prepls {:default (prepl/connect! {:host host, :port port})}}]
     (swap! conns! assoc tag conn)))

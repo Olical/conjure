@@ -4,32 +4,24 @@
 (defonce plugin! (atom nil))
 (defonce api! (atom nil))
 
-(defn store-api! [api]
+(defn reset-api! [api]
   (reset! api! api))
 
-(defn store-plugin! [plugin]
+(defn reset-plugin! [plugin]
   (reset! plugin! plugin)
-  (store-api! (j/get plugin :nvim)))
-
-(defn api []
-  (or @api! (throw (js/Error. "api not available"))))
-
-(defn plugin []
-  (or @plugin! (throw (js/Error. "plugin not available"))))
+  (reset-api! (j/get plugin :nvim)))
 
 (defn buffer []
-  (j/get (api) :buffer))
+  (j/get @api! :buffer))
 
 (defn append [target value]
-  (doto target
-    (j/call :append value)))
+  (j/call target :append value))
 
 (defn echo [message]
-  (j/call (api) :outWriteLine message))
+  (j/call @api! :outWriteLine message))
 
 (defn echo-error [message]
-  (j/call (api) :errWriteLine message))
+  (j/call @api! :errWriteLine message))
 
 (defn register-command [k f]
-  (doto (plugin)
-    (j/call :registerCommand (name k) f)))
+  (j/call @plugin! :registerCommand (name k) f))
