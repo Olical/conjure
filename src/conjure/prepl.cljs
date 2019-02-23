@@ -87,8 +87,8 @@
 (comment
   (do
     ;; make test-prepls
-    ;; clj 5555
-    ;; cljs 5556
+    ;; jvm 5555
+    ;; node 5556
     ;; browser 5557
     (def conn (connect! {:host "localhost", :port 5556}))
 
