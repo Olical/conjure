@@ -1,6 +1,6 @@
-/target/
 /.cpcache/
-**/*.rs.bk
 /out/
+/rplugin/
 /.cljs_node_repl/
-/bin/
+/node_modules/
+/logs/

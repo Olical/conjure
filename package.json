@@ -1,0 +1,20 @@
+{
+  "name": "conjure",
+  "version": "0.0.0",
+  "description": "This is not an npm package, please ignore.",
+  "main": "nope.js",
+  "scripts": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Olical/conjure.git"
+  },
+  "author": "",
+  "license": "Unlicense",
+  "bugs": {
+    "url": "https://github.com/Olical/conjure/issues"
+  },
+  "homepage": "https://github.com/Olical/conjure#readme",
+  "devDependencies": {
+    "neovim": "^4.2.1"
+  }
+}
