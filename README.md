@@ -1,5 +1,7 @@
 # Conjure
 
+> This is the legacy Rust implementation that I'm replacing with ClojureScript. This version is usable and installable via [this guide](https://gist.github.com/Olical/8ddc726c41112be5eb450b12954d81f0). Check out the master branch for the main ClojureScript version.
+
 Clojure(Script) Neovim integration via prepl, a work in progress. Follow me on twitter for updates [@OliverCaldwell](https://twitter.com/OliverCaldwell).
 
 ## Unlicenced
