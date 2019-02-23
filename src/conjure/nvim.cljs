@@ -24,6 +24,12 @@
   (doto target
     (j/call :append value)))
 
+(defn echo [message]
+  (j/call (api) :outWriteLine message))
+
+(defn echo-error [message]
+  (j/call (api) :errWriteLine message))
+
 (defn register-command [k f]
   (doto (plugin)
     (j/call :registerCommand (name k) f)))

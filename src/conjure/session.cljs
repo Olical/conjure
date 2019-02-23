@@ -1,11 +1,11 @@
 (ns conjure.session
-  (:require [conjure.prepl :as p]))
+  (:require [conjure.prepl :as prepl]))
 
 (defonce conns! (atom {}))
 
 (defn destroy! [{:keys [prepls]}]
-  (doseq [prepl (vals prepls)]
-    (p/destroy! prepl)))
+  (doseq [p (vals prepls)]
+    (prepl/destroy! p)))
 
 (defn remove! [tag]
   (when-let [conn (get tag @conns!)]
@@ -17,5 +17,5 @@
 
   (let [conn {:tag tag
               :path-expr path-expr
-              :prepls {:user (p/connect! {:host host, :port port})}}]
+              :prepls {:user (prepl/connect! {:host host, :port port})}}]
     (swap! conns! assoc tag conn)))
