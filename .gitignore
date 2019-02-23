@@ -1,5 +1,5 @@
 /.cpcache/
-/target/
+/out/
 /rplugin/
 /.cljs_node_repl/
 /node_modules/

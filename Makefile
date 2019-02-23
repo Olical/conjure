@@ -1,13 +1,10 @@
-.PHONY: npm build nvim dev test-prepls
+.PHONY: build nvim dev test-prepls
 
 SRC_FILES = $(shell find src -type f -name '*')
 
-npm:
-	npm install
-
 build: rplugin/node/conjure.js
 
-rplugin/node/conjure.js: deps.edn $(SRC_FILES) npm
+rplugin/node/conjure.js: deps.edn $(SRC_FILES)
 	clojure --main cljs.main --compile-opts cljsc_opts.edn --compile conjure.main
 	nvim +UpdateRemotePlugins +q
 
@@ -15,7 +12,8 @@ nvim:
 	mkdir -p logs
 	NVIM_LISTEN_ADDRESS=/tmp/conjure-nvim NVIM_NODE_LOG_FILE=logs/node.log nvim
 
-dev: npm
+dev:
+	npm install
 	(echo "(require 'conjure.dev) (conjure.dev/connect!)" && cat) |\
 		NVIM_LISTEN_ADDRESS=/tmp/conjure-nvim\
 		clj -Adev\
