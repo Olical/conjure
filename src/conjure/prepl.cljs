@@ -2,49 +2,23 @@
   (:require [cljs.nodejs :as node]
             [cljs.core.async :as a]
             [cljs.reader :as reader]
-            [applied-science.js-interop :as j]
-            [byline]))
+            [applied-science.js-interop :as j]))
 
 (defonce net (node/require "net"))
 
-(defonce conn-id! (atom 0))
-(defonce conns! (atom []))
+(defn destroy! [{:keys [socket read eval events]}]
+  (j/call socket :destroy)
 
-(defn conns []
-  @conns!)
+  (doseq [c [read eval events]]
+    (a/close! c)))
 
-(defn destroy! [id]
-  (let [{:keys [socket lines read eval events] :as conn}
-        (first (filter #(= id (:id %)) (conns)))]
-
-    (when conn
-      (swap! conns!
-             (fn [conns]
-               (filterv #(not= % conn) conns)))
-
-      (j/call socket :destroy)
-      (j/call lines :destroy)
-
-      (doseq [c [read eval events]]
-        (a/close! c))
-
-      nil)))
-
-(defn connect! [opts]
-  (let [id (swap! conn-id! inc)
-        socket (j/call net :connect (clj->js (select-keys opts #{:host :port})))
-        lines (j/call byline :createStream)
+(defn connect! [{:keys [host port]}]
+  (let [socket (j/call net :connect #js {"host" host, "port" port})
         [read eval events] (repeatedly a/chan)
-        conn (merge
-               (select-keys opts #{:name :expression :language})
-               {:id id
-                :socket socket
-                :lines lines
-                :read read
-                :eval eval
-                :events events})]
-
-    (swap! conns! conj conn)
+        conn {:socket socket
+              :read read
+              :eval eval
+              :events events}]
 
     (doto socket
       (j/call :setEncoding "utf8")
@@ -54,7 +28,7 @@
                 (a/go
                   (a/>! events {:type :close
                                 :error? error?})
-                  (destroy! id))))
+                  (destroy! conn))))
 
       (j/call :on "error"
               (fn [error]
@@ -75,8 +49,7 @@
       (j/call :on "ready"
               (fn []
                 (a/go
-                  (a/>! events {:type :ready})
-                  (j/call socket :pipe lines))))
+                  (a/>! events {:type :ready}))))
 
       (j/call :on "timeout"
               (fn []
@@ -88,6 +61,13 @@
                 (a/go
                   (a/>! events {:type :connect}))))
 
+      (j/call :on "data"
+              (fn [body]
+                (a/go
+                  (a/>! read (reader/read-string body))
+                  (a/>! events {:type :data
+                                :body body}))))
+
       (j/call :on "lookup"
               (fn [error address family host]
                 (a/go
@@ -97,14 +77,6 @@
                                 :family family
                                 :host host})))))
 
-    (doto lines
-      (j/call :on "data"
-        (fn [body]
-          (a/go
-            (a/>! read (reader/read-string body))
-            (a/>! events {:type :data
-                          :body body})))))
-
     (a/go-loop []
       (when-let [code (a/<! eval)]
         (j/call socket :write code)
@@ -113,22 +85,12 @@
     conn))
 
 (comment
-  (count (conns))
-
-  (doseq [id (map :id (conns))]
-    (destroy! id))
-
   (do
     ;; make test-prepls
     ;; clj 5555
     ;; cljs 5556
     ;; browser 5557
-    (def conn (connect!
-                {:name "test"
-                 :expression #"cljc?$"
-                 :language :clj
-                 :host "localhost"
-                 :port 5556}))
+    (def conn (connect! {:host "localhost", :port 5556}))
 
     (a/go-loop []
       (when-let [res (<! (:read conn))]
@@ -140,4 +102,7 @@
         (prn "=== event" event)
         (recur))))
 
-  (a/go (a/>! (:eval conn) "(+ 10 10)\n")))
+  (a/go (a/>! (:eval conn) "(+ 10 10)"))
+  (j/get (:socket conn) :bytesRead)
+
+  (destroy! conn))

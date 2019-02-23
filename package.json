@@ -16,8 +16,5 @@
   "homepage": "https://github.com/Olical/conjure#readme",
   "devDependencies": {
     "neovim": "^4.2.1"
-  },
-  "dependencies": {
-    "byline": "^5.0.0"
   }
 }
