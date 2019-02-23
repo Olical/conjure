@@ -90,7 +90,7 @@
     ;; jvm 5555
     ;; node 5556
     ;; browser 5557
-    (def conn (connect! {:host "localhost", :port 5556}))
+    (def conn (connect! {:host "localhost", :port 5555}))
 
     (a/go-loop []
       (when-let [res (<! (:read conn))]
