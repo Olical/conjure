@@ -14,11 +14,7 @@
 
 (defn connect! [{:keys [host port]}]
   (let [socket (j/call net :connect #js {"host" host, "port" port})
-        [read eval events] (repeatedly a/chan)
-        conn {:socket socket
-              :read read
-              :eval eval
-              :events events}]
+        [read eval events] (repeatedly a/chan)]
 
     (doto socket
       (j/call :setEncoding "utf8")
@@ -27,8 +23,7 @@
               (fn [error?]
                 (a/go
                   (a/>! events {:type :close
-                                :error? error?})
-                  (destroy! conn))))
+                                :error? error?}))))
 
       (j/call :on "error"
               (fn [error]
@@ -61,13 +56,6 @@
                 (a/go
                   (a/>! events {:type :connect}))))
 
-      (j/call :on "data"
-              (fn [body]
-                (a/go
-                  (a/>! read (reader/read-string body))
-                  (a/>! events {:type :data
-                                :body body}))))
-
       (j/call :on "lookup"
               (fn [error address family host]
                 (a/go
@@ -75,14 +63,24 @@
                                 :error error
                                 :address address
                                 :family family
-                                :host host})))))
+                                :host host}))))
+
+      (j/call :on "data"
+              (fn [body]
+                (a/go
+                  (a/>! read (reader/read-string body))
+                  (a/>! events {:type :data
+                                :body body})))))
 
     (a/go-loop []
       (when-let [code (a/<! eval)]
         (j/call socket :write code)
         (recur)))
 
-    conn))
+    {:socket socket
+     :read read
+     :eval eval
+     :events events}))
 
 (comment
   (do
@@ -90,19 +88,18 @@
     ;; jvm 5555
     ;; node 5556
     ;; browser 5557
-    (def conn (connect! {:host "localhost", :port 5555}))
+    (def prepl (connect! {:host "localhost", :port 5555}))
 
     (a/go-loop []
-      (when-let [res (<! (:read conn))]
+      (when-let [res (<! (:read prepl))]
         (prn "=== res" res)
         (recur)))
 
     (a/go-loop []
-      (when-let [event (<! (:events conn))]
+      (when-let [event (<! (:events prepl))]
         (prn "=== event" event)
         (recur))))
 
-  (a/go (a/>! (:eval conn) "(+ 10 10)"))
-  (j/get (:socket conn) :bytesRead)
+  (a/go (a/>! (:eval prepl) "(+ 10 10)"))
 
-  (destroy! conn))
+  (destroy! prepl))
