@@ -1,4 +1,5 @@
 (ns conjure.prepl
+  "Wrapper around a raw prepl connection, simply provides some basic parsing of responses and talking to node's net module."
   (:require [cljs.nodejs :as node]
             [cljs.core.async :as a]
             [cljs.reader :as reader]

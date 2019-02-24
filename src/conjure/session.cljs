@@ -1,36 +1,46 @@
 (ns conjure.session
+  "Manages active connections, can be used to look up connections to act upon."
   (:require [cljs.core.async :as a]
             [conjure.prepl :as prepl]
-            [conjure.nvim :as nvim]))
+            [conjure.display :as display]))
+
+;; TODO Handle failure events from prepls
 
 (defonce conns! (atom {}))
 
-(defn destroy! [{:keys [prepls]}]
-  (doseq [p (vals prepls)]
-    (prepl/destroy! p)))
+(def default-exprs
+  {:clj #"\.cljc?$"
+   :cljs #"\.clj(s|c)$"})
 
 (defn remove! [tag]
-  (when-let [conn (get @conns! tag)]
-    (destroy! conn)
+  (when-let [{:keys [prepl]} (get @conns! tag)]
+    (prepl/destroy! prepl)
     (swap! conns! dissoc tag)))
 
-(defn add! [{:keys [tag host port] :or {tag :default, host "localhost"}}]
+(defn add! [{:keys [tag port lang expr host]
+             :or {tag :default
+                  host "localhost"
+                  lang :clj}}]
   (remove! tag)
 
-  (let [conn {:prepls {:default (prepl/connect! {:host host, :port port})}}]
+  (let [conn {:tag tag
+              :lang lang
+              :expr (or expr (get default-exprs lang))
+              :prepl (prepl/connect! {:host host, :port port})}]
     (swap! conns! assoc tag conn)
 
     (a/go-loop []
-      (when-let [result (a/<! (get-in conn [:prepls :default :read-chan]))]
-        (nvim/echo! "result" (pr-str result))
-        (recur)))
-
-    (a/go-loop []
-      (when-let [event (a/<! (get-in conn [:prepls :default :event-chan]))]
-        (nvim/echo! "event" (pr-str event))
+      (when-let [result (a/<! (get-in conn [:prepl :read-chan]))]
+        (display/result! result)
         (recur)))))
+
+(defn path-conns [path]
+  (filter
+    (fn [{:keys [expr]}]
+      (re-find expr path))
+    (vals @conns!)))
 
 (comment
   (add! {:tag :dev, :port 5555})
-  (a/go (a/>! (get-in @conns! [:dev :prepls :default :eval-chan]) "(+ 10 10)"))
+  (path-conns "foo.clj")
   (remove! :dev))

@@ -1,4 +1,5 @@
 (ns conjure.dev
+  "Hooks into the result of `make nvim` through the `make dev` prepl."
   (:require [cljs.nodejs :as node]
             [promesa.core :as p]
             [conjure.nvim :as nvim]))

@@ -1,6 +1,6 @@
 (ns conjure.nvim
-  (:require [clojure.string :as str]
-            [applied-science.js-interop :as j]))
+  "Wrapper around all nvim functions."
+  (:require [applied-science.js-interop :as j]))
 
 (defonce plugin! (atom nil))
 (defonce api! (atom nil))
@@ -15,14 +15,11 @@
 (defn buffer []
   (j/get @api! :buffer))
 
-(defn append! [target & value]
-  (j/call target :append (str/join " " value)))
+(defn out-write-line! [line]
+  (j/call @api! :outWriteLine line))
 
-(defn echo! [& message]
-  (j/call @api! :outWriteLine (str/join " " message)))
-
-(defn echo-error! [& message]
-  (j/call @api! :errWriteLine (str/join " " message)))
+(defn err-write-line! [line]
+  (j/call @api! :errWriteLine line))
 
 (defn register-command! [k f opts]
   (j/call @plugin! :registerCommand (name k) f (clj->js opts)))

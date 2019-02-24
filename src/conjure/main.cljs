@@ -1,4 +1,5 @@
 (ns conjure.main
+  "Entry point for the plugin when in production mode."
   (:require [cljs.nodejscli]
             [cljs.nodejs :as node]
             [cljs.core.async :as a]
@@ -26,7 +27,8 @@
 (defn eval! [code]
   (p/do*
     (a/go
-      (a/>! (get-in @session/conns! [:dev :prepls :default :eval-chan]) (str code)))))
+      (doseq [conn (session/path-conns "foo.clj")]
+        (a/>! (get-in conn [:prepl :eval-chan]) (str code))))))
 
 (defn setup! [plugin]
   (nvim/reset-plugin! plugin)
