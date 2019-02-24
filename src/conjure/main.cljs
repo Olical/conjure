@@ -30,8 +30,8 @@
 
 (defn setup! [plugin]
   (nvim/reset-plugin! plugin)
-  (nvim/register-command! :CLJS add! {"nargs" "*"})
-  (nvim/register-command! :CLJSRemove remove! {"nargs" "1"})
-  (nvim/register-command! :CLJSEval eval! {"nargs" "1"}))
+  (nvim/register-command! :CLJS add! {:nargs "*"})
+  (nvim/register-command! :CLJSRemove remove! {:nargs "1"})
+  (nvim/register-command! :CLJSEval eval! {:nargs "1"}))
 
 (j/assoc! js/module :exports setup!)

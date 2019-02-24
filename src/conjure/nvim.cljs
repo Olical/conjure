@@ -25,5 +25,4 @@
   (j/call @api! :errWriteLine (str/join " " message)))
 
 (defn register-command! [k f opts]
-  ;; TODO Have a function that maps keywords to strings as well as JS.
   (j/call @plugin! :registerCommand (name k) f (clj->js opts)))
