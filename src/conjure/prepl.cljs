@@ -2,8 +2,7 @@
   (:require [cljs.nodejs :as node]
             [cljs.core.async :as a]
             [cljs.reader :as reader]
-            [applied-science.js-interop :as j]
-            [conjure.nvim :as nvim]))
+            [applied-science.js-interop :as j]))
 
 (defonce net (node/require "net"))
 
