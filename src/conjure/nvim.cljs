@@ -1,6 +1,7 @@
 (ns conjure.nvim
   "Wrapper around all nvim functions."
-  (:require [applied-science.js-interop :as j]))
+  (:require [applied-science.js-interop :as j]
+            [conjure.util :as util]))
 
 (defonce plugin! (atom nil))
 (defonce api! (atom nil))
@@ -22,4 +23,4 @@
   (j/call @api! :errWriteLine line))
 
 (defn register-command! [k f opts]
-  (j/call @plugin! :registerCommand (name k) f (clj->js opts)))
+  (j/call @plugin! :registerCommand (name k) (comp f str) (util/->js opts)))
