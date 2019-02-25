@@ -5,8 +5,6 @@
             [conjure.prepl :as prepl]
             [conjure.display :as display]))
 
-;; TODO Handle failure events from prepls
-
 (s/def ::expr regexp?)
 (s/def ::tag keyword?)
 (s/def ::port number?)
@@ -22,10 +20,9 @@
    :cljs #"\.clj(s|c)$"})
 
 (defn remove! [tag]
-  (when (display/ensure! ::tag tag)
-    (when-let [{:keys [prepl]} (get @conns! tag)]
-      (prepl/destroy! prepl)
-      (swap! conns! dissoc tag))))
+  (when-let [{:keys [prepl]} (get @conns! tag)]
+    (prepl/destroy! prepl)
+    (swap! conns! dissoc tag)))
 
 (defn add! [{:keys [tag port lang expr host]
              :or {tag :default
@@ -42,6 +39,13 @@
       (a/go-loop []
         (when-let [result (a/<! (get-in conn [:prepl :aux-chan]))]
           (display/result! result)
+          (recur)))
+
+      (a/go-loop []
+        (when-let [event (a/<! (get-in conn [:prepl :event-chan]))]
+          (when (contains? #{:close :error :end :timeout} (:type event))
+            (remove! tag)
+            (display/error! (str "Removed connection " tag " -") event))
           (recur)))))
 
 (defn path-conns [path]

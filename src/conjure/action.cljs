@@ -12,6 +12,7 @@
        (p/map
          (fn [path]
            (if-let [conns (seq (session/path-conns path))]
+             ;; TODO Can this just be a promise plz
              (a/go
                (doseq [conn conns]
                  (display/result! (a/<! (session/eval! conn code)))))

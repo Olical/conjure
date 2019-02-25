@@ -60,7 +60,7 @@
       (j/call :on "lookup"
               (fn [error address family host]
                 (a/go
-                  (a/>! event-chan {:type :end
+                  (a/>! event-chan {:type :lookup
                                     :error error
                                     :address address
                                     :family family
