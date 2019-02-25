@@ -11,13 +11,15 @@
        (nvim/path)
        (p/map
          (fn [path]
-           (a/go
-             (doseq [conn (session/path-conns path)]
-               (a/>! (get-in conn [:prepl :eval-chan]) code)
-               (display/result! (a/<! (get-in conn [:prepl :read-chan])))))))))
+           (doseq [conn (session/path-conns path)]
+             (a/go (display/result! (a/<! (session/eval! conn code)))))))))
 
 (comment
-  (session/add! {:tag :dev, :port 5556, :expr #".*"})
+  ;; TODO Work out why that prn kills it.
+  ;; I suspect it's a nil in a chan.
+  ;; Although Clojure is fine.
+
+  (session/add! {:tag :dev, :port 5555, :expr #".*"})
   (eval! "(+ 10 10)")
   (eval! "(prn :henlo)")
   (session/remove! :dev))

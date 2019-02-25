@@ -49,3 +49,8 @@
     (fn [{:keys [expr]}]
       (re-find expr path))
     (vals @conns!)))
+
+(defn eval! [conn code]
+  (a/go
+    (a/>! (get-in conn [:prepl :eval-chan]) code)
+    (a/<! (get-in conn [:prepl :read-chan]))))
