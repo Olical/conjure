@@ -48,11 +48,13 @@
             (display/error! (str "Removed connection " tag " -") event))
           (recur)))))
 
-(defn path-conns [path]
-  (filter
-    (fn [{:keys [expr]}]
-      (re-find expr path))
-    (vals @conns!)))
+(defn conns
+  ([] (vals @conns!))
+  ([path]
+   (filter
+     (fn [{:keys [expr]}]
+       (re-find expr path))
+     (conns))))
 
 (defn eval! [conn code]
   (a/go

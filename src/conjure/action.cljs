@@ -11,15 +11,14 @@
        (nvim/path)
        (p/map
          (fn [path]
-           (if-let [conns (seq (session/path-conns path))]
-             ;; TODO Can this just be a promise plz
+           (if-let [conns (seq (session/conns path))]
              (a/go
                (doseq [conn conns]
                  (display/result! (a/<! (session/eval! conn code)))))
              (display/error! "No matching connections."))))))
 
 (comment
-  (session/add! {:tag :dev, :port 5556, :expr #".*"})
+  (session/add! {:tag :dev, :port 5555, :expr #".*"})
   (eval! "(+ 10 10)")
   (eval! "(println \"henlo\")")
   (session/remove! :dev))
