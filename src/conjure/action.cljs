@@ -11,15 +11,14 @@
        (nvim/path)
        (p/map
          (fn [path]
-           (doseq [conn (session/path-conns path)]
-             (a/go (display/result! (a/<! (session/eval! conn code)))))))))
+           (if-let [conns (seq (session/path-conns path))]
+             (a/go
+               (doseq [conn conns]
+                 (display/result! (a/<! (session/eval! conn code)))))
+             (display/error! "No matching connections."))))))
 
 (comment
-  ;; TODO Work out why that prn kills it.
-  ;; I suspect it's a nil in a chan.
-  ;; Although Clojure is fine.
-
-  (session/add! {:tag :dev, :port 5555, :expr #".*"})
+  (session/add! {:tag :dev, :port 5556, :expr #".*"})
   (eval! "(+ 10 10)")
-  (eval! "(prn :henlo)")
+  (eval! "(println \"henlo\")")
   (session/remove! :dev))

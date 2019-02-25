@@ -41,7 +41,7 @@
 
       (a/go-loop []
         (when-let [result (a/<! (get-in conn [:prepl :aux-chan]))]
-          (display/aux! result)
+          (display/result! result)
           (recur)))))
 
 (defn path-conns [path]
