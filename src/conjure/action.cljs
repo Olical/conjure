@@ -8,7 +8,7 @@
 (defn eval! [code]
   (a/go
     (let [path (a/<! (nvim/path (nvim/buffer)))]
-      (if-let [conns (seq (session/conns path))]
+      (if-let [conns (session/conns path)]
         (doseq [conn conns]
           (display/result! (a/<! (session/eval! conn code))))
         (display/error! "No matching connections.")))))
