@@ -49,8 +49,3 @@
     (fn [{:keys [expr]}]
       (re-find expr path))
     (vals @conns!)))
-
-(comment
-  (add! {:tag :dev, :port 5555})
-  (path-conns "foo.clj")
-  (remove! :dev))

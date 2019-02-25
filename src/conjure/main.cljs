@@ -4,13 +4,13 @@
             [cljs.nodejscli]
 
             [cljs.nodejs :as node]
-            [cljs.core.async :as a]
             [clojure.edn :as edn]
             [applied-science.js-interop :as j]
             [promesa.core :as p]
             [conjure.nvim :as nvim]
             [conjure.session :as session]
-            [conjure.display :as display]))
+            [conjure.display :as display]
+            [conjure.action :as action]))
 
 (node/enable-util-print!)
 
@@ -29,14 +29,12 @@
 
 (defn eval! [s]
   (p/do*
-    (a/go
-      (doseq [conn (session/path-conns "foo.clj")]
-        (a/>! (get-in conn [:prepl :eval-chan]) s)))))
+    (action/eval! s)))
 
 (defn setup! [plugin]
   (nvim/reset-plugin! plugin)
-  (nvim/register-command! :CLJS add! {:nargs "1"})
-  (nvim/register-command! :CLJSRemove remove! {:nargs "1"})
+  (nvim/register-command! :CLJS+ add! {:nargs "1"})
+  (nvim/register-command! :CLJS- remove! {:nargs "1"})
   (nvim/register-command! :CLJSEval eval! {:nargs "1"}))
 
 (j/assoc! js/module :exports setup!)

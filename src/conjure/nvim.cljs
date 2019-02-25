@@ -16,6 +16,9 @@
 (defn buffer []
   (j/get @api! :buffer))
 
+(defn path [buffer]
+  (j/get buffer :name))
+
 (defn out-write-line! [line]
   (j/call @api! :outWriteLine line))
 
