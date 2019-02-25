@@ -8,8 +8,8 @@
 (defn result! [result]
   (nvim/out-write-line! (str (name (:tag result)) ": " (:val result))))
 
-(defn error! [& message]
-  (nvim/err-write-line! (str/join " " message)))
+(defn error! [& args]
+  (nvim/err-write-line! (str/join " " args)))
 
 (defn ensure! [spec form]
   (if (s/valid? spec form)

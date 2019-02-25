@@ -8,7 +8,7 @@
         camel-snake-kebab {:mvn/version "0.4.0"}
         funcool/promesa {:mvn/version "2.0.0"}
         applied-science/js-interop {:git/url "https://github.com/appliedsciencestudio/js-interop"
-                                    :sha "96780f0d8a4cd5b5e61d39e0d96e3ace5c20abb9"}}
+                                    :sha "c39b30a532481e879fa8c4b25c47bf2407899fc7"}}
 
  :aliases {:test {:extra-deps {org.clojure/tools.namespace {:mvn/version "0.3.0-alpha4"}}}
            :dev {:extra-paths ["dev"]

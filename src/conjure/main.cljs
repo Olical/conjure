@@ -6,7 +6,6 @@
             [cljs.nodejs :as node]
             [clojure.edn :as edn]
             [applied-science.js-interop :as j]
-            [promesa.core :as p]
             [conjure.nvim :as nvim]
             [conjure.session :as session]
             [conjure.display :as display]
@@ -18,23 +17,21 @@
   (display/ensure! spec (edn/read-string s)))
 
 (defn add! [s]
-  (p/do*
-    (when-let [new-conn (parse ::session/new-conn s)]
-      (session/add! new-conn))))
+  (when-let [new-conn (parse ::session/new-conn s)]
+    (session/add! new-conn)))
 
 (defn remove! [s]
-  (p/do*
-    (when-let [tag (parse ::session/tag s)]
-      (session/remove! tag))))
+  (when-let [tag (parse ::session/tag s)]
+    (session/remove! tag)))
 
 (defn eval! [s]
-  (p/do*
-    (action/eval! s)))
+  (action/eval! s))
 
 (defn setup! [plugin]
   (nvim/reset-plugin! plugin)
-  (nvim/register-command! :CLJS+ add! {:nargs "1"})
-  (nvim/register-command! :CLJS- remove! {:nargs "1"})
-  (nvim/register-command! :CLJSEval eval! {:nargs "1"}))
+  (nvim/register-command! :CLJS add! {:nargs "1"})
+  (nvim/register-command! :CLJSRemove remove! {:nargs "1"})
+  (nvim/register-command! :CLJSEval eval! {:nargs "1"})
+  (nvim/register-command! :CLJSCheck (fn [] (nvim/out-write-line! "test"))))
 
 (j/assoc! js/module :exports setup!)
