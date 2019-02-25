@@ -5,7 +5,10 @@
             [conjure.nvim :as nvim]))
 
 (defn result! [result]
-  (nvim/out-write-line! (:val result)))
+  (nvim/out-write-line! (str "RESULT: " (:val result))))
+
+(defn aux! [result]
+  (nvim/out-write-line! (str "AUX: " (:val result))))
 
 (defn ensure! [spec form]
   (if (s/valid? spec form)

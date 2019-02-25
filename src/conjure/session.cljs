@@ -40,8 +40,8 @@
       (swap! conns! assoc tag conn)
 
       (a/go-loop []
-        (when-let [result (a/<! (get-in conn [:prepl :read-chan]))]
-          (display/result! result)
+        (when-let [result (a/<! (get-in conn [:prepl :aux-chan]))]
+          (display/aux! result)
           (recur)))))
 
 (defn path-conns [path]

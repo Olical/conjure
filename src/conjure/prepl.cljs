@@ -7,15 +7,15 @@
 
 (defonce net (node/require "net"))
 
-(defn destroy! [{:keys [socket read-chan eval-chan event-chan]}]
+(defn destroy! [{:keys [socket eval-chan read-chan aux-chan event-chan]}]
   (j/call socket :destroy)
 
-  (doseq [c [read-chan eval-chan event-chan]]
+  (doseq [c [eval-chan read-chan aux-chan event-chan]]
     (a/close! c)))
 
 (defn connect! [{:keys [host port]}]
   (let [socket (j/call net :connect #js {"host" host, "port" port})
-        [read-chan eval-chan event-chan] (repeatedly a/chan)]
+        [eval-chan read-chan aux-chan event-chan] (repeatedly a/chan)]
 
     (doto socket
       (j/call :setEncoding "utf8")
@@ -69,7 +69,10 @@
       (j/call :on "data"
               (fn [body]
                 (a/go
-                  (a/>! read-chan (reader/read-string body))
+                  (let [res (reader/read-string body)]
+                    (if (= (:tag res) :ret)
+                      (a/>! read-chan res)
+                      (a/>! aux-chan res)))
                   (a/>! event-chan {:type :data
                                     :body body})))))
 
@@ -79,6 +82,7 @@
         (recur)))
 
     {:socket socket
-     :read-chan read-chan
      :eval-chan eval-chan
+     :read-chan read-chan
+     :aux-chan aux-chan
      :event-chan event-chan}))
