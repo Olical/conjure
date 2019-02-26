@@ -1,6 +1,7 @@
 (ns conjure.util
   (:require [clojure.walk :as w]
             [clojure.string :as str]
+            [cljs.core.async :as a]
             [applied-science.js-interop :as j]
             [camel-snake-kebab.core :as csk]))
 
@@ -19,3 +20,12 @@
                   (into {} (map map-key x))
                   x))
         m))))
+
+(defn ->chan [p]
+  (let [c (a/promise-chan)]
+    (.then p (fn [v]
+               (a/go
+                 (if (nil? v)
+                   (a/close! c)
+                   (a/>! c v)))))
+    c))

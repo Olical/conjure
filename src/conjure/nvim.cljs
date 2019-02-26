@@ -1,36 +1,44 @@
 (ns conjure.nvim
   "Wrapper around all nvim functions."
-  (:require [clojure.string :as str]
+  (:require [cljs.nodejs :as node]
+            [clojure.string :as str]
             [applied-science.js-interop :as j]
             [conjure.util :as util]))
 
 (defonce plugin! (atom nil))
 (defonce api! (atom nil))
 
-(defn reset-api! [api]
-  (reset! api! api))
+(defn require-api! []
+  (-> (node/require "neovim/scripts/nvim")
+      (.then #(reset! api! %))))
 
 (defn reset-plugin! [plugin]
   (reset! plugin! plugin)
-  (reset-api! (j/get plugin :nvim)))
+  (reset! api! (j/get plugin :nvim)))
 
 (defn buffer []
-  (j/get @api! :buffer))
+  (-> (j/get @api! :buffer)
+      (util/->chan)))
 
 (defn path [buffer]
-  (j/get buffer :name))
+  (-> (j/get buffer :name)
+      (util/->chan)))
 
 (defn out-write! [& args]
-  (j/call @api! :outWrite (str/join " " args)))
+  (-> (j/call @api! :outWrite (str/join " " args))
+      (util/->chan)))
 
 (defn out-write-line! [& args]
-  (j/call @api! :outWriteLine (str/join " " args)))
+  (-> (j/call @api! :outWriteLine (str/join " " args))
+      (util/->chan)))
 
 (defn err-write! [& args]
-  (j/call @api! :errWrite (str/join " " args)))
+  (-> (j/call @api! :errWrite (str/join " " args))
+      (util/->chan)))
 
 (defn err-write-line! [& args]
-  (j/call @api! :errWriteLine (str/join " " args)))
+  (-> (j/call @api! :errWriteLine (str/join " " args))
+      (util/->chan)))
 
 (defn register-command!
   ([k f] (register-command! k f {}))

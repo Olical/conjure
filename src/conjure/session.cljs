@@ -22,7 +22,8 @@
 (defn remove! [tag]
   (when-let [{:keys [prepl]} (get @conns! tag)]
     (prepl/destroy! prepl)
-    (swap! conns! dissoc tag)))
+    (swap! conns! dissoc tag)
+    (display/message! (str "[" (name tag) "]") "Removed.")))
 
 (defn add! [{:keys [tag port lang expr host]
              :or {tag :default
@@ -38,7 +39,7 @@
 
     (a/go-loop []
       (when-let [result (a/<! (get-in conn [:prepl :aux-chan]))]
-        (display/aux! result)
+        (display/aux! conn result)
         (recur)))
 
     (a/go-loop []
@@ -47,9 +48,9 @@
           (:close :error :end :timeout)
           (do
             (remove! tag)
-            (display/error! (str "Removed connection " tag " -") event))
+            (display/error! (str "[" (name tag) "]") "Closed:" event))
 
-          :ready (display/message! "Connected!")
+          :ready (display/message! (str "[" (name tag) "]") "Connected!")
 
           nil)
         (recur)))))
@@ -57,10 +58,11 @@
 (defn conns
   ([] (vals @conns!))
   ([path]
-   (filter
-     (fn [{:keys [expr]}]
-       (re-find expr path))
-     (conns))))
+   (->> (conns)
+        (filter
+          (fn [{:keys [expr]}]
+            (re-find expr path)))
+        (seq))))
 
 (defn eval! [conn code]
   (a/go

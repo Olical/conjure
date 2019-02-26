@@ -6,5 +6,4 @@
 (node/enable-util-print!)
 
 (defn connect! []
-  (-> (node/require "neovim/scripts/nvim")
-      (.then nvim/reset-api!)))
+  (nvim/require-api!))

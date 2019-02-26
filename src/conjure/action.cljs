@@ -6,15 +6,13 @@
             [conjure.display :as display]))
 
 (defn eval! [code]
-  (-> (nvim/buffer)
-      (.then nvim/path)
-      (.then
-        (fn [path]
-          (a/go
-            (if-let [conns (seq (session/conns path))]
-              (doseq [conn conns]
-                (display/result! conn (a/<! (session/eval! conn code))))
-              (display/error! "No matching connections.")))))))
+  (a/go
+    (let [buffer (a/<! (nvim/buffer))
+          path (a/<! (nvim/path buffer))]
+      (if-let [conns (session/conns path)]
+        (doseq [conn conns]
+          (display/result! conn (a/<! (session/eval! conn code))))
+        (display/error! "No matching connections for path:" path)))))
 
 (comment
   (session/add! {:tag :dev, :port 5555, :expr #".*"})
