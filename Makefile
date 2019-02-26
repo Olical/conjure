@@ -4,8 +4,8 @@ SRC_FILES = $(shell find src -type f -name '*')
 
 build: rplugin/node/conjure.js
 
-rplugin/node/conjure.js: deps.edn cljsc_opts.edn $(SRC_FILES)
-	clojure --main cljs.main --compile-opts cljsc_opts.edn --compile conjure.main
+rplugin/node/conjure.js: deps.edn compile-opts.edn $(SRC_FILES)
+	clojure --main cljs.main --compile-opts compile-opts.edn --compile conjure.main
 	nvim +UpdateRemotePlugins +q
 
 nvim:
