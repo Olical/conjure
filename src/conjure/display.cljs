@@ -6,16 +6,16 @@
             [conjure.nvim :as nvim]))
 
 (defn aux! [result]
-  (nvim/out-write-line! (str (name (:tag result)) " => " (:val result))))
+  (nvim/out-write-line! (name (:tag result)) "=>" (:val result)))
 
 (defn result! [conn result]
-  (nvim/out-write-line! (str "[" (name (:tag conn)) "] " (:val result))))
+  (nvim/out-write-line! (str "[" (name (:tag conn)) "]") (:val result)))
 
 (defn message! [& args]
-  (nvim/out-write-line! (str/join " " args)))
+  (apply nvim/out-write-line! "Conjure:" args))
 
 (defn error! [& args]
-  (nvim/err-write-line! (str/join " " args)))
+  (apply nvim/err-write-line! "Conjure:" args))
 
 (defn ensure! [spec form]
   (if (s/valid? spec form)
