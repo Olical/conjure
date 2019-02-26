@@ -28,25 +28,31 @@
              :or {tag :default
                   host "localhost"
                   lang :clj}}]
-    (remove! tag)
+  (remove! tag)
 
-    (let [conn {:tag tag
-                :lang lang
-                :expr (or expr (get default-exprs lang))
-                :prepl (prepl/connect! {:host host, :port port})}]
-      (swap! conns! assoc tag conn)
+  (let [conn {:tag tag
+              :lang lang
+              :expr (or expr (get default-exprs lang))
+              :prepl (prepl/connect! {:host host, :port port})}]
+    (swap! conns! assoc tag conn)
 
-      (a/go-loop []
-        (when-let [result (a/<! (get-in conn [:prepl :aux-chan]))]
-          (display/result! result)
-          (recur)))
+    (a/go-loop []
+      (when-let [result (a/<! (get-in conn [:prepl :aux-chan]))]
+        (display/result! result)
+        (recur)))
 
-      (a/go-loop []
-        (when-let [event (a/<! (get-in conn [:prepl :event-chan]))]
-          (when (contains? #{:close :error :end :timeout} (:type event))
+    (a/go-loop []
+      (when-let [event (a/<! (get-in conn [:prepl :event-chan]))]
+        (case (:type event)
+          (:close :error :end :timeout)
+          (do
             (remove! tag)
             (display/error! (str "Removed connection " tag " -") event))
-          (recur)))))
+
+          :ready (display/message! "Connected!")
+
+          nil)
+        (recur)))))
 
 (defn conns
   ([] (vals @conns!))

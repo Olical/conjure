@@ -17,21 +17,18 @@
   (j/get @api! :buffer))
 
 (defn path [buffer]
-  (-> (j/get buffer :name)
-      (util/->chan)))
+  (j/get buffer :name))
 
 (defn out-write-line! [line]
-  (-> (j/call @api! :outWriteLine line)
-      (util/->chan)))
+  (j/call @api! :outWriteLine line))
 
 (defn err-write-line! [line]
-  (-> (j/call @api! :errWriteLine line)
-      (util/->chan)))
+  (j/call @api! :errWriteLine line))
 
 (defn register-command!
   ([k f] (register-command! k f {}))
   ([k f opts]
    (j/call @plugin! :registerCommand
            (name k)
-           (comp util/->promise f str)
+           (comp f str)
            (util/->js opts))))

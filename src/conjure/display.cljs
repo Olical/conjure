@@ -8,6 +8,9 @@
 (defn result! [result]
   (nvim/out-write-line! (str (name (:tag result)) ": " (:val result))))
 
+(defn message! [& args]
+  (nvim/out-write-line! (str/join " " args)))
+
 (defn error! [& args]
   (nvim/err-write-line! (str/join " " args)))
 
