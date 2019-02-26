@@ -13,7 +13,7 @@
           (a/go
             (if-let [conns (seq (session/conns path))]
               (doseq [conn conns]
-                (display/result! (a/<! (session/eval! conn code))))
+                (display/result! conn (a/<! (session/eval! conn code))))
               (display/error! "No matching connections.")))))))
 
 (comment

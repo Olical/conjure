@@ -38,7 +38,7 @@
 
     (a/go-loop []
       (when-let [result (a/<! (get-in conn [:prepl :aux-chan]))]
-        (display/result! result)
+        (display/aux! result)
         (recur)))
 
     (a/go-loop []

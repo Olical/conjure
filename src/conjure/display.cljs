@@ -5,8 +5,11 @@
             [expound.alpha :as expound]
             [conjure.nvim :as nvim]))
 
-(defn result! [result]
-  (nvim/out-write-line! (str (name (:tag result)) ": " (:val result))))
+(defn aux! [result]
+  (nvim/out-write-line! (str (name (:tag result)) " => " (:val result))))
+
+(defn result! [conn result]
+  (nvim/out-write-line! (str "[" (name (:tag conn)) "] " (:val result))))
 
 (defn message! [& args]
   (nvim/out-write-line! (str/join " " args)))
