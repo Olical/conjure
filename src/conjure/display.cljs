@@ -4,17 +4,14 @@
             [expound.alpha :as expound]
             [conjure.nvim :as nvim]))
 
-(defn aux! [conn result]
-  (nvim/out-write-line! (str "[" (name (:tag conn)) "]") (name (:tag result)) "=>" (:val result)))
+(defn message! [tag & args]
+  (apply nvim/out-write-line! (when tag (str "[" (name tag) "]")) args))
+
+(defn error! [tag & args]
+  (apply nvim/err-write-line! (when tag (str "[" (name tag) "]")) args))
 
 (defn result! [conn result]
-  (nvim/out-write-line! (str "[" (name (:tag conn)) "]") (:val result)))
-
-(defn message! [& args]
-  (apply nvim/out-write-line! args))
-
-(defn error! [& args]
-  (apply nvim/err-write-line! args))
+  (message! (:tag conn) (name (:tag result)) "=>" (:val result)))
 
 (defn ensure! [spec form]
   (if (s/valid? spec form)

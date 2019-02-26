@@ -12,7 +12,7 @@
       (if-let [conns (session/conns path)]
         (doseq [conn conns]
           (display/result! conn (a/<! (session/eval! conn code))))
-        (display/error! "No matching connections for path:" path)))))
+        (display/error! nil "No matching connections for path:" path)))))
 
 (comment
   (session/add! {:tag :dev, :port 5555, :expr #".*"})
