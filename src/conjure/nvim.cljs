@@ -24,17 +24,20 @@
   (-> (j/get buffer :name)
       (util/->chan)))
 
+(defn join [args]
+  (str/join " " (remove nil? args)))
+
 (defn out-write! [& args]
-  (j/call @api! :outWrite (str/join " " args)))
+  (j/call @api! :outWrite (join args)))
 
 (defn out-write-line! [& args]
-  (j/call @api! :outWriteLine (str/join " " args)))
+  (j/call @api! :outWriteLine (join args)))
 
 (defn err-write! [& args]
-  (j/call @api! :errWrite (str/join " " args)))
+  (j/call @api! :errWrite (join args)))
 
 (defn err-write-line! [& args]
-  (j/call @api! :errWriteLine (str/join " " args)))
+  (j/call @api! :errWriteLine (join args)))
 
 (defn register-command!
   ([k f] (register-command! k f {}))

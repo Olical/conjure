@@ -5,6 +5,7 @@
         org.clojure/spec.alpha {:mvn/version "0.2.176"}
         org.clojure/core.async {:mvn/version "0.4.490"}
         expound {:mvn/version "0.7.2"}
+        zprint {:mvn/version "0.4.15"}
         camel-snake-kebab {:mvn/version "0.4.0"}
         applied-science/js-interop {:git/url "https://github.com/appliedsciencestudio/js-interop"
                                     :sha "060918e0d70b05c8307daf747c5b3bf43bf2c281"}}

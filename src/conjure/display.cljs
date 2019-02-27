@@ -10,8 +10,8 @@
 (defn error! [tag & args]
   (apply nvim/err-write-line! (when tag (str "[" (name tag) "]")) args))
 
-(defn result! [conn result]
-  (message! (:tag conn) (name (:tag result)) "=>" (:val result)))
+(defn result! [tag result]
+  (message! tag (name (:tag result)) "=>" (:val result)))
 
 (defn ensure! [spec form]
   (if (s/valid? spec form)
