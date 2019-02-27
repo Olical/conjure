@@ -16,29 +16,25 @@
   (reset! plugin! plugin)
   (reset! api! (j/get plugin :nvim)))
 
-(defn buffer []
+(defn <buffer []
   (-> (j/get @api! :buffer)
       (util/->chan)))
 
-(defn path [buffer]
+(defn <path [buffer]
   (-> (j/get buffer :name)
       (util/->chan)))
 
 (defn out-write! [& args]
-  (-> (j/call @api! :outWrite (str/join " " args))
-      (util/->chan)))
+  (j/call @api! :outWrite (str/join " " args)))
 
 (defn out-write-line! [& args]
-  (-> (j/call @api! :outWriteLine (str/join " " args))
-      (util/->chan)))
+  (j/call @api! :outWriteLine (str/join " " args)))
 
 (defn err-write! [& args]
-  (-> (j/call @api! :errWrite (str/join " " args))
-      (util/->chan)))
+  (j/call @api! :errWrite (str/join " " args)))
 
 (defn err-write-line! [& args]
-  (-> (j/call @api! :errWriteLine (str/join " " args))
-      (util/->chan)))
+  (j/call @api! :errWriteLine (str/join " " args)))
 
 (defn register-command!
   ([k f] (register-command! k f {}))

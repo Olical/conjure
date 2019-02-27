@@ -64,7 +64,7 @@
             (re-find expr path)))
         (seq))))
 
-(defn eval! [conn code]
+(defn <eval! [conn code]
   (a/go
     (a/>! (get-in conn [:prepl :eval-chan]) code)
     (a/<! (get-in conn [:prepl :read-chan]))))
