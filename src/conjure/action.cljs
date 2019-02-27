@@ -3,8 +3,7 @@
   (:require [cljs.core.async :as a]
             [conjure.session :as session]
             [conjure.nvim :as nvim]
-            [conjure.display :as display]
-            [conjure.code :as code]))
+            [conjure.display :as display]))
 
 ;; TODO Get current ns and switch to that ns first.
 ;; TODO Add mappings for this, probably want inner form, outer form and visual selection.
@@ -17,6 +16,5 @@
           path (a/<! (nvim/<path buffer))]
       (if-let [conns (session/conns path)]
         (doseq [{:keys [tag] :as conn} conns]
-          (let [result (a/<! (session/<eval! conn code))]
-            (display/result! tag (update result :val code/format))))
+          (display/result! tag (a/<! (session/<eval! conn code))))
         (display/error! nil "No matching connections for path:" path)))))

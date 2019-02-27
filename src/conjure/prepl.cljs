@@ -3,7 +3,8 @@
   (:require [cljs.nodejs :as node]
             [cljs.core.async :as a]
             [cljs.reader :as reader]
-            [applied-science.js-interop :as j]))
+            [applied-science.js-interop :as j]
+            [conjure.code :as code]))
 
 (defonce net (node/require "net"))
 
@@ -69,7 +70,8 @@
       (j/call :on "data"
               (fn [body]
                 (a/go
-                  (let [res (reader/read-string body)]
+                  (let [{:keys [tag] :as raw-res} (reader/read-string body)
+                        res (cond-> raw-res (contains? #{:out :tap} tag) (update :val code/pretty-print))]
                     (if (= (:tag res) :ret)
                       (a/>! read-chan res)
                       (a/>! aux-chan res)))
