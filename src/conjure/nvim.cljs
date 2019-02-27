@@ -24,7 +24,7 @@
   (-> (j/get buffer :name)
       (util/->chan)))
 
-(defn join [args]
+(defn- join [args]
   (str/join " " (remove nil? args)))
 
 (defn out-write! [& args]

@@ -13,7 +13,7 @@
 
 (node/enable-util-print!)
 
-(defn parse [spec s]
+(defn- parse [spec s]
   (let [v (edn/read-string {:readers {'re re-pattern}} s)]
     (display/ensure! spec v)))
 
