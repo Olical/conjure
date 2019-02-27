@@ -17,5 +17,5 @@
   (if (s/valid? spec form)
     form
     (do
-      (nvim/err-write-line! (expound/expound-str spec form))
+      (error! nil (expound/expound-str spec form))
       nil)))
