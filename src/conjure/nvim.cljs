@@ -20,17 +20,21 @@
 (defn- join [args]
   (str/join " " (remove nil? args)))
 
-(defn <buffer []
-  (-> (j/get @api! :buffer)
-      (util/->chan)))
+(defn <buffer
+  ([] (<buffer @api!))
+  ([o] (-> (j/get o :buffer) (util/->chan))))
 
-(defn <window []
-  (-> (j/get @api! :window)
-      (util/->chan)))
+(defn <window
+  ([] (<window @api!))
+  ([o] (-> (j/get o :window) (util/->chan))))
 
-(defn <path [buffer]
+(defn <tabpage
+  ([] (<tabpage @api!))
+  ([o] (-> (j/get o :tabpage) (util/->chan))))
+
+(defn <name ([buffer]
   (-> (j/get buffer :name)
-      (util/->chan)))
+      (util/->chan))))
 
 (defn <length [buffer]
   (-> (j/get buffer :length)
@@ -47,7 +51,7 @@
 
 (defn scroll-to-bottom! [window]
   (a/go
-    (let [buffer (a/<! (<buffer))
+    (let [buffer (a/<! (<buffer window))
           length (a/<! (<length buffer))]
       (set-cursor! window {:x 0, :y length}))))
 

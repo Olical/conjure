@@ -13,7 +13,7 @@
 (defn eval! [code]
   (a/go
     (let [buffer (a/<! (nvim/<buffer))
-          path (a/<! (nvim/<path buffer))]
+          path (a/<! (nvim/<name buffer))]
       (if-let [conns (session/conns path)]
         (doseq [{:keys [tag] :as conn} conns]
           (display/result! tag (a/<! (session/<eval! conn code))))
