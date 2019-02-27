@@ -13,9 +13,3 @@
         (doseq [conn conns]
           (display/result! conn (a/<! (session/<eval! conn code))))
         (display/error! nil "No matching connections for path:" path)))))
-
-(comment
-  (session/add! {:tag :dev, :port 5555, :expr #".*"})
-  (eval! "(+ 10 10)")
-  (eval! "(println \"henlo\")")
-  (session/remove! :dev))

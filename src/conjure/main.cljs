@@ -4,7 +4,7 @@
             [cljs.nodejscli]
 
             [cljs.nodejs :as node]
-            [clojure.edn :as edn]
+            [cljs.reader :as edn]
             [applied-science.js-interop :as j]
             [conjure.nvim :as nvim]
             [conjure.session :as session]
@@ -14,7 +14,8 @@
 (node/enable-util-print!)
 
 (defn parse [spec s]
-  (display/ensure! spec (edn/read-string s)))
+  (let [v (edn/read-string {:readers {'re re-pattern}} s)]
+    (display/ensure! spec v)))
 
 (defn add! [s]
   (when-let [new-conn (parse ::session/new-conn s)]
@@ -35,3 +36,9 @@
   (nvim/register-command! :CLJSCheck (fn [] (nvim/out-write-line! "test"))))
 
 (j/assoc! js/module :exports setup!)
+
+(comment
+  (add! "{:tag :dev, :port 5555, :expr #re \".*\"}")
+  (eval! "(+ 10 10)")
+  (eval! "(println \"henlo\")")
+  (remove! ":dev"))
