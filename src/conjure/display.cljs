@@ -7,33 +7,38 @@
 
 (def log-buffer-name "/tmp/conjure-log.cljc")
 
-(defn- <log-buffer []
+(defn- <tabpage-log-window []
   (a/go
-    (loop [[buffer & buffers] (a/<! (nvim/<buffers))]
-      (when buffer
-        (if (= (a/<! (nvim/<name buffer)) log-buffer-name)
-          buffer
-          (recur buffers))))))
+    (let [tabpage (a/<! (nvim/<tabpage))]
+      (loop [[window & windows] (a/<! (nvim/<windows tabpage))]
+        (when window
+          (let [buffer (a/<! (nvim/<buffer window))]
+            (if (= (a/<! (nvim/<name buffer)) log-buffer-name)
+              window
+              (recur windows))))))))
 
-(defn- <upsert-log-buffer! []
+(defn- <upsert-tabpage-log-window! []
   (a/go
-    (if-let [buffer (a/<! (<log-buffer))]
-      buffer
+    (if-let [window (a/<! (<tabpage-log-window))]
+      window
       (do
-        (nvim/command! "badd" log-buffer-name)
-        (a/<! (<log-buffer))))))
+        (nvim/command! "vsplit" log-buffer-name)
+        (a/<! (<tabpage-log-window))))))
 
-(comment
-  (do
-    (defn log! [{:keys [conn value]}]
-      ;; Upsert the window+buffer if it's not in this tabpage
-      ;; Append the log, changing how it renders depending on the kind of (:tag value)
-      (a/go
-        (let [buffer (a/<! (<upsert-log-buffer!))]
-          (prn buffer))))
-    (log! {:conn {:tag :test}
-           :value {:tag :ret
-                   :val ":yarp"}})))
+(do
+  ;; TODO Format these nicely
+  ;; TODO Run all output through here
+  ;; TODO Ensure the window displays correctly (small right side)
+  ;; TODO Make the window auto expand and hide 
+  ;; TODO Have a way to open it (optionally focus)
+  (defn log! [{:keys [conn value]}]
+    (a/go
+      (let [window (a/<! (<upsert-tabpage-log-window!))
+            buffer (a/<! (nvim/<buffer window))]
+        (nvim/append! buffer conn value))))
+  (log! {:conn {:tag :test}
+         :value {:tag :ret
+                 :val ":yarp"}}))
 
 (defn message! [tag & args]
   (apply nvim/out-write-line! (when tag (str "[" (name tag) "]")) args))

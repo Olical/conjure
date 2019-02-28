@@ -20,15 +20,6 @@
   ([] (<buffer @api!))
   ([o] (-> (j/get o :buffer) (util/->chan))))
 
-(defn <buffers []
-  (-> (j/get @api! :buffers) (util/->chan)))
-
-(defn <windows []
-  (-> (j/get @api! :windows) (util/->chan)))
-
-(defn <tabpages []
-  (-> (j/get @api! :tabpages) (util/->chan)))
-
 (defn <window
   ([] (<window @api!))
   ([o] (-> (j/get o :window) (util/->chan))))
@@ -36,6 +27,17 @@
 (defn <tabpage
   ([] (<tabpage @api!))
   ([o] (-> (j/get o :tabpage) (util/->chan))))
+
+(defn <buffers
+  ([] (<buffers @api!))
+  ([o] (-> (j/get o :buffers) (util/->chan))))
+
+(defn <windows
+  ([] (<windows @api!))
+  ([o] (-> (j/get o :windows) (util/->chan))))
+
+(defn <tabpages []
+  (-> (j/get @api! :tabpages) (util/->chan)))
 
 (defn <name ([buffer]
   (-> (j/get buffer :name)
