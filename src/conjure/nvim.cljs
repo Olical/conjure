@@ -20,6 +20,15 @@
   ([] (<buffer @api!))
   ([o] (-> (j/get o :buffer) (util/->chan))))
 
+(defn <buffers []
+  (-> (j/get @api! :buffers) (util/->chan)))
+
+(defn <windows []
+  (-> (j/get @api! :windows) (util/->chan)))
+
+(defn <tabpages []
+  (-> (j/get @api! :tabpages) (util/->chan)))
+
 (defn <window
   ([] (<window @api!))
   ([o] (-> (j/get o :window) (util/->chan))))
@@ -50,6 +59,9 @@
     (let [buffer (a/<! (<buffer window))
           length (a/<! (<length buffer))]
       (set-cursor! window {:x 0, :y length}))))
+
+(defn command! [& args]
+  (j/call @api! :command (util/join args)))
 
 (defn out-write! [& args]
   (j/call @api! :outWrite (util/join args)))
