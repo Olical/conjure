@@ -10,7 +10,7 @@
 
 (defn require-api! []
   (-> (node/require "neovim/scripts/nvim")
-      (.then #(reset! api! %))))
+      (j/call :then #(reset! api! %))))
 
 (defn reset-plugin! [plugin]
   (reset! plugin! plugin)
@@ -47,14 +47,29 @@
   (-> (j/get buffer :length)
       (util/->chan)))
 
+(defn <all-lines [buffer]
+  (-> (j/get buffer :lines)
+      (j/call :then vec)
+      (util/->chan)))
+
 (defn append! [buffer & args]
-  (j/call buffer :append (util/join args)))
+  (j/call buffer :append (util/->js (flatten args))))
 
 (defn set-width! [window width]
   (j/assoc! window :width width))
 
 (defn set-cursor! [window {:keys [x y]}]
   (j/assoc! window :cursor #js [y x]))
+
+(defn set-lines! [buffer opts & lines]
+  (j/call buffer :setLines
+          (util/->js (flatten lines))
+          (util/->js opts)))
+
+(defn <get-lines [buffer opts]
+  (-> (j/call buffer :getLines (util/->js opts))
+      (j/call :then vec)
+      (util/->chan)))
 
 (defn scroll-to-bottom! [window]
   (a/go

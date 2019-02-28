@@ -1,11 +1,14 @@
 (ns conjure.display
   "Ways to inform the user about responses, results and errors."
   (:require [clojure.spec.alpha :as s]
+            [clojure.string :as str]
             [cljs.core.async :as a]
             [expound.alpha :as expound]
             [conjure.nvim :as nvim]))
 
+;; TODO Rename this to just conjure.cljc once I completely replace the Rust version.
 (def log-buffer-name "/tmp/conjure-log.cljc")
+(def log-window-widths {:small 40 :large 80})
 
 (defn- <tabpage-log-window []
   (a/go
@@ -22,23 +25,42 @@
     (if-let [window (a/<! (<tabpage-log-window))]
       window
       (do
-        (nvim/command! "vsplit" log-buffer-name)
+        (nvim/command! "botright" (str (:small log-window-widths) "vnew") log-buffer-name)
+        (nvim/command! "setlocal winfixwidth")
+        (nvim/command! "setlocal buftype=nofile")
+        (nvim/command! "setlocal bufhidden=hide")
+        (nvim/command! "setlocal nowrap")
+        (nvim/command! "setlocal noswapfile")
+        (nvim/command! "wincmd w")
         (a/<! (<tabpage-log-window))))))
 
 (do
-  ;; TODO Format these nicely
   ;; TODO Run all output through here
-  ;; TODO Ensure the window displays correctly (small right side)
   ;; TODO Make the window auto expand and hide 
   ;; TODO Have a way to open it (optionally focus)
+  ;; TODO Trim the log when it's too long
   (defn log! [{:keys [conn value]}]
     (a/go
       (let [window (a/<! (<upsert-tabpage-log-window!))
-            buffer (a/<! (nvim/<buffer window))]
-        (nvim/append! buffer conn value))))
+            buffer (a/<! (nvim/<buffer window))
+            length (a/<! (nvim/<length buffer))
+            sample (a/<! (nvim/<get-lines buffer {:start 0, :end 1}))
+            prefix (str ";" (name (:tag conn)) "/" (name (:tag value)) ";")
+            val-lines (str/split (:val value) #"\n")]
+
+        (when (and (= length 1) (= sample [""]))
+          (nvim/set-lines! buffer {:start 0} ";conjure/out; Welcome!"))
+
+        (if (contains? #{:ret :tap} (:tag value))
+          (nvim/append! buffer prefix val-lines)
+          (doseq [line val-lines]
+            (nvim/append! buffer (str prefix " " line)))) 
+
+        (nvim/scroll-to-bottom! window))))
+
   (log! {:conn {:tag :test}
          :value {:tag :ret
-                 :val ":yarp"}}))
+                 :val ":henlo"}}))
 
 (defn message! [tag & args]
   (apply nvim/out-write-line! (when tag (str "[" (name tag) "]")) args))
