@@ -2,12 +2,10 @@
   (:require [clojure.walk :as w]
             [clojure.string :as str]
             [cljs.core.async :as a]
-            [applied-science.js-interop :as j]
             [camel-snake-kebab.core :as csk]))
 
-(defn log [& args]
-  (j/call js/console :log (str/join " " args))
-  (first args))
+(defn join [args]
+  (str/join " " (remove nil? args)))
 
 (defn ->js [m]
   (letfn [(map-key [[k v]]

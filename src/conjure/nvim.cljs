@@ -2,7 +2,6 @@
   "Wrapper around all nvim functions."
   (:require [cljs.nodejs :as node]
             [cljs.core.async :as a]
-            [clojure.string :as str]
             [applied-science.js-interop :as j]
             [conjure.util :as util]))
 
@@ -16,9 +15,6 @@
 (defn reset-plugin! [plugin]
   (reset! plugin! plugin)
   (reset! api! (j/get plugin :nvim)))
-
-(defn- join [args]
-  (str/join " " (remove nil? args)))
 
 (defn <buffer
   ([] (<buffer @api!))
@@ -41,7 +37,7 @@
       (util/->chan)))
 
 (defn append! [buffer & args]
-  (j/call buffer :append (join args)))
+  (j/call buffer :append (util/join args)))
 
 (defn set-width! [window width]
   (j/assoc! window :width width))
@@ -56,16 +52,16 @@
       (set-cursor! window {:x 0, :y length}))))
 
 (defn out-write! [& args]
-  (j/call @api! :outWrite (join args)))
+  (j/call @api! :outWrite (util/join args)))
 
 (defn out-write-line! [& args]
-  (j/call @api! :outWriteLine (join args)))
+  (j/call @api! :outWriteLine (util/join args)))
 
 (defn err-write! [& args]
-  (j/call @api! :errWrite (join args)))
+  (j/call @api! :errWrite (util/join args)))
 
 (defn err-write-line! [& args]
-  (j/call @api! :errWriteLine (join args)))
+  (j/call @api! :errWriteLine (util/join args)))
 
 (defn register-command!
   ([k f] (register-command! k f {}))
