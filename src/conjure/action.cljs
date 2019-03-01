@@ -16,6 +16,6 @@
     (let [buffer (a/<! (nvim/<buffer))
           path (a/<! (nvim/<name buffer))]
       (if-let [conns (session/conns path)]
-        (doseq [{:keys [tag] :as conn} conns]
-          (display/result! tag (a/<! (session/<eval! conn code))))
-        (display/error! nil "No matching connections for path:" path)))))
+        (doseq [conn conns]
+          (display/log! {:conn conn, :value (a/<! (session/<eval! conn code))}))
+        (display/log! {:conn {:tag :conjure}, :value {:tag :err, :val (str "No matching connections for path: " path)}} )))))

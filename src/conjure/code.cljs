@@ -9,6 +9,6 @@
                    {:parse-string-all? true
                     :parse {:interpose "\n\n"}})
     (catch :default e
-      (display/error! nil e)
+      (display/log! {:conn {:tag :conjure}, :value {:tag :err, :val (str e)}})
       s)))
 

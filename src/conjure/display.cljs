@@ -35,7 +35,8 @@
         (nvim/command! "wincmd w")
         (a/<! (<tabpage-log-window))))))
 
-;; TODO Run all output through here
+;; TODO Simplify logging Conjure related messages
+;; TODO Improve connected and disconnected messaging
 ;; TODO Make the window auto expand and hide
 ;; TODO Have a way to open it (optionally focus)
 ;; TODO Trim the log when it's too long
@@ -58,18 +59,9 @@
 
       (nvim/scroll-to-bottom! window))))
 
-(defn message! [tag & args]
-  (apply nvim/out-write-line! (when tag (str "[" (name tag) "]")) args))
-
-(defn error! [tag & args]
-  (apply nvim/err-write-line! (when tag (str "[" (name tag) "]")) args))
-
-(defn result! [tag result]
-  (message! tag (name (:tag result)) "=>" (:val result)))
-
 (defn ensure! [spec form]
   (if (s/valid? spec form)
     form
     (do
-      (error! nil (expound/expound-str spec form))
+      (log! {:conn {:tag :conjure}, :value {:tag :err, :val (expound/expound-str spec form)}})
       nil)))

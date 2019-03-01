@@ -21,10 +21,10 @@
    :cljs #"\.clj(s|c)$"})
 
 (defn remove! [tag]
-  (when-let [{:keys [prepl]} (get @conns! tag)]
+  (when-let [{:keys [prepl] :as conn} (get @conns! tag)]
     (prepl/destroy! prepl)
     (swap! conns! dissoc tag)
-    (display/message! tag "Removed.")))
+    (display/log! {:conn conn, :value {:tag :out, :val  "Removed."}})))
 
 (defn add! [{:keys [tag port lang expr host]
              :or {tag :default
@@ -39,8 +39,8 @@
     (swap! conns! assoc tag conn)
 
     (a/go-loop []
-      (when-let [result (a/<! (get-in conn [:prepl :aux-chan]))]
-        (async/catch! (display/result! tag result))
+      (when-let [value (a/<! (get-in conn [:prepl :aux-chan]))]
+        (async/catch! (display/log! {:conn conn, :value value}))
         (recur)))
 
     (a/go-loop []
@@ -50,9 +50,9 @@
             (:close :error :end :timeout)
             (do
               (remove! tag)
-              (display/error! tag "Closed:" event))
+              (display/log! {:conn conn, :value {:tag :out, :val (str event)}}))
 
-            :ready (display/message! tag "Connected!")
+            :ready (display/log! {:conn conn, :value {:tag :out, :val "Connected!"}})
 
             nil))
         (recur)))))
