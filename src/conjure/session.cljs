@@ -2,6 +2,7 @@
   "Manages active connections, can be used to look up connections to act upon."
   (:require [clojure.spec.alpha :as s]
             [cljs.core.async :as a]
+            [conjure.async :as async :include-macros true]
             [conjure.prepl :as prepl]
             [conjure.display :as display]))
 
@@ -65,6 +66,6 @@
         (seq))))
 
 (defn <eval! [conn code]
-  (a/go
+  (async/go
     (a/>! (get-in conn [:prepl :eval-chan]) code)
     (a/<! (get-in conn [:prepl :read-chan]))))

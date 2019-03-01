@@ -4,6 +4,7 @@
             [conjure.nvim :as nvim]))
 
 (node/enable-util-print!)
+(nvim/enable-error-print!)
 
 (defn connect! []
   (nvim/require-api!))

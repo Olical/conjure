@@ -1,12 +1,14 @@
 (ns conjure.nvim
   "Wrapper around all nvim functions."
   (:require [cljs.nodejs :as node]
-            [cljs.core.async :as a]
             [applied-science.js-interop :as j]
+            [cljs.core.async :as a]
+            [conjure.async :as async :include-macros true]
             [conjure.util :as util]))
 
 (defonce plugin! (atom nil))
 (defonce api! (atom nil))
+(defonce error-print-chan! (atom nil))
 
 (defn require-api! []
   (-> (node/require "neovim/scripts/nvim")
@@ -18,39 +20,32 @@
 
 (defn <buffer
   ([] (<buffer @api!))
-  ([o] (-> (j/get o :buffer) (util/->chan))))
+  ([o] (-> (j/get o :buffer) (async/->chan))))
 
 (defn <window
   ([] (<window @api!))
-  ([o] (-> (j/get o :window) (util/->chan))))
+  ([o] (-> (j/get o :window) (async/->chan))))
 
 (defn <tabpage
   ([] (<tabpage @api!))
-  ([o] (-> (j/get o :tabpage) (util/->chan))))
+  ([o] (-> (j/get o :tabpage) (async/->chan))))
 
 (defn <buffers
   ([] (<buffers @api!))
-  ([o] (-> (j/get o :buffers) (util/->chan))))
+  ([o] (-> (j/get o :buffers) (async/->chan))))
 
 (defn <windows
   ([] (<windows @api!))
-  ([o] (-> (j/get o :windows) (util/->chan))))
+  ([o] (-> (j/get o :windows) (async/->chan))))
 
 (defn <tabpages []
-  (-> (j/get @api! :tabpages) (util/->chan)))
+  (-> (j/get @api! :tabpages) (async/->chan)))
 
 (defn <name ([buffer]
-  (-> (j/get buffer :name)
-      (util/->chan))))
+  (-> (j/get buffer :name) (async/->chan))))
 
 (defn <length [buffer]
-  (-> (j/get buffer :length)
-      (util/->chan)))
-
-(defn <all-lines [buffer]
-  (-> (j/get buffer :lines)
-      (j/call :then vec)
-      (util/->chan)))
+  (-> (j/get buffer :length) (async/->chan)))
 
 (defn append! [buffer & args]
   (j/call buffer :append (util/->js (flatten args))))
@@ -61,18 +56,23 @@
 (defn set-cursor! [window {:keys [x y]}]
   (j/assoc! window :cursor #js [y x]))
 
+(defn <all-lines [buffer]
+  (-> (j/get buffer :lines)
+      (j/call :then vec)
+      (async/->chan)))
+
+(defn <get-lines [buffer opts]
+  (-> (j/call buffer :getLines (util/->js opts))
+      (j/call :then vec)
+      (async/->chan)))
+
 (defn set-lines! [buffer opts & lines]
   (j/call buffer :setLines
           (util/->js (flatten lines))
           (util/->js opts)))
 
-(defn <get-lines [buffer opts]
-  (-> (j/call buffer :getLines (util/->js opts))
-      (j/call :then vec)
-      (util/->chan)))
-
 (defn scroll-to-bottom! [window]
-  (a/go
+  (async/go
     (let [buffer (a/<! (<buffer window))
           length (a/<! (<length buffer))]
       (set-cursor! window {:x 0, :y length}))))
@@ -100,6 +100,14 @@
            (fn [s]
              (try
                (f (str s))
-               (catch :default e
-                 (err-write-line! e))))
+               (catch :default error
+                 (err-write-line! error))))
            (util/->js opts))))
+
+(defn enable-error-print! []
+  (when (nil? @error-print-chan!)
+    (reset! error-print-chan!
+            (a/go-loop []
+              (when-let [error (a/<! async/error-chan)]
+                (err-write-line! error)
+                (recur))))))

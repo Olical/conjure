@@ -12,6 +12,7 @@
             [conjure.action :as action]))
 
 (node/enable-util-print!)
+(nvim/enable-error-print!)
 
 (defn- parse [spec s]
   (let [v (edn/read-string {:readers {'re re-pattern}} s)]

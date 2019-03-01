@@ -2,8 +2,9 @@
   "Ways to inform the user about responses, results and errors."
   (:require [clojure.spec.alpha :as s]
             [clojure.string :as str]
-            [cljs.core.async :as a]
             [expound.alpha :as expound]
+            [cljs.core.async :as a]
+            [conjure.async :as async :include-macros true]
             [conjure.nvim :as nvim]))
 
 ;; TODO Rename this to just conjure.cljc once I completely replace the Rust version.
@@ -11,7 +12,7 @@
 (def log-window-widths {:small 40 :large 80})
 
 (defn- <tabpage-log-window []
-  (a/go
+  (async/go
     (let [tabpage (a/<! (nvim/<tabpage))]
       (loop [[window & windows] (a/<! (nvim/<windows tabpage))]
         (when window
@@ -21,7 +22,7 @@
               (recur windows))))))))
 
 (defn- <upsert-tabpage-log-window! []
-  (a/go
+  (async/go
     (if-let [window (a/<! (<tabpage-log-window))]
       window
       (do
@@ -40,7 +41,7 @@
   ;; TODO Have a way to open it (optionally focus)
   ;; TODO Trim the log when it's too long
   (defn log! [{:keys [conn value]}]
-    (a/go
+    (async/go
       (let [window (a/<! (<upsert-tabpage-log-window!))
             buffer (a/<! (nvim/<buffer window))
             length (a/<! (nvim/<length buffer))
@@ -58,7 +59,7 @@
 
         (nvim/scroll-to-bottom! window))))
 
-  (log! {:conn {:tag :test}
+  #_(log! {:conn {:tag :test}
          :value {:tag :ret
                  :val ":henlo"}}))
 

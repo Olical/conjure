@@ -1,6 +1,7 @@
 (ns conjure.action
   "Actions a user can perform."
   (:require [cljs.core.async :as a]
+            [conjure.async :as async :include-macros true]
             [conjure.session :as session]
             [conjure.nvim :as nvim]
             [conjure.display :as display]))
@@ -11,7 +12,7 @@
 ;; TODO Add the key tools such as doc, goto, autocomplete, tests and file loading.
 
 (defn eval! [code]
-  (a/go
+  (async/go
     (let [buffer (a/<! (nvim/<buffer))
           path (a/<! (nvim/<name buffer))]
       (if-let [conns (session/conns path)]
