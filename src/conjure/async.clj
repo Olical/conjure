@@ -1,8 +1,10 @@
 (ns conjure.async)
 
-(defmacro go [& forms]
-  `(a/go
-     (try
-       ~@forms
-       (catch :default error#
-         (a/>! error-chan error#)))))
+(defmacro catch! [& body]
+  `(try
+     ~@body
+     (catch :default error#
+       (a/go (a/>! error-chan error#)))))
+
+(defmacro go [& body]
+  `(a/go (catch! ~@body)))

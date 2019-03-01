@@ -81,7 +81,7 @@
 
     (a/go-loop []
       (when-let [code (a/<! eval-chan)]
-        (j/call socket :write (str code "\n"))
+        (async/catch! (j/call socket :write (str code "\n")))
         (recur)))
 
     {:socket socket

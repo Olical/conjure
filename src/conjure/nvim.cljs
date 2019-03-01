@@ -109,5 +109,5 @@
     (reset! error-print-chan!
             (a/go-loop []
               (when-let [error (a/<! async/error-chan)]
-                (err-write-line! error)
+                (async/catch! (err-write-line! error))
                 (recur))))))

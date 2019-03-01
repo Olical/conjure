@@ -40,20 +40,21 @@
 
     (a/go-loop []
       (when-let [result (a/<! (get-in conn [:prepl :aux-chan]))]
-        (display/result! tag result)
+        (async/catch! (display/result! tag result))
         (recur)))
 
     (a/go-loop []
       (when-let [event (a/<! (get-in conn [:prepl :event-chan]))]
-        (case (:type event)
-          (:close :error :end :timeout)
-          (do
-            (remove! tag)
-            (display/error! tag "Closed:" event))
+        (async/catch!
+          (case (:type event)
+            (:close :error :end :timeout)
+            (do
+              (remove! tag)
+              (display/error! tag "Closed:" event))
 
-          :ready (display/message! tag "Connected!")
+            :ready (display/message! tag "Connected!")
 
-          nil)
+            nil))
         (recur)))))
 
 (defn conns
