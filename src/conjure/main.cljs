@@ -39,6 +39,9 @@
 (j/assoc! js/module :exports setup!)
 
 (comment
+  ;; Connect the REPL to the `make nvim` Neovim instance.
+  (nvim/require-api!)
+
   (add! "{:tag :dev, :port 5555, :expr #re \".*\"}")
   (eval! "(+ 10 10)")
   (eval! "(println \"henlo\")")

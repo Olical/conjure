@@ -14,11 +14,7 @@ nvim:
 
 dev:
 	npm install
-	(echo "(require 'conjure.dev) (conjure.dev/connect!)" && cat) |\
-		NVIM_LISTEN_ADDRESS=/tmp/conjure-nvim\
-		clj -Adev\
-		-J-Dclojure.server.dev="{:port 5885, :accept cljs.server.node/prepl, :args [{:env-opts {:port 5895}}]}"\
-		--main tubular.core --port 5885
+	NVIM_LISTEN_ADDRESS=/tmp/conjure-nvim clj -Adev
 
 test-prepls:
 	clj -Atest\

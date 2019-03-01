@@ -35,33 +35,28 @@
         (nvim/command! "wincmd w")
         (a/<! (<tabpage-log-window))))))
 
-(do
-  ;; TODO Run all output through here
-  ;; TODO Make the window auto expand and hide 
-  ;; TODO Have a way to open it (optionally focus)
-  ;; TODO Trim the log when it's too long
-  (defn log! [{:keys [conn value]}]
-    (async/go
-      (let [window (a/<! (<upsert-tabpage-log-window!))
-            buffer (a/<! (nvim/<buffer window))
-            length (a/<! (nvim/<length buffer))
-            sample (a/<! (nvim/<get-lines buffer {:start 0, :end 1}))
-            prefix (str ";" (name (:tag conn)) "/" (name (:tag value)) ";")
-            val-lines (str/split (:val value) #"\n")]
+;; TODO Run all output through here
+;; TODO Make the window auto expand and hide
+;; TODO Have a way to open it (optionally focus)
+;; TODO Trim the log when it's too long
+(defn log! [{:keys [conn value]}]
+  (async/go
+    (let [window (a/<! (<upsert-tabpage-log-window!))
+          buffer (a/<! (nvim/<buffer window))
+          length (a/<! (nvim/<length buffer))
+          sample (a/<! (nvim/<get-lines buffer {:start 0, :end 1}))
+          prefix (str ";" (name (:tag conn)) "/" (name (:tag value)) ";")
+          val-lines (str/split (:val value) #"\n")]
 
-        (when (and (= length 1) (= sample [""]))
-          (nvim/set-lines! buffer {:start 0} ";conjure/out; Welcome!"))
+      (when (and (= length 1) (= sample [""]))
+        (nvim/set-lines! buffer {:start 0} ";conjure/out; Welcome!"))
 
-        (if (contains? #{:ret :tap} (:tag value))
-          (nvim/append! buffer prefix val-lines)
-          (doseq [line val-lines]
-            (nvim/append! buffer (str prefix " " line)))) 
+      (if (contains? #{:ret :tap} (:tag value))
+        (nvim/append! buffer prefix val-lines)
+        (doseq [line val-lines]
+          (nvim/append! buffer (str prefix " " line))))
 
-        (nvim/scroll-to-bottom! window))))
-
-  #_(log! {:conn {:tag :test}
-         :value {:tag :ret
-                 :val ":henlo"}}))
+      (nvim/scroll-to-bottom! window))))
 
 (defn message! [tag & args]
   (apply nvim/out-write-line! (when tag (str "[" (name tag) "]")) args))
