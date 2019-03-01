@@ -10,6 +10,7 @@
 ;; TODO Rename this to just conjure.cljc once I completely replace the Rust version.
 (def log-buffer-name "/tmp/conjure-log.cljc")
 (def log-window-widths {:small 40 :large 80})
+(def max-log-buffer-length 10000)
 
 (defn- <tabpage-log-window []
   (async/go
@@ -36,10 +37,10 @@
         (a/<! (<tabpage-log-window))))))
 
 ;; TODO Simplify logging Conjure related messages
-;; TODO Improve connected and disconnected messaging
 ;; TODO Make the window auto expand and hide
 ;; TODO Have a way to open it (optionally focus)
 ;; TODO Trim the log when it's too long
+;; TODO Doesn't seem to print all data all the time (race condition overwriting lines?)
 (defn log! [{:keys [conn value]}]
   (async/go
     (let [window (a/<! (<upsert-tabpage-log-window!))
@@ -51,6 +52,9 @@
 
       (when (and (= length 1) (= sample [""]))
         (nvim/set-lines! buffer {:start 0} ";conjure/out; Welcome!"))
+
+      (when (> length max-log-buffer-length)
+        (nvim/set-lines! buffer {:start 0, :end (/ max-log-buffer-length 2)} ""))
 
       (if (contains? #{:ret :tap} (:tag value))
         (nvim/append! buffer prefix val-lines)

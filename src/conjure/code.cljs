@@ -1,6 +1,7 @@
 (ns conjure.code
   "Generation and manipulation of all Clojure and ClojureScript."
-  (:require [zprint.core :as zp]
+  (:require [clojure.string :as str]
+            [zprint.core :as zp]
             [conjure.display :as display]))
 
 (defn pretty-print [s]
@@ -12,3 +13,8 @@
       (display/log! {:conn {:tag :conjure}, :value {:tag :err, :val (str e)}})
       s)))
 
+(defn sample [s]
+  (let [flat (str/replace s #"\n" "")]
+    (if (> (count flat) 30)
+      (str (subs flat 0 30) "...")
+      flat)))

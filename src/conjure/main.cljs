@@ -44,9 +44,9 @@
 
   (add! "{:tag :dev, :port 5555, :expr #re \".*\"}")
   (eval! "(+ 10 10)")
-
-  ;; TODO Doesn't seem to print all data all the time, needs flushing?
+  (eval! "(repeat 20 :henlo)")
+  (eval! "(prn :thisisasuperlongthingtoevalanditshouldgettruncated)")
+  (eval! "`(fn [foo] (+ foo foo))")
   (eval! "(doc +)")
-
   (eval! "(println \"henlo\")")
   (remove! ":dev"))

@@ -72,7 +72,7 @@
               (fn [body]
                 (async/go
                   (let [{:keys [tag] :as raw-res} (reader/read-string body)
-                        res (cond-> raw-res (contains? #{:out :tap} tag) (update :val code/pretty-print))]
+                        res (cond-> raw-res (contains? #{:ret :tap} tag) (update :val code/pretty-print))]
                     (if (= (:tag res) :ret)
                       (a/>! read-chan res)
                       (a/>! aux-chan res)))
