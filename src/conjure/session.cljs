@@ -24,7 +24,7 @@
   (when-let [{:keys [prepl] :as conn} (get @conns! tag)]
     (prepl/destroy! prepl)
     (swap! conns! dissoc tag)
-    (display/log! {:conn {:tag :conjure}, :value {:tag :out, :val (str "Removed: " conn)}})))
+    (display/log! {:conn {:tag :conjure}, :value {:tag :out, :val (str "- " conn)}})))
 
 (defn add! [{:keys [tag port lang expr host]
              :or {tag :default
@@ -52,7 +52,7 @@
               (remove! tag)
               (display/log! {:conn conn, :value {:tag :out, :val (str event)}}))
 
-            :ready (display/log! {:conn {:tag :conjure}, :value {:tag :out, :val (str "Added: " conn)}})
+            :ready (display/log! {:conn {:tag :conjure}, :value {:tag :out, :val (str "+ " conn)}})
 
             nil))
         (recur)))))

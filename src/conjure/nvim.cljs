@@ -47,9 +47,6 @@
 (defn <length [buffer]
   (-> (j/get buffer :length) (async/->chan)))
 
-(defn append! [buffer & args]
-  (j/call buffer :append (util/->js (flatten args))))
-
 (defn set-width! [window width]
   (j/assoc! window :width width))
 
@@ -70,6 +67,9 @@
   (j/call buffer :setLines
           (util/->js (flatten lines))
           (util/->js opts)))
+
+(defn append! [buffer & args]
+  (j/call buffer :append (util/->js (flatten args))))
 
 (defn scroll-to-bottom! [window]
   (async/go

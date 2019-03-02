@@ -2,6 +2,7 @@
   "Wrapper around a raw prepl connection, simply provides some basic parsing of responses and talking to node's net module."
   (:require [cljs.nodejs :as node]
             [cljs.reader :as reader]
+            [clojure.string :as str]
             [applied-science.js-interop :as j]
             [cljs.core.async :as a]
             [conjure.async :as async :include-macros true]
@@ -71,11 +72,12 @@
       (j/call :on "data"
               (fn [body]
                 (async/go
-                  (let [{:keys [tag] :as raw-res} (reader/read-string body)
-                        res (cond-> raw-res (contains? #{:ret :tap} tag) (update :val code/pretty-print))]
-                    (if (= (:tag res) :ret)
-                      (a/>! read-chan res)
-                      (a/>! aux-chan res)))
+                  (doseq [line (str/split body #"\n")]
+                    (let [{:keys [tag] :as raw-res} (reader/read-string line)
+                          res (cond-> raw-res (contains? #{:ret :tap} tag) (update :val code/pretty-print))]
+                      (if (= (:tag res) :ret)
+                        (a/>! read-chan res)
+                        (a/>! aux-chan res))))
                   (a/>! event-chan {:type :data
                                     :body body})))))
 

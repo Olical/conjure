@@ -48,5 +48,6 @@
   (eval! "(prn :thisisasuperlongthingtoevalanditshouldgettruncated)")
   (eval! "`(fn [foo] (+ foo foo))")
   (eval! "(doc +)")
+  (eval! "(prn 1) (prn 2) (prn 3) (prn 4) (prn 5)")
   (eval! "(println \"henlo\")")
   (remove! ":dev"))

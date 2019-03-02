@@ -58,8 +58,7 @@
 
       (if (contains? #{:ret :tap} (:tag value))
         (nvim/append! buffer prefix val-lines)
-        (doseq [line val-lines]
-          (nvim/append! buffer (str prefix " " line))))
+        (nvim/append! buffer (map #(str prefix " " %) val-lines)))
 
       (nvim/scroll-to-bottom! window))))
 
