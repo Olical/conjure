@@ -32,14 +32,20 @@
 
 (defn <buffers
   ([] (<buffers @api!))
-  ([o] (-> (j/get o :buffers) (async/->chan))))
+  ([o] (-> (j/get o :buffers)
+           (j/call :then array-seq)
+           (async/->chan))))
 
 (defn <windows
   ([] (<windows @api!))
-  ([o] (-> (j/get o :windows) (async/->chan))))
+  ([o] (-> (j/get o :windows)
+           (j/call :then array-seq)
+           (async/->chan))))
 
 (defn <tabpages []
-  (-> (j/get @api! :tabpages) (async/->chan)))
+  (-> (j/get @api! :tabpages)
+      (j/call :then array-seq)
+      (async/->chan)))
 
 (defn <name ([buffer]
   (-> (j/get buffer :name) (async/->chan))))
@@ -55,12 +61,12 @@
 
 (defn <all-lines [buffer]
   (-> (j/get buffer :lines)
-      (j/call :then vec)
+      (j/call :then array-seq)
       (async/->chan)))
 
 (defn <get-lines [buffer opts]
   (-> (j/call buffer :getLines (util/->js opts))
-      (j/call :then vec)
+      (j/call :then array-seq)
       (async/->chan)))
 
 (defn set-lines! [buffer opts & lines]
