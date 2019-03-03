@@ -50,6 +50,10 @@
             (:close :error :end :timeout)
             (do
               (remove! tag)
+
+              ;; TODO Fix the "double log window" bug without this hack.
+              (a/<! (a/timeout 100))
+
               (display/log! {:conn conn, :value {:tag :out, :val (str event)}}))
 
             :ready (display/log! {:conn {:tag :conjure}, :value {:tag :out, :val (str "+ " conn)}})
