@@ -43,6 +43,8 @@
 
 ;; TODO Make the log window expand and contract
 ;; TODO Show / ensure (better name?) log binding should let you focus into it too
+;; TODO Doesn't hide if you go into insert mode...
+;; TODO Hides when you first open it sometimes, race condition
 (defn- <log!* [{:keys [conn value]}]
   (async/go
     (let [window (a/<! (<upsert-tabpage-log-window!))
