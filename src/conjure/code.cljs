@@ -4,14 +4,23 @@
             [zprint.core :as zp]
             [conjure.display :as display]))
 
+;; This is kind of a workaround since zprint complains once (and only once) if
+;; you ask it to format a nil with: find-ns-obj not supported for target node.
+;; This set can be expanded if required but I highly doubt it'll ever need to.
+(def already-pretty #{"nil"})
+
 (defn pretty-print [s]
-  (try
-    (zp/zprint-str (str s)
-                   {:parse-string-all? true
-                    :parse {:interpose "\n\n"}})
-    (catch :default e
-      (display/log! {:conn {:tag :conjure}, :value {:tag :err, :val (str e)}})
-      s)))
+  (if (contains? already-pretty s)
+    s
+    (try
+      (zp/zprint-str (str s)
+                     {:parse-string-all? true
+                      :parse {:interpose "\n\n"}})
+      (catch :default e
+        (display/log! {:conn {:tag :conjure}
+                       :value {:tag :err, :val (str "pretty-print error: " e "\n"
+                                                    "offending code: " s)}})
+        s))))
 
 (defn sample [s]
   (let [flat (str/replace s #"\n" "")]

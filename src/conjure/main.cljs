@@ -42,11 +42,7 @@
   ;; Connect the REPL to the `make nvim` Neovim instance.
   (nvim/require-api!)
 
-  ;; TODO If initial connection fails it opens two windows (race condition?)
-  ;; TODO The first eval yields 
-  ;conjure/err; Error: find-ns-obj not supported for target node
-
-  (add! "{:tag :dev, :port 5559, :expr #re \".*\"}")
+  (add! "{:tag :dev, :port 5555, :expr #re \".*\"}")
   (eval! "(+ 10 10)")
   (eval! "(repeat 20 :henlo)")
   (eval! "(prn :thisisasuperlongthingtoevalanditshouldgettruncated)")
