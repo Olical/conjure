@@ -38,6 +38,7 @@
 
 ;; TODO Simplify logging Conjure related messages
 ;; TODO Make the window auto expand and hide
+;; TODO Fix bug where lots of windows open after multiple log! calls quickly
 (defn log! [{:keys [conn value]}]
   (async/go
     (let [window (a/<! (<upsert-tabpage-log-window!))

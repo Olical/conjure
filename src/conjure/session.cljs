@@ -49,8 +49,8 @@
           (case (:type event)
             (:close :error :end :timeout)
             (do
-              (a/<! (remove! tag))
-              (a/<! (display/log! {:conn conn, :value {:tag :out, :val (str event)}})))
+              (remove! tag)
+              (display/log! {:conn conn, :value {:tag :out, :val (str event)}}))
 
             :ready (display/log! {:conn {:tag :conjure}, :value {:tag :out, :val (str "+ " conn)}})
 
