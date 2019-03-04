@@ -40,11 +40,14 @@
 (defn setup! [plugin]
   (init!)
   (nvim/reset-plugin! plugin)
+
   (nvim/register-command! :CLJSAdd add! {:nargs "1"})
   (nvim/register-command! :CLJSRemove remove! {:nargs "1"})
   (nvim/register-command! :CLJSEval eval! {:nargs "1"})
   (nvim/register-command! :CLJSShowLog show-log!)
-  (nvim/register-command! :CLJSHideLog hide-log!))
+  (nvim/register-command! :CLJSHideLog hide-log!)
+
+  (nvim/register-autocmd! :CursorMoved hide-log! {:pattern "*"}))
 
 (j/assoc! js/module :exports setup!)
 

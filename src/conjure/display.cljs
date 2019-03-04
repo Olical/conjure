@@ -10,9 +10,11 @@
 
 ;; TODO Rename this to just conjure.cljc once I completely replace the Rust version.
 (def log-buffer-name "/tmp/conjure-log.cljc")
+(def log-hide-delay 300)
 (def log-window-widths {:small 40 :large 80})
 (def max-log-buffer-length 10000)
 (defonce log-chan (a/chan))
+(defonce log-last-open! (atom (util/now)))
 
 (defn- <tabpage-log-window []
   (async/go
@@ -29,6 +31,7 @@
     (if-let [window (a/<! (<tabpage-log-window))]
       window
       (do
+        (reset! log-last-open! (util/now))
         (nvim/command! "botright" (str (:small log-window-widths) "vnew") log-buffer-name)
         (nvim/command! "setlocal winfixwidth")
         (nvim/command! "setlocal buftype=nofile")
@@ -39,7 +42,6 @@
         (a/<! (<tabpage-log-window))))))
 
 ;; TODO Make the log window expand and contract
-;; TODO Make the log window autoclose through CursorHold(?)
 (defn- <log!* [{:keys [conn value]}]
   (async/go
     (let [window (a/<! (<upsert-tabpage-log-window!))
@@ -89,5 +91,10 @@
 
 (defn hide-log! []
   (async/go
-    (when-let [window (a/<! (<tabpage-log-window))]
-      (nvim/command! (str (a/<! (nvim/<number window)) "close")))))
+    (let [window (a/<! (<tabpage-log-window))
+          buffer (a/<! (nvim/<buffer))
+          buffer-name (a/<! (nvim/<name buffer))]
+      (when (and window
+                 (not= log-buffer-name buffer-name)
+                 (> (util/now) (+ @log-last-open! log-hide-delay)))
+        (nvim/command! (str (a/<! (nvim/<number window)) "close"))))))

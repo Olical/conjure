@@ -112,6 +112,18 @@
                  (err-write-line! error))))
            (util/->js opts))))
 
+(defn register-autocmd!
+  ([k f] (register-autocmd! k f {}))
+  ([k f opts]
+   (j/call @plugin! :registerAutocmd
+           (name k)
+           (fn [s]
+             (try
+               (f (str s))
+               (catch :default error
+                 (err-write-line! error))))
+           (util/->js opts))))
+
 (defn enable-error-print! []
   (a/go-loop []
     (when-let [error (a/<! async/error-chan)]
