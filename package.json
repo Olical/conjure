@@ -1,0 +1,10 @@
+{
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Olical/conjure.git"
+  },
+  "license": "Unlicense",
+  "devDependencies": {
+    "neovim": "4.3.0"
+  }
+}
