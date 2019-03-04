@@ -1,4 +1,4 @@
-.PHONY: build nvim dev test-prepls
+.PHONY: build nvim dev prepls
 
 SRC_FILES = $(shell find src -type f -name '*')
 
@@ -16,7 +16,7 @@ dev:
 	npm install
 	NVIM_LISTEN_ADDRESS=/tmp/conjure-nvim clj -Adev
 
-test-prepls:
+prepls:
 	clj -Atest\
 		-J-Dclojure.server.jvm="{:port 5555, :accept clojure.core.server/io-prepl}" \
 		-J-Dclojure.server.node="{:port 5556, :accept cljs.server.node/prepl, :args [{:env-opts {:port 5576}}]}"\
