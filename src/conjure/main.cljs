@@ -46,7 +46,7 @@
   ;; TODO The first eval yields 
   ;conjure/err; Error: find-ns-obj not supported for target node
 
-  (add! "{:tag :dev, :port 5555, :expr #re \".*\"}")
+  (add! "{:tag :dev, :port 5559, :expr #re \".*\"}")
   (eval! "(+ 10 10)")
   (eval! "(repeat 20 :henlo)")
   (eval! "(prn :thisisasuperlongthingtoevalanditshouldgettruncated)")
