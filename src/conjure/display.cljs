@@ -42,6 +42,7 @@
         (a/<! (<tabpage-log-window))))))
 
 ;; TODO Make the log window expand and contract
+;; TODO Show / ensure (better name?) log binding should let you focus into it too
 (defn- <log!* [{:keys [conn value]}]
   (async/go
     (let [window (a/<! (<upsert-tabpage-log-window!))
