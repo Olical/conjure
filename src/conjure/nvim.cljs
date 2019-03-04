@@ -52,6 +52,9 @@
 (defn <length [buffer]
   (-> (j/get buffer :length) (async/->chan)))
 
+(defn <number ([window]
+  (-> (j/get window :number) (async/->chan))))
+
 (defn set-width! [window width]
   (j/assoc! window :width width))
 

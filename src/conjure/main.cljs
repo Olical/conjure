@@ -32,16 +32,19 @@
   (action/eval! s))
 
 (defn show-log! []
-  (display/<upsert-tabpage-log-window!))
+  (display/show-log!))
+
+(defn hide-log! []
+  (display/hide-log!))
 
 (defn setup! [plugin]
   (init!)
   (nvim/reset-plugin! plugin)
-  (nvim/register-command! :CLJS add! {:nargs "1"})
+  (nvim/register-command! :CLJSAdd add! {:nargs "1"})
   (nvim/register-command! :CLJSRemove remove! {:nargs "1"})
   (nvim/register-command! :CLJSEval eval! {:nargs "1"})
   (nvim/register-command! :CLJSShowLog show-log!)
-  (nvim/register-command! :CLJSCheck (fn [] (nvim/out-write-line! "test"))))
+  (nvim/register-command! :CLJSHideLog hide-log!))
 
 (j/assoc! js/module :exports setup!)
 

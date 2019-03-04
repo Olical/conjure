@@ -14,6 +14,7 @@
     s
     (try
       (zp/zprint-str (str s)
+                     (:large display/log-window-widths)
                      {:parse-string-all? true
                       :parse {:interpose "\n\n"}})
       (catch :default e

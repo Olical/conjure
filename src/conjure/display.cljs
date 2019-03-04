@@ -24,7 +24,7 @@
               window
               (recur windows))))))))
 
-(defn <upsert-tabpage-log-window! []
+(defn- <upsert-tabpage-log-window! []
   (async/go
     (if-let [window (a/<! (<tabpage-log-window))]
       window
@@ -38,7 +38,8 @@
         (nvim/command! "wincmd w")
         (a/<! (<tabpage-log-window))))))
 
-;; TODO Make the window auto expand and hide
+;; TODO Make the log window expand and contract
+;; TODO Make the log window autoclose through CursorHold(?)
 (defn- <log!* [{:keys [conn value]}]
   (async/go
     (let [window (a/<! (<upsert-tabpage-log-window!))
@@ -81,3 +82,12 @@
     (do
       (log! {:conn {:tag :conjure}, :value {:tag :err, :val (expound/expound-str spec form)}})
       nil)))
+
+(defn show-log! []
+  (async/go
+    (a/<! (<upsert-tabpage-log-window!))))
+
+(defn hide-log! []
+  (async/go
+    (when-let [window (a/<! (<tabpage-log-window))]
+      (nvim/command! (str (a/<! (nvim/<number window)) "close")))))
