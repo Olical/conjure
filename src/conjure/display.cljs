@@ -22,7 +22,7 @@
               window
               (recur windows))))))))
 
-(defn- <upsert-tabpage-log-window! []
+(defn <upsert-tabpage-log-window! []
   (async/go
     (if-let [window (a/<! (<tabpage-log-window))]
       window
@@ -38,9 +38,6 @@
 
 ;; TODO Simplify logging Conjure related messages
 ;; TODO Make the window auto expand and hide
-;; TODO Have a way to open it (optionally focus)
-;; TODO Trim the log when it's too long
-;; TODO Doesn't seem to print all data all the time (race condition overwriting lines?)
 (defn log! [{:keys [conn value]}]
   (async/go
     (let [window (a/<! (<upsert-tabpage-log-window!))
