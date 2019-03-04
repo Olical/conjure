@@ -17,9 +17,7 @@
                      {:parse-string-all? true
                       :parse {:interpose "\n\n"}})
       (catch :default e
-        (display/log! {:conn {:tag :conjure}
-                       :value {:tag :err, :val (str "pretty-print error: " e "\n"
-                                                    "offending code: " s)}})
+        (display/error! (str "Error while pretty-printing " e "\n" s))
         s))))
 
 (defn sample [s]

@@ -1,6 +1,7 @@
 (ns conjure.action
   "Actions a user can perform."
   (:require [cljs.core.async :as a]
+            [clojure.string :as str]
             [conjure.async :as async :include-macros true]
             [conjure.session :as session]
             [conjure.nvim :as nvim]
@@ -16,7 +17,8 @@
     (let [buffer (a/<! (nvim/<buffer))
           path (a/<! (nvim/<name buffer))]
       (if-let [conns (session/conns path)]
-        (doseq [conn conns]
-          (display/log! {:conn conn, :value {:tag :eval, :val (code/sample code)}})
-          (display/log! {:conn conn, :value (a/<! (session/<eval! conn code))}))
-        (display/log! {:conn {:tag :conjure}, :value {:tag :err, :val (str "No matching connections for path: " path)}} )))))
+        (do
+          (display/info! "Eval with" (str/join ", " (map (comp name :tag) conns)) "=>" (code/sample code))
+          (doseq [conn conns]
+            (display/log! {:conn conn, :value (a/<! (session/<eval! conn code))})))
+        (display/error! "No matching connections for path" path)))))

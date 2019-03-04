@@ -5,7 +5,8 @@
             [expound.alpha :as expound]
             [cljs.core.async :as a]
             [conjure.async :as async :include-macros true]
-            [conjure.nvim :as nvim]))
+            [conjure.nvim :as nvim]
+            [conjure.util :as util]))
 
 ;; TODO Rename this to just conjure.cljc once I completely replace the Rust version.
 (def log-buffer-name "/tmp/conjure-log.cljc")
@@ -37,7 +38,6 @@
         (nvim/command! "wincmd w")
         (a/<! (<tabpage-log-window))))))
 
-;; TODO Simplify logging Conjure related messages
 ;; TODO Make the window auto expand and hide
 (defn- <log!* [{:keys [conn value]}]
   (async/go
@@ -62,6 +62,12 @@
 
 (defn log! [opts]
   (async/go (a/>! log-chan opts)))
+
+(defn info! [& args]
+  (log! {:conn {:tag :conjure}, :value {:tag :out, :val (util/join args)}}))
+
+(defn error! [& args]
+  (log! {:conn {:tag :conjure}, :value {:tag :err, :val (util/join args)}}))
 
 (defn enable-log-print! []
   (a/go-loop []
