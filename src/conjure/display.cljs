@@ -11,6 +11,7 @@
 (def log-buffer-name "/tmp/conjure-log.cljc")
 (def log-window-widths {:small 40 :large 80})
 (def max-log-buffer-length 10000)
+(defonce log-chan (a/chan))
 
 (defn- <tabpage-log-window []
   (async/go
@@ -38,8 +39,7 @@
 
 ;; TODO Simplify logging Conjure related messages
 ;; TODO Make the window auto expand and hide
-;; TODO Fix bug where lots of windows open after multiple log! calls quickly
-(defn log! [{:keys [conn value]}]
+(defn- <log!* [{:keys [conn value]}]
   (async/go
     (let [window (a/<! (<upsert-tabpage-log-window!))
           buffer (a/<! (nvim/<buffer window))
@@ -59,6 +59,15 @@
         (nvim/append! buffer (map #(str prefix " " %) val-lines)))
 
       (nvim/scroll-to-bottom! window))))
+
+(defn log! [opts]
+  (async/go (a/>! log-chan opts)))
+
+(defn enable-log-print! []
+  (a/go-loop []
+    (when-let [opts (a/<! log-chan)]
+      (a/<! (<log!* opts))
+      (recur))))
 
 (defn ensure! [spec form]
   (if (s/valid? spec form)

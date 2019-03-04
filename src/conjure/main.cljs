@@ -11,8 +11,10 @@
             [conjure.display :as display]
             [conjure.action :as action]))
 
-(node/enable-util-print!)
-(nvim/enable-error-print!)
+(defn- init! []
+  (node/enable-util-print!)
+  (nvim/enable-error-print!)
+  (display/enable-log-print!))
 
 (defn- parse [spec s]
   (let [v (edn/read-string {:readers {'re re-pattern}} s)]
@@ -33,6 +35,7 @@
   (display/<upsert-tabpage-log-window!))
 
 (defn setup! [plugin]
+  (init!)
   (nvim/reset-plugin! plugin)
   (nvim/register-command! :CLJS add! {:nargs "1"})
   (nvim/register-command! :CLJSRemove remove! {:nargs "1"})
@@ -43,8 +46,14 @@
 (j/assoc! js/module :exports setup!)
 
 (comment
-  ;; Connect the REPL to the `make nvim` Neovim instance.
-  (nvim/require-api!)
+  ;; Development: `make nvim`, `make dev`, REPL into port 5885 then execute this once.
+  (do
+    ;; Connect the REPL to the Neovim instance.
+    (nvim/require-api!)
+
+    ;; Initialise the logging and printing go-loops.
+    ;; This is not idempotent!
+    (init!))
 
   (add! "{:tag :dev, :port 5555, :expr #re \".*\"}")
   (eval! "(+ 10 10)")

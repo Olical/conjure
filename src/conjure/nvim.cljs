@@ -8,7 +8,6 @@
 
 (defonce plugin! (atom nil))
 (defonce api! (atom nil))
-(defonce error-print-chan! (atom nil))
 
 (defn require-api! []
   (-> (node/require "neovim/scripts/nvim")
@@ -111,9 +110,7 @@
            (util/->js opts))))
 
 (defn enable-error-print! []
-  (when (nil? @error-print-chan!)
-    (reset! error-print-chan!
-            (a/go-loop []
-              (when-let [error (a/<! async/error-chan)]
-                (async/catch! (err-write-line! error))
-                (recur))))))
+  (a/go-loop []
+    (when-let [error (a/<! async/error-chan)]
+      (async/catch! (err-write-line! error))
+      (recur))))
