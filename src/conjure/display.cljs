@@ -24,7 +24,7 @@
               window
               (recur windows))))))))
 
-(defn- <upsert-tabpage-log-window! []
+(defn- <upsert-tabpage-log-window! [{:keys [focus?]}]
   (async/go
     (if-let [window (a/<! (<tabpage-log-window))]
       window
@@ -35,14 +35,17 @@
         (nvim/command! "setlocal bufhidden=hide")
         (nvim/command! "setlocal nowrap")
         (nvim/command! "setlocal noswapfile")
-        (nvim/command! "wincmd p")
+
+        (when-not focus?
+          (nvim/command! "wincmd p"))
+
         (a/<! (<tabpage-log-window))))))
 
 ;; TODO Prevent the log window auto closing on first open
 ;; TODO Make the log window expand and contract
 (defn- <log!* [{:keys [conn value]}]
   (async/go
-    (let [window (a/<! (<upsert-tabpage-log-window!))
+    (let [window (a/<! (<upsert-tabpage-log-window! {:focus? false}))
           buffer (a/<! (nvim/<buffer window))
           length (a/<! (nvim/<length buffer))
           sample (a/<! (nvim/<get-lines buffer {:start 0, :end 1}))
@@ -85,9 +88,7 @@
 
 (defn show-log! []
   (async/go
-    (let [window (a/<! (<upsert-tabpage-log-window!))
-          number (a/<! (nvim/<number window))]
-      (nvim/command! (str number "wincmd") "w"))))
+    (a/<! (<upsert-tabpage-log-window! {:focus? true}))))
 
 (defn hide-log! []
   (async/go

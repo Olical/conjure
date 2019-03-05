@@ -107,7 +107,7 @@
            (name k)
            (fn [s]
              (try
-               (f (str s))
+               (async/->promise (f (str s)))
                (catch :default error
                  (err-write-line! error))))
            (util/->js opts))))
@@ -119,7 +119,7 @@
            (name k)
            (fn [s]
              (try
-               (f (str s))
+               (async/->promise (f (str s)))
                (catch :default error
                  (err-write-line! error))))
            (util/->js opts))))
