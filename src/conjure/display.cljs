@@ -38,8 +38,8 @@
         (nvim/command! "wincmd p")
         (a/<! (<tabpage-log-window))))))
 
-;; TODO Make the log window expand and contract
 ;; TODO Prevent the log window auto closing on first open
+;; TODO Make the log window expand and contract
 (defn- <log!* [{:keys [conn value]}]
   (async/go
     (let [window (a/<! (<upsert-tabpage-log-window!))
@@ -91,9 +91,6 @@
 
 (defn hide-log! []
   (async/go
-    (let [window (a/<! (<tabpage-log-window))
-          buffer (a/<! (nvim/<buffer))
-          buffer-name (a/<! (nvim/<name buffer))]
-      (when (and window
-                 (not= log-buffer-name buffer-name))
+    (when (not= log-buffer-name (a/<! (nvim/<name (a/<! (nvim/<buffer)))))
+      (when-let [window (a/<! (<tabpage-log-window))]
         (nvim/command! (str (a/<! (nvim/<number window)) "close"))))))
