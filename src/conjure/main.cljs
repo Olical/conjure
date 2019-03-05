@@ -47,7 +47,8 @@
   (nvim/register-command! :CLJSShowLog show-log!)
   (nvim/register-command! :CLJSHideLog hide-log!)
 
-  (nvim/register-autocmd! :CursorMoved hide-log! {:pattern "*"}))
+  (nvim/register-autocmd! :CursorMoved hide-log! {:pattern "*"})
+  (nvim/register-autocmd! :InsertEnter hide-log! {:pattern "*"}))
 
 (j/assoc! js/module :exports setup!)
 

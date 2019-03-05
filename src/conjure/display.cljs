@@ -10,11 +10,9 @@
 
 ;; TODO Rename this to just conjure.cljc once I completely replace the Rust version.
 (def log-buffer-name "/tmp/conjure-log.cljc")
-(def log-hide-delay 300)
 (def log-window-widths {:small 40 :large 80})
 (def max-log-buffer-length 10000)
 (defonce log-chan (a/chan))
-(defonce log-last-open! (atom (util/now)))
 
 (defn- <tabpage-log-window []
   (async/go
@@ -31,20 +29,17 @@
     (if-let [window (a/<! (<tabpage-log-window))]
       window
       (do
-        (reset! log-last-open! (util/now))
         (nvim/command! "botright" (str (:small log-window-widths) "vnew") log-buffer-name)
         (nvim/command! "setlocal winfixwidth")
         (nvim/command! "setlocal buftype=nofile")
         (nvim/command! "setlocal bufhidden=hide")
         (nvim/command! "setlocal nowrap")
         (nvim/command! "setlocal noswapfile")
-        (nvim/command! "wincmd w")
+        (nvim/command! "wincmd p")
         (a/<! (<tabpage-log-window))))))
 
 ;; TODO Make the log window expand and contract
-;; TODO Show / ensure (better name?) log binding should let you focus into it too
-;; TODO Doesn't hide if you go into insert mode...
-;; TODO Hides when you first open it sometimes, race condition
+;; TODO Prevent the log window auto closing on first open
 (defn- <log!* [{:keys [conn value]}]
   (async/go
     (let [window (a/<! (<upsert-tabpage-log-window!))
@@ -90,7 +85,9 @@
 
 (defn show-log! []
   (async/go
-    (a/<! (<upsert-tabpage-log-window!))))
+    (let [window (a/<! (<upsert-tabpage-log-window!))
+          number (a/<! (nvim/<number window))]
+      (nvim/command! (str number "wincmd") "w"))))
 
 (defn hide-log! []
   (async/go
@@ -98,6 +95,5 @@
           buffer (a/<! (nvim/<buffer))
           buffer-name (a/<! (nvim/<name buffer))]
       (when (and window
-                 (not= log-buffer-name buffer-name)
-                 (> (util/now) (+ @log-last-open! log-hide-delay)))
+                 (not= log-buffer-name buffer-name))
         (nvim/command! (str (a/<! (nvim/<number window)) "close"))))))
