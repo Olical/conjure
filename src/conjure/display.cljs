@@ -8,7 +8,6 @@
             [conjure.nvim :as nvim]
             [conjure.util :as util]))
 
-;; TODO Rename this to just conjure.cljc once I completely replace the Rust version.
 (def log-window-widths {:small 40 :large 80})
 (def max-log-buffer-length 10000)
 (def grace-period-ms 500)

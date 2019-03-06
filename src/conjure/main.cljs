@@ -38,12 +38,10 @@
   (nvim/register-command! :CLJSShowLog display/show-log!)
   (nvim/register-command! :CLJSHideLog display/hide-log!)
 
-  ;; TODO Work out why autocmd patterns aren't going through, should get log resizing working
-  ;; TODO Swap the CursorMoved and InsertEnter events to use an inverse pattern when they work
   (nvim/register-autocmd! :CursorMoved display/hide-background-log! {:pattern "*"})
   (nvim/register-autocmd! :InsertEnter display/hide-background-log! {:pattern "*"})
-  (nvim/register-command! :BufEnter #(display/set-log-size! :large) {:pattern "/tmp/conjure-log-*.cljc"})
-  (nvim/register-command! :BufLeave #(display/set-log-size! :small) {:pattern "/tmp/conjure-log-*.cljc"}))
+  (nvim/register-autocmd! :BufEnter #(display/set-log-size! :large) {:pattern "/tmp/conjure-log-*.cljc"})
+  (nvim/register-autocmd! :BufLeave #(display/set-log-size! :small) {:pattern "/tmp/conjure-log-*.cljc"}))
 
 (j/assoc! js/module :exports setup!)
 
