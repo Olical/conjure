@@ -9,10 +9,10 @@
             [conjure.util :as util]))
 
 ;; TODO Rename this to just conjure.cljc once I completely replace the Rust version.
-(def log-buffer-name "/tmp/conjure-log.cljc")
 (def log-window-widths {:small 40 :large 80})
 (def max-log-buffer-length 10000)
 (def grace-period-ms 500)
+(defonce log-buffer-name (str "/tmp/conjure-log-" (util/now) ".cljc"))
 (defonce log-chan (a/chan))
 (defonce last-update-ms! (atom 0))
 
@@ -43,10 +43,6 @@
 
         (a/<! (<tabpage-log-window))))))
 
-(defn- log-updated! []
-  (reset! last-update-ms! (util/now)))
-
-;; TODO Make the log window expand and contract
 (defn- <log!* [{:keys [conn value]}]
   (async/go
     (let [window (a/<! (<upsert-tabpage-log-window! {:focus? false}))
@@ -57,18 +53,17 @@
           val-lines (str/split (:val value) #"\n")]
 
       (when (and (= length 1) (= sample [""]))
-        (nvim/set-lines! buffer {:start 0} ";conjure/out; Welcome!")
-        (log-updated!))
+        (nvim/set-lines! buffer {:start 0} ";conjure/out; Welcome!"))
 
       (when (> length max-log-buffer-length)
-        (nvim/set-lines! buffer {:start 0, :end (/ max-log-buffer-length 2)} "")
-        (log-updated!))
+        (nvim/set-lines! buffer {:start 0, :end (/ max-log-buffer-length 2)} ""))
 
       (if (contains? #{:ret :tap} (:tag value))
         (nvim/append! buffer prefix val-lines)
         (nvim/append! buffer (map #(str prefix " " %) val-lines)))
 
-      (nvim/scroll-to-bottom! window))))
+      (nvim/scroll-to-bottom! window)
+      (reset! last-update-ms! (util/now)))))
 
 (defn log! [opts]
   (async/go (a/>! log-chan opts)))
@@ -112,3 +107,8 @@
     (when (and (not= log-buffer-name (a/<! (nvim/<name (a/<! (nvim/<buffer)))))
                (> (util/now) (+ @last-update-ms! grace-period-ms)))
       (a/<! (hide-log!)))))
+
+(defn set-log-size! [size]
+  (async/go
+    (when-let [window (a/<! (<tabpage-log-window))]
+      (nvim/set-width! window (get log-window-widths size)))))

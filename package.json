@@ -5,6 +5,6 @@
   },
   "license": "Unlicense",
   "devDependencies": {
-    "neovim": "4.3.0"
+    "neovim": "4.4.0"
   }
 }

@@ -38,8 +38,12 @@
   (nvim/register-command! :CLJSShowLog display/show-log!)
   (nvim/register-command! :CLJSHideLog display/hide-log!)
 
+  ;; TODO Work out why autocmd patterns aren't going through, should get log resizing working
+  ;; TODO Swap the CursorMoved and InsertEnter events to use an inverse pattern when they work
   (nvim/register-autocmd! :CursorMoved display/hide-background-log! {:pattern "*"})
-  (nvim/register-autocmd! :InsertEnter display/hide-background-log! {:pattern "*"}))
+  (nvim/register-autocmd! :InsertEnter display/hide-background-log! {:pattern "*"})
+  (nvim/register-command! :BufEnter #(display/set-log-size! :large) {:pattern "/tmp/conjure-log-*.cljc"})
+  (nvim/register-command! :BufLeave #(display/set-log-size! :small) {:pattern "/tmp/conjure-log-*.cljc"}))
 
 (j/assoc! js/module :exports setup!)
 
@@ -54,11 +58,11 @@
     (init!))
 
   (add! "{:tag :dev, :port 5555, :expr #re \".*\"}")
-  (eval! "(+ 10 10)")
-  (eval! "(repeat 20 :henlo)")
-  (eval! "(prn :thisisasuperlongthingtoevalanditshouldgettruncated)")
-  (eval! "`(fn [foo] (+ foo foo))")
-  (eval! "(doc +)")
-  (eval! "(prn 1) (prn 2) (prn 3) (prn 4) (prn 5)")
-  (eval! "(println \"henlo\")")
+  (action/eval! "(+ 10 10)")
+  (action/eval! "(repeat 20 :henlo)")
+  (action/eval! "(prn :thisisasuperlongthingtoevalanditshouldgettruncated)")
+  (action/eval! "`(fn [foo] (+ foo foo))")
+  (action/eval! "(doc +)")
+  (action/eval! "(prn 1) (prn 2) (prn 3) (prn 4) (prn 5)")
+  (action/eval! "(println \"henlo\")")
   (remove! ":dev"))
