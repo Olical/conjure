@@ -12,7 +12,9 @@
 (def log-buffer-name "/tmp/conjure-log.cljc")
 (def log-window-widths {:small 40 :large 80})
 (def max-log-buffer-length 10000)
+(def grace-period-ms 500)
 (defonce log-chan (a/chan))
+(defonce last-update-ms! (atom 0))
 
 (defn- <tabpage-log-window []
   (async/go
@@ -41,7 +43,9 @@
 
         (a/<! (<tabpage-log-window))))))
 
-;; TODO Prevent the log window auto closing on first open
+(defn- log-updated! []
+  (reset! last-update-ms! (util/now)))
+
 ;; TODO Make the log window expand and contract
 (defn- <log!* [{:keys [conn value]}]
   (async/go
@@ -53,10 +57,12 @@
           val-lines (str/split (:val value) #"\n")]
 
       (when (and (= length 1) (= sample [""]))
-        (nvim/set-lines! buffer {:start 0} ";conjure/out; Welcome!"))
+        (nvim/set-lines! buffer {:start 0} ";conjure/out; Welcome!")
+        (log-updated!))
 
       (when (> length max-log-buffer-length)
-        (nvim/set-lines! buffer {:start 0, :end (/ max-log-buffer-length 2)} ""))
+        (nvim/set-lines! buffer {:start 0, :end (/ max-log-buffer-length 2)} "")
+        (log-updated!))
 
       (if (contains? #{:ret :tap} (:tag value))
         (nvim/append! buffer prefix val-lines)
@@ -92,6 +98,17 @@
 
 (defn hide-log! []
   (async/go
-    (when (not= log-buffer-name (a/<! (nvim/<name (a/<! (nvim/<buffer)))))
-      (when-let [window (a/<! (<tabpage-log-window))]
-        (nvim/command! (str (a/<! (nvim/<number window)) "close"))))))
+    (when-let [window (a/<! (<tabpage-log-window))]
+      (nvim/command! (str (a/<! (nvim/<number window)) "close")))))
+
+;; The update timer and grace period is required because when I call
+;; nvim/set-lines! it triggers a CursorMoved autocmd inside the user's
+;; current buffer. Even though the cursor moved inside the log buffer!
+;;
+;; To "fix" this I just ignore calls to close the log 500ms after log lines
+;; are altered any way.
+(defn hide-background-log! []
+  (async/go
+    (when (and (not= log-buffer-name (a/<! (nvim/<name (a/<! (nvim/<buffer)))))
+               (> (util/now) (+ @last-update-ms! grace-period-ms)))
+      (a/<! (hide-log!)))))

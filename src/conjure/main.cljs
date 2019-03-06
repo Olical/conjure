@@ -28,27 +28,18 @@
   (when-let [tag (parse ::session/tag s)]
     (session/remove! tag)))
 
-(defn eval! [s]
-  (action/eval! s))
-
-(defn show-log! []
-  (display/show-log!))
-
-(defn hide-log! []
-  (display/hide-log!))
-
 (defn setup! [plugin]
   (init!)
   (nvim/reset-plugin! plugin)
 
   (nvim/register-command! :CLJSAdd add! {:nargs "1"})
   (nvim/register-command! :CLJSRemove remove! {:nargs "1"})
-  (nvim/register-command! :CLJSEval eval! {:nargs "1"})
-  (nvim/register-command! :CLJSShowLog show-log!)
-  (nvim/register-command! :CLJSHideLog hide-log!)
+  (nvim/register-command! :CLJSEval action/eval! {:nargs "1"})
+  (nvim/register-command! :CLJSShowLog display/show-log!)
+  (nvim/register-command! :CLJSHideLog display/hide-log!)
 
-  (nvim/register-autocmd! :CursorMoved hide-log! {:pattern "*"})
-  (nvim/register-autocmd! :InsertEnter hide-log! {:pattern "*"}))
+  (nvim/register-autocmd! :CursorMoved display/hide-background-log! {:pattern "*"})
+  (nvim/register-autocmd! :InsertEnter display/hide-background-log! {:pattern "*"}))
 
 (j/assoc! js/module :exports setup!)
 
