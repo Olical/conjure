@@ -1,1 +1,1 @@
-nnoremap <localleader>rc :ConjureConnect dev 127.0.0.1:5885 clj(s\\|c)$ cljs<CR>
+nnoremap <localleader>rc :ConjureConnect dev 127.0.0.1:5885 cljc?$ clj<CR>
