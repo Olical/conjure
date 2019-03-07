@@ -1,8 +1,1 @@
 /.cpcache/
-/out/
-/rplugin/
-/.cljs_node_repl/
-/node_modules/
-/logs/
-/target/
-/.rebel_readline_history
