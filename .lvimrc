@@ -1,4 +1,1 @@
 nnoremap <localleader>rc :ConjureConnect dev 127.0.0.1:5885 cljc?$ clj<cr>
-nnoremap <localleader>dr :source plugin/conjure.vim<cr>
-let &runtimepath .= ','.getcwd()
-source plugin/conjure.vim
