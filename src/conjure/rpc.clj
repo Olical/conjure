@@ -20,7 +20,7 @@
 (defmethod handle-request :default [msg]
   (log/warn "Unhandled request:" msg))
 
-(defn handle-response
+(defn- handle-response
   "Deliver the error and result to any existing request."
   [{:keys [id error result]}]
   (swap! requests!
@@ -33,7 +33,7 @@
 (defmethod handle-notify :default [msg]
   (log/warn "Unhandled notify:" msg))
 
-(defn handle-request-response
+(defn- handle-request-response
   "Give a request to handle-request and send the results to out-chan."
   [msg]
   (a/>!!  out-chan
@@ -49,7 +49,7 @@
 (def keyword->method ":some-method -> some_method"
   (memo/fifo csk/->snake_case_string))
 
-(defn decode
+(defn- decode
   "Decode a msgpack vector into a descriptive map."
   [msg]
   (case (nth msg 0)
@@ -65,7 +65,7 @@
        :method (method->keyword (nth msg 1))
        :params (vec (nth msg 2))}))
 
-(defn encode
+(defn- encode
   "Encode a descriptive map into a vector ready for msgpack."
   [msg]
   (case (:type msg)
@@ -73,7 +73,7 @@
     :response [1 (:id msg) (:error msg) (:result msg)]
     :notify   [2 (keyword->method (:method msg)) (vec (:params msg))]))
 
-(defn request-id
+(defn- request-id
   "The lowest available request ID starting at 1."
   [requests]
   (some
