@@ -7,7 +7,7 @@
 
 (s/def ::port integer?)
 
-(defn init! []
+(defn init []
   (log/merge-config!
     {:level :trace
      :appenders {:println nil

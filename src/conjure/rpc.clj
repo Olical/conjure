@@ -11,36 +11,38 @@
 (defonce in-chan (a/chan 128))
 (defonce out-chan (a/chan 128))
 
-;; These functions work together to deal with
-;; all incoming RPC messages from Neovim.
+;; Used to keep track of which requests are in flight.
+(defonce requests! (atom {}))
+
+;; These three functions work together to deal
+;; with all incoming RPC messages from Neovim.
 (defmulti handle-request :method)
 (defmethod handle-request :default [msg]
   (log/warn "Unhandled request:" msg))
 
-(defn handle-response [msg]
-  (log/error "Not handling responses yet:" msg))
+(defn handle-response
+  "Deliver the error and result to any existing request."
+  [{:keys [id error result]}]
+  (swap! requests!
+         (fn [requests]
+           (when-let [req (get requests id)]
+             (deliver req {:error error, :result result})
+             (dissoc requests id)))))
 
 (defmulti handle-notify :method)
 (defmethod handle-notify :default [msg]
   (log/warn "Unhandled notify:" msg))
 
-;; TODO Remove these once other methods exist, they're for dev only
-(defmethod handle-request :ping [{:keys [params]}]
-  (into ["pong"] params))
-(defmethod handle-notify :henlo [{:keys [params]}]
-  (log/info "Henlo!" params))
-
 (defn handle-request-response
   "Give a request to handle-request and send the results to out-chan."
   [msg]
-  (a/>!!
-    out-chan
-    (merge {:type :response
-            :id (:id msg)}
-           (try
-             {:result (handle-request msg)}
-             (catch Exception error
-               {:error (util/error->str error)})))))
+  (a/>!!  out-chan
+         (merge {:type :response
+                 :id (:id msg)}
+                (try
+                  {:result (handle-request msg)}
+                  (catch Exception error
+                    {:error (util/error->str error)})))))
 
 (def method->keyword "some_method -> :some-method"
   (memo/fifo csk/->kebab-case-keyword))
@@ -54,24 +56,51 @@
     0 {:type :request
        :id (nth msg 1)
        :method (method->keyword (nth msg 2))
-       :params (nth msg 3)}
+       :params (vec (nth msg 3))}
     1 {:type :response
        :id (nth msg 1)
        :error (nth msg 2)
        :result (nth msg 3)}
     2 {:type :notify
        :method (method->keyword (nth msg 1))
-       :params (nth msg 2)}))
+       :params (vec (nth msg 2))}))
 
 (defn encode
   "Encode a descriptive map into a vector ready for msgpack."
   [msg]
   (case (:type msg)
-    :request  [0 (:id msg) (keyword->method (:method msg)) (:params msg)]
+    :request  [0 (:id msg) (keyword->method (:method msg)) (vec (:params msg))]
     :response [1 (:id msg) (:error msg) (:result msg)]
-    :notify   [2 (keyword->method (:method msg)) (:params msg)]))
+    :notify   [2 (keyword->method (:method msg)) (vec (:params msg))]))
 
-(defn init!
+(defn request-id
+  "The lowest available request ID starting at 1."
+  [requests]
+  (some
+    (fn [n]
+      (when-not (contains? requests n)
+        n))
+    (rest (range))))
+
+(defn request
+  "Send a request and block until we get a response.
+  Split out into a future if you need to!"
+  [method & params]
+  (let [id! (atom nil)
+        req (promise)]
+    (swap! requests!
+           (fn [requests]
+             (let [id (request-id requests)]
+               (reset! id! id)
+               (assoc requests id req))))
+    (a/>!! out-chan
+           {:type :request
+            :id @id!
+            :method method
+            :params params})
+    @req))
+
+(defn init
   "Start up the loops that read and write to stdin/stdout.
   This allows us to communicate with Neovim through RPC."
   []
