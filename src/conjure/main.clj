@@ -1,14 +1,9 @@
 (ns conjure.main
-  (:require [msgpack.core :as msg]
-            [msgpack.clojure-extensions]
-            [taoensso.timbre :as log]
-            [conjure.dev :as dev]))
+  (:require [taoensso.timbre :as log]
+            [conjure.dev :as dev]
+            [conjure.rpc :as rpc]))
 
 (defn -main []
   (dev/init!)
-
-  (log/info "Waiting for RPC input...")
-  (loop []
-    (when-let [msg (msg/unpack System/in)]
-      (log/trace "->" msg)
-      (recur))))
+  (rpc/init!)
+  (log/info "Reached end of -main, exiting"))

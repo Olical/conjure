@@ -17,4 +17,4 @@ if ! exists("s:jobid")
   \})
 endif
 
-command! -nargs=0 ConjurePing echo rpcnotify(s:jobid, "ping", "<3")
+command! -nargs=0 ConjurePing echo rpcrequest(s:jobid, "ping", "<3")

@@ -10,11 +10,11 @@
   (str/join " " parts))
 
 (defn error [& parts]
-  (let [msg (sentence parts)]
-    (doseq [line (str/split msg #"\n")]
+  (let [message (sentence parts)]
+    (doseq [line (str/split message #"\n")]
       (log/error line))
     (binding [*out* *err*]
-      (println msg))))
+      (println message))))
 
 (defn parse-user-edn [spec src]
   (let [value (edn/read-string src)]
@@ -23,6 +23,10 @@
       (error (expound/expound-str spec value)))))
 
 (defn env
-  ([spec k] (some->> (env k) (parse-user-edn spec)))
-  ([k] (System/getenv (csk/->SCREAMING_SNAKE_CASE (str "conjure-" (name k))))))
+  ([spec k]
+   (some->> (env k) (parse-user-edn spec)))
+
+  ([k]
+   (System/getenv
+     (csk/->SCREAMING_SNAKE_CASE (str "conjure-" (name k))))))
 
