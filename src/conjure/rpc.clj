@@ -1,5 +1,6 @@
 (ns conjure.rpc
-  (:require [clojure.core.async :as a]
+  (:require [clojure.main :as clj]
+            [clojure.core.async :as a]
             [clojure.core.memoize :as memo]
             [taoensso.timbre :as log]
             [camel-snake-kebab.core :as csk]
@@ -38,7 +39,9 @@
                 (try
                   {:result (handle-request msg)}
                   (catch Exception error
-                    {:error error})))))
+                    {:error (-> (Throwable->map error)
+                                (clj/ex-triage)
+                                (clj/ex-str))})))))
 
 (def method->keyword "some_method -> :some-method"
   (memo/fifo csk/->kebab-case-keyword))
