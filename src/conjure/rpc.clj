@@ -40,6 +40,9 @@
 (def method->keyword (memo/fifo csk/->kebab-case-keyword))
 
 (defn init! []
+  ;; Prevent anyone writing to *out* since that's for msgpack-rpc.
+  (alter-var-root #'*out* (constantly *err*))
+
   (log/info "Starting RPC loop")
 
   (loop []
