@@ -24,10 +24,5 @@
   (log/info "Henlo!" params)
   (rpc/request :nvim-out-write "Oh, henlo!\n")
 
-  ;; What are these!?
-  ; {:error nil
-  ;  :result [#msgpack.core.Ext{:type 0
-  ;                             :data #object["[B" 0x65705a60 "[B@65705a60"]}
-  ;           #msgpack.core.Ext{:type 0
-  ;                             :data #object["[B" 0x13035bc "[B@13035bc"]}]}
-  (rpc/request :nvim-list-bufs))
+  ;; TODO Make sure nested msgpack values are unpacked.
+  (rpc/request :nvim-win-get-cursor (msgpack.core/unpack (:data (:result (rpc/request :nvim-get-current-win))))))
