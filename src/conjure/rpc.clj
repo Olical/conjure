@@ -9,20 +9,19 @@
 (defmulti handle-notify :method)
 
 (defmethod handle-notify :default [message]
-  (log/error "Unhandled notify:" message))
+  (log/warn "Unhandled notify:" message))
 
 (defmulti handle-request :method)
 
 (defmethod handle-request :default [message]
-  (log/error "Unhandled request:" message))
+  (log/warn "Unhandled request:" message))
 
+;; TODO Remove this once other methods exist
 (defmethod handle-request :ping [{:keys [params]}]
   (into ["pong"] params))
 
 (defn handle-response [message]
   (log/error "Not handling responses yet:" message))
-
-(def method->keyword (memo/fifo csk/->kebab-case-keyword))
 
 ;; TODO Write through core.async so they don't conflict
 
@@ -37,6 +36,8 @@
   (let [packed (msg/pack [1 id error result])]
     (.write System/out packed 0 (count packed)))
   (.flush System/out))
+
+(def method->keyword (memo/fifo csk/->kebab-case-keyword))
 
 (defn init! []
   (log/info "Starting RPC loop")
