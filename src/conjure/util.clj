@@ -1,5 +1,6 @@
 (ns conjure.util
-  (:require [clojure.edn :as edn]
+  (:require [clojure.main :as clj]
+            [clojure.edn :as edn]
             [clojure.spec.alpha :as s]
             [clojure.string :as str]
             [expound.alpha :as expound]
@@ -30,3 +31,5 @@
    (System/getenv
      (csk/->SCREAMING_SNAKE_CASE (str "conjure-" (name k))))))
 
+(defn error->str [error]
+  (-> error Throwable->map clj/ex-triage clj/ex-str))

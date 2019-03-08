@@ -1,11 +1,11 @@
 (ns conjure.rpc
-  (:require [clojure.main :as clj]
-            [clojure.core.async :as a]
+  (:require [clojure.core.async :as a]
             [clojure.core.memoize :as memo]
             [taoensso.timbre :as log]
             [camel-snake-kebab.core :as csk]
             [msgpack.core :as msg]
-            [msgpack.clojure-extensions]))
+            [msgpack.clojure-extensions]
+            [conjure.util :as util]))
 
 ;; These channels handle all RPC I/O.
 (defonce in-chan (a/chan 128))
@@ -33,15 +33,14 @@
 (defn handle-request-response
   "Give a request to handle-request and send the results to out-chan."
   [msg]
-  (a/>!! out-chan
-         (merge {:type :response
-                 :id (:id msg)}
-                (try
-                  {:result (handle-request msg)}
-                  (catch Exception error
-                    {:error (-> (Throwable->map error)
-                                (clj/ex-triage)
-                                (clj/ex-str))})))))
+  (a/>!!
+    out-chan
+    (merge {:type :response
+            :id (:id msg)}
+           (try
+             {:result (handle-request msg)}
+             (catch Exception error
+               {:error (util/error->str error)})))))
 
 (def method->keyword "some_method -> :some-method"
   (memo/fifo csk/->kebab-case-keyword))
@@ -105,7 +104,7 @@
           (log/trace "Sent!"))
         (recur))))
 
-  ;; Read messages from in-chan, handle them, put results onto out-chan where required.
+  ;; Handle all messages on in-chan through the handler-* functions.
   (a/thread
     (loop []
       (when-let [msg (a/<!! in-chan)]
