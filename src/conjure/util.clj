@@ -10,11 +10,11 @@
   (str/join " " parts))
 
 (defn error [& parts]
-  (let [message (sentence parts)]
-    (doseq [line (str/split message #"\n")]
+  (let [msg (sentence parts)]
+    (doseq [line (str/split msg #"\n")]
       (log/error line))
     (binding [*out* *err*]
-      (println message))))
+      (println msg))))
 
 (defn parse-user-edn [spec src]
   (let [value (edn/read-string src)]

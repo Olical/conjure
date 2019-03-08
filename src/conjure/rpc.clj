@@ -6,68 +6,92 @@
             [msgpack.core :as msg]
             [msgpack.clojure-extensions]))
 
+(defonce in-chan (a/chan 128))
+(defonce out-chan (a/chan 128))
+
 (defmulti handle-notify :method)
 
-(defmethod handle-notify :default [message]
-  (log/warn "Unhandled notify:" message))
+(defmethod handle-notify :default [msg]
+  (log/warn "Unhandled notify:" msg))
 
 (defmulti handle-request :method)
 
-(defmethod handle-request :default [message]
-  (log/warn "Unhandled request:" message))
+(defmethod handle-request :default [msg]
+  (log/warn "Unhandled request:" msg))
 
 ;; TODO Remove this once other methods exist
 (defmethod handle-request :ping [{:keys [params]}]
   (into ["pong"] params))
 
-(defn handle-response [message]
-  (log/error "Not handling responses yet:" message))
-
-;; TODO Write through core.async so they don't conflict
-
-(defn notify! [{:keys [method params] :as message}]
-  (log/trace "Outgoing RPC notify:" message)
-  (let [packed (msg/pack [2 method params])]
-    (.write System/out packed 0 (count packed)))
-  (.flush System/out))
-
-(defn respond! [{:keys [id error result] :as message}]
-  (log/trace "Outgoing RPC response:" message)
-  (let [packed (msg/pack [1 id error result])]
-    (.write System/out packed 0 (count packed)))
-  (.flush System/out))
+(defn handle-response [msg]
+  (log/error "Not handling responses yet:" msg))
 
 (def method->keyword (memo/fifo csk/->kebab-case-keyword))
+(def keyword->method (memo/fifo csk/->snake_case_string))
+
+(defn decode [msg]
+  (case (nth msg 0)
+    0 {:type :request
+       :id (nth msg 1)
+       :method (method->keyword (nth msg 2))
+       :params (nth msg 3)}
+    1 {:type :response
+       :id (nth msg 1)
+       :error (nth msg 2)
+       :result (nth msg 3)}
+    2 {:type :notify
+       :method (method->keyword (nth msg 1))
+       :params (nth msg 2)}))
+
+(defn encode [msg]
+  (case (:type msg)
+    :request  [0 (:id msg) (keyword->method (:method msg)) (:params msg)]
+    :response [1 (:id msg) (:error msg) (:result msg)]
+    :notify   [2 (keyword->method (:method msg)) (:params msg)]))
+
+(defn send-response! [{:keys [id]} response]
+  (a/>!! out-chan (merge {:type :response, :id id} response)))
 
 (defn init! []
   ;; Prevent anyone writing to *out* since that's for msgpack-rpc.
   (alter-var-root #'*out* (constantly *err*))
 
-  (log/info "Starting RPC loop")
+  (log/info "Starting RPC loops")
 
-  (loop []
-    (when-let [message (msg/unpack System/in)]
-      (case (nth message 0)
-        0 ;; Request and response.
-        (let [id (nth message 1)
-              message {:id id
-                       :method (method->keyword (nth message 2))
-                       :params (nth message 3)}]
-          (log/trace "Incoming RPC request:" message)
-          (try
-            (respond! {:id id, :result (handle-request message)})
-            (catch Exception error
-              (respond! {:id id, :error error}))))
+  ;; Read from stdin and place messages on in-chan.
+  (a/thread
+    (loop []
+      (when-let [msg (msg/unpack System/in)]
+        (log/trace "RPC message received:" msg)
+        (let [decoded (decode msg)]
+          (log/trace "Decoded to this:" decoded)
+          (a/>!! in-chan decoded))
+        (recur))))
 
-        1 ;; Response
-        (handle-response
-          {:error (nth message 2)
-           :result (nth message 3)})
+  ;; Read from out-chan and place messages in stdout.
+  (a/thread
+    (loop []
+      (when-let [msg (a/<!! out-chan)]
+        (log/trace "Sending RPC message:" msg)
+        (let [encoded (encode msg)
+              packed (msg/pack encoded)]
+          (log/trace "Encoded as this:" encoded)
+          (.write System/out packed 0 (count packed))
+          (.flush System/out)
+          (log/trace "Sent!"))
+        (recur))))
 
-        2 ;; Notify
-        (let [message {:method (method->keyword (nth message 1))
-                       :params (nth message 2)}]
-          (log/trace "Incoming RPC notify:" message)
-          (handle-notify message)))
-
-      (recur))))
+  ;; Read messages from in-chan, handle them, put results onto out-chan where required.
+  (a/thread
+    (loop []
+      (when-let [msg (a/<!! in-chan)]
+        (case (:type msg)
+          :request (try
+                     (send-response! msg {:result (handle-request msg)})
+                     (catch Exception error
+                       (send-response! msg {:error error})))
+          :response (handle-response msg)
+          :notify (let [msg {:method (method->keyword (nth msg 1))
+                             :params (nth msg 2)}]
+                    (handle-notify msg)))
+        (recur)))))
