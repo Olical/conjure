@@ -5,7 +5,7 @@ function! s:OnStderr(jobid, lines, source) dict
       echomsg line
     endif
   endfor
-  echomsg "Error from Conjure, see :messages for more."
+  echo "Error from Conjure, see :messages for more"
   echohl None
 endfunction
 
