@@ -25,6 +25,7 @@
 (def method->keyword (memo/fifo csk/->kebab-case-keyword))
 
 ;; TODO Write through core.async so they don't conflict
+;; TODO Can I wrap up *out* so nobody can ever print there :thinking:
 
 (defn notify! [{:keys [method params] :as message}]
   (log/trace "Outgoing RPC notify:" message)
