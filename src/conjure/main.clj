@@ -8,6 +8,8 @@
   (dev/init!)
   (rpc/init!)
 
+  (log/info! "Everything's up and running")
+
   (let [fry (a/chan)]
     ;; https://www.youtube.com/watch?v=6UHlXLmsDGA
     ;;      __

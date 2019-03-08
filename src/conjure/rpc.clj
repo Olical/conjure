@@ -6,30 +6,48 @@
             [msgpack.core :as msg]
             [msgpack.clojure-extensions]))
 
+;; These channels handle all RPC I/O.
 (defonce in-chan (a/chan 128))
 (defonce out-chan (a/chan 128))
 
-(defmulti handle-notify :method)
-
-(defmethod handle-notify :default [msg]
-  (log/warn "Unhandled notify:" msg))
-
+;; These functions work together to deal with
+;; all incoming RPC messages from Neovim.
 (defmulti handle-request :method)
-
 (defmethod handle-request :default [msg]
   (log/warn "Unhandled request:" msg))
-
-;; TODO Remove this once other methods exist
-(defmethod handle-request :ping [{:keys [params]}]
-  (into ["pong"] params))
 
 (defn handle-response [msg]
   (log/error "Not handling responses yet:" msg))
 
-(def method->keyword (memo/fifo csk/->kebab-case-keyword))
-(def keyword->method (memo/fifo csk/->snake_case_string))
+(defmulti handle-notify :method)
+(defmethod handle-notify :default [msg]
+  (log/warn "Unhandled notify:" msg))
 
-(defn decode [msg]
+;; TODO Remove these once other methods exist, they're for dev only
+(defmethod handle-request :ping [{:keys [params]}]
+  (into ["pong"] params))
+(defmethod handle-notify :henlo [{:keys [params]}]
+  (log/info "Henlo!" params))
+
+(defn handle-request-response
+  "Give a request to handle-request and send the results to out-chan."
+  [msg]
+  (a/>!! out-chan
+         (merge {:type :response
+                 :id (:id msg)}
+                (try
+                  {:result (handle-request msg)}
+                  (catch Exception error
+                    {:error error})))))
+
+(def method->keyword "some_method -> :some-method"
+  (memo/fifo csk/->kebab-case-keyword))
+(def keyword->method ":some-method -> some_method"
+  (memo/fifo csk/->snake_case_string))
+
+(defn decode
+  "Decode a msgpack vector into a descriptive map."
+  [msg]
   (case (nth msg 0)
     0 {:type :request
        :id (nth msg 1)
@@ -43,16 +61,19 @@
        :method (method->keyword (nth msg 1))
        :params (nth msg 2)}))
 
-(defn encode [msg]
+(defn encode
+  "Encode a descriptive map into a vector ready for msgpack."
+  [msg]
   (case (:type msg)
     :request  [0 (:id msg) (keyword->method (:method msg)) (:params msg)]
     :response [1 (:id msg) (:error msg) (:result msg)]
     :notify   [2 (keyword->method (:method msg)) (:params msg)]))
 
-(defn send-response! [{:keys [id]} response]
-  (a/>!! out-chan (merge {:type :response, :id id} response)))
+(defn init!
+  "Start up the loops that read and write to stdin/stdout.
+  This allows us to communicate with Neovim through RPC."
+  []
 
-(defn init! []
   ;; Prevent anyone writing to *out* since that's for msgpack-rpc.
   (alter-var-root #'*out* (constantly *err*))
 
@@ -86,12 +107,7 @@
     (loop []
       (when-let [msg (a/<!! in-chan)]
         (case (:type msg)
-          :request (try
-                     (send-response! msg {:result (handle-request msg)})
-                     (catch Exception error
-                       (send-response! msg {:error error})))
+          :request  (handle-request-response msg)
           :response (handle-response msg)
-          :notify (let [msg {:method (method->keyword (nth msg 1))
-                             :params (nth msg 2)}]
-                    (handle-notify msg)))
+          :notify   (handle-notify msg))
         (recur)))))
