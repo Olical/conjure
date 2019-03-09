@@ -17,4 +17,5 @@ if ! exists("s:jobid")
   \})
 endif
 
-command! -nargs=1 DevConnect call rpcnotify(s:jobid, "connect", <q-args>)
+command! -nargs=1 DevAdd call rpcnotify(s:jobid, "add", <q-args>)
+command! -nargs=1 DevRemove call rpcnotify(s:jobid, "remove", <q-args>)

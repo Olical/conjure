@@ -40,7 +40,11 @@
     (a/<!! fry)))
 
 ;; Here we map RPC notifications and requests to their Clojure functions.
-;; Input strings are also parsed as EDN and checked against specs where required.
-(defmethod rpc/handle-notify :connect [{:keys [params]}]
-  (when-let [conn (parse-user-edn ::pool/new-conn (first params))]
-    (log/info conn)))
+;; Input strings are parsed as EDN and checked against specs where required.
+(defmethod rpc/handle-notify :add [{:keys [params]}]
+  (when-let [new-conn (parse-user-edn ::pool/new-conn (first params))]
+    (pool/add! new-conn)))
+
+(defmethod rpc/handle-notify :remove [{:keys [params]}]
+  (when-let [tag (parse-user-edn ::pool/tag (first params))]
+    (pool/remove! tag)))
