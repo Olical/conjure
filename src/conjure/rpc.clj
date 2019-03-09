@@ -46,9 +46,9 @@
                   (catch Exception error
                     {:error (util/error->str error)})))))
 
-(def method->keyword "some_method -> :some-method"
+(def method->kw "some_method -> :some-method"
   (memo/fifo csk/->kebab-case-keyword))
-(def keyword->method ":some-method -> some_method"
+(def kw->method ":some-method -> some_method"
   (memo/fifo csk/->snake_case_string))
 
 (defn- decode
@@ -57,23 +57,23 @@
   (case (nth msg 0)
     0 {:type :request
        :id (nth msg 1)
-       :method (method->keyword (nth msg 2))
+       :method (method->kw (nth msg 2))
        :params (vec (nth msg 3))}
     1 {:type :response
        :id (nth msg 1)
        :error (nth msg 2)
        :result (nth msg 3)}
     2 {:type :notify
-       :method (method->keyword (nth msg 1))
+       :method (method->kw (nth msg 1))
        :params (vec (nth msg 2))}))
 
 (defn- encode
   "Encode a descriptive map into a vector ready for msgpack."
   [msg]
   (case (:type msg)
-    :request  [0 (:id msg) (keyword->method (:method msg)) (vec (:params msg))]
+    :request  [0 (:id msg) (kw->method (:method msg)) (vec (:params msg))]
     :response [1 (:id msg) (:error msg) (:result msg)]
-    :notify   [2 (keyword->method (:method msg)) (vec (:params msg))]))
+    :notify   [2 (kw->method (:method msg)) (vec (:params msg))]))
 
 (defn- request-id
   "The lowest available request ID starting at 1."

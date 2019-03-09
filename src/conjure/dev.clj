@@ -1,12 +1,10 @@
 (ns conjure.dev
   "Tools used to aid the development and debugging of Conjure itself."
   (:require [clojure.core.server :as server]
-            [clojure.spec.alpha :as s]
+            [clojure.edn :as edn]
             [taoensso.timbre :as log]
             [taoensso.timbre.appenders.core :as appenders]
             [conjure.util :as util]))
-
-(s/def ::port integer?)
 
 (defn init []
   (log/merge-config!
@@ -16,9 +14,9 @@
                          (appenders/spit-appender {:fname path}))}})
   (log/info "Logging initialised")
 
-  (when-let [port (util/env ::port :prepl-server-port)]
+  (when-let [port (util/env :prepl-server-port)]
     (server/start-server {:accept 'clojure.core.server/io-prepl
                           :address "127.0.0.1"
                           :name :dev
-                          :port port})
+                          :port (edn/read-string port)})
     (log/info "Started prepl server on port" port)))
