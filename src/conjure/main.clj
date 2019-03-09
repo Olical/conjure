@@ -21,6 +21,5 @@
 (defmethod rpc/handle-request :ping [{:keys [params]}]
   (into ["pong"] params))
 (defmethod rpc/handle-notify :henlo [{:keys [params]}]
-  (log/info "Henlo!" params)
-  (rpc/request :nvim-out-write "Oh, henlo!\n")
-  (rpc/request :nvim-win-get-cursor (:result (rpc/request :nvim-get-current-win))))
+  (log/trace "hmm" (rpc/request :nvim-out-write "Oh, henlo!\n"))
+  (log/trace "cursor" params (rpc/request :nvim-win-get-cursor (:result (rpc/request :nvim-get-current-win)))))

@@ -21,12 +21,13 @@
   (log/warn "Unhandled request:" msg))
 
 (defn- handle-response
-  "Deliver the error and result to any existing request."
-  [{:keys [id error result]}]
+  "Deliver the error or result to any existing request."
+  [{:keys [id error result] :as response}]
+  (log/trace "Received response:" response)
   (swap! requests!
          (fn [requests]
-           (when-let [req (get requests id)]
-             (deliver req {:error error, :result result})
+           (when-let [reqp (get requests id)]
+             (deliver reqp {:error error, :result result})
              (dissoc requests id)))))
 
 (defmulti handle-notify :method)
@@ -87,18 +88,21 @@
   Split out into a future if you need to!"
   [method & params]
   (let [id! (atom nil)
-        req (promise)]
+        reqp (promise)]
     (swap! requests!
            (fn [requests]
              (let [id (request-id requests)]
                (reset! id! id)
-               (assoc requests id req))))
-    (a/>!! out-chan
-           {:type :request
-            :id @id!
-            :method method
-            :params params})
-    @req))
+               (assoc requests id reqp))))
+
+    (let [request {:type :request
+                   :id @id!
+                   :method method
+                   :params params}]
+      (a/>!! out-chan request)
+      (log/trace "Sent request, awaiting response:" request))
+
+    @reqp))
 
 (defn init
   "Start up the loops that read and write to stdin/stdout.
@@ -137,8 +141,9 @@
   (a/thread
     (loop []
       (when-let [msg (a/<!! in-chan)]
-        (case (:type msg)
-          :request  (handle-request-response msg)
-          :response (handle-response msg)
-          :notify   (handle-notify msg))
+        (future
+          (case (:type msg)
+            :request  (handle-request-response msg)
+            :response (handle-response msg)
+            :notify   (handle-notify msg)))
         (recur)))))
