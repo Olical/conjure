@@ -23,6 +23,4 @@
 (defmethod rpc/handle-notify :henlo [{:keys [params]}]
   (log/info "Henlo!" params)
   (rpc/request :nvim-out-write "Oh, henlo!\n")
-
-  ;; TODO Make sure nested msgpack values are unpacked.
-  (rpc/request :nvim-win-get-cursor (msgpack.core/unpack (:data (:result (rpc/request :nvim-get-current-win))))))
+  (rpc/request :nvim-win-get-cursor (:result (rpc/request :nvim-get-current-win))))
