@@ -1,4 +1,5 @@
 (ns conjure.dev
+  "Tools used to aid the development and debugging of Conjure itself."
   (:require [clojure.core.server :as server]
             [clojure.spec.alpha :as s]
             [taoensso.timbre :as log]

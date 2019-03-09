@@ -1,8 +1,11 @@
 (ns conjure.main
+  "Entry point and registration of RPC handlers."
   (:require [clojure.core.async :as a]
             [taoensso.timbre :as log]
             [conjure.dev :as dev]
-            [conjure.rpc :as rpc]))
+            [conjure.rpc :as rpc]
+            [conjure.pool :as pool]
+            [conjure.util :as util]))
 
 (defn -main []
   (dev/init)
@@ -18,8 +21,6 @@
     ;; \\"--\\
     (a/<!! fry)))
 
-(defmethod rpc/handle-request :ping [{:keys [params]}]
-  (into ["pong"] params))
-(defmethod rpc/handle-notify :henlo [{:keys [params]}]
-  (log/trace "hmm" (rpc/request :nvim-out-write "Oh, henlo!\n"))
-  (log/trace "cursor" params (rpc/request :nvim-win-get-cursor (:result (rpc/request :nvim-get-current-win)))))
+(defmethod rpc/handle-notify :connect [{:keys [params]}]
+  (when-let [conn (util/parse-user-edn ::pool/new-conn (first params))]
+    (log/info conn)))

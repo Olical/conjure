@@ -1,4 +1,5 @@
 (ns conjure.util
+  "Anything useful and generic that's shared by multiple namespaces."
   (:require [clojure.main :as clj]
             [clojure.edn :as edn]
             [clojure.spec.alpha :as s]
@@ -33,3 +34,6 @@
 
 (defn error->str [error]
   (-> error Throwable->map clj/ex-triage clj/ex-str))
+
+(defn regexp? [o]
+  (instance? java.util.regex.Pattern o))

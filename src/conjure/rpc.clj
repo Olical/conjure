@@ -1,4 +1,5 @@
 (ns conjure.rpc
+  "Bi-directional communication with Neovim through msgpack-rpc."
   (:require [clojure.core.async :as a]
             [clojure.core.memoize :as memo]
             [taoensso.timbre :as log]
@@ -12,7 +13,7 @@
 (defonce out-chan (a/chan 128))
 
 ;; Used to keep track of which requests are in flight.
-(defonce requests! (atom {}))
+(defonce open-requests! (atom {}))
 
 ;; These three functions work together to deal
 ;; with all incoming RPC messages from Neovim.
@@ -24,7 +25,7 @@
   "Deliver the error or result to any existing request."
   [{:keys [id error result] :as response}]
   (log/trace "Received response:" response)
-  (swap! requests!
+  (swap! open-requests!
          (fn [requests]
            (when-let [reqp (get requests id)]
              (deliver reqp {:error error, :result result})
@@ -89,7 +90,7 @@
   [method & params]
   (let [id! (atom nil)
         reqp (promise)]
-    (swap! requests!
+    (swap! open-requests!
            (fn [requests]
              (let [id (request-id requests)]
                (reset! id! id)
