@@ -1,9 +1,15 @@
 (ns conjure.pool
   "Connection management and selection."
   (:require [clojure.spec.alpha :as s]
+            [clojure.core.async :as a]
             [clojure.core.server :as server]
+            [clojure.java.io :as io]
             [taoensso.timbre :as log]
             [conjure.util :as util]))
+
+(let [s (java.io.StringWriter.)]
+  (.write s "foo" 0 3)
+  (io/reader s))
 
 (s/def ::expr util/regexp?)
 (s/def ::tag keyword?)
@@ -15,13 +21,9 @@
 
 (defonce conns! (atom {}))
 
-;; Going to use server/remote-prepl for this which is sweeeet I think I need to
-;; open up a remote-prepl, give it some streams, wrap those up in three
-;; channels and return those in a map. We'll have aux, eval and read, just
-;; like CLJS. When they nil out we attempt to remove it. On disconnect we'll
-;; close eval which we can use internally to close down the remote-prepl. This
-;; way if things get killed by the user or by the remote-prepl all channels
-;; will close and everything will get cleaned up.
+(defn connect [{:keys [host port]}]
+  (let [[eval-chan read-chan aux-chan] (repeatedly a/chan)]
+    (server/remote-prepl host port)))
 
 (def default-exprs
   {:clj #"\.cljc?$"
@@ -33,10 +35,10 @@
     (swap! conns! dissoc tag)))
 
 (defn add! [{:keys [tag port lang expr host]
-                 :or {tag :default
-                      host "localhost"
-                      lang :clj}
-                 :as new-conn}]
+             :or {tag :default
+                  host "localhost"
+                  lang :clj}
+             :as new-conn}]
 
   (log/info "Adding:" new-conn)
   (remove! tag)
@@ -44,7 +46,8 @@
   (let [conn {:tag tag
               :lang lang
               :expr (or expr (get default-exprs lang))
-              :prepl (prepl/connect! {:host host, :port port})}]
+              :prepl (connect {:host host, :port port})}]
+
     (swap! conns! assoc tag conn)
 
     ;; when it closes we remove it... hmm
@@ -52,7 +55,8 @@
     (a/thread
       (loop []
         (when-let [value (a/<! (get-in conn [:prepl :aux-chan]))]
-          ;; display the aux
+          ;; TODO Display the aux
+          (log/trace "Aux value from:" conn "-" value)
           (recur))))))
 
 (defn conns
