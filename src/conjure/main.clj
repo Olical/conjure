@@ -1,7 +1,6 @@
 (ns conjure.main
   "Entry point and registration of RPC handlers."
-  (:require [clojure.core.async :as a]
-            [clojure.edn :as edn]
+  (:require [clojure.edn :as edn]
             [clojure.spec.alpha :as s]
             [expound.alpha :as expound]
             [taoensso.timbre :as log]
@@ -31,13 +30,12 @@
 
   (log/info "Everything's up and running")
 
-  (let [fry (a/chan)]
-    ;; https://www.youtube.com/watch?v=6UHlXLmsDGA
-    ;;      __
-    ;; (___()'`;
-    ;; /,    /`
-    ;; \\"--\\
-    (a/<!! fry)))
+  ;; https://www.youtube.com/watch?v=6UHlXLmsDGA
+  ;;      __
+  ;; (___()'`;
+  ;; /,    /`
+  ;; \\"--\\
+  @(promise))
 
 ;; Here we map RPC notifications and requests to their Clojure functions.
 ;; Input strings are parsed as EDN and checked against specs where required.
