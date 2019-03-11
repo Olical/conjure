@@ -24,11 +24,12 @@
 
 (defn remove! [tag]
   (when-let [conn (get @conns! tag)]
-    (log/info "Removing:" conn)
+    (log/info "Removing" tag)
     (swap! conns! dissoc tag)
     (doseq [c (vals (:prepl conn))]
       (a/close! c))))
 
+;; TODO When a conn is removed get the remote-prepl to end.
 (defn connect [{:keys [tag host port]}]
   (let [[eval-chan read-chan aux-chan] (repeatedly #(a/chan 32))
         input (PipedInputStream.)
@@ -37,7 +38,7 @@
     (future
       (with-open [reader (io/reader input)]
         (try
-          (log/info "Connecting through remote-prepl for tag:" tag)
+          (log/info "Connecting through remote-prepl for tag" tag)
           (server/remote-prepl
             host port reader
             (fn [out]
@@ -46,27 +47,31 @@
                        read-chan
                        aux-chan)
                      out)))
-          (catch Exception e
-            (log/error "Error from remote-prepl:" e))))
 
-      (log/trace "Exited remote-prepl for tag" tag)
-      (remove! tag))
+          (catch Exception e
+            (log/error "Error from remote-prepl:" e))
+
+          (finally
+            (log/trace "Exited remote-prepl for tag" tag)
+            (remove! tag)))))
 
     (future
       (with-open [writer (io/writer output)]
-        (loop []
-          (when-let [code (a/<!! eval-chan)]
-            (log/trace "Writing to tag:" tag "-" code)
-            (try
+        (try
+          (loop []
+            (when-let [code (a/<!! eval-chan)]
+              (log/trace "Writing to tag:" tag "-" code)
               (.write writer code 0 (count code))
               (.flush writer)
-              (catch Exception e
-                (log/error "Error from eval-chan writing:" e)))
-            (recur))))
+              (recur)))
 
-      (log/trace "Exited eval-chan loop, closing streams for tag:" tag)
-      (.close input)
-      (.close output))
+          (catch Exception e
+            (log/error "Error from eval-chan writing:" e))
+
+          (finally
+            (log/trace "Exited eval-chan loop, closing streams for tag:" tag)
+            (.close input)
+            (.close output)))))
 
     {:eval-chan eval-chan
      :read-chan read-chan
@@ -105,6 +110,7 @@
 
 (comment
   (add! {:tag :test, :port 5555})
+  (remove! :test)
   (a/>!! (-> (conns) first :prepl :eval-chan) "(+ 10 10)")
   (a/>!! (-> (conns) first :prepl :eval-chan) "(prn :henlo)")
   (a/<!! (-> (conns) first :prepl :read-chan)))
