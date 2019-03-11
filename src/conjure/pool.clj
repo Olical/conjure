@@ -36,14 +36,14 @@
         input (PipedInputStream.)
         output (PipedOutputStream. input)]
 
-    (a/thread
+    (future
       (with-open [in-reader (io/reader output)]
         (server/remote-prepl host port in-reader
                              (fn [{:keys [tag] :as out}]
                                (a/>!! (if (= tag :eval) read-chan aux-chan) out))))
       (remove! tag))
 
-    (a/thread
+    (future
       (loop []
         (when-let [code (a/<!! eval-chan)]
           (.write input code 0 (count code))
@@ -71,9 +71,9 @@
 
     ;; when it closes we remove it... hmm
 
-    (a/thread
+    (future
       (loop []
-        (when-let [value (a/<! (get-in conn [:prepl :aux-chan]))]
+        (when-let [value (a/<!! (get-in conn [:prepl :aux-chan]))]
           ;; TODO Display the aux
           (log/trace "Aux value from:" conn "-" value)
           (recur))))))

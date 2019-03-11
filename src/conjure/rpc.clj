@@ -116,7 +116,7 @@
   (log/info "Starting RPC loops")
 
   ;; Read from stdin and place messages on in-chan.
-  (a/thread
+  (future
     (loop []
       (when-let [msg (msg/unpack System/in)]
         (log/trace "RPC message received:" msg)
@@ -126,7 +126,7 @@
         (recur))))
 
   ;; Read from out-chan and place messages in stdout.
-  (a/thread
+  (future
     (loop []
       (when-let [msg (a/<!! out-chan)]
         (log/trace "Sending RPC message:" msg)
@@ -139,7 +139,7 @@
         (recur))))
 
   ;; Handle all messages on in-chan through the handler-* functions.
-  (a/thread
+  (future
     (loop []
       (when-let [msg (a/<!! in-chan)]
         (future
