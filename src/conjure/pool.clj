@@ -29,53 +29,69 @@
     (doseq [c (vals (:prepl conn))]
       (a/close! c))))
 
-;; TODO Ensure the prepl thread is killed (future?) when removed
-;; TODO Ensure we remove everything else if the prepl dies
 (defn connect [{:keys [tag host port]}]
-  (let [[eval-chan read-chan aux-chan] (repeatedly a/chan)
+  (let [[eval-chan read-chan aux-chan] (repeatedly #(a/chan 32))
         input (PipedInputStream.)
         output (PipedOutputStream. input)]
 
     (future
-      (with-open [in-reader (io/reader output)]
-        (server/remote-prepl host port in-reader
-                             (fn [{:keys [tag] :as out}]
-                               (a/>!! (if (= tag :eval) read-chan aux-chan) out))))
+      (with-open [reader (io/reader input)]
+        (try
+          (log/info "Connecting through remote-prepl for tag:" tag)
+          (server/remote-prepl
+            host port reader
+            (fn [out]
+              (log/trace "Read from remote-prepl" tag "-" out)
+              (a/>!! (if (= (:tag out) :ret)
+                       read-chan
+                       aux-chan)
+                     out)))
+          (catch Exception e
+            (log/error "Error from remote-prepl:" e))))
+
+      (log/trace "Exited remote-prepl for tag" tag)
       (remove! tag))
 
     (future
-      (loop []
-        (when-let [code (a/<!! eval-chan)]
-          (.write input code 0 (count code))
-          (recur))))
+      (with-open [writer (io/writer output)]
+        (loop []
+          (when-let [code (a/<!! eval-chan)]
+            (log/trace "Writing to tag:" tag "-" code)
+            (try
+              (.write writer code 0 (count code))
+              (.flush writer)
+              (catch Exception e
+                (log/error "Error from eval-chan writing:" e)))
+            (recur))))
+
+      (log/trace "Exited eval-chan loop, closing streams for tag:" tag)
+      (.close input)
+      (.close output))
 
     {:eval-chan eval-chan
      :read-chan read-chan
      :aux-chan aux-chan}))
 
-(defn add! [{:keys [tag port lang expr host]
+(defn add! [{:keys [tag lang expr]
              :or {tag :default
-                  host "localhost"
+                  host "127.0.0.1"
                   lang :clj}
              :as new-conn}]
-
-  (log/info "Adding:" new-conn)
   (remove! tag)
+  (log/info "Adding:" new-conn)
 
   (let [conn {:tag tag
               :lang lang
               :expr (or expr (get default-exprs lang))
-              :prepl (connect {:host host, :port port})}]
+              :prepl (connect new-conn)}]
 
     (swap! conns! assoc tag conn)
 
-    ;; when it closes we remove it... hmm
-
     (future
       (loop []
-        (when-let [value (a/<!! (get-in conn [:prepl :aux-chan]))]
+        (when-let [out (a/<!! (get-in conn [:prepl :aux-chan]))]
           ;; TODO Display the aux
-          (log/trace "Aux value from:" conn "-" value)
+          (log/trace "Aux value from" (:tag conn) "-" out)
           (recur))))))
 
 (defn conns
@@ -86,3 +102,9 @@
           (fn [{:keys [expr]}]
             (re-find expr path)))
         (seq))))
+
+(comment
+  (add! {:tag :test, :port 5555})
+  (a/>!! (-> (conns) first :prepl :eval-chan) "(+ 10 10)")
+  (a/>!! (-> (conns) first :prepl :eval-chan) "(prn :henlo)")
+  (a/<!! (-> (conns) first :prepl :read-chan)))
