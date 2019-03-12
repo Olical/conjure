@@ -2,6 +2,7 @@
   "Anything useful and generic that's shared by multiple namespaces."
   (:require [clojure.main :as clj]
             [clojure.string :as str]
+            [taoensso.timbre :as log]
             [camel-snake-kebab.core :as csk]))
 
 (defn sentence [parts]
@@ -24,3 +25,10 @@
   (doto stream
     (.write data 0 (count data))
     (.flush)))
+
+(defmacro thread [use-case & body]
+  `(future
+     (try
+       ~@body
+       (catch Exception e#
+         (log/error "Error from thread" (str "'" ~use-case "':") e#)))))

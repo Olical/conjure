@@ -34,7 +34,8 @@
         input (PipedInputStream.)
         output (PipedOutputStream. input)]
 
-    (future
+    (util/thread
+      "reader loop"
       (with-open [reader (io/reader input)]
         (try
           (log/info "Connecting through remote-prepl" tag)
@@ -54,7 +55,8 @@
             (log/trace "Exited remote-prepl, cleaning up" tag)
             (remove! tag)))))
 
-    (future
+    (util/thread
+      "writer loop"
       (with-open [writer (io/writer output)]
         (try
           (loop []
@@ -89,7 +91,8 @@
 
     (swap! conns! assoc tag conn)
 
-    (future
+    (util/thread
+      "AUX channel printer"
       (loop []
         (when-let [out (a/<!! (get-in conn [:prepl :aux-chan]))]
           ;; TODO Display the aux

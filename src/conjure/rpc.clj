@@ -116,7 +116,8 @@
   (log/info "Starting RPC loops")
 
   ;; Read from stdin and place messages on in-chan.
-  (future
+  (util/thread
+    "RPC stdin handler"
     (loop []
       (when-let [msg (try
                        (msg/unpack System/in)
@@ -132,7 +133,8 @@
         (recur))))
 
   ;; Read from out-chan and place messages in stdout.
-  (future
+  (util/thread
+    "RPC stdout"
     (loop []
       (when-let [msg (a/<!! out-chan)]
         (try
@@ -149,12 +151,10 @@
   ;; Handle all messages on in-chan through the handler-* functions.
   (loop []
     (when-let [msg (a/<!! in-chan)]
-      (future
-        (try
-          (case (:type msg)
-            :request  (handle-request-response msg)
-            :response (handle-response msg)
-            :notify   (handle-notify msg))
-          (catch Exception e
-            (log/error "Error from handler:" msg e))))
+      (util/thread
+        "RPC message handler"
+        (case (:type msg)
+          :request  (handle-request-response msg)
+          :response (handle-response msg)
+          :notify   (handle-notify msg)))
       (recur))))
