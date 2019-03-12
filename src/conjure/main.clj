@@ -7,7 +7,8 @@
             [conjure.dev :as dev]
             [conjure.rpc :as rpc]
             [conjure.pool :as pool]
-            [conjure.ui :as ui]))
+            [conjure.ui :as ui]
+            [conjure.actions :as actions]))
 
 (defn -main
   "Start up any background services and then wait forever."
@@ -37,3 +38,6 @@
 (defmethod rpc/handle-notify :remove [{:keys [params]}]
   (when-let [tag (parse-user-edn ::pool/tag (first params))]
     (pool/remove! tag)))
+
+(defmethod rpc/handle-notify :eval [{:keys [params]}]
+  (actions/evaluate (first params)))

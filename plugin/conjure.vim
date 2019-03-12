@@ -19,3 +19,4 @@ endif
 
 command! -nargs=1 DevAdd call rpcnotify(s:jobid, "add", <q-args>)
 command! -nargs=1 DevRemove call rpcnotify(s:jobid, "remove", <q-args>)
+command! -nargs=1 DevEval call rpcnotify(s:jobid, "eval", <q-args>)
