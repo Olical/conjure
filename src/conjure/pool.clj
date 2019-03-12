@@ -107,10 +107,3 @@
           (fn [{:keys [expr]}]
             (re-find expr path)))
         (seq))))
-
-(comment
-  (add! {:tag :test, :port 5555})
-  (remove! :test)
-  (a/>!! (-> (conns) first :prepl :eval-chan) "(+ 10 10)")
-  (a/>!! (-> (conns) first :prepl :eval-chan) "(prn :henlo)")
-  (a/<!! (-> (conns) first :prepl :read-chan)))
