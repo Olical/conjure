@@ -118,33 +118,44 @@
   ;; Read from stdin and place messages on in-chan.
   (future
     (loop []
-      (when-let [msg (msg/unpack System/in)]
-        (log/trace "RPC message received:" msg)
-        (let [decoded (decode msg)]
-          (log/trace "Decoded to this:" decoded)
-          (a/>!! in-chan decoded))
+      (when-let [msg (try
+                       (msg/unpack System/in)
+                       (catch Exception e
+                         (log/error "Error while unpacking from stdin:" e)))]
+        (try
+          (log/trace "RPC message received:" msg)
+          (let [decoded (decode msg)]
+            (log/trace "Decoded to this:" decoded)
+            (a/>!! in-chan decoded))
+          (catch Exception e
+            (log/error "Error while reading from stdin:" e)))
         (recur))))
 
   ;; Read from out-chan and place messages in stdout.
   (future
     (loop []
       (when-let [msg (a/<!! out-chan)]
-        (log/trace "Sending RPC message:" msg)
-        (let [encoded (encode msg)
-              packed (msg/pack encoded)]
-          (log/trace "Encoded as this:" encoded)
-          (.write System/out packed 0 (count packed))
-          (.flush System/out)
-          (log/trace "Sent!"))
+        (try
+          (log/trace "Sending RPC message:" msg)
+          (let [encoded (encode msg)
+                packed (msg/pack encoded)]
+            (log/trace "Encoded as this:" encoded)
+            (.write System/out packed 0 (count packed))
+            (.flush System/out)
+            (log/trace "Sent!"))
+          (catch Exception e
+            (log/error "Error while writing to stdout:" e)))
         (recur))))
 
   ;; Handle all messages on in-chan through the handler-* functions.
-  (future
-    (loop []
-      (when-let [msg (a/<!! in-chan)]
-        (future
+  (loop []
+    (when-let [msg (a/<!! in-chan)]
+      (future
+        (try
           (case (:type msg)
             :request  (handle-request-response msg)
             :response (handle-response msg)
-            :notify   (handle-notify msg)))
-        (recur)))))
+            :notify   (handle-notify msg))
+          (catch Exception e
+            (log/error "Error from handler:" msg e))))
+      (recur))))

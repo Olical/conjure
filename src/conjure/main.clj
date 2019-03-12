@@ -13,16 +13,7 @@
   "Start up any background services and then wait forever."
   []
   (dev/init)
-  (rpc/init)
-
-  (log/info "Everything's up and running")
-
-  ;; https://www.youtube.com/watch?v=6UHlXLmsDGA
-  ;;      __
-  ;; (___()'`;
-  ;; /,    /`
-  ;; \\"--\\
-  @(promise))
+  (rpc/init))
 
 ;; So users can pass {:expr #regex "..."}
 ;; EDN doesn't support regular expressions out of the box.

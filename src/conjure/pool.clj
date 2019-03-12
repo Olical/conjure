@@ -33,27 +33,27 @@
 (defn connect [{:keys [tag host port]}]
   (let [[eval-chan read-chan aux-chan] (repeatedly #(a/chan 32))
         input (PipedInputStream.)
-        output (PipedOutputStream. input)]
+        output (PipedOutputStream. input)
+        reader (io/reader input)]
 
     (future
-      (with-open [reader (io/reader input)]
-        (try
-          (log/info "Connecting through remote-prepl for tag" tag)
-          (server/remote-prepl
-            host port reader
-            (fn [out]
-              (log/trace "Read from remote-prepl" tag "-" out)
-              (a/>!! (if (= (:tag out) :ret)
-                       read-chan
-                       aux-chan)
-                     out)))
+      (try
+        (log/info "Connecting through remote-prepl" tag)
+        (server/remote-prepl
+          host port reader
+          (fn [out]
+            (log/trace "Read from remote-prepl" tag "-" out)
+            (a/>!! (if (= (:tag out) :ret)
+                     read-chan
+                     aux-chan)
+                   out)))
 
-          (catch Exception e
-            (log/error "Error from remote-prepl:" e))
+        (catch Exception e
+          (log/error "Error from remote-prepl:" e))
 
-          (finally
-            (log/trace "Exited remote-prepl for tag" tag)
-            (remove! tag)))))
+        (finally
+          (log/trace "Exited remote-prepl for tag" tag)
+          (remove! tag))))
 
     (future
       (with-open [writer (io/writer output)]
@@ -70,8 +70,7 @@
 
           (finally
             (log/trace "Exited eval-chan loop, closing streams for tag:" tag)
-            (.close input)
-            (.close output)))))
+            (.close reader)))))
 
     {:eval-chan eval-chan
      :read-chan read-chan
