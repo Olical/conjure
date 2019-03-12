@@ -19,3 +19,8 @@
 
 (defn regexp? [o]
   (instance? java.util.regex.Pattern o))
+
+(defn write [stream data]
+  (doto stream
+    (.write data 0 (count data))
+    (.flush)))

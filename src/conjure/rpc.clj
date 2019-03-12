@@ -140,8 +140,7 @@
           (let [encoded (encode msg)
                 packed (msg/pack encoded)]
             (log/trace "Encoded as this:" encoded)
-            (.write System/out packed 0 (count packed))
-            (.flush System/out)
+            (util/write System/out packed)
             (log/trace "Sent!"))
           (catch Exception e
             (log/error "Error while writing to stdout:" e)))

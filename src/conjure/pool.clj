@@ -29,31 +29,30 @@
     (doseq [c (vals (:prepl conn))]
       (a/close! c))))
 
-;; TODO When a conn is removed get the remote-prepl to end.
 (defn connect [{:keys [tag host port]}]
   (let [[eval-chan read-chan aux-chan] (repeatedly #(a/chan 32))
         input (PipedInputStream.)
-        output (PipedOutputStream. input)
-        reader (io/reader input)]
+        output (PipedOutputStream. input)]
 
     (future
-      (try
-        (log/info "Connecting through remote-prepl" tag)
-        (server/remote-prepl
-          host port reader
-          (fn [out]
-            (log/trace "Read from remote-prepl" tag "-" out)
-            (a/>!! (if (= (:tag out) :ret)
-                     read-chan
-                     aux-chan)
-                   out)))
+      (with-open [reader (io/reader input)]
+        (try
+          (log/info "Connecting through remote-prepl" tag)
+          (server/remote-prepl
+            host port reader
+            (fn [out]
+              (log/trace "Read from remote-prepl" tag "-" out)
+              (a/>!! (if (= (:tag out) :ret)
+                       read-chan
+                       aux-chan)
+                     out)))
 
-        (catch Exception e
-          (log/error "Error from remote-prepl:" e))
+          (catch Exception e
+            (log/error "Error from remote-prepl:" e))
 
-        (finally
-          (log/trace "Exited remote-prepl for tag" tag)
-          (remove! tag))))
+          (finally
+            (log/trace "Exited remote-prepl, cleaning up" tag)
+            (remove! tag)))))
 
     (future
       (with-open [writer (io/writer output)]
@@ -61,16 +60,15 @@
           (loop []
             (when-let [code (a/<!! eval-chan)]
               (log/trace "Writing to tag:" tag "-" code)
-              (.write writer code 0 (count code))
-              (.flush writer)
+              (util/write writer code)
               (recur)))
 
           (catch Exception e
             (log/error "Error from eval-chan writing:" e))
 
           (finally
-            (log/trace "Exited eval-chan loop, closing streams for tag:" tag)
-            (.close reader)))))
+            (log/trace "Exited eval-chan loop, cleaning up" tag)
+            (util/write writer ":repl/quit\n")))))
 
     {:eval-chan eval-chan
      :read-chan read-chan
