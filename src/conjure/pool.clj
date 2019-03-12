@@ -95,7 +95,6 @@
       "AUX channel printer"
       (loop []
         (when-let [out (a/<!! (get-in conn [:prepl :aux-chan]))]
-          ;; TODO Display the aux
           (log/trace "Aux value from" (:tag conn) "-" out)
           (recur))))))
 
