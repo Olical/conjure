@@ -1,9 +1,7 @@
 (ns conjure.rpc
   "Bi-directional communication with Neovim through msgpack-rpc."
   (:require [clojure.core.async :as a]
-            [clojure.core.memoize :as memo]
             [taoensso.timbre :as log]
-            [camel-snake-kebab.core :as csk]
             [msgpack.core :as msg]
             [msgpack.clojure-extensions]
             [conjure.util :as util]))
@@ -46,34 +44,29 @@
                   (catch Exception error
                     {:error (util/error->str error)})))))
 
-(def method->kw "some_method -> :some-method"
-  (memo/fifo csk/->kebab-case-keyword))
-(def kw->method ":some-method -> some_method"
-  (memo/fifo csk/->snake_case_string))
-
 (defn- decode
   "Decode a msgpack vector into a descriptive map."
   [msg]
   (case (nth msg 0)
     0 {:type :request
        :id (nth msg 1)
-       :method (method->kw (nth msg 2))
+       :method (util/snake->kw (nth msg 2))
        :params (vec (nth msg 3))}
     1 {:type :response
        :id (nth msg 1)
        :error (nth msg 2)
        :result (nth msg 3)}
     2 {:type :notify
-       :method (method->kw (nth msg 1))
+       :method (util/snake->kw (nth msg 1))
        :params (vec (nth msg 2))}))
 
 (defn- encode
   "Encode a descriptive map into a vector ready for msgpack."
   [{:keys [type id method params error result]}]
   (case type
-    :request  [0 id (kw->method method) (vec params)]
+    :request  [0 id (util/kw->snake method) (vec params)]
     :response [1 id error result]
-    :notify   [2 (kw->method method) (vec params)]))
+    :notify   [2 (util/kw->snake method) (vec params)]))
 
 (defn- request-id
   "The lowest available request ID starting at 1."

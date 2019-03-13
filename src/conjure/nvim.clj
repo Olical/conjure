@@ -1,7 +1,8 @@
 (ns conjure.nvim
   "Tools to interact with Neovim at a higher level than RPC."
   (:require [taoensso.timbre :as log]
-            [conjure.rpc :as rpc]))
+            [conjure.rpc :as rpc]
+            [conjure.util :as util]))
 
 (defn call
   "Simply a thin nvim specific wrapper around rpc/request."
@@ -14,17 +15,17 @@
 (defn- ->atomic-call
   "Transform a regular call into an atomic call param."
   [{:keys [method params]}]
-  [(rpc/kw->method method) (vec params)])
+  [(util/kw->snake method) (vec params)])
 
 (defn call-batch
   "Perform multiple calls together atomically."
-  [& reqs]
+  [reqs]
   (let [[results [err-idx err-type err-msg]]
         (call {:method :nvim-call-atomic
                :params [(map ->atomic-call reqs)]})]
     (when err-idx
       (log/error "Error while making atomic batch call"
-                 (get reqs err-idx) "->" err-type err-msg))
+                 (nth reqs err-idx) "->" err-type err-msg))
     results))
 
 ;; These functions return the data that you can pass to call or call-batch.
@@ -42,3 +43,21 @@
 (defn win-set-cursor [win pos]
   {:method :nvim-win-set-cursor
    :params [win pos]})
+
+(defn list-wins []
+  {:method :nvim-list-wins})
+
+(defn list-bufs []
+  {:method :nvim-list-bufs})
+
+(defn buf-get-name [buf]
+  {:method :nvim-buf-get-name
+   :params [buf]})
+
+(defn buf-get-var [buf name]
+  {:method :nvim-buf-get-var
+   :params [buf (util/kw->snake name)]})
+
+(defn buf-set-var [buf name value]
+  {:method :nvim-buf-set-var
+   :params [buf (util/kw->snake name) value]})

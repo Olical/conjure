@@ -2,6 +2,7 @@
   "Anything useful and generic that's shared by multiple namespaces."
   (:require [clojure.main :as clj]
             [clojure.string :as str]
+            [clojure.core.memoize :as memo]
             [taoensso.timbre :as log]
             [camel-snake-kebab.core :as csk]))
 
@@ -32,3 +33,9 @@
        ~@body
        (catch Exception e#
          (log/error "Error from thread" (str "'" ~use-case "':") e#)))))
+
+(def snake->kw "some_method -> :some-method"
+  (memo/fifo csk/->kebab-case-keyword))
+
+(def kw->snake ":some-method -> some_method"
+  (memo/fifo csk/->snake_case_string))
