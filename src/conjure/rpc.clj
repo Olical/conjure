@@ -87,7 +87,7 @@
 (defn request
   "Send a request and block until we get a response.
   Split out into a future if you need to!"
-  [method params]
+  [{:keys [method params]}]
   (let [id! (atom nil)
         reqp (promise)]
     (swap! open-requests!
