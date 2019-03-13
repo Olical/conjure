@@ -69,11 +69,11 @@
 
 (defn- encode
   "Encode a descriptive map into a vector ready for msgpack."
-  [msg]
-  (case (:type msg)
-    :request  [0 (:id msg) (kw->method (:method msg)) (vec (:params msg))]
-    :response [1 (:id msg) (:error msg) (:result msg)]
-    :notify   [2 (kw->method (:method msg)) (vec (:params msg))]))
+  [{:keys [type id method params error result]}]
+  (case type
+    :request  [0 id (kw->method method) (vec params)]
+    :response [1 id error result]
+    :notify   [2 (kw->method method) (vec params)]))
 
 (defn- request-id
   "The lowest available request ID starting at 1."

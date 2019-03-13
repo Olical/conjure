@@ -3,7 +3,6 @@
   (:require [taoensso.timbre :as log]
             [conjure.rpc :as rpc]))
 
-;; TODO Handle batch calls
 (defn call
   "Simply a thin nvim specific wrapper around rpc/request."
   [req]
@@ -12,8 +11,30 @@
       (log/error "Error while making nvim call" req "->" resp))
     result))
 
+(defn- ->atomic-call [{:keys [method params]}]
+  [(rpc/kw->method method) (vec params)])
+
+(defn call-batch [& reqs]
+  (let [[results [err-idx err-type err-msg]]
+        (call {:method :nvim-call-atomic
+               :params [(map ->atomic-call reqs)]})]
+    (when err-idx
+      (log/error "Error while making atomic batch call"
+                 (get reqs err-idx) "->" err-type err-msg))
+    results))
+
 (defn get-current-buf []
   {:method :nvim-get-current-buf})
 
+(defn get-current-win []
+  {:method :nvim-get-current-win})
+
+(defn win-get-cursor [win]
+  {:method :nvim-win-get-cursor
+   :params [win]})
+
 (comment
-  (call (get-current-buf)))
+  (-> (get-current-win)
+      (call)
+      (win-get-cursor)
+      (call)))
