@@ -33,8 +33,11 @@
   {:method :nvim-win-get-cursor
    :params [win]})
 
+(defn win-set-cursor [win pos]
+  {:method :nvim-win-set-cursor
+   :params [win pos]})
+
 (comment
-  (-> (get-current-win)
-      (call)
-      (win-get-cursor)
-      (call)))
+  (let [win (call (get-current-win))
+        [row col] (call (win-get-cursor win))]
+    (call (win-set-cursor win [(- row 10) (inc col)]))))
