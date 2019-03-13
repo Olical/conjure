@@ -11,10 +11,14 @@
       (log/error "Error while making nvim call" req "->" resp))
     result))
 
-(defn- ->atomic-call [{:keys [method params]}]
+(defn- ->atomic-call
+  "Transform a regular call into an atomic call param."
+  [{:keys [method params]}]
   [(rpc/kw->method method) (vec params)])
 
-(defn call-batch [& reqs]
+(defn call-batch
+  "Perform multiple calls together atomically."
+  [& reqs]
   (let [[results [err-idx err-type err-msg]]
         (call {:method :nvim-call-atomic
                :params [(map ->atomic-call reqs)]})]
@@ -22,6 +26,8 @@
       (log/error "Error while making atomic batch call"
                  (get reqs err-idx) "->" err-type err-msg))
     results))
+
+;; These functions return the data that you can pass to call or call-batch.
 
 (defn get-current-buf []
   {:method :nvim-get-current-buf})
@@ -36,8 +42,3 @@
 (defn win-set-cursor [win pos]
   {:method :nvim-win-set-cursor
    :params [win pos]})
-
-(comment
-  (let [win (call (get-current-win))
-        [row col] (call (win-get-cursor win))]
-    (call (win-set-cursor win [(- row 10) (inc col)]))))
