@@ -39,3 +39,6 @@
 
 (def kw->snake ":some-method -> some_method"
   (memo/fifo csk/->snake_case_string))
+
+(defn now []
+  (System/currentTimeMillis))
