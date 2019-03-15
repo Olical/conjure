@@ -23,8 +23,8 @@
         (nvim/call)
         (util/snake->kw-map))))
 
-(defn error [parts]
-  (let [lines (for [line (util/lines parts)]
+(defn error [msg]
+  (let [lines (for [line (util/lines msg)]
                 (str ";conjure/err " line))
         {:keys [buf win]} (upsert-log)
         line-count (nvim/call (nvim/buf-line-count buf))
