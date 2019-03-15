@@ -40,5 +40,8 @@
 (def kw->snake ":some-method -> some_method"
   (memo/fifo csk/->snake_case_string))
 
+;; TODO set limits on memo and memo the msgpack
+;; Probably use LRU too
+
 (defn now []
   (System/currentTimeMillis))

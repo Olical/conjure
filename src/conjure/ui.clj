@@ -1,8 +1,14 @@
 (ns conjure.ui
   "Handle displaying and managing what's visible to the user."
   (:require [taoensso.timbre :as log]
+            [camel-snake-kebab.extras :as cske]
             [conjure.nvim :as nvim]
             [conjure.util :as util]))
+
+(def log-window-widths {:small 40 :large 80})
+(def max-log-buffer-length 10000)
+(defonce log-buffer-name (str "/tmp/conjure-log-" (util/now) ".cljc"))
+(def upsert-log-lua "return conjure_utils.upsert_log(...)")
 
 ;; TODO Render this in the log window
 (defn error [& parts]
@@ -10,22 +16,14 @@
     (doseq [line (util/lines msg)]
       (log/error line))))
 
-(defonce log-buffer-name (str "/tmp/conjure-log-" (util/now) ".cljc"))
-
-(defn- upsert-log
-  "Get or create the log window and buffer."
-  []
-  ;; Get tabpage wins
-  ;; Get their buffers
-  ;; Find the one that matches
-  ;; Return both or vspl and setup the window
-  (let [bufs (nvim/call (nvim/list-bufs))
-        names (nvim/call-batch (map nvim/buf-get-name bufs))
-        buf (->> names
-                 (keep-indexed
-                   (fn [idx name]
-                     (when (= name log-buffer-name)
-                       (get bufs idx))))
-                 (first))]
-    {:buf buf
-     :win nil}))
+;; TODO Auto close this somehow...
+(defn upsert-log
+  "Get, create, or update the log window and buffer."
+  [{:keys [focus? width] :or {focus? false, width :small}}]
+  (->> (nvim/execute-lua
+         upsert-log-lua
+         log-buffer-name
+         (get log-window-widths width)
+         focus?)
+       (nvim/call)
+       (cske/transform-keys util/snake->kw)))

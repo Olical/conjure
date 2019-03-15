@@ -61,3 +61,7 @@
 (defn buf-set-var [buf name value]
   {:method :nvim-buf-set-var
    :params [buf (util/kw->snake name) value]})
+
+(defn execute-lua [code & args]
+  {:method :nvim-execute-lua
+   :params [code args]})
