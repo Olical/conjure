@@ -1,6 +1,7 @@
 (ns conjure.rpc
   "Bi-directional communication with Neovim through msgpack-rpc."
   (:require [clojure.core.async :as a]
+            [clojure.core.memoize :as memo]
             [taoensso.timbre :as log]
             [msgpack.core :as msg]
             [msgpack.clojure-extensions]
@@ -44,7 +45,7 @@
                   (catch Exception error
                     {:error (util/error->str error)})))))
 
-(defn- decode
+(defn- decode*
   "Decode a msgpack vector into a descriptive map."
   [msg]
   (case (nth msg 0)
@@ -67,6 +68,28 @@
     :request  [0 id (util/kw->snake method) (vec params)]
     :response [1 id error result]
     :notify   [2 (util/kw->snake method) (vec params)]))
+
+;; Pack can be entirely cached because we give it concrete
+;; data as arguments. The unpacking takes a stream so we
+;; can only cache the ouput of that stream function.
+
+(def decode
+  "Decode an already unpacked payload under an LRU cache."
+  (memo/lru
+    (fn [data]
+      (try
+        (decode* data)
+        (catch Exception e
+          (log/error "Error while decoding" e))))))
+
+(def pack
+  "Encode then pack the payload under an LRU cache."
+  (memo/lru
+    (fn [data]
+      (try
+        (msg/pack (encode data))
+        (catch Exception e
+          (log/error "Error while packing" e))))))
 
 (defn- request-id
   "The lowest available request ID starting at 1."
@@ -112,17 +135,11 @@
   (util/thread
     "RPC stdin handler"
     (loop []
-      (when-let [msg (try
-                       (msg/unpack System/in)
-                       (catch Exception e
-                         (log/error "Error while unpacking from stdin:" e)))]
+      (when-let [msg (decode (msg/unpack System/in))]
         (try
-          (log/trace "RPC message received:" msg)
-          (let [decoded (decode msg)]
-            (log/trace "Decoded to this:" decoded)
-            (a/>!! in-chan decoded))
+          (a/>!! in-chan msg)
           (catch Exception e
-            (log/error "Error while reading from stdin:" e)))
+            (log/error "Error while writing to in-chan:" e)))
         (recur))))
 
   ;; Read from out-chan and place messages in stdout.
@@ -132,9 +149,7 @@
       (when-let [msg (a/<!! out-chan)]
         (try
           (log/trace "Sending RPC message:" msg)
-          (let [encoded (encode msg)
-                packed (msg/pack encoded)]
-            (log/trace "Encoded as this:" encoded)
+          (let [packed (pack msg)]
             (util/write System/out packed)
             (log/trace "Sent!"))
           (catch Exception e
