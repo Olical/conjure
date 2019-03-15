@@ -9,12 +9,13 @@
   (let [path (-> (nvim/get-current-buf) (nvim/call)
                  (nvim/buf-get-name) (nvim/call))]
     (if-let [conns (seq (pool/conns path))]
-      (doseq [{:keys [prepl] :as conn} conns]
-        (a/>!! (:eval-chan prepl) code)
-        (ui/result {:conn conn, :resp (a/<!! (:read-chan prepl))}))
-      (ui/error (str "No matching connections for: " path)))))
+      (doseq [{:keys [chans] :as conn} conns]
+        (a/>!! (:eval-chan chans) code)
+        (ui/result {:conn conn, :resp (a/<!! (:ret-chan chans))}))
+      (ui/error "No matching connections for" path))))
 
 (comment
   (pool/conns)
   (pool/add! {:port 5555})
+  (time (evaluate "(doc +)"))
   (time (evaluate "(prn 1) (prn 2)")))

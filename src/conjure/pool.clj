@@ -28,11 +28,11 @@
     (log/info "Removing" tag)
     (ui/info "Removing" tag)
     (swap! conns! dissoc tag)
-    (doseq [c (vals (:prepl conn))]
+    (doseq [c (vals (:chans conn))]
       (a/close! c))))
 
 (defn connect [{:keys [tag host port]}]
-  (let [[eval-chan read-chan aux-chan] (repeatedly #(a/chan 32))
+  (let [[eval-chan read-chan] (repeatedly #(a/chan 32))
         input (PipedInputStream.)
         output (PipedOutputStream. input)]
 
@@ -45,10 +45,7 @@
             host port reader
             (fn [out]
               (log/trace "Read from remote-prepl" tag "-" out)
-              (a/>!! (if (= (:tag out) :ret)
-                       read-chan
-                       aux-chan)
-                     out)))
+              (a/>!! read-chan out)))
 
           (catch Exception e
             (log/error "Error from remote-prepl:" e)
@@ -76,8 +73,7 @@
             (util/write writer ":repl/quit\n")))))
 
     {:eval-chan eval-chan
-     :read-chan read-chan
-     :aux-chan aux-chan}))
+     :read-chan read-chan}))
 
 (defn add! [{:keys [tag lang expr host port]
              :or {tag :default
@@ -87,21 +83,26 @@
   (log/info "Adding" tag host port)
   (ui/info "Adding" tag)
 
-  (let [conn {:tag tag
+  (let [ret-chan (a/chan 32)
+        conn {:tag tag
               :lang lang
               :expr (or expr (get default-exprs lang))
-              :prepl (connect {:tag tag
-                               :host host
-                               :port port})}]
+              :chans (merge
+                       {:ret-chan ret-chan}
+                       (connect {:tag tag
+                                 :host host
+                                 :port port}))}]
 
     (swap! conns! assoc tag conn)
 
     (util/thread
-      "AUX channel printer"
+      "read-chan handler"
       (loop []
-        (when-let [out (a/<!! (get-in conn [:prepl :aux-chan]))]
-          (log/trace "Aux value from" (:tag conn) "-" out)
-          (ui/result {:conn conn, :resp out})
+        (when-let [out (a/<!! (get-in conn [:chans :read-chan]))]
+          (log/trace "Read value from" (:tag conn) "-" out)
+          (if (= (:tag out) :ret)
+            (a/>!! ret-chan out)
+            (ui/result {:conn conn, :resp out}))
           (recur))))))
 
 (defn conns
