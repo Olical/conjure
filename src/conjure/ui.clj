@@ -7,7 +7,7 @@
 ;; TODO Auto close
 
 (def log-window-widths {:small 40 :large 80})
-(def max-log-buffer-length 10000)
+(def max-log-buffer-length 10) ;; 10000
 (defonce log-buffer-name (str "/tmp/conjure-log-" (util/now) ".cljc"))
 (def upsert-log-lua "return conjure_utils.upsert_log(...)")
 (def welcome-msg ";conjure/out Welcome to Conjure!")
@@ -27,7 +27,7 @@
 (defn append [{:keys [src msg code?] :or {code? false}}]
   (let [prefix (str ";" (namespace src) "/" (name src))
         lines (if code?
-                (str prefix "\n" msg)
+                (into [prefix] (util/lines msg))
                 (for [line (util/lines msg)]
                   (str prefix " " line)))
         {:keys [buf win]} (upsert-log)
@@ -44,4 +44,5 @@
   (append {:src :conjure/err, :msg msg}))
 
 (comment
-  (time (error "Henlo, World!\nConjure is magic.")))
+  (error "Henlo, World!\nConjure is magic.")
+  (append {:src :conjure/ret, :msg ":foo\n:bar", :code? true}))
