@@ -14,21 +14,23 @@
 
 (defn- ->atomic-call
   "Transform a regular call into an atomic call param."
-  [{:keys [method params]}]
-  [(util/kw->snake method) (vec params)])
+  [{:keys [method params] :as req}]
+  (when req
+    [(util/kw->snake method) (vec params)]))
 
 (defn call-batch
   "Perform multiple calls together atomically."
   [reqs]
   (let [[results [err-idx err-type err-msg]]
         (call {:method :nvim-call-atomic
-               :params [(map ->atomic-call reqs)]})]
+               :params [(keep ->atomic-call reqs)]})]
     (when err-idx
       (log/error "Error while making atomic batch call"
                  (nth reqs err-idx) "->" err-type err-msg))
     results))
 
 ;; These functions return the data that you can pass to call or call-batch.
+;; I don't care that it's not DRY, it's easy to understand and special case.
 
 (defn get-current-buf []
   {:method :nvim-get-current-buf})
@@ -40,9 +42,9 @@
   {:method :nvim-win-get-cursor
    :params [win]})
 
-(defn win-set-cursor [win pos]
+(defn win-set-cursor [win {:keys [row col]}]
   {:method :nvim-win-set-cursor
-   :params [win pos]})
+   :params [win [row col]]})
 
 (defn list-wins []
   {:method :nvim-list-wins})
@@ -65,3 +67,15 @@
 (defn execute-lua [code & args]
   {:method :nvim-execute-lua
    :params [code args]})
+
+(defn buf-line-count [buf]
+  {:method :nvim-buf-line-count
+   :params [buf]})
+
+(defn buf-get-lines [buf {:keys [start end strict-indexing?]}]
+  {:method :nvim-buf-get-lines
+   :params [buf start end (boolean strict-indexing?)]})
+
+(defn buf-set-lines [buf {:keys [start end strict-indexing?]} lines]
+  {:method :nvim-buf-set-lines
+   :params [buf start end (boolean strict-indexing?) lines]})

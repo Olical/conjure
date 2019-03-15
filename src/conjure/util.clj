@@ -4,7 +4,8 @@
             [clojure.string :as str]
             [clojure.core.memoize :as memo]
             [taoensso.timbre :as log]
-            [camel-snake-kebab.core :as csk]))
+            [camel-snake-kebab.core :as csk]
+            [camel-snake-kebab.extras :as cske]))
 
 (defn sentence [parts]
   (str/join " " parts))
@@ -42,6 +43,12 @@
 
 (def kw->snake ":some-method -> some_method"
   (memo/lru csk/->snake_case_string))
+
+(def snake->kw-map
+  (memo/lru #(cske/transform-keys snake->kw %)))
+
+(def kw->snake-map
+  (memo/lru #(cske/transform-keys kw->snake %)))
 
 (defn now []
   (System/currentTimeMillis))
