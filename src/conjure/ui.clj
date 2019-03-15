@@ -25,8 +25,8 @@
         (nvim/call)
         (util/snake->kw-map))))
 
-(defn append [{:keys [src msg code?] :or {code? false}}]
-  (let [prefix (str ";" (namespace src) "/" (name src))
+(defn append [{:keys [origin kind msg code?] :or {code? false}}]
+  (let [prefix (str ";" (name origin) "/" (name kind))
         lines (if code?
                 (into [prefix] (util/lines (code/zprint msg)))
                 (for [line (util/lines msg)]
@@ -43,9 +43,14 @@
 
     nil))
 
-(defn error [msg]
-  (append {:src :conjure/err, :msg msg}))
+(defn info [& parts]
+  (append {:origin :conjure, :kind :out, :msg (util/sentence parts)}))
 
-(comment
-  (error "Henlo, World!\nConjure is magic.")
-  (append {:src :conjure/ret, :msg ":foo\n:bar", :code? true}))
+(defn error [& parts]
+  (append {:origin :conjure, :kind :err, :msg (util/sentence parts)}))
+
+(defn result [{:keys [conn resp]}]
+  (append {:origin (:tag conn)
+           :kind (:tag resp)
+           :code? (contains? #{:ret :tap} (:tag resp))
+           :msg (:val resp)}))

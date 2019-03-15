@@ -5,7 +5,8 @@
             [clojure.core.server :as server]
             [clojure.java.io :as io]
             [taoensso.timbre :as log]
-            [conjure.util :as util])
+            [conjure.util :as util]
+            [conjure.ui :as ui])
   (:import [java.io PipedInputStream PipedOutputStream]))
 
 (s/def ::expr util/regexp?)
@@ -25,6 +26,7 @@
 (defn remove! [tag]
   (when-let [conn (get @conns! tag)]
     (log/info "Removing" tag)
+    (ui/info "Removing" tag)
     (swap! conns! dissoc tag)
     (doseq [c (vals (:prepl conn))]
       (a/close! c))))
@@ -49,7 +51,8 @@
                      out)))
 
           (catch Exception e
-            (log/error "Error from remote-prepl:" e))
+            (log/error "Error from remote-prepl:" e)
+            (ui/error "Error from" tag e))
 
           (finally
             (log/trace "Exited remote-prepl, cleaning up" tag)
@@ -76,18 +79,20 @@
      :read-chan read-chan
      :aux-chan aux-chan}))
 
-(defn add! [{:keys [tag lang expr]
+(defn add! [{:keys [tag lang expr host port]
              :or {tag :default
                   host "127.0.0.1"
-                  lang :clj}
-             :as new-conn}]
+                  lang :clj}}]
   (remove! tag)
-  (log/info "Adding:" new-conn)
+  (log/info "Adding" tag host port)
+  (ui/info "Adding" tag)
 
   (let [conn {:tag tag
               :lang lang
               :expr (or expr (get default-exprs lang))
-              :prepl (connect new-conn)}]
+              :prepl (connect {:tag tag
+                               :host host
+                               :port port})}]
 
     (swap! conns! assoc tag conn)
 
@@ -96,6 +101,7 @@
       (loop []
         (when-let [out (a/<!! (get-in conn [:prepl :aux-chan]))]
           (log/trace "Aux value from" (:tag conn) "-" out)
+          (ui/result {:conn conn, :resp out})
           (recur))))))
 
 (defn conns

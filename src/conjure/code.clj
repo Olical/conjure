@@ -8,4 +8,6 @@
     (zp/zprint-str src {:parse-string-all? true})
     (catch Exception e
       (log/error "Error while zprinting" e)
-      src)))
+      (if (string? src)
+        src
+        (pr-str src)))))
