@@ -1,7 +1,8 @@
 (ns conjure.ui
   "Handle displaying and managing what's visible to the user."
   (:require [conjure.nvim :as nvim]
-            [conjure.util :as util]))
+            [conjure.util :as util]
+            [conjure.code :as code]))
 
 ;; TODO Trim when long
 ;; TODO Auto close
@@ -27,7 +28,7 @@
 (defn append [{:keys [src msg code?] :or {code? false}}]
   (let [prefix (str ";" (namespace src) "/" (name src))
         lines (if code?
-                (into [prefix] (util/lines msg))
+                (into [prefix] (util/lines (code/zprint msg)))
                 (for [line (util/lines msg)]
                   (str prefix " " line)))
         {:keys [buf win]} (upsert-log)
@@ -38,7 +39,9 @@
       [(when (= line-count 1)
          (nvim/buf-set-lines buf {:start 0, :end 1} [welcome-msg]))
        (nvim/buf-set-lines buf {:start -1, :end -1} lines)
-       (nvim/win-set-cursor win {:col 0, :row new-line-count})])))
+       (nvim/win-set-cursor win {:col 0, :row new-line-count})])
+
+    nil))
 
 (defn error [msg]
   (append {:src :conjure/err, :msg msg}))
