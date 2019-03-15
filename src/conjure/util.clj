@@ -32,16 +32,16 @@
      (try
        ~@body
        (catch Exception e#
+         ;; stdout is redirected to stderr.
+         ;; So it appears in Neovim as well as the log file.
+         (println "Error from thread" (str "'" ~use-case "':") e#)
          (log/error "Error from thread" (str "'" ~use-case "':") e#)))))
 
 (def snake->kw "some_method -> :some-method"
-  (memo/fifo csk/->kebab-case-keyword))
+  (memo/lru csk/->kebab-case-keyword))
 
 (def kw->snake ":some-method -> some_method"
-  (memo/fifo csk/->snake_case_string))
-
-;; TODO set limits on memo and memo the msgpack
-;; Probably use LRU too
+  (memo/lru csk/->snake_case_string))
 
 (defn now []
   (System/currentTimeMillis))
