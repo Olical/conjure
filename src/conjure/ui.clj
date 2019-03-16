@@ -4,25 +4,32 @@
             [conjure.util :as util]
             [conjure.code :as code]))
 
-;; TODO Auto close
-
 (def log-window-widths {:small 40 :large 80})
 (def max-log-buffer-length 10000)
 (defonce log-buffer-name (str "/tmp/conjure-log-" (util/now) ".cljc"))
-(def upsert-log-lua "return conjure_utils.upsert_log(...)")
 (def welcome-msg ";conjure/out Welcome to Conjure!")
+(def lua
+  {:upsert "return conjure_utils.upsert_log(...)"
+   :close "return conjure_utils.close_log(...)"})
 
 (defn upsert-log
   "Get, create, or update the log window and buffer."
   ([] (upsert-log {}))
   ([{:keys [focus? width] :or {focus? false, width :small}}]
    (->> (nvim/execute-lua
-          upsert-log-lua
+          (:upsert lua)
           log-buffer-name
           (get log-window-widths width)
           focus?)
         (nvim/call)
         (util/snake->kw-map))))
+
+(defn close-log
+  "Closes the log window. In other news: Bear shits in woods."
+  []
+  (-> (nvim/execute-lua (:close lua) log-buffer-name)
+      (nvim/call))
+  nil)
 
 (defn append [{:keys [origin kind msg code?] :or {code? false}}]
   (let [prefix (str ";" (name origin) "/" (name kind))

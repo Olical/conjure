@@ -25,12 +25,12 @@ endif
 lua << EOF
 -- Find the log window and buffer if they exist.
 local function find_log (log_buf_name)
-  local let tabpage = vim.api.nvim_get_current_tabpage()
-  local let wins = vim.api.nvim_tabpage_list_wins(tabpage)
+  local tabpage = vim.api.nvim_get_current_tabpage()
+  local wins = vim.api.nvim_tabpage_list_wins(tabpage)
 
   for _, win in ipairs(wins) do
-    local let buf = vim.api.nvim_win_get_buf(win)
-    local let buf_name = vim.api.nvim_buf_get_name(buf)
+    local buf = vim.api.nvim_win_get_buf(win)
+    local buf_name = vim.api.nvim_buf_get_name(buf)
 
     if buf_name == log_buf_name then
       return {win = win, buf = buf}
@@ -45,7 +45,7 @@ conjure_utils = {}
 
 -- Find or create (and then find again) the log window and buffer.
 conjure_utils.upsert_log = function (log_buf_name, width, focus)
-  local let result = find_log(log_buf_name)
+  local result = find_log(log_buf_name)
   if result then
     if focus == true then
       vim.api.nvim_set_current_win(result.win)
@@ -69,10 +69,20 @@ conjure_utils.upsert_log = function (log_buf_name, width, focus)
     return find_log(log_buf_name)
   end
 end
+
+-- Close the log window if it's open in the current tabpage.
+conjure_utils.close_log = function (log_buf_name)
+  local result = find_log(log_buf_name)
+  if result then
+    local win_number = vim.api.nvim_win_get_number(result.win)
+    vim.api.nvim_command(win_number .. "close!")
+  end
+end
 EOF
 
 " Map Neovim commands to RPC notify calls.
 command! -nargs=1 DevAdd call rpcnotify(s:jobid, "add", <q-args>)
 command! -nargs=1 DevRemove call rpcnotify(s:jobid, "remove", <q-args>)
 command! -nargs=1 DevEval call rpcnotify(s:jobid, "eval", <q-args>)
-command! -nargs=0 DevLog call rpcnotify(s:jobid, "log")
+command! -nargs=0 DevOpenLog call rpcnotify(s:jobid, "open_log")
+command! -nargs=0 DevCloseLog call rpcnotify(s:jobid, "close_log")

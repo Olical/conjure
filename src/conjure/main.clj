@@ -42,5 +42,8 @@
 (defmethod rpc/handle-notify :eval [{:keys [params]}]
   (actions/evaluate (first params)))
 
-(defmethod rpc/handle-notify :log [_]
+(defmethod rpc/handle-notify :open-log [_]
   (ui/upsert-log {:focus? true, :width :large}))
+
+(defmethod rpc/handle-notify :close-log [_]
+  (ui/close-log))
