@@ -23,13 +23,14 @@
       (ui/result {:conn conn, :resp (a/<!! (:ret-chan chans))}))))
 
 (defn user-doc [name]
-  (when-let [{:keys [chans] :as conn} (first (relevant-conns))]
-    (a/>!! (:eval-chan chans) (code/doc-str name))
-    (let [resp (a/<!! (:ret-chan chans))]
-      (ui/doc {:conn conn
-               :resp (cond-> resp
-                       (empty? (:val resp))
-                       (assoc :val (str "No doc for " name)))}))))
+  (when-let [conns (relevant-conns)]
+    (doseq [{:keys [chans] :as conn} conns]
+      (a/>!! (:eval-chan chans) (code/doc-str name))
+      (let [resp (a/<!! (:ret-chan chans))]
+        (ui/doc {:conn conn
+                 :resp (cond-> resp
+                         (empty? (:val resp))
+                         (assoc :val (str "No doc for " name)))})))))
 
 (comment
   (pool/conns)
