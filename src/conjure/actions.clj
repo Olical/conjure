@@ -16,13 +16,14 @@
       conns
       (ui/error (ui/error "No matching connections for" path)))))
 
-(defn user-eval [code]
+(defn eval* [code]
   (when-let [conns (relevant-conns)]
     (doseq [{:keys [chans] :as conn} conns]
+      (ui/eval* {:conn conn, :code code})
       (a/>!! (:eval-chan chans) code)
       (ui/result {:conn conn, :resp (a/<!! (:ret-chan chans))}))))
 
-(defn user-doc [name]
+(defn doc [name]
   (when-let [conns (relevant-conns)]
     (doseq [{:keys [chans] :as conn} conns]
       (a/>!! (:eval-chan chans) (code/doc-str name))
@@ -35,6 +36,6 @@
 (comment
   (pool/conns)
   (pool/add! {:port 5555})
-  (time (user-eval "(prn 1) (prn 2)"))
-  (time (user-doc "+"))
-  (time (user-doc "nope")))
+  (time (eval* "(prn 1) (prn 2)"))
+  (time (doc "+"))
+  (time (doc "nope")))

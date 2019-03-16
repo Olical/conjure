@@ -68,6 +68,9 @@
 (defn doc [{:keys [conn resp]}]
   (append {:origin (:tag conn), :kind :doc, :msg (:val resp)}))
 
+(defn eval* [{:keys [conn code]}]
+  (append {:origin (:tag conn), :kind :eval, :msg (code/sample code)}))
+
 (defn result [{:keys [conn resp]}]
   (append {:origin (:tag conn)
            :kind (:tag resp)

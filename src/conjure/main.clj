@@ -40,10 +40,10 @@
     (pool/remove! tag)))
 
 (defmethod rpc/handle-notify :eval [{:keys [params]}]
-  (actions/user-eval (first params)))
+  (actions/eval* (first params)))
 
 (defmethod rpc/handle-notify :doc [{:keys [params]}]
-  (actions/user-doc (first params)))
+  (actions/doc (first params)))
 
 (defmethod rpc/handle-notify :open-log [_]
   (ui/upsert-log {:focus? true, :width :large}))
