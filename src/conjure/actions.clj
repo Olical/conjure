@@ -20,13 +20,13 @@
   (when-let [conns (relevant-conns)]
     (doseq [{:keys [chans] :as conn} conns]
       (ui/eval* {:conn conn, :code code})
-      (a/>!! (:eval-chan chans) code)
+      (a/>!! (:eval-chan chans) (code/eval-str conn code))
       (ui/result {:conn conn, :resp (a/<!! (:ret-chan chans))}))))
 
 (defn doc [name]
   (when-let [conns (relevant-conns)]
     (doseq [{:keys [chans] :as conn} conns]
-      (a/>!! (:eval-chan chans) (code/doc-str name))
+      (a/>!! (:eval-chan chans) (code/doc-str conn name))
       (let [resp (a/<!! (:ret-chan chans))]
         (ui/doc {:conn conn
                  :resp (cond-> resp
@@ -37,5 +37,7 @@
   (pool/conns)
   (pool/add! {:port 5555})
   (time (eval* "(prn 1) (prn 2)"))
+  (time (eval* "(+ 10 nil)"))
+  (time (eval* "#?(:clj 1, :cljs 2)"))
   (time (doc "+"))
   (time (doc "nope")))

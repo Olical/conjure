@@ -22,9 +22,35 @@
       (str (subs flat 0 30) "…")
       flat)))
 
-(defn doc-str [name]
-  (str "
-       (require 'clojure.repl)
-       (with-out-str
-         (clojure.repl/doc " name "))
-       "))
+;; TODO Handle CLJS
+;; TODO Handle ns switching
+(defn eval-str [{:keys [lang]} code]
+  (case lang
+    :clj
+    (str "
+         (try
+           (clojure.core/eval
+             (clojure.core/read-string
+               {:read-cond :allow}
+               \"(do " code ")\"))
+           (catch Throwable e
+             (binding [*out* *err*]
+               (print (-> (Throwable->map e)
+                          (clojure.main/ex-triage)
+                          (clojure.main/ex-str)))
+               (flush)))
+           (finally
+             (flush)))
+         ")
+
+    :cljs
+    (throw (Error. "no cljs eval yet"))))
+
+(defn doc-str [conn name]
+  (eval-str
+    conn
+    (str "
+         (require 'clojure.repl)
+         (with-out-str
+           (clojure.repl/doc " name "))
+         ")))
