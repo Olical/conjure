@@ -5,13 +5,16 @@
             [taoensso.timbre :as log]))
 
 (defn zprint [src]
-  (try
-    (zp/zprint-str src {:parse-string-all? true})
-    (catch Exception e
-      (log/error "Error while zprinting" e)
-      (if (string? src)
-        src
-        (pr-str src)))))
+  (let [code (if (string? src)
+               src
+               (pr-str src))]
+    (try
+      (zp/zprint-str code {:parse-string-all? true})
+      (catch Exception e
+        (log/error "Error while zprinting" e)
+        (if (string? code)
+          code
+          (pr-str code))))))
 
 (defn sample [code]
   (let [flat (str/replace code #"\s+" " ")]
