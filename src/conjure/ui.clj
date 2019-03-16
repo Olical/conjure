@@ -4,11 +4,10 @@
             [conjure.util :as util]
             [conjure.code :as code]))
 
-;; TODO Trim when long
 ;; TODO Auto close
 
 (def log-window-widths {:small 40 :large 80})
-(def max-log-buffer-length 10) ;; 10000
+(def max-log-buffer-length 10000)
 (defonce log-buffer-name (str "/tmp/conjure-log-" (util/now) ".cljc"))
 (def upsert-log-lua "return conjure_utils.upsert_log(...)")
 (def welcome-msg ";conjure/out Welcome to Conjure!")
@@ -33,11 +32,21 @@
                   (str prefix " " line)))
         {:keys [buf win]} (upsert-log)
         line-count (nvim/call (nvim/buf-line-count buf))
-        new-line-count (+ line-count (count lines))]
+        trim (if (> line-count max-log-buffer-length)
+               (/ max-log-buffer-length 2)
+               0)
+        new-line-count (+ line-count (count lines) (- trim))]
 
     (nvim/call-batch
-      [(when (= line-count 1)
+      [;; Insert a welcome message on the first line when empty.
+       (when (= line-count 1)
          (nvim/buf-set-lines buf {:start 0, :end 1} [welcome-msg]))
+
+       ;; Trim the log where required.
+       (when (> trim 0)
+         (nvim/buf-set-lines buf {:start 0, :end trim} []))
+
+       ;; Insert the new lines and scroll to the bottom.
        (nvim/buf-set-lines buf {:start -1, :end -1} lines)
        (nvim/win-set-cursor win {:col 0, :row new-line-count})])
 
