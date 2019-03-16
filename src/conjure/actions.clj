@@ -25,10 +25,15 @@
 (defn user-doc [name]
   (when-let [{:keys [chans] :as conn} (first (relevant-conns))]
     (a/>!! (:eval-chan chans) (code/doc-str name))
-    (ui/doc {:conn conn, :resp (a/<!! (:ret-chan chans))})))
+    (let [resp (a/<!! (:ret-chan chans))]
+      (ui/doc {:conn conn
+               :resp (cond-> resp
+                       (empty? (:val resp))
+                       (assoc :val (str "No doc for " name)))}))))
 
 (comment
   (pool/conns)
   (pool/add! {:port 5555})
   (time (user-eval "(prn 1) (prn 2)"))
-  (time (user-doc "+")))
+  (time (user-doc "+"))
+  (time (user-doc "nope")))
