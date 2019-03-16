@@ -65,6 +65,9 @@
 (defn error [& parts]
   (append {:origin :conjure, :kind :err, :msg (util/sentence parts)}))
 
+(defn doc [{:keys [conn resp]}]
+  (append {:origin (:tag conn), :kind :doc, :msg (:val resp)}))
+
 (defn result [{:keys [conn resp]}]
   (append {:origin (:tag conn)
            :kind (:tag resp)

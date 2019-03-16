@@ -11,3 +11,12 @@
       (if (string? src)
         src
         (pr-str src)))))
+
+(defn doc-str [name]
+  (str "
+       (require 'clojure.repl)
+       (with-out-str
+         (clojure.repl/doc " name "))
+       "))
+
+(doc-str 'foo/bar)

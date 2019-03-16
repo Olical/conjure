@@ -84,5 +84,6 @@ EOF
 command! -nargs=1 DevAdd call rpcnotify(s:jobid, "add", <q-args>)
 command! -nargs=1 DevRemove call rpcnotify(s:jobid, "remove", <q-args>)
 command! -nargs=1 DevEval call rpcnotify(s:jobid, "eval", <q-args>)
+command! -nargs=1 DevDoc call rpcnotify(s:jobid, "doc", <q-args>)
 command! -nargs=0 DevOpenLog call rpcnotify(s:jobid, "open_log")
 command! -nargs=0 DevCloseLog call rpcnotify(s:jobid, "close_log")
