@@ -4,7 +4,9 @@
             [zprint.core :as zp]
             [taoensso.timbre :as log]))
 
-(defn zprint [src]
+(defn zprint
+  "Format the code with zprint, swallowing any errors."
+  [src]
   (let [code (if (string? src)
                src
                (pr-str src))]
@@ -16,7 +18,9 @@
           code
           (pr-str code))))))
 
-(defn sample [code]
+(defn sample
+  "Get a short one line sample snippet of some code."
+  [code]
   (let [flat (str/replace code #"\s+" " ")]
     (if (> (count flat) 30)
       (str (subs flat 0 30) "…")
