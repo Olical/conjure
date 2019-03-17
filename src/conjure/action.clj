@@ -23,10 +23,17 @@
 
 (defn eval* [code]
   (let [ctx (current-ctx)]
-    (doseq [{:keys [chans] :as conn} (:conns ctx)]
+    (doseq [{:keys [chans lang] :as conn} (:conns ctx)]
       (ui/eval* {:conn conn, :code code})
       (a/>!! (:eval-chan chans) (code/eval-str (merge ctx {:conn conn
                                                            :code code})))
+
+      ;; ClojureScript requires three evals: Call in-ns, require cljs.repl, and
+      ;; execute the provided code. We throw away the unused results.
+      (when (= lang :cljs)
+        (a/<!! (:ret-chan chans))
+        (a/<!! (:ret-chan chans)))
+
       (ui/result {:conn conn, :resp (a/<!! (:ret-chan chans))}))))
 
 (defn doc [name]
@@ -40,16 +47,20 @@
                          (empty? (:val resp))
                          (assoc :val (str "No doc for " name)))})))))
 
+;; TODO Bootstrap call on connect that just ensures requires.
+;; TODO Work out why doc doesn't work with cljs.
 (comment
   (pool/conns)
-  (pool/add! {:tag :dev-jvm
+  (pool/add! {:tag :jvm
               :port 5555
               :lang :clj})
-  (pool/add! {:tag :dev-node
+  (pool/add! {:tag :node
               :port 5556
               :lang :cljs
               :expr #"\.cljc?$"})
+  (pool/remove-all!)
+
   (time (eval* "(prn 1) (prn 2)"))
-  (time (eval* "#?(:clj 1, :cljs 2)"))
+  (time (eval* "#?(:clj \"Clojure!\", :cljs \"ClojureScript!\")"))
   (time (doc "+"))
   (time (doc "nope")))

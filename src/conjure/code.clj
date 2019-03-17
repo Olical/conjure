@@ -2,21 +2,19 @@
   "Tools to render or format Clojure code."
   (:require [clojure.string :as str]
             [zprint.core :as zp]
-            [taoensso.timbre :as log]))
+            [taoensso.timbre :as log]
+            [conjure.util :as util]))
 
 (defn zprint
   "Format the code with zprint, swallowing any errors."
-  [src]
-  (let [code (if (string? src)
-               src
-               (pr-str src))]
-    (try
-      (zp/zprint-str code {:parse-string-all? true})
-      (catch Exception e
-        (log/error "Error while zprinting" e)
-        (if (string? code)
-          code
-          (pr-str code))))))
+  [code]
+  (try
+    (zp/zprint-str code)
+    (catch Exception e
+      (log/error "Error while zprinting" e)
+      (if (string? code)
+        code
+        (pr-str code)))))
 
 (defn sample
   "Get a short one line sample snippet of some code."
@@ -30,18 +28,16 @@
 (defn extract-ns [code]
   (second (re-find ns-re code)))
 
-;; TODO Handle CLJS
-;; TODO Handle ns switching
 (defn eval-str [{:keys [conn ns code]}]
   (case (:lang conn)
     :clj
     (str "
          (try
-           (ns " ns ")
+           (ns " (or ns "user") ")
            (clojure.core/eval
              (clojure.core/read-string
                {:read-cond :allow}
-               \"(do " code ")\"))
+               \"(do " (util/escape-quotes code) ")\"))
            (catch Throwable e
              (binding [*out* *err*]
                (print (-> (Throwable->map e)
@@ -53,13 +49,33 @@
          ")
 
     :cljs
-    (throw (Error. "no cljs eval yet"))))
+    (str "
+         (in-ns '" (or ns "cljs.user") ")
+         (require 'cljs.repl)
+         (try
+           " code "
+           (catch :default e
+             (print (-> (cljs.repl/Error->map e)
+                        (cljs.repl/ex-triage)
+                        (cljs.repl/ex-str)))
+             (flush))
+           (finally
+             (flush)))
+         ")))
 
-(defn doc-str [{:keys [name] :as ctx}]
+(defn doc-str [{:keys [name conn] :as ctx}]
   (eval-str
     (assoc ctx :code
-           (str "
-                (require 'clojure.repl)
-                (with-out-str
-                (clojure.repl/doc " name "))
-                "))))
+           (case (:lang conn)
+             :clj
+             (str "
+                  (require 'clojure.repl)
+                  (with-out-str
+                    (clojure.repl/doc " name "))
+                  ")
+
+             :cljs
+             (str "
+                  (with-out-str
+                    (cljs.repl/doc " name "))
+                  ")))))

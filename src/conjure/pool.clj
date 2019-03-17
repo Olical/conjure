@@ -31,6 +31,10 @@
     (doseq [c (vals (:chans conn))]
       (a/close! c))))
 
+(defn remove-all! []
+  (doseq [tag (keys @conns!)]
+    (remove! tag)))
+
 (defn connect [{:keys [tag host port]}]
   (let [[eval-chan read-chan] (repeatedly #(a/chan 32))
         input (PipedInputStream.)

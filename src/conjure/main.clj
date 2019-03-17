@@ -39,6 +39,9 @@
   (when-let [tag (parse-user-edn ::pool/tag (first params))]
     (pool/remove! tag)))
 
+(defmethod rpc/handle-notify :remove-all [{:keys [_]}]
+  (pool/remove-all!))
+
 (defmethod rpc/handle-notify :eval [{:keys [params]}]
   (action/eval* (first params)))
 
