@@ -8,7 +8,7 @@
             [conjure.rpc :as rpc]
             [conjure.pool :as pool]
             [conjure.ui :as ui]
-            [conjure.actions :as actions]))
+            [conjure.action :as action]))
 
 (defn -main
   "Start up any background services and then wait forever."
@@ -40,10 +40,10 @@
     (pool/remove! tag)))
 
 (defmethod rpc/handle-notify :eval [{:keys [params]}]
-  (actions/eval* (first params)))
+  (action/eval* (first params)))
 
 (defmethod rpc/handle-notify :doc [{:keys [params]}]
-  (actions/doc (first params)))
+  (action/doc (first params)))
 
 (defmethod rpc/handle-notify :open-log [_]
   (ui/upsert-log {:focus? true, :width :large}))

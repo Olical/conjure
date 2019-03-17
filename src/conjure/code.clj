@@ -26,13 +26,18 @@
       (str (subs flat 0 30) "…")
       flat)))
 
+(def ns-re #"\(\s*ns\s+(\D[\w\d\.\*\+!\-'?]*)\s*")
+(defn extract-ns [code]
+  (second (re-find ns-re code)))
+
 ;; TODO Handle CLJS
 ;; TODO Handle ns switching
-(defn eval-str [{:keys [lang]} code]
-  (case lang
+(defn eval-str [{:keys [conn ns code]}]
+  (case (:lang conn)
     :clj
     (str "
          (try
+           (ns " ns ")
            (clojure.core/eval
              (clojure.core/read-string
                {:read-cond :allow}
@@ -50,11 +55,11 @@
     :cljs
     (throw (Error. "no cljs eval yet"))))
 
-(defn doc-str [conn name]
+(defn doc-str [{:keys [name] :as ctx}]
   (eval-str
-    conn
-    (str "
-         (require 'clojure.repl)
-         (with-out-str
-           (clojure.repl/doc " name "))
-         ")))
+    (assoc ctx :code
+           (str "
+                (require 'clojure.repl)
+                (with-out-str
+                (clojure.repl/doc " name "))
+                "))))
