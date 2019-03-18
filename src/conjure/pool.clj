@@ -38,7 +38,9 @@
     (let [{:keys [eval-chan ret-chan read-chan]} (:chans conn)]
       (a/close! eval-chan)
       (a/close! ret-chan)
-      (a/<!! read-chan))))
+      (loop []
+        (when-not (nil? (a/<!! read-chan))
+          (recur))))))
 
 (defn remove-all! []
   (doseq [tag (keys @conns!)]
