@@ -28,6 +28,11 @@
 (defn extract-ns [code]
   (second (re-find ns-re code)))
 
+(defn prelude-str [{:keys [lang]}]
+  (case lang
+    :clj "(require 'clojure.repl)"
+    :cljs "(require 'cljs.repl)"))
+
 (defn eval-str [{:keys [conn ns code]}]
   (case (:lang conn)
     :clj
@@ -51,7 +56,6 @@
     :cljs
     (str "
          (in-ns '" (or ns "cljs.user") ")
-         (require 'cljs.repl)
          (try
            " code "
            (catch :default e
@@ -69,7 +73,6 @@
            (case (:lang conn)
              :clj
              (str "
-                  (require 'clojure.repl)
                   (with-out-str
                     (clojure.repl/doc " name "))
                   ")

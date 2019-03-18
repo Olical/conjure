@@ -28,10 +28,11 @@
       (a/>!! (:eval-chan chans) (code/eval-str (merge ctx {:conn conn
                                                            :code code})))
 
-      ;; ClojureScript requires three evals: Call in-ns, require cljs.repl, and
-      ;; execute the provided code. We throw away the unused results.
+      ;; ClojureScript requires two evals:
+      ;; * Call in-ns.
+      ;; * Execute the provided code.
+      ;; We throw away the in-ns result first.
       (when (= lang :cljs)
-        (a/<!! (:ret-chan chans))
         (a/<!! (:ret-chan chans)))
 
       (ui/result {:conn conn, :resp (a/<!! (:ret-chan chans))}))))
@@ -47,7 +48,11 @@
                          (empty? (:val resp))
                          (assoc :val (str "No doc for " name)))})))))
 
-;; TODO Bootstrap call on connect that just ensures requires.
+;; TODO Fix prelude when re-adding a node conn
+;; I think when I disconnect and re-connect too fast then write something node
+;; shits the bed. JVM is fine with prelude. I guess I need to wait until it's
+;; good to go?
+
 ;; TODO Work out why doc doesn't work with cljs.
 (comment
   (pool/conns)

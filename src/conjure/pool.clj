@@ -6,7 +6,8 @@
             [clojure.java.io :as io]
             [taoensso.timbre :as log]
             [conjure.util :as util]
-            [conjure.ui :as ui])
+            [conjure.ui :as ui]
+            [conjure.code :as code])
   (:import [java.io PipedInputStream PipedOutputStream]))
 
 (s/def ::expr util/regexp?)
@@ -95,9 +96,14 @@
                        {:ret-chan ret-chan}
                        (connect {:tag tag
                                  :host host
-                                 :port port}))}]
+                                 :port port}))}
+        prelude (code/prelude-str {:lang lang})]
 
     (swap! conns! assoc tag conn)
+
+    (log/trace "Sending prelude:" prelude)
+    (a/>!! (get-in conn [:chans :eval-chan]) prelude)
+    (log/trace "Prelude result:" (a/<!! (get-in conn [:chans :read-chan])))
 
     (util/thread
       "read-chan handler"
