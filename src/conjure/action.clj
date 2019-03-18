@@ -51,10 +51,6 @@
                          (empty? (:val result))
                          (assoc :val (str "No doc for " name)))})))))
 
-;; TODO Fix prelude when re-adding a node conn
-;; I think when I disconnect and re-connect too fast then write something node
-;; shits the bed. JVM is fine with prelude. I guess I need to wait until it's
-;; good to go?
 (comment
   (pool/conns)
   (pool/add! {:tag :jvm

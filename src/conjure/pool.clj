@@ -29,8 +29,16 @@
     (log/info "Removing" tag)
     (ui/info "Removing" tag)
     (swap! conns! dissoc tag)
-    (doseq [c (vals (:chans conn))]
-      (a/close! c))))
+
+    ;; read-chan is closed when the remote-prepl exits. This
+    ;; pattern of closing two here and then waiting for the
+    ;; read-chan to return a nil (which it will when closed)
+    ;; ensures that removal isn't complete until the remote-prepl is done.
+    ;; This prevents some weird race conditions with node connections.
+    (let [{:keys [eval-chan ret-chan read-chan]} (:chans conn)]
+      (a/close! eval-chan)
+      (a/close! ret-chan)
+      (a/<!! read-chan))))
 
 (defn remove-all! []
   (doseq [tag (keys @conns!)]
@@ -58,6 +66,7 @@
 
           (finally
             (log/trace "Exited remote-prepl, cleaning up" tag)
+            (a/close! read-chan)
             (remove! tag)))))
 
     (util/thread
