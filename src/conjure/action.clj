@@ -53,7 +53,8 @@
 ;; shits the bed. JVM is fine with prelude. I guess I need to wait until it's
 ;; good to go?
 
-;; TODO Work out why doc doesn't work with cljs.
+;; TODO Wrap up eval and ret fetching into one fn.
+;; Should fix CLJS doc issues.
 (comment
   (pool/conns)
   (pool/add! {:tag :jvm
