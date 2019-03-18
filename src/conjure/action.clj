@@ -21,40 +21,40 @@
      :ns (code/extract-ns (str/join "\n" sample-lines))
      :conns (or conns (ui/error "No matching connections for" path))}))
 
+(defn- wrapped-eval [ctx {:keys [conn] :as opts}]
+  (let [{:keys [eval-chan ret-chan]} (:chans conn)]
+    (a/>!! eval-chan (code/eval-str ctx opts))
+
+    ;; ClojureScript requires two evals:
+    ;; * Call in-ns.
+    ;; * Execute the provided code.
+    ;; We throw away the in-ns result first.
+    (when (= (:lang conn) :cljs)
+      (a/<!! ret-chan))
+
+    (a/<!! ret-chan)))
+
 (defn eval* [code]
   (let [ctx (current-ctx)]
-    (doseq [{:keys [chans lang] :as conn} (:conns ctx)]
-      (ui/eval* {:conn conn, :code code})
-      (a/>!! (:eval-chan chans) (code/eval-str (merge ctx {:conn conn
-                                                           :code code})))
-
-      ;; ClojureScript requires two evals:
-      ;; * Call in-ns.
-      ;; * Execute the provided code.
-      ;; We throw away the in-ns result first.
-      (when (= lang :cljs)
-        (a/<!! (:ret-chan chans)))
-
-      (ui/result {:conn conn, :resp (a/<!! (:ret-chan chans))}))))
+    (doseq [conn (:conns ctx)]
+      (let [opts {:conn conn, :code code}]
+        (ui/eval* opts)
+        (ui/result {:conn conn, :resp (wrapped-eval ctx opts)})))))
 
 (defn doc [name]
   (let [ctx (current-ctx)]
-    (doseq [{:keys [chans] :as conn} (:conns ctx)]
-      (a/>!! (:eval-chan chans) (code/doc-str (merge ctx {:conn conn
-                                                          :name name})))
-      (let [resp (a/<!! (:ret-chan chans))]
+    (doseq [conn (:conns ctx)]
+      (let [code (code/doc-str {:conn conn, :name name})
+            result (wrapped-eval ctx {:conn conn, :code code})]
         (ui/doc {:conn conn
-                 :resp (cond-> resp
-                         (empty? (:val resp))
+                 :resp (cond-> result
+                         (empty? (:val result))
                          (assoc :val (str "No doc for " name)))})))))
 
 ;; TODO Fix prelude when re-adding a node conn
 ;; I think when I disconnect and re-connect too fast then write something node
 ;; shits the bed. JVM is fine with prelude. I guess I need to wait until it's
 ;; good to go?
-
-;; TODO Wrap up eval and ret fetching into one fn.
-;; Should fix CLJS doc issues.
 (comment
   (pool/conns)
   (pool/add! {:tag :jvm

@@ -33,7 +33,7 @@
     :clj "(require 'clojure.repl)"
     :cljs "(require 'cljs.repl)"))
 
-(defn eval-str [{:keys [conn ns code]}]
+(defn eval-str [{:keys [ns]} {:keys [conn code]}]
   (case (:lang conn)
     :clj
     (str "
@@ -67,18 +67,16 @@
              (flush)))
          ")))
 
-(defn doc-str [{:keys [name conn] :as ctx}]
-  (eval-str
-    (assoc ctx :code
-           (case (:lang conn)
-             :clj
-             (str "
-                  (with-out-str
-                    (clojure.repl/doc " name "))
-                  ")
+(defn doc-str [{:keys [conn name]}]
+  (case (:lang conn)
+    :clj
+    (str "
+         (with-out-str
+           (clojure.repl/doc " name "))
+         ")
 
-             :cljs
-             (str "
-                  (with-out-str
-                    (cljs.repl/doc " name "))
-                  ")))))
+    :cljs
+    (str "
+         (with-out-str
+           (cljs.repl/doc " name "))
+         ")))
