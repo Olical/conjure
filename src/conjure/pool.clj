@@ -2,6 +2,7 @@
   "Connection management and selection."
   (:require [clojure.spec.alpha :as s]
             [clojure.core.async :as a]
+            [clojure.string :as str]
             [clojure.core.server :as server]
             [clojure.java.io :as io]
             [taoensso.timbre :as log]
@@ -102,6 +103,8 @@
   (let [ret-chan (a/chan 32)
         conn {:tag tag
               :lang lang
+              :host host
+              :port port
               :expr (or expr (get default-exprs lang))
               :chans (merge
                        {:ret-chan ret-chan}
@@ -134,3 +137,10 @@
           (fn [{:keys [expr]}]
             (re-find expr path)))
         (seq))))
+
+(defn status []
+  (let [conns (conns)
+        intro (util/count-str conns "connection")
+        conn-strs (for [{:keys [tag host port expr lang]} conns]
+                    (str tag " @ " host ":" port " for " (pr-str expr) " (" lang ")"))]
+    (ui/info (str/join "\n" (into [intro] conn-strs)))))

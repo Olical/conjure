@@ -55,3 +55,8 @@
 
 (defn now []
   (System/currentTimeMillis))
+
+(defn count-str [items description]
+  (let [amount (count items)
+        plural? (not= amount 1)]
+    (str amount " " description (when plural? "s"))))

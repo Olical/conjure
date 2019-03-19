@@ -42,6 +42,9 @@
 (defmethod rpc/handle-notify :remove-all [{:keys [_]}]
   (pool/remove-all!))
 
+(defmethod rpc/handle-notify :status [{:keys [_]}]
+  (pool/status))
+
 (defmethod rpc/handle-notify :eval [{:keys [params]}]
   (action/eval* (first params)))
 
