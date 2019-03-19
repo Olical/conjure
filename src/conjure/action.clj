@@ -47,6 +47,8 @@
         lines (nvim/call (nvim/buf-get-lines buf {:start 0, :end -1}))]
     (eval* (str/join "\n" lines))))
 
+;; TODO Fix this for CLJS
+;; TODO Create specific output style
 (defn eval-file []
   (let [ctx (current-ctx)]
     (doseq [conn (:conns ctx)]
@@ -66,12 +68,15 @@
                          (empty? (:val result))
                          (assoc :val (str "No doc for " name)))})))))
 
+;; TODO Cap these start and end values so they don't explode.
 (defn- read-range [{:keys [lines start end]}]
   (-> lines
       (update (dec (count lines)) subs 0 end)
       (update 0 subs (dec start))
       (->> (str/join "\n"))))
 
+;; TODO Read the form even when on the first paren.
+;; It reads the previous form if there is one I think... or the parent...
 (defn- read-form
   "Read the current form under the cursor from the buffer by default. When
   outer? is set to true it'll read the outer most form under the cursor."
@@ -120,20 +125,3 @@
                           :start s-col
                           :end e-col})]
     (eval* code)))
-
-(comment
-  (pool/conns)
-  (pool/add! {:tag :jvm
-              :port 5555
-              :lang :clj})
-  (pool/add! {:tag :node
-              :port 5556
-              :lang :cljs
-              :expr #"\.cljc?$"})
-  (pool/remove-all!)
-
-  (+ 10 10)
-  (time (eval* "(prn 1) (prn 2)"))
-  (time (eval* "#?(:clj \"Clojure!\", :cljs \"ClojureScript!\")"))
-  (time (doc "+"))
-  (time (doc "nope")))

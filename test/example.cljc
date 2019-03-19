@@ -4,7 +4,7 @@
 
 (defn henlo [name]
   (tap> (str "Saying 'henlo' to " name))
-  (prn "Henlo," (str name "!"))
+  (println (str "Henlo, " name "!"))
   :done)
 
 (defn get-env []

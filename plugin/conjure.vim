@@ -89,10 +89,11 @@ command! -nargs=0 DevRemoveAll call rpcnotify(s:jobid, "remove_all")
 command! -nargs=0 DevStatus call rpcnotify(s:jobid, "status")
 
 command! -nargs=1 DevEval call rpcnotify(s:jobid, "eval", <q-args>)
-command! -nargs=0 DevBuffer call rpcnotify(s:jobid, "eval_buffer")
+command! -nargs=0 DevEvalBuffer call rpcnotify(s:jobid, "eval_buffer")
+command! -nargs=0 DevEvalFile call rpcnotify(s:jobid, "eval_file")
 command! -nargs=0 DevEvalInnerForm call rpcnotify(s:jobid, "eval_inner_form")
 command! -nargs=0 DevEvalOuterForm call rpcnotify(s:jobid, "eval_outer_form")
-command! -nargs=0 DevEvalVisualSelection call rpcnotify(s:jobid, "eval_visual_selection")
+command! -nargs=0 -range DevEvalVisualSelection call rpcnotify(s:jobid, "eval_visual_selection")
 
 command! -nargs=1 DevDoc call rpcnotify(s:jobid, "doc", <q-args>)
 command! -nargs=0 DevOpenLog call rpcnotify(s:jobid, "open_log")

@@ -1,1 +1,15 @@
 nnoremap <localleader>rc :ConjureConnect dev 127.0.0.1:5885 cljc?$ clj<cr>
+
+nnoremap <localleader>cc :DevAdd {:tag :jvm, :port 5555}<cr>
+            \ :DevAdd {:tag :node, :port 5556, :lang :cljs}<cr>
+
+nnoremap <localleader>cs :DevStatus<cr>
+
+nnoremap <localleader>ce :DevEvalInnerForm<cr>
+nnoremap <localleader>cE :DevEvalOuterForm<cr>
+nnoremap <localleader>cb :DevEvalBuffer<cr>
+nnoremap <localleader>cf :DevEvalFile<cr>
+vnoremap <localleader>ce :DevEvalVisualSelection<cr>
+nnoremap <localleader>cK :DevDoc expand("<cword>")<cr>
+nnoremap <localleader>cl :DevOpenLog<cr>
+nnoremap <localleader>cL :DevCloseLog<cr>
