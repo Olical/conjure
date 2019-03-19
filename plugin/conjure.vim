@@ -61,6 +61,7 @@ conjure_utils.upsert_log = function (log_buf_name, width, focus)
     vim.api.nvim_command("setlocal bufhidden=hide")
     vim.api.nvim_command("setlocal nowrap")
     vim.api.nvim_command("setlocal noswapfile")
+    vim.api.nvim_command("setlocal nobuflisted")
     vim.api.nvim_command("setlocal nospell")
 
     if focus ~= true then

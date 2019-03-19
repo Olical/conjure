@@ -51,20 +51,39 @@
                          (empty? (:val result))
                          (assoc :val (str "No doc for " name)))})))))
 
-;; Inner backwards
-;; echo searchpairpos("(", "", ")", "bnzW")
-;; Inner forwards
-;; echo searchpairpos("(", "", ")", "nzW")
+(defn- read-form
+  "Read the current form under the cursor from the buffer by default. When
+  outer? is set to true it'll read the outer most form under the cursor."
+  ([] (read-form {}))
+  ([{:keys [outer?]}]
+   (let [forwards (str (when outer? "r") "nzW")
+         backwards (str "b" forwards)
 
-;; Outer backwards
-;; echo searchpairpos("(", "", ")", "brnzW")
-;; Outer forwards
-;; echo searchpairpos("(", "", ")", "rnzW")
+         [buf win start end]
+         (nvim/call-batch
+           [(nvim/get-current-buf)
+            (nvim/get-current-win)
+            (nvim/call-function :searchpairpos "(" "" ")" backwards)
+            (nvim/call-function :searchpairpos "(" "" ")" forwards)])
 
-(defn eval-inner-form [])
-(defn eval-outer-form [])
+         cursor (nvim/call (nvim/win-get-cursor win))
+         start (if (= start [0 0]) cursor start)
+         end (if (= end [0 0]) cursor end)
 
-#_(nvim/call (nvim/call-function :searchpairpos "(" "" ")" "bnzW"))
+         lines (nvim/call
+                 (nvim/buf-get-lines buf {:start (dec (first start))
+                                          :end (first end)}))]
+
+     (-> lines
+         (update (dec (count lines)) subs 0 (second end))
+         (update 0 subs (dec (second start)))
+         (->> (str/join "\n"))))))
+
+(defn eval-inner-form []
+  (eval* (read-form)))
+
+(defn eval-outer-form []
+  (eval* (read-form {:outer? true})))
 
 (comment
   (pool/conns)
