@@ -54,6 +54,9 @@
 (defmethod rpc/handle-notify :eval-outer-form [{:keys [_]}]
   (action/eval-outer-form))
 
+(defmethod rpc/handle-notify :eval-visual-selection [{:keys [_]}]
+  (action/eval-visual-selection))
+
 (defmethod rpc/handle-notify :doc [{:keys [params]}]
   (action/doc (first params)))
 

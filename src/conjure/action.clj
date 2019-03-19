@@ -51,6 +51,12 @@
                          (empty? (:val result))
                          (assoc :val (str "No doc for " name)))})))))
 
+(defn- read-range [{:keys [lines start end]}]
+  (-> lines
+      (update (dec (count lines)) subs 0 end)
+      (update 0 subs (dec start))
+      (->> (str/join "\n"))))
+
 (defn- read-form
   "Read the current form under the cursor from the buffer by default. When
   outer? is set to true it'll read the outer most form under the cursor."
@@ -74,16 +80,31 @@
                  (nvim/buf-get-lines buf {:start (dec (first start))
                                           :end (first end)}))]
 
-     (-> lines
-         (update (dec (count lines)) subs 0 (second end))
-         (update 0 subs (dec (second start)))
-         (->> (str/join "\n"))))))
+     (read-range {:lines lines
+                  :start (second start)
+                  :end (second end)}))))
 
 (defn eval-inner-form []
   (eval* (read-form)))
 
 (defn eval-outer-form []
   (eval* (read-form {:outer? true})))
+
+(defn eval-visual-selection []
+  (let [[buf [_ s-line s-col _] [_ e-line e-col]]
+        (nvim/call-batch
+          [(nvim/get-current-buf)
+           (nvim/call-function :getpos "'<")
+           (nvim/call-function :getpos "'>")])
+        lines (nvim/call
+                (nvim/buf-get-lines
+                  buf
+                  {:start (dec s-line)
+                   :end e-line}))
+        code (read-range {:lines lines
+                          :start s-col
+                          :end e-col})]
+    (eval* code)))
 
 (comment
   (pool/conns)
@@ -96,6 +117,7 @@
               :expr #"\.cljc?$"})
   (pool/remove-all!)
 
+  (+ 10 10)
   (time (eval* "(prn 1) (prn 2)"))
   (time (eval* "#?(:clj \"Clojure!\", :cljs \"ClojureScript!\")"))
   (time (doc "+"))
