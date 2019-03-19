@@ -18,6 +18,7 @@
            (nvim/buf-get-lines buf {:start 0, :end 25})])
         conns (pool/conns path)]
     {:path path
+     :buf buf
      :ns (code/extract-ns (str/join "\n" sample-lines))
      :conns (or conns (ui/error "No matching connections for" path))}))
 
@@ -38,6 +39,20 @@
   (let [ctx (current-ctx)]
     (doseq [conn (:conns ctx)]
       (let [opts {:conn conn, :code code}]
+        (ui/eval* opts)
+        (ui/result {:conn conn, :resp (wrapped-eval ctx opts)})))))
+
+(defn eval-buffer []
+  (let [buf (nvim/call (nvim/get-current-buf))
+        lines (nvim/call (nvim/buf-get-lines buf {:start 0, :end -1}))]
+    (eval* (str/join "\n" lines))))
+
+(defn eval-file []
+  (let [ctx (current-ctx)]
+    (doseq [conn (:conns ctx)]
+      (let [opts {:conn conn
+                  :code (code/load-file-str {:conn conn
+                                             :path (:path ctx)})}]
         (ui/eval* opts)
         (ui/result {:conn conn, :resp (wrapped-eval ctx opts)})))))
 

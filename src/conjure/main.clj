@@ -48,6 +48,12 @@
 (defmethod rpc/handle-notify :eval [{:keys [params]}]
   (action/eval* (first params)))
 
+(defmethod rpc/handle-notify :eval-buffer [{:keys [_]}]
+  (action/eval-buffer))
+
+(defmethod rpc/handle-notify :eval-file [{:keys [_]}]
+  (action/eval-file))
+
 (defmethod rpc/handle-notify :eval-inner-form [{:keys [_]}]
   (action/eval-inner-form))
 
@@ -66,4 +72,4 @@
 (defmethod rpc/handle-notify :close-log [_]
   (ui/close-log))
 
-;; TODO goto, autocomplete, eval file, eval buffer, tests, reloading
+;; TODO goto, autocomplete, tests, reloading
