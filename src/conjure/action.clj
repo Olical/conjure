@@ -51,6 +51,21 @@
                          (empty? (:val result))
                          (assoc :val (str "No doc for " name)))})))))
 
+;; Inner backwards
+;; echo searchpairpos("(", "", ")", "bnzW")
+;; Inner forwards
+;; echo searchpairpos("(", "", ")", "nzW")
+
+;; Outer backwards
+;; echo searchpairpos("(", "", ")", "brnzW")
+;; Outer forwards
+;; echo searchpairpos("(", "", ")", "rnzW")
+
+(defn eval-inner-form [])
+(defn eval-outer-form [])
+
+#_(nvim/call (nvim/call-function :searchpairpos "(" "" ")" "bnzW"))
+
 (comment
   (pool/conns)
   (pool/add! {:tag :jvm

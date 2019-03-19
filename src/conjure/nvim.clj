@@ -79,3 +79,7 @@
 (defn buf-set-lines [buf {:keys [start end strict-indexing?]} lines]
   {:method :nvim-buf-set-lines
    :params [buf start end (boolean strict-indexing?) lines]})
+
+(defn call-function [fn-name & args]
+  {:method :nvim-call-function
+   :params [(util/kw->snake fn-name) args]})
