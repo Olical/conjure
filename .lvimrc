@@ -9,7 +9,7 @@ nnoremap <localleader>ce :DevEvalCurrentForm<cr>
 nnoremap <localleader>cE :DevEvalRootForm<cr>
 vnoremap <localleader>ce :DevEval<cr>
 nnoremap <localleader>cb :%DevEval<cr>
-nnoremap <localleader>cf :DevEval (load-file "<c-r>%")<cr>
+nnoremap <localleader>cf :DevEval (clojure.core/load-file "<c-r>%")<cr>
 nnoremap <localleader>cK :DevDoc expand("<cword>")<cr>
 nnoremap <localleader>cl :DevOpenLog<cr>
 nnoremap <localleader>cL :DevCloseLog<cr>

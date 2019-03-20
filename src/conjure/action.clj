@@ -66,6 +66,7 @@
 
 ;; TODO Read the form even when on the first paren.
 ;; It reads the previous form if there is one I think... or the parent...
+;; TODO Treat {} and [] as forms too.
 (defn- read-form
   "Read the current form under the cursor from the buffer by default. When
   root? is set to true it'll read the outer most form under the cursor."
