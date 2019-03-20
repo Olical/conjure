@@ -42,22 +42,6 @@
         (ui/eval* opts)
         (ui/result {:conn conn, :resp (wrapped-eval ctx opts)})))))
 
-(defn eval-buffer []
-  (let [buf (nvim/call (nvim/get-current-buf))
-        lines (nvim/call (nvim/buf-get-lines buf {:start 0, :end -1}))]
-    (eval* (str/join "\n" lines))))
-
-;; TODO Fix this for CLJS
-;; TODO Create specific output style
-(defn eval-file []
-  (let [ctx (current-ctx)]
-    (doseq [conn (:conns ctx)]
-      (let [opts {:conn conn
-                  :code (code/load-file-str {:conn conn
-                                             :path (:path ctx)})}]
-        (ui/eval* opts)
-        (ui/result {:conn conn, :resp (wrapped-eval ctx opts)})))))
-
 (defn doc [name]
   (let [ctx (current-ctx)]
     (doseq [conn (:conns ctx)]
@@ -68,21 +52,26 @@
                          (empty? (:val result))
                          (assoc :val (str "No doc for " name)))})))))
 
-;; TODO Cap these start and end values so they don't explode.
-(defn- read-range [{:keys [lines start end]}]
+(defn- read-range
+  "Given some lines, start column, and end column it will trim the first and
+  last line using those columns then join the lines into once string. Useful
+  for trimming nvim/buf-get-lines results by some sort of col/row range."
+  [{:keys [lines start end]}]
   (-> lines
-      (update (dec (count lines)) subs 0 end)
-      (update 0 subs (dec start))
+      (update (dec (count lines))
+              (fn [line]
+                (subs line 0 (min end (count line)))))
+      (update 0 subs (max (dec start) 0))
       (->> (str/join "\n"))))
 
 ;; TODO Read the form even when on the first paren.
 ;; It reads the previous form if there is one I think... or the parent...
 (defn- read-form
   "Read the current form under the cursor from the buffer by default. When
-  outer? is set to true it'll read the outer most form under the cursor."
+  root? is set to true it'll read the outer most form under the cursor."
   ([] (read-form {}))
-  ([{:keys [outer?]}]
-   (let [forwards (str (when outer? "r") "nzW")
+  ([{:keys [root?]}]
+   (let [forwards (str (when root? "r") "nzW")
          backwards (str "b" forwards)
 
          [buf win start end]
@@ -104,24 +93,8 @@
                   :start (second start)
                   :end (second end)}))))
 
-(defn eval-inner-form []
+(defn eval-current-form []
   (eval* (read-form)))
 
-(defn eval-outer-form []
-  (eval* (read-form {:outer? true})))
-
-(defn eval-visual-selection []
-  (let [[buf [_ s-line s-col _] [_ e-line e-col]]
-        (nvim/call-batch
-          [(nvim/get-current-buf)
-           (nvim/call-function :getpos "'<")
-           (nvim/call-function :getpos "'>")])
-        lines (nvim/call
-                (nvim/buf-get-lines
-                  buf
-                  {:start (dec s-line)
-                   :end e-line}))
-        code (read-range {:lines lines
-                          :start s-col
-                          :end e-col})]
-    (eval* code)))
+(defn eval-root-form []
+  (eval* (read-form {:root? true})))

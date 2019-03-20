@@ -45,23 +45,16 @@
 (defmethod rpc/handle-notify :status [{:keys [_]}]
   (pool/status))
 
-(defmethod rpc/handle-notify :eval [{:keys [params]}]
+(defmethod rpc/handle-notify :eval [{:keys [params] :as opts}]
+  ;; TODO Handle ranges
+  (prn opts)
   (action/eval* (first params)))
 
-(defmethod rpc/handle-notify :eval-buffer [{:keys [_]}]
-  (action/eval-buffer))
+(defmethod rpc/handle-notify :eval-current-form [{:keys [_]}]
+  (action/eval-current-form))
 
-(defmethod rpc/handle-notify :eval-file [{:keys [_]}]
-  (action/eval-file))
-
-(defmethod rpc/handle-notify :eval-inner-form [{:keys [_]}]
-  (action/eval-inner-form))
-
-(defmethod rpc/handle-notify :eval-outer-form [{:keys [_]}]
-  (action/eval-outer-form))
-
-(defmethod rpc/handle-notify :eval-visual-selection [{:keys [_]}]
-  (action/eval-visual-selection))
+(defmethod rpc/handle-notify :eval-root-form [{:keys [_]}]
+  (action/eval-root-form))
 
 (defmethod rpc/handle-notify :doc [{:keys [params]}]
   (action/doc (first params)))
