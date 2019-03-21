@@ -32,11 +32,11 @@
   nil)
 
 (defn append [{:keys [origin kind msg code?] :or {code? false}}]
-  (let [prefix (str ";" (name origin) "/" (name kind))
+  (let [prefix (str "; " (name origin) "/" (name kind))
         lines (if code?
-                (into [prefix] (util/lines (code/zprint msg)))
+                (into [(str prefix " ⤸")] (util/lines (code/zprint msg)))
                 (for [line (util/lines msg)]
-                  (str prefix " " line)))
+                  (str prefix " | " line)))
         {:keys [buf win]} (upsert-log)
         line-count (nvim/call (nvim/buf-line-count buf))
         trim (if (> line-count max-log-buffer-length)
