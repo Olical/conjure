@@ -7,9 +7,12 @@ nnoremap <localleader>cs :DevStatus<cr>
 
 nnoremap <localleader>ce :DevEvalCurrentForm<cr>
 nnoremap <localleader>cE :DevEvalRootForm<cr>
-vnoremap <localleader>ce :DevEval<cr>
-nnoremap <localleader>cb :%DevEval<cr>
-nnoremap <localleader>cf :DevEval (clojure.core/load-file "<c-r>%")<cr>
-nnoremap <localleader>cK :DevDoc expand("<cword>")<cr>
+vnoremap <localleader>ce :DevEvalRange<cr>
+
+" TODO I think this needs to be it's own command...
+nnoremap <localleader>cf :%DevEvalRange<cr>
+nnoremap <localleader>cF :DevEval (clojure.core/load-file "<c-r>%")<cr>
+nnoremap <localleader>cK :DevDoc <c-r>=expand("<cword>")<cr><cr>
+nnoremap <localleader>cs :DevStatus<cr>
 nnoremap <localleader>cl :DevOpenLog<cr>
-nnoremap <localleader>cL :DevCloseLog<cr>
+nnoremap <localleader>cq :DevCloseLog<cr>

@@ -99,3 +99,19 @@
 
 (defn eval-root-form []
   (eval* (read-form {:root? true})))
+
+(defn eval-range []
+  (let [[buf [_ s-line s-col _] [_ e-line e-col]]
+        (nvim/call-batch
+          [(nvim/get-current-buf)
+           (nvim/call-function :getpos "'<")
+           (nvim/call-function :getpos "'>")])
+        lines (nvim/call
+                (nvim/buf-get-lines
+                  buf
+                  {:start (dec s-line)
+                   :end e-line}))
+        code (read-range {:lines lines
+                          :start s-col
+                          :end e-col})]
+    (eval* code)))
