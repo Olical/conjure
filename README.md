@@ -16,6 +16,7 @@
  * Friendly error output by default with optional expansion.
  * Code formatting via [zprint][].
  * Changed namespace reloading via `tools.namespace`.
+ * Better current and outer most form selection.
 
 ## Installation
 
@@ -36,16 +37,6 @@ The `'for'` and `'on'` keys are entirely optional but you might prefer Conjure t
 Conjure doesn't come with any key bindings by default, it leaves that up to you. This template will act as a good starting point for your configuration, feel free to change it as you see fit.
 
 ```viml
-nnoremap <localleader>re :ConjureEvalCurrentForm<cr>
-nnoremap <localleader>rr :ConjureEvalRootForm<cr>
-vnoremap <localleader>re :ConjureEvalSelection<cr>
-nnoremap <localleader>rf :ConjureEvalBuffer<cr>
-nnoremap <localleader>rd :ConjureLoadFile <c-r>%<cr>
-nnoremap <localleader>rs :ConjureStatus<cr>
-nnoremap <localleader>rl :ConjureOpenLog<cr>
-nnoremap <localleader>rq :ConjureCloseLog<cr>
-nnoremap K :ConjureDoc <c-r><c-w><cr>
-
 function! s:close_log()
   if expand("%:p") !~# "/tmp/conjure-log-\\d\\+.cljc"
     ConjureCloseLog
@@ -54,7 +45,16 @@ endfunction
 
 augroup conjure
   autocmd!
-  autocmd! InsertEnter *.clj\(c\|s\) :call <sid>close_log()
+  autocmd InsertEnter *.clj\(c\|s\) :call <sid>close_log()
+  autocmd FileType clojure nnoremap <buffer> <localleader>re :ConjureEvalCurrentForm<cr>
+  autocmd FileType clojure nnoremap <buffer> <localleader>rr :ConjureEvalRootForm<cr>
+  autocmd FileType clojure vnoremap <buffer> <localleader>re :ConjureEvalSelection<cr>
+  autocmd FileType clojure nnoremap <buffer> <localleader>rf :ConjureEvalBuffer<cr>
+  autocmd FileType clojure nnoremap <buffer> <localleader>rF :ConjureLoadFile <c-r>%<cr>
+  autocmd FileType clojure nnoremap <buffer> <localleader>rs :ConjureStatus<cr>
+  autocmd FileType clojure nnoremap <buffer> <localleader>rl :ConjureOpenLog<cr>
+  autocmd FileType clojure nnoremap <buffer> <localleader>rq :ConjureCloseLog<cr>
+  autocmd FileType clojure nnoremap <buffer> K :ConjureDoc <c-r><c-w><cr>
 augroup END
 ```
 
