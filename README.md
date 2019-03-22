@@ -2,6 +2,20 @@
 
 [Clojure][] (and [ClojureScript][]) tooling for [Neovim][] over a [socket prepl][prepl-post] connection.
 
+### Features
+
+ * Connect to multiple Clojure or ClojureScript prepls at the same time.
+ * Evaluate in `.clj`, `.cljc` and `.cljs` buffers without having to reconnect.
+ * Documentation lookup.
+ * Custom log buffer that tries to stay out of the way but is there when you need it.
+
+### Upcoming
+
+ * Autocomplete via [Compliement][].
+ * Go to definition.
+ * Friendly error output by default with optional expansion.
+ * Code formatting via [zprint][].
+
 ## Installation
 
 Here's how you would install and compile using [vim-plug][].
@@ -66,3 +80,5 @@ Do what you want. Learn as much as you can. Unlicense more software.
 [clojurescript]: https://clojurescript.org/
 [neovim]: https://neovim.io/
 [prepl-post]: https://oli.me.uk/2019-03-22-clojure-socket-prepl-cookbook/
+[compliment]: https://github.com/alexander-yakushev/compliment
+[zprint]: https://github.com/kkinnear/zprint
