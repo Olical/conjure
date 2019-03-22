@@ -21,36 +21,59 @@
 Here's how you would install and compile using [vim-plug][], it's easy enough to translate this to your favourite plugin manager.
 
 ```viml
-Plug 'Olical/conjure', { 'tag': 'v0.4.0', 'do': 'make compile' }
+Plug 'Olical/conjure', { 'tag': 'v0.4.0', 'do': 'make compile', 'for': 'clojure', 'on': 'ConjureAdd'  }
 ```
 
 You should rely on a tag so that breaking changes don't end up disrupting your workflow. Make sure you watch the repository for releases using the menu in the top right, that way you can decide when you want to upgrade.
 
 The compile step (`make compile`) is technically optional but I highly doubt you want to be waiting 10+ seconds for Conjure to start in the background before you can use any of the commands.
 
+The `'for'` and `'on'` keys are entirely optional but you might prefer Conjure to only start up once you've entered a Clojure file.
+
 ## Configuration
 
 Conjure doesn't come with any key bindings by default, it leaves that up to you. This template will act as a good starting point for your configuration, feel free to change it as you see fit.
 
 ```viml
-" Evaluate various things.
-nnoremap <localleader>re :ConjureEvalCurrentForm<cr>
-nnoremap <localleader>rE :ConjureEvalRootForm<cr>
+" Evaluate the form under the cursor.
+nnoremap <localleader>rr :ConjureEvalCurrentForm<cr>
+
+" Evaluate the outermost form.
+nnoremap <localleader>re :ConjureEvalRootForm<cr>
+
+" Evaluate whatever is currently visually selected.
 vnoremap <localleader>re :ConjureEvalSelection<cr>
+
+" Evaluate the entire buffer.
+" Taken from the buffer, not the file on disk.
 nnoremap <localleader>rf :ConjureEvalBuffer<cr>
 
-" Essentially just (load-file "...")
-nnoremap <localleader>rF :ConjureLoadFile <c-r>%<cr>
+" Evaluate the file from the disk.
+nnoremap <localleader>rd :ConjureLoadFile <c-r>%<cr>
 
-" Log out the current connections and their configuration.
+" Log the current connections and their configuration.
 nnoremap <localleader>rs :ConjureStatus<cr>
 
-" Expand and focus the log or close it.
+" Expand and focus the log.
 nnoremap <localleader>rl :ConjureOpenLog<cr>
-nnoremap <localleader>rL :ConjureCloseLog<cr>
+
+" Close the log if it's open.
+nnoremap <localleader>rq :ConjureCloseLog<cr>
 
 " Look up documentation for the word under the cursor.
 nnoremap K :ConjureDoc <c-r><c-w><cr>
+
+" Closes the log if we're not currently inside it.
+function! s:close_log()
+  if expand("%:p") !~# "/tmp/conjure-log-\\d\\+.cljc"
+    ConjureCloseLog
+  endif
+endfunction
+
+augroup conjure
+  " Close the log when entering insert mode.
+  autocmd! InsertEnter *.clj\(c\|s\) :call <sid>close_log()
+augroup END
 ```
 
 ## Usage
