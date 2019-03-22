@@ -3,7 +3,6 @@
 (ns test.example)
 
 (defn henlo [name]
-  (tap> (str "Saying 'henlo' to " name))
   (println (str "Henlo, " name "!"))
   :done)
 
