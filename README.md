@@ -15,6 +15,7 @@
  * Go to definition.
  * Friendly error output by default with optional expansion.
  * Code formatting via [zprint][].
+ * Changed namespace reloading via `tools.namespace`.
 
 ## Installation
 
