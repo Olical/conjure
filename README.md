@@ -18,6 +18,39 @@ The compile step (`make compile`) is technically optional but I highly doubt you
 
 Conjure doesn't come with any key bindings by default, it leaves that up to you. This template will act as a good starting point for your configuration, feel free to change it as you see fit.
 
+```viml
+" Evaluate various things.
+nnoremap <localleader>re :ConjureEvalCurrentForm<cr>
+nnoremap <localleader>rE :ConjureEvalRootForm<cr>
+vnoremap <localleader>re :ConjureEvalSelection<cr>
+nnoremap <localleader>rf :ConjureEvalBuffer<cr>
+
+" Essentially just (load-file "...")
+nnoremap <localleader>rF :ConjureLoadFile <c-r>%<cr>
+
+" Log out the current connections and their configuration.
+nnoremap <localleader>rs :ConjureStatus<cr>
+
+" Expand and focus the log or close it.
+nnoremap <localleader>rl :ConjureOpenLog<cr>
+nnoremap <localleader>rL :ConjureCloseLog<cr>
+
+" Look up documentation for the word under the cursor.
+nnoremap K :ConjureDoc <c-r><c-w><cr>
+```
+
+## Usage
+
+...
+
+## Issues
+
+...
+
+## Contributing
+
+...
+
 ## Unlicenced
 
 Find the full [unlicense][] in the `UNLICENSE` file, but here's a snippet.
