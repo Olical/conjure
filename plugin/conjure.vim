@@ -14,6 +14,12 @@ endfunction
 let s:jobid = -1
 let s:cwd = resolve(expand("<sfile>:p:h") . "/..")
 
+if $CONJURE_JOB_OPTS != ""
+  let s:job_opts = $CONJURE_JOB_OPTS
+else
+  let s:job_opts = "-A:fast"
+endif
+
 " Reset the jobid then call start again
 function! s:on_exit(jobid, msg, event) dict
   if a:msg != 0
@@ -29,14 +35,7 @@ endfunction
 " Start up the Clojure process if we haven't already.
 function! s:start()
   if s:jobid == -1
-    " Use the uberjar if built, default to the Clojure CLI.
-    if !empty(glob(resolve(s:cwd . "/bin/conjure.jar")))
-      let l:job_command = "java -jar bin/conjure.jar"
-    else
-      let l:job_command = "clojure -m conjure.main"
-    endif
-
-    let s:jobid = jobstart(l:job_command, {
+    let s:jobid = jobstart("clojure " . s:job_opts . " -m conjure.main", {
     \  "rpc": v:true,
     \  "cwd": s:cwd,
     \  "on_stderr": function("s:on_stderr"),
