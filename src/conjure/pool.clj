@@ -60,7 +60,8 @@
             host port reader
             (fn [out]
               (log/trace "Read from remote-prepl" tag "-" out)
-              (a/>!! read-chan out)))
+              (a/>!! read-chan out))
+            :valf identity)
 
           (catch Exception e
             (log/error "Error from remote-prepl:" e)

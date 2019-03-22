@@ -9,12 +9,10 @@
   "Format the code with zprint, swallowing any errors."
   [code]
   (try
-    (zp/zprint-str code)
+    (zp/zprint-str code {:parse-string-all? true})
     (catch Exception e
       (log/error "Error while zprinting" e)
-      (if (string? code)
-        code
-        (pr-str code)))))
+      code)))
 
 (defn sample
   "Get a short one line sample snippet of some code."
