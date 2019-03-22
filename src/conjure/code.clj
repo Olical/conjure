@@ -31,6 +31,8 @@
     :clj "(require 'clojure.repl)"
     :cljs "(require 'cljs.repl)"))
 
+;; The read-string/eval wrapper can go away with Clojure 1.11.
+;; https://dev.clojure.org/jira/browse/CLJ-2453
 (defn eval-str [{:keys [ns]} {:keys [conn code]}]
   (case (:lang conn)
     :clj
@@ -42,11 +44,7 @@
                {:read-cond :allow}
                \"(do " (util/escape-quotes code) ")\"))
            (catch Throwable e
-             (binding [*out* *err*]
-               (print (-> (Throwable->map e)
-                          (clojure.main/ex-triage)
-                          (clojure.main/ex-str)))
-               (flush)))
+             (clojure.core/Throwable->map e))
            (finally
              (flush)))
          ")
@@ -57,10 +55,7 @@
          (try
            (do " code ")
            (catch :default e
-             (print (-> (cljs.repl/Error->map e)
-                        (cljs.repl/ex-triage)
-                        (cljs.repl/ex-str)))
-             (flush))
+             (cljs.repl/Error->map e))
            (finally
              (flush)))
          ")))

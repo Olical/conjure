@@ -12,3 +12,6 @@
 (+ 10 20)
 
 [(henlo "Ollie") (get-env)]
+
+(comment
+  (this-will-error))
