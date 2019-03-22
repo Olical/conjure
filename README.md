@@ -88,7 +88,7 @@ Conjure exposes the following commands, most are pretty self explanatory.
                           :opt-un [::expr ::lang ::host]))
 ```
 
-If you get something wrong it'll explain using [Expound][] in the log buffer. Essentially you must provide a `:tag` and a `:port`, other than that the rest is optional.
+If you get something wrong it'll explain using [Expound][] in the log buffer. Essentially you must provide at least a `:tag` and `:port`.
 
 Here's some sample interactions.
 
@@ -107,7 +107,7 @@ Here's some sample interactions.
 :ConjureRemove :node
 ```
 
-If you wish to change the regular expression used to match buffers to connections, you can set the `:expr`. You have to prefix it with `#regex` because [edn][] is slightly different to regular Clojure.
+If you wish to change the regular expression used to match buffers to connections, you can set `:expr`. You need to prefix it with `#regex` because [edn][] doesn't have built in support for `#"..."` syntax like Clojure does.
 
 ```viml
 :ConjureAdd {:tag :frontend, :port 8888, :expr #regex "frontend/.+\\.cljs"}
@@ -115,7 +115,7 @@ If you wish to change the regular expression used to match buffers to connection
 
 ## Issues
 
-If you find any issues please do let me know, provide as much as much information and context as you can.
+If you have any problems please do let me know, provide as much as much information and context as you can.
 
 It would help a lot if you could run Neovim with the `CONJURE_LOG_PATH` environment variable set while you reproduce the issue. Any issue will be a lot easier to diagnose and fix with the log attached.
 
