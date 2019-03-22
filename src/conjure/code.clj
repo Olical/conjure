@@ -57,7 +57,7 @@
     (str "
          (in-ns '" (or ns "cljs.user") ")
          (try
-           " code "
+           (do " code ")
            (catch :default e
              (print (-> (cljs.repl/Error->map e)
                         (cljs.repl/ex-triage)
