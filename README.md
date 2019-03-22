@@ -1,6 +1,6 @@
 # Conjure
 
-[Clojure][] (and [ClojureScript][]) tooling for [Neovim][] over a [socket prepl][] connection. Written in Clojure with a sprinkling of Lua and VimL where required.
+[Clojure][] (and [ClojureScript][]) tooling for [Neovim][] over a [socket prepl][prepl-post] connection. Written in Clojure with a sprinkling of Lua and VimL where required.
 
 ## Installation
 
