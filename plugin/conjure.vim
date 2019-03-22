@@ -112,18 +112,18 @@ end
 EOF
 
 " Map Neovim commands to RPC notify calls.
-command! -nargs=1 DevAdd call rpcnotify(s:jobid, "add", <q-args>)
-command! -nargs=1 DevRemove call rpcnotify(s:jobid, "remove", <q-args>)
-command! -nargs=0 DevRemoveAll call rpcnotify(s:jobid, "remove_all")
-command! -nargs=0 DevStatus call rpcnotify(s:jobid, "status")
+command! -nargs=1 ConjureAdd call rpcnotify(s:jobid, "add", <q-args>)
+command! -nargs=1 ConjureRemove call rpcnotify(s:jobid, "remove", <q-args>)
+command! -nargs=0 ConjureRemoveAll call rpcnotify(s:jobid, "remove_all")
+command! -nargs=0 ConjureStatus call rpcnotify(s:jobid, "status")
 
-command! -nargs=1 DevEval call rpcnotify(s:jobid, "eval", <q-args>)
-command! -range   DevEvalSelection call rpcnotify(s:jobid, "eval_selection")
-command! -nargs=0 DevEvalCurrentForm call rpcnotify(s:jobid, "eval_current_form")
-command! -nargs=0 DevEvalRootForm call rpcnotify(s:jobid, "eval_root_form")
-command! -nargs=0 DevEvalBuffer call rpcnotify(s:jobid, "eval_buffer")
-command! -nargs=1 DevLoadFile call rpcnotify(s:jobid, "load_file", <q-args>)
+command! -nargs=1 ConjureEval call rpcnotify(s:jobid, "eval", <q-args>)
+command! -range   ConjureEvalSelection call rpcnotify(s:jobid, "eval_selection")
+command! -nargs=0 ConjureEvalCurrentForm call rpcnotify(s:jobid, "eval_current_form")
+command! -nargs=0 ConjureEvalRootForm call rpcnotify(s:jobid, "eval_root_form")
+command! -nargs=0 ConjureEvalBuffer call rpcnotify(s:jobid, "eval_buffer")
+command! -nargs=1 ConjureLoadFile call rpcnotify(s:jobid, "load_file", <q-args>)
 
-command! -nargs=1 DevDoc call rpcnotify(s:jobid, "doc", <q-args>)
-command! -nargs=0 DevOpenLog call rpcnotify(s:jobid, "open_log")
-command! -nargs=0 DevCloseLog call rpcnotify(s:jobid, "close_log")
+command! -nargs=1 ConjureDoc call rpcnotify(s:jobid, "doc", <q-args>)
+command! -nargs=0 ConjureOpenLog call rpcnotify(s:jobid, "open_log")
+command! -nargs=0 ConjureCloseLog call rpcnotify(s:jobid, "close_log")

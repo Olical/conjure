@@ -1,6 +1,22 @@
 # Conjure
 
-Clojure(Script) Neovim integration via prepl, a work in progress. Follow me on twitter for updates [@OliverCaldwell](https://twitter.com/OliverCaldwell).
+[Clojure][] (and [ClojureScript][]) tooling for [Neovim][] over a [socket prepl][] connection. Written in Clojure with a sprinkling of Lua and VimL where required.
+
+## Installation
+
+Here's how you would install and compile using [vim-plug][].
+
+```viml
+Plug 'Olical/conjure', { 'tag': 'v0.4.0', 'do': 'make compile' }
+```
+
+You should rely on a tag so that breaking changes don't end up disrupting your workflow. Make sure you watch the repository for releases using the menu in the top right, that way you can decide when you want to upgrade.
+
+The compile step (`make compile`) is technically optional but I highly doubt you want to be waiting 10+ seconds for Conjure to start in the background before you can use any of the commands.
+
+## Configuration
+
+Conjure doesn't come with any key bindings by default, it leaves that up to you. This template will act as a good starting point for your configuration, feel free to change it as you see fit.
 
 ## Unlicenced
 
@@ -13,3 +29,7 @@ Find the full [unlicense][] in the `UNLICENSE` file, but here's a snippet.
 Do what you want. Learn as much as you can. Unlicense more software.
 
 [unlicense]: http://unlicense.org/
+[clojure]: https://clojure.org/
+[clojurescript]: https://clojurescript.org/
+[neovim]: https://neovim.io/
+[prepl-post]: https://oli.me.uk/2019-03-22-clojure-socket-prepl-cookbook/
