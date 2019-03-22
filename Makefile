@@ -5,7 +5,6 @@ VERSION := $(shell git rev-parse HEAD)
 dev:
 	CONJURE_LOG_PATH=logs/conjure.log \
 	CONJURE_PREPL_SERVER_PORT=5885 \
-	CONJURE_JOB_COMMAND="clojure -m conjure.main" \
 		nvim -c "source plugin/conjure.vim" src/conjure/main.clj
 
 prepls:
