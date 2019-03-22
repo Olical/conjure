@@ -20,6 +20,8 @@
 
 Here's how you would install and compile using [vim-plug][], it's easy enough to translate this to your favourite plugin manager.
 
+> Note: This tag isn't published yet, you could use the latest commit or master if you're feeling brave.
+
 ```viml
 Plug 'Olical/conjure', { 'tag': 'v0.4.0', 'do': 'make compile', 'for': 'clojure', 'on': 'ConjureAdd'  }
 ```
@@ -35,35 +37,16 @@ The `'for'` and `'on'` keys are entirely optional but you might prefer Conjure t
 Conjure doesn't come with any key bindings by default, it leaves that up to you. This template will act as a good starting point for your configuration, feel free to change it as you see fit.
 
 ```viml
-" Evaluate the form under the cursor.
 nnoremap <localleader>rr :ConjureEvalCurrentForm<cr>
-
-" Evaluate the outermost form.
 nnoremap <localleader>re :ConjureEvalRootForm<cr>
-
-" Evaluate whatever is currently visually selected.
 vnoremap <localleader>re :ConjureEvalSelection<cr>
-
-" Evaluate the entire buffer.
-" Taken from the buffer, not the file on disk.
 nnoremap <localleader>rf :ConjureEvalBuffer<cr>
-
-" Evaluate the file from the disk.
 nnoremap <localleader>rd :ConjureLoadFile <c-r>%<cr>
-
-" Log the current connections and their configuration.
 nnoremap <localleader>rs :ConjureStatus<cr>
-
-" Expand and focus the log.
 nnoremap <localleader>rl :ConjureOpenLog<cr>
-
-" Close the log if it's open.
 nnoremap <localleader>rq :ConjureCloseLog<cr>
-
-" Look up documentation for the word under the cursor.
 nnoremap K :ConjureDoc <c-r><c-w><cr>
 
-" Closes the log if we're not currently inside it.
 function! s:close_log()
   if expand("%:p") !~# "/tmp/conjure-log-\\d\\+.cljc"
     ConjureCloseLog
@@ -71,14 +54,65 @@ function! s:close_log()
 endfunction
 
 augroup conjure
-  " Close the log when entering insert mode.
+  autocmd!
   autocmd! InsertEnter *.clj\(c\|s\) :call <sid>close_log()
 augroup END
 ```
 
 ## Usage
 
-...
+Conjure exposes the following commands, most are pretty self explanatory.
+
+ * `ConjureAdd` - add a new connection.
+ * `ConjureRemove` - remove an existing connection by tag.
+ * `ConjureRemoveAll` - remove all connections.
+ * `ConjureStatus` - display the current connections in the log buffer.
+ * `ConjureEval` - evaluate the argument as Clojure code.
+ * `ConjureEvalSelection` - evaluates the current (or previous) visual selection.
+ * `ConjureEvalCurrentForm` - evaluates the form under the cursor.
+ * `ConjureEvalRootForm` - evaluates the outermost form under the cursor.
+ * `ConjureEvalBuffer` - evaluate the entire buffer (not from the disk).
+ * `ConjureLoadFile` - load and evaluate the file from the disk.
+ * `ConjureDoc` - display the documentation for the given symbol in the log buffer.
+ * `ConjureOpenLog` - open and focus the log buffer in a wide window.
+ * `ConjureCloseLog` - close the log window if it's open in this tab.
+
+`ConjureAdd` takes a map that conforms to the following spec.
+
+```clojure
+(s/def ::expr util/regexp?)
+(s/def ::tag keyword?)
+(s/def ::port number?)
+(s/def ::lang #{:clj :cljs})
+(s/def ::host string?)
+(s/def ::new-conn (s/keys :req-un [::tag ::port]
+                          :opt-un [::expr ::lang ::host]))
+```
+
+If you get something wrong it'll explain using [Expound][] in the log buffer. Essentially you must provide a `:tag` and a `:port`, other than that the rest is optional.
+
+Here's some sample interactions.
+
+```viml
+" A regular Clojure connection.
+:ConjureAdd {:tag :jvm, :port 5555}
+
+" The :lang defaults to :clj, you need to specify it as :cljs for ClojureScript.
+:ConjureAdd {:tag :node, :port 5556, :lang :cljs}
+
+" This will print the result from both REPLs
+" Providing you call it from within a .cljc buffer.
+:ConjureEval (+ 10 10)
+
+" Disconnect from :node.
+:ConjureRemove :node
+```
+
+If you wish to change the regular expression used to match buffers to connections, you can set the `:expr`. You have to prefix it with `#regex` because [edn][] is slightly different to regular Clojure.
+
+```viml
+:ConjureAdd {:tag :frontend, :port 8888, :expr #regex "frontend/.+\\.cljs"}
+```
 
 ## Issues
 
@@ -106,3 +140,5 @@ Do what you want. Learn as much as you can. Unlicense more software.
 [compliment]: https://github.com/alexander-yakushev/compliment
 [zprint]: https://github.com/kkinnear/zprint
 [vim-plug]: https://github.com/junegunn/vim-plug
+[expound]: https://github.com/bhb/expound
+[edn]: https://github.com/edn-format/edn

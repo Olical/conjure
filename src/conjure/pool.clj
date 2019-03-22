@@ -93,8 +93,7 @@
      :read-chan read-chan}))
 
 (defn add! [{:keys [tag lang expr host port]
-             :or {tag :default
-                  host "127.0.0.1"
+             :or {host "127.0.0.1"
                   lang :clj}}]
   (remove! tag)
   (log/info "Adding" tag host port)
