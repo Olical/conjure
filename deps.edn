@@ -13,4 +13,8 @@
  :aliases
  {:prepls
   {:extra-deps
-   {org.clojure/clojurescript {:mvn/version "1.10.520"}}}}}
+   {org.clojure/clojurescript {:mvn/version "1.10.520"}}}
+
+  :pack
+  {:extra-deps {pack/pack.alpha {:git/url "https://github.com/juxt/pack.alpha.git"
+                                 :sha "81b9e47d992b17aa3e3af1a47aed1f0287ebe9b8"}}}}}

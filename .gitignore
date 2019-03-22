@@ -1,3 +1,4 @@
 /.cpcache/
 /logs/
 /.cljs_node_repl/
+/bin/

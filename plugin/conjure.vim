@@ -14,20 +14,28 @@ endfunction
 let s:jobid = -1
 let s:cwd = resolve(expand("<sfile>:p:h") . "/..")
 
+if $CONJURE_JOB_COMMAND != 0
+  let s:job_command = $CONJURE_JOB_COMMAND
+else
+  let s:job_command = "java -jar bin/conjure.jar"
+endif
+
 " Reset the jobid then call start again
 function! s:on_exit(jobid, msg, event) dict
-  echohl ErrorMsg
-  echo "Conjure exited, restarting"
-  echohl None
+  if a:msg != 0
+    echohl ErrorMsg
+    echo "Conjure exited, restarting"
+    echohl None
 
-  let s:jobid = -1
-  call <sid>start()
+    let s:jobid = -1
+    call <sid>start()
+  endif
 endfunction
 
 " Start up the Clojure process if we haven't already.
 function! s:start()
   if s:jobid == -1
-    let s:jobid = jobstart("clojure -m conjure.main", {
+    let s:jobid = jobstart(s:job_command, {
     \  "rpc": v:true,
     \  "cwd": s:cwd,
     \  "on_stderr": function("s:on_stderr"),
