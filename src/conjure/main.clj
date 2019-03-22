@@ -64,7 +64,9 @@
   (action/doc (first params)))
 
 (defmethod rpc/handle-notify :open-log [_]
-  (ui/upsert-log {:focus? true, :width :large}))
+  (ui/upsert-log {:focus? true
+                  :resize? true
+                  :width :large}))
 
 (defmethod rpc/handle-notify :close-log [_]
   (ui/close-log))

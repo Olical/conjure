@@ -15,12 +15,13 @@
 (defn upsert-log
   "Get, create, or update the log window and buffer."
   ([] (upsert-log {}))
-  ([{:keys [focus? width] :or {focus? false, width :small}}]
+  ([{:keys [focus? resize? width] :or {focus? false, resize? false, width :small}}]
    (->> (nvim/execute-lua
           (:upsert lua)
           log-buffer-name
           (get log-window-widths width)
-          focus?)
+          focus?
+          resize?)
         (nvim/call)
         (util/snake->kw-map))))
 

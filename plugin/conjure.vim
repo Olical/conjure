@@ -44,14 +44,16 @@ end
 conjure_utils = {}
 
 -- Find or create (and then find again) the log window and buffer.
-conjure_utils.upsert_log = function (log_buf_name, width, focus)
+conjure_utils.upsert_log = function (log_buf_name, width, focus, resize)
   local result = find_log(log_buf_name)
   if result then
     if focus == true then
       vim.api.nvim_set_current_win(result.win)
     end
 
-    vim.api.nvim_win_set_width(result.win, width)
+    if resize == true then
+      vim.api.nvim_win_set_width(result.win, width)
+    end
 
     return result
   else
