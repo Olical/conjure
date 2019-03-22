@@ -18,7 +18,7 @@
 
 ## Installation
 
-Here's how you would install and compile using [vim-plug][].
+Here's how you would install and compile using [vim-plug][], it's easy enough to translate this to your favourite plugin manager.
 
 ```viml
 Plug 'Olical/conjure', { 'tag': 'v0.4.0', 'do': 'make compile' }
@@ -82,3 +82,4 @@ Do what you want. Learn as much as you can. Unlicense more software.
 [prepl-post]: https://oli.me.uk/2019-03-22-clojure-socket-prepl-cookbook/
 [compliment]: https://github.com/alexander-yakushev/compliment
 [zprint]: https://github.com/kkinnear/zprint
+[vim-plug]: https://github.com/junegunn/vim-plug
