@@ -11,7 +11,7 @@
 
 ### Upcoming
 
- * Autocomplete via [Compliement][].
+ * Autocomplete via [Compliment][].
  * Go to definition.
  * Friendly error output by default with optional expansion.
  * Code formatting via [zprint][].
