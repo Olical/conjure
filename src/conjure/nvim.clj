@@ -83,3 +83,7 @@
 (defn call-function [fn-name & args]
   {:method :nvim-call-function
    :params [(util/kw->snake fn-name) args]})
+
+(defn eval* [expr]
+  {:method :nvim-eval
+   :params [expr]})

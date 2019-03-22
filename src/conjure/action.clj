@@ -67,12 +67,10 @@
   (-> lines
       (update (dec (count lines))
               (fn [line]
-                (subs line 0 (min end (count line)))))
+                (subs line 0 (min (inc end) (count line)))))
       (update 0 subs (max (dec start) 0))
       (util/join)))
 
-;; TODO Read the form even when on the first paren.
-;; It reads the previous form if there is one I think... or the parent...
 ;; TODO Treat {} and [] as forms too.
 (defn- read-form
   "Read the current form under the cursor from the buffer by default. When
@@ -88,8 +86,8 @@
             (nvim/get-current-win)
             (nvim/call-function :searchpairpos "(" "" ")" backwards)
             (nvim/call-function :searchpairpos "(" "" ")" forwards)])
-
          cursor (nvim/call (nvim/win-get-cursor win))
+
          start (if (= start [0 0]) cursor start)
          end (if (= end [0 0]) cursor end)
 
