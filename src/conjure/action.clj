@@ -1,6 +1,7 @@
 (ns conjure.action
   "Things the user can do that probably trigger some sort of UI update."
   (:require [clojure.core.async :as a]
+            [clojure.edn :as edn]
             [conjure.pool :as pool]
             [conjure.ui :as ui]
             [conjure.nvim :as nvim]
@@ -51,7 +52,8 @@
   (let [ctx (current-ctx)]
     (doseq [conn (:conns ctx)]
       (let [code (code/doc-str {:conn conn, :name name})
-            result (wrapped-eval ctx {:conn conn, :code code})]
+            result (-> (wrapped-eval ctx {:conn conn, :code code})
+                       (update :val edn/read-string))]
         (ui/doc {:conn conn
                  :resp (cond-> result
                          (empty? (:val result))
