@@ -13,6 +13,9 @@
 (defn lines [s]
   (str/split s #"\n"))
 
+(defn join [lines]
+  (str/join "\n" lines))
+
 (defn env [k]
   (System/getenv
     (csk/->SCREAMING_SNAKE_CASE (str "conjure-" (name k)))))

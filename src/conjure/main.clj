@@ -39,23 +39,26 @@
   (when-let [tag (parse-user-edn ::pool/tag (first params))]
     (pool/remove! tag)))
 
-(defmethod rpc/handle-notify :remove-all [{:keys [_]}]
+(defmethod rpc/handle-notify :remove-all [_]
   (pool/remove-all!))
 
-(defmethod rpc/handle-notify :status [{:keys [_]}]
+(defmethod rpc/handle-notify :status [_]
   (pool/status))
 
 (defmethod rpc/handle-notify :eval [{:keys [params]}]
   (action/eval* (first params)))
 
-(defmethod rpc/handle-notify :eval-current-form [{:keys [_]}]
+(defmethod rpc/handle-notify :eval-current-form [_]
   (action/eval-current-form))
 
-(defmethod rpc/handle-notify :eval-root-form [{:keys [_]}]
+(defmethod rpc/handle-notify :eval-root-form [_]
   (action/eval-root-form))
 
 (defmethod rpc/handle-notify :eval-selection [_]
   (action/eval-selection))
+
+(defmethod rpc/handle-notify :eval-buffer [_]
+  (action/eval-buffer))
 
 (defmethod rpc/handle-notify :doc [{:keys [params]}]
   (action/doc (first params)))

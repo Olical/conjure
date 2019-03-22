@@ -2,7 +2,6 @@
   "Connection management and selection."
   (:require [clojure.spec.alpha :as s]
             [clojure.core.async :as a]
-            [clojure.string :as str]
             [clojure.core.server :as server]
             [clojure.java.io :as io]
             [taoensso.timbre :as log]
@@ -143,4 +142,4 @@
         intro (util/count-str conns "connection")
         conn-strs (for [{:keys [tag host port expr lang]} conns]
                     (str tag " @ " host ":" port " for " (pr-str expr) " (" lang ")"))]
-    (ui/info (str/join "\n" (into [intro] conn-strs)))))
+    (ui/info (util/join (into [intro] conn-strs)))))

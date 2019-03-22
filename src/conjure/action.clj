@@ -1,11 +1,11 @@
 (ns conjure.action
   "Things the user can do that probably trigger some sort of UI update."
   (:require [clojure.core.async :as a]
-            [clojure.string :as str]
             [conjure.pool :as pool]
             [conjure.ui :as ui]
             [conjure.nvim :as nvim]
-            [conjure.code :as code]))
+            [conjure.code :as code]
+            [conjure.util :as util]))
 
 (defn- current-ctx
   "Context contains useful data that we don't watch to fetch twice while
@@ -19,7 +19,7 @@
         conns (pool/conns path)]
     {:path path
      :buf buf
-     :ns (code/extract-ns (str/join "\n" sample-lines))
+     :ns (code/extract-ns (util/join sample-lines))
      :conns (or conns (ui/error "No matching connections for" path))}))
 
 (defn- wrapped-eval [ctx {:keys [conn] :as opts}]
@@ -62,7 +62,7 @@
               (fn [line]
                 (subs line 0 (min end (count line)))))
       (update 0 subs (max (dec start) 0))
-      (->> (str/join "\n"))))
+      (util/join)))
 
 ;; TODO Read the form even when on the first paren.
 ;; It reads the previous form if there is one I think... or the parent...
@@ -114,4 +114,10 @@
         code (read-range {:lines lines
                           :start s-col
                           :end e-col})]
+    (eval* code)))
+
+(defn eval-buffer []
+  (let [code (-> (nvim/get-current-buf) (nvim/call)
+                 (nvim/buf-get-lines {:start 0, :end -1}) (nvim/call)
+                 (util/join))]
     (eval* code)))
