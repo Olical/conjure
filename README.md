@@ -37,8 +37,8 @@ The `'for'` and `'on'` keys are entirely optional but you might prefer Conjure t
 Conjure doesn't come with any key bindings by default, it leaves that up to you. This template will act as a good starting point for your configuration, feel free to change it as you see fit.
 
 ```viml
-nnoremap <localleader>rr :ConjureEvalCurrentForm<cr>
-nnoremap <localleader>re :ConjureEvalRootForm<cr>
+nnoremap <localleader>re :ConjureEvalCurrentForm<cr>
+nnoremap <localleader>rr :ConjureEvalRootForm<cr>
 vnoremap <localleader>re :ConjureEvalSelection<cr>
 nnoremap <localleader>rf :ConjureEvalBuffer<cr>
 nnoremap <localleader>rd :ConjureLoadFile <c-r>%<cr>
