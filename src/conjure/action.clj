@@ -100,7 +100,7 @@
 (defn eval-root-form []
   (eval* (read-form {:root? true})))
 
-(defn eval-range []
+(defn eval-selection []
   (let [[buf [_ s-line s-col _] [_ e-line e-col]]
         (nvim/call-batch
           [(nvim/get-current-buf)

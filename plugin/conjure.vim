@@ -89,7 +89,7 @@ command! -nargs=0 DevRemoveAll call rpcnotify(s:jobid, "remove_all")
 command! -nargs=0 DevStatus call rpcnotify(s:jobid, "status")
 
 command! -nargs=1 DevEval call rpcnotify(s:jobid, "eval", <q-args>)
-command! -nargs=0 -range DevEvalRange call rpcnotify(s:jobid, "eval_range")
+command! -nargs=0 -range DevEvalSelection call rpcnotify(s:jobid, "eval_range")
 command! -nargs=0 DevEvalCurrentForm call rpcnotify(s:jobid, "eval_current_form")
 command! -nargs=0 DevEvalRootForm call rpcnotify(s:jobid, "eval_root_form")
 

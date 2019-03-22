@@ -54,8 +54,8 @@
 (defmethod rpc/handle-notify :eval-root-form [{:keys [_]}]
   (action/eval-root-form))
 
-(defmethod rpc/handle-notify :eval-range [_]
-  (action/eval-range))
+(defmethod rpc/handle-notify :eval-selection [_]
+  (action/eval-selection))
 
 (defmethod rpc/handle-notify :doc [{:keys [params]}]
   (action/doc (first params)))
