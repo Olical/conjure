@@ -72,6 +72,11 @@
 (defn eval* [{:keys [conn code]}]
   (append {:origin (:tag conn), :kind :eval, :msg (code/sample code)}))
 
+(defn load-file* [{:keys [conn path]}]
+  (append {:origin (:tag conn)
+           :kind :load-file
+           :msg path}))
+
 (defn result [{:keys [conn resp]}]
   (append {:origin (:tag conn)
            :kind (:tag resp)

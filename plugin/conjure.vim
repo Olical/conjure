@@ -95,6 +95,7 @@ command! -range   DevEvalSelection call rpcnotify(s:jobid, "eval_selection")
 command! -nargs=0 DevEvalCurrentForm call rpcnotify(s:jobid, "eval_current_form")
 command! -nargs=0 DevEvalRootForm call rpcnotify(s:jobid, "eval_root_form")
 command! -nargs=0 DevEvalBuffer call rpcnotify(s:jobid, "eval_buffer")
+command! -nargs=1 DevLoadFile call rpcnotify(s:jobid, "load_file", <q-args>)
 
 command! -nargs=1 DevDoc call rpcnotify(s:jobid, "doc", <q-args>)
 command! -nargs=0 DevOpenLog call rpcnotify(s:jobid, "open_log")

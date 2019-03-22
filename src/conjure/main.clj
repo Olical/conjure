@@ -60,6 +60,9 @@
 (defmethod rpc/handle-notify :eval-buffer [_]
   (action/eval-buffer))
 
+(defmethod rpc/handle-notify :load-file [{:keys [params]}]
+  (action/load-file* (first params)))
+
 (defmethod rpc/handle-notify :doc [{:keys [params]}]
   (action/doc (first params)))
 

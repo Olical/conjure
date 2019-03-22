@@ -72,7 +72,5 @@
     :clj (str "(with-out-str (clojure.repl/doc " name "))")
     :cljs (str "(with-out-str (cljs.repl/doc " name "))")))
 
-(defn load-file-str [{:keys [conn path]}]
-  (case (:lang conn)
-    :clj (str "(clojure.core/load-file \"" path "\")")
-    :cljs (str "(cljs.core/load-file \"" path "\")")))
+(defn load-file-str [path]
+  (str "(load-file \"" path "\")"))

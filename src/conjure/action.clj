@@ -35,6 +35,11 @@
 
     (a/<!! ret-chan)))
 
+(defn- raw-eval [ctx {:keys [conn code]}]
+  (let [{:keys [eval-chan ret-chan]} (:chans conn)]
+    (a/>!! eval-chan code)
+    (a/<!! ret-chan)))
+
 (defn eval* [code]
   (let [ctx (current-ctx)]
     (doseq [conn (:conns ctx)]
@@ -121,3 +126,11 @@
                  (nvim/buf-get-lines {:start 0, :end -1}) (nvim/call)
                  (util/join))]
     (eval* code)))
+
+(defn load-file* [path]
+  (let [ctx (current-ctx)
+        code (code/load-file-str path)]
+    (doseq [conn (:conns ctx)]
+      (let [opts {:conn conn, :code code, :path path}]
+        (ui/load-file* opts)
+        (ui/result {:conn conn, :resp (raw-eval ctx opts)})))))
