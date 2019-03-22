@@ -21,8 +21,6 @@
 
 Here's how you would install and compile using [vim-plug][], it's easy enough to translate this to your favourite plugin manager.
 
-> Note: This tag isn't published yet, you could use the latest commit or master if you're feeling brave.
-
 ```viml
 Plug 'Olical/conjure', { 'tag': 'v0.4.0', 'do': 'make compile', 'for': 'clojure', 'on': 'ConjureAdd'  }
 ```
@@ -117,11 +115,15 @@ If you wish to change the regular expression used to match buffers to connection
 
 ## Issues
 
-...
+If you find any issues please do let me know, provide as much as much information and context as you can.
+
+It would help a lot if you could run Neovim with the `CONJURE_LOG_PATH` environment variable set while you reproduce the issue. Any issue will be a lot easier to diagnose and fix with the log attached.
 
 ## Contributing
 
-...
+Contributions are encouraged, of course! Before submitting pull requests and making serious changes to the code however, I'd love it if you could open an issue to discuss your idea or get in touch via twitter ([@OliverCaldwell][twitter]).
+
+Giving myself and any passers by a chance to discuss ideas first will hopefully mean no rejected pull requests at all.
 
 ## Unlicenced
 
@@ -143,3 +145,4 @@ Do what you want. Learn as much as you can. Unlicense more software.
 [vim-plug]: https://github.com/junegunn/vim-plug
 [expound]: https://github.com/bhb/expound
 [edn]: https://github.com/edn-format/edn
+[twitter]: https://twitter.com/OliverCaldwell
