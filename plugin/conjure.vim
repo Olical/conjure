@@ -1,6 +1,6 @@
 " Handles all stderr from the Clojure process.
 " Simply prints it in red.
-function! s:on_stderr(jobid, lines, source) dict
+function! s:on_stderr(jobid, lines, event) dict
   echohl ErrorMsg
   for line in a:lines
     if len(line) > 0
@@ -11,14 +11,33 @@ function! s:on_stderr(jobid, lines, source) dict
   echohl None
 endfunction
 
+let s:jobid = -1
+let s:cwd = resolve(expand("<sfile>:p:h") . "/..")
+
+" Reset the jobid then call start again
+function! s:on_exit(jobid, msg, event) dict
+  echohl ErrorMsg
+  echo "Conjure exited, restarting"
+  echohl None
+
+  let s:jobid = -1
+  call <sid>start()
+endfunction
+
 " Start up the Clojure process if we haven't already.
-if ! exists("s:jobid")
-  let s:jobid = jobstart("clojure -m conjure.main", {
-  \  "rpc": v:true,
-  \  "cwd": resolve(expand("<sfile>:p:h") . "/.."),
-  \  "on_stderr": function("s:on_stderr")
-  \})
-endif
+function! s:start()
+  if s:jobid == -1
+    let s:jobid = jobstart("clojure -m conjure.main", {
+    \  "rpc": v:true,
+    \  "cwd": s:cwd,
+    \  "on_stderr": function("s:on_stderr"),
+    \  "on_exit": function("s:on_exit")
+    \})
+  endif
+endfunction
+
+" Start the job
+call <sid>start()
 
 " Helper Lua functions to avoid sending too much
 " data back and forth over RPC on each command.
