@@ -1,6 +1,6 @@
 " Handles all stderr from the Clojure process.
 " Simply prints it in red.
-function! s:OnStderr(jobid, lines, source) dict
+function! s:on_stderr(jobid, lines, source) dict
   echohl ErrorMsg
   for line in a:lines
     if len(line) > 0
@@ -16,7 +16,7 @@ if ! exists("s:jobid")
   let s:jobid = jobstart("clojure -m conjure.main", {
   \  "rpc": v:true,
   \  "cwd": resolve(expand("<sfile>:p:h") . "/.."),
-  \  "on_stderr": function("s:OnStderr")
+  \  "on_stderr": function("s:on_stderr")
   \})
 endif
 
