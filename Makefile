@@ -4,6 +4,7 @@ dev:
 	CONJURE_LOG_PATH=logs/conjure.log \
 	CONJURE_PREPL_SERVER_PORT=5885 \
 	CONJURE_JOB_OPTS=" " \
+	CONJURE_ALLOWED_DIR="$(shell pwd)" \
 		nvim -c "source plugin/conjure.vim" src/conjure/main.clj
 
 prepls:

@@ -44,8 +44,12 @@ function! s:start()
   endif
 endfunction
 
-" Start the job
-call <sid>start()
+" Start the job if `make dev` isn't limiting the cwd.
+" This is useful because you can turn off your globally installed version and
+" override it with the development version temporarily.
+if $CONJURE_ALLOWED_DIR == "" || $CONJURE_ALLOWED_DIR == s:cwd
+  call <sid>start()
+endif
 
 " Helper Lua functions to avoid sending too much
 " data back and forth over RPC on each command.
