@@ -71,7 +71,6 @@
       (update 0 subs (max (dec start) 0))
       (util/join)))
 
-;; TODO Treat {} and [] as forms too.
 (defn- read-form
   "Read the current form under the cursor from the buffer by default. When
   root? is set to true it'll read the outer most form under the cursor."
@@ -80,16 +79,25 @@
    (let [forwards (str (when root? "r") "nzW")
          backwards (str "b" forwards)
 
-         [buf win start end]
+         ;; Fetch the buffer, window and all matching pairs for () [] and {}.
+         ;; We'll then select the smallest region from those three
+         [buf win p-start p-end s-start s-end c-start c-end]
          (nvim/call-batch
            [(nvim/get-current-buf)
             (nvim/get-current-win)
+
             (nvim/call-function :searchpairpos "(" "" ")" backwards)
-            (nvim/call-function :searchpairpos "(" "" ")" forwards)])
+            (nvim/call-function :searchpairpos "(" "" ")" forwards)
+
+            (nvim/call-function :searchpairpos "[" "" "]" backwards)
+            (nvim/call-function :searchpairpos "[" "" "]" forwards)
+
+            (nvim/call-function :searchpairpos "{" "" "}" backwards)
+            (nvim/call-function :searchpairpos "{" "" "}" forwards)])
          cursor (nvim/call (nvim/win-get-cursor win))
 
-         start (if (= start [0 0]) cursor start)
-         end (if (= end [0 0]) cursor end)
+         start (if (= p-start [0 0]) cursor p-start)
+         end (if (= p-end [0 0]) cursor p-end)
 
          lines (nvim/call
                  (nvim/buf-get-lines buf {:start (dec (first start))
