@@ -17,7 +17,6 @@
  * Code formatting via [zprint][].
  * Changed namespace reloading via `tools.namespace`.
  * Better current and outer most form selection.
- * Only re-compile when the code has changed.
  * Animated workflow guides and UI examples.
 
 ## Installation

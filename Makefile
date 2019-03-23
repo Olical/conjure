@@ -13,19 +13,14 @@ prepls:
 		-J-Dclojure.server.node="{:port 5556 :accept cljs.server.node/prepl}" \
 		-J-Dclojure.server.browser="{:port 5557 :accept cljs.server.browser/prepl}"
 
-compile:
+SOURCES := $(shell find src -type f)
+
+classes: $(SOURCES)
 	mkdir -p classes
 	clojure -Cfast \
 		-J-Dclojure.compiler.direct-linking=true \
 		-J-Dclojure.compiler.elide-meta="[:doc :file :line :added]" \
-		--eval " \
-			(compile 'conjure.action) \
-			(compile 'conjure.code) \
-			(compile 'conjure.dev) \
-			(compile 'conjure.main) \
-			(compile 'conjure.nvim) \
-			(compile 'conjure.pool) \
-			(compile 'conjure.rpc) \
-			(compile 'conjure.ui) \
-			(compile 'conjure.util) \
-		"
+		--eval "$(shell echo "$(SOURCES)" | scripts/compile-str.sh)"
+	touch classes
+
+compile: classes
