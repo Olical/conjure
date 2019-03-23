@@ -19,4 +19,4 @@
   {:extra-paths ["classes"]
    :jvm-opts ["-client" "-Xmx2g" "-Xverify:none"
               "-XX:+TieredCompilation" "-XX:TieredStopAtLevel=1"
-              "-XX:+UseConcMarkSweepGC" "-XX:+CMSClassUnloadingEnabled"]}}}
+              "-XX:+CMSClassUnloadingEnabled"]}}}
