@@ -67,11 +67,10 @@
   (-> lines
       (update (dec (count lines))
               (fn [line]
-                (subs line 0 (min (inc end) (count line)))))
+                (subs line 0 (min end (count line)))))
       (update 0 subs (max (dec start) 0))
       (util/join)))
 
-;; TODO Treat {} and [] as forms too.
 (defn- read-form
   "Read the current form under the cursor from the buffer by default. When
   root? is set to true it'll read the outer most form under the cursor."
@@ -79,25 +78,46 @@
   ([{:keys [root?]}]
    (let [forwards (str (when root? "r") "nzW")
          backwards (str "b" forwards)
+         get-pair (fn [s e]
+                    [(nvim/call-function :searchpairpos s "" e backwards)
+                     (nvim/call-function :searchpairpos s "" e forwards)])
 
-         [buf win start end]
+         ;; Fetch the buffer, window and all matching pairs for () [] and {}.
+         ;; We'll then select the smallest region from those three
+         [buf win cur-char & positions]
          (nvim/call-batch
-           [(nvim/get-current-buf)
-            (nvim/get-current-win)
-            (nvim/call-function :searchpairpos "(" "" ")" backwards)
-            (nvim/call-function :searchpairpos "(" "" ")" forwards)])
-         cursor (nvim/call (nvim/win-get-cursor win))
+           (concat
+             [(nvim/get-current-buf)
+              (nvim/get-current-win)
+              (nvim/eval* "matchstr(getline('.'), '\\\\%'.col('.').'c.')")]
+             (get-pair "(" ")")
+             (get-pair "\\\\[" "\\\\]")
+             (get-pair "{" "}")))
 
-         start (if (= start [0 0]) cursor start)
-         end (if (= end [0 0]) cursor end)
+         cursor (update (nvim/call (nvim/win-get-cursor win)) 1 inc)
+         pairs (keep (fn [[[start sc] [end ec]]]
+                       (let [start (if (= cur-char sc) cursor start)
+                             end (if (= cur-char ec) cursor end)]
+                         (when-not (or (= start [0 0]) (= end [0 0]))
+                           [start end])))
+                     (->> (interleave positions ["(" ")" "[" "]" "{" "}"])
+                          (partition 2) (partition 2)))
 
-         lines (nvim/call
-                 (nvim/buf-get-lines buf {:start (dec (first start))
-                                          :end (first end)}))]
+         lines (nvim/call-batch
+                 (map (fn [[start end]]
+                        (nvim/buf-get-lines buf {:start (dec (first start))
+                                                 :end (first end)}))
+                      pairs))
 
-     (read-range {:lines lines
-                  :start (second start)
-                  :end (second end)}))))
+         text (map-indexed
+                (fn [n lines]
+                  (let [[start end] (nth pairs n)]
+                    (read-range {:lines lines
+                                 :start (second start)
+                                 :end (second end)})))
+                lines)]
+
+     ((if root? last first) (sort-by count text)))))
 
 (defn eval-current-form []
   (eval* (read-form)))
