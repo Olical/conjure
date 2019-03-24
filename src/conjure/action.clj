@@ -94,8 +94,6 @@
              (get-pair "\\\\[" "\\\\]")
              (get-pair "{" "}")))
 
-         ;; TODO Transduce away the intermediate steps.
-
          cursor (update (nvim/call (nvim/win-get-cursor win)) 1 inc)
          pairs (keep (fn [[[start sc] [end ec]]]
                        (let [start (if (= cur-char sc) cursor start)
