@@ -2,6 +2,8 @@
 
 [Clojure][] (and [ClojureScript][]) tooling for [Neovim][] over a [socket prepl][prepl-post] connection.
 
+[![asciicast](https://asciinema.org/a/RjojeOrKcF5zczweI7q3qiMgw.svg)](https://asciinema.org/a/RjojeOrKcF5zczweI7q3qiMgw)
+
 ### Features
 
  * Connect to multiple Clojure or ClojureScript prepls at the same time.
