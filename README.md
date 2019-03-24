@@ -11,17 +11,16 @@
 
 ### Upcoming
 
+ * Animated workflow guides and UI examples.
  * Autocomplete via [Compliment][].
  * Go to definition.
  * Friendly error output by default with optional expansion.
  * Code formatting via [zprint][].
  * Changed namespace reloading via `tools.namespace`.
- * Better current and outer most form selection.
- * Animated workflow guides and UI examples.
 
 ## Installation
 
-Here's how you would install and compile using [vim-plug][], it's easy enough to translate this to your favourite plugin manager.
+You can easily install Conjure with [vim-plug][].
 
 ```viml
 Plug 'Olical/conjure', { 'tag': 'v0.4.0', 'do': 'make compile', 'for': 'clojure', 'on': 'ConjureAdd'  }
@@ -31,37 +30,26 @@ You should rely on a tag so that breaking changes don't end up disrupting your w
 
 The compile step (`make compile`) is technically optional but I highly doubt you want to be waiting 10+ seconds for Conjure to start in the background before you can use any of the commands.
 
-The `'for'` and `'on'` keys are entirely optional but you might prefer Conjure to only start up once you've entered a Clojure file.
-
-## Configuration
-
-Conjure doesn't come with any key bindings by default, it leaves that up to you. This template will act as a good starting point for your configuration, feel free to change it as you see fit.
-
-```viml
-function! s:close_log()
-  if expand("%:p") !~# "/tmp/conjure-log-\\d\\+.cljc"
-    ConjureCloseLog
-  endif
-endfunction
-
-augroup conjure
-  autocmd!
-  autocmd InsertEnter *.clj,*.clj[cs] :call <sid>close_log()
-  autocmd FileType clojure nnoremap <buffer> <localleader>re :ConjureEvalCurrentForm<cr>
-  autocmd FileType clojure nnoremap <buffer> <localleader>rr :ConjureEvalRootForm<cr>
-  autocmd FileType clojure vnoremap <buffer> <localleader>re :ConjureEvalSelection<cr>
-  autocmd FileType clojure nnoremap <buffer> <localleader>rf :ConjureEvalBuffer<cr>
-  autocmd FileType clojure nnoremap <buffer> <localleader>rF :ConjureLoadFile <c-r>%<cr>
-  autocmd FileType clojure nnoremap <buffer> <localleader>rs :ConjureStatus<cr>
-  autocmd FileType clojure nnoremap <buffer> <localleader>rl :ConjureOpenLog<cr>
-  autocmd FileType clojure nnoremap <buffer> <localleader>rq :ConjureCloseLog<cr>
-  autocmd FileType clojure nnoremap <buffer> K :ConjureDoc <c-r><c-w><cr>
-augroup END
-```
+The `'for'` and `'on'` keys are optional but you might prefer Conjure to only start up once you've entered a Clojure file.
 
 ## Usage
 
-Conjure exposes the following commands, most are pretty self explanatory.
+### Mappings
+
+You can disable these and define your own with `let g:conjure_default_mappings = 0`.
+
+ * `InsertEnter` in a Clojure buffer (that is _not_ the log) closes the log.
+ * `<localleader>re` - `ConjureEvalCurrentForm`
+ * `<localleader>rr` - `ConjureEvalRootForm`
+ * `<localleader>re` - `ConjureEvalSelection` (visual mode)
+ * `<localleader>rf` - `ConjureEvalBuffer`
+ * `<localleader>rF` - `ConjureLoadFile`
+ * `<localleader>rs` - `ConjureStatus`
+ * `<localleader>rl` - `ConjureOpenLog`
+ * `<localleader>rq` - `ConjureCloseLog`
+ * `K` - `ConjureDoc`
+
+### Commands
 
  * `ConjureAdd` - add a new connection.
  * `ConjureRemove` - remove an existing connection by tag.
@@ -91,7 +79,7 @@ Conjure exposes the following commands, most are pretty self explanatory.
 
 If you get something wrong it'll explain using [Expound][] in the log buffer. Essentially you must provide at least a `:tag` and `:port`.
 
-Here's some sample interactions.
+## Example
 
 ```viml
 " A regular Clojure connection.
