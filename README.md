@@ -13,7 +13,6 @@
 
 ### Upcoming
 
- * Animated workflow guides and UI examples.
  * Autocomplete via [Compliment][].
  * Go to definition.
  * Friendly error output by default with optional expansion.
