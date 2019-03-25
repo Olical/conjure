@@ -110,7 +110,7 @@
          ;; root though since you want to keep searching outwards.
          cursor (nvim/call (nvim/win-get-cursor win))
          get-pos (fn [pos ch]
-                   (if (or (and (not root?) (= cur-char ch))
+                   (if (or (and (not root?) (= cur-char ch) (nil-pos? pos))
                            (and root? (nil-pos? pos)))
                      cursor pos))
 
