@@ -100,7 +100,7 @@ If you get something wrong it'll explain using [Expound][] in the log buffer. Es
 If you wish to change the regular expression used to match buffers to connections, you can set `:expr`. You need to prefix it with `#regex` because [edn][] doesn't have built in support for `#"..."` syntax like Clojure does.
 
 ```viml
-:ConjureAdd {:tag :frontend, :port 8888, :expr #regex "frontend/.+\\.cljs"}
+:ConjureAdd {:tag :frontend, :port 8888, :expr #regex "frontend/.+\\.cljs", :lang :cljs}
 ```
 
 ## Issues
