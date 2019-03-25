@@ -72,6 +72,11 @@
       (update 0 subs (max (dec start) 0))
       (util/join)))
 
+(defn- nil-pos?
+  "Helper function to check for [0 0] positions in a more fluent way."
+  [pos]
+  (= pos [0 0]))
+
 (defn- read-form
   "Read the current form under the cursor from the buffer by default. When
   root? is set to true it'll read the outer most form under the cursor."
@@ -95,11 +100,15 @@
              (get-pair "\\\\[" "\\\\]")
              (get-pair "{" "}")))
 
-         cursor (update (nvim/call (nvim/win-get-cursor win)) 1 inc)
+         cursor (nvim/call (nvim/win-get-cursor win))
+         get-pos (fn [pos ch]
+                   (if (or (and (not root?) (= cur-char ch))
+                           (and root? (nil-pos? pos)))
+                     cursor pos))
          pairs (keep (fn [[[start sc] [end ec]]]
-                       (let [start (if (= cur-char sc) cursor start)
-                             end (if (= cur-char ec) cursor end)]
-                         (when-not (or (= start [0 0]) (= end [0 0]))
+                       (let [start (get-pos start sc)
+                             end (get-pos end ec)]
+                         (when-not (or (nil-pos? start) (nil-pos? end))
                            [start end])))
                      (->> (interleave positions ["(" ")" "[" "]" "{" "}"])
                           (partition 2) (partition 2)))
@@ -117,7 +126,6 @@
                                  :start (second start)
                                  :end (second end)})))
                 lines)]
-
      (when (seq text)
        ((if root? last first) (sort-by count text))))))
 
