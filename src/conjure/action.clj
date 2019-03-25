@@ -82,7 +82,12 @@
   root? is set to true it'll read the outer most form under the cursor."
   ([] (read-form {}))
   ([{:keys [root?]}]
-   (let [forwards (str (when root? "r") "nzW")
+   ;; Put on your seatbelt, this function's a bit wild.
+   ;; Could maybe be simplified a little but I doubt that much.
+
+   (let [;; Used for asking Neovim for the matching character
+         ;; backwards and forwards.
+         forwards (str (when root? "r") "nzW")
          backwards (str "b" forwards)
          get-pair (fn [s e]
                     [(nvim/call-function :searchpairpos s "" e backwards)
@@ -100,11 +105,16 @@
              (get-pair "\\\\[" "\\\\]")
              (get-pair "{" "}")))
 
+         ;; If the position is [0 0] we're _probably_ on the matching
+         ;; character, so we should use the cursor position. Don't do this for
+         ;; root though since you want to keep searching outwards.
          cursor (nvim/call (nvim/win-get-cursor win))
          get-pos (fn [pos ch]
                    (if (or (and (not root?) (= cur-char ch))
                            (and root? (nil-pos? pos)))
                      cursor pos))
+
+         ;; Find all of the pairs using the fns and data above.
          pairs (keep (fn [[[start sc] [end ec]]]
                        (let [start (get-pos start sc)
                              end (get-pos end ec)]
@@ -113,12 +123,14 @@
                      (->> (interleave positions ["(" ")" "[" "]" "{" "}"])
                           (partition 2) (partition 2)))
 
+         ;; Pull the lines from the pairs we found.
          lines (nvim/call-batch
                  (map (fn [[start end]]
                         (nvim/buf-get-lines buf {:start (dec (first start))
                                                  :end (first end)}))
                       pairs))
 
+         ;; Extract the text range (column-wise) from those groups of lines.
          text (map-indexed
                 (fn [n lines]
                   (let [[start end] (nth pairs n)]
@@ -126,6 +138,9 @@
                                  :start (second start)
                                  :end (second end)})))
                 lines)]
+
+     ;; If we have some matches, select the largest if we want the root form
+     ;; and the smallest if we want the current one.
      (when (seq text)
        ((if root? last first) (sort-by count text))))))
 
