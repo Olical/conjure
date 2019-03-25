@@ -15,8 +15,9 @@ prepls:
 
 SOURCES := $(shell find src -type f)
 
-classes: $(SOURCES)
+classes: deps.edn $(SOURCES)
 	mkdir -p classes
+	rm -rf classes/*
 	clojure -Cfast \
 		-J-Dclojure.compiler.direct-linking=true \
 		-J-Dclojure.compiler.elide-meta="[:doc :file :line :added]" \
