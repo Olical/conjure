@@ -42,11 +42,12 @@
     (a/<!! ret-chan)))
 
 (defn eval* [code]
-  (let [ctx (current-ctx)]
-    (doseq [conn (:conns ctx)]
-      (let [opts {:conn conn, :code code}]
-        (ui/eval* opts)
-        (ui/result {:conn conn, :resp (wrapped-eval ctx opts)})))))
+  (when code
+    (let [ctx (current-ctx)]
+      (doseq [conn (:conns ctx)]
+        (let [opts {:conn conn, :code code}]
+          (ui/eval* opts)
+          (ui/result {:conn conn, :resp (wrapped-eval ctx opts)}))))))
 
 (defn doc [name]
   (let [ctx (current-ctx)]
@@ -67,7 +68,7 @@
   (-> lines
       (update (dec (count lines))
               (fn [line]
-                (subs line 0 (min end (count line)))))
+                (subs line 0 (min (inc end) (count line)))))
       (update 0 subs (max (dec start) 0))
       (util/join)))
 
@@ -117,7 +118,8 @@
                                  :end (second end)})))
                 lines)]
 
-     ((if root? last first) (sort-by count text)))))
+     (when (seq text)
+       ((if root? last first) (sort-by count text))))))
 
 (defn eval-current-form []
   (eval* (read-form)))
