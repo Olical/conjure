@@ -1,5 +1,5 @@
-let s:jobid = -1
 let s:cwd = resolve(expand("<sfile>:p:h") . "/..")
+let s:jobid = -1
 
 if $CONJURE_JOB_OPTS != ""
   let s:job_opts = $CONJURE_JOB_OPTS
@@ -91,10 +91,6 @@ function! conjure#init()
   " data back and forth over RPC on each command.
   lua require("conjure")
 
-  " Start the job if `make dev` isn't limiting the cwd.
-  " This is useful because you can turn off your globally installed
-  " version and override it with the development version temporarily.
-  if $CONJURE_ALLOWED_DIR == "" || $CONJURE_ALLOWED_DIR == s:cwd
-    call conjure#start()
-  endif
+  " Start the job.
+  call conjure#start()
 endfunction
