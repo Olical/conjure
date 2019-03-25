@@ -1,3 +1,4 @@
 nnoremap <localleader>rc :ConjureAdd {:tag :dev, :port 5885}<cr>
 let &runtimepath.=','.resolve(expand("<sfile>:p:h"))
+source autoload/conjure.vim
 source plugin/conjure.vim

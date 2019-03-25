@@ -1,4 +1,3 @@
-" Initialise some script local variables.
 let s:jobid = -1
 let s:cwd = resolve(expand("<sfile>:p:h") . "/..")
 
