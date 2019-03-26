@@ -7,9 +7,9 @@
 ### Features
 
  * Connect to multiple Clojure or ClojureScript prepls at the same time.
- * Evaluate in `.clj`, `.cljc` and `.cljs` buffers without having to reconnect.
- * Documentation lookup.
- * Custom log buffer that tries to stay out of the way but is there when you need it.
+ * Evaluate in `.clj`, `.cljc` and `.cljs` buffers seamlessly.
+ * Custom log buffer that appears and vanishes where required.
+ * `(doc ...)` lookup.
 
 ### Upcoming
 
@@ -21,7 +21,7 @@
 
 ## Installation
 
-You can easily install Conjure with [vim-plug][], or any other plugin manager for that matter.
+Here's an example with [vim-plug][], my plugin manager of choice.
 
 ```viml
 Plug 'Olical/conjure', { 'tag': 'v0.6.0', 'do': 'make compile', 'for': 'clojure', 'on': 'ConjureAdd'  }
@@ -29,7 +29,7 @@ Plug 'Olical/conjure', { 'tag': 'v0.6.0', 'do': 'make compile', 'for': 'clojure'
 
 You should rely on a tag so that breaking changes don't end up disrupting your workflow, please don't depend on `master`. Make sure you watch the repository for releases using the menu in the top right, that way you can decide when you want to upgrade.
 
-The compile step (`make compile`) is technically optional but I highly doubt you want to be waiting 10+ seconds for Conjure to start in the background before you can use any of the commands.
+The compile step (`make compile`) is technically optional but I highly doubt you want to be waiting 10+ seconds for Conjure to start in the background before you can use any of the commands. Once compiled it takes around 1.5 seconds on my machine, again, entirely in the background. I don't even notice.
 
 The `'for'` and `'on'` keys are optional but you might prefer Conjure to only start up once you've entered a Clojure file.
 
