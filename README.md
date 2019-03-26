@@ -16,8 +16,8 @@
  * Friendly error output by default with optional expansion. ([#12](https://github.com/Olical/conjure/issues/12))
  * Code formatting via [zprint][]. ([#11](https://github.com/Olical/conjure/issues/11))
  * Changed namespace reloading via `tools.namespace`. ([#10](https://github.com/Olical/conjure/issues/10))
- * Configuration ([#7](https://github.com/Olical/conjure/issues/7))
- * Polished documentation and README ([#6](https://github.com/Olical/conjure/issues/6))
+ * Configuration. ([#7](https://github.com/Olical/conjure/issues/7))
+ * Polished documentation and README. ([#6](https://github.com/Olical/conjure/issues/6))
 
 [![asciicast](https://asciinema.org/a/RjojeOrKcF5zczweI7q3qiMgw.svg)](https://asciinema.org/a/RjojeOrKcF5zczweI7q3qiMgw)
 
