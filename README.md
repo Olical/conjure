@@ -109,12 +109,6 @@ If you have any problems please do let me know, provide as much as much informat
 
 It would help a lot if you could run Neovim with the `CONJURE_LOG_PATH` environment variable set while you reproduce the issue. Any issue will be a lot easier to diagnose and fix with the log attached.
 
-## Contributing
-
-Contributions are encouraged, of course! Before submitting pull requests and making serious changes to the code however, I'd love it if you could open an issue to discuss your idea or get in touch via twitter ([@OliverCaldwell][twitter]).
-
-Giving myself and any passers by a chance to discuss ideas first will hopefully mean no rejected pull requests at all.
-
 ## Unlicenced
 
 Find the full [unlicense][] in the `UNLICENSE` file, but here's a snippet.
