@@ -13,11 +13,13 @@
 
 ### Upcoming
 
- * Autocomplete via [Compliment][].
- * Go to definition.
- * Friendly error output by default with optional expansion.
- * Code formatting via [zprint][].
- * Changed namespace reloading via `tools.namespace`.
+ * Autocomplete via [Compliment][]. (#8)
+ * Go to definition. (#9)
+ * Friendly error output by default with optional expansion. (#12)
+ * Code formatting via [zprint][]. (#11)
+ * Changed namespace reloading via `tools.namespace`. (#10)
+ * Configuration (#7)
+ * Polished documentation and README (#6)
 
 ## Installation
 
