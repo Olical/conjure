@@ -159,6 +159,7 @@
   ;; Handle all messages on in-chan through the handler-* functions.
   (loop []
     (when-let [msg (a/<!! in-chan)]
+      (log/trace "Received RPC message:" msg)
       (util/thread
         "RPC message handler"
         (case (:type msg)

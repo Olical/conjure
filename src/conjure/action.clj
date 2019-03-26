@@ -73,7 +73,7 @@
       (util/join)))
 
 (defn- nil-pos?
-  "Helper function to check for [0 0] positions in a more fluent way."
+  "A more intention revealing way of checking for [0 0] positions."
   [pos]
   (= pos [0 0]))
 
