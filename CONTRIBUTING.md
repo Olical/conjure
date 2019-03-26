@@ -7,9 +7,9 @@
 
 When working on Conjure you can start the development version through `make dev`. You'll ideally need [localvimrc][] to evaluate the `.lvimrc` file for you on startup. When working on Conjure you'll have the following extras by default:
 
- * Your global version of Conjure will be disabled.
- * Logs are sent to `logs/conjure.log` (I `tail -f` this file in another terminal while working)
- * A prepl into Conjure itself is opened on port `5885`. `,rc` will connect Conjure to itself so you can develop in a strangely magical cycle.
+ * Your global version of Conjure will be disabled. (if you use [vim-plug][])
+ * Logs are sent to `logs/conjure.log`. (I `tail -f` this file in another terminal while working)
+ * A prepl into Conjure itself is opened on port `5885`. `<localleader>rc` will connect Conjure to itself so you can develop in a strangely magical cycle.
  * The AOT compiled classes are ignored so startup time is quite a bit longer but you get the full development version to REPL into.
 
 You can start a few prepls to test against with `make prepls`:
@@ -22,4 +22,5 @@ These are useful for testing Clojure and ClojureScript discrepancies, of which t
 
 Above all, have fun with it. Help build and improve something you love to use.
 
+[vim-plug]: https://github.com/junegunn/vim-plug
 [localvimrc]: https://github.com/embear/vim-localvimrc
