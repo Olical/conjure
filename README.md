@@ -21,13 +21,13 @@
 
 ## Installation
 
-You can easily install Conjure with [vim-plug][].
+You can easily install Conjure with [vim-plug][], or any other plugin manager for that matter.
 
 ```viml
 Plug 'Olical/conjure', { 'tag': 'v0.6.0', 'do': 'make compile', 'for': 'clojure', 'on': 'ConjureAdd'  }
 ```
 
-You should rely on a tag so that breaking changes don't end up disrupting your workflow. Make sure you watch the repository for releases using the menu in the top right, that way you can decide when you want to upgrade.
+You should rely on a tag so that breaking changes don't end up disrupting your workflow, please don't depend on `master`. Make sure you watch the repository for releases using the menu in the top right, that way you can decide when you want to upgrade.
 
 The compile step (`make compile`) is technically optional but I highly doubt you want to be waiting 10+ seconds for Conjure to start in the background before you can use any of the commands.
 
@@ -103,12 +103,6 @@ If you wish to change the regular expression used to match buffers to connection
 :ConjureAdd {:tag :frontend, :port 8888, :expr #regex "frontend/.+\\.cljs", :lang :cljs}
 ```
 
-## Issues
-
-If you have any problems please do let me know, provide as much as much information and context as you can.
-
-It would help a lot if you could run Neovim with the `CONJURE_LOG_PATH` environment variable set while you reproduce the issue. Any issue will be a lot easier to diagnose and fix with the log attached.
-
 ## Unlicenced
 
 Find the full [unlicense][] in the `UNLICENSE` file, but here's a snippet.
@@ -116,8 +110,6 @@ Find the full [unlicense][] in the `UNLICENSE` file, but here's a snippet.
 >This is free and unencumbered software released into the public domain.
 >
 >Anyone is free to copy, modify, publish, use, compile, sell, or distribute this software, either in source code form or as a compiled binary, for any purpose, commercial or non-commercial, and by any means.
-
-Do what you want. Learn as much as you can. Unlicense more software.
 
 [unlicense]: http://unlicense.org/
 [clojure]: https://clojure.org/
