@@ -100,9 +100,9 @@
            (concat
              [(nvim/get-current-buf)
               (nvim/get-current-win)
-              (nvim/eval* "matchstr(getline('.'), '\\\\%'.col('.').'c.')")]
+              (nvim/eval* (str "matchstr(getline('.'), '\\%'.col('.').'c.')"))]
              (get-pair "(" ")")
-             (get-pair "\\\\[" "\\\\]")
+             (get-pair "\\[" "\\]")
              (get-pair "{" "}")))
 
          ;; If the position is [0 0] we're _probably_ on the matching

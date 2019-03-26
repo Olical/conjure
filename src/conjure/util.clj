@@ -24,7 +24,8 @@
   (-> error Throwable->map clj/ex-triage clj/ex-str))
 
 (defn escape-quotes [s]
-  (str/escape s {\" "\\\""}))
+  (str/escape s {\\ "\\\\"
+                 \" "\\\""}))
 
 (defn regexp? [o]
   (instance? java.util.regex.Pattern o))
