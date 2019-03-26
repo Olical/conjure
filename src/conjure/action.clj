@@ -68,8 +68,8 @@
   (-> lines
       (update (dec (count lines))
               (fn [line]
-                (subs line 0 (min (inc end) (count line)))))
-      (update 0 subs (max (dec start) 0))
+                (subs line 0 (min end (count line)))))
+      (update 0 subs (max start 0))
       (util/join)))
 
 (defn- nil-pos?
@@ -108,7 +108,7 @@
          ;; If the position is [0 0] we're _probably_ on the matching
          ;; character, so we should use the cursor position. Don't do this for
          ;; root though since you want to keep searching outwards.
-         cursor (nvim/call (nvim/win-get-cursor win))
+         cursor (update (nvim/call (nvim/win-get-cursor win)) 1 inc)
          get-pos (fn [pos ch]
                    (if (or (and (not root?) (= cur-char ch) (nil-pos? pos))
                            (and root? (nil-pos? pos)))
@@ -135,8 +135,8 @@
                 (fn [n lines]
                   (let [[start end] (nth pairs n)]
                     (read-range {:lines lines
-                                 :start (second start)
-                                 :end (second end)})))
+                                 :start (dec (second start))
+                                 :end (inc (second end))})))
                 lines)]
 
      ;; If we have some matches, select the largest if we want the root form
@@ -162,7 +162,7 @@
                   {:start (dec s-line)
                    :end e-line}))
         code (read-range {:lines lines
-                          :start s-col
+                          :start (dec s-col)
                           :end e-col})]
     (eval* code)))
 
