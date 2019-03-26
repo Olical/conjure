@@ -110,8 +110,8 @@
          ;; root though since you want to keep searching outwards.
          cursor (update (nvim/call (nvim/win-get-cursor win)) 1 inc)
          get-pos (fn [pos ch]
-                   (if (or (and (not root?) (= cur-char ch) (nil-pos? pos))
-                           (and root? (nil-pos? pos)))
+                   (if (or (and (= cur-char ch) (nil-pos? pos))
+                           (and (not root?) (= cur-char ch)))
                      cursor pos))
 
          ;; Find all of the pairs using the fns and data above.
@@ -136,7 +136,7 @@
                   (let [[start end] (nth pairs n)]
                     (read-range {:lines lines
                                  :start (dec (second start))
-                                 :end (inc (second end))})))
+                                 :end (second end)})))
                 lines)]
 
      ;; If we have some matches, select the largest if we want the root form
