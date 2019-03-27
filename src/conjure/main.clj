@@ -6,7 +6,7 @@
             [taoensso.timbre :as log]
             [conjure.dev :as dev]
             [conjure.rpc :as rpc]
-            [conjure.pool :as pool]
+            [conjure.prepl :as prepl]
             [conjure.ui :as ui]
             [conjure.action :as action]))
 
@@ -32,18 +32,18 @@
 ;; Here we map RPC notifications and requests to their Clojure functions.
 ;; Input strings are parsed as EDN and checked against specs where required.
 (defmethod rpc/handle-notify :add [{:keys [params]}]
-  (when-let [new-conn (parse-user-edn ::pool/new-conn (first params))]
-    (pool/add! new-conn)))
+  (when-let [new-conn (parse-user-edn ::prepl/new-conn (first params))]
+    (prepl/add! new-conn)))
 
 (defmethod rpc/handle-notify :remove [{:keys [params]}]
-  (when-let [tag (parse-user-edn ::pool/tag (first params))]
-    (pool/remove! tag)))
+  (when-let [tag (parse-user-edn ::prepl/tag (first params))]
+    (prepl/remove! tag)))
 
 (defmethod rpc/handle-notify :remove-all [_]
-  (pool/remove-all!))
+  (prepl/remove-all!))
 
 (defmethod rpc/handle-notify :status [_]
-  (pool/status))
+  (prepl/status))
 
 (defmethod rpc/handle-notify :eval [{:keys [params]}]
   (action/eval* (first params)))

@@ -1,5 +1,5 @@
-(ns conjure.pool
-  "Connection management and selection."
+(ns conjure.prepl
+  "Remote prepl connection management and selection."
   (:require [clojure.spec.alpha :as s]
             [clojure.core.async :as a]
             [clojure.core.server :as server]

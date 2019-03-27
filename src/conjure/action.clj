@@ -2,7 +2,7 @@
   "Things the user can do that probably trigger some sort of UI update."
   (:require [clojure.core.async :as a]
             [clojure.edn :as edn]
-            [conjure.pool :as pool]
+            [conjure.prepl :as prepl]
             [conjure.ui :as ui]
             [conjure.nvim :as nvim]
             [conjure.code :as code]
@@ -17,7 +17,7 @@
         (nvim/call-batch
           [(nvim/buf-get-name buf)
            (nvim/buf-get-lines buf {:start 0, :end 25})])
-        conns (pool/conns path)]
+        conns (prepl/conns path)]
     {:path path
      :buf buf
      :ns (code/extract-ns (util/join sample-lines))
