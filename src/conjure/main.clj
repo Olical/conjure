@@ -73,6 +73,3 @@
 
 (defmethod rpc/handle-notify :close-log [_]
   (ui/close-log))
-
-;; TODO goto, autocomplete, tests, reloading
-;; TODO buffer, file, range eval
