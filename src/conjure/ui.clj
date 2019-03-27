@@ -95,7 +95,6 @@
            :code? (contains? #{:ret :tap} (:tag resp))
            :msg (:val resp)}))
 
-;; TODO Move pretty printing here.
 (defn load-file*
   "When we ask to load a whole file from disk."
   [{:keys [conn path]}]
