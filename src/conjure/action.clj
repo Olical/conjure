@@ -23,7 +23,10 @@
      :ns (code/extract-ns (util/join sample-lines))
      :conns (or conns (ui/error "No matching connections for" path))}))
 
-(defn- wrapped-eval [ctx {:keys [conn] :as opts}]
+(defn- wrapped-eval
+  "Wraps up code with environment specific padding, sends it off for evaluation
+  and blocks until we get a result."
+  [ctx {:keys [conn] :as opts}]
   (let [{:keys [eval-chan ret-chan]} (:chans conn)]
     (a/>!! eval-chan (code/eval-str ctx opts))
 
@@ -36,29 +39,13 @@
 
     (a/<!! ret-chan)))
 
-(defn- raw-eval [ctx {:keys [conn code]}]
+(defn- raw-eval
+  "Unlike wrapped-eval, it will send the exact code it is given and then block
+  for a response."
+  [ctx {:keys [conn code]}]
   (let [{:keys [eval-chan ret-chan]} (:chans conn)]
     (a/>!! eval-chan code)
     (a/<!! ret-chan)))
-
-(defn eval* [code]
-  (when code
-    (let [ctx (current-ctx)]
-      (doseq [conn (:conns ctx)]
-        (let [opts {:conn conn, :code code}]
-          (ui/eval* opts)
-          (ui/result {:conn conn, :resp (wrapped-eval ctx opts)}))))))
-
-(defn doc [name]
-  (let [ctx (current-ctx)]
-    (doseq [conn (:conns ctx)]
-      (let [code (code/doc-str {:conn conn, :name name})
-            result (-> (wrapped-eval ctx {:conn conn, :code code})
-                       (update :val edn/read-string))]
-        (ui/doc {:conn conn
-                 :resp (cond-> result
-                         (empty? (:val result))
-                         (assoc :val (str "No doc for " name)))})))))
 
 (defn- read-range
   "Given some lines, start column, and end column it will trim the first and
@@ -143,6 +130,27 @@
      ;; and the smallest if we want the current one.
      (when (seq text)
        ((if root? last first) (sort-by count text))))))
+
+;; The following functions are called by the user through commands.
+
+(defn eval* [code]
+  (when code
+    (let [ctx (current-ctx)]
+      (doseq [conn (:conns ctx)]
+        (let [opts {:conn conn, :code code}]
+          (ui/eval* opts)
+          (ui/result {:conn conn, :resp (wrapped-eval ctx opts)}))))))
+
+(defn doc [name]
+  (let [ctx (current-ctx)]
+    (doseq [conn (:conns ctx)]
+      (let [code (code/doc-str {:conn conn, :name name})
+            result (-> (wrapped-eval ctx {:conn conn, :code code})
+                       (update :val edn/read-string))]
+        (ui/doc {:conn conn
+                 :resp (cond-> result
+                         (empty? (:val result))
+                         (assoc :val (str "No doc for " name)))})))))
 
 (defn eval-current-form []
   (eval* (read-form)))
