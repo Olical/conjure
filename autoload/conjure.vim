@@ -87,10 +87,6 @@ endfunction
 
 " Perform any required setup.
 function! conjure#init()
-  " Helper Lua functions to avoid sending too much
-  " data back and forth over RPC on each command.
-  lua require("conjure")
-
   " Start the job if `make dev` isn't limiting the cwd.
   " This is useful because you can turn off your globally installed
   " version and override it with the development version temporarily.

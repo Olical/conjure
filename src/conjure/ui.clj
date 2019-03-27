@@ -9,8 +9,8 @@
 (defonce log-buffer-name (str "/tmp/conjure-log-" (util/now) ".cljc"))
 (def welcome-msg "; conjure/out | Welcome to Conjure!")
 (def lua
-  {:upsert "return conjure_utils.upsert_log(...)"
-   :close "return conjure_utils.close_log(...)"})
+  {:upsert "return require('conjure').upsert_log(...)"
+   :close "return require('conjure').close_log(...)"})
 
 (defn upsert-log
   "Get, create, or update the log window and buffer."

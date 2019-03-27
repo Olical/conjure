@@ -1,3 +1,5 @@
+local conjure = {}
+
 -- Find the log window and buffer if they exist.
 local function find_log (log_buf_name)
   local tabpage = vim.api.nvim_get_current_tabpage()
@@ -15,11 +17,8 @@ local function find_log (log_buf_name)
   return nil
 end
 
--- Global table of helper functions for Conjure to call.
-conjure_utils = {}
-
 -- Find or create (and then find again) the log window and buffer.
-conjure_utils.upsert_log = function (log_buf_name, width, focus, resize)
+function upsert_log (log_buf_name, width, focus, resize)
   local result = find_log(log_buf_name)
   if result then
     if focus == true then
@@ -50,10 +49,12 @@ conjure_utils.upsert_log = function (log_buf_name, width, focus, resize)
 end
 
 -- Close the log window if it's open in the current tabpage.
-conjure_utils.close_log = function (log_buf_name)
+function conjure.close_log (log_buf_name)
   local result = find_log(log_buf_name)
   if result then
     local win_number = vim.api.nvim_win_get_number(result.win)
     vim.api.nvim_command(win_number .. "close!")
   end
 end
+
+return conjure
