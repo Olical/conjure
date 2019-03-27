@@ -46,7 +46,7 @@
            (clojure.core/eval
              (clojure.core/read-string
                {:read-cond :allow}
-               \"(do " (util/escape-quotes code) ")\"))
+               \"(do " (util/escape-quotes code) "\n)\"))
            (catch Throwable e
              (clojure.core/Throwable->map e))
            (finally
@@ -57,7 +57,7 @@
     (str "
          (in-ns '" (or ns "cljs.user") ")
          (try
-           (do " code ")
+           " code "
            (catch :default e
              (cljs.repl/Error->map e))
            (finally
