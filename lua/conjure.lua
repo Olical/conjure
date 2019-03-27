@@ -18,7 +18,7 @@ local function find_log (log_buf_name)
 end
 
 -- Find or create (and then find again) the log window and buffer.
-function upsert_log (log_buf_name, width, focus, resize)
+function conjure.upsert_log (log_buf_name, width, focus, resize)
   local result = find_log(log_buf_name)
   if result then
     if focus == true then

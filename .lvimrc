@@ -1,5 +1,7 @@
 nnoremap <localleader>rc :ConjureAdd {:tag :dev, :port 5885}<cr>
+
 let &runtimepath=resolve(expand("<sfile>:p:h")) . "," . &runtimepath
+lua package.loaded["conjure"] = nil
 
 if !exists("g:conjure_initialised")
   let g:conjure_initialised = 1
