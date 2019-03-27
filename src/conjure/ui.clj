@@ -6,7 +6,7 @@
 
 (def log-window-widths {:small 40 :large 80})
 (def max-log-buffer-length 10000)
-(defonce log-buffer-name (str "/tmp/conjure-log-" (util/now) ".cljc"))
+(defonce log-buffer-name "/tmp/conjure.cljc")
 (def welcome-msg "; conjure/out | Welcome to Conjure!")
 (def lua
   {:upsert "return require('conjure').upsert_log(...)"

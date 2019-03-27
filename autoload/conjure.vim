@@ -80,7 +80,7 @@ endfunction
 
 " Close the log if we're not currently using it.
 function! conjure#close_unused_log()
-  if expand("%:p") !~# "/tmp/conjure-log-\\d\\+.cljc"
+  if expand("%:p") !~# "/tmp/conjure.cljc"
     ConjureCloseLog
   endif
 endfunction
