@@ -35,7 +35,7 @@
 (defn append [{:keys [origin kind msg code?] :or {code? false}}]
   (let [prefix (str "; " (name origin) "/" (name kind))
         lines (if code?
-                (into [(str prefix " ⤸")] (util/lines (code/zprint msg)))
+                (into [(str prefix " ⤸")] (util/lines (code/pprint msg)))
                 (for [line (util/lines msg)]
                   (str prefix " | " line)))
         {:keys [buf win]} (upsert-log)

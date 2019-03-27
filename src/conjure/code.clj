@@ -1,28 +1,32 @@
 (ns conjure.code
   "Tools to render or format Clojure code."
   (:require [clojure.string :as str]
-            [zprint.core :as zp]
+            [clojure.core :as core]
+            [fipp.clojure :as fipp]
             [taoensso.timbre :as log]
             [conjure.util :as util]))
 
-(defn zprint
-  "Format the code with zprint, swallowing any errors."
+(defn pprint
+  "Format the code with, swallowing any errors."
   [code]
   (try
-    (zp/zprint-str code {:parse-string-all? true})
+    (with-out-str
+      (fipp/pprint (core/read-string {:read-cond :preserve} code)))
     (catch Exception e
-      (log/error "Error while zprinting" e)
+      (log/error "Error while pretty printing" e)
       code)))
+
+(def ^:private sample-length 42)
 
 (defn sample
   "Get a short one line sample snippet of some code."
   [code]
   (let [flat (str/replace code #"\s+" " ")]
-    (if (> (count flat) 30)
-      (str (subs flat 0 30) "…")
+    (if (> (count flat) sample-length)
+      (str (subs flat 0 sample-length) "…")
       flat)))
 
-(def ns-re #"\(\s*ns\s+(\D[\w\d\.\*\+!\-'?]*)\s*")
+(def ^:private ns-re #"\(\s*ns\s+(\D[\w\d\.\*\+!\-'?]*)\s*")
 (defn extract-ns [code]
   (second (re-find ns-re code)))
 

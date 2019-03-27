@@ -8,7 +8,7 @@
   clojure-msgpack {:mvn/version "1.2.1"}
   camel-snake-kebab {:mvn/version "0.4.0"}
   expound {:mvn/version "0.7.2"}
-  zprint {:mvn/version "0.4.15"}}
+  fipp {:mvn/version "0.6.17"}}
 
  :aliases
  {:prepls

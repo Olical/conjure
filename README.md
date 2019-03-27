@@ -14,7 +14,7 @@
  * Autocomplete via [Compliment][]. ([#8](https://github.com/Olical/conjure/issues/8))
  * Go to definition. ([#9](https://github.com/Olical/conjure/issues/9))
  * Friendly error output by default with optional expansion. ([#12](https://github.com/Olical/conjure/issues/12))
- * Code formatting via [zprint][]. ([#11](https://github.com/Olical/conjure/issues/11))
+ * Code formatting. ([#11](https://github.com/Olical/conjure/issues/11))
  * Changed namespace reloading via `tools.namespace`. ([#10](https://github.com/Olical/conjure/issues/10))
  * Configuration. ([#7](https://github.com/Olical/conjure/issues/7))
  * Polished documentation and README. ([#6](https://github.com/Olical/conjure/issues/6))
@@ -119,7 +119,6 @@ Find the full [unlicense][] in the `UNLICENSE` file, but here's a snippet.
 [neovim]: https://neovim.io/
 [prepl-post]: https://oli.me.uk/2019-03-22-clojure-socket-prepl-cookbook/
 [compliment]: https://github.com/alexander-yakushev/compliment
-[zprint]: https://github.com/kkinnear/zprint
 [vim-plug]: https://github.com/junegunn/vim-plug
 [expound]: https://github.com/bhb/expound
 [edn]: https://github.com/edn-format/edn
