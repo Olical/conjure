@@ -6,18 +6,18 @@
             [taoensso.timbre :as log]
             [conjure.util :as util]))
 
+(def ^:private read-opts {:read-cond :preserve})
 (defn pprint
-  "Format the code with, swallowing any errors."
+  "Parse and format the code, suppress and log any errors."
   [code]
   (try
     (with-out-str
-      (fipp/pprint (core/read-string {:read-cond :preserve} code)))
+      (fipp/pprint (core/read-string read-opts code)))
     (catch Exception e
       (log/error "Error while pretty printing" e)
       code)))
 
 (def ^:private sample-length 42)
-
 (defn sample
   "Get a short one line sample snippet of some code."
   [code]

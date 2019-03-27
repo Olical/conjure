@@ -18,13 +18,15 @@
 (s/def ::new-conn (s/keys :req-un [::tag ::port]
                           :opt-un [::expr ::lang ::host]))
 
-(def default-exprs
+(defonce ^:private conns! (atom {}))
+(def ^:private default-exprs
   {:clj #"\.cljc?$"
    :cljs #"\.clj(s|c)$"})
 
-(defonce conns! (atom {}))
-
-(defn remove! [tag]
+(defn remove!
+  "Remove the connection under the given tag. Shuts it down cleanly and blocks
+  until it's done."
+  [tag]
   (when-let [conn (get @conns! tag)]
     (log/info "Removing" tag)
     (ui/info "Removing" tag)
@@ -46,7 +48,12 @@
   (doseq [tag (keys @conns!)]
     (remove! tag)))
 
-(defn connect [{:keys [tag host port]}]
+(defn connect
+  "Connect to a prepl and return channels to interact with it. When the eval
+  channel closes it cascades through the system and eventually closes the read
+  channel. We can use this fact to await the read channel's closure to know
+  when the closing is complete. Handy!"
+  [{:keys [tag host port]}]
   (let [[eval-chan read-chan] (repeatedly #(a/chan 32))
         input (PipedInputStream.)
         output (PipedOutputStream. input)]
@@ -92,10 +99,14 @@
     {:eval-chan eval-chan
      :read-chan read-chan}))
 
-(defn add! [{:keys [tag lang expr host port]
-             :or {host "127.0.0.1"
-                  lang :clj}}]
+(defn add!
+  "Remove any existing connection under :tag then create a new connection."
+  [{:keys [tag lang expr host port]
+    :or {host "127.0.0.1"
+         lang :clj}}]
+
   (remove! tag)
+
   (log/info "Adding" tag host port)
   (ui/info "Adding" tag)
 
@@ -129,6 +140,8 @@
           (recur))))))
 
 (defn conns
+  "Without a path it'll return all current connections. With a path it finds
+  any connection who's :expr matches that string."
   ([] (vals @conns!))
   ([path]
    (->> (conns)
@@ -137,9 +150,12 @@
             (re-find expr path)))
         (seq))))
 
-(defn status []
+(defn status
+  "Display the current status of the connections. This counts and lists with
+  some connection information."
+  []
   (let [conns (conns)
         intro (util/count-str conns "connection")
         conn-strs (for [{:keys [tag host port expr lang]} conns]
                     (str tag " @ " host ":" port " for " (pr-str expr) " (" lang ")"))]
-    (ui/info (util/join (into [intro] conn-strs)))))
+    (ui/info (util/join-lines (into [intro] conn-strs)))))

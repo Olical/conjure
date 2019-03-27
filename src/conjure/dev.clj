@@ -6,7 +6,9 @@
             [taoensso.timbre.appenders.core :as appenders]
             [conjure.util :as util]))
 
-(defn init []
+(defn init
+  "Initialise the logging and internal development prepl where required."
+  []
   (log/merge-config!
     {:level :trace
      :appenders {:println nil

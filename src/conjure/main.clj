@@ -18,8 +18,7 @@
 
 ;; So users can pass {:expr #regex "..."}
 ;; EDN doesn't support regular expressions out of the box.
-(def edn-opts {:readers {'regex re-pattern}})
-
+(def ^:private edn-opts {:readers {'regex re-pattern}})
 (defn parse-user-edn
   "Parses some string as EDN and ensures it conforms to a spec.
   Returns nil and displays an error if it fails."

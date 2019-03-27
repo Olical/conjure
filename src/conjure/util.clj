@@ -7,16 +7,19 @@
             [camel-snake-kebab.core :as csk]
             [camel-snake-kebab.extras :as cske]))
 
-(defn sentence [parts]
+(defn join-words [parts]
   (str/join " " parts))
 
-(defn lines [s]
+(defn split-lines [s]
   (str/split s #"\n"))
 
-(defn join [lines]
+(defn join-lines [lines]
   (str/join "\n" lines))
 
-(defn env [k]
+(defn env
+  "Turn :some-keyword into CONJURE_SOME_KEYWORD for
+  environment variable lookup. Presumably."
+  [k]
   (System/getenv
     (csk/->SCREAMING_SNAKE_CASE (str "conjure-" (name k)))))
 
@@ -35,7 +38,10 @@
     (.write data 0 (count data))
     (.flush)))
 
-(defmacro thread [use-case & body]
+(defmacro thread
+  "Useful helper to run code in a thread but ensure errors are caught and
+  logged correctly."
+  [use-case & body]
   `(future
      (try
        ~@body
@@ -57,10 +63,9 @@
 (def kw->snake-map
   (memo/lru #(cske/transform-keys kw->snake %)))
 
-(defn now []
-  (System/currentTimeMillis))
-
-(defn count-str [items description]
+(defn count-str
+  "Pluralises a string depending on the amount."
+  [items description]
   (let [amount (count items)
         plural? (not= amount 1)]
     (str amount " " description (when plural? "s"))))

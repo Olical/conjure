@@ -20,7 +20,7 @@
         conns (prepl/conns path)]
     {:path path
      :buf buf
-     :ns (code/extract-ns (util/join sample-lines))
+     :ns (code/extract-ns (util/join-lines sample-lines))
      :conns (or conns (ui/error "No matching connections for" path))}))
 
 (defn- wrapped-eval
@@ -57,7 +57,7 @@
               (fn [line]
                 (subs line 0 (min end (count line)))))
       (update 0 subs (max start 0))
-      (util/join)))
+      (util/join-lines)))
 
 (defn- nil-pos?
   "A more intention revealing way of checking for [0 0] positions."
@@ -177,7 +177,7 @@
 (defn eval-buffer []
   (let [code (-> (nvim/get-current-buf) (nvim/call)
                  (nvim/buf-get-lines {:start 0, :end -1}) (nvim/call)
-                 (util/join))]
+                 (util/join-lines))]
     (eval* code)))
 
 (defn load-file* [path]

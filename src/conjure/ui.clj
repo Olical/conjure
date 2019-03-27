@@ -4,11 +4,11 @@
             [conjure.util :as util]
             [conjure.code :as code]))
 
-(def log-window-widths {:small 40 :large 80})
-(def max-log-buffer-length 10000)
-(defonce log-buffer-name "/tmp/conjure.cljc")
-(def welcome-msg "; conjure/out | Welcome to Conjure!")
-(def lua
+(def ^:private log-window-widths {:small 40 :large 80})
+(def ^:private max-log-buffer-length 3000)
+(defonce ^:private log-buffer-name "/tmp/conjure.cljc")
+(def ^:private welcome-msg "; conjure/out | Welcome to Conjure!")
+(def ^:private lua
   {:upsert "return require('conjure').upsert_log(...)"
    :close "return require('conjure').close_log(...)"})
 
@@ -32,11 +32,16 @@
       (nvim/call))
   nil)
 
-(defn append [{:keys [origin kind msg code?] :or {code? false}}]
+(defn append
+  "Append the message to the log, prefixed by the origin/kind. If it's code
+  then it won't prefix every line with the source, it'll place the whole string
+  below the origin/kind comment."
+  [{:keys [origin kind msg code?] :or {code? false}}]
+
   (let [prefix (str "; " (name origin) "/" (name kind))
         lines (if code?
-                (into [(str prefix " ⤸")] (util/lines (code/pprint msg)))
-                (for [line (util/lines msg)]
+                (into [(str prefix " ⤸")] (util/split-lines (code/pprint msg)))
+                (for [line (util/split-lines msg)]
                   (str prefix " | " line)))
         {:keys [buf win]} (upsert-log)
         line-count (nvim/call (nvim/buf-line-count buf))
@@ -60,25 +65,40 @@
 
     nil))
 
-(defn info [& parts]
-  (append {:origin :conjure, :kind :out, :msg (util/sentence parts)}))
+(defn info
+  "For general information from Conjure, this is like
+  a println from the system itself."
+  [& parts]
+  (append {:origin :conjure, :kind :out, :msg (util/join-words parts)}))
 
-(defn error [& parts]
-  (append {:origin :conjure, :kind :err, :msg (util/sentence parts)}))
+(defn error
+  "For errors out of Conjure that shouldn't go to stderr."
+  [& parts]
+  (append {:origin :conjure, :kind :err, :msg (util/join-words parts)}))
 
-(defn doc [{:keys [conn resp]}]
+(defn doc
+  "Results from a (doc ...) call."
+  [{:keys [conn resp]}]
   (append {:origin (:tag conn), :kind :doc, :msg (:val resp)}))
 
-(defn eval* [{:keys [conn code]}]
+(defn eval*
+  "When we send an eval and are awaiting a result, prints a short sample of the
+  code we sent."
+  [{:keys [conn code]}]
   (append {:origin (:tag conn), :kind :eval, :msg (code/sample code)}))
 
-(defn load-file* [{:keys [conn path]}]
-  (append {:origin (:tag conn)
-           :kind :load-file
-           :msg path}))
-
-(defn result [{:keys [conn resp]}]
+(defn result
+  "Format, if it's code, and display a result from an evaluation."
+  [{:keys [conn resp]}]
   (append {:origin (:tag conn)
            :kind (:tag resp)
            :code? (contains? #{:ret :tap} (:tag resp))
            :msg (:val resp)}))
+
+;; TODO Move pretty printing here.
+(defn load-file*
+  "When we ask to load a whole file from disk."
+  [{:keys [conn path]}]
+  (append {:origin (:tag conn)
+           :kind :load-file
+           :msg path}))

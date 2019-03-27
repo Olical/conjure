@@ -8,11 +8,11 @@
             [conjure.util :as util]))
 
 ;; These channels handle all RPC I/O.
-(defonce in-chan (a/chan 128))
-(defonce out-chan (a/chan 128))
+(defonce ^:private in-chan (a/chan 128))
+(defonce ^:private out-chan (a/chan 128))
 
 ;; Used to keep track of which requests are in flight.
-(defonce open-requests! (atom {}))
+(defonce ^:private open-requests! (atom {}))
 
 ;; These three functions work together to deal
 ;; with all incoming RPC messages from Neovim.
@@ -37,7 +37,7 @@
 (defn- handle-request-response
   "Give a request to handle-request and send the results to out-chan."
   [msg]
-  (a/>!!  out-chan
+  (a/>!! out-chan
          (merge {:type :response
                  :id (:id msg)}
                 (try
