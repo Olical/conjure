@@ -32,7 +32,7 @@
 
 (defn prelude-str [{:keys [lang]}]
   (case lang
-    :clj "(require 'clojure.repl)"
+    :clj "(require '(clojure.repl compliment.core))"
     :cljs "(require 'cljs.repl)"))
 
 ;; The read-string/eval wrapper can go away with Clojure 1.11.
