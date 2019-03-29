@@ -1,4 +1,4 @@
-.PHONY: dev prepls compile
+.PHONY: dev prepls clean compile
 	
 dev:
 	CONJURE_LOG_PATH=logs/conjure.log \
@@ -15,13 +15,14 @@ prepls:
 
 SOURCES := $(shell find src -type f)
 
-classes: deps.edn $(SOURCES)
-	mkdir -p classes
-	rm -rf classes/*
-	clojure -Cfast \
+clean:
+	rm -r classes
+
+classes: clean deps.edn $(SOURCES)
+	mkdir classes
+	clojure -Sforce -Cfast \
 		-J-Dclojure.compiler.direct-linking=true \
 		-J-Dclojure.compiler.elide-meta="[:doc :file :line :added]" \
-		--eval "$(shell echo "$(SOURCES)" | scripts/compile-str.sh)"
-	touch classes
+		--eval "(compile 'conjure.main)"
 
 compile: classes
