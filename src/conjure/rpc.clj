@@ -16,6 +16,7 @@
 
 ;; These three functions work together to deal
 ;; with all incoming RPC messages from Neovim.
+;; WARNING: I'm not sure if the request-id ever goes down for these.
 (defmulti handle-request :method)
 (defmethod handle-request :default [msg]
   (log/warn "Unhandled request:" msg))

@@ -76,10 +76,11 @@
   (case (:lang conn)
     :clj
     (str "
-         (when (find-ns 'compliment.core)
+         (if (find-ns 'compliment.core)
            (compliment.core/completions
              \"" (util/escape-quotes prefix) "\"
-             {:ns (find-ns '" ns ")}))
+             {:ns (find-ns '" ns ")})
+           [])
          ")
 
     ;; ClojureScript isn't supported by compliment right now.
