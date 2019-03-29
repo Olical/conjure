@@ -32,7 +32,7 @@
 
 (defn prelude-str [{:keys [lang]}]
   (case lang
-    :clj "(require '(clojure.repl compliment.core))"
+    :clj "(require 'clojure.repl 'compliment.core)"
     :cljs "(require 'cljs.repl)"))
 
 ;; The read-string/eval wrapper can go away with Clojure 1.11.
@@ -71,3 +71,16 @@
 
 (defn load-file-str [path]
   (str "(load-file \"" path "\")"))
+
+(defn completions-str [{:keys [ns]} {:keys [conn prefix]}]
+  (case (:lang conn)
+    :clj
+    (str "
+         (when (find-ns 'compliment.core)
+           (compliment.core/completions
+             \"" (util/escape-quotes prefix) "\"
+             {:ns (find-ns '" ns ")}))
+         ")
+
+    ;; ClojureScript isn't supported by compliment right now.
+    :cljs "[]"))
