@@ -190,7 +190,6 @@
         (ui/result {:conn conn, :resp (raw-eval ctx opts)})))))
 
 ;; TODO Context.
-;; TODO Make the async so it doesn't block the editor.
 (defn completions [prefix]
   (let [ctx (current-ctx)
         conn (first (:conns ctx))]
@@ -203,7 +202,8 @@
              edn/read-string
              (map
                (fn [{:keys [candidate type ns package]}]
-                 (util/kw->snake-map
-                   {:word candidate
-                    :kind (subs (name type) 0 1)
-                    :menu (or ns package "special")}))))))))
+                 (let [menu (or ns package)]
+                   (util/kw->snake-map
+                     (cond-> {:word candidate
+                              :kind (subs (name type) 0 1)}
+                       menu (assoc :menu menu)))))))))))
