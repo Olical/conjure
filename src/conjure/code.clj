@@ -80,7 +80,7 @@
              \"" (util/escape-quotes prefix) "\"
              {:ns (find-ns '" ns ")
               " (when context
-                  ":context \"" (util/escape-quotes context) "\"")
+                  (str ":context \"" (util/escape-quotes context) "\""))
              "})
            (prn \"Compliment not found, please add it to your dependencies: https://github.com/alexander-yakushev/compliment\"))
          ")
