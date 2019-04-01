@@ -26,9 +26,8 @@
       (str (subs flat 0 sample-length) "…")
       flat)))
 
-(def ^:private ns-re #"\(\s*ns\s+(\D[\w\d\.\*\+!\-'?]*)\s*")
 (defn extract-ns [code]
-  (second (re-find ns-re code)))
+  (second (re-find #"\(\s*ns\s+(\D[\w\d\.\*\+!\-'?]*)\s*" code)))
 
 (defn prelude-str [{:keys [lang]}]
   (case lang
