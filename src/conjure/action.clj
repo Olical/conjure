@@ -12,22 +12,17 @@
 (defn- current-ctx
   "Context contains useful data that we don't watch to fetch twice while
   building code to eval. This function performs those costly calls."
-  ([] (current-ctx {}))
-  ([{:keys [silent?] :or {silent? false}}]
-   (let [buf (-> (nvim/get-current-buf) (nvim/call))
-         [path sample-lines]
-         (nvim/call-batch
-           [(nvim/buf-get-name buf)
-            (nvim/buf-get-lines buf {:start 0, :end 25})])
-         conns (prepl/conns path)]
-
-     (when (and (not silent?) (empty? conns))
-       (ui/error "No matching connections for" path))
-
-     {:path path
-      :buf buf
-      :ns (code/extract-ns (util/join-lines sample-lines))
-      :conns conns})))
+  []
+  (let [buf (-> (nvim/get-current-buf) (nvim/call))
+        [path sample-lines]
+        (nvim/call-batch
+          [(nvim/buf-get-name buf)
+           (nvim/buf-get-lines buf {:start 0, :end 25})])
+        conns (prepl/conns path)]
+    {:path path
+     :buf buf
+     :ns (code/extract-ns (util/join-lines sample-lines))
+     :conns (or conns (ui/error "No matching connections for" path))}))
 
 (defn- wrapped-eval
   "Wraps up code with environment specific padding, sends it off for evaluation
@@ -195,26 +190,20 @@
         (ui/result {:conn conn, :resp (raw-eval ctx opts)})))))
 
 ;; TODO Context.
-;; TODO Debounce.
-;; TODO Prevent race conditions, last request should always win.
-;;      Do this by killing the existing calls or ignoring old responses.
-(defn update-completions [prefix]
-  (let [ctx (current-ctx {:silent? true})
+(defn completions [prefix]
+  (let [ctx (current-ctx)
         conn (first (:conns ctx))]
     (when (and conn (= :clj (:lang conn)))
       (log/trace "Finding completions for" (str "\"" prefix "\"")
                  "in" (:path ctx))
-      (let [code (code/completions-str ctx {:conn conn, :prefix prefix})
-            matches (->> (wrapped-eval ctx {:conn conn, :code code})
-                         :val
-                         edn/read-string
-                         (map
-                           (fn [{:keys [candidate type ns package]}]
-                             (let [menu (or ns package)]
-                               (util/kw->snake-map
-                                 (cond-> {:word candidate
-                                          :kind (subs (name type) 0 1)}
-                                   menu (assoc :menu menu)))))))]
-        (nvim/call-batch
-          [(nvim/set-var :conjure-completions matches)
-           (nvim/feedkeys {:keys "<c-x><c-o>"})])))))
+      (let [code (code/completions-str ctx {:conn conn, :prefix prefix}) ]
+        (->> (wrapped-eval ctx {:conn conn, :code code})
+             :val
+             edn/read-string
+             (map
+               (fn [{:keys [candidate type ns package]}]
+                 (let [menu (or ns package)]
+                   (util/kw->snake-map
+                     (cond-> {:word candidate
+                              :kind (subs (name type) 0 1)}
+                       menu (assoc :menu menu)))))))))))

@@ -64,10 +64,6 @@
   {:method :nvim-buf-set-var
    :params [buf (util/kw->snake name) value]})
 
-(defn set-var [name value]
-  {:method :nvim-set-var
-   :params [(util/kw->snake name) value]})
-
 (defn execute-lua [code & args]
   {:method :nvim-execute-lua
    :params [code args]})
@@ -91,7 +87,3 @@
 (defn eval* [expr]
   {:method :nvim-eval
    :params [expr]})
-
-(defn feedkeys [{:keys [keys mode escape-csi] :or {escape-csi false, mode "n"}}]
-  {:method :nvim-feedkeys
-   :params [keys mode escape-csi]})
