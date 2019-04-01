@@ -28,7 +28,9 @@ command! -nargs=0 ConjureCloseLog call rpcnotify(s:jobid, "close_log")
 if !exists("g:conjure_default_mappings") || g:conjure_default_mappings
   augroup conjure
     autocmd!
-    autocmd InsertEnter *.clj,*.clj[cs] :call conjure#close_unused_log()
+    autocmd InsertEnter *.clj,*.clj[cs] call conjure#close_unused_log()
+    autocmd CursorHoldI *.clj,*.clj[cs] call conjure#update_completions()
+    autocmd FileType clojure setlocal omnifunc=conjure#omnicomplete
     autocmd FileType clojure nnoremap <buffer> <localleader>re :ConjureEvalCurrentForm<cr>
     autocmd FileType clojure nnoremap <buffer> <localleader>rr :ConjureEvalRootForm<cr>
     autocmd FileType clojure vnoremap <buffer> <localleader>re :ConjureEvalSelection<cr>
@@ -38,7 +40,6 @@ if !exists("g:conjure_default_mappings") || g:conjure_default_mappings
     autocmd FileType clojure nnoremap <buffer> <localleader>rl :ConjureOpenLog<cr>
     autocmd FileType clojure nnoremap <buffer> <localleader>rq :ConjureCloseLog<cr>
     autocmd FileType clojure nnoremap <buffer> K :ConjureDoc <c-r><c-w><cr>
-    autocmd FileType clojure setlocal omnifunc=conjure#omnicomplete
   augroup END
 endif
 
@@ -86,14 +87,32 @@ function! conjure#close_unused_log()
   endif
 endfunction
 
-" Handle omnicomplete requests through complement if it's there.
+" Completion is provided by asking Conjure to refresh the completions in the
+" background using compliment. We don't block because it'll lock up the Neovim
+" UI for an indeterminate amount of time, if someone really wants a blocking
+" omnifunc they can call, let me know, I can make it happen. The following
+" variables and functions are used in this asynchronous completion flow.
+let g:conjure_completions = []
+
+function! conjure#find_completion_start()
+  let line = getline('.')[0 : col('.')-2]
+  return col('.') - strlen(matchstr(line, '\k\+$')) - 1
+endfunction
+
 function! conjure#omnicomplete(findstart, base)
   if a:findstart
-    let line = getline('.')[0 : col('.')-2]
-    return col('.') - strlen(matchstr(line, '\k\+$')) - 1
+    return conjure#find_completion_start()
   else
-    return rpcrequest(s:jobid, "completions", a:base)
+    return g:conjure_completions
   endif
+endfunction
+
+function! conjure#update_completions()
+  let l:start = conjure#find_completion_start()
+  let l:prefix = getline('.')[l:start : col('.')-2]
+
+  let g:conjure_completions = []
+  call rpcnotify(s:jobid, "update_completions", l:prefix)
 endfunction
 
 " Perform any required setup.
