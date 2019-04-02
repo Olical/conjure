@@ -8,6 +8,7 @@
  * Evaluate in `.clj`, `.cljc` and `.cljs` buffers seamlessly.
  * Custom log buffer that appears and vanishes where required.
  * `(doc ...)` lookup.
+ * [Omnicomplete](#omnicomplete) through [Compliment][].
 
 ### Upcoming
 
@@ -83,7 +84,7 @@ If you get something wrong it'll explain using [Expound][] in the log buffer. Es
 
 ## Omnicomplete
 
-Completion is provided through the wonderful [compliment][], simply ensure it's depended on inside your project for `<c-x><c-o>` omnicompletion to work. If you already depend on CIDER, chances are it's already inside your project since it pulls it in already for you. If you're working with a pure prepl project you'll probably need to add it to your `deps.edn`.
+Completion is provided through the wonderful [Compliment][], simply ensure it's depended on inside your project for `<c-x><c-o>` omnicompletion to work. If you already depend on CIDER, chances are it's already inside your project since it pulls it in already for you. If you're working with a pure prepl project you'll probably need to add it to your `deps.edn`.
 
 If you don't have complement Conjure will still work fine, omnicompletion will just return no results.
 
