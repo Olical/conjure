@@ -82,10 +82,8 @@
               " (when context
                   (str ":context \"" (util/escape-quotes context) "\""))
              "})
-           (prn \"Compliment not found, please add it to your dependencies: https://github.com/alexander-yakushev/compliment\"))
+           (println \"Compliment not found, please add it to your dependencies.\nhttps://github.com/alexander-yakushev/compliment\"))
          ")
 
     ;; ClojureScript isn't supported by compliment right now.
-    :cljs "
-          (prn \"Compliment doesn't support ClojureScript yet: https://github.com/alexander-yakushev/compliment/issues/42\")
-          "))
+    :cljs "(println \"Compliment doesn't support ClojureScript yet.\nhttps://github.com/alexander-yakushev/compliment/issues/42\")"))
