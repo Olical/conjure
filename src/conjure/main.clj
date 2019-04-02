@@ -72,3 +72,6 @@
 
 (defmethod rpc/handle-notify :close-log [_]
   (ui/close-log))
+
+(defmethod rpc/handle-request :completions [{:keys [params]}]
+  (action/completions (first params)))

@@ -11,7 +11,6 @@
 
 ### Upcoming
 
- * Autocomplete via [Compliment][]. ([#8](https://github.com/Olical/conjure/issues/8))
  * Go to definition. ([#9](https://github.com/Olical/conjure/issues/9))
  * Friendly error output by default with optional expansion. ([#12](https://github.com/Olical/conjure/issues/12))
  * Code formatting. ([#11](https://github.com/Olical/conjure/issues/11))
@@ -81,6 +80,12 @@ You can disable these and define your own with `let g:conjure_default_mappings =
 ```
 
 If you get something wrong it'll explain using [Expound][] in the log buffer. Essentially you must provide at least a `:tag` and `:port`.
+
+## Omnicomplete
+
+Completion is provided through the wonderful [compliment][], simply ensure it's depended on inside your project for `<c-x><c-o>` omnicompletion to work. If you already depend on CIDER, chances are it's already inside your project since it pulls it in already for you. If you're working with a pure prepl project you'll probably need to add it to your `deps.edn`.
+
+If you don't have complement Conjure will still work fine, omnicompletion will just return no results.
 
 ## Example
 

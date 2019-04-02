@@ -11,9 +11,10 @@
   fipp {:mvn/version "0.6.17"}}
 
  :aliases
- {:prepls
+ {:dev
   {:extra-deps
-   {org.clojure/clojurescript {:mvn/version "1.10.520"}}}
+   {org.clojure/clojurescript {:mvn/version "1.10.520"}
+    compliment {:mvn/version "0.3.8"}}}
 
   :fast
   {:extra-paths ["classes"]

@@ -1,7 +1,9 @@
 (ns conjure.action
   "Things the user can do that probably trigger some sort of UI update."
   (:require [clojure.core.async :as a]
+            [clojure.string :as str]
             [clojure.edn :as edn]
+            [taoensso.timbre :as log]
             [conjure.prepl :as prepl]
             [conjure.ui :as ui]
             [conjure.nvim :as nvim]
@@ -187,3 +189,21 @@
       (let [opts {:conn conn, :code code, :path path}]
         (ui/load-file* opts)
         (ui/result {:conn conn, :resp (raw-eval ctx opts)})))))
+
+(defn completions [prefix]
+  (let [ctx (current-ctx)
+        conn (first (:conns ctx))]
+    (when conn
+      (log/trace "Finding completions for" (str "\"" prefix "\"")
+                 "in" (:path ctx))
+      (let [code (code/completions-str ctx {:conn conn, :prefix prefix})]
+        (->> (wrapped-eval ctx {:conn conn, :code code})
+             :val
+             edn/read-string
+             (map
+               (fn [{:keys [candidate type ns package]}]
+                 (let [menu (or ns package)]
+                   (util/kw->snake-map
+                     (cond-> {:word candidate
+                              :kind (subs (name type) 0 1)}
+                       menu (assoc :menu menu)))))))))))

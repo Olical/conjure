@@ -26,13 +26,12 @@
       (str (subs flat 0 sample-length) "…")
       flat)))
 
-(def ^:private ns-re #"\(\s*ns\s+(\D[\w\d\.\*\+!\-'?]*)\s*")
 (defn extract-ns [code]
-  (second (re-find ns-re code)))
+  (second (re-find #"\(\s*ns\s+(\D[\w\d\.\*\+!\-'?]*)\s*" code)))
 
 (defn prelude-str [{:keys [lang]}]
   (case lang
-    :clj "(require 'clojure.repl)"
+    :clj "(require 'clojure.repl 'compliment.core)"
     :cljs "(require 'cljs.repl)"))
 
 ;; The read-string/eval wrapper can go away with Clojure 1.11.
@@ -71,3 +70,20 @@
 
 (defn load-file-str [path]
   (str "(load-file \"" path "\")"))
+
+(defn completions-str [{:keys [ns]} {:keys [conn prefix context]}]
+  (case (:lang conn)
+    :clj
+    (str "
+         (if (find-ns 'compliment.core)
+           (compliment.core/completions
+             \"" (util/escape-quotes prefix) "\"
+             {:ns (find-ns '" ns ")
+              " (when context
+                  (str ":context \"" (util/escape-quotes context) "\""))
+             "})
+           (println \"Compliment not found, please add it to your dependencies.\nhttps://github.com/alexander-yakushev/compliment\"))
+         ")
+
+    ;; ClojureScript isn't supported by compliment right now.
+    :cljs "(println \"Compliment doesn't support ClojureScript yet.\nhttps://github.com/alexander-yakushev/compliment/issues/42\")"))

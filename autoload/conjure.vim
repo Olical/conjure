@@ -38,6 +38,7 @@ if !exists("g:conjure_default_mappings") || g:conjure_default_mappings
     autocmd FileType clojure nnoremap <buffer> <localleader>rl :ConjureOpenLog<cr>
     autocmd FileType clojure nnoremap <buffer> <localleader>rq :ConjureCloseLog<cr>
     autocmd FileType clojure nnoremap <buffer> K :ConjureDoc <c-r><c-w><cr>
+    autocmd FileType clojure setlocal omnifunc=conjure#omnicomplete
   augroup END
 endif
 
@@ -82,6 +83,16 @@ endfunction
 function! conjure#close_unused_log()
   if expand("%:p") !~# "/tmp/conjure.cljc"
     ConjureCloseLog
+  endif
+endfunction
+
+" Handle omnicomplete requests through complement if it's there.
+function! conjure#omnicomplete(findstart, base)
+  if a:findstart
+    let line = getline('.')[0 : col('.')-2]
+    return col('.') - strlen(matchstr(line, '\k\+$')) - 1
+  else
+    return rpcrequest(s:jobid, "completions", a:base)
   endif
 endfunction
 
