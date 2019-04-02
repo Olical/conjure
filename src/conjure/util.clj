@@ -16,6 +16,9 @@
 (defn join-lines [lines]
   (str/join "\n" lines))
 
+(defn splice [s start end r]
+  (str (subs s 0 start) r (subs s end)))
+
 (defn env
   "Turn :some-keyword into CONJURE_SOME_KEYWORD for
   environment variable lookup. Presumably."
