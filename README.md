@@ -9,10 +9,10 @@
  * Custom log buffer that appears and vanishes where required.
  * `(doc ...)` lookup.
  * [Omnicomplete](#omnicomplete) through [Compliment][].
+ * Go to definition (will work more consistently when [#18](https://github.com/Olical/conjure/issues/18) is done).
 
 ### Upcoming
 
- * Go to definition. ([#9](https://github.com/Olical/conjure/issues/9))
  * Friendly error output by default with optional expansion. ([#12](https://github.com/Olical/conjure/issues/12))
  * Code formatting. ([#11](https://github.com/Olical/conjure/issues/11))
  * Changed namespace reloading via `tools.namespace`. ([#10](https://github.com/Olical/conjure/issues/10))
@@ -51,6 +51,7 @@ You can disable these and define your own with `let g:conjure_default_mappings =
  * `<localleader>rl` - `ConjureOpenLog`
  * `<localleader>rq` - `ConjureCloseLog`
  * `K` - `ConjureDoc`
+ * `gd` - `ConjureDefinition`
 
 ### Commands
 
@@ -65,6 +66,7 @@ You can disable these and define your own with `let g:conjure_default_mappings =
  * `ConjureEvalBuffer` - evaluate the entire buffer (not from the disk).
  * `ConjureLoadFile` - load and evaluate the file from the disk.
  * `ConjureDoc` - display the documentation for the given symbol in the log buffer.
+ * `ConjureDefinition` - go to the source of the given symbol, providing we can find it - falls back to vanilla `gd`.
  * `ConjureOpenLog` - open and focus the log buffer in a wide window.
  * `ConjureCloseLog` - close the log window if it's open in this tab.
 
