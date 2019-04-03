@@ -215,7 +215,7 @@
                  (-> (wrapped-eval ctx {:conn conn, :code (code/defintion-str name)})
                      (get :val)
                      (edn/read-string)))]
-    (if-let [[file row col] (first (keep lookup (:conns ctx)))]
+    (if-let [[file row col] (some lookup (:conns ctx))]
       (nvim/call-batch
         [(nvim/command-output (str "edit " file))
          (nvim/win-set-cursor (:win ctx) {:row row, :col col})])

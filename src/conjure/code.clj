@@ -97,7 +97,7 @@
                         (mapv (meta sym) [:file :line :column])
                         (when-let [syms #?(:cljs (ns-interns '"name")
                                            :clj (some-> (find-ns '"name") ns-interns))]
-                          (when-let [file (:file (meta (-> syms first val)))]
+                          (when-let [file (:file (meta (some-> syms first val)))]
                             [file 1 1])))]
          (when-not (or (clojure.string/blank? (first loc)) (= (first loc) \"NO_SOURCE_PATH\"))
            (-> loc
