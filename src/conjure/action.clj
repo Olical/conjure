@@ -207,3 +207,11 @@
                      (cond-> {:word candidate
                               :kind (subs (name type) 0 1)}
                        menu (assoc :menu menu)))))))))))
+
+(defn definition [name]
+  (let [ctx (current-ctx)
+        conn (first (:conns ctx))]
+    (when conn
+      (tap> (-> (wrapped-eval ctx {:conn conn, :code (code/defintion-str name)})
+                :val
+                edn/read-string)))))

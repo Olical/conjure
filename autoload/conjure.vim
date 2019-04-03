@@ -20,6 +20,7 @@ command! -nargs=0 ConjureEvalRootForm call rpcnotify(s:jobid, "eval_root_form")
 command! -nargs=0 ConjureEvalBuffer call rpcnotify(s:jobid, "eval_buffer")
 command! -nargs=1 ConjureLoadFile call rpcnotify(s:jobid, "load_file", <q-args>)
 
+command! -nargs=1 ConjureDefinition call rpcnotify(s:jobid, "definition", <q-args>)
 command! -nargs=1 ConjureDoc call rpcnotify(s:jobid, "doc", <q-args>)
 command! -nargs=0 ConjureOpenLog call rpcnotify(s:jobid, "open_log")
 command! -nargs=0 ConjureCloseLog call rpcnotify(s:jobid, "close_log")
@@ -38,6 +39,7 @@ if !exists("g:conjure_default_mappings") || g:conjure_default_mappings
     autocmd FileType clojure nnoremap <buffer> <localleader>rl :ConjureOpenLog<cr>
     autocmd FileType clojure nnoremap <buffer> <localleader>rq :ConjureCloseLog<cr>
     autocmd FileType clojure nnoremap <buffer> K :ConjureDoc <c-r><c-w><cr>
+    autocmd FileType clojure nnoremap <buffer> gd :ConjureDefinition <c-r><c-w><cr>
     autocmd FileType clojure setlocal omnifunc=conjure#omnicomplete
   augroup END
 endif
