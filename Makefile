@@ -16,7 +16,7 @@ prepls:
 SOURCES := $(shell find src -type f)
 
 clean:
-	rm -r classes
+	rm -rf classes
 
 classes: clean deps.edn $(SOURCES)
 	mkdir classes
