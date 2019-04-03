@@ -1,7 +1,6 @@
 (ns conjure.action
   "Things the user can do that probably trigger some sort of UI update."
   (:require [clojure.core.async :as a]
-            [clojure.string :as str]
             [clojure.edn :as edn]
             [taoensso.timbre :as log]
             [conjure.prepl :as prepl]
@@ -14,14 +13,16 @@
   "Context contains useful data that we don't watch to fetch twice while
   building code to eval. This function performs those costly calls."
   []
-  (let [buf (-> (nvim/get-current-buf) (nvim/call))
-        [path sample-lines]
+  (let [buf (nvim/call (nvim/get-current-buf))
+        [path sample-lines win]
         (nvim/call-batch
           [(nvim/buf-get-name buf)
-           (nvim/buf-get-lines buf {:start 0, :end 25})])
+           (nvim/buf-get-lines buf {:start 0, :end 25})
+           (nvim/get-current-win)])
         conns (prepl/conns path)]
     {:path path
      :buf buf
+     :win win
      :ns (code/extract-ns (util/join-lines sample-lines))
      :conns (or conns (ui/error "No matching connections for" path))}))
 
@@ -210,8 +211,12 @@
 
 (defn definition [name]
   (let [ctx (current-ctx)
-        conn (first (:conns ctx))]
-    (when conn
-      (tap> (-> (wrapped-eval ctx {:conn conn, :code (code/defintion-str name)})
-                :val
-                edn/read-string)))))
+        lookup (fn [conn]
+                 (-> (wrapped-eval ctx {:conn conn, :code (code/defintion-str name)})
+                     (get :val)
+                     (edn/read-string)))]
+    (if-let [[file row col] (first (keep lookup (:conns ctx)))]
+      (nvim/call-batch
+        [(nvim/command-output (str "edit " file))
+         (nvim/win-set-cursor (:win ctx) {:row row, :col col})])
+      (nvim/call (nvim/command-output "normal! gd")))))
