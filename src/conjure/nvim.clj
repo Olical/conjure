@@ -87,3 +87,11 @@
 (defn eval* [expr]
   {:method :nvim-eval
    :params [expr]})
+
+(defn command-output [expr]
+  {:method :nvim-command-output
+   :params [expr]})
+
+(defn feedkeys [{:keys [keys mode escape-csi] :or {mode :m, escape-csi false}}]
+  {:method :nvim-feedkeys
+   :params [keys (name mode) escape-csi]})

@@ -31,7 +31,10 @@
 
 (defn prelude-str [{:keys [lang]}]
   (case lang
-    :clj "(require 'clojure.repl 'compliment.core)"
+    :clj "(require 'clojure.repl
+                   'clojure.string
+                   'clojure.java.io
+                   'compliment.core)"
     :cljs "(require 'cljs.repl)"))
 
 ;; The read-string/eval wrapper can go away with Clojure 1.11.
@@ -87,3 +90,27 @@
 
     ;; ClojureScript isn't supported by compliment right now.
     :cljs "(println \"Compliment doesn't support ClojureScript yet.\nhttps://github.com/alexander-yakushev/compliment/issues/42\")"))
+
+(defn defintion-str [name]
+  (str "
+       (when-let [loc (if-let [sym (and (not (find-ns '"name")) (resolve '"name"))]
+                        (mapv (meta sym) [:file :line :column])
+                        (when-let [syms #?(:cljs (ns-interns '"name")
+                                           :clj (some-> (find-ns '"name") ns-interns))]
+                          (when-let [file (:file (meta (some-> syms first val)))]
+                            [file 1 1])))]
+         (when-not (or (clojure.string/blank? (first loc)) (= (first loc) \"NO_SOURCE_PATH\"))
+           (-> loc
+               (update
+                 0
+                 #?(:cljs identity
+                    :clj (fn [file]
+                           (if (.exists (clojure.java.io/file file))
+                             file
+                             (-> (clojure.java.io/resource file)
+                                 (str)
+                                 (clojure.string/replace #\"^file:\" \"\")
+                                 (clojure.string/replace #\"^jar:file\" \"zipfile\")
+                                 (clojure.string/replace #\"\\.jar!/\" \".jar::\"))))))
+               (update 2 dec))))
+       "))
