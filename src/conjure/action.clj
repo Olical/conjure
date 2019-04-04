@@ -197,22 +197,24 @@
         (ui/result {:conn conn, :resp (raw-eval ctx opts)})))))
 
 (defn completions [prefix]
-  (let [ctx (current-ctx {:silent? true})
-        conn (first (:conns ctx))]
-    (when conn
-      (log/trace "Finding completions for" (str "\"" prefix "\"")
-                 "in" (:path ctx))
-      (let [code (code/completions-str ctx {:prefix prefix})]
-        (->> (wrapped-eval ctx {:conn conn, :code code})
-             :val
-             edn/read-string
-             (map
-               (fn [{:keys [candidate type ns package]}]
-                 (let [menu (or ns package)]
-                   (util/kw->snake-map
-                     (cond-> {:word candidate
-                              :kind (subs (name type) 0 1)}
-                       menu (assoc :menu menu)))))))))))
+  (let [ctx (current-ctx {:silent? true})]
+    (->> (:conns ctx)
+         (mapcat
+           (fn [conn]
+             (log/trace "Finding completions for" (str "\"" prefix "\"")
+                        "in" (:path ctx))
+             (let [code (code/completions-str ctx {:conn conn, :prefix prefix})]
+               (->> (wrapped-eval ctx {:conn conn, :code code})
+                    :val
+                    edn/read-string
+                    (map
+                      (fn [{:keys [candidate type ns package]}]
+                        (let [menu (or ns package)]
+                          (util/kw->snake-map
+                            (cond-> {:word candidate
+                                     :kind (subs (name type) 0 1)}
+                              menu (assoc :menu menu))))))))))
+         (dedupe))))
 
 (defn definition [name]
   (let [ctx (current-ctx)
