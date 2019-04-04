@@ -90,6 +90,10 @@ Completion is provided through the wonderful [Compliment][], simply ensure it's 
 
 If you don't have complement Conjure will still work fine, omnicompletion will just return no results.
 
+### Autocomplete
+
+If you'd like completion automatically popping up as you type you can use [coc-conjure][] to integrate Conjure with [coc.nvim][], all thanks to [@jlesquembre][]!
+
 ## Example
 
 ```viml
@@ -131,3 +135,6 @@ Find the full [unlicense][] in the `UNLICENSE` file, but here's a snippet.
 [expound]: https://github.com/bhb/expound
 [edn]: https://github.com/edn-format/edn
 [twitter]: https://twitter.com/OliverCaldwell
+[coc-conjure]: https://github.com/jlesquembre/coc-conjure
+[coc.nvim]: https://github.com/neoclide/coc.nvim
+[@jlesquembre]: https://github.com/jlesquembre
