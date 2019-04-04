@@ -1,4 +1,4 @@
-.PHONY: dev prepls clean compile
+.PHONY: dev prepls compile
 	
 dev:
 	CONJURE_LOG_PATH=logs/conjure.log \
@@ -15,10 +15,8 @@ prepls:
 
 SOURCES := $(shell find src -type f)
 
-clean:
+classes: deps.edn $(SOURCES)
 	rm -rf classes
-
-classes: clean deps.edn $(SOURCES)
 	mkdir classes
 	clojure -Sforce -C:fast \
 		-J-Dclojure.compiler.direct-linking=true \
