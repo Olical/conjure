@@ -18,6 +18,7 @@
  * Changed namespace reloading via `tools.namespace`. ([#10](https://github.com/Olical/conjure/issues/10))
  * Configuration. ([#7](https://github.com/Olical/conjure/issues/7))
  * Polished documentation and README. ([#6](https://github.com/Olical/conjure/issues/6))
+ * Running tests with a keybinding. ([#20](https://github.com/Olical/conjure/issues/20))
 
 [![asciicast](https://asciinema.org/a/RjojeOrKcF5zczweI7q3qiMgw.svg)](https://asciinema.org/a/RjojeOrKcF5zczweI7q3qiMgw)
 
