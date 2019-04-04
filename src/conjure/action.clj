@@ -12,19 +12,24 @@
 (defn- current-ctx
   "Context contains useful data that we don't watch to fetch twice while
   building code to eval. This function performs those costly calls."
-  []
-  (let [buf (nvim/call (nvim/get-current-buf))
-        [path sample-lines win]
-        (nvim/call-batch
-          [(nvim/buf-get-name buf)
-           (nvim/buf-get-lines buf {:start 0, :end 25})
-           (nvim/get-current-win)])
-        conns (prepl/conns path)]
-    {:path path
-     :buf buf
-     :win win
-     :ns (code/extract-ns (util/join-lines sample-lines))
-     :conns (or conns (ui/error "No matching connections for" path))}))
+  ([] (current-ctx {}))
+  ([{:keys [silent?] :or {silent? false}}]
+   (let [buf (nvim/call (nvim/get-current-buf))
+         [path sample-lines win]
+         (nvim/call-batch
+           [(nvim/buf-get-name buf)
+            (nvim/buf-get-lines buf {:start 0, :end 25})
+            (nvim/get-current-win)])
+         conns (prepl/conns path)]
+
+     (when (and (empty? conns) (not silent?))
+       (ui/error "No matching connections for" path))
+
+     {:path path
+      :buf buf
+      :win win
+      :ns (code/extract-ns (util/join-lines sample-lines))
+      :conns conns})))
 
 (defn- wrapped-eval
   "Wraps up code with environment specific padding, sends it off for evaluation
@@ -192,7 +197,7 @@
         (ui/result {:conn conn, :resp (raw-eval ctx opts)})))))
 
 (defn completions [prefix]
-  (let [ctx (current-ctx)
+  (let [ctx (current-ctx {:silent? true})
         conn (first (:conns ctx))]
     (when conn
       (log/trace "Finding completions for" (str "\"" prefix "\"")

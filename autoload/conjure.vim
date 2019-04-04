@@ -94,8 +94,12 @@ function! conjure#omnicomplete(findstart, base)
     let line = getline('.')[0 : col('.')-2]
     return col('.') - strlen(matchstr(line, '\k\+$')) - 1
   else
-    return rpcrequest(s:jobid, "completions", a:base)
+    return conjure#completions(a:base)
   endif
+endfunction
+
+function! conjure#completions(base)
+  return rpcrequest(s:jobid, "completions", a:base)
 endfunction
 
 " Perform any required setup.
