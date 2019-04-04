@@ -202,7 +202,7 @@
     (when conn
       (log/trace "Finding completions for" (str "\"" prefix "\"")
                  "in" (:path ctx))
-      (let [code (code/completions-str ctx {:conn conn, :prefix prefix})]
+      (let [code (code/completions-str ctx {:prefix prefix})]
         (->> (wrapped-eval ctx {:conn conn, :code code})
              :val
              edn/read-string

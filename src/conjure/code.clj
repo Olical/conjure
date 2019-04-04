@@ -74,22 +74,16 @@
 (defn load-file-str [path]
   (str "(load-file \"" path "\")"))
 
-(defn completions-str [{:keys [ns]} {:keys [conn prefix context]}]
-  (case (:lang conn)
-    :clj
-    (str "
-         (if (find-ns 'compliment.core)
-           (compliment.core/completions
-             \"" (util/escape-quotes prefix) "\"
-             {:ns (find-ns '" ns ")
-              " (when context
-                  (str ":context \"" (util/escape-quotes context) "\""))
-             "})
-           (println \"Compliment not found, please add it to your dependencies.\nhttps://github.com/alexander-yakushev/compliment\"))
-         ")
-
-    ;; ClojureScript isn't supported by compliment right now.
-    :cljs "(println \"Compliment doesn't support ClojureScript yet.\nhttps://github.com/alexander-yakushev/compliment/issues/42\")"))
+(defn completions-str [{:keys [ns]} {:keys [prefix context]}]
+  (str "
+       (when (find-ns 'compliment.core)
+         (compliment.core/completions
+           \"" (util/escape-quotes prefix) "\"
+           {:ns (find-ns '" ns ")
+            " (when context
+                (str ":context \"" (util/escape-quotes context) "\""))
+           "}))
+       "))
 
 (defn defintion-str [name]
   (str "
