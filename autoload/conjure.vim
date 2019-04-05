@@ -102,6 +102,10 @@ function! conjure#completions(base)
   return rpcrequest(s:jobid, "completions", a:base)
 endfunction
 
+function! conjure#async_completions(base, callback)
+  return rpcnotify(s:jobid, "async_completions", a:base, a:callback)
+endfunction
+
 " Perform any required setup.
 function! conjure#init()
   " Start the job if `make dev` isn't limiting the cwd.

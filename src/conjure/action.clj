@@ -216,6 +216,9 @@
                               menu (assoc :menu menu))))))))))
          (dedupe))))
 
+(defn async-completions [{:keys [prefix callback]}]
+  (nvim/call (nvim/call-function callback (completions prefix))))
+
 (defn definition [name]
   (let [ctx (current-ctx)
         lookup (fn [conn]
