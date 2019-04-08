@@ -76,9 +76,5 @@
 (defmethod rpc/handle-request :completions [{:keys [params]}]
   (action/completions (first params)))
 
-(defmethod rpc/handle-notify :async-completions [{:keys [params]}]
-  (action/async-completions {:prefix (first params)
-                             :callback (second params)}))
-
 (defmethod rpc/handle-notify :definition [{:keys [params]}]
   (action/definition (first params)))
