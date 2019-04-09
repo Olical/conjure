@@ -1,5 +1,10 @@
 local conjure = {}
 
+-- Believe it or not, this'll check if a string ends with a given suffix.
+local function ends_with(str, ending)
+  return ending == "" or str:sub(-#ending) == ending
+end
+
 -- Find the log window and buffer if they exist.
 local function find_log (log_buf_name)
   local tabpage = vim.api.nvim_get_current_tabpage()
@@ -9,7 +14,8 @@ local function find_log (log_buf_name)
     local buf = vim.api.nvim_win_get_buf(win)
     local buf_name = vim.api.nvim_buf_get_name(buf)
 
-    if buf_name == log_buf_name then
+    -- OSX symlinks /tmp to /private/tmp so we check the suffix instead.
+    if ends_with(buf_name, log_buf_name) then
       return {win = win, buf = buf}
     end
   end
