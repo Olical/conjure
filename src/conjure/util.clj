@@ -4,6 +4,7 @@
             [clojure.string :as str]
             [clojure.core.memoize :as memo]
             [taoensso.timbre :as log]
+            [fipp.clojure :as fipp]
             [camel-snake-kebab.core :as csk]
             [camel-snake-kebab.extras :as cske]))
 
@@ -33,6 +34,11 @@
   (str/escape s {\\ "\\\\"
                  \" "\\\""}))
 
+(defn pprint
+  "Format the given data, assuming it's already parsed."
+  [data]
+  (with-out-str (fipp/pprint data)))
+
 (defn regexp? [o]
   (instance? java.util.regex.Pattern o))
 
@@ -51,7 +57,7 @@
        (catch Exception e#
          ;; stdout is redirected to stderr.
          ;; So it appears in Neovim as well as the log file.
-         (println "Error from thread" (str "'" ~use-case "':") e#)
+         (println "Error from thread" (str "'" ~use-case "':\n") (pprint (Throwable->map e#)))
          (log/error "Error from thread" (str "'" ~use-case "':") e#)))))
 
 (def snake->kw "some_method -> :some-method"

@@ -2,39 +2,37 @@
   "Tools to render or format Clojure code."
   (:require [clojure.string :as str]
             [clojure.core :as core]
-            [fipp.clojure :as fipp]
             [taoensso.timbre :as log]
             [conjure.util :as util]))
 
-(def ^:private read-opts {:read-cond :preserve})
 (defn pprint
   "Parse and format the code, suppress and log any errors."
   [code]
   (try
-    (with-out-str
-      (fipp/pprint (core/read-string read-opts code)))
+    (util/pprint (core/read-string {:read-cond :preserve} code))
     (catch Exception e
       (log/error "Error while pretty printing" e)
       code)))
 
-(def ^:private sample-length 42)
 (defn sample
   "Get a short one line sample snippet of some code."
   [code]
-  (let [flat (str/replace code #"\s+" " ")]
-    (if (> (count flat) sample-length)
-      (str (subs flat 0 sample-length) "…")
-      flat)))
+  (let [sample-length 42]
+    (let [flat (str/replace code #"\s+" " ")]
+      (if (> (count flat) sample-length)
+        (str (subs flat 0 sample-length) "…")
+        flat))))
 
 (defn extract-ns [code]
   (second (re-find #"\(\s*ns\s+(\D[\w\d\.\*\+!\-'?]*)\s*" code)))
 
 (defn prelude-str [{:keys [lang]}]
   (case lang
-    :clj "(require 'clojure.repl
-                   'clojure.string
-                   'clojure.java.io)
-          (try (require 'compliment.core) (catch Exception _))"
+    :clj "(do
+            (require 'clojure.repl
+                     'clojure.string
+                     'clojure.java.io)
+            (try (require 'compliment.core) (catch Exception _)))"
     :cljs "(require 'cljs.repl)"))
 
 ;; The read-string/eval wrapper can go away with Clojure 1.11.
