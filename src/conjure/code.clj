@@ -33,8 +33,8 @@
   (case lang
     :clj "(require 'clojure.repl
                    'clojure.string
-                   'clojure.java.io
-                   'compliment.core)"
+                   'clojure.java.io)
+          (try (require 'compliment.core) (catch Exception _))"
     :cljs "(require 'cljs.repl)"))
 
 ;; The read-string/eval wrapper can go away with Clojure 1.11.
@@ -78,8 +78,8 @@
   (case (:lang conn)
     :clj
     (str "
-         (when (find-ns 'compliment.core)
-           (compliment.core/completions
+         (when-let [completions (resolve 'compliment.core/completions)]
+           (completions
              \"" (util/escape-quotes prefix) "\"
              {:ns (find-ns '" ns ")
               " (when context
