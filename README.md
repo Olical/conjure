@@ -29,7 +29,7 @@
 Here's an example with [vim-plug][], my plugin manager of choice.
 
 ```viml
-Plug 'Olical/conjure', { 'tag': 'v0.8.2', 'do': 'make compile', 'for': 'clojure', 'on': 'ConjureAdd'  }
+Plug 'Olical/conjure', { 'tag': 'v0.9.0', 'do': 'make compile', 'for': 'clojure', 'on': 'ConjureAdd'  }
 ```
 
 You should rely on a tag so that breaking changes don't end up disrupting your workflow, please don't depend on `master`. Make sure you watch the repository for releases using the menu in the top right, that way you can decide when you want to upgrade.
