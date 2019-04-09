@@ -70,12 +70,11 @@
            (in-ns '" (or ns "cljs.user") ")
            (try
              " code "
-             " paren-guard "
              (catch :default e
                (cljs.repl/Error->map e))
              (finally
                (flush)))
-           "))))
+           " paren-guard))))
 
 (defn doc-str [{:keys [conn name]}]
   (case (:lang conn)
