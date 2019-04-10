@@ -2,6 +2,7 @@
   "Entry point and registration of RPC handlers."
   (:require [clojure.edn :as edn]
             [clojure.spec.alpha :as s]
+            [clojure.string :as str]
             [expound.alpha :as expound]
             [taoensso.timbre :as log]
             [conjure.dev :as dev]
@@ -79,8 +80,10 @@
 (defmethod rpc/handle-notify :definition [{:keys [params]}]
   (action/definition (first params)))
 
-(defmethod rpc/handle-notify :run-tests [_]
-  (action/run-tests))
+(defmethod rpc/handle-notify :run-tests [{:keys [params]}]
+  (action/run-tests (->> (str/split (first params) #"\s+")
+                         (remove str/blank?))))
 
-(defmethod rpc/handle-notify :run-all-tests [_]
-  (action/run-all-tests))
+(defmethod rpc/handle-notify :run-all-tests [{:keys [params]}]
+  (action/run-all-tests (when-not (str/blank? (first params))
+                          (first params))))

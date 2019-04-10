@@ -74,8 +74,8 @@ You can disable these and define your own with `let g:conjure_default_mappings =
  * `ConjureDefinition` - go to the source of the given symbol, providing we can find it - falls back to vanilla `gd`.
  * `ConjureOpenLog` - open and focus the log buffer in a wide window.
  * `ConjureCloseLog` - close the log window if it's open in this tab.
- * `ConjureRunTests` - run tests in the current namespace.
- * `ConjureRunAllTests` - run all tests.
+ * `ConjureRunTests` - run tests in the current namespace and it's `-test` equivalent (as well as the other way around) or with the provided namespace names separated by spaces.
+ * `ConjureRunAllTests` - run all tests with an optional namespace filter regex.
 
 `ConjureAdd` takes a map that conforms to the following spec.
 

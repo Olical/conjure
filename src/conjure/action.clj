@@ -230,7 +230,7 @@
          (nvim/win-set-cursor (:win ctx) {:row row, :col col})])
       (nvim/call (nvim/command-output "normal! gd")))))
 
-(defn run-tests []
+(defn run-tests [targets]
   (let [ctx (current-ctx)
         ns (:ns ctx)
         other-ns (if (str/ends-with? ns "-test")
@@ -238,15 +238,17 @@
                    (str ns "-test"))]
     (doseq [conn (:conns ctx)]
       (let [code (code/run-tests-str
-                   (cond-> #{ns}
-                     (= (:lang conn) :clj) (conj other-ns)))]
+                   (if (empty? targets)
+                     (cond-> #{ns}
+                       (= (:lang conn) :clj) (conj other-ns))
+                     targets))]
         (ui/test* {:conn conn
                    :resp (-> (wrapped-eval ctx {:conn conn, :code code})
                              (update :val edn/read-string))})))))
 
-(defn run-all-tests []
+(defn run-all-tests [re]
   (let [ctx (current-ctx)
-        code (code/run-all-tests-str)]
+        code (code/run-all-tests-str re)]
     (doseq [conn (:conns ctx)]
       (ui/test* {:conn conn
                  :resp (-> (wrapped-eval ctx {:conn conn, :code code})

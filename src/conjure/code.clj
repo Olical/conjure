@@ -124,10 +124,12 @@
               :cljs (cljs.test/run-tests " targets-str ")))
          ")))
 
-(defn run-all-tests-str []
-  "
-  (with-out-str
-    #?(:clj (binding [clojure.test/*test-out* *out*]
-              (clojure.test/run-all-tests))
-       :cljs (cljs.test/run-all-tests)))
-  ")
+(defn run-all-tests-str [re]
+  (let [re-str (when re
+                 (str " #\"" (util/escape-quotes re) "\""))]
+    (str "
+         (with-out-str
+           #?(:clj (binding [clojure.test/*test-out* *out*]
+                     (clojure.test/run-all-tests" re-str "))
+              :cljs (cljs.test/run-all-tests" re-str ")))
+         ")))

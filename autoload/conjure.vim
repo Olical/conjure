@@ -24,8 +24,8 @@ command! -nargs=1 ConjureDefinition call rpcnotify(s:jobid, "definition", <q-arg
 command! -nargs=1 ConjureDoc call rpcnotify(s:jobid, "doc", <q-args>)
 command! -nargs=0 ConjureOpenLog call rpcnotify(s:jobid, "open_log")
 command! -nargs=0 ConjureCloseLog call rpcnotify(s:jobid, "close_log")
-command! -nargs=0 ConjureRunTests call rpcnotify(s:jobid, "run_tests")
-command! -nargs=0 ConjureRunAllTests call rpcnotify(s:jobid, "run_all_tests")
+command! -nargs=* ConjureRunTests call rpcnotify(s:jobid, "run_tests", <q-args>)
+command! -nargs=? ConjureRunAllTests call rpcnotify(s:jobid, "run_all_tests", <q-args>)
 
 " Default mappings if not disabled.
 if !exists("g:conjure_default_mappings") || g:conjure_default_mappings
