@@ -227,3 +227,9 @@
         [(nvim/command-output (str "edit " file))
          (nvim/win-set-cursor (:win ctx) {:row row, :col col})])
       (nvim/call (nvim/command-output "normal! gd")))))
+
+(defn run-tests []
+  (eval* (code/run-tests-str)))
+
+(defn run-all-tests []
+  (eval* (code/run-all-tests-str)))

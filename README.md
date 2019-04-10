@@ -12,6 +12,7 @@
  * `(doc ...)` lookup.
  * [Omnicomplete](#omnicomplete) through [Compliment][].
  * Go to definition (will work more consistently when [#18](https://github.com/Olical/conjure/issues/18) is done).
+ * Running tests in the current namespace.
 
 ### Upcoming
 
@@ -20,7 +21,6 @@
  * Changed namespace reloading via `tools.namespace`. ([#10](https://github.com/Olical/conjure/issues/10))
  * Configuration. ([#7](https://github.com/Olical/conjure/issues/7))
  * Polished documentation and README. ([#6](https://github.com/Olical/conjure/issues/6))
- * Running tests with a keybinding. ([#20](https://github.com/Olical/conjure/issues/20))
 
 [![asciicast](https://asciinema.org/a/RjojeOrKcF5zczweI7q3qiMgw.svg)](https://asciinema.org/a/RjojeOrKcF5zczweI7q3qiMgw)
 
@@ -53,6 +53,8 @@ You can disable these and define your own with `let g:conjure_default_mappings =
  * `<localleader>rs` - `ConjureStatus`
  * `<localleader>rl` - `ConjureOpenLog`
  * `<localleader>rq` - `ConjureCloseLog`
+ * `<localleader>rt` - `ConjureRunTests`
+ * `<localleader>rT` - `ConjureRunAllTests`
  * `K` - `ConjureDoc`
  * `gd` - `ConjureDefinition`
 
@@ -72,6 +74,8 @@ You can disable these and define your own with `let g:conjure_default_mappings =
  * `ConjureDefinition` - go to the source of the given symbol, providing we can find it - falls back to vanilla `gd`.
  * `ConjureOpenLog` - open and focus the log buffer in a wide window.
  * `ConjureCloseLog` - close the log window if it's open in this tab.
+ * `ConjureRunTests` - run tests in the current namespace.
+ * `ConjureRunAllTests` - run all tests.
 
 `ConjureAdd` takes a map that conforms to the following spec.
 

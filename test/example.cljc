@@ -1,6 +1,7 @@
 ;; Some example code to test Conjure with.
 
-(ns test.example)
+(ns test.example
+  (:require [clojure.test :as t]))
 
 (defn henlo [name]
   (println (str "Henlo, " name "!"))
@@ -15,3 +16,7 @@
 
 (comment
   (this-will-error))
+
+(t/deftest something-simple
+  (t/testing "hmm"
+    (t/is (= 10 10))))

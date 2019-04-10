@@ -78,3 +78,9 @@
 
 (defmethod rpc/handle-notify :definition [{:keys [params]}]
   (action/definition (first params)))
+
+(defmethod rpc/handle-notify :run-tests [_]
+  (action/run-tests))
+
+(defmethod rpc/handle-notify :run-all-tests [_]
+  (action/run-all-tests))

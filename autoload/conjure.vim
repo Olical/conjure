@@ -24,6 +24,8 @@ command! -nargs=1 ConjureDefinition call rpcnotify(s:jobid, "definition", <q-arg
 command! -nargs=1 ConjureDoc call rpcnotify(s:jobid, "doc", <q-args>)
 command! -nargs=0 ConjureOpenLog call rpcnotify(s:jobid, "open_log")
 command! -nargs=0 ConjureCloseLog call rpcnotify(s:jobid, "close_log")
+command! -nargs=0 ConjureRunTests call rpcnotify(s:jobid, "run_tests")
+command! -nargs=0 ConjureRunAllTests call rpcnotify(s:jobid, "run_all_tests")
 
 " Default mappings if not disabled.
 if !exists("g:conjure_default_mappings") || g:conjure_default_mappings
@@ -38,6 +40,8 @@ if !exists("g:conjure_default_mappings") || g:conjure_default_mappings
     autocmd FileType clojure nnoremap <buffer> <localleader>rs :ConjureStatus<cr>
     autocmd FileType clojure nnoremap <buffer> <localleader>rl :ConjureOpenLog<cr>
     autocmd FileType clojure nnoremap <buffer> <localleader>rq :ConjureCloseLog<cr>
+    autocmd FileType clojure nnoremap <buffer> <localleader>rt :ConjureRunTests<cr>
+    autocmd FileType clojure nnoremap <buffer> <localleader>rT :ConjureRunAllTests<cr>
     autocmd FileType clojure nnoremap <buffer> K :ConjureDoc <c-r><c-w><cr>
     autocmd FileType clojure nnoremap <buffer> gd :ConjureDefinition <c-r><c-w><cr>
     autocmd FileType clojure setlocal omnifunc=conjure#omnicomplete
