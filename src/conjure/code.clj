@@ -115,13 +115,13 @@
 
 (defn run-tests-str [targets]
   (let [targets-str (->> targets
-                         (map #(str " '" %))
-                         (str/join))]
+                         (map #(str "'" %))
+                         (str/join " "))]
     (str "
          (with-out-str
            #?(:clj (binding [clojure.test/*test-out* *out*]
-                     (clojure.test/run-tests" targets-str "))
-              :cljs (cljs.test/run-tests" targets-str ")))
+                     (apply clojure.test/run-tests (keep find-ns #{" targets-str "})))
+              :cljs (cljs.test/run-tests " targets-str ")))
          ")))
 
 (defn run-all-tests-str []

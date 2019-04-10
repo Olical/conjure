@@ -84,7 +84,11 @@
 (defn test*
   "Results from tests."
   [{:keys [conn resp]}]
-  (append {:origin (:tag conn), :kind :test, :msg (:val resp)}))
+  (append {:origin (:tag conn)
+           :kind :test
+           :msg (if (string? (:val resp))
+                  (:val resp)
+                  (pr-str (:val resp)))}))
 
 (defn eval*
   "When we send an eval and are awaiting a result, prints a short sample of the

@@ -2,6 +2,7 @@
   "Things the user can do that probably trigger some sort of UI update."
   (:require [clojure.core.async :as a]
             [clojure.edn :as edn]
+            [clojure.string :as str]
             [taoensso.timbre :as log]
             [conjure.prepl :as prepl]
             [conjure.ui :as ui]
@@ -231,12 +232,17 @@
 
 (defn run-tests []
   (let [ctx (current-ctx)
-        targets #{(:ns ctx)}
-        code (code/run-tests-str targets)]
+        ns (:ns ctx)
+        other-ns (if (str/ends-with? ns "-test")
+                   (str/replace ns #"-test$" "")
+                   (str ns "-test"))]
     (doseq [conn (:conns ctx)]
-      (ui/test* {:conn conn
-                 :resp (-> (wrapped-eval ctx {:conn conn, :code code})
-                           (update :val edn/read-string))}))))
+      (let [code (code/run-tests-str
+                   (cond-> #{ns}
+                     (= (:lang conn) :clj) (conj other-ns)))]
+        (ui/test* {:conn conn
+                   :resp (-> (wrapped-eval ctx {:conn conn, :code code})
+                             (update :val edn/read-string))})))))
 
 (defn run-all-tests []
   (let [ctx (current-ctx)
