@@ -219,7 +219,8 @@
 (defn definition [name]
   (let [ctx (current-ctx)
         lookup (fn [conn]
-                 (-> (wrapped-eval ctx {:conn conn, :code (code/defintion-str name)})
+                 (-> (wrapped-eval ctx
+                                   {:conn conn, :code (code/defintion-str name)})
                      (get :val)
                      (edn/read-string)))]
     (if-let [[file row col] (some lookup (:conns ctx))]
@@ -229,7 +230,18 @@
       (nvim/call (nvim/command-output "normal! gd")))))
 
 (defn run-tests []
-  (eval* (code/run-tests-str)))
+  (let [ctx (current-ctx)
+        targets #{(:ns ctx)}
+        code (code/run-tests-str targets)]
+    (doseq [conn (:conns ctx)]
+      (ui/test* {:conn conn
+                 :resp (-> (wrapped-eval ctx {:conn conn, :code code})
+                           (update :val edn/read-string))}))))
 
 (defn run-all-tests []
-  (eval* (code/run-all-tests-str)))
+  (let [ctx (current-ctx)
+        code (code/run-all-tests-str)]
+    (doseq [conn (:conns ctx)]
+      (ui/test* {:conn conn
+                 :resp (-> (wrapped-eval ctx {:conn conn, :code code})
+                           (update :val edn/read-string))}))))

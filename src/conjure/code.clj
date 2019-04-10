@@ -34,8 +34,7 @@
                      'clojure.java.io
                      'clojure.test)
             (try (require 'compliment.core) (catch Exception _)))"
-    :cljs "(require 'cljs.repl
-                    'clojure.test)"))
+    :cljs "(require 'cljs.repl 'cljs.test)"))
 
 ;; The read-string/eval wrapper can go away with Clojure 1.11.
 ;; https://dev.clojure.org/jira/browse/CLJ-2453
@@ -114,8 +113,21 @@
                (update 2 dec))))
        "))
 
-(defn run-tests-str []
-  "(clojure.test/run-tests)")
+(defn run-tests-str [targets]
+  (let [targets-str (->> targets
+                         (map #(str " '" %))
+                         (str/join))]
+    (str "
+         (with-out-str
+           #?(:clj (binding [clojure.test/*test-out* *out*]
+                     (clojure.test/run-tests" targets-str "))
+              :cljs (cljs.test/run-tests" targets-str ")))
+         ")))
 
 (defn run-all-tests-str []
-  "(clojure.test/run-all-tests)")
+  "
+  (with-out-str
+    #?(:clj (binding [clojure.test/*test-out* *out*]
+              (clojure.test/run-all-tests))
+       :cljs (cljs.test/run-all-tests)))
+  ")

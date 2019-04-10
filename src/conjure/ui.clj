@@ -81,6 +81,11 @@
   [{:keys [conn resp]}]
   (append {:origin (:tag conn), :kind :doc, :msg (:val resp)}))
 
+(defn test*
+  "Results from tests."
+  [{:keys [conn resp]}]
+  (append {:origin (:tag conn), :kind :test, :msg (:val resp)}))
+
 (defn eval*
   "When we send an eval and are awaiting a result, prints a short sample of the
   code we sent."
