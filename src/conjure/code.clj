@@ -35,46 +35,34 @@
             (try (require 'compliment.core) (catch Exception _)))"
     :cljs "(require 'cljs.repl)"))
 
-(defn- paren-guard-str
-  "Returns a bunch of closing parenthesis (as many as there are opening
-  parenthesis in the source) to ensure that you can't unbalance the parenthesis
-  in an eval."
-  [code]
-  (-> (frequencies code)
-      (get \()
-      (or 0)
-      (repeat ")")
-      (str/join)))
-
 ;; The read-string/eval wrapper can go away with Clojure 1.11.
 ;; https://dev.clojure.org/jira/browse/CLJ-2453
 (defn eval-str [{:keys [ns]} {:keys [conn code]}]
-  (let [paren-guard (paren-guard-str code)]
-    (case (:lang conn)
-      :clj
-      (str "
-           (try
-             (ns " (or ns "user") ")
-             (clojure.core/eval
-               (clojure.core/read-string
-                 {:read-cond :allow}
-                 \"(do " (util/escape-quotes code) "\n" paren-guard ")\"))
-             (catch Throwable e
-               (clojure.core/Throwable->map e))
-             (finally
-               (flush)))
-           ")
+  (case (:lang conn)
+    :clj
+    (str "
+         (try
+           (ns " (or ns "user") ")
+           (clojure.core/eval
+             (clojure.core/read-string
+               {:read-cond :allow}
+               \"(do " (util/escape-quotes code) "\n)\"))
+           (catch Throwable e
+             (clojure.core/Throwable->map e))
+           (finally
+             (flush)))
+         ")
 
-      :cljs
-      (str "
-           (in-ns '" (or ns "cljs.user") ")
-           (try
-             " code "
-             (catch :default e
-               (cljs.repl/Error->map e))
-             (finally
-               (flush)))
-           " paren-guard))))
+    :cljs
+    (str "
+         (in-ns '" (or ns "cljs.user") ")
+         (try
+           " code "
+           (catch :default e
+             (cljs.repl/Error->map e))
+           (finally
+             (flush)))
+         ")))
 
 (defn doc-str [{:keys [conn name]}]
   (case (:lang conn)
