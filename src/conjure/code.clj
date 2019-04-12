@@ -49,9 +49,10 @@
          (try
            (ns " (or ns "user") ")
            (clojure.core/eval
-             (clojure.core/read-string
-               {:read-cond :allow}
-               \"(do " (util/escape-quotes code) "\n)\"))
+             (binding [*default-data-reader-fn* tagged-literal]
+               (clojure.core/read-string
+                 {:read-cond :allow}
+                 \"(do " (util/escape-quotes code) "\n)\")))
            (catch Throwable e
              (clojure.core/Throwable->map e))
            (finally
