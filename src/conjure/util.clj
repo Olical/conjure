@@ -4,7 +4,7 @@
             [clojure.string :as str]
             [clojure.core.memoize :as memo]
             [taoensso.timbre :as log]
-            [fipp.clojure :as fipp]
+            [zprint.core :as zp]
             [camel-snake-kebab.core :as csk]
             [camel-snake-kebab.extras :as cske]))
 
@@ -37,7 +37,7 @@
 (defn pprint
   "Format the given data, assuming it's already parsed."
   [data]
-  (with-out-str (fipp/pprint data)))
+  (zp/zprint-str data))
 
 (defn regexp? [o]
   (instance? java.util.regex.Pattern o))

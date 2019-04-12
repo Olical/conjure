@@ -9,7 +9,11 @@
   "Parse and format the code, suppress and log any errors."
   [code]
   (try
-    (util/pprint (core/read-string {:read-cond :preserve} code))
+    (binding [*default-data-reader-fn* tagged-literal]
+      (util/pprint
+        (core/read-string
+          {:read-cond :preserve}
+          code)))
     (catch Exception e
       (log/error "Error while pretty printing" e)
       code)))
