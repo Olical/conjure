@@ -5,7 +5,12 @@
             [taoensso.timbre :as log]
             [msgpack.core :as msg]
             [msgpack.clojure-extensions]
+            [aleph.tcp :as tcp]
+            [manifold.stream :as stream]
             [conjure.util :as util]))
+
+;; TCP port that the RPC opens up on for other plugins to use.
+(defonce port (util/free-port))
 
 ;; These channels handle all RPC I/O.
 (defonce ^:private in-chan (a/chan 128))
@@ -38,8 +43,8 @@
   "Give a request to handle-request and send the results to out-chan."
   [msg]
   (a/>!! out-chan
-         (merge {:type :response
-                 :id (:id msg)}
+         (merge {:type :response}
+                (select-keys msg #{:id :client})
                 (try
                   {:result (handle-request msg)}
                   (catch Exception error
@@ -113,6 +118,7 @@
                (assoc requests id reqp))))
 
     (let [request {:type :request
+                   :client :stdio
                    :id @id!
                    :method method
                    :params params}]
@@ -129,6 +135,18 @@
   ;; Prevent anyone writing to *out* since that's for msgpack-rpc.
   (alter-var-root #'*out* (constantly *err*))
 
+  ;; This server allows other plugins to make RPC calls.
+  (log/info "Starting RPC TCP server on port" port)
+  (tcp/start-server
+    (fn [s info]
+      (log/info "TCP connection opened" (pr-str info))
+      (when-let [msg (decode (msg/unpack (stream/stream->seq s)))]
+        (try
+          (a/>!! in-chan (assoc msg :client s))
+          (catch Exception e
+            (log/error "Error while writing to in-chan:" e)))))
+    {:port port})
+
   (log/info "Starting RPC loops")
 
   ;; Read from stdin and place messages on in-chan.
@@ -137,12 +155,12 @@
     (loop []
       (when-let [msg (decode (msg/unpack System/in))]
         (try
-          (a/>!! in-chan msg)
+          (a/>!! in-chan (assoc msg :client :stdio))
           (catch Exception e
             (log/error "Error while writing to in-chan:" e)))
         (recur))))
 
-  ;; Read from out-chan and place messages in stdout.
+  ;; Read from out-chan and send messages to the client.
   (util/thread
     "RPC stdout"
     (loop []
@@ -150,10 +168,14 @@
         (try
           (log/trace "Sending RPC message:" msg)
           (let [packed (pack msg)]
-            (util/write System/out packed)
+            (util/write
+              (if (= (:client msg) :stdio)
+                System/out
+                (:client msg))
+              packed) 
             (log/trace "Sent!"))
           (catch Exception e
-            (log/error "Error while writing to stdout:" e)))
+            (log/error "Error while writing to client:" (:client msg) e)))
         (recur))))
 
   ;; Handle all messages on in-chan through the handler-* functions.

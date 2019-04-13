@@ -78,3 +78,8 @@
   (let [amount (count items)
         plural? (not= amount 1)]
     (str amount " " description (when plural? "s"))))
+
+(defn free-port []
+  (let [socket (java.net.ServerSocket. 0)]
+    (.close socket)
+    (.getLocalPort socket)))
