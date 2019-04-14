@@ -10,6 +10,7 @@ class Source(Base):
     self.filetypes = ['clojure']
     self.rank = 500
 
+  def on_init(self, context):
     rpc_port = vim.api.call_function("conjure#get_rpc_port", [])
     self.sock = socket.socket()
     self.sock.connect(("localhost", rpc_port))
