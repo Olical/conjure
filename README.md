@@ -99,7 +99,22 @@ If you don't have complement Conjure will still work fine, omnicompletion will j
 
 ### Autocomplete
 
-If you'd like completion automatically popping up as you type you can use [coc-conjure][] to integrate Conjure with [coc.nvim][], all thanks to [@jlesquembre][]!
+Async autocompletion is provided by various plugins in Neovim, here's how you integrate Conjure with some of the most popular tools. If you wish to help grow this list you can check out `rplugin/python3/deoplete/sources/conjure.py` for an example of how to connect to, and use, the Conjure JSON RPC port.
+
+#### [Deoplete][]
+
+Deoplete is supported by default since the source is contained within this repository. All you need to do is install Conjure and Deoplete then connect to a prepl. Completion should work right away (providing [Compliment][] is available).
+
+I also recommend configuring Deoplete using settings that I first found in the [async-clj-omni][] repository.
+
+```vim
+let g:deoplete#keyword_patterns = {}
+let g:deoplete#keyword_patterns.clojure = '[\w!$%&*+/:<=>?@\^_~\-\.#]*'
+```
+
+#### [Coc][]
+
+You can install [coc-conjure][] to hook these two tools together easily, all thanks to [@jlesquembre][].
 
 ## Example
 
@@ -143,5 +158,7 @@ Find the full [unlicense][] in the `UNLICENSE` file, but here's a snippet.
 [edn]: https://github.com/edn-format/edn
 [twitter]: https://twitter.com/OliverCaldwell
 [coc-conjure]: https://github.com/jlesquembre/coc-conjure
-[coc.nvim]: https://github.com/neoclide/coc.nvim
+[coc]: https://github.com/neoclide/coc.nvim
 [@jlesquembre]: https://github.com/jlesquembre
+[deoplete]: https://github.com/Shougo/deoplete.nvim
+[async-clj-omni]: https://github.com/clojure-vim/async-clj-omni
