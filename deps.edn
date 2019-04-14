@@ -9,8 +9,8 @@
   camel-snake-kebab {:mvn/version "0.4.0"}
   expound {:mvn/version "0.7.2"}
   zprint {:mvn/version "0.4.15"}
-  aleph {:mvn/version "0.4.6"}
-  manifold {:mvn/version "0.1.8"}}
+  tcp-server {:mvn/version "0.1.0"}
+  cheshire {:mvn/version "5.8.1"}}
 
  :aliases
  {:dev
