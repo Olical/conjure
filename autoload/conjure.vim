@@ -106,6 +106,10 @@ function! conjure#completions(base)
   return rpcrequest(s:jobid, "completions", a:base)
 endfunction
 
+function! conjure#get_rpc_port()
+  return rpcrequest(s:jobid, "get_rpc_port")
+endfunction
+
 " Perform any required setup.
 function! conjure#init()
   " Start the job if `make dev` isn't limiting the cwd.

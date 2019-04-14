@@ -77,6 +77,9 @@
 (defmethod rpc/handle-request :completions [{:keys [params]}]
   (action/completions (first params)))
 
+(defmethod rpc/handle-request :get-rpc-port [_]
+  rpc/port)
+
 (defmethod rpc/handle-notify :definition [{:keys [params]}]
   (action/definition (first params)))
 

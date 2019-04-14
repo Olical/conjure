@@ -2,3 +2,4 @@
 /.cpcache/
 /classes/
 /logs/
+__pycache__/
