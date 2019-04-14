@@ -11,13 +11,14 @@ class Source(Base):
     self.name = "conjure"
     self.filetypes = ['clojure']
     self.rank = 500
+    self.vim = vim
 
   def on_init(self, context):
     # I _think_ init is when you're in a Clojure file, so we defer connecting
     # until the user wants to edit some Clojure.
 
     # This call fetches the port for the JSON RPC TCP server. Acronyms!
-    rpc_port = vim.api.call_function("conjure#get_rpc_port", [])
+    rpc_port = self.vim.api.call_function("conjure#get_rpc_port", [])
 
     # Create the socket and connect it to the RPC server.
     self.sock = socket.socket()
