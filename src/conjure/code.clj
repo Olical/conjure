@@ -85,14 +85,14 @@
          (when-let [completions (resolve 'compliment.core/completions)]
            (completions
              \"" (util/escape-quotes prefix) "\"
-             {:ns (find-ns '" ns ")
+             {:ns (find-ns '" (or ns "user") ")
               " (when context
                   (str ":context \"" (util/escape-quotes context) "\""))
              "}))
          ")
 
     ;; ClojureScript isn't supported by compliment right now.
-    :cljs "nil"))
+    :cljs "[]"))
 
 (defn defintion-str [name]
   (str "
