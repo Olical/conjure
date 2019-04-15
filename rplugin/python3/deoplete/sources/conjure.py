@@ -6,25 +6,26 @@ import json
 # Create a class to perform completions, inherit from Deoplete's Base class.
 class Source(Base):
   def __init__(self, vim):
-    # Setup the source, we rank it highly so it appears above other results.
+    # Configure the source.
     Base.__init__(self, vim)
     self.name = "conjure"
     self.filetypes = ['clojure']
     self.rank = 500
+
+    # Store a reference to the vim API for later use.
     self.vim = vim
 
-  def on_init(self, context):
-    # I _think_ init is when you're in a Clojure file, so we defer connecting
-    # until the user wants to edit some Clojure.
-
-    # This call fetches the port for the JSON RPC TCP server. Acronyms!
-    rpc_port = self.vim.api.call_function("conjure#get_rpc_port", [])
-
-    # Create the socket and connect it to the RPC server.
-    self.sock = socket.socket()
-    self.sock.connect(("localhost", rpc_port))
-
   def gather_candidates(self, context):
+    # Connect if we haven't already.
+    if not self.sock:
+      # This call fetches the port for the JSON RPC TCP server. Acronyms!
+      rpc_port = self.vim.api.call_function("conjure#get_rpc_port", [])
+
+      # Create the socket and connect it to the RPC server.
+      self.sock = socket.socket()
+      self.sock.connect(("localhost", rpc_port))
+
+
     # Build a JSON RPC message with a new line at the end.
     # The 0 at the front indicates an RPC request.
     # The 1 is the request ID, you'll get that back in the response.
