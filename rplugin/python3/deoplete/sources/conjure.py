@@ -17,7 +17,7 @@ class Source(Base):
 
   def gather_candidates(self, context):
     # Connect if we haven't already.
-    if not self.sock:
+    if not hasattr(self, "sock"):
       # This call fetches the port for the JSON RPC TCP server. Acronyms!
       rpc_port = self.vim.api.call_function("conjure#get_rpc_port", [])
 
