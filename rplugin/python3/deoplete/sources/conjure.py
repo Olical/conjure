@@ -4,6 +4,8 @@ import socket
 import json
 import os
 
+# This disables the global Conjure Deoplete source while in development.
+# So the only one that'll return results will be the local development version.
 allowed_dir = os.environ.get("CONJURE_ALLOWED_DIR", "/")
 current_path = os.path.realpath(__file__)
 is_enabled = current_path.startswith(allowed_dir)
@@ -11,15 +13,14 @@ is_enabled = current_path.startswith(allowed_dir)
 # Create a class to perform completions, inherit from Deoplete's Base class.
 class Source(Base):
   def __init__(self, vim):
-    if is_enabled:
-      # Configure the source.
-      Base.__init__(self, vim)
-      self.name = "conjure"
-      self.filetypes = ['clojure']
-      self.rank = 500
+    # Configure the source.
+    Base.__init__(self, vim)
+    self.name = "conjure"
+    self.filetypes = ['clojure']
+    self.rank = 500
 
-      # Store a reference to the vim API for later use.
-      self.vim = vim
+    # Store a reference to the vim API for later use.
+    self.vim = vim
 
   def gather_candidates(self, context):
     if is_enabled:
@@ -52,3 +53,5 @@ class Source(Base):
       # 2nd index is an error, if there was one (or null).
       # 3rd index is the result, for us that's the autocompletion esults.
       return res[3]
+    else:
+      return []
