@@ -9,10 +9,10 @@
  * Connect to multiple Clojure or ClojureScript prepls at the same time.
  * Evaluate in `.clj`, `.cljc` and `.cljs` buffers seamlessly.
  * Custom log buffer that appears and vanishes where required.
- * `(doc ...)` lookup.
  * [Completion](#completion) through [Compliment][].
- * Go to definition (will work more consistently when [#18](https://github.com/Olical/conjure/issues/18) is done).
- * Running tests in the current namespace.
+ * Running tests in the current namespace or the `-test` equivalent.
+ * Go to definition.
+ * `(doc ...)` lookup.
 
 ### Upcoming
 
