@@ -10,7 +10,7 @@
  * Evaluate in `.clj`, `.cljc` and `.cljs` buffers seamlessly.
  * Custom log buffer that appears and vanishes where required.
  * `(doc ...)` lookup.
- * [Omnicomplete](#omnicomplete) through [Compliment][].
+ * [Completion](#completion) through [Compliment][].
  * Go to definition (will work more consistently when [#18](https://github.com/Olical/conjure/issues/18) is done).
  * Running tests in the current namespace.
 
@@ -91,7 +91,7 @@ You can disable these and define your own with `let g:conjure_default_mappings =
 
 If you get something wrong it'll explain using [Expound][] in the log buffer. Essentially you must provide at least a `:tag` and `:port`.
 
-## Omnicomplete
+## Completion
 
 Completion is provided through the wonderful [Compliment][], simply ensure it's depended on inside your project for `<c-x><c-o>` omnicompletion to work. If you already depend on CIDER, chances are it's already inside your project since it pulls it in already for you. If you're working with a pure prepl project you'll probably need to add it to your `deps.edn`.
 
