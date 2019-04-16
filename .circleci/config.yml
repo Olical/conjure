@@ -13,7 +13,7 @@ jobs:
           keys:
             - deps-{{ checksum "deps.edn" }}
 
-      - run: make test
+      - run: clojure -A:test
 
       - save_cache:
           paths:
