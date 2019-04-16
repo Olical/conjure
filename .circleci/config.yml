@@ -1,0 +1,21 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: circleci/clojure:tools-deps-1.10.0.442
+
+    working_directory: ~/conjure
+
+    steps:
+      - checkout
+
+      - restore_cache:
+          keys:
+            - deps-{{ checksum "deps.edn" }}
+
+      - run: make test
+
+      - save_cache:
+          paths:
+            - ~/.m2
+          key: deps-{{ checksum "deps.edn" }}

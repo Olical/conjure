@@ -13,7 +13,11 @@
   cheshire {:mvn/version "5.8.1"}}
 
  :aliases
- {:dev
+ {:test
+  {:extra-deps {lambdaisland/kaocha {:mvn/version "0.0-418"}}
+   :main-opts ["-m" "kaocha.runner"]}
+
+  :dev
   {:extra-deps
    {org.clojure/clojurescript {:mvn/version "1.10.520"}
     compliment {:mvn/version "0.3.8"}}}

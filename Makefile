@@ -1,4 +1,4 @@
-.PHONY: dev prepls compile
+.PHONY: dev prepls compile test
 	
 dev:
 	CONJURE_LOG_PATH=logs/conjure.log \
@@ -24,3 +24,6 @@ classes: deps.edn $(SOURCES)
 		--eval "(compile 'conjure.main)"
 
 compile: classes
+
+test:
+	clojure -A:test
