@@ -13,7 +13,13 @@ jobs:
           keys:
             - deps-{{ checksum "deps.edn" }}
 
-      - run: clojure -A:test
+      - run: >
+          clojure -A:test
+          --plugin kaocha.plugin/junit-xml
+          --junit-xml-file test-results/junit/results.xml
+
+      - store_test_results:
+          path: test-results
 
       - save_cache:
           paths:
