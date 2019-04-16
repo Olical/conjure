@@ -2,7 +2,9 @@
 
 > This software is still in early development, expect some breaking changes before [v1.0.0](https://github.com/Olical/conjure/milestone/1) is released. Keep up with changes by watching the repository for releases and depending on specific tags instead of master.
 
-[Clojure][] (and [ClojureScript][]) tooling for [Neovim][] over a [socket prepl][prepl-post] connection.
+[Clojure][] (and [ClojureScript][]) tooling for [Neovim][] over a socket prepl connection.
+
+You can find out more about socket prepls in my blog post, [Clojure socket prepl cookbook][prepl-post], which has also been [translated into Russian][ru-prepl-post].
 
 ### Features
 
@@ -151,6 +153,7 @@ Find the full [unlicense][] in the `UNLICENSE` file, but here's a snippet.
 [clojure]: https://clojure.org/
 [clojurescript]: https://clojurescript.org/
 [neovim]: https://neovim.io/
+[ru-prepl-post]: http://softdroid.net/povarennaya-kniga-clojure-socket-prepl
 [prepl-post]: https://oli.me.uk/2019-03-22-clojure-socket-prepl-cookbook/
 [compliment]: https://github.com/alexander-yakushev/compliment
 [vim-plug]: https://github.com/junegunn/vim-plug
