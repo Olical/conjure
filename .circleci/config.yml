@@ -16,7 +16,7 @@ jobs:
       - run: >
           clojure -A:test
           --plugin kaocha.plugin/junit-xml
-          --junit-xml-file test-results/junit/results.xml
+          --junit-xml-file test-results/kaocha/results.xml
 
       - store_test_results:
           path: test-results
