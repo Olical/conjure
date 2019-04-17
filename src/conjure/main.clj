@@ -11,9 +11,18 @@
             [conjure.ui :as ui]
             [conjure.action :as action]))
 
+(defn- clean-up-and-exit
+  "Performs any necessary clean up and calls `(System/exit status)`."
+  []
+  (shutdown-agents)
+  (flush)
+  (binding [*out* *err*] (flush))
+  (System/exit 0))
+
 (defn -main
   "Start up any background services and then wait forever."
   []
+  (.addShutdownHook (Runtime/getRuntime) (Thread. #(clean-up-and-exit)))
   (dev/init)
   (rpc/init))
 
