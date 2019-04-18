@@ -42,17 +42,18 @@
 
 ;; The read-string/eval wrapper can go away with Clojure 1.11.
 ;; https://dev.clojure.org/jira/browse/CLJ-2453
-(defn eval-str [{:keys [ns]} {:keys [conn code]}]
+(defn eval-str [{:keys [ns path]} {:keys [conn code]}]
   (case (:lang conn)
     :clj
     (str "
          (try
            (ns " (or ns "user") ")
-           (clojure.core/eval
-             (binding [*default-data-reader-fn* tagged-literal]
-               (clojure.core/read-string
-                 {:read-cond :allow}
-                 \"(do " (util/escape-quotes code) "\n)\")))
+           (binding [*file* \"" path "\"]
+             (clojure.core/eval
+               (binding [*default-data-reader-fn* tagged-literal]
+                 (clojure.core/read-string
+                   {:read-cond :allow}
+                   \"(do " (util/escape-quotes code) "\n)\"))))
            (catch Throwable e
              (clojure.core/Throwable->map e))
            (finally
