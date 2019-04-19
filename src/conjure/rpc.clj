@@ -1,5 +1,5 @@
 (ns conjure.rpc
-  "Bi-directional communication with Neovim through msgpack-rpc."
+  "Communication with Neovim through msgpack RPC and other plugins via JSON RPC."
   (:require [clojure.core.async :as a]
             [clojure.core.memoize :as memo]
             [taoensso.timbre :as log]

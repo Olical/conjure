@@ -7,6 +7,25 @@
   (t/is (= (util/join-words []) ""))
   (t/is (= (util/join-words ["foo" "bar"]) "foo bar")))
 
+(t/deftest split-lines
+  (t/is (= (util/split-lines "") [""]))
+  (t/is (= (util/split-lines "foo\nbar") ["foo" "bar"])))
+
+(t/deftest join-lines
+  (t/is (= (util/join-lines []) ""))
+  (t/is (= (util/join-lines ["foo" "bar"]) "foo\nbar")))
+
+(t/deftest splice
+  (t/is (= (util/splice "" 0 0 "") ""))
+  
+  (t/is (= (util/splice "" 0 0 "foo") "foo"))
+  (t/is (= (util/splice "Hello, World!" 7 12 "Conjure") "Hello, Conjure!"))
+
+  (t/testing "exceeding boundaries"
+    (t/is (= (util/splice "" 0 1 "") ""))
+    (t/is (= (util/splice "" -1 0 "") ""))
+    (t/is (= (util/splice "Hello, World!" 7 20 "Conjure?") "Hello, Conjure?"))))
+
 (t/deftest escape-quotes
   (t/is (= (util/escape-quotes "\"\"") "\\\"\\\"")))
 
@@ -17,3 +36,7 @@
 
 (t/deftest free-port
   (t/is (number? (util/free-port))))
+
+(t/deftest env
+  (binding [util/get-env-fn {"CONJURE_FOO_BAR" :baz}]
+    (t/is (= (util/env :foo-bar) :baz))))

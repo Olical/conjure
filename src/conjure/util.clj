@@ -17,14 +17,22 @@
 (defn join-lines [lines]
   (str/join "\n" lines))
 
-(defn splice [s start end r]
-  (str (subs s 0 start) r (subs s end)))
+(defn splice
+  "Splice a string into another one from the starting character to the end
+  character. Will cap the start and end values to keep it inside the original
+  string."
+  [s start end r]
+  (str (subs s 0 (max 0 start))
+       r
+       (subs s (min (count s) end))))
+
+(def ^:dynamic get-env-fn #(System/getenv %))
 
 (defn env
   "Turn :some-keyword into CONJURE_SOME_KEYWORD for
   environment variable lookup. Presumably."
   [k]
-  (System/getenv
+  (get-env-fn
     (csk/->SCREAMING_SNAKE_CASE (str "conjure-" (name k)))))
 
 (defn error->str [error]
