@@ -19,7 +19,7 @@ jobs:
           clojure -A:test
           --plugin kaocha.plugin/junit-xml
           --junit-xml-file test-results/kaocha/results.xml
-          --plugin cloverage
+          --plugin cloverage --codecov
 
       - store_test_results:
           path: test-results
