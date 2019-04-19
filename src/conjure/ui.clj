@@ -24,8 +24,7 @@
 (defn close-log
   "Closes the log window. In other news: Bear shits in woods."
   []
-  (nvim/call-lua-function :close-log log-buffer-name)
-  nil)
+  (nvim/call-lua-function :close-log log-buffer-name))
 
 (defn append
   "Append the message to the log, prefixed by the origin/kind. If it's code
