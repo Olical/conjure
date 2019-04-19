@@ -29,6 +29,9 @@
 (t/deftest escape-quotes
   (t/is (= (util/escape-quotes "\"\"") "\\\"\\\"")))
 
+(t/deftest pprint
+  (t/is (util/pprint {:foo :bar}) "{:foo :bar}"))
+
 (t/deftest count-str
   (t/is (= (util/count-str [] "number") "0 numbers"))
   (t/is (= (util/count-str [1] "number") "1 number"))
@@ -40,3 +43,7 @@
 (t/deftest env
   (binding [util/get-env-fn {"CONJURE_FOO_BAR" :baz}]
     (t/is (= (util/env :foo-bar) :baz))))
+
+(t/deftest regexp?
+  (t/is (util/regexp? #"foo"))
+  (t/is (not (util/regexp? "foo"))))
