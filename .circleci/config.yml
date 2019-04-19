@@ -25,7 +25,7 @@ jobs:
           path: test-results
 
       - codecov/upload:
-          file: {{ coverage_report_filepath }}
+          file: target/coverage/codecov.json
 
       - save_cache:
           paths:
