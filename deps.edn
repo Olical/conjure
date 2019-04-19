@@ -15,7 +15,8 @@
  :aliases
  {:test
   {:extra-deps {lambdaisland/kaocha {:mvn/version "0.0-418"}
-                lambdaisland/kaocha-junit-xml {:mvn/version "0.0-70"}}
+                lambdaisland/kaocha-junit-xml {:mvn/version "0.0-70"}
+                lambdaisland/kaocha-cloverage {:mvn/version "0.0-32"}}
    :main-opts ["-m" "kaocha.runner"]}
 
   :dev
