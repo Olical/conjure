@@ -1,4 +1,4 @@
-.PHONY: dev prepls compile test
+.PHONY: dev prepls compile test test-watch
 	
 dev:
 	CONJURE_LOG_PATH=logs/conjure.log \
@@ -27,3 +27,6 @@ compile: classes
 
 test:
 	clojure -A:test
+
+test-watch:
+	clojure -A:test --watch
