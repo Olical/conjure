@@ -108,7 +108,7 @@
         n))
     (rest (range))))
 
-(defn request
+(defn ^:dynamic request
   "Send a request and block until we get a response.
   Split out into a future if you need to!"
   [{:keys [method params]}]

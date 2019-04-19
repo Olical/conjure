@@ -1,6 +1,7 @@
 (ns conjure.ui
   "Handle displaying and managing what's visible to the user."
   (:require [conjure.nvim :as nvim]
+            [conjure.nvim.api :as nvim-api]
             [conjure.util :as util]
             [conjure.code :as code]))
 
@@ -8,28 +9,23 @@
 (def ^:private max-log-buffer-length 3000)
 (defonce ^:private log-buffer-name "/tmp/conjure.cljc")
 (def ^:private welcome-msg "; conjure/out | Welcome to Conjure!")
-(def ^:private lua
-  {:upsert "return require('conjure').upsert_log(...)"
-   :close "return require('conjure').close_log(...)"})
 
 (defn upsert-log
   "Get, create, or update the log window and buffer."
   ([] (upsert-log {}))
   ([{:keys [focus? resize? width] :or {focus? false, resize? false, width :small}}]
-   (->> (nvim/execute-lua
-          (:upsert lua)
-          log-buffer-name
-          (get log-window-widths width)
-          focus?
-          resize?)
-        (nvim/call)
-        (util/snake->kw-map))))
+   (-> (nvim/execute-lua
+         :upsert-log
+         log-buffer-name
+         (get log-window-widths width)
+         focus?
+         resize?)
+       (util/snake->kw-map))))
 
 (defn close-log
   "Closes the log window. In other news: Bear shits in woods."
   []
-  (-> (nvim/execute-lua (:close lua) log-buffer-name)
-      (nvim/call))
+  (nvim/execute-lua :close-log log-buffer-name)
   nil)
 
 (defn append
@@ -44,24 +40,24 @@
                 (for [line (util/split-lines msg)]
                   (str prefix " | " line)))
         {:keys [buf win]} (upsert-log)
-        line-count (nvim/call (nvim/buf-line-count buf))
+        line-count (nvim-api/call (nvim-api/buf-line-count buf))
         trim (if (> line-count max-log-buffer-length)
                (/ max-log-buffer-length 2)
                0)
         new-line-count (+ line-count (count lines) (- trim))]
 
-    (nvim/call-batch
+    (nvim-api/call-batch
       [;; Insert a welcome message on the first line when empty.
        (when (= line-count 1)
-         (nvim/buf-set-lines buf {:start 0, :end 1} [welcome-msg]))
+         (nvim-api/buf-set-lines buf {:start 0, :end 1} [welcome-msg]))
 
        ;; Trim the log where required.
        (when (> trim 0)
-         (nvim/buf-set-lines buf {:start 0, :end trim} []))
+         (nvim-api/buf-set-lines buf {:start 0, :end trim} []))
 
        ;; Insert the new lines and scroll to the bottom.
-       (nvim/buf-set-lines buf {:start -1, :end -1} lines)
-       (nvim/win-set-cursor win {:col 0, :row new-line-count})])
+       (nvim-api/buf-set-lines buf {:start -1, :end -1} lines)
+       (nvim-api/win-set-cursor win {:col 0, :row new-line-count})])
 
     nil))
 

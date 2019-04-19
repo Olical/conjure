@@ -1,97 +1,147 @@
 (ns conjure.nvim
-  "Tools to interact with Neovim at a higher level than RPC."
-  (:require [taoensso.timbre :as log]
-            [conjure.rpc :as rpc]
+  (:require [conjure.nvim.api :as api]
+            [conjure.code :as code]
             [conjure.util :as util]))
 
-(defn call
-  "Simply a thin nvim specific wrapper around rpc/request."
-  [req]
-  (let [{:keys [error result] :as resp} (rpc/request req)]
-    (when error
-      (log/error "Error while making nvim call" req "->" resp))
-    result))
+(defn current-ctx
+  "Context contains useful data that we don't watch to fetch twice while
+  building code to eval. This function performs those costly calls."
+  []
+  (let [buf (api/call (api/get-current-buf))
+        [path sample-lines win]
+        (api/call-batch
+          [(api/buf-get-name buf)
+           (api/buf-get-lines buf {:start 0, :end 25})
+           (api/get-current-win)])]
+    {:path path
+     :buf buf
+     :win win
+     :ns (code/extract-ns (util/join-lines sample-lines))}))
 
-(defn- ->atomic-call
-  "Transform a regular call into an atomic call param."
-  [{:keys [method params] :as req}]
-  (when req
-    [(util/kw->snake method) (vec params)]))
+(defn read-range
+  "Given some lines, start column, and end column it will trim the first and
+  last line using those columns then join the lines into once string. Useful
+  for trimming api/buf-get-lines results by some sort of col/row range."
+  [{:keys [lines start end]}]
+  (-> lines
+      (update (dec (count lines))
+              (fn [line]
+                (subs line 0 (min end (count line)))))
+      (update 0 subs (max start 0))
+      (util/join-lines)))
 
-(defn call-batch
-  "Perform multiple calls together atomically."
-  [reqs]
-  (let [[results [err-idx err-type err-msg]]
-        (call {:method :nvim-call-atomic
-               :params [(keep ->atomic-call reqs)]})]
-    (when err-idx
-      (log/error "Error while making atomic batch call"
-                 (nth reqs err-idx) "->" err-type err-msg))
-    results))
+(defn nil-pos?
+  "A more intention revealing way of checking for [0 0] positions."
+  [pos]
+  (= pos [0 0]))
 
-;; These functions return the data that you can pass to call or call-batch.
-;; I don't care that it's not DRY, it's easy to understand and special case.
+(defn read-form
+  "Read the current form under the cursor from the buffer by default. When
+  root? is set to true it'll read the outer most form under the cursor."
+  ([] (read-form {}))
+  ([{:keys [root?]}]
+   ;; Put on your seatbelt, this function's a bit wild.
+   ;; Could maybe be simplified a little but I doubt that much.
 
-(defn get-current-buf []
-  {:method :nvim-get-current-buf})
+   (let [;; Used for asking Neovim for the matching character
+         ;; backwards and forwards.
+         forwards (str (when root? "r") "nzW")
+         backwards (str "b" forwards)
+         get-pair (fn [s e]
+                    [(api/call-function :searchpairpos s "" e backwards)
+                     (api/call-function :searchpairpos s "" e forwards)])
 
-(defn get-current-win []
-  {:method :nvim-get-current-win})
+         ;; Fetch the buffer, window and all matching pairs for () [] and {}.
+         ;; We'll then select the smallest region from those three
+         [buf win cur-char & positions]
+         (api/call-batch
+           (concat
+             [(api/get-current-buf)
+              (api/get-current-win)
+              (api/eval* (str "matchstr(getline('.'), '\\%'.col('.').'c.')"))]
+             (get-pair "(" ")")
+             (get-pair "\\[" "\\]")
+             (get-pair "{" "}")))
 
-(defn win-get-cursor [win]
-  {:method :nvim-win-get-cursor
-   :params [win]})
+         ;; If the position is [0 0] we're _probably_ on the matching
+         ;; character, so we should use the cursor position. Don't do this for
+         ;; root though since you want to keep searching outwards.
+         cursor (update (api/call (api/win-get-cursor win)) 1 inc)
+         get-pos (fn [pos ch]
+                   (if (or (and (= cur-char ch) (nil-pos? pos))
+                           (and (not root?) (= cur-char ch)))
+                     cursor pos))
 
-(defn win-set-cursor [win {:keys [row col]}]
-  {:method :nvim-win-set-cursor
-   :params [win [row col]]})
+         ;; Find all of the pairs using the fns and data above.
+         pairs (keep (fn [[[start sc] [end ec]]]
+                       (let [start (get-pos start sc)
+                             end (get-pos end ec)]
+                         (when-not (or (nil-pos? start) (nil-pos? end))
+                           [start end])))
+                     (->> (interleave positions ["(" ")" "[" "]" "{" "}"])
+                          (partition 2) (partition 2)))
 
-(defn list-wins []
-  {:method :nvim-list-wins})
+         ;; Pull the lines from the pairs we found.
+         lines (api/call-batch
+                 (map (fn [[start end]]
+                        (api/buf-get-lines buf {:start (dec (first start))
+                                                :end (first end)}))
+                      pairs))
 
-(defn list-bufs []
-  {:method :nvim-list-bufs})
+         ;; Extract the text range (column-wise) from those groups of lines.
+         text (map-indexed
+                (fn [n lines]
+                  (let [[start end] (nth pairs n)]
+                    (read-range {:lines lines
+                                 :start (dec (second start))
+                                 :end (second end)})))
+                lines)]
 
-(defn buf-get-name [buf]
-  {:method :nvim-buf-get-name
-   :params [buf]})
+     ;; If we have some matches, select the largest if we want the root form
+     ;; and the smallest if we want the current one.
+     (when (seq text)
+       ((if root? last first) (sort-by count text))))))
 
-(defn buf-get-var [buf name]
-  {:method :nvim-buf-get-var
-   :params [buf (util/kw->snake name)]})
+(defn read-buffer
+  "Read the entire current buffer into a string."
+  []
+  (-> (api/get-current-buf) (api/call)
+      (api/buf-get-lines {:start 0, :end -1}) (api/call)
+      (util/join-lines)))
 
-(defn buf-set-var [buf name value]
-  {:method :nvim-buf-set-var
-   :params [buf (util/kw->snake name) value]})
+(defn definition
+  "Trigger built in go to definition."
+  []
+  (api/call (api/command-output "normal! gd")))
 
-(defn execute-lua [code & args]
-  {:method :nvim-execute-lua
-   :params [code args]})
+(defn edit-at
+  "Edit the given file at the specific row and column."
+  [ctx [file row col]]
+  (api/call-batch
+    [(api/command-output (str "edit " file))
+     (api/win-set-cursor (:win ctx) {:row row, :col col})]))
 
-(defn buf-line-count [buf]
-  {:method :nvim-buf-line-count
-   :params [buf]})
+(defn read-selection
+  "Read the current selection into a string."
+  []
+  (let [[buf [_ s-line s-col _] [_ e-line e-col]]
+        (api/call-batch
+          [(api/get-current-buf)
+           (api/call-function :getpos "'<")
+           (api/call-function :getpos "'>")])
+        lines (api/call
+                (api/buf-get-lines
+                  buf
+                  {:start (dec s-line)
+                   :end e-line}))]
+    (read-range {:lines lines
+                 :start (dec s-col)
+                 :end e-col})))
 
-(defn buf-get-lines [buf {:keys [start end strict-indexing?]}]
-  {:method :nvim-buf-get-lines
-   :params [buf start end (boolean strict-indexing?)]})
-
-(defn buf-set-lines [buf {:keys [start end strict-indexing?]} lines]
-  {:method :nvim-buf-set-lines
-   :params [buf start end (boolean strict-indexing?) lines]})
-
-(defn call-function [fn-name & args]
-  {:method :nvim-call-function
-   :params [(util/kw->snake fn-name) args]})
-
-(defn eval* [expr]
-  {:method :nvim-eval
-   :params [expr]})
-
-(defn command-output [expr]
-  {:method :nvim-command-output
-   :params [expr]})
-
-(defn feedkeys [{:keys [keys mode escape-csi] :or {mode :m, escape-csi false}}]
-  {:method :nvim-feedkeys
-   :params [keys (name mode) escape-csi]})
+(defn execute-lua
+  "Execute Conjure lua functions."
+  [fn-name & args]
+  (->> (apply api/execute-lua
+              (str "return require('conjure')." (util/kw->snake fn-name) "(...)")
+              args)
+       (api/call)))

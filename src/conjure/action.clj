@@ -11,26 +11,16 @@
             [conjure.util :as util]))
 
 (defn- current-ctx
-  "Context contains useful data that we don't watch to fetch twice while
-  building code to eval. This function performs those costly calls."
+  "An enriched version of the nvim ctx with matching prepl connections."
   ([] (current-ctx {}))
   ([{:keys [silent?] :or {silent? false}}]
-   (let [buf (nvim/call (nvim/get-current-buf))
-         [path sample-lines win]
-         (nvim/call-batch
-           [(nvim/buf-get-name buf)
-            (nvim/buf-get-lines buf {:start 0, :end 25})
-            (nvim/get-current-win)])
-         conns (prepl/conns path)]
+   (let [ctx (nvim/current-ctx)
+         conns (prepl/conns (:path ctx))]
 
      (when (and (empty? conns) (not silent?))
-       (ui/error "No matching connections for" path))
+       (ui/error "No matching connections for" (:path ctx)))
 
-     {:path path
-      :buf buf
-      :win win
-      :ns (code/extract-ns (util/join-lines sample-lines))
-      :conns conns})))
+     (merge ctx {:conns conns}))))
 
 (defn- wrapped-eval
   "Wraps up code with environment specific padding, sends it off for evaluation
@@ -56,90 +46,6 @@
     (a/>!! eval-chan code)
     (a/<!! ret-chan)))
 
-(defn- read-range
-  "Given some lines, start column, and end column it will trim the first and
-  last line using those columns then join the lines into once string. Useful
-  for trimming nvim/buf-get-lines results by some sort of col/row range."
-  [{:keys [lines start end]}]
-  (-> lines
-      (update (dec (count lines))
-              (fn [line]
-                (subs line 0 (min end (count line)))))
-      (update 0 subs (max start 0))
-      (util/join-lines)))
-
-(defn- nil-pos?
-  "A more intention revealing way of checking for [0 0] positions."
-  [pos]
-  (= pos [0 0]))
-
-(defn- read-form
-  "Read the current form under the cursor from the buffer by default. When
-  root? is set to true it'll read the outer most form under the cursor."
-  ([] (read-form {}))
-  ([{:keys [root?]}]
-   ;; Put on your seatbelt, this function's a bit wild.
-   ;; Could maybe be simplified a little but I doubt that much.
-
-   (let [;; Used for asking Neovim for the matching character
-         ;; backwards and forwards.
-         forwards (str (when root? "r") "nzW")
-         backwards (str "b" forwards)
-         get-pair (fn [s e]
-                    [(nvim/call-function :searchpairpos s "" e backwards)
-                     (nvim/call-function :searchpairpos s "" e forwards)])
-
-         ;; Fetch the buffer, window and all matching pairs for () [] and {}.
-         ;; We'll then select the smallest region from those three
-         [buf win cur-char & positions]
-         (nvim/call-batch
-           (concat
-             [(nvim/get-current-buf)
-              (nvim/get-current-win)
-              (nvim/eval* (str "matchstr(getline('.'), '\\%'.col('.').'c.')"))]
-             (get-pair "(" ")")
-             (get-pair "\\[" "\\]")
-             (get-pair "{" "}")))
-
-         ;; If the position is [0 0] we're _probably_ on the matching
-         ;; character, so we should use the cursor position. Don't do this for
-         ;; root though since you want to keep searching outwards.
-         cursor (update (nvim/call (nvim/win-get-cursor win)) 1 inc)
-         get-pos (fn [pos ch]
-                   (if (or (and (= cur-char ch) (nil-pos? pos))
-                           (and (not root?) (= cur-char ch)))
-                     cursor pos))
-
-         ;; Find all of the pairs using the fns and data above.
-         pairs (keep (fn [[[start sc] [end ec]]]
-                       (let [start (get-pos start sc)
-                             end (get-pos end ec)]
-                         (when-not (or (nil-pos? start) (nil-pos? end))
-                           [start end])))
-                     (->> (interleave positions ["(" ")" "[" "]" "{" "}"])
-                          (partition 2) (partition 2)))
-
-         ;; Pull the lines from the pairs we found.
-         lines (nvim/call-batch
-                 (map (fn [[start end]]
-                        (nvim/buf-get-lines buf {:start (dec (first start))
-                                                 :end (first end)}))
-                      pairs))
-
-         ;; Extract the text range (column-wise) from those groups of lines.
-         text (map-indexed
-                (fn [n lines]
-                  (let [[start end] (nth pairs n)]
-                    (read-range {:lines lines
-                                 :start (dec (second start))
-                                 :end (second end)})))
-                lines)]
-
-     ;; If we have some matches, select the largest if we want the root form
-     ;; and the smallest if we want the current one.
-     (when (seq text)
-       ((if root? last first) (sort-by count text))))))
-
 ;; The following functions are called by the user through commands.
 
 (defn eval* [code]
@@ -162,32 +68,16 @@
                          (assoc :val (str "No doc for " name)))})))))
 
 (defn eval-current-form []
-  (eval* (read-form)))
+  (eval* (nvim/read-form)))
 
 (defn eval-root-form []
-  (eval* (read-form {:root? true})))
+  (eval* (nvim/read-form {:root? true})))
 
 (defn eval-selection []
-  (let [[buf [_ s-line s-col _] [_ e-line e-col]]
-        (nvim/call-batch
-          [(nvim/get-current-buf)
-           (nvim/call-function :getpos "'<")
-           (nvim/call-function :getpos "'>")])
-        lines (nvim/call
-                (nvim/buf-get-lines
-                  buf
-                  {:start (dec s-line)
-                   :end e-line}))
-        code (read-range {:lines lines
-                          :start (dec s-col)
-                          :end e-col})]
-    (eval* code)))
+  (eval* (nvim/read-selection)))
 
 (defn eval-buffer []
-  (let [code (-> (nvim/get-current-buf) (nvim/call)
-                 (nvim/buf-get-lines {:start 0, :end -1}) (nvim/call)
-                 (util/join-lines))]
-    (eval* code)))
+  (eval* (nvim/read-buffer)))
 
 (defn load-file* [path]
   (let [ctx (current-ctx)
@@ -224,11 +114,9 @@
                                    {:conn conn, :code (code/defintion-str name)})
                      (get :val)
                      (edn/read-string)))]
-    (if-let [[file row col] (some lookup (:conns ctx))]
-      (nvim/call-batch
-        [(nvim/command-output (str "edit " file))
-         (nvim/win-set-cursor (:win ctx) {:row row, :col col})])
-      (nvim/call (nvim/command-output "normal! gd")))))
+    (if-let [coord (some lookup (:conns ctx))]
+      (nvim/edit-at ctx coord)
+      (nvim/definition))))
 
 (defn run-tests [targets]
   (let [ctx (current-ctx)
