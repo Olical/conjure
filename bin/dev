@@ -1,0 +1,7 @@
+#!/usr/bin/env sh
+
+CONJURE_LOG_PATH=logs/conjure.log \
+CONJURE_PREPL_SERVER_PORT=5885 \
+CONJURE_JOB_OPTS="-A:dev" \
+CONJURE_ALLOWED_DIR="$(pwd)" \
+nvim -c "source plugin/conjure.vim" src/conjure/main.clj
