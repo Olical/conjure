@@ -138,7 +138,7 @@
                  :start (dec s-col)
                  :end e-col})))
 
-(defn execute-lua
+(defn call-lua-function
   "Execute Conjure lua functions."
   [fn-name & args]
   (->> (apply api/execute-lua

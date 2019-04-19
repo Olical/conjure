@@ -14,7 +14,7 @@
   "Get, create, or update the log window and buffer."
   ([] (upsert-log {}))
   ([{:keys [focus? resize? width] :or {focus? false, resize? false, width :small}}]
-   (-> (nvim/execute-lua
+   (-> (nvim/call-lua-function
          :upsert-log
          log-buffer-name
          (get log-window-widths width)
@@ -25,7 +25,7 @@
 (defn close-log
   "Closes the log window. In other news: Bear shits in woods."
   []
-  (nvim/execute-lua :close-log log-buffer-name)
+  (nvim/call-lua-function :close-log log-buffer-name)
   nil)
 
 (defn append
