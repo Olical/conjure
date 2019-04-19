@@ -26,7 +26,7 @@ classes: deps.edn $(SOURCES)
 compile: classes
 
 test:
-	clojure -A:test
+	bin/kaocha
 
 test-watch:
-	clojure -A:test --watch
+	bin/kaocha --watch

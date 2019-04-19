@@ -16,7 +16,7 @@ jobs:
             - deps-{{ checksum "deps.edn" }}
 
       - run: >
-          clojure -A:test
+          bin/kaocha
           --plugin kaocha.plugin/junit-xml
           --junit-xml-file test-results/kaocha/results.xml
           --plugin cloverage --no-cov-html --codecov
