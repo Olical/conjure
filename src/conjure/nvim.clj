@@ -145,3 +145,23 @@
               (str "return require('conjure')." (util/kw->snake fn-name) "(...)")
               args)
        (api/call)))
+
+(defn append-lines [{:keys [trim-at buf win lines header]}]
+  (let [line-count (api/call (api/buf-line-count buf))
+        trim (if (> line-count trim-at)
+               (/ trim-at 2)
+               0)
+        new-line-count (+ line-count (count lines) (- trim))]
+    (api/call-batch
+      [;; Insert a welcome message on the first line when empty.
+       (when (= line-count 1)
+         (api/buf-set-lines buf {:start 0, :end 1} [header]))
+
+       ;; Trim the log where required.
+       (when (> trim 0)
+         (api/buf-set-lines buf {:start 0, :end trim} []))
+
+       ;; Insert the new lines and scroll to the bottom.
+       (api/buf-set-lines buf {:start -1, :end -1} lines)
+       (api/win-set-cursor win {:col 0, :row new-line-count})])
+    nil))

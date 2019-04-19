@@ -1,7 +1,6 @@
 (ns conjure.ui
   "Handle displaying and managing what's visible to the user."
   (:require [conjure.nvim :as nvim]
-            [conjure.nvim.api :as nvim-api]
             [conjure.util :as util]
             [conjure.code :as code]))
 
@@ -34,32 +33,16 @@
   below the origin/kind comment."
   [{:keys [origin kind msg code?] :or {code? false}}]
 
-  (let [prefix (str "; " (name origin) "/" (name kind))
-        lines (if code?
-                (into [(str prefix " ⤸")] (util/split-lines (code/pprint msg)))
-                (for [line (util/split-lines msg)]
-                  (str prefix " | " line)))
-        {:keys [buf win]} (upsert-log)
-        line-count (nvim-api/call (nvim-api/buf-line-count buf))
-        trim (if (> line-count max-log-buffer-length)
-               (/ max-log-buffer-length 2)
-               0)
-        new-line-count (+ line-count (count lines) (- trim))]
-
-    (nvim-api/call-batch
-      [;; Insert a welcome message on the first line when empty.
-       (when (= line-count 1)
-         (nvim-api/buf-set-lines buf {:start 0, :end 1} [welcome-msg]))
-
-       ;; Trim the log where required.
-       (when (> trim 0)
-         (nvim-api/buf-set-lines buf {:start 0, :end trim} []))
-
-       ;; Insert the new lines and scroll to the bottom.
-       (nvim-api/buf-set-lines buf {:start -1, :end -1} lines)
-       (nvim-api/win-set-cursor win {:col 0, :row new-line-count})])
-
-    nil))
+  (let [prefix (str "; " (name origin) "/" (name kind))]
+    (nvim/append-lines
+      (merge
+        (upsert-log)
+        {:header welcome-msg
+         :trim-at max-log-buffer-length
+         :lines (if code?
+                  (into [(str prefix " ⤸")] (util/split-lines (code/pprint msg)))
+                  (for [line (util/split-lines msg)]
+                    (str prefix " | " line)))}))))
 
 (defn info
   "For general information from Conjure, this is like
