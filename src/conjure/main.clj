@@ -14,9 +14,11 @@
 (defn- clean-up-and-exit
   "Performs any necessary clean up and calls `(System/exit status)`."
   []
+  (log/info "Shutting down")
   (shutdown-agents)
   (flush)
   (binding [*out* *err*] (flush))
+  (log/info "Done, exiting with code 0")
   (System/exit 0))
 
 (defn -main
