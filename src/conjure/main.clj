@@ -18,7 +18,6 @@
   (shutdown-agents)
   (flush)
   (binding [*out* *err*] (flush))
-  (log/info "Done, exiting with code 0")
   (System/exit 0))
 
 (defn -main
@@ -28,14 +27,11 @@
   (dev/init)
   (rpc/init))
 
-;; So users can pass {:expr #regex "..."}
-;; EDN doesn't support regular expressions out of the box.
-(def ^:private edn-opts {:readers {'regex re-pattern}})
 (defn parse-user-edn
   "Parses some string as EDN and ensures it conforms to a spec.
   Returns nil and displays an error if it fails."
   [spec src]
-  (let [value (edn/read-string edn-opts src)]
+  (let [value (edn/read-string {:readers {'regex re-pattern}} src)]
     (if (s/valid? spec value)
       value
       (ui/error (expound/expound-str spec value)))))
