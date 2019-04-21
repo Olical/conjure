@@ -18,12 +18,12 @@
   (shutdown-agents)
   (flush)
   (binding [*out* *err*] (flush))
-  (System/exit 0))
+  (.. Runtime (getRuntime) (halt 0)))
 
 (defn -main
   "Start up any background services and then wait forever."
   []
-  (.addShutdownHook (Runtime/getRuntime) (Thread. #(clean-up-and-exit)))
+  (.. Runtime (getRuntime) (addShutdownHook (Thread. #(clean-up-and-exit))))
   (dev/init)
   (rpc/init))
 
