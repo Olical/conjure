@@ -30,7 +30,7 @@
       (update 0 subs (max start 0))
       (util/join-lines)))
 
-(defn nil-pos?
+(defn- nil-pos?
   "A more intention revealing way of checking for [0 0] positions."
   [pos]
   (= pos [0 0]))
