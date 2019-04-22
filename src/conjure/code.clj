@@ -27,10 +27,13 @@
         (str (subs flat 0 sample-length) "…")
         flat))))
 
-(defn extract-ns [code]
-  (let [form (core/read-string {:read-cond :preserve} code)]
-    (when (and (seq? form) (= (first form) 'ns))
-      (some->> form (filter symbol?) (second) (str)))))
+(defn parse-ns [code]
+  (try
+    (let [form (core/read-string {:read-cond :preserve} code)]
+      (when (and (seq? form) (= (first form) 'ns))
+        (second (filter symbol? form))))
+    (catch Exception e
+      (log/error "Caught error while extracting ns" e))))
 
 (defn prelude-str [{:keys [lang]}]
   (case lang

@@ -16,7 +16,7 @@
     {:path path
      :buf buf
      :win win
-     :ns (code/extract-ns (util/join-lines sample-lines))}))
+     :ns (code/parse-ns (util/join-lines sample-lines))}))
 
 (defn read-range
   "Given some lines, start column, and end column it will trim the first and
