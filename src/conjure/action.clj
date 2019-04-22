@@ -111,12 +111,15 @@
   (let [ctx (current-ctx)
         lookup (fn [conn]
                  (-> (wrapped-eval ctx
-                                   {:conn conn, :code (code/defintion-str name)})
+                                   {:conn conn, :code (code/definition-str name)})
                      (get :val)
-                     (edn/read-string)))]
-    (if-let [coord (some lookup (:conns ctx))]
+                     (edn/read-string)))
+        coord (some lookup (:conns ctx))]
+    (if (vector? coord)
       (nvim/edit-at ctx coord)
-      (nvim/definition))))
+      (do
+        (log/warn "Non-vector definition result:" coord)
+        (nvim/definition)))))
 
 (defn run-tests [targets]
   (let [ctx (current-ctx)

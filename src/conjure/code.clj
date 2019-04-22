@@ -109,7 +109,7 @@
     ;; ClojureScript isn't supported by compliment right now.
     :cljs "[]"))
 
-(defn defintion-str [name]
+(defn definition-str [name]
   (str "
        (when-let [loc (if-let [sym (and (not (find-ns '"name")) (resolve '"name"))]
                         (mapv (meta sym) [:file :line :column])
