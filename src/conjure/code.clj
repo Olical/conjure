@@ -29,7 +29,7 @@
 
 (defn extract-ns [code]
   (let [form (core/read-string {:read-cond :preserve} code)]
-    (when (seq? form)
+    (when (and (seq? form) (= (first form) 'ns))
       (some->> form (filter symbol?) (second) (str)))))
 
 (defn prelude-str [{:keys [lang]}]
