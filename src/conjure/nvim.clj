@@ -18,7 +18,7 @@
      :win win
      :ns (code/parse-ns (util/join-lines sample-lines))}))
 
-(defn read-range
+(defn- read-range
   "Given some lines, start column, and end column it will trim the first and
   last line using those columns then join the lines into once string. Useful
   for trimming api/buf-get-lines results by some sort of col/row range."
