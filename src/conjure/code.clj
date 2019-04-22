@@ -28,7 +28,9 @@
         flat))))
 
 (defn extract-ns [code]
-  (second (re-find #"\(\s*ns\s+(\D[\w\d\.\*\+!\-'?]*)\s*" code)))
+  (let [form (core/read-string {:read-cond :preserve} code)]
+    (when (seq? form)
+      (some->> form (filter symbol?) (second) (str)))))
 
 (defn prelude-str [{:keys [lang]}]
   (case lang
