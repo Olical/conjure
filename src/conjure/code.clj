@@ -49,6 +49,9 @@
 
 ;; The read-string/eval wrapper can go away with Clojure 1.11.
 ;; https://dev.clojure.org/jira/browse/CLJ-2453
+
+;; The doall upon sequences is to work around an issue with pr-str.
+;; https://dev.clojure.org/jira/browse/CLJ-1532?focusedCommentId=51590#comment-51590
 (defn eval-str [{:keys [ns path]} {:keys [conn code]}]
   (case (:lang conn)
     :clj
@@ -58,11 +61,13 @@
            (binding [*file* \"" path "\"] 
              (with-bindings {clojure.lang.Compiler/LINE 1
                              clojure.lang.Compiler/COLUMN 1}
-               (clojure.core/eval
-                 (binding [*default-data-reader-fn* tagged-literal]
-                   (clojure.core/read-string
-                     {:read-cond :allow}
-                     \"(do " (util/escape-quotes code) "\n)\")))))
+               (let [ret (clojure.core/eval
+                           (binding [*default-data-reader-fn* tagged-literal]
+                             (clojure.core/read-string
+                               {:read-cond :allow}
+                               \"(do " (util/escape-quotes code) "\n)\")))]
+                 (cond-> ret
+                   (seq? ret) (doall)))))
            (catch Throwable e
              (clojure.core/Throwable->map e))
            (finally
