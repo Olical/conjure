@@ -4,7 +4,7 @@
             [conjure.rpc :as rpc]
             [conjure.util :as util]))
 
-(defn call
+(defn ^:dynamic call
   "Simply a thin nvim specific wrapper around rpc/request."
   [req]
   (let [{:keys [error result] :as resp} (rpc/request req)]
@@ -18,7 +18,7 @@
   (when req
     [(util/kw->snake method) (vec params)]))
 
-(defn call-batch
+(defn ^:dynamic call-batch
   "Perform multiple calls together atomically."
   [reqs]
   (let [[results [err-idx err-type err-msg]]
