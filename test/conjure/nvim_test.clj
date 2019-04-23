@@ -21,8 +21,12 @@
 (t/deftest current-ctx
   (defmethod call :nvim-get-current-buf [_] 5)
   (defmethod call :nvim-get-current-win [_] 10)
-  (defmethod call :nvim-buf-get-name [_] "foo.clj")
-  (defmethod call :nvim-buf-get-lines [_] ["(ns foo)"])
+  (defmethod call :nvim-buf-get-name [{[buf] :params}]
+    (t/is (= buf 5))
+    "foo.clj")
+  (defmethod call :nvim-buf-get-lines [{[buf] :params}]
+    (t/is (= buf 5))
+    ["(ns foo)"])
 
   (t/is (= (nvim/current-ctx)
            {:path "foo.clj"
