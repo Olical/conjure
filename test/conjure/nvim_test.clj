@@ -36,31 +36,45 @@
             :ns 'foo})))
 
 (t/deftest read-form
-  (defmethod call :nvim-get-current-buf [_] 5)
-  (defmethod call :nvim-get-current-win [_] 10)
-  (defmethod call :nvim-eval [_] "e")
-  (defmethod call :nvim-call-function [{[_ [s _ e args]] :params}]
-    (get {["()" :b] [2 16]
-          ["()" :f] [2 30]}
-         [(str s e)
-          (if (str/starts-with? args "b")
-            :b
-            :f)]
-         [0 0]))
-  (defmethod call :nvim-buf-get-lines [{[buf start end] :params}]
-    (t/is (= buf 5))
-    (->> ["(+ 10 10)"
-          "[:foo] {:x :y} (hello (world)) [:bar]"
-          ":hello"]
-         (drop start)
-         (take (- end start))
-         (vec)))
+  (let [src ["(+ 10 10)"
+             "[:foo] {:x :y} (hello (world)) [:bar]"
+             ":hello"]
+        pair-pos (fn [[_ [s _ e args]] positions]
+                   (get positions
+                        (if (str/starts-with? args "b") s e)
+                        [0 0]))]
+    (defmethod call :nvim-get-current-buf [_] 5)
+    (defmethod call :nvim-get-current-win [_] 10)
+    (defmethod call :nvim-eval [_]
+      (let [[row col] (call {:method :nvim-win-get-cursor})]
+        (str (get-in src [(dec row) col]))))
+    (defmethod call :nvim-buf-get-lines [{[buf start end] :params}]
+      (t/is (= buf 5))
+      (->> src
+           (drop start)
+           (take (- end start))
+           (vec)))
 
-  (t/testing "basic paren form"
-    (defmethod call :nvim-win-get-cursor [_] [2 18])
-    (t/is (= (nvim/read-form) "(hello (world))")))
+    (t/testing "basic paren form"
+      (defmethod call :nvim-call-function [{:keys [params]}]
+        (pair-pos params
+                  {"(" [2 16]
+                   ")" [2 30]}))
+      (defmethod call :nvim-win-get-cursor [_] [2 17])
+      (t/is (= (nvim/read-form) "(hello (world))")))
 
-  #_(t/testing "cursor on a boundary"
-      (defmethod call :nvim-win-get-cursor [{[win] :params}]
-        (t/is (= win 10))
-        [2 18])))
+    (t/testing "cursor on a boundary"
+      (defmethod call :nvim-call-function [{:keys [params]}]
+        (pair-pos params
+                  {"(" [1 1]
+                   ")" [2 29]}))
+      (defmethod call :nvim-win-get-cursor [_] [2 22])
+      (t/is (= (nvim/read-form) "(world)")))
+
+    (t/testing "root of an inner form"
+      (defmethod call :nvim-call-function [{:keys [params]}]
+        (pair-pos params
+                  {"(" [2 16]
+                   ")" [2 30]}))
+      (defmethod call :nvim-win-get-cursor [_] [2 22])
+      (t/is (= (nvim/read-form {:root? true}) "(hello (world))")))))
