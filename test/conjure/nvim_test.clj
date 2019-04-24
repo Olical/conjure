@@ -78,3 +78,14 @@
                    ")" [2 30]}))
       (defmethod call :nvim-win-get-cursor [_] [2 22])
       (t/is (= (nvim/read-form {:root? true}) "(hello (world))")))))
+
+(t/deftest read-buffer
+  (defmethod call :nvim-get-current-buf [_] 5)
+  (defmethod call :nvim-buf-get-lines [{[buf start end strict-indexing?] :params}]
+    (t/is (= buf 5))
+    (t/is (= start 0))
+    (t/is (= end -1))
+    (t/is (false? strict-indexing?))
+    ["foo" "bar"])
+
+  (t/is (= (nvim/read-buffer) "foo\nbar")))
