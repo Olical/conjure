@@ -1,18 +1,24 @@
 # Contributing to Conjure
 
- 1. Check out `CODE_OF_CONDUCT.md`, I will not tolerate behavior that violates the document. Let's all be wonderful humans to each other.
+ 1. Check out `CODE_OF_CONDUCT.md`, I will not tolerate behavior that violates that document. Let's all be wonderful humans to each other.
  2. Have a look around the issues to see if something similar to your feature or change has been discussed before.
  3. Speak to someone about it, raise an issue and start a discussion. Of course if you're just fixing a typo then go ahead, but if it's not an entirely trivial change let's work out what to do together. Perhaps someone has already solved your problem and just needs a poke to share their work or findings.
  4. Develop your change on a branch keeping in line with how the project is currently structured, try to keep your change minimal and focussed.
 
-When working on Conjure you can start the development version through `make dev`. You'll ideally need [localvimrc][] to evaluate the `.lvimrc` file for you on startup. When working on Conjure you'll have the following extras by default:
+When working on Conjure you can start the development version through `bin/dev`. You'll ideally need [localvimrc][] to evaluate the `.lvimrc` file for you on startup. When working on Conjure you'll have the following extras by default:
 
  * Your global version of Conjure will be overridden by the one in your current directory.
  * Logs are sent to `logs/conjure.log`. (I `tail -f` this file in another terminal while working)
  * A prepl into Conjure itself is opened on port `5885`. `<localleader>rc` will connect Conjure to itself so you can develop in a strangely magical cycle.
  * The AOT compiled classes are ignored so startup time is quite a bit longer but you get the full development version to REPL into.
 
-You can start a few prepls to test against with `make prepls`:
+## Checking your work
+
+The test suite is run through [CircleCI][] automatically on every change and coverage reports are uploaded to [Codecov][], you can execute it all yourself with `bin/kaocha`. Check out the [Kaocha documentation][kaocha] for more information.
+
+Try to grow the coverage instead of shrinking it where possible but I'm never going to be super strict about this. Add tests where you feel like they help, don't bother where the value is negligible.
+
+For ad-hoc interactive testing you can start a few test prepls with `bin/prepls`:
 
  * `jvm` on `5555`
  * `node` on `5556`
@@ -23,3 +29,6 @@ These are useful for testing Clojure and ClojureScript discrepancies, of which t
 Above all, have fun with it. Help build and improve something you love to use.
 
 [localvimrc]: https://github.com/embear/vim-localvimrc
+[circleci]: https://circleci.com/
+[codecov]: https://codecov.io/
+[kaocha]: https://github.com/lambdaisland/kaocha
