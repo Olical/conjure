@@ -67,7 +67,10 @@
                   {"(" [2 16]
                    ")" [2 30]}))
       (defmethod call :nvim-win-get-cursor [_] [2 17])
-      (t/is (= (nvim/read-form) "(hello (world))")))
+      (t/is (= (nvim/read-form)
+               {:form "(hello (world))"
+                :cursor [1 2]
+                :origin [2 16]})))
 
     (t/testing "cursor on a boundary"
       (defmethod call :nvim-call-function [{:keys [params]}]
@@ -75,7 +78,10 @@
                   {"(" [1 1]
                    ")" [2 29]}))
       (defmethod call :nvim-win-get-cursor [_] [2 22])
-      (t/is (= (nvim/read-form) "(world)")))
+      (t/is (= (nvim/read-form)
+               {:form "(world)"
+                :cursor [1 0]
+                :origin [2 23]})))
 
     (t/testing "root of an inner form"
       (defmethod call :nvim-call-function [{:keys [params]}]
@@ -83,7 +89,10 @@
                   {"(" [2 16]
                    ")" [2 30]}))
       (defmethod call :nvim-win-get-cursor [_] [2 22])
-      (t/is (= (nvim/read-form {:root? true}) "(hello (world))")))))
+      (t/is (= (nvim/read-form {:root? true})
+               {:form "(hello (world))"
+                :cursor [1 7]
+                :origin [2 16]})))))
 
 (t/deftest read-buffer
   (defmethod call :nvim-get-current-buf [_] 5)

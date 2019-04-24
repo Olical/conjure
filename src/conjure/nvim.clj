@@ -88,19 +88,26 @@
                                                 :end (first end)}))
                       pairs))
 
-         ;; Extract the text range (column-wise) from those groups of lines.
+         ;; Build the potential results containing the form text, origin in the
+         ;; document and local cursor position within that form.
          text (map-indexed
                 (fn [n lines]
                   (let [[start end] (nth pairs n)]
-                    (read-range {:lines lines
-                                 :start (dec (second start))
-                                 :end (second end)})))
+                    {:form (read-range {:lines lines
+                                        :start (dec (second start))
+                                        :end (second end)})
+                     :origin start
+                     :cursor [(inc (- (first cursor)
+                                      (first start)))
+                              (- (second cursor)
+                                 (second start))]}))
                 lines)]
 
      ;; If we have some matches, select the largest if we want the root form
      ;; and the smallest if we want the current one.
      (when (seq text)
-       ((if root? last first) (sort-by count text))))))
+       ((if root? last first)
+        (sort-by (comp count :form) text))))))
 
 (defn read-buffer
   "Read the entire current buffer into a string."

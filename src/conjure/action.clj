@@ -68,10 +68,10 @@
                          (assoc :val (str "No doc for " name)))})))))
 
 (defn eval-current-form []
-  (eval* (nvim/read-form)))
+  (eval* (:form (nvim/read-form))))
 
 (defn eval-root-form []
-  (eval* (nvim/read-form {:root? true})))
+  (eval* (:form (nvim/read-form {:root? true}))))
 
 (defn eval-selection []
   (eval* (nvim/read-selection)))
