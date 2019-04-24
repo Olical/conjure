@@ -35,7 +35,6 @@
             :win 10
             :ns 'foo})))
 
-#_
 (t/deftest read-form
   (defmethod call :nvim-get-current-buf [_] 5)
   (defmethod call :nvim-get-current-win [_] 10)
@@ -48,15 +47,20 @@
             :b
             :f)]
          [0 0]))
-  (defmethod call :nvim-win-get-cursor [{[win] :params}]
-    (t/is (= win 10))
-    [2 18])
   (defmethod call :nvim-buf-get-lines [{[buf start end] :params}]
     (t/is (= buf 5))
-    (t/is (= start 1))
-    (t/is (= end 2))
-    ["(+ 10 10)"
-     "[:foo] {:x :y} (hello (world)) [:bar]"
-     ":hello"])
+    (->> ["(+ 10 10)"
+          "[:foo] {:x :y} (hello (world)) [:bar]"
+          ":hello"]
+         (drop start)
+         (take (- end start))
+         (vec)))
 
-  (t/is (= (nvim/read-form) "(hello (world))")))
+  (t/testing "basic paren form"
+    (defmethod call :nvim-win-get-cursor [_] [2 18])
+    (t/is (= (nvim/read-form) "(hello (world))")))
+
+  #_(t/testing "cursor on a boundary"
+      (defmethod call :nvim-win-get-cursor [{[win] :params}]
+        (t/is (= win 10))
+        [2 18])))
