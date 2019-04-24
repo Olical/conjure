@@ -55,6 +55,12 @@
            (take (- end start))
            (vec)))
 
+    (t/testing "no form"
+      (defmethod call :nvim-call-function [{:keys [params]}]
+        (pair-pos params {}))
+      (defmethod call :nvim-win-get-cursor [_] [2 17])
+      (t/is (= (nvim/read-form) nil)))
+
     (t/testing "basic paren form"
       (defmethod call :nvim-call-function [{:keys [params]}]
         (pair-pos params
