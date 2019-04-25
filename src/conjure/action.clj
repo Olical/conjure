@@ -87,14 +87,27 @@
         (ui/load-file* opts)
         (ui/result {:conn conn, :resp (raw-eval ctx opts)})))))
 
+(defn- completion-context [prefix]
+  (when-let [{:keys [form cursor]} (nvim/read-form {:root? true})]
+    (-> (util/split-lines form)
+        (update (dec (first cursor))
+                #(util/splice %
+                              (- (second cursor) (count prefix))
+                              (second cursor)
+                              "__prefix__"))
+        (util/join-lines))))
+
 (defn completions [prefix]
-  (let [ctx (current-ctx {:silent? true})]
+  (let [ctx (current-ctx {:silent? true})
+        context (completion-context prefix)]
     (->> (:conns ctx)
          (mapcat
            (fn [conn]
              (log/trace "Finding completions for" (str "\"" prefix "\"")
                         "in" (:path ctx))
-             (let [code (code/completions-str ctx {:conn conn, :prefix prefix})]
+             (let [code (code/completions-str ctx {:conn conn
+                                                   :prefix prefix
+                                                   :context context})]
                (->> (wrapped-eval ctx {:conn conn, :code code})
                     :val
                     edn/read-string
