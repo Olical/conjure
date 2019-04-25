@@ -59,3 +59,9 @@
 
 (t/deftest kw->snake-map
   (t/is (= (util/kw->snake-map {:foo-bar :baz}) {"foo_bar" :baz})))
+
+(t/deftest write
+  (t/is (= (str (util/write (java.io.StringWriter.) "foo")) "foo")))
+
+(t/deftest thread
+  (t/is (= @(util/thread "adding" (+ 10 10)) 20)))
