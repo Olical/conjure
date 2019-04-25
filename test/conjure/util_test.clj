@@ -47,3 +47,15 @@
 (t/deftest regexp?
   (t/is (util/regexp? #"foo"))
   (t/is (not (util/regexp? "foo"))))
+
+(t/deftest snake->kw
+  (t/is (= (util/snake->kw "foo_bar") :foo-bar)))
+
+(t/deftest kw->snake
+  (t/is (= (util/kw->snake :foo-bar) "foo_bar")))
+
+(t/deftest snake->kw-map
+  (t/is (= (util/snake->kw-map {"foo_bar" :baz}) {:foo-bar :baz})))
+
+(t/deftest kw->snake-map
+  (t/is (= (util/kw->snake-map {:foo-bar :baz}) {"foo_bar" :baz})))
