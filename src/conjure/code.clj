@@ -54,7 +54,7 @@
 ;; https://dev.clojure.org/jira/browse/CLJ-2453
 
 ;; The doall upon sequences is to work around an issue with pr-str.
-;; https://dev.clojure.org/jira/browse/CLJ-1532?focusedCommentId=51590#comment-51590
+;; https://dev.clojure.org/jira/browse/CLJ-1532
 (defn eval-str [{:keys [ns path]} {:keys [conn code]}]
   (case (:lang conn)
     :clj
