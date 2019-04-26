@@ -56,10 +56,9 @@
       (str "
            (try
              (ns " (or ns "user") ")
-             (binding [*default-data-reader-fn* tagged-literal]
-               (let [rdr (-> (java.io.StringReader. \"(do " (util/escape-quotes code) "\n)\")
-                             (clojure.lang.LineNumberingPushbackReader.))]
-                 (. clojure.lang.Compiler (load rdr \"" path "\" \"" path-name "\"))))
+             (let [rdr (-> (java.io.StringReader. \"(do " (util/escape-quotes code) "\n)\")
+                           (clojure.lang.LineNumberingPushbackReader.))]
+               (. clojure.lang.Compiler (load rdr \"" path "\" \"" path-name "\")))
              (catch Throwable e
                (Throwable->map e))
              (finally
