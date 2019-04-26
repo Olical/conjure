@@ -62,15 +62,13 @@
          (try
            (ns " (or ns "user") ")
            (binding [*file* \"" path "\"] 
-             (with-bindings {clojure.lang.Compiler/LINE 1
-                             clojure.lang.Compiler/COLUMN 1}
-               (let [ret (clojure.core/eval
-                           (binding [*default-data-reader-fn* tagged-literal]
-                             (clojure.core/read-string
-                               {:read-cond :allow}
-                               \"(do " (util/escape-quotes code) "\n)\")))]
-                 (cond-> ret
-                   (seq? ret) (doall)))))
+             (let [ret (clojure.core/eval
+                         (binding [*default-data-reader-fn* tagged-literal]
+                           (clojure.core/read-string
+                             {:read-cond :allow}
+                             \"(do " (util/escape-quotes code) "\n)\")))]
+               (cond-> ret
+                 (seq? ret) (doall))))
            (catch Throwable e
              (clojure.core/Throwable->map e))
            (finally
