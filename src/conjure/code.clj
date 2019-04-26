@@ -49,9 +49,6 @@
 ;; If you're evaluating a form it needs to send the line and column for the forms first character.
 ;; If it's a range eval we set it to the start of the eval.
 ;; If it's a buffer, it's the start of the buffer.
-
-;; The doall upon sequences is to mitigate an issue with pr-str.
-;; https://dev.clojure.org/jira/browse/CLJ-1532
 (defn eval-str [{:keys [ns path]} {:keys [conn code]}]
   (let [path-name (last (str/split path #"/"))]
     (case (:lang conn)
@@ -61,10 +58,8 @@
              (ns " (or ns "user") ")
              (binding [*default-data-reader-fn* tagged-literal]
                (let [rdr (-> (java.io.StringReader. \"(do " (util/escape-quotes code) "\n)\")
-                             (clojure.lang.LineNumberingPushbackReader.))
-                     ret (. clojure.lang.Compiler (load rdr \"" path "\" \"" path-name "\"))]
-                 (cond-> ret
-                   (seq? ret) (doall))))
+                             (clojure.lang.LineNumberingPushbackReader.))]
+                 (. clojure.lang.Compiler (load rdr \"" path "\" \"" path-name "\"))))
              (catch Throwable e
                (Throwable->map e))
              (finally
