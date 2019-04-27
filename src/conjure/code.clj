@@ -9,10 +9,11 @@
   "Parse and format the code, suppress and log any errors."
   [code]
   (try
-    (util/pprint
-      (core/read-string
-        {:read-cond :preserve}
-        code))
+    (binding [*default-data-reader-fn* tagged-literal]
+      (util/pprint
+        (core/read-string
+          {:read-cond :preserve}
+          code)))
     (catch Exception e
       (log/error "Error while pretty printing" e)
       code)))
@@ -48,16 +49,19 @@
 ;; If you're evaluating a form it needs to send the line and column for the forms first character.
 ;; If it's a range eval we set it to the start of the eval.
 ;; If it's a buffer, it's the start of the buffer.
-(defn eval-str [{:keys [ns path]} {:keys [conn code]}]
-  (let [path-name (last (str/split path #"/"))]
+(defn eval-str [{:keys [ns path line] :or {line 1}} {:keys [conn code]}]
+  (let [path-args-str (when-not (str/blank? path)
+                        (str " \"" path "\" \"" (last (str/split path #"/")) "\""))]
     (case (:lang conn)
       :clj
       (str "
            (try
              (ns " (or ns "user") ")
              (let [rdr (-> (java.io.StringReader. \"(do " (util/escape-quotes code) "\n)\")
-                           (clojure.lang.LineNumberingPushbackReader.))]
-               (. clojure.lang.Compiler (load rdr \"" path "\" \"" path-name "\")))
+                           (clojure.lang.LineNumberingPushbackReader.)
+                           (doto (.setLineNumber " line ")))]
+               (binding [*default-data-reader-fn* tagged-literal]
+                 (. clojure.lang.Compiler (load rdr" path-args-str "))))
              (catch Throwable e
                (Throwable->map e))
              (finally
