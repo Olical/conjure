@@ -49,6 +49,8 @@
 ;; If you're evaluating a form it needs to send the line and column for the forms first character.
 ;; If it's a range eval we set it to the start of the eval.
 ;; If it's a buffer, it's the start of the buffer.
+
+;; TODO Replace all reader conditionals. I know the lang anyway.
 (defn eval-str [{:keys [ns path line] :or {line 1}} {:keys [conn code]}]
   (let [path-args-str (when-not (str/blank? path)
                         (str " \"" path "\" \"" (last (str/split path #"/")) "\""))]
