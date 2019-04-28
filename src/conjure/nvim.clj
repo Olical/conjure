@@ -131,7 +131,7 @@
 (defn read-selection
   "Read the current selection into a string."
   []
-  (let [[buf [_ s-line s-col _] [_ e-line e-col]]
+  (let [[buf [_ s-line s-col _] [_ e-line e-col _]]
         (api/call-batch
           [(api/get-current-buf)
            (api/call-function :getpos "'<")
@@ -141,9 +141,10 @@
                   buf
                   {:start (dec s-line)
                    :end e-line}))]
-    (read-range {:lines lines
-                 :start (dec s-col)
-                 :end e-col})))
+    {:selection (read-range {:lines lines
+                             :start (dec s-col)
+                             :end e-col})
+     :origin [s-line s-col]}))
 
 (defn call-lua-function
   "Execute Conjure lua functions."

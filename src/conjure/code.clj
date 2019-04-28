@@ -45,11 +45,8 @@
             (try (require 'compliment.core) (catch Exception _)))"
     :cljs "(require 'cljs.repl 'cljs.test)"))
 
-;; TODO Pass the line and column through from Neovim for the cursor, form or file.
-;; If you're evaluating a form it needs to send the line and column for the forms first character.
-;; If it's a range eval we set it to the start of the eval.
-;; If it's a buffer, it's the start of the buffer.
-(defn eval-str [{:keys [ns path line] :or {line 1}} {:keys [conn code]}]
+;; TODO Implement line offset for ClojureScript.
+(defn eval-str [{:keys [ns path]} {:keys [conn code line]}]
   (let [path-args-str (when-not (str/blank? path)
                         (str " \"" path "\" \"" (last (str/split path #"/")) "\""))]
     (case (:lang conn)
@@ -59,7 +56,7 @@
              (ns " (or ns "user") ")
              (let [rdr (-> (java.io.StringReader. \"(do " (util/escape-quotes code) "\n)\")
                            (clojure.lang.LineNumberingPushbackReader.)
-                           (doto (.setLineNumber " line ")))]
+                           (doto (.setLineNumber " (or line 1) ")))]
                (binding [*default-data-reader-fn* tagged-literal]
                  (. clojure.lang.Compiler (load rdr" path-args-str "))))
              (catch Throwable e

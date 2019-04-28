@@ -48,11 +48,11 @@
 
 ;; The following functions are called by the user through commands.
 
-(defn eval* [code]
+(defn eval* [{:keys [code line]}]
   (when code
     (let [ctx (current-ctx)]
       (doseq [conn (:conns ctx)]
-        (let [opts {:conn conn, :code code}]
+        (let [opts {:conn conn, :code code, :line line}]
           (ui/eval* opts)
           (ui/result {:conn conn, :resp (wrapped-eval ctx opts)}))))))
 
@@ -68,16 +68,22 @@
                          (assoc :val (str "No doc for " name)))})))))
 
 (defn eval-current-form []
-  (eval* (:form (nvim/read-form))))
+  (let [{:keys [form origin]} (nvim/read-form)]
+    (eval* {:code form
+            :line (first origin)})))
 
 (defn eval-root-form []
-  (eval* (:form (nvim/read-form {:root? true}))))
+  (let [{:keys [form origin]} (nvim/read-form {:root? true})]
+    (eval* {:code form
+            :line (first origin)})))
 
 (defn eval-selection []
-  (eval* (nvim/read-selection)))
+  (let [{:keys [selection origin]} (nvim/read-selection)]
+    (eval* {:code selection
+            :line (first origin)})))
 
 (defn eval-buffer []
-  (eval* (nvim/read-buffer)))
+  (eval* {:code (nvim/read-buffer)}))
 
 (defn load-file* [path]
   (let [ctx (current-ctx)
