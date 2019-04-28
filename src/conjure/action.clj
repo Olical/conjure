@@ -144,18 +144,19 @@
                    (str ns "-test"))]
     (doseq [conn (:conns ctx)]
       (let [code (code/run-tests-str
-                   (if (empty? targets)
-                     (cond-> #{ns}
-                       (= (:lang conn) :clj) (conj other-ns))
-                     targets))]
+                   {:conn conn
+                    :targets (if (empty? targets)
+                               (cond-> #{ns}
+                                 (= (:lang conn) :clj) (conj other-ns))
+                               targets)})]
         (ui/test* {:conn conn
                    :resp (-> (wrapped-eval ctx {:conn conn, :code code})
                              (update :val edn/read-string))})))))
 
 (defn run-all-tests [re]
-  (let [ctx (current-ctx)
-        code (code/run-all-tests-str re)]
+  (let [ctx (current-ctx)]
     (doseq [conn (:conns ctx)]
-      (ui/test* {:conn conn
-                 :resp (-> (wrapped-eval ctx {:conn conn, :code code})
-                           (update :val edn/read-string))}))))
+      (let [code (code/run-all-tests-str {:re re, :conn conn})]
+        (ui/test* {:conn conn
+                   :resp (-> (wrapped-eval ctx {:conn conn, :code code})
+                             (update :val edn/read-string))})))))

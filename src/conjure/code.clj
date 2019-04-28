@@ -49,8 +49,6 @@
 ;; If you're evaluating a form it needs to send the line and column for the forms first character.
 ;; If it's a range eval we set it to the start of the eval.
 ;; If it's a buffer, it's the start of the buffer.
-
-;; TODO Replace all reader conditionals. I know the lang anyway.
 (defn eval-str [{:keys [ns path line] :or {line 1}} {:keys [conn code]}]
   (let [path-args-str (when-not (str/blank? path)
                         (str " \"" path "\" \"" (last (str/split path #"/")) "\""))]
@@ -133,23 +131,38 @@
                (update 2 dec))))
        "))
 
-(defn run-tests-str [targets]
+(defn run-tests-str [{:keys [targets conn]}]
   (let [targets-str (->> targets
                          (map #(str "'" %))
                          (str/join " "))]
-    (str "
-         (with-out-str
-           #?(:clj (binding [clojure.test/*test-out* *out*]
-                     (apply clojure.test/run-tests (keep find-ns #{" targets-str "})))
-              :cljs (cljs.test/run-tests " targets-str ")))
-         ")))
+    (case (:lang conn)
+      :clj
+      (str "
+           (with-out-str
+             (binding [clojure.test/*test-out* *out*]
+               (apply clojure.test/run-tests (keep find-ns #{" targets-str "}))))
+           ")
 
-(defn run-all-tests-str [re]
+      :cljs
+      (str "
+           (with-out-str
+             (cljs.test/run-tests " targets-str "))
+           "))))
+
+(defn run-all-tests-str [{:keys [re conn]}]
   (let [re-str (when re
                  (str " #\"" (util/escape-quotes re) "\""))]
-    (str "
-         (with-out-str
-           #?(:clj (binding [clojure.test/*test-out* *out*]
-                     (clojure.test/run-all-tests" re-str "))
-              :cljs (cljs.test/run-all-tests" re-str ")))
-         ")))
+
+    (case (:lang conn)
+      :clj
+      (str "
+           (with-out-str
+             (binding [clojure.test/*test-out* *out*]
+               (clojure.test/run-all-tests" re-str ")))
+           ")
+
+      :cljs
+      (str "
+           (with-out-str
+             (cljs.test/run-all-tests" re-str "))
+           "))))
