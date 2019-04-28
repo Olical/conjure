@@ -20,11 +20,3 @@
 (t/deftest something-simple
   (t/testing "hmm"
     (t/is (= 10 10))))
-
-(defn positive-numbers
-  ([] (positive-numbers 1))
-  ([n]
-   (prn "x")
-   (lazy-seq (cons n (positive-numbers (inc n))))))
-
-(take 10 (positive-numbers))
