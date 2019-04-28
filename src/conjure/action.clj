@@ -124,7 +124,9 @@
   (let [ctx (current-ctx)
         lookup (fn [conn]
                  (-> (wrapped-eval ctx
-                                   {:conn conn, :code (code/definition-str name)})
+                                   {:conn conn
+                                    :code (code/definition-str {:conn conn
+                                                                :name name})})
                      (get :val)
                      (edn/read-string)))
         coord (some lookup (:conns ctx))]
