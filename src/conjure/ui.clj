@@ -5,7 +5,7 @@
             [conjure.code :as code]))
 
 (def ^:private log-window-widths {:small 40 :large 80})
-(def ^:private max-log-buffer-length 3000)
+(def ^:private max-log-buffer-length 2000)
 (defonce ^:private log-buffer-name "/tmp/conjure.cljc")
 (def ^:private welcome-msg "; conjure/out | Welcome to Conjure!")
 
