@@ -60,7 +60,10 @@
                (binding [*default-data-reader-fn* tagged-literal]
                  (. clojure.lang.Compiler (load rdr" path-args-str "))))
              (catch Throwable e
-               (Throwable->map e))
+               (let [emap (Throwable->map e)]
+                 (binding [*out* *err*]
+                   (println (-> emap clojure.main/ex-triage clojure.main/ex-str)))
+                 emap))
              (finally
                (flush)))
            ")
@@ -71,7 +74,9 @@
            (try
              " code "
              (catch :default e
-               (cljs.repl/Error->map e))
+               (let [emap (cljs.repl/Error->map e)]
+                 (println (-> emap cljs.repl/ex-triage cljs.repl/ex-str))
+                 emap))
              (finally
                (flush)))
            "))))
