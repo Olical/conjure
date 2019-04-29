@@ -83,9 +83,7 @@
   (memo/lru
     (fn [data]
       (try
-        (if (sequential? data)
-          (decode* data)
-          (log/warn "Can not decode" (pr-str data)))
+        (decode* data)
         (catch Exception e
           (log/error "Error while decoding" e))))))
 
@@ -151,7 +149,7 @@
                      (log/info "TCP connection opened")
 
                      (loop []
-                       (when-let [msg (decode (json/parse-stream reader))]
+                       (when-let [msg (some-> (json/parse-stream reader) (decode))]
                          (try
                            (a/>!! in-chan (assoc msg :client writer))
                            (catch Exception e
