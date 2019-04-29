@@ -39,7 +39,7 @@
         {:header welcome-msg
          :trim-at max-log-buffer-length
          :lines (if code?
-                  (into [(str prefix " ⤸")] (util/split-lines (code/pprint msg)))
+                  (into [(str prefix " ⤸")] (util/split-lines msg))
                   (for [line (util/split-lines msg)]
                     (str prefix " | " line)))}))))
 
@@ -80,7 +80,8 @@
   (append {:origin (:tag conn)
            :kind (:tag resp)
            :code? (contains? #{:ret :tap} (:tag resp))
-           :msg (:val resp)}))
+           :msg (code/pprint (cond-> (:val resp)
+                               (= (:tag resp) :ret) (second)))}))
 
 (defn load-file*
   "When we ask to load a whole file from disk."

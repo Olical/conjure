@@ -1,7 +1,6 @@
 (ns conjure.action
   "Things the user can do that probably trigger some sort of UI update."
   (:require [clojure.core.async :as a]
-            [clojure.edn :as edn]
             [clojure.string :as str]
             [taoensso.timbre :as log]
             [conjure.prepl :as prepl]
@@ -61,7 +60,7 @@
     (doseq [conn (:conns ctx)]
       (let [code (code/doc-str {:conn conn, :name name})
             result (-> (wrapped-eval ctx {:conn conn, :code code})
-                       (update :val edn/read-string))]
+                       (update :val second))]
         (ui/doc {:conn conn
                  :resp (cond-> result
                          (empty? (:val result))
@@ -114,16 +113,16 @@
              (let [code (code/completions-str ctx {:conn conn
                                                    :prefix prefix
                                                    :context context})]
-               (->> (wrapped-eval ctx {:conn conn, :code code})
-                    :val
-                    edn/read-string
-                    (map
-                      (fn [{:keys [candidate type ns package]}]
-                        (let [menu (or ns package)]
-                          (util/kw->snake-map
-                            (cond-> {:word candidate
-                                     :kind (subs (name type) 0 1)}
-                              menu (assoc :menu menu))))))))))
+               (-> (wrapped-eval ctx {:conn conn, :code code})
+                   (get :val)
+                   (second)
+                   (->> (map
+                          (fn [{:keys [candidate type ns package]}]
+                            (let [menu (or ns package)]
+                              (util/kw->snake-map
+                                (cond-> {:word candidate
+                                         :kind (subs (name type) 0 1)}
+                                  menu (assoc :menu menu)))))))))))
          (dedupe))))
 
 (defn definition [name]
@@ -134,7 +133,7 @@
                                     :code (code/definition-str {:conn conn
                                                                 :name name})})
                      (get :val)
-                     (edn/read-string)))
+                     (second)))
         coord (some lookup (:conns ctx))]
     (if (vector? coord)
       (nvim/edit-at ctx coord)
@@ -157,7 +156,7 @@
                                targets)})]
         (ui/test* {:conn conn
                    :resp (-> (wrapped-eval ctx {:conn conn, :code code})
-                             (update :val edn/read-string))})))))
+                             (update :val second))})))))
 
 (defn run-all-tests [re]
   (let [ctx (current-ctx)]
@@ -165,4 +164,4 @@
       (let [code (code/run-all-tests-str {:re re, :conn conn})]
         (ui/test* {:conn conn
                    :resp (-> (wrapped-eval ctx {:conn conn, :code code})
-                             (update :val edn/read-string))})))))
+                             (update :val second))})))))

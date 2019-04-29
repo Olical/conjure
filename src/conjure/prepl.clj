@@ -134,9 +134,12 @@
       (loop []
         (when-let [out (a/<!! (get-in conn [:chans :read-chan]))]
           (log/trace "Read value from" (:tag conn) "-" out)
-          (if (= (:tag out) :ret)
-            (a/>!! ret-chan out)
-            (ui/result {:conn conn, :resp out}))
+          (let [out (cond-> out
+                      (contains? #{:tap :ret} (:tag out))
+                      (update :val code/parse-code))]
+            (if (= (:tag out) :ret)
+              (a/>!! ret-chan out)
+              (ui/result {:conn conn, :resp out})))
           (recur))))))
 
 (defn conns

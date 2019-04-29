@@ -83,7 +83,9 @@
   (memo/lru
     (fn [data]
       (try
-        (decode* data)
+        (if (sequential? data)
+          (decode* data)
+          (log/warn "Can not decode" (pr-str data)))
         (catch Exception e
           (log/error "Error while decoding" e))))))
 

@@ -1,7 +1,6 @@
 (ns conjure.code
   "Tools to render or format Clojure code."
   (:require [clojure.string :as str]
-            [clojure.core :as core]
             [taoensso.timbre :as log]
             [conjure.util :as util]))
 
@@ -9,11 +8,7 @@
   "Parse and format the code, suppress and log any errors."
   [code]
   (try
-    (binding [*default-data-reader-fn* tagged-literal]
-      (util/pprint
-        (core/read-string
-          {:read-cond :preserve}
-          code)))
+    (util/pprint code)
     (catch Exception e
       (log/error "Error while pretty printing" e)
       code)))
@@ -27,9 +22,13 @@
         (str (subs flat 0 sample-length) "…")
         flat))))
 
+(defn parse-code [code]
+  (binding [*default-data-reader-fn* tagged-literal]
+    (read-string {:read-cond :preserve} code)))
+
 (defn parse-ns [code]
   (try
-    (let [form (core/read-string {:read-cond :preserve} code)]
+    (let [form (parse-code code)]
       (when (and (seq? form) (= (first form) 'ns))
         (second (filter symbol? form))))
     (catch Exception e
@@ -58,12 +57,12 @@
                            (clojure.lang.LineNumberingPushbackReader.)
                            (doto (.setLineNumber " (or line 1) ")))]
                (binding [*default-data-reader-fn* tagged-literal]
-                 (. clojure.lang.Compiler (load rdr" path-args-str "))))
+                 [:ok (. clojure.lang.Compiler (load rdr" path-args-str "))]))
              (catch Throwable e
                (let [emap (Throwable->map e)]
                  (binding [*out* *err*]
                    (println (-> emap clojure.main/ex-triage clojure.main/ex-str)))
-                 emap))
+                 [:error emap]))
              (finally
                (flush)))
            ")
@@ -72,11 +71,11 @@
       (str "
            (in-ns '" (or ns "cljs.user") ")
            (try
-             " code "
+             [:ok " code "]
              (catch :default e
                (let [emap (cljs.repl/Error->map e)]
                  (println (-> emap cljs.repl/ex-triage cljs.repl/ex-str))
-                 emap))
+                 [:error emap]))
              (finally
                (flush)))
            "))))
