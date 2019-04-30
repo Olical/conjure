@@ -77,11 +77,13 @@
 (defn result
   "Format, if it's code, and display a result from an evaluation."
   [{:keys [conn resp]}]
-  (append {:origin (:tag conn)
-           :kind (:tag resp)
-           :code? (contains? #{:ret :tap} (:tag resp))
-           :msg (code/pprint (cond-> (:val resp)
-                               (= (:tag resp) :ret) (second)))}))
+  (let [code? (contains? #{:ret :tap} (:tag resp))]
+    (append {:origin (:tag conn)
+             :kind (:tag resp)
+             :code? code?
+             :msg (cond-> (:val resp)
+                    (= (:tag resp) :ret) (second)
+                    code? (code/pprint))})))
 
 (defn load-file*
   "When we ask to load a whole file from disk."
