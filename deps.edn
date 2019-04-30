@@ -1,7 +1,7 @@
 {:paths ["src"]
 
  :deps
- {org.clojure/clojure {:mvn/version "1.10.1-beta2"}
+ {org.clojure/clojure {:mvn/version "1.10.0"}
   org.clojure/core.async {:mvn/version "0.4.490"}
   org.clojure/spec.alpha {:mvn/version "0.2.176"}
   com.taoensso/timbre {:mvn/version "4.10.0"}
