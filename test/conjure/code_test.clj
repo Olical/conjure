@@ -7,6 +7,9 @@
   (t/is (= (code/sample "this is some long code and it exceeds the character limit")
            "this is some long code and it exceeds the …")))
 
+(t/deftest parse-code
+  (t/is (= (code/parse-code "{:foo :bar}") {:foo :bar})))
+
 (t/deftest parse-ns
   (t/is (= (code/parse-ns "lol nope") nil))
   (t/is (= (code/parse-ns "(+ 10 10)") nil))
