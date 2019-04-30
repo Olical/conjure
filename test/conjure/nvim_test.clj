@@ -25,6 +25,7 @@
   (defmethod call :nvim-buf-get-name [{[buf] :params}]
     (t/is (= buf 5))
     "foo.clj")
+  (defmethod call :nvim-buf-line-count [_] 1)
   (defmethod call :nvim-buf-get-lines [{[buf] :params}]
     (t/is (= buf 5))
     ["(ns foo)"])
