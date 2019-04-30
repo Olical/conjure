@@ -45,7 +45,11 @@
 (defn pprint
   "Format the given data, assuming it's already parsed."
   [data]
-  (zp/zprint-str data))
+  (try
+    (zp/zprint-str data)
+    (catch Exception e
+      (log/error "Error while pretty printing" e)
+      (pr-str data))))
 
 (defn regexp? [o]
   (instance? java.util.regex.Pattern o))

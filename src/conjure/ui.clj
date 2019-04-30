@@ -83,7 +83,7 @@
              :code? code?
              :msg (cond-> (:val resp)
                     (= (:tag resp) :ret) (second)
-                    code? (code/pprint))})))
+                    code? (util/pprint))})))
 
 (defn load-file*
   "When we ask to load a whole file from disk."

@@ -4,15 +4,6 @@
             [taoensso.timbre :as log]
             [conjure.util :as util]))
 
-(defn pprint
-  "Parse and format the code, suppress and log any errors."
-  [code]
-  (try
-    (util/pprint code)
-    (catch Exception e
-      (log/error "Error while pretty printing" e)
-      code)))
-
 (defn sample
   "Get a short one line sample snippet of some code."
   [code]
