@@ -7,16 +7,25 @@
   "Context contains useful data that we don't watch to fetch twice while
   building code to eval. This function performs those costly calls."
   []
-  (let [buf (api/call (api/get-current-buf))
-        [path sample-lines win]
+  (let [line-count 25
+        buf (api/call (api/get-current-buf))
+        get-lines (fn [end] (api/buf-get-lines buf {:start 0, :end end}))
+        [path buf-length sample-lines win]
         (api/call-batch
           [(api/buf-get-name buf)
-           (api/buf-get-lines buf {:start 0, :end 25})
+           (api/buf-line-count buf)
+           (get-lines line-count)
            (api/get-current-win)])]
-    {:path path
-     :buf buf
-     :win win
-     :ns (code/parse-ns (util/join-lines sample-lines))}))
+    (loop [sample-lines sample-lines
+           line-count line-count]
+      (let [ns (code/parse-ns (util/join-lines sample-lines))
+            next-line-count (* line-count 2)]
+        (if (and (nil? ns) (< line-count buf-length))
+          (recur (api/call (get-lines next-line-count)) next-line-count)
+          {:path path
+           :buf buf
+           :win win
+           :ns ns})))))
 
 (defn- read-range
   "Given some lines, start column, and end column it will trim the first and
