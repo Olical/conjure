@@ -22,7 +22,7 @@
     (let [form (parse-code code)]
       (when (and (seq? form) (= (first form) 'ns))
         (second (filter symbol? form))))
-    (catch Exception e
+    (catch Throwable e
       (log/error "Caught error while extracting ns" e))))
 
 (defn prelude-str [{:keys [lang]}]

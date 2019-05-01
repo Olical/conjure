@@ -35,8 +35,8 @@
   (get-env-fn
     (csk/->SCREAMING_SNAKE_CASE (str "conjure-" (name k)))))
 
-(defn error->str [error]
-  (-> error Throwable->map clj/ex-triage clj/ex-str))
+(defn throwable->str [throwable]
+  (-> throwable Throwable->map clj/ex-triage clj/ex-str))
 
 (defn escape-quotes [s]
   (str/escape s {\\ "\\\\"
@@ -47,7 +47,7 @@
   [data]
   (try
     (zp/zprint-str data)
-    (catch Exception e
+    (catch Throwable e
       (log/error "Error while pretty printing" e)
       (pr-str data))))
 
@@ -66,7 +66,7 @@
   `(future
      (try
        ~@body
-       (catch Exception e#
+       (catch Throwable e#
          ;; stdout is redirected to stderr.
          ;; So it appears in Neovim as well as the log file.
          (println "Error from thread" (str "'" ~use-case "':\n") (pprint (Throwable->map e#)))

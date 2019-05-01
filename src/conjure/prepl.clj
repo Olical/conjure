@@ -70,7 +70,7 @@
               (a/>!! read-chan out))
             :valf identity)
 
-          (catch Exception e
+          (catch Throwable e
             (log/error "Error from remote-prepl:" e)
             (ui/error "Error from" tag e))
 
@@ -89,7 +89,7 @@
               (util/write writer code)
               (recur)))
 
-          (catch Exception e
+          (catch Throwable e
             (log/error "Error from eval-chan writing:" e))
 
           (finally

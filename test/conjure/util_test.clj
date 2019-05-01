@@ -1,5 +1,6 @@
 (ns conjure.util-test
   (:require [clojure.test :as t]
+            [zprint.core :as zp]
             [conjure.util :as util]))
 
 (t/deftest join-words
@@ -30,7 +31,14 @@
   (t/is (= (util/escape-quotes "\"\"") "\\\"\\\"")))
 
 (t/deftest pprint
-  (t/is (util/pprint {:foo :bar}) "{:foo :bar}"))
+  (t/is (util/pprint {:foo :bar}) "{:foo :bar}")
+
+  (with-redefs [zp/zprint-str (fn [_] (throw (Error. "ohno")))]
+    (t/is (= (util/pprint {:an :error}) "{:an :error}"))))
+
+(t/deftest throwable->str
+  (t/is (re-matches #"Execution error \(Error\) at conjure\.util-test/fn \(util_test\.clj:\d+\)\.\nohno\n"
+                    (util/throwable->str (Error. "ohno")))))
 
 (t/deftest count-str
   (t/is (= (util/count-str [] "number") "0 numbers"))

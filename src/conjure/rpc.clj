@@ -47,8 +47,8 @@
                 (select-keys msg #{:id :client})
                 (try
                   {:result (handle-request msg)}
-                  (catch Exception error
-                    {:error (util/error->str error)})))))
+                  (catch Throwable error
+                    {:error (util/throwable->str error)})))))
 
 (defn- decode*
   "Decode a msgpack vector into a descriptive map."
@@ -84,7 +84,7 @@
     (fn [data]
       (try
         (decode* data)
-        (catch Exception e
+        (catch Throwable e
           (log/error "Error while decoding" e))))))
 
 (def pack
@@ -96,7 +96,7 @@
           (case transport
             :msgpack (msg/pack payload)
             :json (str (json/generate-string payload) "\n")))
-        (catch Exception e
+        (catch Throwable e
           (log/error "Error while packing" e))))))
 
 (defn- request-id
@@ -152,7 +152,7 @@
                        (when-let [msg (some-> (json/parse-stream reader) (decode))]
                          (try
                            (a/>!! in-chan (assoc msg :client writer))
-                           (catch Exception e
+                           (catch Throwable e
                              (log/error "Error while writing to in-chan:" e)))
                          (recur)))
 
@@ -168,7 +168,7 @@
       (when-let [msg (decode (msg/unpack System/in))]
         (try
           (a/>!! in-chan (assoc msg :client :stdio))
-          (catch Exception e
+          (catch Throwable e
             (log/error "Error while writing to in-chan:" e)))
         (recur))))
 
@@ -183,7 +183,7 @@
             (util/write System/out (pack {:data msg, :transport :msgpack}))
             (util/write (:client msg) (pack {:data msg, :transport :json})))
           (log/trace "Sent!")
-          (catch Exception e
+          (catch Throwable e
             (log/error "Error while writing to client:" (:client msg) e)))
         (recur))))
 
