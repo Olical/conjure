@@ -26,7 +26,7 @@
   []
   (nvim/call-lua-function :close-log log-buffer-name))
 
-(defn append
+(defn ^:dynamic append
   "Append the message to the log, prefixed by the origin/kind. If it's code
   then it won't prefix every line with the source, it'll place the whole string
   below the origin/kind comment."
