@@ -35,7 +35,6 @@
             (try (require 'compliment.core) (catch Exception _)))"
     :cljs "(require 'cljs.repl 'cljs.test)"))
 
-;; TODO Implement line offset for ClojureScript.
 (defn eval-str [{:keys [ns path]} {:keys [conn code line]}]
   (let [path-args-str (when-not (str/blank? path)
                         (str " \"" path "\" \"" (last (str/split path #"/")) "\""))]
