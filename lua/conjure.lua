@@ -45,6 +45,9 @@ function conjure.upsert_log (log_buf_name, width, focus, resize)
     vim.api.nvim_command("setlocal noswapfile")
     vim.api.nvim_command("setlocal nobuflisted")
     vim.api.nvim_command("setlocal nospell")
+    vim.api.nvim_command("setlocal foldmethod=marker")
+    vim.api.nvim_command("setlocal foldlevel=0")
+    vim.api.nvim_command("setlocal foldmarker={{{,}}}")
 
     if focus ~= true then
       vim.api.nvim_command("wincmd p")

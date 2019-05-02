@@ -29,19 +29,27 @@
 (defn ^:dynamic append
   "Append the message to the log, prefixed by the origin/kind. If it's code
   then it won't prefix every line with the source, it'll place the whole string
-  below the origin/kind comment."
-  [{:keys [origin kind msg code?] :or {code? false}}]
+  below the origin/kind comment. If you provide fold-text the lines will be
+  wrapped with fold markers and automatically hidden with your text displayed instead."
+  [{:keys [origin kind msg code? fold-text] :or {code? false}}]
 
-  (let [prefix (str "; " (name origin) "/" (name kind))]
-    (nvim/append-lines
-      (merge
-        (upsert-log)
-        {:header welcome-msg
-         :trim-at max-log-buffer-length
-         :lines (if code?
-                  (into [(str prefix " ⤸")] (util/split-lines msg))
-                  (for [line (util/split-lines msg)]
-                    (str prefix " | " line)))}))))
+  (let [prefix (str "; " (name origin) "/" (name kind))
+        log (upsert-log)
+        lines (util/split-lines msg)]
+      (nvim/append-lines
+        (merge
+          log
+          {:header welcome-msg
+           :trim-at max-log-buffer-length
+           :lines (if code?
+                    (concat (when fold-text
+                              [(str "; " fold-text " {{{1")])
+                            [(str prefix " ⤸")]
+                            lines
+                            (when fold-text
+                              ["; }}}1"]))
+                    (for [line lines]
+                      (str prefix " | " line)))}))))
 
 (defn info
   "For general information from Conjure, this is like
@@ -75,12 +83,15 @@
   (append {:origin (:tag conn), :kind :eval, :msg (code/sample code)}))
 
 (defn result
-  "Format, if it's code, and display a result from an evaluation."
+  "Format, if it's code, and display a result from an evaluation.
+  Will also fold the output if it's an error."
   [{:keys [conn resp]}]
   (let [code? (contains? #{:ret :tap} (:tag resp))]
     (append {:origin (:tag conn)
              :kind (:tag resp)
              :code? code?
+             :fold-text (when (and code? (= (first (:val resp)) :error))
+                          "Error folded, use `zo` to reveal")
              :msg (cond-> (:val resp)
                     (= (:tag resp) :ret) (second)
                     code? (util/pprint))})))

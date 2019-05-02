@@ -12,11 +12,11 @@
 
 (+ 10 20)
 
-[(henlo "Ollie") (get-env)]
-
 (comment
   (this-will-error))
 
 (t/deftest something-simple
   (t/testing "hmm"
     (t/is (= 10 10))))
+
+[(henlo "Ollie") (get-env)]
