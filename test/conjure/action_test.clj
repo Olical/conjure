@@ -3,6 +3,8 @@
             [conjure.action :as action]
             [conjure.ui :as ui]))
 
+;; Maybe this makes more sense as an integration test.
+
 (def appends! (atom nil))
 
 (t/use-fixtures
