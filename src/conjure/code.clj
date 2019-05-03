@@ -61,7 +61,7 @@
       (str "
            (in-ns '" (or ns "cljs.user") ")
            (try
-             [:ok " code "]
+             [:ok " code "\n]
              (catch :default e
                (let [emap (cljs.repl/Error->map e)]
                  (println (-> emap cljs.repl/ex-triage cljs.repl/ex-str))
@@ -91,7 +91,8 @@
              "}))
          ")
 
-    ;; ClojureScript isn't supported by compliment right now.
+    ;; ClojureScript isn't supported by Compliment yet.
+    ;; https://github.com/alexander-yakushev/compliment/pull/62
     :cljs "[]"))
 
 (defn definition-str [{:keys [name conn]}]
