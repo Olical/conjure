@@ -188,13 +188,15 @@
         (recur))))
 
   ;; Handle all messages on in-chan through the handler-* functions.
-  (loop []
-    (when-let [msg (a/<!! in-chan)]
-      (log/trace "Received RPC message:" msg)
-      (util/thread
-        "RPC message handler"
-        (case (:type msg)
-          :request  (handle-request-response msg)
-          :response (handle-response msg)
-          :notify   (handle-notify msg)))
-      (recur))))
+  (util/thread
+    "RPC event loop"
+    (loop []
+      (when-let [msg (a/<!! in-chan)]
+        (log/trace "Received RPC message:" msg)
+        (util/thread
+          "RPC message handler"
+          (case (:type msg)
+            :request  (handle-request-response msg)
+            :response (handle-response msg)
+            :notify   (handle-notify msg)))
+        (recur)))))

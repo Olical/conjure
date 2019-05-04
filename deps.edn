@@ -10,7 +10,8 @@
   expound {:mvn/version "0.7.2"}
   zprint {:mvn/version "0.4.15"}
   tcp-server {:mvn/version "0.1.0"}
-  cheshire {:mvn/version "5.8.1"}}
+  cheshire {:mvn/version "5.8.1"}
+  compliment {:mvn/version "0.3.8"}}
 
  :aliases
  {:test
@@ -20,8 +21,7 @@
 
   :dev
   {:extra-deps
-   {org.clojure/clojurescript {:mvn/version "1.10.520"}
-    compliment {:mvn/version "0.3.8"}}}
+   {org.clojure/clojurescript {:mvn/version "1.10.520"}}}
 
   :fast
   {:extra-paths ["classes"]

@@ -4,6 +4,7 @@
             [clojure.core.async :as a]
             [clojure.core.server :as server]
             [clojure.java.io :as io]
+            [clojure.edn :as edn]
             [taoensso.timbre :as log]
             [conjure.util :as util]
             [conjure.ui :as ui]
@@ -162,3 +163,17 @@
         conn-strs (for [{:keys [tag host port expr lang]} conns]
                     (str tag " @ " host ":" port " for " (pr-str expr) " (" lang ")"))]
     (ui/info (util/join-lines (into [intro] conn-strs)))))
+
+(defonce internal-port
+  (or (some-> (util/env :prepl-server-port)
+              (edn/read-string))
+      (util/free-port)))
+
+(defn init
+  "Initialise the internal prepl."
+  []
+  (server/start-server {:accept 'clojure.core.server/io-prepl
+                        :address "127.0.0.1"
+                        :name :dev
+                        :port internal-port})
+  (log/info "Started prepl server on port" internal-port))

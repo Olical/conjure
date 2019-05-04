@@ -13,11 +13,15 @@
 (defn- current-ctx
   "An enriched version of the nvim ctx with matching prepl connections."
   ([] (current-ctx {}))
-  ([{:keys [silent?] :or {silent? false}}]
+  ([{:keys [passive?] :or {passive? false}}]
+   (when (and (not passive?) (empty? (prepl/conns)))
+     (ui/info "No connections, adding Conjure's own JVM")
+     (prepl/add! {:tag :conjure, :port prepl/internal-port}))
+
    (let [ctx (nvim/current-ctx)
          conns (prepl/conns (:path ctx))]
 
-     (when (and (empty? conns) (not silent?))
+     (when (and (not passive?) (empty? conns))
        (ui/error "No matching connections for" (:path ctx)))
 
      (merge ctx {:conns conns}))))
@@ -104,7 +108,7 @@
         (util/join-lines))))
 
 (defn completions [prefix]
-  (let [ctx (current-ctx {:silent? true})
+  (let [ctx (current-ctx {:passive? true})
         context (completion-context prefix)]
     (->> (:conns ctx)
          (mapcat

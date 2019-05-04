@@ -25,7 +25,10 @@
   []
   (.. Runtime (getRuntime) (addShutdownHook (Thread. #(clean-up-and-exit))))
   (dev/init)
-  (rpc/init))
+  (rpc/init)
+  (prepl/init)
+  (log/info "Everything's ready! Let's perform some magic.")
+  @(promise))
 
 (defn parse-user-edn
   "Parses some string as EDN and ensures it conforms to a spec.
