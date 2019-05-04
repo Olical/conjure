@@ -61,7 +61,7 @@
       (str "
            (in-ns '" (or ns "cljs.user") ")
            (try
-             [:ok " code "\n]
+             [:ok (do " code "\n)]
              (catch :default e
                (let [emap (cljs.repl/Error->map e)]
                  (println (-> emap cljs.repl/ex-triage cljs.repl/ex-str))
