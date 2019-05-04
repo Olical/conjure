@@ -2,7 +2,8 @@
   "Handle displaying and managing what's visible to the user."
   (:require [conjure.nvim :as nvim]
             [conjure.util :as util]
-            [conjure.code :as code]))
+            [conjure.code :as code]
+            [conjure.result :as result]))
 
 (def ^:private log-window-widths {:small 40 :large 80})
 (def ^:private max-log-buffer-length 2000)
@@ -90,10 +91,10 @@
     (append {:origin (:tag conn)
              :kind (:tag resp)
              :code? code?
-             :fold-text (when (and code? (= (first (:val resp)) :error))
+             :fold-text (when (and code? (= (result/kind (:val resp)) :error))
                           "Error folded, use `zo` to reveal")
              :msg (cond-> (:val resp)
-                    (= (:tag resp) :ret) (second)
+                    (= (:tag resp) :ret) (result/value)
                     code? (util/pprint))})))
 
 (defn load-file*

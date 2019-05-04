@@ -7,7 +7,8 @@
             [conjure.ui :as ui]
             [conjure.nvim :as nvim]
             [conjure.code :as code]
-            [conjure.util :as util]))
+            [conjure.util :as util]
+            [conjure.result :as result]))
 
 (defn- current-ctx
   "An enriched version of the nvim ctx with matching prepl connections."
@@ -60,7 +61,7 @@
     (doseq [conn (:conns ctx)]
       (let [code (code/doc-str {:conn conn, :name name})
             result (-> (wrapped-eval ctx {:conn conn, :code code})
-                       (update :val second))]
+                       (update :val result/value))]
         (ui/doc {:conn conn
                  :resp (cond-> result
                          (empty? (:val result))
@@ -115,7 +116,7 @@
                                                    :context context})]
                (-> (wrapped-eval ctx {:conn conn, :code code})
                    (get :val)
-                   (second)
+                   (result/value)
                    (->> (map
                           (fn [{:keys [candidate type ns package]}]
                             (let [menu (or ns package)]
@@ -133,7 +134,7 @@
                                     :code (code/definition-str {:conn conn
                                                                 :name name})})
                      (get :val)
-                     (second)))
+                     (result/value)))
         coord (some lookup (:conns ctx))]
     (if (vector? coord)
       (nvim/edit-at ctx coord)
@@ -156,7 +157,7 @@
                                targets)})]
         (ui/test* {:conn conn
                    :resp (-> (wrapped-eval ctx {:conn conn, :code code})
-                             (update :val second))})))))
+                             (update :val result/value))})))))
 
 (defn run-all-tests [re]
   (let [ctx (current-ctx)]
@@ -164,4 +165,4 @@
       (let [code (code/run-all-tests-str {:re re, :conn conn})]
         (ui/test* {:conn conn
                    :resp (-> (wrapped-eval ctx {:conn conn, :code code})
-                             (update :val second))})))))
+                             (update :val result/value))})))))
