@@ -67,7 +67,7 @@
           (server/remote-prepl
             host port reader
             (fn [out]
-              (log/trace "Read from remote-prepl" tag "-" out)
+              (log/trace "Read from remote-prepl" tag "-" (update out :form code/sample))
               (a/>!! read-chan out))
             :valf identity)
 
@@ -86,7 +86,7 @@
         (try
           (loop []
             (when-let [code (a/<!! eval-chan)]
-              (log/trace "Writing to tag:" tag "-" code)
+              (log/trace "Writing to tag:" tag "-" (code/sample code))
               (util/write writer code)
               (recur)))
 
@@ -126,15 +126,19 @@
 
     (swap! conns! assoc tag conn)
 
-    (log/trace "Sending prelude:" prelude)
+    (log/trace "Sending prelude:" (code/sample prelude))
     (a/>!! (get-in conn [:chans :eval-chan]) prelude)
-    (log/trace "Prelude result:" (a/<!! (get-in conn [:chans :read-chan])))
+
+    (loop []
+      (if (= ":ready" (:val (a/<!! (get-in conn [:chans :read-chan]))))
+        (log/trace "Prelude loaded")
+        (recur)))
 
     (util/thread
       "read-chan handler"
       (loop []
         (when-let [out (a/<!! (get-in conn [:chans :read-chan]))]
-          (log/trace "Read value from" (:tag conn) "-" out)
+          (log/trace "Read value from" (:tag conn) "-" (update out :form code/sample))
           (let [out (cond-> out
                       (contains? #{:tap :ret} (:tag out))
                       (update :val code/parse-code))]

@@ -15,7 +15,7 @@
   ([] (current-ctx {}))
   ([{:keys [passive?] :or {passive? false}}]
    (when (and (not passive?) (empty? (prepl/conns)))
-     (ui/info "No connections, adding Conjure's own JVM")
+     (ui/info "Warning: Connecting to Conjure's own JVM by default.\nYou should start your own prepl and connect to that.")
      (prepl/add! {:tag :conjure, :port prepl/internal-port}))
 
    (let [ctx (nvim/current-ctx)

@@ -95,9 +95,7 @@ If you get something wrong it'll explain using [Expound][] in the log buffer. Es
 
 ## Completion
 
-Completion is provided through the wonderful [Compliment][], simply ensure it's depended on inside your project for `<c-x><c-o>` omnicompletion to work. If you already depend on CIDER, chances are it's already inside your project since it pulls it in already for you. If you're working with a pure prepl project you'll probably need to add it to your `deps.edn`.
-
-If you don't have complement Conjure will still work fine, omnicompletion will just return no results.
+Completion is provided through the wonderful [Compliment][] and is injected for you without conflicting with existing versions. `<c-x><c-o>` omnicompletion should work as soon as you're connected.
 
 ### Autocomplete
 
@@ -105,7 +103,7 @@ Async autocompletion is provided by various plugins in Neovim, here's how you in
 
 #### [Deoplete][]
 
-Deoplete is supported by default since the source is contained within this repository. All you need to do is install Conjure and Deoplete then connect to a prepl. Completion should work right away (providing [Compliment][] is available).
+Deoplete is supported by default since the source is contained within this repository. All you need to do is install Conjure and Deoplete then connect to a prepl. Completion should work right away.
 
 I also recommend configuring Deoplete using settings that I first found in the [async-clj-omni][] repository.
 
