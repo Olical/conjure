@@ -1,5 +1,6 @@
 let s:jobid = -1
 let s:cwd = resolve(expand("<sfile>:p:h") . "/..")
+let g:conjure_ready = 0
 
 if $CONJURE_JOB_OPTS != ""
   let s:job_opts = $CONJURE_JOB_OPTS
