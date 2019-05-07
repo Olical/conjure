@@ -5,7 +5,7 @@
 (t/deftest sample
   (t/is (= (code/sample "this is some code") "this is some code"))
   (t/is (= (code/sample "this is some long code and it exceeds the character limit")
-           "this is some long code and it exceeds the …")))
+           "this is some long code and it exceeds the characte…")))
 
 (t/deftest parse-code
   (t/is (= (code/parse-code "{:foo :bar}") {:foo :bar})))
