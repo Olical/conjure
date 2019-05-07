@@ -1,13 +1,14 @@
 (ns conjure.code
   "Tools to render or format Clojure code."
   (:require [clojure.string :as str]
+            [clojure.java.io :as io]
             [taoensso.timbre :as log]
             [conjure.util :as util]))
 
 (defn sample
   "Get a short one line sample snippet of some code."
   [code]
-  (let [sample-length 42]
+  (let [sample-length 50]
     (let [flat (str/replace code #"\s+" " ")]
       (if (> (count flat) sample-length)
         (str (subs flat 0 sample-length) "…")
@@ -25,15 +26,42 @@
     (catch Throwable e
       (log/error "Caught error while extracting ns" e))))
 
+(def compliment-files
+  "Files to load, in order, to add Compliment to a REPL."
+  ["sources"
+   "utils"
+   "context"
+   "sources/resources"
+   "sources/ns_mappings"
+   "sources/local_bindings"
+   "sources/class_members"
+   "sources/keywords"
+   "sources/namespaces_and_classes"
+   "sources/special_forms"
+   "core"])
+
 (defn prelude-str [{:keys [lang]}]
   (case lang
-    :clj "(do
-            (require 'clojure.repl
-                     'clojure.string
-                     'clojure.java.io
-                     'clojure.test)
-            (try (require 'compliment.core) (catch Exception _)))"
-    :cljs "(require 'cljs.repl 'cljs.test)"))
+    :clj (str "
+              (require 'clojure.repl
+                       'clojure.string
+                       'clojure.java.io
+                       'clojure.test)
+              "
+              (->> compliment-files
+                   (map (fn [file]
+                          (-> (str "repos/compliment/src/compliment/" file ".clj")
+                              (io/resource)
+                              (slurp)
+                              (str/replace #"compliment" "conjure-compliment"))))
+                   (str/join "\n")) 
+              "
+              :ready
+              ")
+    :cljs "
+          (require 'cljs.repl 'cljs.test)
+          :ready
+          "))
 
 (defn eval-str [{:keys [ns path]} {:keys [conn code line]}]
   (let [path-args-str (when-not (str/blank? path)
@@ -82,13 +110,12 @@
   (case (:lang conn)
     :clj
     (str "
-         (when-let [completions (resolve 'compliment.core/completions)]
-           (completions
-             \"" (util/escape-quotes prefix) "\"
-             {:ns (find-ns '" (or ns "user") ")
-              " (when context
-                  (str ":context \"" (util/escape-quotes context) "\""))
-             "}))
+         (conjure-compliment.core/completions
+           \"" (util/escape-quotes prefix) "\"
+           {:ns (find-ns '" (or ns "user") ")
+            " (when context
+                (str ":context \"" (util/escape-quotes context) "\""))
+           "})
          ")
 
     ;; ClojureScript isn't supported by Compliment yet.
