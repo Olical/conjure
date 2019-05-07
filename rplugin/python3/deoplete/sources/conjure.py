@@ -23,7 +23,7 @@ class Source(Base):
     self.vim = vim
 
   def gather_candidates(self, context):
-    if is_enabled:
+    if is_enabled and self.vim.api.get_var("conjure_ready"):
       # Connect if we haven't already.
       if not hasattr(self, "sock"):
         # This call fetches the port for the JSON RPC TCP server. Acronyms!
@@ -32,7 +32,6 @@ class Source(Base):
         # Create the socket and connect it to the RPC server.
         self.sock = socket.socket()
         self.sock.connect(("localhost", rpc_port))
-
 
       # Build a JSON RPC message with a new line at the end.
       # The 0 at the front indicates an RPC request.
@@ -51,7 +50,7 @@ class Source(Base):
       # 0th index is the type of RPC message, should be 1 which is a response.
       # 1st index is the request ID from earlier, it'll be 1 in this case.
       # 2nd index is an error, if there was one (or null).
-      # 3rd index is the result, for us that's the autocompletion esults.
+      # 3rd index is the result, for us that's the autocompletion results.
       return res[3]
     else:
       return []

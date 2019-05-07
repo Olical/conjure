@@ -9,7 +9,8 @@
             [conjure.rpc :as rpc]
             [conjure.prepl :as prepl]
             [conjure.ui :as ui]
-            [conjure.action :as action]))
+            [conjure.action :as action]
+            [conjure.nvim :as nvim]))
 
 (defn- clean-up-and-exit
   "Performs any necessary clean up and calls `(System/exit status)`."
@@ -27,6 +28,7 @@
   (dev/init)
   (rpc/init)
   (prepl/init)
+  (nvim/set-ready!)
   (log/info "Everything's ready! Let's perform some magic.")
   @(promise))
 

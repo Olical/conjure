@@ -69,6 +69,7 @@ function! conjure#on_exit(jobid, msg, event) dict
     echohl None
 
     let s:jobid = -1
+    let g:conjure_ready = 0
     call conjure#start()
   endif
 endfunction

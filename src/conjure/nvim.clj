@@ -182,3 +182,6 @@
        (api/buf-set-lines buf {:start -1, :end -1} lines)
        (api/win-set-cursor win {:col 0, :row new-line-count})])
     nil))
+
+(defn set-ready! []
+  (api/call (api/set-var :conjure-ready 1)))
