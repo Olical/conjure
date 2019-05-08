@@ -27,8 +27,7 @@
 
 (defn- handle-response
   "Deliver the error or result to any existing request."
-  [{:keys [id error result] :as response}]
-  (log/trace "Received response:" response)
+  [{:keys [id error result]}]
   (swap! open-requests!
          (fn [requests]
            (when-let [reqp (get requests id)]
@@ -125,8 +124,7 @@
                    :id @id!
                    :method method
                    :params params}]
-      (a/>!! out-chan request)
-      (log/trace "Sent request, awaiting response:" request))
+      (a/>!! out-chan request))
 
     @reqp))
 
@@ -182,7 +180,6 @@
           (if (= (:client msg) :stdio)
             (util/write System/out (pack {:data msg, :transport :msgpack}))
             (util/write (:client msg) (pack {:data msg, :transport :json})))
-          (log/trace "Sent!")
           (catch Throwable e
             (log/error "Error while writing to client:" (:client msg) e)))
         (recur))))
