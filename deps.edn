@@ -20,7 +20,9 @@
 
   :dev
   {:extra-deps
-   {org.clojure/clojurescript {:mvn/version "1.10.520"}}}
+   {org.clojure/clojurescript {:mvn/version "1.10.520"}
+    leiningen {:mvn/version "2.9.0"}
+    thomasa/mranderson {:mvn/version "0.5.1"}}}
 
   :fast
   {:extra-paths ["classes"]
