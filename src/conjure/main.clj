@@ -5,7 +5,8 @@
             [clojure.string :as str]
             [expound.alpha :as expound]
             [taoensso.timbre :as log]
-            [conjure.dev :as dev]
+            [taoensso.timbre.appenders.core :as appenders]
+            [conjure.util :as util]
             [conjure.rpc :as rpc]
             [conjure.prepl :as prepl]
             [conjure.ui :as ui]
@@ -25,7 +26,14 @@
   "Start up any background services and then wait forever."
   []
   (.. Runtime (getRuntime) (addShutdownHook (Thread. #(clean-up-and-exit))))
-  (dev/init)
+
+  (log/merge-config!
+    {:level :trace
+     :appenders {:println nil
+                 :spit (when-let [path (util/env :log-path)]
+                         (appenders/spit-appender {:fname path}))}})
+  (log/info "Logging initialised")
+
   (rpc/init)
   (prepl/init)
   (nvim/set-ready!)
