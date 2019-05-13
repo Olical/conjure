@@ -56,9 +56,14 @@
          ;; backwards and forwards.
          forwards (str (when root? "r") "nzW")
          backwards (str "b" forwards)
+
+         ;; Ignore matches inside comments or strings.
+         ;; https://github.com/Olical/conjure/issues/34
+         skip "join(map(synstack(line('.'), col('.')), 'synIDattr(v:val, \"name\")')) =~? 'comment\\|string' ? 1 : 0"
+
          get-pair (fn [s e]
-                    [(api/call-function :searchpairpos s "" e backwards)
-                     (api/call-function :searchpairpos s "" e forwards)])
+                    [(api/call-function :searchpairpos s "" e backwards skip)
+                     (api/call-function :searchpairpos s "" e forwards skip)])
 
          ;; Fetch the buffer, window and all matching pairs for () [] and {}.
          ;; We'll then select the smallest region from those three
