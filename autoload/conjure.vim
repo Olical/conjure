@@ -97,8 +97,8 @@ endfunction
 " Handle omnicomplete requests through complement if it's there.
 function! conjure#omnicomplete(findstart, base)
   if a:findstart
-    let line = getline('.')[0 : col('.')-2]
-    return col('.') - strlen(matchstr(line, '\k\+$')) - 1
+    let l:line = getline('.')[0 : col('.')-2]
+    return col('.') - strlen(matchstr(l:line, '\k\+$')) - 1
   else
     return conjure#completions(a:base)
   endif
@@ -110,6 +110,15 @@ endfunction
 
 function! conjure#get_rpc_port()
   return rpcrequest(s:jobid, "get_rpc_port")
+endfunction
+
+" Is the cursor inside code or is it in a comment / string.
+function! conjure#cursor_in_code()
+  " Get the name of the syntax at the bottom of the stack.
+  let l:name = synIDattr(synstack(line("."), col("."))[-1], "name")
+
+  " If it's comment or string we're not in code.
+  return l:name ==# "clojureComment" || l:name ==# "clojureString" ? 0 : 1
 endfunction
 
 " Perform any required setup.

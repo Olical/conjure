@@ -59,7 +59,7 @@
 
          ;; Ignore matches inside comments or strings.
          ;; https://github.com/Olical/conjure/issues/34
-         skip "join(map(synstack(line('.'), col('.')), 'synIDattr(v:val, \"name\")')) =~? 'comment\\|string' ? 1 : 0"
+         skip "!conjure#cursor_in_code()"
 
          get-pair (fn [s e]
                     [(api/call-function :searchpairpos s "" e backwards skip)
