@@ -115,10 +115,22 @@ endfunction
 " Is the cursor inside code or is it in a comment / string.
 function! conjure#cursor_in_code()
   " Get the name of the syntax at the bottom of the stack.
-  let l:name = synIDattr(synstack(line("."), col("."))[-1], "name")
+  let l:stack = synstack(line("."), col("."))
 
-  " If it's comment or string we're not in code.
-  return l:name ==# "clojureComment" || l:name ==# "clojureString" ? 0 : 1
+  if len(l:stack) == 0
+    return 1
+  else
+    let l:name = synIDattr(l:stack[-1], "name")
+
+    " If it's comment or string we're not in code.
+    return l:name ==# "clojureComment" || l:name ==# "clojureString" ? 0 : 1
+  endif
+endfunction
+
+" Is Conjure ready and are we typing in some code.
+" Then the autocompletion plugins should kick in.
+function! conjure#should_autocomplete()
+  return g:conjure_ready && conjure#cursor_in_code()
 endfunction
 
 " Perform any required setup.

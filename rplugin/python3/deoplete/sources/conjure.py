@@ -23,7 +23,7 @@ class Source(Base):
     self.vim = vim
 
   def gather_candidates(self, context):
-    if is_enabled and self.vim.api.get_var("conjure_ready"):
+    if is_enabled and self.vim.api.call_function("conjure#should_autocomplete", []):
       # Connect if we haven't already.
       if not hasattr(self, "sock"):
         # This call fetches the port for the JSON RPC TCP server. Acronyms!
