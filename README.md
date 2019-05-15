@@ -91,6 +91,12 @@ You can disable these and define your own with `let g:conjure_default_mappings =
 
 If you get something wrong it'll explain using [Expound][] in the log buffer. Essentially you must provide at least a `:tag` and `:port`.
 
+### Options
+
+ * `g:conjure_log_direction` - How to split the log window. `"vertical"` or `"horizontal"`. Defaults to `"vertical"`.
+ * `g:conjure_log_size_small` - Percentage size of the window used by Conjure log. A number between 1 and 100, defaults to 25.
+ * `g:conjure_log_size_large` - Percentage size of the window used by Conjure log **when open with `ConjureOpenLog`**. A number between 1 and 100, defaults to 50.
+
 ## Completion
 
 Completion is provided through the wonderful [Compliment][] and is injected for you without conflicting with existing versions. `<c-x><c-o>` omnicompletion should work as soon as you're connected.

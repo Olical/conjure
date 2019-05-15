@@ -64,8 +64,22 @@
   {:method :nvim-buf-set-var
    :params [buf (util/kw->snake name) value]})
 
+(defn get-var
+  [name]
+  {:method :nvim-get-var
+   :params [(util/kw->snake name)]})
+
 (defn set-var [name value]
   {:method :nvim-set-var
+   :params [(util/kw->snake name) value]})
+
+(defn get-option
+  [name]
+  {:method :nvim-get-option
+   :params [(util/kw->snake name)]})
+
+(defn set-option [name value]
+  {:method :nvim-set-option
    :params [(util/kw->snake name) value]})
 
 (defn execute-lua [code & args]

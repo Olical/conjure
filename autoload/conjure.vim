@@ -8,6 +8,10 @@ else
   let s:job_opts = "-A:fast"
 endif
 
+let g:conjure_log_direction = get(g:, 'conjure_log_direction', "vertical")
+let g:conjure_log_size_small = get(g:, 'conjure_log_size_small', 25)
+let g:conjure_log_size_large = get(g:, 'conjure_log_size_large', 50)
+
 " Create commands for RPC calls handled by main.clj.
 command! -nargs=1 ConjureAdd call rpcnotify(s:jobid, "add", <q-args>)
 command! -nargs=1 ConjureRemove call rpcnotify(s:jobid, "remove", <q-args>)
