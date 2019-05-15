@@ -93,6 +93,45 @@
       (t/is (= (nvim/read-form {:root? true})
                {:form "(hello (world))"
                 :cursor [1 7]
+                :origin [2 16]})))
+
+    (t/testing "a skip is provided to non-root form reads"
+      ;; Non-root has skip.
+      (defmethod call :nvim-call-function [{:keys [params]}]
+        (t/is (= (count (second params)) 5))
+        (pair-pos params
+                  {"(" [2 16]
+                   ")" [2 30]}))
+      (defmethod call :nvim-win-get-cursor [_] [2 17])
+      (t/is (= (nvim/read-form)
+               {:form "(hello (world))"
+                :cursor [1 2]
+                :origin [2 16]}))
+
+      ;; Root does not.
+      (defmethod call :nvim-call-function [{:keys [params]}]
+        (t/is (= (count (second params)) 4))
+        (pair-pos params
+                  {"(" [2 16]
+                   ")" [2 30]}))
+      (defmethod call :nvim-win-get-cursor [_] [2 22])
+      (t/is (= (nvim/read-form {:root? true})
+               {:form "(hello (world))"
+                :cursor [1 7]
+                :origin [2 16]})))
+
+    (t/testing "providing a win skips a call"
+      (defmethod call :nvim-call-function [{:keys [params]}]
+        (pair-pos params
+                  {"(" [2 16]
+                   ")" [2 30]}))
+      (defmethod call :nvim-win-get-cursor [_] [2 17])
+      (defmethod call :nvim-get-current-win [_]
+        (throw (Error. "asked for win")))
+      (t/is (thrown? Error (nvim/read-form)))
+      (t/is (= (nvim/read-form {:win 10})
+               {:form "(hello (world))"
+                :cursor [1 2]
                 :origin [2 16]})))))
 
 (t/deftest read-buffer
