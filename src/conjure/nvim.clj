@@ -48,7 +48,7 @@
   "Read the current form under the cursor from the buffer by default. When
   root? is set to true it'll read the outer most form under the cursor."
   ([] (read-form {}))
-  ([{:keys [root?]}]
+  ([{:keys [root? win]}]
    ;; Put on your seatbelt, this function's a bit wild.
    ;; Could maybe be simplified a little but I doubt that much.
 
@@ -56,17 +56,27 @@
          ;; backwards and forwards.
          forwards (str (when root? "r") "nzW")
          backwards (str "b" forwards)
+
+         ;; Ignore matches inside comments or strings.
+         ;; We only have to do this for non-root form reading.
+         ;;  https://github.com/Olical/conjure/issues/34
+         skip (when-not root?
+                "!conjure#cursor_in_code()")
+
          get-pair (fn [s e]
-                    [(api/call-function :searchpairpos s "" e backwards)
-                     (api/call-function :searchpairpos s "" e forwards)])
+                    (let [extra-args (remove nil? [skip])]
+                      [(apply api/call-function :searchpairpos s "" e backwards extra-args)
+                       (apply api/call-function :searchpairpos s "" e forwards extra-args)]))
 
          ;; Fetch the buffer, window and all matching pairs for () [] and {}.
          ;; We'll then select the smallest region from those three
-         [buf win cur-char & positions]
+         [buf win-or-cursor cur-char & positions]
          (api/call-batch
            (concat
              [(api/get-current-buf)
-              (api/get-current-win)
+              (if win
+                (api/win-get-cursor win)
+                (api/get-current-win))
               (api/eval* (str "matchstr(getline('.'), '\\%'.col('.').'c.')"))]
              (get-pair "(" ")")
              (get-pair "\\[" "\\]")
@@ -75,7 +85,12 @@
          ;; If the position is [0 0] we're _probably_ on the matching
          ;; character, so we should use the cursor position. Don't do this for
          ;; root though since you want to keep searching outwards.
-         cursor (update (api/call (api/win-get-cursor win)) 1 inc)
+         ;; We also avoid a second api/call if the caller provides the window for us.
+         cursor (update (if win
+                          win-or-cursor
+                          (api/call (api/win-get-cursor win-or-cursor)))
+                        1 inc)
+
          get-pos (fn [pos ch]
                    (if (or (and (= cur-char ch) (nil-pos? pos))
                            (and (not root?) (= cur-char ch)))

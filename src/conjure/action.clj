@@ -52,13 +52,14 @@
 
 ;; The following functions are called by the user through commands.
 
-(defn eval* [{:keys [code line]}]
-  (when code
-    (let [ctx (current-ctx)]
-      (doseq [conn (:conns ctx)]
-        (let [opts {:conn conn, :code code, :line line}]
-          (ui/eval* opts)
-          (ui/result {:conn conn, :resp (wrapped-eval ctx opts)}))))))
+(defn eval*
+  ([opts] (eval* (current-ctx) opts))
+  ([ctx {:keys [code line]}]
+   (when code
+     (doseq [conn (:conns ctx)]
+       (let [opts {:conn conn, :code code, :line line}]
+         (ui/eval* opts)
+         (ui/result {:conn conn, :resp (wrapped-eval ctx opts)}))))))
 
 (defn doc [name]
   (let [ctx (current-ctx)]
@@ -97,19 +98,20 @@
         (ui/load-file* opts)
         (ui/result {:conn conn, :resp (raw-eval ctx opts)})))))
 
-(defn- completion-context [prefix]
-  (when-let [{:keys [form cursor]} (nvim/read-form {:root? true})]
-    (-> (util/split-lines form)
-        (update (dec (first cursor))
-                #(util/splice %
-                              (- (second cursor) (count prefix))
-                              (second cursor)
-                              "__prefix__"))
-        (util/join-lines))))
-
 (defn completions [prefix]
   (let [ctx (current-ctx {:passive? true})
-        context (completion-context prefix)]
+
+        ;; Context for Compliment to complete local bindings.
+        ;; We read the surrounding top level form from the current buffer
+        ;; and add the __prefix__ symbol.
+        context (when-let [{:keys [form cursor]} (nvim/read-form {:root? true, :win (:win ctx)})]
+                  (-> (util/split-lines form)
+                      (update (dec (first cursor))
+                              #(util/splice %
+                                            (- (second cursor) (count prefix))
+                                            (second cursor)
+                                            "__prefix__"))
+                      (util/join-lines)))]
     (->> (:conns ctx)
          (mapcat
            (fn [conn]
