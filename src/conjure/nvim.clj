@@ -58,12 +58,15 @@
          backwards (str "b" forwards)
 
          ;; Ignore matches inside comments or strings.
-         ;; https://github.com/Olical/conjure/issues/34
-         skip "!conjure#cursor_in_code()"
+         ;; We only have to do this for non-root form reading.
+         ;;  https://github.com/Olical/conjure/issues/34
+         skip (when-not root?
+                "!conjure#cursor_in_code()")
 
          get-pair (fn [s e]
-                    [(api/call-function :searchpairpos s "" e backwards skip)
-                     (api/call-function :searchpairpos s "" e forwards skip)])
+                    (let [extra-args (remove nil? [skip])]
+                      [(apply api/call-function :searchpairpos s "" e backwards extra-args)
+                       (apply api/call-function :searchpairpos s "" e forwards extra-args)]))
 
          ;; Fetch the buffer, window and all matching pairs for () [] and {}.
          ;; We'll then select the smallest region from those three
