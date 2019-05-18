@@ -13,9 +13,11 @@
   (compile 'conjure.main)
 
   ;; Map runtime deps through Mr Anderson.
-  (ma/mranderson {:clojars "https://repo.clojars.org"}
+  (ma/mranderson {:clojars "https://repo.clojars.org"
+                  :central "https://repo.maven.apache.org/maven2"}
                  (map #(with-meta % {:inline-dep true})
-                      '[[compliment "0.3.8"]])
+                      '[[compliment "0.3.8"]
+                        [org.clojure/tools.namespace "0.3.0-alpha4"]])
                  {:pname "conjure"
                   :pversion "0.0.0"
                   :pprefix "conjure"
