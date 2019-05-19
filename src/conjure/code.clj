@@ -30,7 +30,7 @@
 
 (def injected-deps
   "Files to load, in order, to add runtime dependencies to a REPL."
-  (edn/read-string (slurp "target/mranderson/load-order.edn")))
+  (delay (edn/read-string (slurp "target/mranderson/load-order.edn"))))
 
 (defn prelude-str [{:keys [lang]}]
   (case lang
@@ -40,7 +40,7 @@
                        'clojure.java.io
                        'clojure.test)
               "
-              (->> injected-deps
+              (->> (deref injected-deps)
                    (map slurp)
                    (str/join "\n")) 
               "
