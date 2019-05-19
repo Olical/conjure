@@ -135,7 +135,7 @@ endfunction
 
 " Perform any required setup.
 function! conjure#init()
-  " Start the job if `make dev` isn't limiting the cwd.
+  " Start the job if `bin/dev` isn't limiting the cwd.
   " This is useful because you can turn off your globally installed
   " version and override it with the development version temporarily.
   if $CONJURE_ALLOWED_DIR == "" || $CONJURE_ALLOWED_DIR == s:cwd
