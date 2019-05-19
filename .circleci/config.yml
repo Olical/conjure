@@ -49,13 +49,13 @@ workflows:
   checks:
     jobs:
       - restore
-      - compile
+      - compile:
           requires:
             - restore
-      - test
+      - test:
           requires:
             - restore
-      - save
+      - save:
           requires:
             - compile
             - test
