@@ -12,7 +12,7 @@ executors:
 commands:
   with-deps:
     parameters:
-      steps:
+      cache-key:
         description: "Checksums to differentiate the job's cache."
         type: string
         default: "default"
