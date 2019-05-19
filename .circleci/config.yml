@@ -32,8 +32,8 @@ jobs:
     executor: clojure
     steps:
       - with-deps:
-        steps:
-          - run: bin/compile
+          steps:
+            - run: bin/compile
 
   test:
     executor: clojure
