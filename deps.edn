@@ -1,4 +1,4 @@
-{:paths ["src" "resources"]
+{:paths ["src"]
 
  :deps
  {org.clojure/clojure {:mvn/version "1.10.0"}
@@ -18,9 +18,20 @@
                 lambdaisland/kaocha-junit-xml {:mvn/version "0.0-70"}
                 lambdaisland/kaocha-cloverage {:mvn/version "0.0-32"}}}
 
-  :dev
+  :cljs
   {:extra-deps
    {org.clojure/clojurescript {:mvn/version "1.10.520"}}}
+
+  :tools
+  {:extra-deps
+   {org.clojure/tools.namespace {:mvn/version "0.3.0-alpha4"}
+    leiningen {:mvn/version "2.9.0"}
+    thomasa/mranderson {:mvn/version "0.5.1"}}}
+
+  :compile
+  {:extra-paths ["classes"]
+   :jvm-opts ["-Dclojure.compiler.direct-linking=true"
+              "-Dclojure.compiler.elide-meta=[:doc,:file,:line,:added]"]}
 
   :fast
   {:extra-paths ["classes"]

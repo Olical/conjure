@@ -1,6 +1,7 @@
 (ns conjure.code
   "Tools to render or format Clojure code."
   (:require [clojure.string :as str]
+            [clojure.edn :as edn]
             [clojure.java.io :as io]
             [taoensso.timbre :as log]
             [conjure.util :as util]))
@@ -27,19 +28,9 @@
     (catch Throwable e
       (log/error "Caught error while extracting ns" e))))
 
-(def compliment-files
-  "Files to load, in order, to add Compliment to a REPL."
-  ["sources"
-   "utils"
-   "context"
-   "sources/resources"
-   "sources/ns_mappings"
-   "sources/local_bindings"
-   "sources/class_members"
-   "sources/keywords"
-   "sources/namespaces_and_classes"
-   "sources/special_forms"
-   "core"])
+(def injected-deps
+  "Files to load, in order, to add runtime dependencies to a REPL."
+  (delay (edn/read-string (slurp "target/mranderson/load-order.edn"))))
 
 (defn prelude-str [{:keys [lang]}]
   (case lang
@@ -49,12 +40,8 @@
                        'clojure.java.io
                        'clojure.test)
               "
-              (->> compliment-files
-                   (map (fn [file]
-                          (-> (str "repos/compliment/src/compliment/" file ".clj")
-                              (io/resource)
-                              (slurp)
-                              (str/replace #"compliment" "conjure-compliment"))))
+              (->> (deref injected-deps)
+                   (map slurp)
                    (str/join "\n")) 
               "
               :ready
@@ -111,7 +98,7 @@
   (case (:lang conn)
     :clj
     (str "
-         (conjure-compliment.core/completions
+         (conjure.compliment.v0v3v8.compliment.core/completions
            \"" (util/escape-quotes prefix) "\"
            {:ns (find-ns '" (or ns "user") ")
             " (when context
