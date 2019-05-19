@@ -37,7 +37,7 @@ jobs:
                 bin/kaocha
                 --plugin kaocha.plugin/junit-xml
                 --junit-xml-file test-results/kaocha/results.xml
-                --plugin cloverage --no-cov-html --codecov
+                --plugin cloverage --no-cov-html --codecov --ns-exclude-regex "^conjure\.compile\.main$"
             - store_test_results:
                 path: test-results
             - codecov/upload:
