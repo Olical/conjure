@@ -1,2 +1,5 @@
+;; These dependencies are fetched and munged by bin/compile (conjure.compile.main)
+;; for injection over a prepl at runtime.
+
 [[compliment "0.3.8"]
  [org.clojure/tools.namespace "0.3.0-alpha4"]]
