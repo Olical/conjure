@@ -20,12 +20,12 @@ commands:
       - checkout
       - restore_cache:
           keys:
-            - deps-{{ checksum "deps.edn" }}
+            - deps-{{ checksum "deps.edn" }}-{{ checksum "injected-deps.edn" }}
       - steps: << parameters.steps >>
       - save_cache:
           paths:
             - ~/.m2
-          key: deps-{{ checksum "deps.edn" }}
+          key: deps-{{ checksum "deps.edn" }}-{{ checksum "injected-deps.edn" }}
 
 jobs:
   compile:

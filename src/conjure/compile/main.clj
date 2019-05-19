@@ -1,6 +1,7 @@
 (ns conjure.compile.main
   "AOT compile everything Conjure requires at runtime."
   (:require [clojure.java.io :as io]
+            [clojure.edn :as edn]
             [clojure.tools.namespace.find :as find]
             [clojure.tools.namespace.parse :as parse]
             [clojure.tools.namespace.file :as file]
@@ -18,8 +19,7 @@
   (ma/mranderson {:clojars "https://repo.clojars.org"
                   :central "https://repo.maven.apache.org/maven2"}
                  (map #(with-meta % {:inline-dep true})
-                      '[[compliment "0.3.8"]
-                        [org.clojure/tools.namespace "0.3.0-alpha4"]])
+                      (edn/read-string (slurp "injected-deps.edn")))
                  {:pname "conjure"
                   :pversion "0.0.0"
                   :pprefix "conjure"
