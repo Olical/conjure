@@ -58,7 +58,7 @@ jobs:
 
 workflows:
   version: 2
-  test:
+  checks:
     jobs:
       - compile
       - test
