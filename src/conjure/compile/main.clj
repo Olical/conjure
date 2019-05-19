@@ -1,18 +1,20 @@
-(ns conjure.tools.compile
+(ns conjure.compile.main
+  "AOT compile everything Conjure requires at runtime."
   (:require [clojure.java.io :as io]
             [clojure.tools.namespace.find :as find]
             [clojure.tools.namespace.parse :as parse]
             [clojure.tools.namespace.file :as file]
             [clojure.tools.namespace.dependency :as dep]
+            [taoensso.timbre :as log]
             [mranderson.core :as ma]))
 
 (def ma-root (io/file "target/mranderson"))
 
 (defn -main []
-  ;; AOT compile Conjure's source.
+  (log/info "AOT compiling Conjure's namespaces")
   (compile 'conjure.main)
 
-  ;; Map runtime deps through Mr Anderson.
+  (log/info "Fetching and munging dependencies to be injected over prepl.")
   (ma/mranderson {:clojars "https://repo.clojars.org"
                   :central "https://repo.maven.apache.org/maven2"}
                  (map #(with-meta % {:inline-dep true})
@@ -26,7 +28,7 @@
                   :parent-clj-dirs []
                   :branch []})
 
-  ;; Build a list of files to load in dependency order for runtime deps.
+  (log/info "Calculating load order of dependency files.")
   (let [parsed (into {} (map
                           (fn [file]
                             (let [decl (file/read-file-ns-decl file)]
@@ -49,4 +51,7 @@
          (dep/topo-sort)
          (mapv (comp str :file))
          (pr-str)
-         (spit (io/file ma-root "load-order.edn")))))
+         (spit (io/file ma-root "load-order.edn"))))
+
+  (log/info "Everything's ready! Let's perform some magic.")
+  (shutdown-agents))

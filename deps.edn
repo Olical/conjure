@@ -23,11 +23,16 @@
    {org.clojure/clojurescript {:mvn/version "1.10.520"}}}
 
   :tools
-  {:extra-paths ["tools"]
-   :extra-deps
+  {:extra-deps
    {org.clojure/tools.namespace {:mvn/version "0.3.0-alpha4"}
     leiningen {:mvn/version "2.9.0"}
     thomasa/mranderson {:mvn/version "0.5.1"}}}
+
+  :compile
+  {:extra-paths ["classes"]
+   :main-opts ["-m" "conjure.compile.main"]
+   :jvm-opts ["-Dclojure.compiler.direct-linking=true"
+              "-Dclojure.compiler.elide-meta=[:doc,:file,:line,:added]"]}
 
   :fast
   {:extra-paths ["classes"]
