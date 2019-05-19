@@ -1,5 +1,5 @@
-(ns conjure.compile.main
-  "AOT compile everything Conjure requires at runtime."
+(ns conjure.munge.main
+  "Munge dependencies for injection at runtime."
   (:require [clojure.java.io :as io]
             [clojure.edn :as edn]
             [clojure.tools.namespace.find :as find]
@@ -12,9 +12,6 @@
 (def ma-root (io/file "target/mranderson"))
 
 (defn -main []
-  (log/info "AOT compiling Conjure's namespaces")
-  (compile 'conjure.main)
-
   (log/info "Fetching and munging dependencies to be injected over prepl.")
   (ma/mranderson {:clojars "https://repo.clojars.org"
                   :central "https://repo.maven.apache.org/maven2"}
@@ -53,5 +50,4 @@
          (pr-str)
          (spit (io/file ma-root "load-order.edn"))))
 
-  (log/info "Everything's ready! Let's perform some magic.")
   (shutdown-agents))

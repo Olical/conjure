@@ -1,5 +1,11 @@
 #!/usr/bin/env sh
 
+echo "Compiling Conjure ahead of time."
 rm -rf classes
 mkdir classes
-clojure -Sforce -A:tools:compile
+clojure -Sforce -A:compile --eval "(compile 'conjure.main)"
+
+echo "Munging dependencies for injection at runtime."
+clojure -A:tools --main conjure.munge.main
+
+echo "Everything's ready! Let's perform some magic."
