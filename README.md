@@ -11,14 +11,14 @@ You can find out more about socket prepls in my blog post, [Clojure socket prepl
  * Connect to multiple Clojure or ClojureScript prepls at the same time.
  * Evaluate in `.clj`, `.cljc` and `.cljs` buffers seamlessly.
  * Custom log buffer that appears and vanishes where required.
- * [Completion](#completion) through [Compliment][].
+ * [Completion](#completion) through [Compliment][] (injected for you automatically).
  * Running tests in the current namespace or the `-test` equivalent.
+ * Friendly error output by default with optional expansion.
  * Go to definition.
  * `(doc ...)` lookup.
 
 ### Upcoming
 
- * Friendly error output by default with optional expansion. ([#12](https://github.com/Olical/conjure/issues/12))
  * Code formatting. ([#11](https://github.com/Olical/conjure/issues/11))
  * Changed namespace reloading via `tools.namespace`. ([#10](https://github.com/Olical/conjure/issues/10))
  * Configuration. ([#7](https://github.com/Olical/conjure/issues/7))
@@ -31,7 +31,7 @@ You can find out more about socket prepls in my blog post, [Clojure socket prepl
 Here's an example with [vim-plug][], my plugin manager of choice.
 
 ```viml
-Plug 'Olical/conjure', { 'tag': 'v0.13.1', 'do': 'bin/compile', 'for': 'clojure', 'on': 'ConjureAdd'  }
+Plug 'Olical/conjure', { 'tag': 'v0.14.0', 'do': 'bin/compile', 'for': 'clojure', 'on': 'ConjureAdd'  }
 ```
 
 You should rely on a tag so that breaking changes don't end up disrupting your workflow, please don't depend on `master`. Make sure you watch the repository for releases using the menu in the top right, that way you can upgrade when it's convenient for you.
