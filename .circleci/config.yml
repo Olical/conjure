@@ -28,6 +28,13 @@ commands:
           key: deps-{{ checksum "deps.edn" }}
 
 jobs:
+  compile:
+    executor: clojure
+    steps:
+      - with-deps:
+        steps:
+          - run: bin/compile
+
   test:
     executor: clojure
     steps:
@@ -47,4 +54,5 @@ workflows:
   version: 2
   test:
     jobs:
+      - compile
       - test
