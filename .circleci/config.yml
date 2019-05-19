@@ -31,17 +31,17 @@ jobs:
   test:
     executor: clojure
     steps:
-      with-deps:
-        steps:
-          - run: >
-              bin/kaocha
-              --plugin kaocha.plugin/junit-xml
-              --junit-xml-file test-results/kaocha/results.xml
-              --plugin cloverage --no-cov-html --codecov
-          - store_test_results:
-              path: test-results
-          - codecov/upload:
-              file: target/coverage/codecov.json
+      - with-deps:
+          steps:
+            - run: >
+                bin/kaocha
+                --plugin kaocha.plugin/junit-xml
+                --junit-xml-file test-results/kaocha/results.xml
+                --plugin cloverage --no-cov-html --codecov
+            - store_test_results:
+                path: test-results
+            - codecov/upload:
+                file: target/coverage/codecov.json
 
 workflows:
   version: 2
