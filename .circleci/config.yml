@@ -9,50 +9,53 @@ executors:
       - image: circleci/clojure:tools-deps-1.10.0.442
     working_directory: ~/conjure
 
-commands:
-  with-deps:
-    parameters:
-      steps:
-        description: "Steps to execute after the repo and deps are fetched but before the cache is saved."
-        type: steps
-        default: []
+jobs:
+  restore:
+    executor: clojure
     steps:
       - checkout
       - restore_cache:
           keys:
             - deps-{{ checksum "deps.edn" }}-{{ checksum "injected-deps.edn" }}
-      - steps: << parameters.steps >>
+
+  compile:
+    executor: clojure
+    steps:
+      - run: bin/compile
+
+  test:
+    executor: clojure
+    steps:
+      - run: >
+          bin/kaocha
+          --plugin kaocha.plugin/junit-xml
+          --junit-xml-file test-results/kaocha/results.xml
+          --plugin cloverage --no-cov-html --codecov --cov-ns-exclude-regex "^conjure\.compile\.main$"
+      - store_test_results:
+          path: test-results
+      - codecov/upload:
+          file: target/coverage/codecov.json
+
+  save:
+    executor: clojure
+    steps:
       - save_cache:
           paths:
             - ~/.m2
           key: deps-{{ checksum "deps.edn" }}-{{ checksum "injected-deps.edn" }}
 
-jobs:
-  compile:
-    executor: clojure
-    steps:
-      - with-deps:
-          steps:
-            - run: bin/compile
-
-  test:
-    executor: clojure
-    steps:
-      - with-deps:
-          steps:
-            - run: >
-                bin/kaocha
-                --plugin kaocha.plugin/junit-xml
-                --junit-xml-file test-results/kaocha/results.xml
-                --plugin cloverage --no-cov-html --codecov --cov-ns-exclude-regex "^conjure\.compile\.main$"
-            - store_test_results:
-                path: test-results
-            - codecov/upload:
-                file: target/coverage/codecov.json
-
 workflows:
   version: 2
-  test:
+  checks:
     jobs:
+      - restore
       - compile
+          requires:
+            - restore
       - test
+          requires:
+            - restore
+      - save
+          requires:
+            - compile
+            - test
