@@ -10,6 +10,8 @@ if [ ! -d classes ] || [ $(git show -s --format=%ct HEAD) -gt $(stat -c %Y class
   clojure -Sforce -A:compile --eval "(compile 'conjure.main)"
 
   echo "[2/2] Preparing dependencies for runtime injection"
+  mkdir -p target
+  rm -rf target/mranderson
   clojure -Sforce -A:tools --main conjure.munge.main
 
   echo "Everything's ready! Let's perform some magic."
