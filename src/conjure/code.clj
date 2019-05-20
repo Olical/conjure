@@ -64,7 +64,8 @@
                            (clojure.lang.LineNumberingPushbackReader.)
                            (doto (.setLineNumber " (or line 1) ")))]
                (binding [*default-data-reader-fn* tagged-literal]
-                 [:ok (. clojure.lang.Compiler (load rdr" path-args-str "))]))
+                 (let [res (. clojure.lang.Compiler (load rdr" path-args-str "))]
+                   [:ok (cond-> res (seq? res) (doall))])))
              (catch Throwable e
                (let [emap (Throwable->map e)]
                  (binding [*out* *err*]
