@@ -17,8 +17,10 @@
           flat)))))
 
 (defn parse-code [code]
-  (binding [*default-data-reader-fn* tagged-literal]
-    (read-string {:read-cond :preserve} code)))
+  (if (string? code)
+    (binding [*default-data-reader-fn* tagged-literal]
+      (read-string {:read-cond :preserve} code))
+    code))
 
 (defn parse-ns [code]
   (try
