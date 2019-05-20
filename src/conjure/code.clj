@@ -2,7 +2,6 @@
   "Tools to render or format Clojure code."
   (:require [clojure.string :as str]
             [clojure.edn :as edn]
-            [clojure.java.io :as io]
             [taoensso.timbre :as log]
             [conjure.util :as util]))
 

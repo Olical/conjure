@@ -142,6 +142,17 @@
           (let [out (cond-> out
                       (contains? #{:tap :ret} (:tag out))
                       (update :val code/parse-code))]
+
+            ;; This is when an error somehow makes it out of the prepl without being caught.
+            ;; It usually means the user is having a bad time, let's at least get
+            ;; something on screen that they can reference in an issue to help fix it.
+            (when (:exception out)
+              (log/error "Uncaught error leaked out of prepl" (:val out))
+              (ui/error "Uncaught error from" (:tag conn) "this might be a bug in Conjure!"
+                        (-> (:val out) clojure.main/ex-triage clojure.main/ex-str))
+              (ui/result {:conn conn
+                          :resp (update out :val (fn [val] [:error val]))}))
+
             (if (= (:tag out) :ret)
               (a/>!! ret-chan out)
               (ui/result {:conn conn, :resp out})))
