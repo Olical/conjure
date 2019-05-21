@@ -89,7 +89,7 @@
 (defmethod rpc/handle-notify :open-log [_]
   (ui/upsert-log {:focus? true
                   :resize? true
-                  :width :large}))
+                  :size :large}))
 
 (defmethod rpc/handle-notify :close-log [_]
   (ui/close-log))
