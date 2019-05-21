@@ -1,3 +1,10 @@
+" User config with defaults.
+let g:conjure_default_mappings = get(g:, 'conjure_default_mappings', 1)
+let g:conjure_log_direction = get(g:, 'conjure_log_direction', "vertical")
+let g:conjure_log_size_small = get(g:, 'conjure_log_size_small', 25)
+let g:conjure_log_size_large = get(g:, 'conjure_log_size_large', 50)
+
+" Various script wide flags.
 let s:jobid = -1
 let s:cwd = resolve(expand("<sfile>:p:h") . "/..")
 let g:conjure_ready = 0
@@ -29,20 +36,20 @@ command! -nargs=* ConjureRunTests call rpcnotify(s:jobid, "run_tests", <q-args>)
 command! -nargs=? ConjureRunAllTests call rpcnotify(s:jobid, "run_all_tests", <q-args>)
 
 " Default mappings if not disabled.
-if !exists("g:conjure_default_mappings") || g:conjure_default_mappings
+if g:conjure_default_mappings
   augroup conjure
     autocmd!
     autocmd InsertEnter *.edn,*.clj,*.clj[cs] :call conjure#close_unused_log()
-    autocmd FileType clojure nnoremap <buffer> <localleader>re :ConjureEvalCurrentForm<cr>
-    autocmd FileType clojure nnoremap <buffer> <localleader>rr :ConjureEvalRootForm<cr>
-    autocmd FileType clojure vnoremap <buffer> <localleader>re :ConjureEvalSelection<cr>
-    autocmd FileType clojure nnoremap <buffer> <localleader>rf :ConjureEvalBuffer<cr>
-    autocmd FileType clojure nnoremap <buffer> <localleader>rF :ConjureLoadFile <c-r>=expand('%:p')<cr><cr>
-    autocmd FileType clojure nnoremap <buffer> <localleader>rs :ConjureStatus<cr>
-    autocmd FileType clojure nnoremap <buffer> <localleader>rl :ConjureOpenLog<cr>
-    autocmd FileType clojure nnoremap <buffer> <localleader>rq :ConjureCloseLog<cr>
-    autocmd FileType clojure nnoremap <buffer> <localleader>rt :ConjureRunTests<cr>
-    autocmd FileType clojure nnoremap <buffer> <localleader>rT :ConjureRunAllTests<cr>
+    autocmd FileType clojure nnoremap <buffer> <localleader>ee :ConjureEvalCurrentForm<cr>
+    autocmd FileType clojure nnoremap <buffer> <localleader>er :ConjureEvalRootForm<cr>
+    autocmd FileType clojure vnoremap <buffer> <localleader>ee :ConjureEvalSelection<cr>
+    autocmd FileType clojure nnoremap <buffer> <localleader>eb :ConjureEvalBuffer<cr>
+    autocmd FileType clojure nnoremap <buffer> <localleader>ef :ConjureLoadFile <c-r>=expand('%:p')<cr><cr>
+    autocmd FileType clojure nnoremap <buffer> <localleader>cs :ConjureStatus<cr>
+    autocmd FileType clojure nnoremap <buffer> <localleader>cl :ConjureOpenLog<cr>
+    autocmd FileType clojure nnoremap <buffer> <localleader>cq :ConjureCloseLog<cr>
+    autocmd FileType clojure nnoremap <buffer> <localleader>tt :ConjureRunTests<cr>
+    autocmd FileType clojure nnoremap <buffer> <localleader>ta :ConjureRunAllTests<cr>
     autocmd FileType clojure nnoremap <buffer> K :ConjureDoc <c-r><c-w><cr>
     autocmd FileType clojure nnoremap <buffer> gd :ConjureDefinition <c-r><c-w><cr>
     autocmd FileType clojure setlocal omnifunc=conjure#omnicomplete
