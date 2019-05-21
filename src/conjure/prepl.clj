@@ -21,8 +21,8 @@
 
 (defonce ^:private conns! (atom {}))
 (def ^:private default-exprs
-  {:clj #"\.cljc?$"
-   :cljs #"\.clj(s|c)$"})
+  {:clj #"\.(cljc?|edn)$"
+   :cljs #"\.(clj(s|c)|edn)$"})
 
 (defn remove!
   "Remove the connection under the given tag. Shuts it down cleanly and blocks
