@@ -1,5 +1,5 @@
-nnoremap <localleader>rc :ConjureAdd {:tag :dev, :port 5885}<cr>
-nnoremap <localleader>rC 
+nnoremap <localleader>cc :ConjureAdd {:tag :dev, :port 5885}<cr>
+nnoremap <localleader>cC 
       \:ConjureAdd {:tag :jvm, :port 5555}<cr>
       \:ConjureAdd {:tag :node, :port 5556, :lang :cljs}<cr>
       " \:ConjureAdd {:tag :browser, :port 5557, :lang :cljs}<cr>
