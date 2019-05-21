@@ -9,6 +9,5 @@ lua package.loaded["conjure"] = nil
 
 if !exists("g:conjure_initialised")
   let g:conjure_initialised = 1
-  source autoload/conjure.vim
-  call conjure#init()
+  source plugin/conjure.vim
 endif
