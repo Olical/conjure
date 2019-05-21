@@ -21,7 +21,6 @@ You can find out more about socket prepls in my blog post, [Clojure socket prepl
 
  * Code formatting. ([#11](https://github.com/Olical/conjure/issues/11))
  * Changed namespace reloading via `tools.namespace`. ([#10](https://github.com/Olical/conjure/issues/10))
- * Configuration. ([#7](https://github.com/Olical/conjure/issues/7))
  * Polished documentation and README. ([#6](https://github.com/Olical/conjure/issues/6))
 
 [![asciicast](https://asciinema.org/a/RjojeOrKcF5zczweI7q3qiMgw.svg)](https://asciinema.org/a/RjojeOrKcF5zczweI7q3qiMgw)
@@ -45,16 +44,16 @@ The `'for'` and `'on'` keys are optional but you might prefer Conjure to only st
 You can disable these and define your own with `let g:conjure_default_mappings = 0`.
 
  * `InsertEnter` in a Clojure buffer (that is _not_ the log) closes the log.
- * `<localleader>re` - `ConjureEvalCurrentForm`
- * `<localleader>rr` - `ConjureEvalRootForm`
- * `<localleader>re` - `ConjureEvalSelection` (visual mode)
- * `<localleader>rf` - `ConjureEvalBuffer`
- * `<localleader>rF` - `ConjureLoadFile`
- * `<localleader>rs` - `ConjureStatus`
- * `<localleader>rl` - `ConjureOpenLog`
- * `<localleader>rq` - `ConjureCloseLog`
- * `<localleader>rt` - `ConjureRunTests`
- * `<localleader>rT` - `ConjureRunAllTests`
+ * `<localleader>ee` - `ConjureEvalCurrentForm`
+ * `<localleader>er` - `ConjureEvalRootForm`
+ * `<localleader>ee` - `ConjureEvalSelection` (visual mode)
+ * `<localleader>eb` - `ConjureEvalBuffer`
+ * `<localleader>ef` - `ConjureLoadFile`
+ * `<localleader>cs` - `ConjureStatus`
+ * `<localleader>cl` - `ConjureOpenLog`
+ * `<localleader>cq` - `ConjureCloseLog`
+ * `<localleader>tt` - `ConjureRunTests`
+ * `<localleader>ta` - `ConjureRunAllTests`
  * `K` - `ConjureDoc`
  * `gd` - `ConjureDefinition`
 
@@ -112,9 +111,11 @@ let g:deoplete#keyword_patterns.clojure = '[\w!$%&*+/:<=>?@\^_~\-\.#]*'
 
 #### [Coc][]
 
-You can install [coc-conjure][] to hook these two tools together easily, all thanks to [@jlesquembre][].
+You can install [coc-conjure][] to hook these two tools together easily, all thanks to [@jlesquembre][]. Documentation for that process can be found inside the repository.
 
 ## Example
+
+> Note: Hopefully all of the stateful `ConjureAdd` / `ConjureRemove` commands will vanish with #15!
 
 ```viml
 " A regular Clojure connection.
