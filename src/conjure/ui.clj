@@ -5,7 +5,6 @@
             [conjure.code :as code]
             [conjure.result :as result]))
 
-(def ^:private log-window-widths {:small 40 :large 80})
 (def ^:private max-log-buffer-length 2000)
 (defonce ^:private log-buffer-name "/tmp/conjure.cljc")
 (def ^:private welcome-msg "; conjure/out | Welcome to Conjure!")
@@ -13,11 +12,11 @@
 (defn upsert-log
   "Get, create, or update the log window and buffer."
   ([] (upsert-log {}))
-  ([{:keys [focus? resize? width] :or {focus? false, resize? false, width :small}}]
+  ([{:keys [focus? resize? size] :or {focus? false, resize? false, size :small}}]
    (-> (nvim/call-lua-function
          :upsert-log
          log-buffer-name
-         (get log-window-widths width)
+         (util/kw->snake size)
          focus?
          resize?)
        (util/snake->kw-map))))

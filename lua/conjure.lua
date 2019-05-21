@@ -23,8 +23,26 @@ local function find_log (log_buf_name)
   return nil
 end
 
+
+-- Returns the absolute number of lines
+local function get_log_window_size(size, direction)
+  local percentage_size = (size == "small") and
+    vim.api.nvim_get_var("conjure_log_size_small") or
+    vim.api.nvim_get_var("conjure_log_size_large")
+
+  local vim_window_size = (direction == "horizontal") and
+    vim.api.nvim_get_option("lines") or
+    vim.api.nvim_get_option("columns")
+
+  return math.floor(vim_window_size * (percentage_size / 100))
+end
+
+
 -- Find or create (and then find again) the log window and buffer.
-function conjure.upsert_log (log_buf_name, width, focus, resize)
+function conjure.upsert_log(log_buf_name, size, focus, resize)
+  local direction = vim.api.nvim_get_var("conjure_log_direction")
+  local size_abs = get_log_window_size(size, direction)
+
   local result = find_log(log_buf_name)
   if result then
     if focus == true then
@@ -32,12 +50,17 @@ function conjure.upsert_log (log_buf_name, width, focus, resize)
     end
 
     if resize == true then
-      vim.api.nvim_win_set_width(result.win, width)
+      if direction == "horizontal" then
+        vim.api.nvim_win_set_height(result.win, size_abs)
+      else
+        vim.api.nvim_win_set_width(result.win, size_abs)
+      end
     end
 
     return result
   else
-    vim.api.nvim_command("botright " .. width .. "vsplit " .. log_buf_name)
+    local split = (direction == "horizontal") and "split" or "vsplit"
+    vim.api.nvim_command("botright " .. size_abs .. split .. " " .. log_buf_name)
     vim.api.nvim_command("setlocal winfixwidth")
     vim.api.nvim_command("setlocal buftype=nofile")
     vim.api.nvim_command("setlocal bufhidden=hide")
