@@ -32,7 +32,7 @@ command! -nargs=? ConjureRunAllTests call rpcnotify(s:jobid, "run_all_tests", <q
 if !exists("g:conjure_default_mappings") || g:conjure_default_mappings
   augroup conjure
     autocmd!
-    autocmd InsertEnter *.clj,*.clj[cs] :call conjure#close_unused_log()
+    autocmd InsertEnter *.edn,*.clj,*.clj[cs] :call conjure#close_unused_log()
     autocmd FileType clojure nnoremap <buffer> <localleader>re :ConjureEvalCurrentForm<cr>
     autocmd FileType clojure nnoremap <buffer> <localleader>rr :ConjureEvalRootForm<cr>
     autocmd FileType clojure vnoremap <buffer> <localleader>re :ConjureEvalSelection<cr>
