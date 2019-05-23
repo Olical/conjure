@@ -24,10 +24,12 @@
 (defn parse-ns [code]
   (try
     (let [form (parse-code code)]
-      (when (and (seq? form) (= (first form) 'ns))
-        (second (filter symbol? form))))
+      [:ok
+       (when (and (seq? form) (= (first form) 'ns))
+         (second (filter symbol? form)))])
     (catch Throwable e
-      (log/error "Caught error while extracting ns" e))))
+      (log/error "Caught error while extracting ns" e)
+      [:error e])))
 
 (def injected-deps
   "Files to load, in order, to add runtime dependencies to a REPL."

@@ -1,7 +1,8 @@
 (ns conjure.nvim
   (:require [conjure.nvim.api :as api]
             [conjure.code :as code]
-            [conjure.util :as util]))
+            [conjure.util :as util]
+            [conjure.result :as result]))
 
 (defn current-ctx
   "Context contains useful data that we don't watch to fetch twice while
@@ -18,14 +19,14 @@
            (api/get-current-win)])]
     (loop [sample-lines sample-lines
            line-count line-count]
-      (let [ns (code/parse-ns (util/join-lines sample-lines))
+      (let [ns-res (code/parse-ns (util/join-lines sample-lines))
             next-line-count (* line-count 2)]
-        (if (and (nil? ns) (< line-count buf-length))
+        (if (and (result/error? ns-res) (< line-count buf-length))
           (recur (api/call (get-lines next-line-count)) next-line-count)
           {:path path
            :buf buf
            :win win
-           :ns ns})))))
+           :ns (result/ok ns-res)})))))
 
 (defn- read-range
   "Given some lines, start column, and end column it will trim the first and

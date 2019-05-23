@@ -90,8 +90,8 @@
     (append {:origin (:tag conn)
              :kind (:tag resp)
              :code? code?
-             :fold-text (when (and code? (= (result/kind (:val resp)) :error))
-                          "Error folded, use `zo` to reveal")
+             :fold-text (when (and code? (result/error? (:val resp)))
+                          "Error folded")
              :msg (cond-> (:val resp)
                     (= (:tag resp) :ret) (result/value)
                     code? (util/pprint))})))

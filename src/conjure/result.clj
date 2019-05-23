@@ -12,3 +12,17 @@
 (defn value [res]
   (when (result? res)
     (second res)))
+
+(defn error? [res]
+  (= (kind res) :error))
+
+(defn ok? [res]
+  (= (kind res) :ok))
+
+(defn error [res]
+  (when (error? res)
+    (value res)))
+
+(defn ok [res]
+  (when (ok? res)
+    (value res)))
