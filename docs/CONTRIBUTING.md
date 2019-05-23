@@ -1,5 +1,7 @@
 # Contributing to Conjure
 
+> Note: All development should take place on the develop branch and all pull requests should target it. Merges to master are performed at release time.
+
  1. Check out `CODE_OF_CONDUCT.md`, I will not tolerate behavior that violates that document. Let's all be wonderful humans to each other.
  2. Have a look around the issues to see if something similar to your feature or change has been discussed before.
  3. Speak to someone about it, raise an issue and start a discussion. Of course if you're just fixing a typo then go ahead, but if it's not an entirely trivial change let's work out what to do together. Perhaps someone has already solved your problem and just needs a poke to share their work or findings.
