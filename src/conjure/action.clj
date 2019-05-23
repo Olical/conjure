@@ -72,6 +72,22 @@
                          (empty? (:val result))
                          (assoc :val (str "No doc for " name)))})))))
 
+(defn hover-doc [name]
+  (let [ctx (current-ctx {:passive? true})]
+    (some-> (some (fn [conn]
+                    (-> (wrapped-eval ctx
+                                      {:conn conn 
+                                       :code (code/doc-str {:conn conn
+                                                            :name name})})
+                        (get :val)
+                        (result/ok)))
+                  (:conns ctx))
+            (util/split-lines)
+            (->> (rest) (str/join " "))
+            (str/replace #"\s+" " ")
+            (code/sample) ;; TODO Move code/sample to util
+            (nvim/echo))))
+
 (defn eval-current-form []
   (let [{:keys [form origin]} (nvim/read-form)]
     (eval* {:code form

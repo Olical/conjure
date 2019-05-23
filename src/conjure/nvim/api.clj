@@ -113,3 +113,7 @@
 (defn feedkeys [{:keys [keys mode escape-csi] :or {mode :m, escape-csi false}}]
   {:method :nvim-feedkeys
    :params [keys (name mode) escape-csi]})
+
+(defn out-write [msg]
+  {:method :nvim-out-write
+   :params [msg]})
