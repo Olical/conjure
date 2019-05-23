@@ -33,7 +33,7 @@ Here's an example with [vim-plug][], my plugin manager of choice.
 Plug 'Olical/conjure', { 'tag': 'v0.14.2', 'do': 'bin/compile', 'for': 'clojure', 'on': 'ConjureAdd'  }
 ```
 
-You should rely on a tag so that breaking changes don't end up disrupting your workflow, please don't depend on `master`. Make sure you watch the repository for releases using the menu in the top right, that way you can upgrade when it's convenient for you.
+You should rely on a tag so that breaking changes don't end up disrupting your workflow, please don't depend on `master` (and especially not `develop`!). Make sure you watch the repository for releases using the menu in the top right, that way you can upgrade when it's convenient for you.
 
 The `'for'` and `'on'` keys are optional but you might prefer Conjure to only start up once you've entered a Clojure file.
 
