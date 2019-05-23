@@ -9,11 +9,11 @@
   "Get a short one line sample snippet of some code."
   [code]
   (when code
-    (let [sample-length 50]
-      (let [flat (str/replace code #"\s+" " ")]
-        (if (> (count flat) sample-length)
-          (str (subs flat 0 sample-length) "…")
-          flat)))))
+    (let [sample-length 50
+          flat (str/replace code #"\s+" " ")]
+      (if (> (count flat) sample-length)
+        (str (subs flat 0 sample-length) "…")
+        flat))))
 
 (defn parse-code [code]
   (if (string? code)
