@@ -106,7 +106,7 @@ endfunction
 " Trigger quick doc ideally because of CursorHold(I).
 " It displays with an echo and is a little context aware.
 function! conjure#quick_doc()
-  call rpcnotify(s:jobid, "quick_doc", expand("<cword>"))
+  call rpcnotify(s:jobid, "quick_doc")
 endfunction
 
 

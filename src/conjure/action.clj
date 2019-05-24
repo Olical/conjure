@@ -72,27 +72,37 @@
                          (empty? (:val result))
                          (assoc :val (str "No doc for " name)))})))))
 
-(defn quick-doc [name]
+(defn quick-doc []
   ;; TODO Debounce
-  ;; TODO Use the current form's head to get the symbol
   ;; TODO Trim the string to the width of the editor (use `columns`)
-  (let [ctx (current-ctx {:passive? true})
-        resolve-var (code/resolve-var-str name)]
-    (some-> (some (fn [conn]
-                    (when (-> (wrapped-eval ctx {:conn conn, :code resolve-var})
-                              (get :val)
-                              (result/ok))
-                      (-> (wrapped-eval ctx {:conn conn
-                                             :code (code/doc-str {:conn conn
-                                                                  :name name})})
-                          (get :val)
-                          (result/ok))))
-                  (:conns ctx))
-            (util/split-lines)
-            (->> (rest) (str/join " "))
-            (str/replace #"\s+" " ")
-            (code/sample)
-            (nvim/echo))))
+  ;; TODO Only take parens into account? Could be useful elsewhere with read-form of specific pairs.
+  (when-let [name (try
+                    (some-> (nvim/read-form)
+                            (get :form)
+                            (code/parse-code)
+                            (first)
+                            (as-> x
+                              (when (symbol? x)
+                                x))
+                            (str))
+                    (catch Throwable _))]
+    (let [ctx (current-ctx {:passive? true})
+          resolve-var (code/resolve-var-str name)]
+      (some-> (some (fn [conn]
+                      (when (-> (wrapped-eval ctx {:conn conn, :code resolve-var})
+                                (get :val)
+                                (result/ok))
+                        (-> (wrapped-eval ctx {:conn conn
+                                               :code (code/doc-str {:conn conn
+                                                                    :name name})})
+                            (get :val)
+                            (result/ok))))
+                    (:conns ctx))
+              (util/split-lines)
+              (->> (rest) (str/join " "))
+              (str/replace #"\s+" " ")
+              (code/sample)
+              (nvim/echo)))))
 
 (defn eval-current-form []
   (let [{:keys [form origin]} (nvim/read-form)]
