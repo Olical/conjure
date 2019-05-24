@@ -30,7 +30,7 @@ command! -nargs=1 ConjureLoadFile call rpcnotify(s:jobid, "load_file", <q-args>)
 
 command! -nargs=1 ConjureDefinition call rpcnotify(s:jobid, "definition", <q-args>)
 command! -nargs=1 ConjureDoc call rpcnotify(s:jobid, "doc", <q-args>)
-command! -nargs=1 ConjureHoverDoc call rpcnotify(s:jobid, "hover_doc", <q-args>)
+command! -nargs=1 ConjureQuickDoc call conjure#quick_doc()
 command! -nargs=0 ConjureOpenLog call rpcnotify(s:jobid, "open_log")
 command! -nargs=0 ConjureCloseLog call rpcnotify(s:jobid, "close_log")
 command! -nargs=* ConjureRunTests call rpcnotify(s:jobid, "run_tests", <q-args>)
@@ -56,8 +56,8 @@ if g:conjure_default_mappings
     autocmd FileType clojure nnoremap <buffer> <localleader>tt :ConjureRunTests<cr>
     autocmd FileType clojure nnoremap <buffer> <localleader>ta :ConjureRunAllTests<cr>
 
-    autocmd CursorHold *.edn,*.clj,*.clj[cs] :ConjureHoverDoc <c-r><c-w>
-    autocmd CursorHoldI *.edn,*.clj,*.clj[cs] :ConjureHoverDoc <c-r><c-w>
+    autocmd CursorHold *.edn,*.clj,*.clj[cs] :call conjure#quick_doc()
+    autocmd CursorHoldI *.edn,*.clj,*.clj[cs] :call conjure#quick_doc()
 
     autocmd FileType clojure nnoremap <buffer> K :ConjureDoc <c-r><c-w><cr>
     autocmd FileType clojure nnoremap <buffer> gd :ConjureDefinition <c-r><c-w><cr>
@@ -102,6 +102,13 @@ function! conjure#start()
     \})
   endif
 endfunction
+
+" Trigger quick doc ideally because of CursorHold(I).
+" It displays with an echo and is a little context aware.
+function! conjure#quick_doc()
+  call rpcnotify(s:jobid, "quick_doc", expand("<cword>"))
+endfunction
+
 
 " Close the log if we're not currently using it.
 function! conjure#close_unused_log()

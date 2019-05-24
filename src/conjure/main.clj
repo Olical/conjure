@@ -86,8 +86,8 @@
 (defmethod rpc/handle-notify :doc [{:keys [params]}]
   (action/doc (first params)))
 
-(defmethod rpc/handle-notify :hover-doc [{:keys [params]}]
-  (action/hover-doc (first params)))
+(defmethod rpc/handle-notify :quick-doc [{:keys [params]}]
+  (action/quick-doc (first params)))
 
 (defmethod rpc/handle-notify :open-log [_]
   (ui/upsert-log {:focus? true

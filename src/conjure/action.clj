@@ -72,20 +72,26 @@
                          (empty? (:val result))
                          (assoc :val (str "No doc for " name)))})))))
 
-(defn hover-doc [name]
-  (let [ctx (current-ctx {:passive? true})]
+(defn quick-doc [name]
+  ;; TODO Debounce
+  ;; TODO Use the current form's head to get the symbol
+  ;; TODO Trim the string to the width of the editor (use `columns`)
+  (let [ctx (current-ctx {:passive? true})
+        resolve-var (code/resolve-var-str name)]
     (some-> (some (fn [conn]
-                    (-> (wrapped-eval ctx
-                                      {:conn conn 
-                                       :code (code/doc-str {:conn conn
-                                                            :name name})})
-                        (get :val)
-                        (result/ok)))
+                    (when (-> (wrapped-eval ctx {:conn conn, :code resolve-var})
+                              (get :val)
+                              (result/ok))
+                      (-> (wrapped-eval ctx {:conn conn
+                                             :code (code/doc-str {:conn conn
+                                                                  :name name})})
+                          (get :val)
+                          (result/ok))))
                   (:conns ctx))
             (util/split-lines)
             (->> (rest) (str/join " "))
             (str/replace #"\s+" " ")
-            (code/sample) ;; TODO Move code/sample to util
+            (code/sample)
             (nvim/echo))))
 
 (defn eval-current-form []

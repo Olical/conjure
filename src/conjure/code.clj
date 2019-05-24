@@ -177,3 +177,10 @@
            (with-out-str
              (cljs.test/run-all-tests" re-str "))
            "))))
+
+(defn resolve-var-str [name]
+  (if (try (symbol? (parse-code name)) (catch Throwable _))
+    (str "(let [x (resolve '" name ")]
+            (when (var? x)
+              x))")
+    ""))
