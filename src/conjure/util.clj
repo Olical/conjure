@@ -2,6 +2,7 @@
   "Anything useful and generic that's shared by multiple namespaces."
   (:require [clojure.main :as clj]
             [clojure.string :as str]
+            [clojure.core.async :as a]
             [clojure.core.memoize :as memo]
             [taoensso.timbre :as log]
             [zprint.core :as zp]
@@ -102,3 +103,18 @@
   (let [socket (java.net.ServerSocket. 0)]
     (.close socket)
     (.getLocalPort socket)))
+
+(defn debounce [f ms]
+  (let [in (a/chan (a/sliding-buffer 1))
+        out (a/chan (a/sliding-buffer 1))]
+    (a/go-loop []
+      (let [timeout (a/timeout ms)
+            args (a/<! in)]
+        (a/alt!
+          timeout (a/>! out (apply f args))
+          in nil)
+        (recur)))
+
+    (fn [& args]
+      (a/put! in (or args []))
+      out)))

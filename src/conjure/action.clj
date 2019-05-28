@@ -76,6 +76,7 @@
   ;; TODO Debounce
   ;; TODO Trim the string to the width of the editor (use `columns`)
   ;; TODO Only take parens into account? Could be useful elsewhere with read-form of specific pairs.
+  ;; TODO Don't echo to :messages.
   (when-let [name (try
                     (some-> (nvim/read-form)
                             (get :form)
