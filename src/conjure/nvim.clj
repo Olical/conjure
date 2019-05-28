@@ -11,12 +11,13 @@
   (let [line-count 25
         buf (api/call (api/get-current-buf))
         get-lines (fn [end] (api/buf-get-lines buf {:start 0, :end end}))
-        [path buf-length sample-lines win]
+        [path buf-length sample-lines win columns]
         (api/call-batch
           [(api/buf-get-name buf)
            (api/buf-line-count buf)
            (get-lines line-count)
-           (api/get-current-win)])]
+           (api/get-current-win)
+           (api/get-option :columns)])]
     (loop [sample-lines sample-lines
            line-count line-count]
       (let [ns-res (code/parse-ns (util/join-lines sample-lines))
@@ -26,7 +27,8 @@
           {:path path
            :buf buf
            :win win
-           :ns (result/ok ns-res)})))))
+           :ns (result/ok ns-res)
+           :columns columns})))))
 
 (defn- read-range
   "Given some lines, start column, and end column it will trim the first and
