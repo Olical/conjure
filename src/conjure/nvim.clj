@@ -203,4 +203,8 @@
   (api/call (api/set-var :conjure-ready 1)))
 
 (defn echo [& parts]
-  (api/call (api/out-write (str (util/join-words parts) "\n"))))
+  (api/call
+    (api/command
+      (str "echo \""
+           (util/escape-quotes (util/join-words parts))
+           "\""))))

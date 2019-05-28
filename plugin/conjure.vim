@@ -57,8 +57,6 @@ if g:conjure_default_mappings
     autocmd FileType clojure nnoremap <buffer> <localleader>ta :ConjureRunAllTests<cr>
 
     autocmd CursorHold *.edn,*.clj,*.clj[cs] :call conjure#quick_doc()
-    autocmd CursorHoldI *.edn,*.clj,*.clj[cs] :call conjure#quick_doc()
-
     autocmd FileType clojure nnoremap <buffer> K :ConjureDoc <c-r><c-w><cr>
     autocmd FileType clojure nnoremap <buffer> gd :ConjureDefinition <c-r><c-w><cr>
     autocmd FileType clojure setlocal omnifunc=conjure#omnicomplete

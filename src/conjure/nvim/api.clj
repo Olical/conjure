@@ -110,6 +110,10 @@
   {:method :nvim-command-output
    :params [expr]})
 
+(defn command [expr]
+  {:method :nvim-command
+   :params [expr]})
+
 (defn feedkeys [{:keys [keys mode escape-csi] :or {mode :m, escape-csi false}}]
   {:method :nvim-feedkeys
    :params [keys (name mode) escape-csi]})

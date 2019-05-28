@@ -74,17 +74,14 @@
                            (assoc :val (str "No doc for " name)))}))))))
 
 (defn quick-doc []
-  ;; TODO Debounce
   ;; TODO Trim the string to the width of the editor (use `columns`)
   ;; TODO Only take parens into account? Could be useful elsewhere with read-form of specific pairs.
-  ;; TODO Don't echo to :messages.
   (when-let [name (some-> (nvim/read-form)
                           (get :form)
                           (code/parse-code-safe)
-                          (first)
                           (as-> x
-                            (when (symbol? x)
-                              x))
+                            (when (seq? x) (first x))
+                            (when (symbol? x) x))
                           (str))]
     (let [ctx (current-ctx {:passive? true})
           resolve-var (code/resolve-var-str name)]
