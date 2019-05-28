@@ -51,7 +51,7 @@
   "Read the current form under the cursor from the buffer by default. When
   root? is set to true it'll read the outer most form under the cursor."
   ([] (read-form {}))
-  ([{:keys [root? win]}]
+  ([{:keys [root? data-pairs? win] :or {root? false, data-pairs? true}}]
    ;; Put on your seatbelt, this function's a bit wild.
    ;; Could maybe be simplified a little but I doubt that much.
 
@@ -82,8 +82,10 @@
                 (api/get-current-win))
               (api/eval* (str "matchstr(getline('.'), '\\%'.col('.').'c.')"))]
              (get-pair "(" ")")
-             (get-pair "\\[" "\\]")
-             (get-pair "{" "}")))
+             (when data-pairs?
+               (concat
+                 (get-pair "\\[" "\\]")
+                 (get-pair "{" "}")))))
 
          ;; If the position is [0 0] we're _probably_ on the matching
          ;; character, so we should use the cursor position. Don't do this for
@@ -105,7 +107,9 @@
                              end (get-pos end ec)]
                          (when-not (or (nil-pos? start) (nil-pos? end))
                            [start end])))
-                     (->> (interleave positions ["(" ")" "[" "]" "{" "}"])
+                     (->> (interleave positions (concat ["(" ")"]
+                                                        (when data-pairs?
+                                                          ["[" "]" "{" "}"])))
                           (partition 2) (partition 2)))
 
          ;; Pull the lines from the pairs we found.

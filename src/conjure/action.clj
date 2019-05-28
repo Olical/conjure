@@ -76,8 +76,7 @@
 (defonce previous-quick-doc-form! (atom nil))
 
 (defn quick-doc []
-  ;; TODO Only take parens into account? Could be useful elsewhere with read-form of specific pairs.
-  (let [form (get (nvim/read-form) :form)]
+  (let [form (get (nvim/read-form {:data-pairs? false}) :form)]
     (when (not= form @previous-quick-doc-form!)
       (reset! previous-quick-doc-form! form)
       (when-let [name (some-> (code/parse-code-safe form)
