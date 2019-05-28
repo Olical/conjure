@@ -74,16 +74,3 @@
 
 (t/deftest thread
   (t/is (= @(util/thread "adding" (+ 10 10)) 20)))
-
-(t/deftest debounce
-  (t/testing "waiting on a single debounced value"
-    (let [f (util/debounce inc 5)]
-      (t/is (= (a/<!! (f 10)) 11))))
-
-  (t/testing "multiple calls are debounced"
-    (let [v (atom 0)
-          f (util/debounce (fn [] (swap! v inc)) 5)]
-      (f) (f) (f)
-      (t/is (= @v 0))
-      (a/<!! (f))
-      (t/is (= @v 1)))))
