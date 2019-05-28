@@ -27,6 +27,10 @@
     (t/is (= (util/splice "" -1 0 "") ""))
     (t/is (= (util/splice "Hello, World!" 7 20 "Conjure?") "Hello, Conjure?"))))
 
+(t/deftest sample
+  (t/is (= (util/sample "this is some code" 20) "this is some code"))
+  (t/is (= (util/sample "this is some long code" 20) "this is some long co…")))
+
 (t/deftest escape-quotes
   (t/is (= (util/escape-quotes "\"\"") "\\\"\\\"")))
 

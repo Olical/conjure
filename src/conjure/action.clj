@@ -101,7 +101,7 @@
               (util/split-lines)
               (->> (rest) (str/join " "))
               (str/replace #"\s+" " ")
-              (code/sample)
+              (util/sample 50)
               (nvim/echo)))))
 
 (defn eval-current-form []

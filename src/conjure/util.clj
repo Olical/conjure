@@ -26,6 +26,16 @@
        r
        (subs s (min (count s) end))))
 
+(defn sample
+  "Get a one line sample of some string. If the string had to be trimmed an
+  ellipses will be appended onto the end."
+  [code length]
+  (when code
+    (let [flat (str/replace code #"\s+" " ")]
+      (if (> (count flat) length)
+        (str (subs flat 0 length) "…")
+        flat))))
+
 (def ^:dynamic get-env-fn #(System/getenv %))
 
 (defn env

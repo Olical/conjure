@@ -80,7 +80,7 @@
   "When we send an eval and are awaiting a result, prints a short sample of the
   code we sent."
   [{:keys [conn code]}]
-  (append {:origin (:tag conn), :kind :eval, :msg (code/sample code)}))
+  (append {:origin (:tag conn), :kind :eval, :msg (util/sample code 50)}))
 
 (defn result
   "Format, if it's code, and display a result from an evaluation.
