@@ -98,7 +98,7 @@
                             (get :val)
                             (result/ok))))
                     (:conns ctx))
-              (util/split-lines)
+              (str/split-lines)
               (->> (rest) (str/join " "))
               (str/replace #"\s+" " ")
               (util/sample 50)
@@ -137,7 +137,7 @@
         ;; We read the surrounding top level form from the current buffer
         ;; and add the __prefix__ symbol.
         context (when-let [{:keys [form cursor]} (nvim/read-form {:root? true, :win (:win ctx)})]
-                  (-> (util/split-lines form)
+                  (-> (str/split-lines form)
                       (update (dec (first cursor))
                               #(util/splice %
                                             (- (second cursor) (count prefix))

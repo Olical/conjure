@@ -11,9 +11,6 @@
 (defn join-words [parts]
   (str/join " " parts))
 
-(defn split-lines [s]
-  (str/split s #"\n"))
-
 (defn join-lines [lines]
   (str/join "\n" lines))
 

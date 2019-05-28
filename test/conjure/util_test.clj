@@ -8,10 +8,6 @@
   (t/is (= (util/join-words []) ""))
   (t/is (= (util/join-words ["foo" "bar"]) "foo bar")))
 
-(t/deftest split-lines
-  (t/is (= (util/split-lines "") [""]))
-  (t/is (= (util/split-lines "foo\nbar") ["foo" "bar"])))
-
 (t/deftest join-lines
   (t/is (= (util/join-lines []) ""))
   (t/is (= (util/join-lines ["foo" "bar"]) "foo\nbar")))

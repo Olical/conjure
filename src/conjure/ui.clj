@@ -1,8 +1,8 @@
 (ns conjure.ui
   "Handle displaying and managing what's visible to the user."
-  (:require [conjure.nvim :as nvim]
+  (:require [clojure.string :as str]
+            [conjure.nvim :as nvim]
             [conjure.util :as util]
-            [conjure.code :as code]
             [conjure.result :as result]))
 
 (def ^:private max-log-buffer-length 2000)
@@ -35,7 +35,7 @@
 
   (let [prefix (str "; " (name origin) "/" (name kind))
         log (upsert-log)
-        lines (util/split-lines msg)]
+        lines (str/split-lines msg)]
       (nvim/append-lines
         (merge
           log
