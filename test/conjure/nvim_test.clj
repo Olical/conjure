@@ -29,12 +29,14 @@
   (defmethod call :nvim-buf-get-lines [{[buf] :params}]
     (t/is (= buf 5))
     ["(ns foo)"])
+  (defmethod call :nvim-get-option [_] 300)
 
   (t/is (= (nvim/current-ctx)
            {:path "foo.clj"
             :buf 5
             :win 10
-            :ns 'foo})))
+            :ns 'foo
+            :columns 300})))
 
 (t/deftest read-form
   (let [src ["(+ 10 10)"
