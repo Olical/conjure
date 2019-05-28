@@ -11,6 +11,11 @@
       (read-string {:read-cond :preserve} code))
     code))
 
+(defn parse-code-safe [code]
+  (try
+    (parse-code code)
+    (catch Throwable _)))
+
 (defn parse-ns [code]
   (try
     (let [form (parse-code code)]

@@ -62,31 +62,30 @@
          (ui/result {:conn conn, :resp (wrapped-eval ctx opts)}))))))
 
 (defn doc [name]
-  (let [ctx (current-ctx)]
-    (doseq [conn (:conns ctx)]
-      (let [code (code/doc-str {:conn conn, :name name})
-            result (-> (wrapped-eval ctx {:conn conn, :code code})
-                       (update :val result/value))]
-        (ui/doc {:conn conn
-                 :resp (cond-> result
-                         (empty? (:val result))
-                         (assoc :val (str "No doc for " name)))})))))
+  (when (symbol? (code/parse-code-safe name))
+    (let [ctx (current-ctx)]
+      (doseq [conn (:conns ctx)]
+        (let [code (code/doc-str {:conn conn, :name name})
+              result (-> (wrapped-eval ctx {:conn conn, :code code})
+                         (update :val result/value))]
+          (ui/doc {:conn conn
+                   :resp (cond-> result
+                           (empty? (:val result))
+                           (assoc :val (str "No doc for " name)))}))))))
 
 (defn quick-doc []
   ;; TODO Debounce
   ;; TODO Trim the string to the width of the editor (use `columns`)
   ;; TODO Only take parens into account? Could be useful elsewhere with read-form of specific pairs.
   ;; TODO Don't echo to :messages.
-  (when-let [name (try
-                    (some-> (nvim/read-form)
-                            (get :form)
-                            (code/parse-code)
-                            (first)
-                            (as-> x
-                              (when (symbol? x)
-                                x))
-                            (str))
-                    (catch Throwable _))]
+  (when-let [name (some-> (nvim/read-form)
+                          (get :form)
+                          (code/parse-code-safe)
+                          (first)
+                          (as-> x
+                            (when (symbol? x)
+                              x))
+                          (str))]
     (let [ctx (current-ctx {:passive? true})
           resolve-var (code/resolve-var-str name)]
       (some-> (some (fn [conn]
