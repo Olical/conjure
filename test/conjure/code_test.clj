@@ -7,6 +7,7 @@
   (t/is (= (code/parse-code "{:foo :bar}") {:foo :bar})))
 
 (t/deftest parse-code-safe
+  (t/is (= (code/parse-code "{:foo :bar}") {:foo :bar}))
   (t/is (= (code/parse-code-safe "(ohno(})") nil)))
 
 (t/deftest parse-ns
