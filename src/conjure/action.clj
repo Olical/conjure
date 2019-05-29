@@ -76,31 +76,30 @@
 (defonce previous-quick-doc-form! (atom nil))
 
 (defn quick-doc []
-  (let [form (get (nvim/read-form {:data-pairs? false}) :form)]
-    (when (not= form @previous-quick-doc-form!)
-      (reset! previous-quick-doc-form! form)
-      (when-let [name (some-> (code/parse-code-safe form)
-                              (as-> x
-                                (when (seq? x) (first x))
-                                (when (symbol? x) x))
-                              (str))]
-        (let [ctx (current-ctx {:passive? true})
-              resolve-var (code/resolve-var-str name)]
-          (some-> (some (fn [conn]
-                          (when (-> (wrapped-eval ctx {:conn conn, :code resolve-var})
-                                    (get :val)
-                                    (result/ok))
-                            (-> (wrapped-eval ctx {:conn conn
-                                                   :code (code/doc-str {:conn conn
-                                                                        :name name})})
+  (when-let [name (some-> (nvim/read-form {:data-pairs? false})
+                          (get :form)
+                          (code/parse-code-safe)
+                          (as-> x
+                            (when (seq? x) (first x))
+                            (when (symbol? x) x))
+                          (str))]
+    (let [ctx (current-ctx {:passive? true})
+          resolve-var (code/resolve-var-str name)]
+      (some-> (some (fn [conn]
+                      (when (-> (wrapped-eval ctx {:conn conn, :code resolve-var})
                                 (get :val)
-                                (result/ok))))
-                        (:conns ctx))
-                  (str/split-lines)
-                  (->> (rest) (str/join " "))
-                  (str/replace #"\s+" " ")
-                  (util/sample (* (:columns ctx) 0.75))
-                  (nvim/echo)))))))
+                                (result/ok))
+                        (-> (wrapped-eval ctx {:conn conn
+                                               :code (code/doc-str {:conn conn
+                                                                    :name name})})
+                            (get :val)
+                            (result/ok))))
+                    (:conns ctx))
+              (str/split-lines)
+              (->> (rest) (str/join " "))
+              (str/replace #"\s+" " ")
+              (util/sample 256)
+              (nvim/display-virtual)))))
 
 (defn eval-current-form []
   (let [{:keys [form origin]} (nvim/read-form)]

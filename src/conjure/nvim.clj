@@ -11,13 +11,12 @@
   (let [line-count 25
         buf (api/call (api/get-current-buf))
         get-lines (fn [end] (api/buf-get-lines buf {:start 0, :end end}))
-        [path buf-length sample-lines win columns]
+        [path buf-length sample-lines win]
         (api/call-batch
           [(api/buf-get-name buf)
            (api/buf-line-count buf)
            (get-lines line-count)
-           (api/get-current-win)
-           (api/get-option :columns)])]
+           (api/get-current-win)])]
     (loop [sample-lines sample-lines
            line-count line-count]
       (let [ns-res (code/parse-ns (util/join-lines sample-lines))
@@ -27,8 +26,7 @@
           {:path path
            :buf buf
            :win win
-           :ns (result/ok ns-res)
-           :columns columns})))))
+           :ns (result/ok ns-res)})))))
 
 (defn- read-range
   "Given some lines, start column, and end column it will trim the first and
@@ -214,3 +212,15 @@
       (str "echo \""
            (util/escape-quotes (util/join-words parts))
            "\""))))
+
+(defonce virtual-text-ns!
+  (delay (api/call (api/create-namespace :conjure-virtual-text))))
+
+(defn display-virtual [body]
+  (let [{:keys [win buf]} (current-ctx)
+        [row _] (api/call (api/win-get-cursor win))]
+    (api/call-batch
+      [(api/buf-clear-namespace buf {:ns-id @virtual-text-ns!})
+       (api/buf-set-virtual-text buf {:ns-id @virtual-text-ns!
+                                      :line (dec row)
+                                      :chunks [[body "comment"]]})])))

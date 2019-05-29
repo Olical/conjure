@@ -121,3 +121,15 @@
 (defn out-write [msg]
   {:method :nvim-out-write
    :params [msg]})
+
+(defn create-namespace [name]
+  {:method :nvim-create-namespace
+   :params [(util/kw->snake name)]})
+
+(defn buf-set-virtual-text [buf {:keys [ns-id line chunks opts] :or {opts {}}}]
+  {:method :nvim-buf-set-virtual-text
+   :params [buf ns-id line chunks opts]})
+
+(defn buf-clear-namespace [buf {:keys [ns-id line-start line-end] :or {line-start 0, line-end -1}}]
+  {:method :nvim-buf-clear-namespace
+   :params [buf ns-id line-start line-end]})
