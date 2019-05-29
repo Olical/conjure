@@ -15,7 +15,7 @@ You can find out more about socket prepls in my blog post, [Clojure socket prepl
  * Running tests in the current namespace or the `-test` equivalent.
  * Friendly error output by default with optional expansion.
  * Go to definition.
- * `(doc ...)` lookup on `K` or via `CursorHold` for your current form.
+ * Documentation lookup on a key press and when your cursor is idle.
 
 ### Upcoming
 
@@ -44,7 +44,7 @@ The `'for'` and `'on'` keys are optional but you might prefer Conjure to only st
 You can disable these and define your own with `let g:conjure_default_mappings = 0`.
 
  * `InsertEnter` in a Clojure buffer (that is _not_ the log) closes the log.
- * `CursorHold` in a Clojure buffer looks up the docs for the head of the form under your cursor and echos it. If this is annoying you, turn it off with `let g:conjure_quick_doc = 0`
+ * `CursorHold` in a Clojure buffer looks up the docs for the head of the form under your cursor and displays it with virtual text.
  * `<localleader>ee` - `ConjureEvalCurrentForm`
  * `<localleader>er` - `ConjureEvalRootForm`
  * `<localleader>ee` - `ConjureEvalSelection` (visual mode)

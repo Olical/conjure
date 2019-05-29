@@ -73,8 +73,6 @@
                            (empty? (:val result))
                            (assoc :val (str "No doc for " name)))}))))))
 
-(defonce previous-quick-doc-form! (atom nil))
-
 (defn quick-doc []
   (when-let [name (some-> (nvim/read-form {:data-pairs? false})
                           (get :form)

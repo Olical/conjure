@@ -1,6 +1,5 @@
 " User config with defaults.
 let g:conjure_default_mappings = get(g:, 'conjure_default_mappings', 1)
-let g:conjure_quick_doc = get(g:, 'conjure_quick_doc', 1)
 let g:conjure_log_direction = get(g:, 'conjure_log_direction', "vertical")
 let g:conjure_log_size_small = get(g:, 'conjure_log_size_small', 25)
 let g:conjure_log_size_large = get(g:, 'conjure_log_size_large', 50)
@@ -57,9 +56,7 @@ if g:conjure_default_mappings
     autocmd FileType clojure nnoremap <buffer> <localleader>tt :ConjureRunTests<cr>
     autocmd FileType clojure nnoremap <buffer> <localleader>ta :ConjureRunAllTests<cr>
 
-    if g:conjure_quick_doc
-      autocmd CursorHold *.edn,*.clj,*.clj[cs] :call conjure#quick_doc()
-    endif
+    autocmd CursorHold *.edn,*.clj,*.clj[cs] :call conjure#quick_doc()
 
     autocmd FileType clojure nnoremap <buffer> K :ConjureDoc <c-r><c-w><cr>
     autocmd FileType clojure nnoremap <buffer> gd :ConjureDefinition <c-r><c-w><cr>
@@ -106,7 +103,7 @@ function! conjure#start()
 endfunction
 
 " Trigger quick doc ideally because of CursorHold(I).
-" It displays with an echo and is a little context aware.
+" It displays the doc for the head of the current form using virtual text.
 function! conjure#quick_doc()
   call rpcnotify(s:jobid, "quick_doc")
 endfunction
