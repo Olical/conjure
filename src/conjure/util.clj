@@ -46,7 +46,9 @@
 (defn throwable->str [throwable]
   (-> throwable Throwable->map clj/ex-triage clj/ex-str))
 
-(defn escape-quotes [s]
+(defn escape-quotes
+  "Escape backslashes and double quotes."
+  [s]
   (str/escape s {\\ "\\\\"
                  \" "\\\""}))
 
@@ -62,7 +64,9 @@
 (defn regexp? [o]
   (instance? java.util.regex.Pattern o))
 
-(defn write [stream data]
+(defn write
+  "Write the full data to the stream and then flush the stream."
+  [stream data]
   (doto stream
     (.write data 0 (count data))
     (.flush)))
@@ -99,7 +103,9 @@
         plural? (not= amount 1)]
     (str amount " " description (when plural? "s"))))
 
-(defn free-port []
+(defn free-port
+  "Find a free port we can bind to."
+  []
   (let [socket (java.net.ServerSocket. 0)]
     (.close socket)
     (.getLocalPort socket)))
