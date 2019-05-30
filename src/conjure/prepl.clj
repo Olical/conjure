@@ -55,7 +55,8 @@
   channel. We can use this fact to await the read channel's closure to know
   when the closing is complete. Handy!"
   [{:keys [tag host port]}]
-  (let [[eval-chan read-chan] (repeatedly #(a/chan 32))
+  (let [eval-chan (a/chan)
+        read-chan (a/chan)
         input (PipedInputStream.)
         output (PipedOutputStream. input)]
 
@@ -111,7 +112,7 @@
   (log/info "Adding" tag host port)
   (ui/info "Adding" tag)
 
-  (let [ret-chan (a/chan 32)
+  (let [ret-chan (a/chan)
         conn {:tag tag
               :lang lang
               :host host
