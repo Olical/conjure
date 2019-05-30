@@ -17,8 +17,9 @@ You can find out more about socket prepls in my blog post, [Clojure socket prepl
  * Go to definition.
  * Documentation lookup on a key press and when your cursor is idle.
 
-### Upcoming
+### Upcoming for v1.0.0
 
+ * Declarative prepl connections. ([#15](https://github.com/Olical/conjure/issues/15))
  * Code formatting. ([#11](https://github.com/Olical/conjure/issues/11))
  * Changed namespace reloading via `tools.namespace`. ([#10](https://github.com/Olical/conjure/issues/10))
  * Polished documentation and README. ([#6](https://github.com/Olical/conjure/issues/6))
@@ -30,7 +31,7 @@ You can find out more about socket prepls in my blog post, [Clojure socket prepl
 Here's an example with [vim-plug][], my plugin manager of choice.
 
 ```viml
-Plug 'Olical/conjure', { 'tag': 'v0.14.2', 'do': 'bin/compile', 'for': 'clojure', 'on': 'ConjureAdd'  }
+Plug 'Olical/conjure', { 'tag': 'v0.16.0', 'do': 'bin/compile', 'for': 'clojure', 'on': 'ConjureAdd'  }
 ```
 
 You should rely on a tag so that breaking changes don't end up disrupting your workflow, please don't depend on `master` (and especially not `develop`!). Make sure you watch the repository for releases using the menu in the top right, that way you can upgrade when it's convenient for you.
