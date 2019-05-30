@@ -105,7 +105,9 @@ endfunction
 " Trigger quick doc ideally because of CursorHold(I).
 " It displays the doc for the head of the current form using virtual text.
 function! conjure#quick_doc()
-  call rpcnotify(s:jobid, "quick_doc")
+  if g:conjure_ready
+    call rpcnotify(s:jobid, "quick_doc")
+  endif
 endfunction
 
 
