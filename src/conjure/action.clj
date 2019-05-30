@@ -95,9 +95,9 @@
                     (:conns ctx))
               (str/split-lines)
               (->> (rest) (str/join " "))
-              (str/replace #"\s+" " ")
               (util/sample 256)
-              (nvim/display-virtual)))))
+              (as-> doc
+                (nvim/display-virtual [[(str ";; " doc) "comment"]]))))))
 
 (defn eval-current-form []
   (let [{:keys [form origin]} (nvim/read-form)]
