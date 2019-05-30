@@ -93,7 +93,9 @@
                             (get :val)
                             (result/ok))))
                     (:conns ctx))
-              (str/split-lines)
+              (as-> res
+                (when (string? res)
+                  (str/split-lines res)))
               (->> (rest) (str/join " "))
               (util/sample 256)
               (as-> doc
