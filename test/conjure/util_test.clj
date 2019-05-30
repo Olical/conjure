@@ -1,5 +1,6 @@
 (ns conjure.util-test
   (:require [clojure.test :as t]
+            [clojure.core.async :as a]
             [zprint.core :as zp]
             [conjure.util :as util]))
 
@@ -7,10 +8,6 @@
   (t/is (= (util/join-words nil) ""))
   (t/is (= (util/join-words []) ""))
   (t/is (= (util/join-words ["foo" "bar"]) "foo bar")))
-
-(t/deftest split-lines
-  (t/is (= (util/split-lines "") [""]))
-  (t/is (= (util/split-lines "foo\nbar") ["foo" "bar"])))
 
 (t/deftest join-lines
   (t/is (= (util/join-lines []) ""))
@@ -26,6 +23,10 @@
     (t/is (= (util/splice "" 0 1 "") ""))
     (t/is (= (util/splice "" -1 0 "") ""))
     (t/is (= (util/splice "Hello, World!" 7 20 "Conjure?") "Hello, Conjure?"))))
+
+(t/deftest sample
+  (t/is (= (util/sample "this is some code" 20) "this is some code"))
+  (t/is (= (util/sample "this is some long code" 20) "this is some long co…")))
 
 (t/deftest escape-quotes
   (t/is (= (util/escape-quotes "\"\"") "\\\"\\\"")))

@@ -30,6 +30,7 @@ command! -nargs=1 ConjureLoadFile call rpcnotify(s:jobid, "load_file", <q-args>)
 
 command! -nargs=1 ConjureDefinition call rpcnotify(s:jobid, "definition", <q-args>)
 command! -nargs=1 ConjureDoc call rpcnotify(s:jobid, "doc", <q-args>)
+command! -nargs=1 ConjureQuickDoc call conjure#quick_doc()
 command! -nargs=0 ConjureOpenLog call rpcnotify(s:jobid, "open_log")
 command! -nargs=0 ConjureCloseLog call rpcnotify(s:jobid, "close_log")
 command! -nargs=* ConjureRunTests call rpcnotify(s:jobid, "run_tests", <q-args>)
@@ -39,17 +40,24 @@ command! -nargs=? ConjureRunAllTests call rpcnotify(s:jobid, "run_all_tests", <q
 if g:conjure_default_mappings
   augroup conjure
     autocmd!
+
     autocmd InsertEnter *.edn,*.clj,*.clj[cs] :call conjure#close_unused_log()
+
     autocmd FileType clojure nnoremap <buffer> <localleader>ee :ConjureEvalCurrentForm<cr>
     autocmd FileType clojure nnoremap <buffer> <localleader>er :ConjureEvalRootForm<cr>
     autocmd FileType clojure vnoremap <buffer> <localleader>ee :ConjureEvalSelection<cr>
     autocmd FileType clojure nnoremap <buffer> <localleader>eb :ConjureEvalBuffer<cr>
     autocmd FileType clojure nnoremap <buffer> <localleader>ef :ConjureLoadFile <c-r>=expand('%:p')<cr><cr>
+
     autocmd FileType clojure nnoremap <buffer> <localleader>cs :ConjureStatus<cr>
     autocmd FileType clojure nnoremap <buffer> <localleader>cl :ConjureOpenLog<cr>
     autocmd FileType clojure nnoremap <buffer> <localleader>cq :ConjureCloseLog<cr>
+
     autocmd FileType clojure nnoremap <buffer> <localleader>tt :ConjureRunTests<cr>
     autocmd FileType clojure nnoremap <buffer> <localleader>ta :ConjureRunAllTests<cr>
+
+    autocmd CursorHold *.edn,*.clj,*.clj[cs] :call conjure#quick_doc()
+
     autocmd FileType clojure nnoremap <buffer> K :ConjureDoc <c-r><c-w><cr>
     autocmd FileType clojure nnoremap <buffer> gd :ConjureDefinition <c-r><c-w><cr>
     autocmd FileType clojure setlocal omnifunc=conjure#omnicomplete
@@ -93,6 +101,13 @@ function! conjure#start()
     \})
   endif
 endfunction
+
+" Trigger quick doc ideally because of CursorHold(I).
+" It displays the doc for the head of the current form using virtual text.
+function! conjure#quick_doc()
+  call rpcnotify(s:jobid, "quick_doc")
+endfunction
+
 
 " Close the log if we're not currently using it.
 function! conjure#close_unused_log()

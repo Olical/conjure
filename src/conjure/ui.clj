@@ -1,8 +1,8 @@
 (ns conjure.ui
   "Handle displaying and managing what's visible to the user."
-  (:require [conjure.nvim :as nvim]
+  (:require [clojure.string :as str]
+            [conjure.nvim :as nvim]
             [conjure.util :as util]
-            [conjure.code :as code]
             [conjure.result :as result]))
 
 (def ^:private max-log-buffer-length 2000)
@@ -35,7 +35,7 @@
 
   (let [prefix (str "; " (name origin) "/" (name kind))
         log (upsert-log)
-        lines (util/split-lines msg)]
+        lines (str/split-lines msg)]
       (nvim/append-lines
         (merge
           log
@@ -80,7 +80,7 @@
   "When we send an eval and are awaiting a result, prints a short sample of the
   code we sent."
   [{:keys [conn code]}]
-  (append {:origin (:tag conn), :kind :eval, :msg (code/sample code)}))
+  (append {:origin (:tag conn), :kind :eval, :msg (util/sample code 50)}))
 
 (defn result
   "Format, if it's code, and display a result from an evaluation.
@@ -90,8 +90,8 @@
     (append {:origin (:tag conn)
              :kind (:tag resp)
              :code? code?
-             :fold-text (when (and code? (= (result/kind (:val resp)) :error))
-                          "Error folded, use `zo` to reveal")
+             :fold-text (when (and code? (result/error? (:val resp)))
+                          "Error folded")
              :msg (cond-> (:val resp)
                     (= (:tag resp) :ret) (result/value)
                     code? (util/pprint))})))

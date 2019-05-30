@@ -2,6 +2,7 @@
   "Anything useful and generic that's shared by multiple namespaces."
   (:require [clojure.main :as clj]
             [clojure.string :as str]
+            [clojure.core.async :as a]
             [clojure.core.memoize :as memo]
             [taoensso.timbre :as log]
             [zprint.core :as zp]
@@ -10,9 +11,6 @@
 
 (defn join-words [parts]
   (str/join " " parts))
-
-(defn split-lines [s]
-  (str/split s #"\n"))
 
 (defn join-lines [lines]
   (str/join "\n" lines))
@@ -26,6 +24,16 @@
        r
        (subs s (min (count s) end))))
 
+(defn sample
+  "Get a one line sample of some string. If the string had to be trimmed an
+  ellipses will be appended onto the end."
+  [code length]
+  (when code
+    (let [flat (str/replace code #"\s+" " ")]
+      (if (> (count flat) length)
+        (str (subs flat 0 length) "…")
+        flat))))
+
 (def ^:dynamic get-env-fn #(System/getenv %))
 
 (defn env
@@ -38,7 +46,9 @@
 (defn throwable->str [throwable]
   (-> throwable Throwable->map clj/ex-triage clj/ex-str))
 
-(defn escape-quotes [s]
+(defn escape-quotes
+  "Escape backslashes and double quotes."
+  [s]
   (str/escape s {\\ "\\\\"
                  \" "\\\""}))
 
@@ -54,7 +64,9 @@
 (defn regexp? [o]
   (instance? java.util.regex.Pattern o))
 
-(defn write [stream data]
+(defn write
+  "Write the full data to the stream and then flush the stream."
+  [stream data]
   (doto stream
     (.write data 0 (count data))
     (.flush)))
@@ -91,7 +103,9 @@
         plural? (not= amount 1)]
     (str amount " " description (when plural? "s"))))
 
-(defn free-port []
+(defn free-port
+  "Find a free port we can bind to."
+  []
   (let [socket (java.net.ServerSocket. 0)]
     (.close socket)
     (.getLocalPort socket)))

@@ -62,15 +62,42 @@
          (ui/result {:conn conn, :resp (wrapped-eval ctx opts)}))))))
 
 (defn doc [name]
-  (let [ctx (current-ctx)]
-    (doseq [conn (:conns ctx)]
-      (let [code (code/doc-str {:conn conn, :name name})
-            result (-> (wrapped-eval ctx {:conn conn, :code code})
-                       (update :val result/value))]
-        (ui/doc {:conn conn
-                 :resp (cond-> result
-                         (empty? (:val result))
-                         (assoc :val (str "No doc for " name)))})))))
+  (when (symbol? (code/parse-code-safe name))
+    (let [ctx (current-ctx)]
+      (doseq [conn (:conns ctx)]
+        (let [code (code/doc-str {:conn conn, :name name})
+              result (-> (wrapped-eval ctx {:conn conn, :code code})
+                         (update :val result/value))]
+          (ui/doc {:conn conn
+                   :resp (cond-> result
+                           (empty? (:val result))
+                           (assoc :val (str "No doc for " name)))}))))))
+
+(defn quick-doc []
+  (when-let [name (some-> (nvim/read-form {:data-pairs? false})
+                          (get :form)
+                          (code/parse-code-safe)
+                          (as-> x
+                            (when (seq? x) (first x))
+                            (when (symbol? x) x))
+                          (str))]
+    (let [ctx (current-ctx {:passive? true})
+          resolve-var (code/resolve-var-str name)]
+      (some-> (some (fn [conn]
+                      (when (-> (wrapped-eval ctx {:conn conn, :code resolve-var})
+                                (get :val)
+                                (result/ok))
+                        (-> (wrapped-eval ctx {:conn conn
+                                               :code (code/doc-str {:conn conn
+                                                                    :name name})})
+                            (get :val)
+                            (result/ok))))
+                    (:conns ctx))
+              (str/split-lines)
+              (->> (rest) (str/join " "))
+              (util/sample 256)
+              (as-> doc
+                (nvim/display-virtual [[(str ";; " doc) "comment"]]))))))
 
 (defn eval-current-form []
   (let [{:keys [form origin]} (nvim/read-form)]
@@ -105,7 +132,7 @@
         ;; We read the surrounding top level form from the current buffer
         ;; and add the __prefix__ symbol.
         context (when-let [{:keys [form cursor]} (nvim/read-form {:root? true, :win (:win ctx)})]
-                  (-> (util/split-lines form)
+                  (-> (str/split-lines form)
                       (update (dec (first cursor))
                               #(util/splice %
                                             (- (second cursor) (count prefix))

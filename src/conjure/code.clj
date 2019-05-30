@@ -2,34 +2,34 @@
   "Tools to render or format Clojure code."
   (:require [clojure.string :as str]
             [clojure.edn :as edn]
+            [clojure.tools.reader :as tr]
             [taoensso.timbre :as log]
             [conjure.util :as util]))
 
-(defn sample
-  "Get a short one line sample snippet of some code."
-  [code]
-  (when code
-    (let [sample-length 50]
-      (let [flat (str/replace code #"\s+" " ")]
-        (if (> (count flat) sample-length)
-          (str (subs flat 0 sample-length) "…")
-          flat)))))
-
 (defn parse-code [code]
   (if (string? code)
-    (binding [*default-data-reader-fn* tagged-literal]
-      (read-string {:read-cond :preserve} code))
+    (binding [tr/*read-eval* false
+              tr/*default-data-reader-fn* tagged-literal
+              tr/*alias-map* (constantly 'user)]
+      (tr/read-string {:read-cond :preserve} code))
     code))
+
+(defn parse-code-safe [code]
+  (try
+    (parse-code code)
+    (catch Throwable _)))
 
 (defn parse-ns [code]
   (try
     (let [form (parse-code code)]
-      (when (and (seq? form) (= (first form) 'ns))
-        (second (filter symbol? form))))
+      [:ok
+       (when (and (seq? form) (= (first form) 'ns))
+         (second (filter symbol? form)))])
     (catch Throwable e
-      (log/error "Caught error while extracting ns" e))))
+      (log/error "Caught error while extracting ns" e)
+      [:error e])))
 
-(def injected-deps
+(def injected-deps!
   "Files to load, in order, to add runtime dependencies to a REPL."
   (delay (edn/read-string (slurp "target/mranderson/load-order.edn"))))
 
@@ -41,15 +41,15 @@
                        'clojure.java.io
                        'clojure.test)
               "
-              (->> (deref injected-deps)
+              (->> @injected-deps!
                    (map slurp)
-                   (str/join "\n")) 
+                   (str/join "\n"))
               "
-              :ready
+              :conjure/ready
               ")
     :cljs "
           (require 'cljs.repl 'cljs.test)
-          :ready
+          :conjure/ready
           "))
 
 (defn eval-str [{:keys [ns path]} {:keys [conn code line]}]
@@ -175,3 +175,8 @@
            (with-out-str
              (cljs.test/run-all-tests" re-str "))
            "))))
+
+(defn resolve-var-str [name]
+  (str "(let [x (resolve '" name ")]
+          (when (var? x)
+            x))"))

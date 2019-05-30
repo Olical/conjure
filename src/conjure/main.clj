@@ -86,6 +86,9 @@
 (defmethod rpc/handle-notify :doc [{:keys [params]}]
   (action/doc (first params)))
 
+(defmethod rpc/handle-notify :quick-doc [_]
+  (action/quick-doc))
+
 (defmethod rpc/handle-notify :open-log [_]
   (ui/upsert-log {:focus? true
                   :resize? true
