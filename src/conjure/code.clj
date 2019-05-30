@@ -2,14 +2,16 @@
   "Tools to render or format Clojure code."
   (:require [clojure.string :as str]
             [clojure.edn :as edn]
+            [clojure.tools.reader :as tr]
             [taoensso.timbre :as log]
             [conjure.util :as util]))
 
 (defn parse-code [code]
   (if (string? code)
-    (binding [*read-eval* false
-              *default-data-reader-fn* tagged-literal]
-      (read-string {:read-cond :preserve} code))
+    (binding [tr/*read-eval* false
+              tr/*default-data-reader-fn* tagged-literal
+              tr/*alias-map* (constantly 'user)]
+      (tr/read-string {:read-cond :preserve} code))
     code))
 
 (defn parse-code-safe [code]
@@ -41,7 +43,7 @@
               "
               (->> @injected-deps!
                    (map slurp)
-                   (str/join "\n")) 
+                   (str/join "\n"))
               "
               :ready
               ")
