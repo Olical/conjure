@@ -130,7 +130,7 @@
     (a/>!! (get-in conn [:chans :eval-chan]) prelude)
 
     (loop []
-      (if (= ":ready" (:val (a/<!! (get-in conn [:chans :read-chan]))))
+      (if (= ":conjure/ready" (:val (a/<!! (get-in conn [:chans :read-chan]))))
         (log/trace "Prelude loaded")
         (recur)))
 

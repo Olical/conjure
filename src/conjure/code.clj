@@ -45,11 +45,11 @@
                    (map slurp)
                    (str/join "\n"))
               "
-              :ready
+              :conjure/ready
               ")
     :cljs "
           (require 'cljs.repl 'cljs.test)
-          :ready
+          :conjure/ready
           "))
 
 (defn eval-str [{:keys [ns path]} {:keys [conn code line]}]
