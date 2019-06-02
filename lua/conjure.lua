@@ -6,7 +6,7 @@ local function ends_with(str, ending)
 end
 
 -- Find the log window and buffer if they exist.
-local function find_log (log_buf_name)
+local function find_log_buf_and_win(log_buf_name)
   local tabpage = vim.api.nvim_get_current_tabpage()
   local wins = vim.api.nvim_tabpage_list_wins(tabpage)
 
@@ -23,6 +23,23 @@ local function find_log (log_buf_name)
   return nil
 end
 
+-- Find the log buffer if it exists
+-- We use this when we want to update a hidden log buffer without showing it.
+-- So it might not be attached to a window.
+local function find_log_buf(log_buf_name)
+  local bufs = vim.api.nvim_list_bufs()
+
+  for _, buf in ipairs(bufs) do
+    local buf_name = vim.api.nvim_buf_get_name(buf)
+
+    -- OSX symlinks /tmp to /private/tmp so we check the suffix instead.
+    if ends_with(buf_name, log_buf_name) then
+      return {buf = buf}
+    end
+  end
+
+  return nil
+end
 
 -- Returns the absolute number of lines
 local function get_log_window_size(size, direction)
@@ -37,29 +54,29 @@ local function get_log_window_size(size, direction)
   return math.floor(vim_window_size * (percentage_size / 100))
 end
 
-
 -- Find or create (and then find again) the log window and buffer.
-function conjure.upsert_log(log_buf_name, size, focus, resize)
+function conjure.upsert_log(log_buf_name, size, focus, resize, open)
   local direction = vim.api.nvim_get_var("conjure_log_direction")
   local size_abs = get_log_window_size(size, direction)
+  local match = find_log_buf_and_win(log_buf_name) or find_log_buf(log_buf_name)
 
-  local result = find_log(log_buf_name)
-  if result then
-    if focus == true then
-      vim.api.nvim_set_current_win(result.win)
+  if match then
+    if open and focus == true then
+      vim.api.nvim_set_current_win(match.win)
     end
 
-    if resize == true then
+    if open and resize == true then
       if direction == "horizontal" then
-        vim.api.nvim_win_set_height(result.win, size_abs)
+        vim.api.nvim_win_set_height(match.win, size_abs)
       else
-        vim.api.nvim_win_set_width(result.win, size_abs)
+        vim.api.nvim_win_set_width(match.win, size_abs)
       end
     end
 
-    return result
+    return match
   else
     local split = (direction == "horizontal") and "split" or "vsplit"
+
     vim.api.nvim_command("botright " .. size_abs .. split .. " " .. log_buf_name)
     vim.api.nvim_command("setlocal winfixwidth")
     vim.api.nvim_command("setlocal buftype=nofile")
@@ -71,18 +88,24 @@ function conjure.upsert_log(log_buf_name, size, focus, resize)
     vim.api.nvim_command("setlocal foldmethod=marker")
     vim.api.nvim_command("setlocal foldlevel=0")
     vim.api.nvim_command("setlocal foldmarker={{{,}}}")
+    vim.api.nvim_command("normal! G")
 
-    if focus ~= true then
-      vim.api.nvim_command("wincmd p")
+    if open then
+      if focus ~= true then
+        vim.api.nvim_command("wincmd p")
+      end
+
+      return find_log_buf_and_win(log_buf_name)
+    else
+      vim.api.nvim_command("wincmd q")
+      return find_log_buf(log_buf_name)
     end
-
-    return find_log(log_buf_name)
   end
 end
 
 -- Close the log window if it's open in the current tabpage.
-function conjure.close_log (log_buf_name)
-  local result = find_log(log_buf_name)
+function conjure.close_log(log_buf_name)
+  local result = find_log_buf_and_win(log_buf_name)
   if result then
     local win_number = vim.api.nvim_win_get_number(result.win)
     vim.api.nvim_command(win_number .. "close!")
