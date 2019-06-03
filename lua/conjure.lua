@@ -60,12 +60,12 @@ function conjure.upsert_log(log_buf_name, size, focus, resize, open)
   local size_abs = get_log_window_size(size, direction)
   local match = find_log_buf_and_win(log_buf_name) or find_log_buf(log_buf_name)
 
-  if match then
-    if open and focus == true then
+  if match and match.win and open then
+    if focus == true then
       vim.api.nvim_set_current_win(match.win)
     end
 
-    if open and resize == true then
+    if resize == true then
       if direction == "horizontal" then
         vim.api.nvim_win_set_height(match.win, size_abs)
       else
@@ -73,6 +73,8 @@ function conjure.upsert_log(log_buf_name, size, focus, resize, open)
       end
     end
 
+    return match
+  elseif match and not open then
     return match
   else
     local split = (direction == "horizontal") and "split" or "vsplit"

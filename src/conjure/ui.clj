@@ -91,20 +91,27 @@
   "Format, if it's code, and display a result from an evaluation.
   Will also fold the output if it's an error."
   [{:keys [conn resp]}]
-  (let [code? (contains? #{:ret :tap} (:tag resp))]
+  (let [code? (contains? #{:ret :tap} (:tag resp))
+        msg (cond-> (:val resp)
+              (= (:tag resp) :ret) (result/value)
+              code? (util/pprint))
+        multi-line? (str/includes? msg "\n")]
+
+    (when-not multi-line?
+      (nvim/display-virtual [[(str "=> " msg) "comment"]]))
+
     (append {:origin (:tag conn)
              :kind (:tag resp)
              :code? code?
-             :open? false
+             :open? multi-line?
              :fold-text (when (and code? (result/error? (:val resp)))
                           "Error folded")
-             :msg (cond-> (:val resp)
-                    (= (:tag resp) :ret) (result/value)
-                    code? (util/pprint))})))
+             :msg msg})))
 
 (defn load-file*
   "When we ask to load a whole file from disk."
   [{:keys [conn path]}]
   (append {:origin (:tag conn)
            :kind :load-file
-           :msg path}))
+           :msg path
+           :open? false}))
