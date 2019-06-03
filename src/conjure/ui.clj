@@ -69,6 +69,17 @@
   [{:keys [conn resp]}]
   (append {:origin (:tag conn), :kind :doc, :msg (:val resp)}))
 
+(defn quick-doc
+  "Display inline documentation."
+  [s]
+  (when (string? s)
+    (nvim/display-virtual
+      [[(str "🛈 "
+             (-> (str/split s #"\n" 2)
+                 (last)
+                 (util/sample 256)))
+        "comment"]])))
+
 (defn test*
   "Results from tests."
   [{:keys [conn resp]}]
