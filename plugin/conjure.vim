@@ -56,7 +56,8 @@ if g:conjure_default_mappings
     autocmd FileType clojure nnoremap <buffer> <localleader>tt :ConjureRunTests<cr>
     autocmd FileType clojure nnoremap <buffer> <localleader>ta :ConjureRunAllTests<cr>
 
-    autocmd CursorHold *.edn,*.clj,*.clj[cs] :call conjure#quick_doc()
+    autocmd CursorMoved *.edn,*.clj,*.clj[cs] :call conjure#quick_doc()
+    autocmd CursorMovedI *.edn,*.clj,*.clj[cs] :call conjure#quick_doc()
 
     autocmd FileType clojure nnoremap <buffer> K :ConjureDoc <c-r><c-w><cr>
     autocmd FileType clojure nnoremap <buffer> gd :ConjureDefinition <c-r><c-w><cr>
@@ -102,14 +103,18 @@ function! conjure#start()
   endif
 endfunction
 
-" Trigger quick doc ideally because of CursorHold(I).
+" Trigger quick doc on CursorMoved(I) with a debounce.
 " It displays the doc for the head of the current form using virtual text.
+let s:quick_doc_timer = -1
 function! conjure#quick_doc()
   if g:conjure_ready
-    call rpcnotify(s:jobid, "quick_doc")
+    if s:quick_doc_timer != -1
+      call timer_stop(s:quick_doc_timer)
+    endif
+
+    let s:quick_doc_timer = timer_start(250, {-> rpcnotify(s:jobid, "quick_doc")})
   endif
 endfunction
-
 
 " Close the log if we're not currently using it.
 function! conjure#close_unused_log()
