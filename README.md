@@ -42,8 +42,6 @@ The `'for'` and `'on'` keys are optional but you might prefer Conjure to only st
 
 ### Mappings
 
-You can disable these and define your own with `let g:conjure_default_mappings = 0`.
-
  * `InsertEnter` in a Clojure buffer (that is _not_ the log) closes the log.
  * `CursorMoved(I)` in a Clojure buffer looks up the docs for the head of the form under your cursor and displays it with virtual text.
  * `<localleader>ee` - `ConjureEvalCurrentForm`
@@ -94,9 +92,17 @@ If you get something wrong it'll explain using [Expound][] in the log buffer. Es
 
 ### Options
 
- * `g:conjure_log_direction` - How to split the log window. `"vertical"` or `"horizontal"`. Defaults to `"vertical"`.
- * `g:conjure_log_size_small` - Percentage size of the window used by Conjure log. A number between 1 and 100, defaults to 25.
- * `g:conjure_log_size_large` - Percentage size of the window used by Conjure log **when open with `ConjureOpenLog`**. A number between 1 and 100, defaults to 50.
+You may set these globals with `let` before Conjure loads to configure it's behaviour slightly. Their default values are displayed after the `=`, with a `1` indicating true and `0` indicating false.
+
+ * `g:conjure_default_mappings = 1` - Enable default key mappings.
+ * `g:conjure_log_direction = "vertical"` - How to split the log window. Either `"vertical"` or `"horizontal"`.
+ * `g:conjure_log_size_small = 25` (%) - Regular size of the log window when it opens automatically.
+ * `g:conjure_log_size_large = 50` (%) - Size of the log window when explicitly opened by  `ConjureOpenLog`.
+ * `g:conjure_log_auto_close = 1` - Enable closing the log window as you enter insert mode in a Clojure buffer.
+ * `g:conjure_quick_doc_normal_mode = 1` - Enable small doc strings appearing as virtual text in normal mode.
+ * `g:conjure_quick_doc_insert_mode = 1` - Enable small doc strings appearing as virtual text in insert mode as you type.
+ * `g:conjure_quick_doc_time = 250` (ms) - How long your cursor has to hold before the quick doc will be queried, if enabled.
+ * `g:conjure_omnifunc = 1` - Enable Conjure's built in omnifunc.
 
 ## Completion
 
