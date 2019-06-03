@@ -45,7 +45,7 @@ The `'for'` and `'on'` keys are optional but you might prefer Conjure to only st
 You can disable these and define your own with `let g:conjure_default_mappings = 0`.
 
  * `InsertEnter` in a Clojure buffer (that is _not_ the log) closes the log.
- * `CursorHold` in a Clojure buffer looks up the docs for the head of the form under your cursor and displays it with virtual text.
+ * `CursorMoved(I)` in a Clojure buffer looks up the docs for the head of the form under your cursor and displays it with virtual text.
  * `<localleader>ee` - `ConjureEvalCurrentForm`
  * `<localleader>er` - `ConjureEvalRootForm`
  * `<localleader>ee` - `ConjureEvalSelection` (visual mode)
