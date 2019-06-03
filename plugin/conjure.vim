@@ -4,6 +4,11 @@ let g:conjure_log_direction = get(g:, 'conjure_log_direction', "vertical") " ver
 let g:conjure_log_size_small = get(g:, 'conjure_log_size_small', 25) " %
 let g:conjure_log_size_large = get(g:, 'conjure_log_size_large', 50) " %
 let g:conjure_log_auto_close = get(g:, 'conjure_log_auto_close', 1) " 1/0
+
+" TODO Read this from the JVM side to control the auto open.
+" It opens when it's a multiline result right now, this could turn it off completely.
+let g:conjure_log_auto_open = get(g:, 'conjure_log_auto_open', 1) " 1/0
+
 let g:conjure_quick_doc_normal_mode = get(g:, 'conjure_quick_doc_normal_mode', 1) " 1/0
 let g:conjure_quick_doc_insert_mode = get(g:, 'conjure_quick_doc_insert_mode', 1) " 1/0
 let g:conjure_quick_doc_time = get(g:, 'conjure_quick_doc_time', 250) " ms
