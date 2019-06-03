@@ -73,6 +73,10 @@ augroup conjure
     autocmd CursorMovedI *.edn,*.clj,*.clj[cs] :call conjure#quick_doc()
   endif
 
+  if g:conjure_quick_doc_normal_mode || g:conjure_quick_doc_insert_mode
+    autocmd BufLeave *.edn,*.clj,*.clj[cs] :call conjure#quick_doc_cancel()
+  endif
+
   if g:conjure_omnifunc
     autocmd FileType clojure setlocal omnifunc=conjure#omnicomplete
   endif
@@ -119,12 +123,17 @@ endfunction
 " Trigger quick doc on CursorMoved(I) with a debounce.
 " It displays the doc for the head of the current form using virtual text.
 let s:quick_doc_timer = -1
+
+function! conjure#quick_doc_cancel()
+  if s:quick_doc_timer != -1
+    call timer_stop(s:quick_doc_timer)
+    let s:quick_doc_timer = -1
+  endif
+endfunction
+
 function! conjure#quick_doc()
   if g:conjure_ready
-    if s:quick_doc_timer != -1
-      call timer_stop(s:quick_doc_timer)
-    endif
-
+    call conjure#quick_doc_cancel()
     let s:quick_doc_timer = timer_start(250, {-> rpcnotify(s:jobid, "quick_doc")})
   endif
 endfunction
