@@ -99,7 +99,7 @@
               (->> (rest) (str/join " "))
               (util/sample 256)
               (as-> doc
-                (nvim/display-virtual [[(str "🔍 " doc) "comment"]]))))))
+                (nvim/display-virtual [[(str "🛈 " doc) "comment"]]))))))
 
 (defn eval-current-form []
   (let [{:keys [form origin]} (nvim/read-form)]
