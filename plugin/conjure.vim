@@ -1,8 +1,12 @@
 " User config with defaults.
-let g:conjure_default_mappings = get(g:, 'conjure_default_mappings', 1)
-let g:conjure_log_direction = get(g:, 'conjure_log_direction', "vertical")
-let g:conjure_log_size_small = get(g:, 'conjure_log_size_small', 25)
-let g:conjure_log_size_large = get(g:, 'conjure_log_size_large', 50)
+let g:conjure_default_mappings = get(g:, 'conjure_default_mappings', 1) " 1/0
+let g:conjure_log_direction = get(g:, 'conjure_log_direction', "vertical") " vertical/horizontal
+let g:conjure_log_size_small = get(g:, 'conjure_log_size_small', 25) " %
+let g:conjure_log_size_large = get(g:, 'conjure_log_size_large', 50) " %
+let g:conjure_log_auto_close = get(g:, 'conjure_log_auto_close', 1) " 1/0
+let g:conjure_quick_doc_normal_mode = get(g:, 'conjure_quick_doc_normal_mode', 1) " 1/0
+let g:conjure_quick_doc_insert_mode = get(g:, 'conjure_quick_doc_insert_mode', 1) " 1/0
+let g:conjure_omnifunc = get(g:, 'conjure_omnifunc', 1) " 1/0
 
 " Various script wide flags.
 let s:jobid = -1
@@ -36,13 +40,10 @@ command! -nargs=0 ConjureCloseLog call rpcnotify(s:jobid, "close_log")
 command! -nargs=* ConjureRunTests call rpcnotify(s:jobid, "run_tests", <q-args>)
 command! -nargs=? ConjureRunAllTests call rpcnotify(s:jobid, "run_all_tests", <q-args>)
 
-" Default mappings if not disabled.
-if g:conjure_default_mappings
-  augroup conjure
-    autocmd!
+augroup conjure
+  autocmd!
 
-    autocmd InsertEnter *.edn,*.clj,*.clj[cs] :call conjure#close_unused_log()
-
+  if g:conjure_default_mappings
     autocmd FileType clojure nnoremap <buffer> <localleader>ee :ConjureEvalCurrentForm<cr>
     autocmd FileType clojure nnoremap <buffer> <localleader>er :ConjureEvalRootForm<cr>
     autocmd FileType clojure vnoremap <buffer> <localleader>ee :ConjureEvalSelection<cr>
@@ -56,14 +57,26 @@ if g:conjure_default_mappings
     autocmd FileType clojure nnoremap <buffer> <localleader>tt :ConjureRunTests<cr>
     autocmd FileType clojure nnoremap <buffer> <localleader>ta :ConjureRunAllTests<cr>
 
-    autocmd CursorMoved *.edn,*.clj,*.clj[cs] :call conjure#quick_doc()
-    autocmd CursorMovedI *.edn,*.clj,*.clj[cs] :call conjure#quick_doc()
-
     autocmd FileType clojure nnoremap <buffer> K :ConjureDoc <c-r><c-w><cr>
     autocmd FileType clojure nnoremap <buffer> gd :ConjureDefinition <c-r><c-w><cr>
+  endif
+
+  if g:conjure_log_auto_close
+    autocmd InsertEnter *.edn,*.clj,*.clj[cs] :call conjure#close_unused_log()
+  endif
+
+  if g:conjure_quick_doc_normal_mode
+    autocmd CursorMoved *.edn,*.clj,*.clj[cs] :call conjure#quick_doc()
+  endif
+
+  if g:conjure_quick_doc_insert_mode
+    autocmd CursorMovedI *.edn,*.clj,*.clj[cs] :call conjure#quick_doc()
+  endif
+
+  if g:conjure_omnifunc
     autocmd FileType clojure setlocal omnifunc=conjure#omnicomplete
-  augroup END
-endif
+  endif
+augroup END
 
 " Handles all stderr from the Clojure process.
 " Simply prints it in red.
