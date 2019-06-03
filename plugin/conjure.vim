@@ -21,25 +21,25 @@ else
 endif
 
 " Create commands for RPC calls handled by main.clj.
-command! -nargs=1 ConjureAdd call rpcnotify(s:jobid, "add", <q-args>)
-command! -nargs=1 ConjureRemove call rpcnotify(s:jobid, "remove", <q-args>)
-command! -nargs=0 ConjureRemoveAll call rpcnotify(s:jobid, "remove_all")
-command! -nargs=0 ConjureStatus call rpcnotify(s:jobid, "status")
+command! -nargs=1 ConjureAdd call conjure#notify("add", <q-args>)
+command! -nargs=1 ConjureRemove call conjure#notify("remove", <q-args>)
+command! -nargs=0 ConjureRemoveAll call conjure#notify("remove_all")
+command! -nargs=0 ConjureStatus call conjure#notify("status")
 
-command! -nargs=1 ConjureEval call rpcnotify(s:jobid, "eval", <q-args>)
-command! -range   ConjureEvalSelection call rpcnotify(s:jobid, "eval_selection")
-command! -nargs=0 ConjureEvalCurrentForm call rpcnotify(s:jobid, "eval_current_form")
-command! -nargs=0 ConjureEvalRootForm call rpcnotify(s:jobid, "eval_root_form")
-command! -nargs=0 ConjureEvalBuffer call rpcnotify(s:jobid, "eval_buffer")
-command! -nargs=1 ConjureLoadFile call rpcnotify(s:jobid, "load_file", <q-args>)
+command! -nargs=1 ConjureEval call conjure#notify("eval", <q-args>)
+command! -range   ConjureEvalSelection call conjure#notify("eval_selection")
+command! -nargs=0 ConjureEvalCurrentForm call conjure#notify("eval_current_form")
+command! -nargs=0 ConjureEvalRootForm call conjure#notify("eval_root_form")
+command! -nargs=0 ConjureEvalBuffer call conjure#notify("eval_buffer")
+command! -nargs=1 ConjureLoadFile call conjure#notify("load_file", <q-args>)
 
-command! -nargs=1 ConjureDefinition call rpcnotify(s:jobid, "definition", <q-args>)
-command! -nargs=1 ConjureDoc call rpcnotify(s:jobid, "doc", <q-args>)
+command! -nargs=1 ConjureDefinition call conjure#notify("definition", <q-args>)
+command! -nargs=1 ConjureDoc call conjure#notify("doc", <q-args>)
 command! -nargs=1 ConjureQuickDoc call conjure#quick_doc()
-command! -nargs=0 ConjureOpenLog call rpcnotify(s:jobid, "open_log")
-command! -nargs=0 ConjureCloseLog call rpcnotify(s:jobid, "close_log")
-command! -nargs=* ConjureRunTests call rpcnotify(s:jobid, "run_tests", <q-args>)
-command! -nargs=? ConjureRunAllTests call rpcnotify(s:jobid, "run_all_tests", <q-args>)
+command! -nargs=0 ConjureOpenLog call conjure#notify("open_log")
+command! -nargs=0 ConjureCloseLog call conjure#notify("close_log")
+command! -nargs=* ConjureRunTests call conjure#notify("run_tests", <q-args>)
+command! -nargs=? ConjureRunAllTests call conjure#notify("run_all_tests", <q-args>)
 
 augroup conjure
   autocmd!
@@ -135,8 +135,19 @@ endfunction
 function! conjure#quick_doc()
   if g:conjure_ready
     call conjure#quick_doc_cancel()
-    let s:quick_doc_timer = timer_start(g:conjure_quick_doc_time, {-> rpcnotify(s:jobid, "quick_doc")})
+    let s:quick_doc_timer = timer_start(g:conjure_quick_doc_time, {-> conjure#notify("quick_doc")})
   endif
+endfunction
+
+" Cancel existing quick doc timers and notify/request Conjure over RPC.
+function! conjure#notify(method, ...)
+  call conjure#quick_doc_cancel()
+  return rpcnotify(s:jobid, a:method, get(a:, 1, 0))
+endfunction
+
+function! conjure#request(method, ...)
+  call conjure#quick_doc_cancel()
+  return rpcrequest(s:jobid, a:method, get(a:, 1, 0))
 endfunction
 
 " Close the log if we're not currently using it.
@@ -157,11 +168,11 @@ function! conjure#omnicomplete(findstart, base)
 endfunction
 
 function! conjure#completions(base)
-  return rpcrequest(s:jobid, "completions", a:base)
+  return conjure#request("completions", a:base)
 endfunction
 
 function! conjure#get_rpc_port()
-  return rpcrequest(s:jobid, "get_rpc_port")
+  return conjure#request("get_rpc_port")
 endfunction
 
 " Is the cursor inside code or is it in a comment / string.
