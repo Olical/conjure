@@ -73,7 +73,6 @@
                            (empty? (:val result))
                            (assoc :val (str "No doc for " name)))}))))))
 
-;; TODO Prevent this from overriding one line eval results.
 (defn quick-doc []
   (when-let [name (some-> (nvim/read-form {:data-pairs? false})
                           (get :form)
