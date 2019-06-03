@@ -6,6 +6,7 @@ let g:conjure_log_size_large = get(g:, 'conjure_log_size_large', 50) " %
 let g:conjure_log_auto_close = get(g:, 'conjure_log_auto_close', 1) " 1/0
 let g:conjure_quick_doc_normal_mode = get(g:, 'conjure_quick_doc_normal_mode', 1) " 1/0
 let g:conjure_quick_doc_insert_mode = get(g:, 'conjure_quick_doc_insert_mode', 1) " 1/0
+let g:conjure_quick_doc_time = get(g:, 'conjure_quick_doc_time', 250) " ms
 let g:conjure_omnifunc = get(g:, 'conjure_omnifunc', 1) " 1/0
 
 " Various script wide flags.
@@ -134,7 +135,7 @@ endfunction
 function! conjure#quick_doc()
   if g:conjure_ready
     call conjure#quick_doc_cancel()
-    let s:quick_doc_timer = timer_start(250, {-> rpcnotify(s:jobid, "quick_doc")})
+    let s:quick_doc_timer = timer_start(g:conjure_quick_doc_time, {-> rpcnotify(s:jobid, "quick_doc")})
   endif
 endfunction
 
