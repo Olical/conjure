@@ -97,8 +97,7 @@
               code? (util/pprint))
         multi-line? (str/includes? msg "\n")]
 
-    (when-not multi-line?
-      (nvim/display-virtual [[(str "=> " msg) "comment"]]))
+    (nvim/display-virtual [[(str "=> " (util/sample msg 128)) "comment"]])
 
     (append {:origin (:tag conn)
              :kind (:tag resp)
