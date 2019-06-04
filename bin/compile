@@ -4,15 +4,16 @@
 # This prevents every vim-plug update from compiling when nothing changed.
 # If you _need_ to have everything recompiled, just delete classes.
 if [ ! -d classes ] || [ $(git show -s --format=%ct HEAD) -gt $(stat -c %Y classes) ]; then
-  echo "[1/2] Compiling Conjure"
+  echo "[Conjure] AOT compiling..."
   rm -rf classes
   mkdir classes
   clojure -Sforce -A:compile --eval "(compile 'conjure.main)"
+fi
 
-  echo "[2/2] Preparing dependencies for runtime injection"
+# Skip this if the Mr Anderson output is newer than the config.
+if [ ! -d target/mranderson ] || [ $(stat -c %Y injected-deps.edn) -gt $(stat -c %Y target/mranderson) ]; then
+  echo "[Conjure] Preparing dependencies for runtime injection..."
   mkdir -p target
   rm -rf target/mranderson
   clojure -Sforce -A:tools --main conjure.munge.main
-
-  echo "Everything's ready! Let's perform some magic."
 fi

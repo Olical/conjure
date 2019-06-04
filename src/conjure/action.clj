@@ -93,13 +93,7 @@
                             (get :val)
                             (result/ok))))
                     (:conns ctx))
-              (as-> res
-                (when (string? res)
-                  (str/split-lines res)))
-              (->> (rest) (str/join " "))
-              (util/sample 256)
-              (as-> doc
-                (nvim/display-virtual [[(str ";; " doc) "comment"]]))))))
+              (ui/quick-doc)))))
 
 (defn eval-current-form []
   (let [{:keys [form origin]} (nvim/read-form)]

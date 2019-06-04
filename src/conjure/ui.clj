@@ -12,13 +12,15 @@
 (defn upsert-log
   "Get, create, or update the log window and buffer."
   ([] (upsert-log {}))
-  ([{:keys [focus? resize? size] :or {focus? false, resize? false, size :small}}]
+  ([{:keys [focus? resize? open? size]
+     :or {focus? false, resize? false, open? true, size :small}}]
    (-> (nvim/call-lua-function
          :upsert-log
          log-buffer-name
          (util/kw->snake size)
          focus?
-         resize?)
+         resize?
+         open?)
        (util/snake->kw-map))))
 
 (defn close-log
@@ -31,10 +33,10 @@
   then it won't prefix every line with the source, it'll place the whole string
   below the origin/kind comment. If you provide fold-text the lines will be
   wrapped with fold markers and automatically hidden with your text displayed instead."
-  [{:keys [origin kind msg code? fold-text] :or {code? false}}]
+  [{:keys [origin kind msg code? fold-text open?] :or {code? false, open? true}}]
 
   (let [prefix (str "; " (name origin) "/" (name kind))
-        log (upsert-log)
+        log (upsert-log {:open? open?})
         lines (str/split-lines msg)]
       (nvim/append-lines
         (merge
@@ -67,6 +69,17 @@
   [{:keys [conn resp]}]
   (append {:origin (:tag conn), :kind :doc, :msg (:val resp)}))
 
+(defn quick-doc
+  "Display inline documentation."
+  [s]
+  (when (string? s)
+    (nvim/display-virtual
+      [[(str "🛈 "
+             (-> (str/split s #"\n" 2)
+                 (last)
+                 (util/sample 256)))
+        "comment"]])))
+
 (defn test*
   "Results from tests."
   [{:keys [conn resp]}]
@@ -80,25 +93,36 @@
   "When we send an eval and are awaiting a result, prints a short sample of the
   code we sent."
   [{:keys [conn code]}]
-  (append {:origin (:tag conn), :kind :eval, :msg (util/sample code 50)}))
+  (append {:origin (:tag conn)
+           :kind :eval
+           :msg (util/sample code 50)
+           :open? false}))
 
 (defn result
   "Format, if it's code, and display a result from an evaluation.
   Will also fold the output if it's an error."
   [{:keys [conn resp]}]
-  (let [code? (contains? #{:ret :tap} (:tag resp))]
+  (let [code? (contains? #{:ret :tap} (:tag resp))
+        msg (cond-> (:val resp)
+              (= (:tag resp) :ret) (result/value)
+              code? (util/pprint))
+        open? (or (not code?) (str/includes? msg "\n"))]
+
+    (when code?
+      (nvim/display-virtual [[(str "=> " (util/sample msg 128)) "comment"]]))
+
     (append {:origin (:tag conn)
              :kind (:tag resp)
              :code? code?
+             :open? open?
              :fold-text (when (and code? (result/error? (:val resp)))
                           "Error folded")
-             :msg (cond-> (:val resp)
-                    (= (:tag resp) :ret) (result/value)
-                    code? (util/pprint))})))
+             :msg msg})))
 
 (defn load-file*
   "When we ask to load a whole file from disk."
   [{:keys [conn path]}]
   (append {:origin (:tag conn)
            :kind :load-file
-           :msg path}))
+           :msg path
+           :open? false}))

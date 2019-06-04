@@ -200,7 +200,10 @@
 
        ;; Insert the new lines and scroll to the bottom.
        (api/buf-set-lines buf {:start -1, :end -1} lines)
-       (api/win-set-cursor win {:col 0, :row new-line-count})])
+
+       (if win
+         (api/win-set-cursor win {:col 0, :row new-line-count})
+         (api/command "redraw!"))])
     nil))
 
 (defn set-ready! []
