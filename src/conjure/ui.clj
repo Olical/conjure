@@ -106,14 +106,15 @@
         msg (cond-> (:val resp)
               (= (:tag resp) :ret) (result/value)
               code? (util/pprint))
-        multi-line? (str/includes? msg "\n")]
+        open? (or (not code?) (str/includes? msg "\n"))]
 
-    (nvim/display-virtual [[(str "=> " (util/sample msg 128)) "comment"]])
+    (when code?
+      (nvim/display-virtual [[(str "=> " (util/sample msg 128)) "comment"]]))
 
     (append {:origin (:tag conn)
              :kind (:tag resp)
              :code? code?
-             :open? multi-line?
+             :open? open?
              :fold-text (when (and code? (result/error? (:val resp)))
                           "Error folded")
              :msg msg})))
