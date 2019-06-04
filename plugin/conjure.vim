@@ -141,13 +141,17 @@ endfunction
 
 " Cancel existing quick doc timers and notify/request Conjure over RPC.
 function! conjure#notify(method, ...)
-  call conjure#quick_doc_cancel()
-  return rpcnotify(s:jobid, a:method, get(a:, 1, 0))
+  if s:jobid != -1
+    call conjure#quick_doc_cancel()
+    return rpcnotify(s:jobid, a:method, get(a:, 1, 0))
+  endif
 endfunction
 
 function! conjure#request(method, ...)
-  call conjure#quick_doc_cancel()
-  return rpcrequest(s:jobid, a:method, get(a:, 1, 0))
+  if s:jobid != -1
+    call conjure#quick_doc_cancel()
+    return rpcrequest(s:jobid, a:method, get(a:, 1, 0))
+  endif
 endfunction
 
 " Close the log if we're not currently using it.
