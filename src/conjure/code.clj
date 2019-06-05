@@ -22,7 +22,7 @@
 
 (defn parse-code-silent [code]
   (try
-    (parse-code code)
+    (parse-code* code)
     (catch Throwable t
       (log/warn "Failed to parse code" t))))
 
