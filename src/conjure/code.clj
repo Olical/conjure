@@ -8,8 +8,7 @@
 
 (defn parse-code [code]
   (if (string? code)
-    (binding [tr/*read-eval* false
-              tr/*default-data-reader-fn* tagged-literal
+    (binding [tr/*default-data-reader-fn* tagged-literal
               tr/*alias-map* (constantly 'user)]
       (tr/read-string {:read-cond :preserve} code))
     code))
