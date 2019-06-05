@@ -16,4 +16,4 @@
   (t/is (= (code/parse-ns "(ns some.ns-woo)") [:ok 'some.ns-woo]))
   (t/is (= (code/parse-ns "(ns some.ns-woo \"some docs\")") [:ok 'some.ns-woo]))
   (t/is (= (code/parse-ns "(ns ^{:doc \"foo\"} best.ns)") [:ok 'best.ns]))
-  (t/is (result/error? (code/parse-ns "(bad"))))
+  (t/is (= (code/parse-ns "(bad") [:ok nil])))
