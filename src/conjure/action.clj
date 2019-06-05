@@ -62,7 +62,7 @@
          (ui/result {:conn conn, :resp (wrapped-eval ctx opts)}))))))
 
 (defn doc [name]
-  (when (symbol? (code/parse-code-safe name))
+  (when (symbol? (code/parse-code-silent name))
     (let [ctx (current-ctx)]
       (doseq [conn (:conns ctx)]
         (let [code (code/doc-str {:conn conn, :name name})
@@ -76,7 +76,7 @@
 (defn quick-doc []
   (when-let [name (some-> (nvim/read-form {:data-pairs? false})
                           (get :form)
-                          (code/parse-code-safe)
+                          (code/parse-code-silent)
                           (as-> x
                             (when (seq? x) (first x))
                             (when (symbol? x) x))
