@@ -6,18 +6,25 @@
             [taoensso.timbre :as log]
             [conjure.util :as util]))
 
-(defn parse-code [code]
+(defn- parse-code* [code]
   (if (string? code)
-    (binding [tr/*read-eval* false
-              tr/*default-data-reader-fn* tagged-literal
+    (binding [tr/*default-data-reader-fn* tagged-literal
               tr/*alias-map* (constantly 'user)]
       (tr/read-string {:read-cond :preserve} code))
     code))
 
-(defn parse-code-safe [code]
+(defn parse-code [code]
+  (try
+    (parse-code* code) 
+    (catch Throwable t
+      (log/error "Failed to parse code" t)
+      [:err (Throwable->map t)])))
+
+(defn parse-code-silent [code]
   (try
     (parse-code code)
-    (catch Throwable _)))
+    (catch Throwable t
+      (log/warn "Failed to parse code" t))))
 
 (defn parse-ns [code]
   (try
