@@ -1,4 +1,5 @@
 {:conns
  {:dev {:port 5885}
   :jvm {:port 5555}
-  :node {:port 5556}}}
+  :node {:port 5556
+         :lang :cljs}}}

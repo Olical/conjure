@@ -13,7 +13,8 @@
   tcp-server {:mvn/version "0.1.0"}
   cheshire {:mvn/version "5.8.1"}
   me.raynes/fs {:mvn/version "1.4.6"}
-  medley {:mvn/version "1.2.0"}}
+  medley {:mvn/version "1.2.0"}
+  traversy {:mvn/version "0.5.0"}}
 
  :aliases
  {:test
