@@ -6,9 +6,9 @@
 (t/deftest parse-code
   (t/is (= (code/parse-code "{:foo :bar}") {:foo :bar})))
 
-(t/deftest parse-code-safe
-  (t/is (= (code/parse-code "{:foo :bar}") {:foo :bar}))
-  (t/is (= (code/parse-code-safe "(ohno(})") nil)))
+(t/deftest parse-code-silent
+  (t/is (= (code/parse-code-silent "{:foo :bar}") {:foo :bar}))
+  (t/is (= (code/parse-code-silent "(ohno(})") nil)))
 
 (t/deftest parse-ns
   (t/is (= (code/parse-ns "lol nope") [:ok nil]))
@@ -16,4 +16,4 @@
   (t/is (= (code/parse-ns "(ns some.ns-woo)") [:ok 'some.ns-woo]))
   (t/is (= (code/parse-ns "(ns some.ns-woo \"some docs\")") [:ok 'some.ns-woo]))
   (t/is (= (code/parse-ns "(ns ^{:doc \"foo\"} best.ns)") [:ok 'best.ns]))
-  (t/is (result/error? (code/parse-ns "(bad"))))
+  (t/is (= (code/parse-ns "(bad") [:ok nil])))

@@ -209,13 +209,6 @@
 (defn set-ready! []
   (api/call (api/set-var :conjure-ready 1)))
 
-(defn echo [& parts]
-  (api/call
-    (api/command
-      (str "echo \""
-           (util/escape-quotes (util/join-words parts))
-           "\""))))
-
 (defonce virtual-text-ns!
   (delay (api/call (api/create-namespace :conjure-virtual-text))))
 
@@ -227,3 +220,13 @@
        (api/buf-set-virtual-text buf {:ns-id @virtual-text-ns!
                                       :line (dec row)
                                       :chunks chunks})])))
+
+(def flag
+  "Read a config flag, :foo-bar will read g:conjure_foo_bar from the editor and
+  cache the result. String results will get converted to keywords."
+  (memoize
+    (fn [k]
+      (-> (api/call (api/get-var (keyword (str "conjure-" (name k)))))
+          (as-> result
+            (cond-> result
+              (string? result) (keyword)))))))
