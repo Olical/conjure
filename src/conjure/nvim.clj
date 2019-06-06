@@ -209,13 +209,6 @@
 (defn set-ready! []
   (api/call (api/set-var :conjure-ready 1)))
 
-(defn echo [& parts]
-  (api/call
-    (api/command
-      (str "echo \""
-           (util/escape-quotes (util/join-words parts))
-           "\""))))
-
 (defonce virtual-text-ns!
   (delay (api/call (api/create-namespace :conjure-virtual-text))))
 
