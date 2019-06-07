@@ -31,7 +31,7 @@ You can find out more about socket prepls in my blog post, [Clojure socket prepl
 Here's an example with [vim-plug][], my plugin manager of choice.
 
 ```viml
-Plug 'Olical/conjure', { 'tag': 'v0.17.1', 'do': 'bin/compile', 'for': 'clojure'  }
+Plug 'Olical/conjure', { 'tag': 'v0.17.1', 'do': 'bin/compile', 'for': 'clojure', 'on': 'ConjureUp'  }
 ```
 
 You should rely on a tag so that breaking changes don't end up disrupting your workflow, please don't depend on `master` (and especially not `develop`!). Make sure you watch the repository for releases using the menu in the top right, that way you can upgrade when it's convenient for you.
