@@ -14,10 +14,6 @@
   "An enriched version of the nvim ctx with matching prepl connections."
   ([] (current-ctx {}))
   ([{:keys [passive?] :or {passive? false}}]
-   (when (and (not passive?) (empty? (prepl/conns)))
-     (ui/info "Warning: Connecting to Conjure's own JVM by default.\nYou should start your own prepl and connect to that.")
-     (prepl/add! {:tag :conjure, :port prepl/internal-port}))
-
    (let [ctx (nvim/current-ctx)
          conns (prepl/conns (:path ctx))]
 

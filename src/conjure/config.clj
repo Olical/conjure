@@ -7,6 +7,7 @@
             [medley.core :as m]
             [me.raynes.fs :as fs]
             [traversy.lens :as tl]
+            [conjure.ui :as ui]
             [conjure.util :as util]))
 
 (s/def ::expr util/regexp?)
@@ -22,7 +23,7 @@
   {:clj #"\.(cljc?|edn)$"
    :cljs #"\.(clj(s|c)|edn)$"})
 
-(def edn-opts
+(def ^:private edn-opts
   {:readers {'regex re-pattern
              'slurp-edn (comp edn/read-string slurp)}})
 
@@ -54,8 +55,8 @@
   [config]
   (if (s/valid? ::config config)
     config
-    (throw (Error. (str "Conjure config failed spec.\n\n"
-                        (expound/expound-str ::config config))))))
+    (ui/error (str "Something's wrong with your .conjure.edn!\n"
+                   (expound/expound-str ::config config)))))
 
 (defn fetch
   "Gather, hydrate and validate the config."
@@ -63,6 +64,3 @@
   (-> (gather)
       (hydrate)
       (validate)))
-
-(comment
-  (time (fetch)))

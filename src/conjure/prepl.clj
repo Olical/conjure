@@ -1,7 +1,6 @@
 (ns conjure.prepl
   "Remote prepl connection management and selection."
-  (:require [clojure.spec.alpha :as s]
-            [clojure.core.async :as a]
+  (:require [clojure.core.async :as a]
             [clojure.core.server :as server]
             [clojure.java.io :as io]
             [clojure.edn :as edn]
@@ -11,18 +10,7 @@
             [conjure.code :as code])
   (:import [java.io PipedInputStream PipedOutputStream]))
 
-(s/def ::expr util/regexp?)
-(s/def ::tag keyword?)
-(s/def ::port number?)
-(s/def ::lang #{:clj :cljs})
-(s/def ::host string?)
-(s/def ::new-conn (s/keys :req-un [::tag ::port]
-                          :opt-un [::expr ::lang ::host]))
-
 (defonce ^:private conns! (atom {}))
-(def ^:private default-exprs
-  {:clj #"\.(cljc?|edn)$"
-   :cljs #"\.(clj(s|c)|edn)$"})
 
 (defn remove!
   "Remove the connection under the given tag. Shuts it down cleanly and blocks
@@ -103,9 +91,7 @@
 
 (defn add!
   "Remove any existing connection under :tag then create a new connection."
-  [{:keys [tag lang expr host port]
-    :or {host "127.0.0.1"
-         lang :clj}}]
+  [{:keys [tag lang expr host port]}]
 
   (remove! tag)
 
@@ -117,7 +103,7 @@
               :lang lang
               :host host
               :port port
-              :expr (or expr (get default-exprs lang))
+              :expr expr
               :chans (merge
                        {:ret-chan ret-chan}
                        (connect {:tag tag
@@ -158,6 +144,13 @@
               (a/>!! ret-chan out)
               (ui/result {:conn conn, :resp out})))
           (recur))))))
+
+(defn sync!
+  "Disconnect from everything and attempt to connect to every new conn."
+  [conns]
+  (remove-all!)
+  (doseq [[tag conn] conns]
+    (add! (assoc conn :tag tag))))
 
 (defn conns
   "Without a path it'll return all current connections. With a path it finds
