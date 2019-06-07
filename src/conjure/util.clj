@@ -7,7 +7,8 @@
             [taoensso.timbre :as log]
             [zprint.core :as zp]
             [camel-snake-kebab.core :as csk]
-            [camel-snake-kebab.extras :as cske]))
+            [camel-snake-kebab.extras :as cske])
+  (:import [java.net Socket]))
 
 (defn join-words [parts]
   (str/join " " parts))
@@ -109,3 +110,10 @@
   (let [socket (java.net.ServerSocket. 0)]
     (.close socket)
     (.getLocalPort socket)))
+
+(defn socket? [{:keys [host port]}]
+  (try
+    (Socket. host port)
+    true
+    (catch Throwable _
+      false)))
