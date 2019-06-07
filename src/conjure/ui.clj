@@ -111,10 +111,9 @@
         ;; :multiline => Open the log when there's a multiline result.
         ;; :never => Never open the log for evals, it'll still open for stdin/out, doc, etc.
         auto-open (nvim/flag :log-auto-open)
-        open? (and (not= auto-open :never)
-                   (or (not code?)
-                       (= auto-open :always)
-                       (and (= auto-open :multiline) (str/includes? msg "\n"))))]
+        open? (or (not code?)
+                  (or (= auto-open :always)
+                      (and (= auto-open :multiline) (str/includes? msg "\n"))))]
 
     (when code?
       (nvim/display-virtual [[(str "=> " (util/sample msg 128)) "comment"]]))
