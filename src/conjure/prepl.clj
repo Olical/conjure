@@ -149,7 +149,8 @@
   "Disconnect from everything and attempt to connect to every new conn."
   [conns]
   (remove-all!)
-  (doseq [[tag conn] conns]
+  (doseq [[tag conn] conns
+          :when (:enabled? conn)]
     (add! (assoc conn :tag tag))))
 
 (defn conns

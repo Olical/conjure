@@ -15,7 +15,8 @@
 (s/def ::lang #{:clj :cljs})
 (s/def ::host string?)
 (s/def ::tag keyword?)
-(s/def ::conn (s/keys :req-un [::port ::host ::lang ::expr]))
+(s/def ::enabled? boolean?)
+(s/def ::conn (s/keys :req-un [::port ::host ::lang ::expr ::enabled?]))
 (s/def ::conns (s/map-of ::tag ::conn))
 (s/def ::config (s/nilable (s/keys :opt-un [::conns])))
 
@@ -47,7 +48,8 @@
                  (fn [conn]
                    (merge {:lang :clj
                            :expr (get default-exprs (get conn :lang :clj))
-                           :host "127.0.0.1"}
+                           :host "127.0.0.1"
+                           :enabled? true}
                           conn)))))
 
 (defn- validate

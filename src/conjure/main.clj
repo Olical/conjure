@@ -40,6 +40,10 @@
 
 ;; Here we map RPC notifications and requests to their Clojure functions.
 ;; Input strings are parsed as EDN and checked against specs where required.
+
+;; TODO Maybe accept more config here which is merged with config/fetch.
+;; This will allow you to toggle enabled? on some things.
+;; Maybe I accept +foo -bar syntax that will map to enabled? flags.
 (defmethod rpc/handle-notify :up [_]
   (some-> (config/fetch)
           (get :conns)
