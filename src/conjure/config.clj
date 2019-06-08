@@ -2,6 +2,7 @@
   "Tools to load all relevant  .conjure.edn files.
   They're used to manage connection configuration."
   (:require [clojure.edn :as edn]
+            [clojure.string :as str]
             [clojure.spec.alpha :as s]
             [expound.alpha :as expound]
             [medley.core :as m]
@@ -60,9 +61,31 @@
     (ui/error (str "Something's wrong with your .conjure.edn!\n"
                    (expound/expound-str ::config config)))))
 
+(defn toggle [config flags]
+  (if-let [flags (and (not (str/blank? flags))
+                      (not-empty (str/split flags #"\s+")))]
+    (transduce
+      (comp
+        (map (fn [flag]
+               {:tag (keyword (subs flag 1))
+                :enabled? (case (first flag)
+                            \- false
+                            \+ true
+                            nil) }))
+        (remove (comp nil? second)))
+      (completing
+        (fn [config {:keys [tag enabled?]}]
+          (tl/update config (tl/in [:conns tag])
+                     (fn [conn]
+                       (assoc conn :enabled? enabled?)))))
+      config
+      flags)
+    config))
+
 (defn fetch
   "Gather, hydrate and validate the config."
-  []
+  [flags]
   (-> (gather)
       (hydrate)
+      (toggle flags)
       (validate)))

@@ -22,7 +22,7 @@ else
 endif
 
 " Create commands for RPC calls handled by main.clj.
-command! -nargs=0 ConjureUp call conjure#notify("up")
+command! -nargs=* ConjureUp call conjure#notify("up", <q-args>)
 command! -nargs=0 ConjureStatus call conjure#notify("status")
 
 command! -nargs=1 ConjureEval call conjure#notify("eval", <q-args>)
