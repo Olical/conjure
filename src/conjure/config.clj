@@ -84,8 +84,9 @@
 
 (defn fetch
   "Gather, hydrate and validate the config."
-  [flags]
-  (-> (gather)
-      (hydrate)
-      (toggle flags)
-      (validate)))
+  ([] (fetch {}))
+  ([{:keys [flags] :as _opts}]
+   (-> (gather)
+       (hydrate)
+       (toggle flags)
+       (validate))))
