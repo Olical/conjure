@@ -9,7 +9,8 @@
             [me.raynes.fs :as fs]
             [traversy.lens :as tl]
             [conjure.ui :as ui]
-            [conjure.util :as util]))
+            [conjure.util :as util]
+            [conjure.prepl :as prepl]))
 
 (s/def ::expr util/regexp?)
 (s/def ::port number?)
@@ -45,6 +46,16 @@
                (map slurp)
                (map #(edn/read-string edn-opts %)))
          m/deep-merge)))
+
+(defn- fallback
+  "If there's no connections still fallback to connecting to Conjure's own JVM."
+  [{:keys [conns] :as config}]
+  
+  (if (empty? conns)
+    (do
+      (ui/info "Warning: No conns configured, connecting to Conjure's own JVM by default.")
+      (assoc-in config [:conns :conjure] {:port prepl/internal-port}))
+    config))
 
 (defn- hydrate
   "Infer some more values from the existing config."
@@ -92,6 +103,7 @@
   ([] (fetch {}))
   ([{:keys [flags cwd] :or {cwd "."} :as _opts}]
    (-> (gather {:cwd cwd})
+       (fallback)
        (hydrate)
        (toggle flags)
        (validate))))
