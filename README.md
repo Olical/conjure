@@ -24,7 +24,7 @@ You can find out more about socket prepls in my blog post, [Clojure socket prepl
  * Changed namespace reloading via `tools.namespace`. ([#10](https://github.com/Olical/conjure/issues/10))
  * Polished documentation and README. ([#6](https://github.com/Olical/conjure/issues/6))
 
-[![asciicast](https://asciinema.org/a/RjojeOrKcF5zczweI7q3qiMgw.svg)](https://asciinema.org/a/RjojeOrKcF5zczweI7q3qiMgw)
+[![asciicast](https://asciinema.org/a/9WzntRGRXsR7PNivHRgRQzdqA.svg)](https://asciinema.org/a/9WzntRGRXsR7PNivHRgRQzdqA)
 
 ## Installation
 
