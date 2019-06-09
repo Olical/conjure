@@ -47,7 +47,7 @@
                (map #(edn/read-string edn-opts %)))
          m/deep-merge)))
 
-(defn- fallback
+(defn- ^:dynamic fallback
   "If there's no connections still fallback to connecting to Conjure's own JVM."
   [{:keys [conns] :as config}]
   
