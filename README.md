@@ -74,7 +74,7 @@ If you open Conjure without any connections configured it'll self prepl into it'
 
 ### Commands
 
- * `ConjureUp` - synchronise connections with your `.conjure.edn` config files.
+ * `ConjureUp` - synchronise connections with your `.conjure.edn` config files, takes flags like `-foo +bar` which will set the `:enabled?` flags of matching connections.
  * `ConjureStatus` - display the current connections in the log buffer.
  * `ConjureEval` - evaluate the argument as Clojure code.
  * `ConjureEvalSelection` - evaluates the current (or previous) visual selection.
