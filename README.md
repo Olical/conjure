@@ -40,7 +40,7 @@ You should rely on a tag so that breaking changes don't end up disrupting your w
 
 ### Configuration
 
-Connections are configured through the `.conjure.edn` file in your current directory, which is deeply merged with all other `.conjure.edn` files in all parent directories. This allows you to store common settings for your workflow in your home directory, for example.
+Connections are configured through the `.conjure.edn` file in your current directory (the dot prefix is optional), which is deeply merged with all other `.conjure.edn` files in all parent directories. This allows you to store common settings for your workflow in your home directory, for example. `$XDG_CONFIG_HOME` is taken into account, by default this means you can configure Conjure globally with `~/.config/conjure/conjure.edn` if you so wish.
 
 Once you're set up you can execute `ConjureUp` (`<localleader>cu` by default) to read, merge and validate all of your files. `ConjureUp` is also executed when Conjure starts, so you can just open any Clojure file and start hacking. The files in your local directory will overwrite those in parent directories allowing you to override things in your home directory.
 

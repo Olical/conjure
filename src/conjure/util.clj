@@ -38,8 +38,7 @@
 (def ^:dynamic get-env-fn #(System/getenv %))
 
 (defn env
-  "Turn :some-keyword into CONJURE_SOME_KEYWORD for
-  environment variable lookup. Presumably."
+  "Turn :some-keyword into SOME_KEYWORD and look it up in the environment."
   [k]
   (get-env-fn
     (csk/->SCREAMING_SNAKE_CASE (name k))))

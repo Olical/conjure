@@ -32,10 +32,15 @@
 (defn- ^:dynamic gather
   "Gather all config files from disk and merge them together, deepest file wins."
   [{:keys [cwd] :as _opts}]
-  (->> (conj (fs/parents cwd) (fs/file cwd))
+  (->> (concat [(fs/file (or (util/env :xdg-config-home)
+                             (fs/file (fs/home) ".config"))
+                         "conjure")]
+               (fs/parents cwd)
+               [(fs/file cwd)])
        (reverse)
        (transduce
-         (comp (map #(fs/file % ".conjure.edn"))
+         (comp (mapcat (fn [dir] [(fs/file dir "conjure.edn")
+                                  (fs/file dir ".conjure.edn")]))
                (filter (every-pred fs/file? fs/readable?))
                (map slurp)
                (map #(edn/read-string edn-opts %)))
