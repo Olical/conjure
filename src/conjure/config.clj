@@ -32,7 +32,7 @@
 (defn- ^:dynamic gather
   "Gather all config files from disk and merge them together, deepest file wins."
   []
-  (->> (conj (fs/parents ".") fs/*cwd*)
+  (->> (conj (fs/parents fs/*cwd*) fs/*cwd*)
        (reverse)
        (transduce
          (comp (map #(fs/file % ".conjure.edn"))
