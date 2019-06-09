@@ -234,3 +234,8 @@
           (as-> result
             (cond-> result
               (string? result) (keyword)))))))
+
+(defn cwd
+  "Get the current working directory of the editor."
+  []
+  (api/call (api/command-output "pwd")))

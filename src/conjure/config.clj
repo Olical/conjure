@@ -31,8 +31,8 @@
 
 (defn- ^:dynamic gather
   "Gather all config files from disk and merge them together, deepest file wins."
-  []
-  (->> (conj (fs/parents fs/*cwd*) fs/*cwd*)
+  [{:keys [cwd] :as _opts}]
+  (->> (conj (fs/parents cwd) (fs/file cwd))
        (reverse)
        (transduce
          (comp (map #(fs/file % ".conjure.edn"))
@@ -85,8 +85,8 @@
 (defn fetch
   "Gather, hydrate and validate the config."
   ([] (fetch {}))
-  ([{:keys [flags] :as _opts}]
-   (-> (gather)
+  ([{:keys [flags cwd] :or {cwd "."} :as _opts}]
+   (-> (gather {:cwd cwd})
        (hydrate)
        (toggle flags)
        (validate))))

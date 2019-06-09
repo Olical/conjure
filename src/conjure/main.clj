@@ -41,7 +41,8 @@
 ;; Here we map RPC notifications and requests to their Clojure functions.
 ;; Input strings are parsed as EDN and checked against specs where required.
 (defmethod rpc/handle-notify :up [{:keys [params]}]
-  (some-> (config/fetch {:flags (first params)})
+  (some-> (config/fetch {:flags (first params)
+                         :cwd (nvim/cwd)})
           (get :conns)
           (prepl/sync!)))
 
