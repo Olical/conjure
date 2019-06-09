@@ -42,7 +42,7 @@
   environment variable lookup. Presumably."
   [k]
   (get-env-fn
-    (csk/->SCREAMING_SNAKE_CASE (str "conjure-" (name k)))))
+    (csk/->SCREAMING_SNAKE_CASE (name k))))
 
 (defn throwable->str [throwable]
   (-> throwable Throwable->map clj/ex-triage clj/ex-str))

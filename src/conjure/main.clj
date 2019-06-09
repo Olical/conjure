@@ -28,7 +28,7 @@
   (log/merge-config!
     {:level :trace
      :appenders {:println nil
-                 :spit (when-let [path (util/env :log-path)]
+                 :spit (when-let [path (util/env :conjure-log-path)]
                          (appenders/spit-appender {:fname path}))}})
   (log/info "Logging initialised")
 

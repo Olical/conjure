@@ -50,7 +50,7 @@
   (t/is (number? (util/free-port))))
 
 (t/deftest env
-  (binding [util/get-env-fn {"CONJURE_FOO_BAR" :baz}]
+  (binding [util/get-env-fn {"FOO_BAR" :baz}]
     (t/is (= (util/env :foo-bar) :baz))))
 
 (t/deftest regexp?

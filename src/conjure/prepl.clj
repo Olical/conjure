@@ -13,7 +13,7 @@
 (defonce ^:private conns! (atom {}))
 
 (defonce ^:private internal-port
-  (or (some-> (util/env :prepl-server-port)
+  (or (some-> (util/env :conjure-prepl-server-port)
               (edn/read-string))
       (util/free-port)))
 
