@@ -72,6 +72,23 @@ Here's an exhaustive example of what you can configure with these files. If you 
 
 If you open Conjure without any connections configured it'll self prepl into it's _own_ JVM. This allows you to have autocompletion and evaluation in any directory or Clojure file. This can be really useful for quickly trying something out in a temporary file where a regular REPL won't quite cut it.
 
+### Commands
+
+ * `ConjureUp` - synchronise connections with your `.conjure.edn` config files.
+ * `ConjureStatus` - display the current connections in the log buffer.
+ * `ConjureEval` - evaluate the argument as Clojure code.
+ * `ConjureEvalSelection` - evaluates the current (or previous) visual selection.
+ * `ConjureEvalCurrentForm` - evaluates the form under the cursor.
+ * `ConjureEvalRootForm` - evaluates the outermost form under the cursor.
+ * `ConjureEvalBuffer` - evaluate the entire buffer (not from the disk).
+ * `ConjureLoadFile` - load and evaluate the file from the disk.
+ * `ConjureDoc` - display the documentation for the given symbol in the log buffer.
+ * `ConjureDefinition` - go to the source of the given symbol, providing we can find it - falls back to vanilla `gd`.
+ * `ConjureOpenLog` - open and focus the log buffer in a wide window.
+ * `ConjureCloseLog` - close the log window if it's open in this tab.
+ * `ConjureRunTests` - run tests in the current namespace and it's `-test` equivalent (as well as the other way around) or with the provided namespace names separated by spaces.
+ * `ConjureRunAllTests` - run all tests with an optional namespace filter regex.
+
 ### Mappings
 
  * `InsertEnter` in a Clojure buffer (that is _not_ the log) closes the log.
@@ -89,23 +106,6 @@ If you open Conjure without any connections configured it'll self prepl into it'
  * `<localleader>ta` - `ConjureRunAllTests`
  * `K` - `ConjureDoc`
  * `gd` - `ConjureDefinition`
-
-### Commands
-
- * `ConjureUp` - synchronise connections with your `.conjure.edn` config files.
- * `ConjureStatus` - display the current connections in the log buffer.
- * `ConjureEval` - evaluate the argument as Clojure code.
- * `ConjureEvalSelection` - evaluates the current (or previous) visual selection.
- * `ConjureEvalCurrentForm` - evaluates the form under the cursor.
- * `ConjureEvalRootForm` - evaluates the outermost form under the cursor.
- * `ConjureEvalBuffer` - evaluate the entire buffer (not from the disk).
- * `ConjureLoadFile` - load and evaluate the file from the disk.
- * `ConjureDoc` - display the documentation for the given symbol in the log buffer.
- * `ConjureDefinition` - go to the source of the given symbol, providing we can find it - falls back to vanilla `gd`.
- * `ConjureOpenLog` - open and focus the log buffer in a wide window.
- * `ConjureCloseLog` - close the log window if it's open in this tab.
- * `ConjureRunTests` - run tests in the current namespace and it's `-test` equivalent (as well as the other way around) or with the provided namespace names separated by spaces.
- * `ConjureRunAllTests` - run all tests with an optional namespace filter regex.
 
 ### Options
 
