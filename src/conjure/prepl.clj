@@ -160,13 +160,13 @@
   [conns]
   (remove-all!)
 
-  (if conns
-    (doseq [[tag conn] conns
-            :when (:enabled? conn)]
-      (add! (assoc conn :tag tag)))
+  (if (empty? conns)
     (do
       (ui/info "Warning: No conns configured, connecting to Conjure's own JVM by default.")
-      (add! {:tag :conjure, :port internal-port}))))
+      (add! {:tag :conjure, :port internal-port}))
+    (doseq [[tag conn] conns
+            :when (:enabled? conn)]
+      (add! (assoc conn :tag tag)))))
 
 (defn conns
   "Without a path it'll return all current connections. With a path it finds
