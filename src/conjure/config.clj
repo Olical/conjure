@@ -72,7 +72,7 @@
                             \- false
                             \+ true
                             nil) }))
-        (remove (comp nil? second)))
+        (remove (comp nil? :enabled?)))
       (completing
         (fn [config {:keys [tag enabled?]}]
           (tl/update config (tl/in [:conns tag])
