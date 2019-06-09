@@ -5,9 +5,9 @@
             [conjure.util :as util]
             [conjure.result :as result]))
 
+(def ^:private welcome-msg "; conjure/out | Welcome to Conjure!")
 (def ^:private max-log-buffer-length 2000)
 (defonce ^:private log-buffer-name "/tmp/conjure.cljc")
-(def ^:private welcome-msg "; conjure/out | Welcome to Conjure!")
 
 (defn upsert-log
   "Get, create, or update the log window and buffer."
