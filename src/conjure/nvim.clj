@@ -36,8 +36,12 @@
   (-> lines
       (update (dec (count lines))
               (fn [line]
-                (subs line 0 (min end (count line)))))
-      (update 0 subs (max start 0))
+                (when line
+                  (subs line 0 (min end (count line))))))
+      (update 0
+              (fn [line]
+                (when line
+                  (subs line (max start 0)))))
       (util/join-lines)))
 
 (defn- nil-pos?
@@ -209,13 +213,6 @@
 (defn set-ready! []
   (api/call (api/set-var :conjure-ready 1)))
 
-(defn echo [& parts]
-  (api/call
-    (api/command
-      (str "echo \""
-           (util/escape-quotes (util/join-words parts))
-           "\""))))
-
 (defonce virtual-text-ns!
   (delay (api/call (api/create-namespace :conjure-virtual-text))))
 
@@ -227,3 +224,18 @@
        (api/buf-set-virtual-text buf {:ns-id @virtual-text-ns!
                                       :line (dec row)
                                       :chunks chunks})])))
+
+(def flag
+  "Read a config flag, :foo-bar will read g:conjure_foo_bar from the editor and
+  cache the result. String results will get converted to keywords."
+  (memoize
+    (fn [k]
+      (-> (api/call (api/get-var (keyword (str "conjure-" (name k)))))
+          (as-> result
+            (cond-> result
+              (string? result) (keyword)))))))
+
+(defn cwd
+  "Get the current working directory of the editor."
+  []
+  (api/call (api/command-output "pwd")))

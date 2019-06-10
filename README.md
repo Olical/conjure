@@ -16,52 +16,65 @@ You can find out more about socket prepls in my blog post, [Clojure socket prepl
  * Friendly error output by default with optional expansion.
  * Go to definition.
  * Documentation lookup on a key press and when your cursor is idle.
+ * Declarative prepl connections with `.conjure.edn`.
 
 ### Upcoming for v1.0.0
 
- * Declarative prepl connections. ([#15](https://github.com/Olical/conjure/issues/15))
  * Code formatting. ([#11](https://github.com/Olical/conjure/issues/11))
  * Changed namespace reloading via `tools.namespace`. ([#10](https://github.com/Olical/conjure/issues/10))
  * Polished documentation and README. ([#6](https://github.com/Olical/conjure/issues/6))
 
-[![asciicast](https://asciinema.org/a/RjojeOrKcF5zczweI7q3qiMgw.svg)](https://asciinema.org/a/RjojeOrKcF5zczweI7q3qiMgw)
+[![asciicast](https://asciinema.org/a/9WzntRGRXsR7PNivHRgRQzdqA.svg)](https://asciinema.org/a/9WzntRGRXsR7PNivHRgRQzdqA)
 
 ## Installation
 
 Here's an example with [vim-plug][], my plugin manager of choice.
 
 ```viml
-Plug 'Olical/conjure', { 'tag': 'v0.17.1', 'do': 'bin/compile', 'for': 'clojure', 'on': 'ConjureAdd'  }
+Plug 'Olical/conjure', { 'tag': 'v0.18.0', 'do': 'bin/compile', 'for': 'clojure', 'on': 'ConjureUp'  }
 ```
 
 You should rely on a tag so that breaking changes don't end up disrupting your workflow, please don't depend on `master` (and especially not `develop`!). Make sure you watch the repository for releases using the menu in the top right, that way you can upgrade when it's convenient for you.
 
-The `'for'` and `'on'` keys are optional but you might prefer Conjure to only start up once you've entered a Clojure file.
-
 ## Usage
 
-### Mappings
+### Configuration
 
- * `InsertEnter` in a Clojure buffer (that is _not_ the log) closes the log.
- * `CursorMoved(I)` in a Clojure buffer looks up the docs for the head of the form under your cursor and displays it with virtual text.
- * `<localleader>ee` - `ConjureEvalCurrentForm`
- * `<localleader>er` - `ConjureEvalRootForm`
- * `<localleader>ee` - `ConjureEvalSelection` (visual mode)
- * `<localleader>eb` - `ConjureEvalBuffer`
- * `<localleader>ef` - `ConjureLoadFile`
- * `<localleader>cs` - `ConjureStatus`
- * `<localleader>cl` - `ConjureOpenLog`
- * `<localleader>cq` - `ConjureCloseLog`
- * `<localleader>tt` - `ConjureRunTests`
- * `<localleader>ta` - `ConjureRunAllTests`
- * `K` - `ConjureDoc`
- * `gd` - `ConjureDefinition`
+Connections are configured through the `.conjure.edn` file in your current directory (the dot prefix is optional), which is deeply merged with all other `.conjure.edn` files in all parent directories. This allows you to store common settings for your workflow in your home directory, for example. `$XDG_CONFIG_HOME` is taken into account, by default this means you can configure Conjure globally with `~/.config/conjure/conjure.edn` if you so wish.
+
+Once you're set up you can execute `ConjureUp` (`<localleader>cu` by default) to read, merge and validate all of your files. `ConjureUp` is also executed when Conjure starts, so you can just open any Clojure file and start hacking. The files in your local directory will overwrite those in parent directories allowing you to override things in your home directory.
+
+Here's an exhaustive example of what you can configure with these files. If you get something wrong you'll get an explanation from [expound][].
+
+```clojure
+{:conns
+ {:api {:port 5885}
+  :frontend {:port 5556
+
+             ;; You need to explicitly tell Conjure if it's a ClojureScript connection.
+             :lang :cljs}
+
+  :staging {:host "foo.com"
+            :port 424242
+
+            ;; This is EDN so you need to specify that you want a regex.
+            ;; Clojure(Script)'s #"..." syntax won't work here.
+            :expr #regex "\\.(cljc?|edn|another.extension)$"}
+
+  ;; You can slurp in valid EDN which allows you to use random port files from other tools (such as boot).
+  :boot {:port #slurp-edn ".socket-port"
+
+         ;; Disabled conns will be ignored on ConjureUp.
+         ;; They can be enabled and disabled with `:ConjureUp -staging +boot`
+         ;; This allows you to toggle parts of your config with different custom mappings.
+         :enabled? false}}}
+```
+
+If you open Conjure without any connections configured it'll self prepl into it's _own_ JVM. This allows you to have autocompletion and evaluation in any directory or Clojure file. This can be really useful for quickly trying something out in a temporary file where a regular REPL won't quite cut it.
 
 ### Commands
 
- * `ConjureAdd` - add a new connection.
- * `ConjureRemove` - remove an existing connection by tag.
- * `ConjureRemoveAll` - remove all connections.
+ * `ConjureUp` - synchronise connections with your `.conjure.edn` config files, takes flags like `-foo +bar` which will set the `:enabled?` flags of matching connections.
  * `ConjureStatus` - display the current connections in the log buffer.
  * `ConjureEval` - evaluate the argument as Clojure code.
  * `ConjureEvalSelection` - evaluates the current (or previous) visual selection.
@@ -76,19 +89,23 @@ The `'for'` and `'on'` keys are optional but you might prefer Conjure to only st
  * `ConjureRunTests` - run tests in the current namespace and it's `-test` equivalent (as well as the other way around) or with the provided namespace names separated by spaces.
  * `ConjureRunAllTests` - run all tests with an optional namespace filter regex.
 
-`ConjureAdd` takes a map that conforms to the following spec.
+### Mappings
 
-```clojure
-(s/def ::expr util/regexp?)
-(s/def ::tag keyword?)
-(s/def ::port number?)
-(s/def ::lang #{:clj :cljs})
-(s/def ::host string?)
-(s/def ::new-conn (s/keys :req-un [::tag ::port]
-                          :opt-un [::expr ::lang ::host]))
-```
-
-If you get something wrong it'll explain using [Expound][] in the log buffer. Essentially you must provide at least a `:tag` and `:port`.
+ * `InsertEnter` in a Clojure buffer (that is _not_ the log) closes the log.
+ * `CursorMoved(I)` in a Clojure buffer looks up the docs for the head of the form under your cursor and displays it with virtual text.
+ * `<localleader>ee` - `ConjureEvalCurrentForm`
+ * `<localleader>er` - `ConjureEvalRootForm`
+ * `<localleader>ee` - `ConjureEvalSelection` (visual mode)
+ * `<localleader>eb` - `ConjureEvalBuffer`
+ * `<localleader>ef` - `ConjureLoadFile`
+ * `<localleader>cu` - `ConjureUp`
+ * `<localleader>cs` - `ConjureStatus`
+ * `<localleader>cl` - `ConjureOpenLog`
+ * `<localleader>cq` - `ConjureCloseLog`
+ * `<localleader>tt` - `ConjureRunTests`
+ * `<localleader>ta` - `ConjureRunAllTests`
+ * `K` - `ConjureDoc`
+ * `gd` - `ConjureDefinition`
 
 ### Options
 
@@ -99,6 +116,7 @@ You may set these globals with `let` before Conjure loads to configure it's beha
  * `g:conjure_log_size_small = 25` (%) - Regular size of the log window when it opens automatically.
  * `g:conjure_log_size_large = 50` (%) - Size of the log window when explicitly opened by  `ConjureOpenLog`.
  * `g:conjure_log_auto_close = 1` - Enable closing the log window as you enter insert mode in a Clojure buffer.
+ * `g:conjure_log_auto_open = "multiline"` - Open the log window after eval, it can be set to `"multiline"`, `"always"` or `"never"`. The default will open it when the eval returns a multiple line result since it doesn't fit into the virtual text display as well.
  * `g:conjure_quick_doc_normal_mode = 1` - Enable small doc strings appearing as virtual text in normal mode.
  * `g:conjure_quick_doc_insert_mode = 1` - Enable small doc strings appearing as virtual text in insert mode as you type.
  * `g:conjure_quick_doc_time = 250` (ms) - How long your cursor has to hold before the quick doc will be queried, if enabled.
@@ -126,31 +144,6 @@ let g:deoplete#keyword_patterns.clojure = '[\w!$%&*+/:<=>?@\^_~\-\.#]*'
 #### [Coc][]
 
 You can install [coc-conjure][] to hook these two tools together easily, all thanks to [@jlesquembre][]. Documentation for that process can be found inside the repository.
-
-## Example
-
-> Note: Hopefully all of the stateful `ConjureAdd` / `ConjureRemove` commands will vanish with #15!
-
-```viml
-" A regular Clojure connection.
-:ConjureAdd {:tag :jvm, :port 5555}
-
-" The :lang defaults to :clj, you need to specify it as :cljs for ClojureScript.
-:ConjureAdd {:tag :node, :port 5556, :lang :cljs}
-
-" This will print the result from both REPLs
-" Providing you call it from within a .cljc buffer.
-:ConjureEval (+ 10 10)
-
-" Disconnect from :node.
-:ConjureRemove :node
-```
-
-If you wish to change the regular expression used to match buffers to connections, you can set `:expr`. You need to prefix it with `#regex` because [edn][] doesn't have built in support for `#"..."` syntax like Clojure does.
-
-```viml
-:ConjureAdd {:tag :frontend, :port 8888, :expr #regex "frontend/.+\\.cljs", :lang :cljs}
-```
 
 ## Unlicenced
 

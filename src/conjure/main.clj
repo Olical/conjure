@@ -1,11 +1,9 @@
 (ns conjure.main
   "Entry point and registration of RPC handlers."
-  (:require [clojure.edn :as edn]
-            [clojure.spec.alpha :as s]
-            [clojure.string :as str]
-            [expound.alpha :as expound]
+  (:require [clojure.string :as str]
             [taoensso.timbre :as log]
             [taoensso.timbre.appenders.core :as appenders]
+            [conjure.config :as config]
             [conjure.util :as util]
             [conjure.rpc :as rpc]
             [conjure.prepl :as prepl]
@@ -30,7 +28,7 @@
   (log/merge-config!
     {:level :trace
      :appenders {:println nil
-                 :spit (when-let [path (util/env :log-path)]
+                 :spit (when-let [path (util/env :conjure-log-path)]
                          (appenders/spit-appender {:fname path}))}})
   (log/info "Logging initialised")
 
@@ -40,27 +38,13 @@
   (log/info "Everything's ready! Let's perform some magic.")
   @(promise))
 
-(defn parse-user-edn
-  "Parses some string as EDN and ensures it conforms to a spec.
-  Returns nil and displays an error if it fails."
-  [spec src]
-  (let [value (edn/read-string {:readers {'regex re-pattern}} src)]
-    (if (s/valid? spec value)
-      value
-      (ui/error (expound/expound-str spec value)))))
-
 ;; Here we map RPC notifications and requests to their Clojure functions.
 ;; Input strings are parsed as EDN and checked against specs where required.
-(defmethod rpc/handle-notify :add [{:keys [params]}]
-  (when-let [new-conn (parse-user-edn ::prepl/new-conn (first params))]
-    (prepl/add! new-conn)))
-
-(defmethod rpc/handle-notify :remove [{:keys [params]}]
-  (when-let [tag (parse-user-edn ::prepl/tag (first params))]
-    (prepl/remove! tag)))
-
-(defmethod rpc/handle-notify :remove-all [_]
-  (prepl/remove-all!))
+(defmethod rpc/handle-notify :up [{:keys [params]}]
+  (-> (config/fetch {:flags (first params)
+                     :cwd (nvim/cwd)})
+      (get :conns)
+      (prepl/sync!)))
 
 (defmethod rpc/handle-notify :status [_]
   (prepl/status))

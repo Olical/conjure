@@ -4,6 +4,7 @@ let g:conjure_log_direction = get(g:, 'conjure_log_direction', "vertical") " ver
 let g:conjure_log_size_small = get(g:, 'conjure_log_size_small', 25) " %
 let g:conjure_log_size_large = get(g:, 'conjure_log_size_large', 50) " %
 let g:conjure_log_auto_close = get(g:, 'conjure_log_auto_close', 1) " 1/0
+let g:conjure_log_auto_open = get(g:, 'conjure_log_auto_open', "multiline") " always/multiline/never
 let g:conjure_quick_doc_normal_mode = get(g:, 'conjure_quick_doc_normal_mode', 1) " 1/0
 let g:conjure_quick_doc_insert_mode = get(g:, 'conjure_quick_doc_insert_mode', 1) " 1/0
 let g:conjure_quick_doc_time = get(g:, 'conjure_quick_doc_time', 250) " ms
@@ -21,9 +22,7 @@ else
 endif
 
 " Create commands for RPC calls handled by main.clj.
-command! -nargs=1 ConjureAdd call conjure#notify("add", <q-args>)
-command! -nargs=1 ConjureRemove call conjure#notify("remove", <q-args>)
-command! -nargs=0 ConjureRemoveAll call conjure#notify("remove_all")
+command! -nargs=* ConjureUp call conjure#notify("up", <q-args>)
 command! -nargs=0 ConjureStatus call conjure#notify("status")
 
 command! -nargs=1 ConjureEval call conjure#notify("eval", <q-args>)
@@ -51,6 +50,7 @@ augroup conjure
     autocmd FileType clojure nnoremap <buffer> <localleader>eb :ConjureEvalBuffer<cr>
     autocmd FileType clojure nnoremap <buffer> <localleader>ef :ConjureLoadFile <c-r>=expand('%:p')<cr><cr>
 
+    autocmd FileType clojure nnoremap <buffer> <localleader>cu :ConjureUp<cr>
     autocmd FileType clojure nnoremap <buffer> <localleader>cs :ConjureStatus<cr>
     autocmd FileType clojure nnoremap <buffer> <localleader>cl :ConjureOpenLog<cr>
     autocmd FileType clojure nnoremap <buffer> <localleader>cq :ConjureCloseLog<cr>
@@ -205,4 +205,8 @@ endfunction
 " version and override it with the development version temporarily.
 if $CONJURE_ALLOWED_DIR == "" || $CONJURE_ALLOWED_DIR == s:cwd
   call conjure#start()
+
+  " Perform an initial ConjureUp which will read the user config and attempt
+  " to connect to everything available.
+  ConjureUp
 endif

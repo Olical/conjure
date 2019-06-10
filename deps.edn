@@ -1,7 +1,7 @@
 {:paths ["src"]
 
  :deps
- {org.clojure/clojure {:mvn/version "1.10.0"}
+ {org.clojure/clojure {:mvn/version "1.10.1"}
   org.clojure/core.async {:mvn/version "0.4.490"}
   org.clojure/spec.alpha {:mvn/version "0.2.176"}
   org.clojure/tools.reader {:mvn/version "1.3.2"}
@@ -11,7 +11,10 @@
   expound {:mvn/version "0.7.2"}
   zprint {:mvn/version "0.4.15"}
   tcp-server {:mvn/version "0.1.0"}
-  cheshire {:mvn/version "5.8.1"}}
+  cheshire {:mvn/version "5.8.1"}
+  me.raynes/fs {:mvn/version "1.4.6"}
+  medley {:mvn/version "1.2.0"}
+  traversy {:mvn/version "0.5.0"}}
 
  :aliases
  {:test

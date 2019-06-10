@@ -5,9 +5,9 @@
             [conjure.util :as util]
             [conjure.result :as result]))
 
+(def ^:private welcome-msg "; conjure/out | Welcome to Conjure!")
 (def ^:private max-log-buffer-length 2000)
 (defonce ^:private log-buffer-name "/tmp/conjure.cljc")
-(def ^:private welcome-msg "; conjure/out | Welcome to Conjure!")
 
 (defn upsert-log
   "Get, create, or update the log window and buffer."
@@ -106,7 +106,14 @@
         msg (cond-> (:val resp)
               (= (:tag resp) :ret) (result/value)
               code? (util/pprint))
-        open? (or (not code?) (str/includes? msg "\n"))]
+
+        ;; :always => Open the log for every eval result.
+        ;; :multiline => Open the log when there's a multiline result.
+        ;; :never => Never open the log for evals, it'll still open for stdin/out, doc, etc.
+        auto-open (nvim/flag :log-auto-open)
+        open? (or (not code?)
+                  (or (= auto-open :always)
+                      (and (= auto-open :multiline) (str/includes? msg "\n"))))]
 
     (when code?
       (nvim/display-virtual [[(str "=> " (util/sample msg 128)) "comment"]]))

@@ -7,7 +7,8 @@
             [taoensso.timbre :as log]
             [zprint.core :as zp]
             [camel-snake-kebab.core :as csk]
-            [camel-snake-kebab.extras :as cske]))
+            [camel-snake-kebab.extras :as cske])
+  (:import [java.net Socket]))
 
 (defn join-words [parts]
   (str/join " " parts))
@@ -37,11 +38,10 @@
 (def ^:dynamic get-env-fn #(System/getenv %))
 
 (defn env
-  "Turn :some-keyword into CONJURE_SOME_KEYWORD for
-  environment variable lookup. Presumably."
+  "Turn :some-keyword into SOME_KEYWORD and look it up in the environment."
   [k]
   (get-env-fn
-    (csk/->SCREAMING_SNAKE_CASE (str "conjure-" (name k)))))
+    (csk/->SCREAMING_SNAKE_CASE (name k))))
 
 (defn throwable->str [throwable]
   (-> throwable Throwable->map clj/ex-triage clj/ex-str))
@@ -109,3 +109,10 @@
   (let [socket (java.net.ServerSocket. 0)]
     (.close socket)
     (.getLocalPort socket)))
+
+(defn socket? [{:keys [host port]}]
+  (try
+    (Socket. host port)
+    true
+    (catch Throwable _
+      false)))
