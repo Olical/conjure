@@ -1,7 +1,3 @@
 let &runtimepath=resolve(expand("<sfile>:p:h")) . "," . &runtimepath
 lua package.loaded["conjure"] = nil
-
-if !exists("g:conjure_initialised")
-  let g:conjure_initialised = 1
-  source plugin/conjure.vim
-endif
+source plugin/conjure.vim

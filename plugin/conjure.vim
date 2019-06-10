@@ -1,3 +1,17 @@
+let s:cwd = resolve(expand("<sfile>:p:h") . "/..")
+
+" Don't load if...
+"  * Not in Neovim
+"  * Already loaded
+"  * Blocked by CONJURE_ALLOWED_DIR (bin/dev)
+if !has('nvim') || exists("g:conjure_loaded") || ($CONJURE_ALLOWED_DIR != "" && $CONJURE_ALLOWED_DIR != s:cwd)
+  finish
+endif
+
+let g:conjure_loaded = 1
+let g:conjure_initialised = 0
+let g:conjure_ready = 0
+
 " User config with defaults.
 let g:conjure_default_mappings = get(g:, 'conjure_default_mappings', 1) " 1/0
 let g:conjure_log_direction = get(g:, 'conjure_log_direction', "vertical") " vertical/horizontal
@@ -10,10 +24,7 @@ let g:conjure_quick_doc_insert_mode = get(g:, 'conjure_quick_doc_insert_mode', 1
 let g:conjure_quick_doc_time = get(g:, 'conjure_quick_doc_time', 250) " ms
 let g:conjure_omnifunc = get(g:, 'conjure_omnifunc', 1) " 1/0
 
-" Various script wide flags.
 let s:jobid = -1
-let s:cwd = resolve(expand("<sfile>:p:h") . "/..")
-let g:conjure_ready = 0
 
 if $CONJURE_JOB_OPTS != ""
   let s:job_opts = $CONJURE_JOB_OPTS
@@ -42,6 +53,7 @@ command! -nargs=? ConjureRunAllTests call conjure#notify("run_all_tests", <q-arg
 
 augroup conjure
   autocmd!
+  autocmd BufEnter *.clj,*.clj[cs] call conjure#init()
 
   if g:conjure_default_mappings
     autocmd FileType clojure nnoremap <buffer> <localleader>ee :ConjureEvalCurrentForm<cr>
@@ -200,13 +212,11 @@ function! conjure#should_autocomplete()
   return g:conjure_ready && conjure#cursor_in_code()
 endfunction
 
-" Start the job if `bin/dev` isn't limiting the cwd.
-" This is useful because you can turn off your globally installed
-" version and override it with the development version temporarily.
-if $CONJURE_ALLOWED_DIR == "" || $CONJURE_ALLOWED_DIR == s:cwd
-  call conjure#start()
-
-  " Perform an initial ConjureUp which will read the user config and attempt
-  " to connect to everything available.
-  ConjureUp
-endif
+" Initialise if not done already.
+function! conjure#init()
+  if g:conjure_initialised == 0
+    let g:conjure_initialised = 1
+    call conjure#start()
+    ConjureUp
+  endif
+endfunction
