@@ -238,4 +238,4 @@
 (defn cwd
   "Get the current working directory of the editor."
   []
-  (api/call (api/command-output "pwd")))
+  (api/call (api/call-function "getcwd" 0)))
