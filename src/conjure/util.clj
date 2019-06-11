@@ -35,6 +35,9 @@
         (str (subs flat 0 length) "…")
         flat))))
 
+(defn multiline? [s]
+  (str/includes? s "\n"))
+
 (def ^:dynamic get-env-fn #(System/getenv %))
 
 (defn env

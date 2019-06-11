@@ -233,7 +233,8 @@
       (-> (api/call (api/get-var (keyword (str "conjure-" (name k)))))
           (as-> result
             (cond-> result
-              (string? result) (keyword)))))))
+              (string? result) (keyword)
+              (vector? result) (->> (map keyword) (set))))))))
 
 (defn cwd
   "Get the current working directory of the editor."
