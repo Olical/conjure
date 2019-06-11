@@ -116,7 +116,7 @@ You may set these globals with `let` before Conjure loads to configure it's beha
  * `g:conjure_log_size_small = 25` (%) - Regular size of the log window when it opens automatically.
  * `g:conjure_log_size_large = 50` (%) - Size of the log window when explicitly opened by  `ConjureOpenLog`.
  * `g:conjure_log_auto_close = 1` - Enable closing the log window as you enter insert mode in a Clojure buffer.
- * `g:conjure_log_auto_open = ["eval", "ret", "ret-multiline", "out", "err", "tap", "doc", "load-file"]` - Open the log window for different kinds of log entries, remove unwanted kinds.
+ * `g:conjure_log_auto_open = ["eval", "ret", "ret-multiline", "out", "err", "tap", "doc", "load-file", "test"]` - Open the log window for different kinds of log entries, remove unwanted kinds.
    * `eval` - Code you just evaluated and which connection it went to.
    * `ret` - Returned value from an evaluation (single line).
    * `ret-multiline` - Returned value from an evaluation (multiple lines).
@@ -125,6 +125,7 @@ You may set these globals with `let` before Conjure loads to configure it's beha
    * `tap` - Results from `(tap> ...)` calls within an evaluation.
    * `doc` - Documentation output.
    * `load-file` - Path to the file you just loaded from disk.
+   * `test` - Test results.
  * `g:conjure_fold_multiline_results = 0` - Fold multiline results in the log window.
  * `g:conjure_quick_doc_normal_mode = 1` - Enable small doc strings appearing as virtual text in normal mode.
  * `g:conjure_quick_doc_insert_mode = 1` - Enable small doc strings appearing as virtual text in insert mode as you type.
