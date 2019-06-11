@@ -108,16 +108,15 @@ function! conjure#on_stderr(jobid, lines, event) dict
   echohl None
 endfunction
 
-" Reset the jobid then call start again.
+" Reset the jobid, notify that you can restart easily.
 function! conjure#on_exit(jobid, msg, event) dict
   if a:msg != 0
     echohl ErrorMsg
-    echo "Conjure exited, restarting"
+    echo "Conjure exited (" . a:msg . "), consider conjure#start()"
     echohl None
 
     let s:jobid = -1
     let g:conjure_ready = 0
-    call conjure#start()
   endif
 endfunction
 
