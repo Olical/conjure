@@ -7,11 +7,11 @@
  3. Speak to someone about it, raise an issue and start a discussion. Of course if you're just fixing a typo then go ahead, but if it's not an entirely trivial change let's work out what to do together. Perhaps someone has already solved your problem and just needs a poke to share their work or findings.
  4. Develop your change on a branch keeping in line with how the project is currently structured, try to keep your change minimal and focussed.
 
-When working on Conjure you can start the development version through `bin/dev`. You'll ideally need [localvimrc][] to evaluate the `.lvimrc` file for you on startup. When working on Conjure you'll have the following extras by default:
+When working on Conjure you can start the development version through `bin/dev`. When working on Conjure you'll have the following extras by default:
 
  * Your global version of Conjure will be overridden by the one in your current directory.
  * Logs are sent to `logs/conjure.log`. (I `tail -f` this file in another terminal while working)
- * A prepl into Conjure itself is opened on port `5885`. `<localleader>rc` will connect Conjure to itself so you can develop in a strangely magical cycle.
+ * A prepl is connected to Conjure itself so you can develop in a strangely magical cycle.
  * The AOT compiled classes are ignored so startup time is quite a bit longer but you get the full development version to REPL into.
 
 ## Checking your work
@@ -30,7 +30,6 @@ These are useful for testing Clojure and ClojureScript discrepancies, of which t
 
 Above all, have fun with it. Help build and improve something you love to use.
 
-[localvimrc]: https://github.com/embear/vim-localvimrc
 [circleci]: https://circleci.com/
 [codecov]: https://codecov.io/
 [kaocha]: https://github.com/lambdaisland/kaocha
