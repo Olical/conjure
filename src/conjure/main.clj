@@ -3,6 +3,7 @@
   (:require [clojure.string :as str]
             [taoensso.timbre :as log]
             [taoensso.timbre.appenders.core :as appenders]
+            [me.raynes.fs :as fs]
             [conjure.config :as config]
             [conjure.util :as util]
             [conjure.rpc :as rpc]
@@ -22,14 +23,14 @@
 
 (defn -main
   "Start up any background services and then wait forever."
-  []
+  [cwd]
   (.. Runtime (getRuntime) (addShutdownHook (Thread. #(clean-up-and-exit))))
 
   (log/merge-config!
     {:level :trace
      :appenders {:println nil
                  :spit (when-let [path (util/env :conjure-log-path)]
-                         (appenders/spit-appender {:fname path}))}})
+                         (appenders/spit-appender {:fname (str (fs/file cwd path))}))}})
   (log/info "Logging initialised")
 
   (rpc/init)

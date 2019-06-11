@@ -124,7 +124,7 @@ endfunction
 " Start up the Clojure process if we haven't already.
 function! conjure#start()
   if s:jobid == -1
-    let s:jobid = jobstart("clojure " . s:job_opts . " -m conjure.main", {
+    let s:jobid = jobstart("clojure " . s:job_opts . " -m conjure.main " . getcwd(0), {
     \  "rpc": v:true,
     \  "cwd": s:cwd,
     \  "on_stderr": "conjure#on_stderr",
