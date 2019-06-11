@@ -111,9 +111,11 @@
         ;; :multiline => Open the log when there's a multiline result.
         ;; :never => Never open the log for evals, it'll still open for stdin/out, doc, etc.
         auto-open (nvim/flag :log-auto-open)
+        fold-results? (= 1 (nvim/flag :fold-results))
+        multiline-msg? (str/includes? msg "\n")
         open? (or (not code?)
                   (or (= auto-open :always)
-                      (and (= auto-open :multiline) (str/includes? msg "\n"))))]
+                      (and (= auto-open :multiline) multiline-msg?)))]
 
     (when code?
       (nvim/display-virtual [[(str "=> " (util/sample msg 128)) "comment"]]))
@@ -122,8 +124,11 @@
              :kind (:tag resp)
              :code? code?
              :open? open?
-             :fold-text (when (and code? (result/error? (:val resp)))
-                          "Error folded")
+             :fold-text (and code?
+                             (or (when (result/error? (:val resp))
+                                   "Error folded")
+                                 (when (and fold-results? multiline-msg?)
+                                   "Result folded")))
              :msg msg})))
 
 (defn load-file*
