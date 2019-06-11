@@ -82,7 +82,7 @@
         (try
           (loop []
             (when-let [code (a/<!! eval-chan)]
-              (log/trace "Writing to tag:" tag "-" (util/sample code 20))
+              (log/trace "Writing to tag:" tag "-" code)
               (util/write writer code)
               (recur)))
 

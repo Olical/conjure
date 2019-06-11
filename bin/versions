@@ -1,0 +1,15 @@
+#!/usr/bin/env sh
+
+set -e
+
+echo -e "=== Conjure ==="
+git describe --long --dirty --abbrev=10 --tags
+
+echo -e "\n=== OS ==="
+echo $OSTYPE
+
+echo -e "\n=== Neovim ==="
+nvim --version
+
+echo -e "\n=== Java ==="
+java -version 2>&1

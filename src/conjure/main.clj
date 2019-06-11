@@ -1,6 +1,7 @@
 (ns conjure.main
   "Entry point and registration of RPC handlers."
   (:require [clojure.string :as str]
+            [clojure.java.shell :as shell]
             [taoensso.timbre :as log]
             [taoensso.timbre.appenders.core :as appenders]
             [me.raynes.fs :as fs]
@@ -32,6 +33,8 @@
                  :spit (when-let [path (util/env :conjure-log-path)]
                          (appenders/spit-appender {:fname (str (fs/file cwd path))}))}})
   (log/info "Logging initialised")
+
+  (log/info (str "System versions\n" (:out (shell/sh "bin/versions"))))
 
   (rpc/init)
   (prepl/init)
