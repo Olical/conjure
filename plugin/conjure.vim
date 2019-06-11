@@ -54,6 +54,7 @@ command! -nargs=? ConjureRunAllTests call conjure#notify("run_all_tests", <q-arg
 augroup conjure
   autocmd!
   autocmd BufEnter *.clj,*.clj[cs] call conjure#init()
+  autocmd VimLeavePre * call conjure#stop()
 
   if g:conjure_default_mappings
     autocmd FileType clojure nnoremap <buffer> <localleader>ee :ConjureEvalCurrentForm<cr>
@@ -129,6 +130,13 @@ function! conjure#start()
     \  "on_stderr": "conjure#on_stderr",
     \  "on_exit": "conjure#on_exit"
     \})
+  endif
+endfunction
+
+" Stop the Clojure process if it's running.
+function! conjure#stop()
+  if s:jobid != -1
+    call conjure#notify("stop")
   endif
 endfunction
 

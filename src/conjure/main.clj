@@ -12,14 +12,14 @@
             [conjure.action :as action]
             [conjure.nvim :as nvim]))
 
-(defn- clean-up-and-exit
-  "Performs any necessary clean up and calls `(System/exit status)`."
-  []
+(defn- clean-up-and-exit []
   (log/info "Shutting down")
   (shutdown-agents)
   (flush)
   (binding [*out* *err*] (flush))
   (.. Runtime (getRuntime) (halt 0)))
+
+(defonce exit-handle! (promise))
 
 (defn -main
   "Start up any background services and then wait forever."
@@ -37,7 +37,7 @@
   (prepl/init)
   (nvim/set-ready!)
   (log/info "Everything's ready! Let's perform some magic.")
-  @(promise))
+  @exit-handle!)
 
 ;; Here we map RPC notifications and requests to their Clojure functions.
 ;; Input strings are parsed as EDN and checked against specs where required.
@@ -98,3 +98,6 @@
 (defmethod rpc/handle-notify :run-all-tests [{:keys [params]}]
   (action/run-all-tests (when-not (str/blank? (first params))
                           (first params))))
+
+(defmethod rpc/handle-notify :stop [_]
+  (deliver exit-handle! true))
