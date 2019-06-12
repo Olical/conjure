@@ -58,22 +58,22 @@ augroup conjure
   autocmd VimLeavePre * call conjure#stop()
 
   if g:conjure_default_mappings
-    autocmd FileType clojure nnoremap <buffer> <localleader>ee :ConjureEvalCurrentForm<cr>
-    autocmd FileType clojure nnoremap <buffer> <localleader>er :ConjureEvalRootForm<cr>
-    autocmd FileType clojure vnoremap <buffer> <localleader>ee :ConjureEvalSelection<cr>
-    autocmd FileType clojure nnoremap <buffer> <localleader>eb :ConjureEvalBuffer<cr>
-    autocmd FileType clojure nnoremap <buffer> <localleader>ef :ConjureLoadFile <c-r>=expand('%:p')<cr><cr>
+    autocmd FileType clojure nnoremap <silent> <buffer> <localleader>ee :ConjureEvalCurrentForm<cr>
+    autocmd FileType clojure nnoremap <silent> <buffer> <localleader>er :ConjureEvalRootForm<cr>
+    autocmd FileType clojure vnoremap <silent> <buffer> <localleader>ee :ConjureEvalSelection<cr>
+    autocmd FileType clojure nnoremap <silent> <buffer> <localleader>eb :ConjureEvalBuffer<cr>
+    autocmd FileType clojure nnoremap <silent> <buffer> <localleader>ef :ConjureLoadFile <c-r>=expand('%:p')<cr><cr>
 
-    autocmd FileType clojure nnoremap <buffer> <localleader>cu :ConjureUp<cr>
-    autocmd FileType clojure nnoremap <buffer> <localleader>cs :ConjureStatus<cr>
-    autocmd FileType clojure nnoremap <buffer> <localleader>cl :ConjureOpenLog<cr>
-    autocmd FileType clojure nnoremap <buffer> <localleader>cq :ConjureCloseLog<cr>
+    autocmd FileType clojure nnoremap <silent> <buffer> <localleader>cu :ConjureUp<cr>
+    autocmd FileType clojure nnoremap <silent> <buffer> <localleader>cs :ConjureStatus<cr>
+    autocmd FileType clojure nnoremap <silent> <buffer> <localleader>cl :ConjureOpenLog<cr>
+    autocmd FileType clojure nnoremap <silent> <buffer> <localleader>cq :ConjureCloseLog<cr>
 
-    autocmd FileType clojure nnoremap <buffer> <localleader>tt :ConjureRunTests<cr>
-    autocmd FileType clojure nnoremap <buffer> <localleader>ta :ConjureRunAllTests<cr>
+    autocmd FileType clojure nnoremap <silent> <buffer> <localleader>tt :ConjureRunTests<cr>
+    autocmd FileType clojure nnoremap <silent> <buffer> <localleader>ta :ConjureRunAllTests<cr>
 
-    autocmd FileType clojure nnoremap <buffer> K :ConjureDoc <c-r><c-w><cr>
-    autocmd FileType clojure nnoremap <buffer> gd :ConjureDefinition <c-r><c-w><cr>
+    autocmd FileType clojure nnoremap <silent> <buffer> K :ConjureDoc <c-r><c-w><cr>
+    autocmd FileType clojure nnoremap <silent> <buffer> gd :ConjureDefinition <c-r><c-w><cr>
   endif
 
   if g:conjure_log_auto_close
