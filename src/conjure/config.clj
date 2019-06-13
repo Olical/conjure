@@ -26,10 +26,6 @@
   {:clj #"\.(cljc?|edn)$"
    :cljs #"\.(clj(s|c)|edn)$"})
 
-(def ^:private edn-opts
-  {:readers {'regex re-pattern
-             'slurp-edn (comp edn/read-string slurp)}})
-
 (defn- ^:dynamic gather
   "Gather all config files from disk and merge them together, deepest file wins."
   [{:keys [cwd] :as _opts}]
@@ -44,7 +40,14 @@
                                   (fs/file dir ".conjure.edn")]))
                (filter (every-pred fs/file? fs/readable?))
                (map slurp)
-               (map #(edn/read-string edn-opts %)))
+               (map #(edn/read-string
+                       {:readers
+                        {'regex re-pattern
+                         'slurp-edn (fn [path]
+                                      (-> (fs/file cwd path)
+                                          (slurp)
+                                          (edn/read-string)))}}
+                       %)))
          m/deep-merge)))
 
 (defn- ^:dynamic fallback
