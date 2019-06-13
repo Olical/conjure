@@ -98,7 +98,8 @@ end
 function conjure.close_log(log_buf_name)
   local match = find_log(log_buf_name)
   if match.win then
-    vim.api.nvim_command(match.win .. "close!")
+    local win_number = vim.api.nvim_win_get_number(match.win)
+    vim.api.nvim_command(win_number .. "close!")
   end
 end
 
