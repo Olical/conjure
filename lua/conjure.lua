@@ -96,10 +96,9 @@ end
 
 -- Close the log window if it's open in the current tabpage.
 function conjure.close_log(log_buf_name)
-  local result = find_log_buf_and_win(log_buf_name)
-  if result then
-    local win_number = vim.api.nvim_win_get_number(result.win)
-    vim.api.nvim_command(win_number .. "close!")
+  local match = find_log(log_buf_name)
+  if match.win then
+    vim.api.nvim_command(match.win .. "close!")
   end
 end
 
