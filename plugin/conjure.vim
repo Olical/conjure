@@ -58,6 +58,7 @@ augroup conjure
   autocmd VimLeavePre * call conjure#stop()
 
   if g:conjure_default_mappings
+    autocmd FileType clojure nnoremap <silent> <buffer> <localleader>ew :ConjureEval <c-r><c-w><cr>
     autocmd FileType clojure nnoremap <silent> <buffer> <localleader>ee :ConjureEvalCurrentForm<cr>
     autocmd FileType clojure nnoremap <silent> <buffer> <localleader>er :ConjureEvalRootForm<cr>
     autocmd FileType clojure vnoremap <silent> <buffer> <localleader>ee :ConjureEvalSelection<cr>

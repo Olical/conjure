@@ -240,3 +240,11 @@
   "Get the current working directory of the editor."
   []
   (api/call (api/call-function "getcwd" 0)))
+
+(defn current-line
+  "Get the current line number of the cursor.
+  Useful in a few places where you don't want a full cursor."
+  []
+  (-> (api/call (api/get-current-win))
+      (as-> win
+        (first (api/call (api/win-get-cursor win))))))

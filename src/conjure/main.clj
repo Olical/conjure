@@ -53,7 +53,8 @@
   (prepl/status))
 
 (defmethod rpc/handle-notify :eval [{:keys [params]}]
-  (action/eval* (first params)))
+  (action/eval* {:code (first params)
+                 :line (nvim/current-line)}))
 
 (defmethod rpc/handle-notify :eval-current-form [_]
   (action/eval-current-form))

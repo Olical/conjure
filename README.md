@@ -96,6 +96,7 @@ If you open Conjure without any connections configured it'll self prepl into it'
  * `<localleader>ee` - `ConjureEvalCurrentForm`
  * `<localleader>er` - `ConjureEvalRootForm`
  * `<localleader>ee` - `ConjureEvalSelection` (visual mode)
+ * `<localleader>ew` - `ConjureEval <word under cursor>`
  * `<localleader>eb` - `ConjureEvalBuffer`
  * `<localleader>ef` - `ConjureLoadFile`
  * `<localleader>cu` - `ConjureUp`

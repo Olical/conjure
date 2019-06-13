@@ -53,7 +53,9 @@
   ([ctx {:keys [code line]}]
    (when code
      (doseq [conn (:conns ctx)]
-       (let [opts {:conn conn, :code code, :line line}]
+       (let [opts {:conn conn
+                   :code code
+                   :line line}]
          (ui/eval* opts)
          (ui/result {:conn conn, :resp (wrapped-eval ctx opts)}))))))
 
