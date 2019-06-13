@@ -27,18 +27,13 @@ end
 -- We use this when we want to update a hidden log buffer without showing it.
 -- So it might not be attached to a window.
 local function find_log_buf(log_buf_name)
-  local bufs = vim.api.nvim_list_bufs()
+  local buf = vim.api.nvim_call_function("bufnr", {log_buf_name .. "$"})
 
-  for _, buf in ipairs(bufs) do
-    local buf_name = vim.api.nvim_buf_get_name(buf)
-
-    -- OSX symlinks /tmp to /private/tmp so we check the suffix instead.
-    if ends_with(buf_name, log_buf_name) then
-      return {buf = buf}
-    end
+  if buf ~= -1 and vim.api.nvim_buf_line_count(buf) > 0 then
+    return {buf = buf}
+  else
+    return nil
   end
-
-  return nil
 end
 
 -- Returns the absolute number of lines
@@ -74,13 +69,17 @@ function conjure.upsert_log(log_buf_name, size, focus, resize, open)
     end
 
     return match
-  elseif match and not open then
+  elseif match and match.buf and not open then
     return match
   else
     local split = (direction == "horizontal") and "split" or "vsplit"
 
+    -- Keep the window small if we're just creating it for setlocal calls.
+    local size_abs = open and size_abs or 0
+
     vim.api.nvim_command("botright " .. size_abs .. split .. " " .. log_buf_name)
     vim.api.nvim_command("setlocal winfixwidth")
+    vim.api.nvim_command("setlocal winfixheight")
     vim.api.nvim_command("setlocal buftype=nofile")
     vim.api.nvim_command("setlocal bufhidden=hide")
     vim.api.nvim_command("setlocal nowrap")
