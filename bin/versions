@@ -1,15 +1,13 @@
 #!/usr/bin/env sh
 
-set -e
-
-echo -e "=== Conjure ==="
+printf "=== Conjure ===\n"
 git describe --long --dirty --abbrev=10 --tags
 
-echo -e "\n=== OS ==="
-echo $OSTYPE
+printf "\n=== OS ===\n"
+uname -a
 
-echo -e "\n=== Neovim ==="
+printf "\n=== Neovim ===\n"
 nvim --version
 
-echo -e "\n=== Java ==="
+printf "\n=== Java ===\n"
 java -version 2>&1
