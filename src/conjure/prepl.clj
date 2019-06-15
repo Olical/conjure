@@ -102,8 +102,14 @@
 
   (remove! tag)
 
-  (if-not (util/socket? {:host host, :port port})
+  (cond
+    (nil? port)
+    (ui/info "Skipping" tag "- nil port")
+
+    (not (util/socket? {:host host, :port port}))
     (ui/info "Skipping" tag "- can't connect")
+
+    :else
     (do
       (log/info "Adding" tag host port)
       (ui/info "Adding" tag)

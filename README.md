@@ -62,6 +62,7 @@ Here's an exhaustive example of what you can configure with these files. If you 
             :expr #regex "\\.(cljc?|edn|another.extension)$"}
 
   ;; You can slurp in valid EDN which allows you to use random port files from other tools (such as boot).
+  ;; If the file doesn't exist yet the connection will simply be ignored because of the nil :port value.
   :boot {:port #slurp-edn ".socket-port"
 
          ;; Disabled conns will be ignored on ConjureUp.

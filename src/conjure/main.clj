@@ -23,7 +23,7 @@
 (defonce exit-handle! (promise))
 
 (defn -main
-  "Start up any background services and then wait forever."
+  "Start up any background services and then wait until the exit promise is delivered."
   [cwd]
   (.. Runtime (getRuntime) (addShutdownHook (Thread. #(clean-up-and-exit))))
 
