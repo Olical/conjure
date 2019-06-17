@@ -87,6 +87,7 @@ If you open Conjure without any connections configured it'll self prepl into it'
  * `ConjureDefinition` - go to the source of the given symbol, providing we can find it - falls back to vanilla `gd`.
  * `ConjureOpenLog` - open and focus the log buffer in a wide window.
  * `ConjureCloseLog` - close the log window if it's open in this tab.
+ * `ConjureToggleLog` - open or close the log depending on it's current state.
  * `ConjureRunTests` - run tests in the current namespace and it's `-test` equivalent (as well as the other way around) or with the provided namespace names separated by spaces.
  * `ConjureRunAllTests` - run all tests with an optional namespace filter regex.
 
@@ -104,6 +105,7 @@ If you open Conjure without any connections configured it'll self prepl into it'
  * `<localleader>cs` - `ConjureStatus`
  * `<localleader>cl` - `ConjureOpenLog`
  * `<localleader>cq` - `ConjureCloseLog`
+ * `<localleader>cL` - `ConjureToggleLog`
  * `<localleader>tt` - `ConjureRunTests`
  * `<localleader>ta` - `ConjureRunAllTests`
  * `K` - `ConjureDoc`

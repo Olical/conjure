@@ -49,6 +49,7 @@ command! -nargs=1 ConjureDoc call conjure#notify("doc", <q-args>)
 command! -nargs=1 ConjureQuickDoc call conjure#quick_doc()
 command! -nargs=0 ConjureOpenLog call conjure#notify("open_log")
 command! -nargs=0 ConjureCloseLog call conjure#notify("close_log")
+command! -nargs=0 ConjureToggleLog call conjure#notify("toggle_log")
 command! -nargs=* ConjureRunTests call conjure#notify("run_tests", <q-args>)
 command! -nargs=? ConjureRunAllTests call conjure#notify("run_all_tests", <q-args>)
 
@@ -69,6 +70,7 @@ augroup conjure
     autocmd FileType clojure nnoremap <silent> <buffer> <localleader>cs :ConjureStatus<cr>
     autocmd FileType clojure nnoremap <silent> <buffer> <localleader>cl :ConjureOpenLog<cr>
     autocmd FileType clojure nnoremap <silent> <buffer> <localleader>cq :ConjureCloseLog<cr>
+    autocmd FileType clojure nnoremap <silent> <buffer> <localleader>cL :ConjureToggleLog<cr>
 
     autocmd FileType clojure nnoremap <silent> <buffer> <localleader>tt :ConjureRunTests<cr>
     autocmd FileType clojure nnoremap <silent> <buffer> <localleader>ta :ConjureRunAllTests<cr>

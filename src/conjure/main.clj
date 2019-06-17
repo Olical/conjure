@@ -77,13 +77,21 @@
 (defmethod rpc/handle-notify :quick-doc [_]
   (action/quick-doc))
 
+(def ^:private log-opts
+  {:focus? true
+   :resize? true
+   :size :large})
+
 (defmethod rpc/handle-notify :open-log [_]
-  (ui/upsert-log {:focus? true
-                  :resize? true
-                  :size :large}))
+  (ui/upsert-log log-opts))
 
 (defmethod rpc/handle-notify :close-log [_]
   (ui/close-log))
+
+(defmethod rpc/handle-notify :toggle-log [_]
+  (if (ui/log-open?)
+    (ui/close-log)
+    (ui/upsert-log log-opts)))
 
 (defmethod rpc/handle-request :completions [{:keys [params]}]
   (action/completions (first params)))

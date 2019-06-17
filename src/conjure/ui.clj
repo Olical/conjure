@@ -23,6 +23,11 @@
          open?)
        (util/snake->kw-map))))
 
+(defn log-open?
+  "Check if the log window is currently open."
+  []
+  (boolean (:win (upsert-log {:open? false}))))
+
 (defn close-log
   "Closes the log window. In other news: Bear shits in woods."
   []
