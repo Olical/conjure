@@ -5,6 +5,7 @@
             [clojure.string :as str]
             [clojure.spec.alpha :as s]
             [expound.alpha :as expound]
+            [taoensso.timbre :as log]
             [medley.core :as m]
             [me.raynes.fs :as fs]
             [traversy.lens :as tl]
@@ -13,7 +14,7 @@
             [conjure.prepl :as prepl]))
 
 (s/def ::expr util/regexp?)
-(s/def ::port number?)
+(s/def ::port (s/nilable number?))
 (s/def ::lang #{:clj :cljs})
 (s/def ::host string?)
 (s/def ::tag keyword?)
@@ -25,10 +26,6 @@
 (def ^:private default-exprs
   {:clj #"\.(cljc?|edn)$"
    :cljs #"\.(clj(s|c)|edn)$"})
-
-(def ^:private edn-opts
-  {:readers {'regex re-pattern
-             'slurp-edn (comp edn/read-string slurp)}})
 
 (defn- ^:dynamic gather
   "Gather all config files from disk and merge them together, deepest file wins."
@@ -44,7 +41,17 @@
                                   (fs/file dir ".conjure.edn")]))
                (filter (every-pred fs/file? fs/readable?))
                (map slurp)
-               (map #(edn/read-string edn-opts %)))
+               (map #(edn/read-string
+                       {:readers
+                        {'regex re-pattern
+                         'slurp-edn (fn [path]
+                                      (try
+                                        (-> (fs/file cwd path)
+                                            (slurp)
+                                            (edn/read-string))
+                                        (catch Throwable t
+                                          (log/error "Caught error while slurping EDN" t))))}}
+                       %)))
          m/deep-merge)))
 
 (defn- ^:dynamic fallback

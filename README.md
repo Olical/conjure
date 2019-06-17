@@ -31,7 +31,7 @@ You can find out more about socket prepls in my blog post, [Clojure socket prepl
 Here's an example with [vim-plug][], my plugin manager of choice.
 
 ```viml
-Plug 'Olical/conjure', { 'tag': 'v0.18.0', 'do': 'bin/compile', 'for': 'clojure', 'on': 'ConjureUp'  }
+Plug 'Olical/conjure', { 'tag': 'v0.19.0', 'do': 'bin/compile'  }
 ```
 
 You should rely on a tag so that breaking changes don't end up disrupting your workflow, please don't depend on `master` (and especially not `develop`!). Make sure you watch the repository for releases using the menu in the top right, that way you can upgrade when it's convenient for you.
@@ -62,6 +62,7 @@ Here's an exhaustive example of what you can configure with these files. If you 
             :expr #regex "\\.(cljc?|edn|another.extension)$"}
 
   ;; You can slurp in valid EDN which allows you to use random port files from other tools (such as boot).
+  ;; If the file doesn't exist yet the connection will simply be ignored because of the nil :port value.
   :boot {:port #slurp-edn ".socket-port"
 
          ;; Disabled conns will be ignored on ConjureUp.
@@ -86,6 +87,7 @@ If you open Conjure without any connections configured it'll self prepl into it'
  * `ConjureDefinition` - go to the source of the given symbol, providing we can find it - falls back to vanilla `gd`.
  * `ConjureOpenLog` - open and focus the log buffer in a wide window.
  * `ConjureCloseLog` - close the log window if it's open in this tab.
+ * `ConjureToggleLog` - open or close the log depending on it's current state.
  * `ConjureRunTests` - run tests in the current namespace and it's `-test` equivalent (as well as the other way around) or with the provided namespace names separated by spaces.
  * `ConjureRunAllTests` - run all tests with an optional namespace filter regex.
 
@@ -96,12 +98,14 @@ If you open Conjure without any connections configured it'll self prepl into it'
  * `<localleader>ee` - `ConjureEvalCurrentForm`
  * `<localleader>er` - `ConjureEvalRootForm`
  * `<localleader>ee` - `ConjureEvalSelection` (visual mode)
+ * `<localleader>ew` - `ConjureEval <word under cursor>`
  * `<localleader>eb` - `ConjureEvalBuffer`
  * `<localleader>ef` - `ConjureLoadFile`
  * `<localleader>cu` - `ConjureUp`
  * `<localleader>cs` - `ConjureStatus`
  * `<localleader>cl` - `ConjureOpenLog`
  * `<localleader>cq` - `ConjureCloseLog`
+ * `<localleader>cL` - `ConjureToggleLog`
  * `<localleader>tt` - `ConjureRunTests`
  * `<localleader>ta` - `ConjureRunAllTests`
  * `K` - `ConjureDoc`
@@ -116,7 +120,17 @@ You may set these globals with `let` before Conjure loads to configure it's beha
  * `g:conjure_log_size_small = 25` (%) - Regular size of the log window when it opens automatically.
  * `g:conjure_log_size_large = 50` (%) - Size of the log window when explicitly opened by  `ConjureOpenLog`.
  * `g:conjure_log_auto_close = 1` - Enable closing the log window as you enter insert mode in a Clojure buffer.
- * `g:conjure_log_auto_open = "multiline"` - Open the log window after eval, it can be set to `"multiline"`, `"always"` or `"never"`. The default will open it when the eval returns a multiple line result since it doesn't fit into the virtual text display as well.
+ * `g:conjure_log_auto_open = ["eval", "ret", "ret-multiline", "out", "err", "tap", "doc", "load-file", "test"]` - Open the log window for different kinds of log entries, remove unwanted kinds.
+   * `eval` - Code you just evaluated and which connection it went to.
+   * `ret` - Returned value from an evaluation (single line).
+   * `ret-multiline` - Returned value from an evaluation (multiple lines).
+   * `out` - `stdout` from an evaluation.
+   * `err` - `stderr` from an evaluation.
+   * `tap` - Results from `(tap> ...)` calls within an evaluation.
+   * `doc` - Documentation output.
+   * `load-file` - Path to the file you just loaded from disk.
+   * `test` - Test results.
+ * `g:conjure_fold_multiline_results = 0` - Fold multiline results in the log window.
  * `g:conjure_quick_doc_normal_mode = 1` - Enable small doc strings appearing as virtual text in normal mode.
  * `g:conjure_quick_doc_insert_mode = 1` - Enable small doc strings appearing as virtual text in insert mode as you type.
  * `g:conjure_quick_doc_time = 250` (ms) - How long your cursor has to hold before the quick doc will be queried, if enabled.

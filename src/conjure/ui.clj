@@ -23,6 +23,11 @@
          open?)
        (util/snake->kw-map))))
 
+(defn log-open?
+  "Check if the log window is currently open."
+  []
+  (boolean (:win (upsert-log {:open? false}))))
+
 (defn close-log
   "Closes the log window. In other news: Bear shits in woods."
   []
@@ -33,25 +38,29 @@
   then it won't prefix every line with the source, it'll place the whole string
   below the origin/kind comment. If you provide fold-text the lines will be
   wrapped with fold markers and automatically hidden with your text displayed instead."
-  [{:keys [origin kind msg code? fold-text open?] :or {code? false, open? true}}]
+  [{:keys [origin kind msg code? fold-text] :or {code? false}}]
 
   (let [prefix (str "; " (name origin) "/" (name kind))
-        log (upsert-log {:open? open?})
+        log (upsert-log {:open? (contains?
+                                  (nvim/flag :log-auto-open)
+                                  (if (and (= kind :ret) (util/multiline? msg))
+                                    :ret-multiline
+                                    kind))})
         lines (str/split-lines msg)]
-      (nvim/append-lines
-        (merge
-          log
-          {:header welcome-msg
-           :trim-at max-log-buffer-length
-           :lines (if code?
-                    (concat (when fold-text
-                              [(str "; " fold-text " {{{1")])
-                            [(str prefix " ⤸")]
-                            lines
-                            (when fold-text
-                              ["; }}}1"]))
-                    (for [line lines]
-                      (str prefix " | " line)))}))))
+    (nvim/append-lines
+      (merge
+        log
+        {:header welcome-msg
+         :trim-at max-log-buffer-length
+         :lines (if code?
+                  (concat (when fold-text
+                            [(str "; " fold-text " {{{1")])
+                          [(str prefix " ⤸")]
+                          lines
+                          (when fold-text
+                            ["; }}}1"]))
+                  (for [line lines]
+                    (str prefix " | " line)))}))))
 
 (defn info
   "For general information from Conjure, this is like
@@ -95,8 +104,7 @@
   [{:keys [conn code]}]
   (append {:origin (:tag conn)
            :kind :eval
-           :msg (util/sample code 50)
-           :open? false}))
+           :msg (util/sample code 50)}))
 
 (defn result
   "Format, if it's code, and display a result from an evaluation.
@@ -105,15 +113,7 @@
   (let [code? (contains? #{:ret :tap} (:tag resp))
         msg (cond-> (:val resp)
               (= (:tag resp) :ret) (result/value)
-              code? (util/pprint))
-
-        ;; :always => Open the log for every eval result.
-        ;; :multiline => Open the log when there's a multiline result.
-        ;; :never => Never open the log for evals, it'll still open for stdin/out, doc, etc.
-        auto-open (nvim/flag :log-auto-open)
-        open? (or (not code?)
-                  (or (= auto-open :always)
-                      (and (= auto-open :multiline) (str/includes? msg "\n"))))]
+              code? (util/pprint))]
 
     (when code?
       (nvim/display-virtual [[(str "=> " (util/sample msg 128)) "comment"]]))
@@ -121,9 +121,12 @@
     (append {:origin (:tag conn)
              :kind (:tag resp)
              :code? code?
-             :open? open?
-             :fold-text (when (and code? (result/error? (:val resp)))
-                          "Error folded")
+             :fold-text (and code?
+                             (or (when (result/error? (:val resp))
+                                   "Error folded")
+                                 (when (and (= 1 (nvim/flag :fold-multiline-results))
+                                            (util/multiline? msg))
+                                   "Result folded")))
              :msg msg})))
 
 (defn load-file*
@@ -131,5 +134,4 @@
   [{:keys [conn path]}]
   (append {:origin (:tag conn)
            :kind :load-file
-           :msg path
-           :open? false}))
+           :msg path}))

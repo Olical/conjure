@@ -82,7 +82,7 @@
         (try
           (loop []
             (when-let [code (a/<!! eval-chan)]
-              (log/trace "Writing to tag:" tag "-" (util/sample code 20))
+              (log/trace "Writing to tag:" tag "-" code)
               (util/write writer code)
               (recur)))
 
@@ -102,8 +102,14 @@
 
   (remove! tag)
 
-  (if-not (util/socket? {:host host, :port port})
+  (cond
+    (nil? port)
+    (ui/info "Skipping" tag "- nil port")
+
+    (not (util/socket? {:host host, :port port}))
     (ui/info "Skipping" tag "- can't connect")
+
+    :else
     (do
       (log/info "Adding" tag host port)
       (ui/info "Adding" tag)

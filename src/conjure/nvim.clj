@@ -233,9 +233,18 @@
       (-> (api/call (api/get-var (keyword (str "conjure-" (name k)))))
           (as-> result
             (cond-> result
-              (string? result) (keyword)))))))
+              (string? result) (keyword)
+              (vector? result) (->> (map keyword) (set))))))))
 
 (defn cwd
   "Get the current working directory of the editor."
   []
-  (api/call (api/command-output "pwd")))
+  (api/call (api/call-function "getcwd" 0)))
+
+(defn current-line
+  "Get the current line number of the cursor.
+  Useful in a few places where you don't want a full cursor."
+  []
+  (-> (api/call (api/get-current-win))
+      (as-> win
+        (first (api/call (api/win-get-cursor win))))))
