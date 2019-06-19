@@ -53,30 +53,40 @@ command! -nargs=0 ConjureToggleLog call conjure#notify("toggle_log")
 command! -nargs=* ConjureRunTests call conjure#notify("run_tests", <q-args>)
 command! -nargs=? ConjureRunAllTests call conjure#notify("run_all_tests", <q-args>)
 
+function conjure#mapKey(plugMapping, keyMapping, action)
+    if !hasmapto(a:plugMapping)
+        exec 'autocmd FileType clojure nnoremap <silent> <buffer>' a:keyMapping a:action
+    endif
+    exec 'autocmd FileType clojure nnoremap <silent> <buffer>' a:plugMapping a:action
+endfunction
+
 augroup conjure
   autocmd!
   autocmd BufEnter *.clj,*.clj[cs] call conjure#init()
   autocmd VimLeavePre * call conjure#stop()
 
   if g:conjure_default_mappings
-    autocmd FileType clojure nnoremap <silent> <buffer> <localleader>ew :ConjureEval <c-r><c-w><cr>
-    autocmd FileType clojure nnoremap <silent> <buffer> <localleader>ee :ConjureEvalCurrentForm<cr>
-    autocmd FileType clojure nnoremap <silent> <buffer> <localleader>er :ConjureEvalRootForm<cr>
-    autocmd FileType clojure vnoremap <silent> <buffer> <localleader>ee :ConjureEvalSelection<cr>
-    autocmd FileType clojure nnoremap <silent> <buffer> <localleader>eb :ConjureEvalBuffer<cr>
-    autocmd FileType clojure nnoremap <silent> <buffer> <localleader>ef :ConjureLoadFile <c-r>=expand('%:p')<cr><cr>
+    :call conjure#mapKey("<Plug>(ConjureEval)", "<localleader>ew", ":ConjureEval <c-r><c-w><cr>")
+    :call conjure#mapKey("<Plug>(ConjureEvalCurrentForm)", "<localleader>ee", ":ConjureEvalCurrentForm<cr>")
+    :call conjure#mapKey("<Plug>(ConjureEvalRootForm)", "<localleader>er", ":ConjureEvalRootForm<cr>")
 
-    autocmd FileType clojure nnoremap <silent> <buffer> <localleader>cu :ConjureUp<cr>
-    autocmd FileType clojure nnoremap <silent> <buffer> <localleader>cs :ConjureStatus<cr>
-    autocmd FileType clojure nnoremap <silent> <buffer> <localleader>cl :ConjureOpenLog<cr>
-    autocmd FileType clojure nnoremap <silent> <buffer> <localleader>cq :ConjureCloseLog<cr>
-    autocmd FileType clojure nnoremap <silent> <buffer> <localleader>cL :ConjureToggleLog<cr>
+    if !hasmapto("<Plug>(ConjureEvalSelection)")
+        autocmd FileType clojure vnoremap <silent> <buffer> <localleader>ee :ConjureEvalSelection<cr>
+    endif
+    autocmd FileType clojure vnoremap <silent> <buffer> <Plug>(ConjureEvalSelection) :ConjureEvalSelection<cr>
 
-    autocmd FileType clojure nnoremap <silent> <buffer> <localleader>tt :ConjureRunTests<cr>
-    autocmd FileType clojure nnoremap <silent> <buffer> <localleader>ta :ConjureRunAllTests<cr>
+    :call conjure#mapKey("<Plug>(ConjureEvalBuffer)", "<localleader>eb", ":ConjureEvalBuffer<cr>")
+    :call conjure#mapKey("<Plug>(ConjureLoadFile)", "<localleader>ef", ":ConjureLoadFile <c-r>=expand('%:p')<cr><cr>")
+    :call conjure#mapKey("<Plug>(ConjureUp)", "<localleader>cu", ":ConjureUp<cr>")
+    :call conjure#mapKey("<Plug>(ConjureStatus)", "<localleader>cs", ":ConjureStatus<cr>")
+    :call conjure#mapKey("<Plug>(ConjureOpenLog)", "<localleader>cl", ":ConjureOpenLog<cr>")
+    :call conjure#mapKey("<Plug>(ConjureCloseLog)", "<localleader>cq", ":ConjureCloseLog<cr>")
+    :call conjure#mapKey("<Plug>(ConjureToggleLog)", "<localleader>cL", ":ConjureToggleLog<cr>")
+    :call conjure#mapKey("<Plug>(ConjureRunTests)", "<localleader>tt", ":ConjureRunTests<cr>")
+    :call conjure#mapKey("<Plug>(ConjureRunAllTests)", "<localleader>ta", ":ConjureRunAllTests<cr>")
+    :call conjure#mapKey("<Plug>(ConjureDoc)", "K", ":ConjureDoc <c-r><c-w><cr>")
+    :call conjure#mapKey("<Plug>(ConjureDefinition)", "gd", ":ConjureDefinition <c-r><c-w><cr>")
 
-    autocmd FileType clojure nnoremap <silent> <buffer> K :ConjureDoc <c-r><c-w><cr>
-    autocmd FileType clojure nnoremap <silent> <buffer> gd :ConjureDefinition <c-r><c-w><cr>
   endif
 
   if g:conjure_log_auto_close

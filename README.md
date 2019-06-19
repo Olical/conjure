@@ -111,6 +111,14 @@ If you open Conjure without any connections configured it'll self prepl into it'
  * `K` - `ConjureDoc`
  * `gd` - `ConjureDefinition`
 
+### Remapping
+
+It's possible to remap the keys, for example, to remap the `ConjureToggleLog`, add the following to your `.vimrc`:
+```
+ nmap <silent> <buffer> <Leader>cl <Plug>(ConjureToggleLog)
+ nmap <silent> <buffer> <Leader>co <Plug>(ConjureOpenLog) "remap the ConjureOpenLog to something else
+ ```
+
 ### Options
 
 You may set these globals with `let` before Conjure loads to configure it's behaviour slightly. Their default values are displayed after the `=`, with a `1` indicating true and `0` indicating false.
