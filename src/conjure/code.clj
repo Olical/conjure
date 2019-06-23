@@ -15,7 +15,7 @@
 
 (defn parse-code [code]
   (try
-    (parse-code* code) 
+    (parse-code* code)
     (catch Throwable t
       (log/error "Failed to parse code" t)
       [:err (Throwable->map t)])))
@@ -42,20 +42,26 @@
 
 (defn prelude-str [{:keys [lang]}]
   (case lang
-    :clj (str "
-              (require 'clojure.repl
-                       'clojure.string
-                       'clojure.java.io
-                       'clojure.test)
-              "
-              (->> @injected-deps!
-                   (map slurp)
-                   (str/join "\n"))
-              "
-              :conjure/ready
-              ")
+    :clj (let [deps (str/join "\n" (map slurp @injected-deps!))]
+           (str "
+                (ns conjure.prelude
+                  (:require [clojure.repl]
+                            [clojure.string]
+                            [clojure.java.io]
+                            [clojure.test]))
+
+                (when (or (nil? (resolve 'deps-hash))
+                          (not= deps-hash " (hash deps) "))
+                  (eval '(do " deps "))
+                  (def deps-hash " (hash deps) "))
+
+                :conjure/ready
+                "))
     :cljs "
-          (require 'cljs.repl 'cljs.test)
+          (ns conjure.prelude
+            (:require [cljs.repl]
+                      [cljs.test]))
+
           :conjure/ready
           "))
 
