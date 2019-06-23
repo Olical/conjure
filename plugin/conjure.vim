@@ -228,7 +228,7 @@ endfunction
 function! conjure#init()
   if g:conjure_initialised == 0
     if s:dev ||
-          \(isdirectory(s:cwd . "/classes/conjure/main$_main.class") &&
+          \(filereadable(s:cwd . "/classes/conjure/main$_main.class") &&
           \ filereadable(s:cwd . "/target/mranderson/load-order.edn"))
       let g:conjure_initialised = 1
       call conjure#start()
