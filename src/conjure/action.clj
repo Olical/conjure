@@ -57,7 +57,9 @@
                    :code code
                    :line line}]
          (ui/eval* opts)
-         (ui/result {:conn conn, :resp (wrapped-eval ctx opts)}))))))
+         (ui/result {:conn conn
+                     :resp (wrapped-eval ctx opts)
+                     :ctx ctx}))))))
 
 (defn doc [name]
   (when (symbol? (code/parse-code-silent name))
@@ -91,7 +93,7 @@
                             (get :val)
                             (result/ok))))
                     (:conns ctx))
-              (ui/quick-doc)))))
+              (ui/quick-doc ctx)))))
 
 (defn eval-current-form []
   (let [{:keys [form origin]} (nvim/read-form)]
@@ -117,7 +119,9 @@
     (doseq [conn (:conns ctx)]
       (let [opts {:conn conn, :code code, :path path}]
         (ui/load-file* opts)
-        (ui/result {:conn conn, :resp (raw-eval ctx opts)})))))
+        (ui/result {:conn conn
+                    :resp (raw-eval ctx opts)
+                    :ctx ctx})))))
 
 (defn completions [prefix]
   (let [ctx (current-ctx {:passive? true})

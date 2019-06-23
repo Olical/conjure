@@ -216,9 +216,8 @@
 (defonce virtual-text-ns!
   (delay (api/call (api/create-namespace :conjure-virtual-text))))
 
-(defn display-virtual [chunks]
-  (let [{:keys [win buf]} (current-ctx)
-        [row _] (api/call (api/win-get-cursor win))]
+(defn display-virtual [{:keys [buf win]} chunks]
+  (let [[row _] (api/call (api/win-get-cursor win))]
     (api/call-batch
       [(api/buf-clear-namespace buf {:ns-id @virtual-text-ns!})
        (api/buf-set-virtual-text buf {:ns-id @virtual-text-ns!
