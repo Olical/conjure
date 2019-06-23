@@ -4,3 +4,4 @@
 /logs/
 /target/
 __pycache__/
+/out/
