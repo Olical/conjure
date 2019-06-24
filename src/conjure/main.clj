@@ -13,6 +13,10 @@
             [conjure.action :as action]
             [conjure.nvim :as nvim]))
 
+;; TODO Find a way to default ctx for ui/result
+;; TODO Check if I can reuse ctx some more now, like for read-range win / cursor.
+;; TODO Actually do the bindings in rpc
+
 (defn- clean-up-and-exit []
   (log/info "Shutting down")
   (shutdown-agents)

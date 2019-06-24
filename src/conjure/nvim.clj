@@ -4,6 +4,10 @@
             [conjure.util :as util]
             [conjure.result :as result]))
 
+(def ^:dynamic ctx
+  "Dynamic var to be bound to some context map."
+  nil)
+
 (defn current-ctx
   "Context contains useful data that we don't watch to fetch twice while
   building code to eval. This function performs those costly calls."
@@ -156,7 +160,7 @@
 
 (defn edit-at
   "Edit the given file at the specific row and column."
-  [ctx [file row col]]
+  [[file row col]]
   (api/call-batch
     [(api/command-output (str "edit " file))
      (api/win-set-cursor (:win ctx) {:row row, :col col})]))
@@ -216,8 +220,9 @@
 (defonce virtual-text-ns!
   (delay (api/call (api/create-namespace :conjure-virtual-text))))
 
-(defn display-virtual [{:keys [buf win]} chunks]
-  (let [[row _] (api/call (api/win-get-cursor win))]
+(defn display-virtual [chunks]
+  (let [{:keys [buf win]} ctx
+        [row _] (api/call (api/win-get-cursor win))]
     (api/call-batch
       [(api/buf-clear-namespace buf {:ns-id @virtual-text-ns!})
        (api/buf-set-virtual-text buf {:ns-id @virtual-text-ns!
