@@ -1,7 +1,7 @@
 #!/usr/bin/env sh
 
 printf "=== Conjure ===\n"
-git describe --long --dirty --abbrev=10 --tags
+./bin/conjure-version
 
 printf "\n=== OS ===\n"
 uname -a
