@@ -4,7 +4,8 @@
             [clojure.edn :as edn]
             [clojure.tools.reader :as tr]
             [taoensso.timbre :as log]
-            [conjure.util :as util]))
+            [conjure.util :as util]
+            [conjure.meta :as meta]))
 
 (defn- parse-code* [code]
   (if (string? code)
@@ -44,7 +45,7 @@
   (case lang
     :clj (let [deps (str/join "\n" (map slurp @injected-deps!))]
            (str "
-                (ns conjure.prelude
+                (ns conjure.prelude." meta/ns-version "
                   (:require [clojure.repl]
                             [clojure.string]
                             [clojure.java.io]
@@ -59,7 +60,7 @@
                 :conjure/ready
                 "))
     :cljs "
-          (ns conjure.prelude
+          (ns conjure.prelude." meta/ns-version "
             (:require [cljs.repl]
                       [cljs.test]))
 

@@ -2,7 +2,6 @@
   "Anything useful and generic that's shared by multiple namespaces."
   (:require [clojure.main :as clj]
             [clojure.string :as str]
-            [clojure.core.async :as a]
             [clojure.core.memoize :as memo]
             [taoensso.timbre :as log]
             [zprint.core :as zp]
