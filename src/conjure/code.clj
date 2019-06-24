@@ -50,8 +50,7 @@
                             [clojure.java.io]
                             [clojure.test]))
 
-                (when (or (nil? (resolve 'deps-hash))
-                          (not= deps-hash " (hash deps) "))
+                (when (not= (resolve 'deps-hash) " (hash deps) ")
                   (eval '(do " deps "))
                   (def deps-hash " (hash deps) "))
 
