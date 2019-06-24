@@ -50,7 +50,11 @@
                             [clojure.java.io]
                             [clojure.test]))
 
-                " deps "
+                (defonce deps-hash! (atom nil))
+
+                (when (not= @deps-hash! " (hash deps) ")
+                  (load-string \"" (util/escape-quotes deps) "\")
+                  (reset! deps-hash! " (hash deps) "))
 
                 :conjure/ready
                 "))
