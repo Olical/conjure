@@ -5,7 +5,8 @@
             [clojure.tools.reader :as tr]
             [taoensso.timbre :as log]
             [conjure.util :as util]
-            [conjure.meta :as meta]))
+            [conjure.meta :as meta]
+            [conjure.nvim :as nvim]))
 
 (defn- parse-code* [code]
   (if (string? code)
@@ -111,13 +112,13 @@
 (defn load-file-str [path]
   (str "(load-file \"" path "\")"))
 
-(defn completions-str [{:keys [ns]} {:keys [conn prefix context]}]
+(defn completions-str [{:keys [conn prefix context]}]
   (case (:lang conn)
     :clj
     (str "
          (conjure.compliment.v0v3v8.compliment.core/completions
            \"" (util/escape-quotes prefix) "\"
-           {:ns (find-ns '" (or ns "user") ")
+           {:ns (find-ns '" (or (:ns nvim/ctx) "user") ")
             " (when context
                 (str ":context \"" (util/escape-quotes context) "\""))
            "})

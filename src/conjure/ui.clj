@@ -81,10 +81,9 @@
 
 (defn quick-doc
   "Display inline documentation."
-  [s ctx]
+  [s]
   (when (string? s)
     (nvim/display-virtual
-      ctx
       [[(str "🛈 "
              (-> (str/split s #"\n" 2)
                  (last)
@@ -111,7 +110,7 @@
 (defn result
   "Format, if it's code, and display a result from an evaluation.
   Will also fold the output if it's an error."
-  [{:keys [conn resp ctx]}]
+  [{:keys [conn resp]}]
   (let [code? (contains? #{:ret :tap} (:tag resp))
         msg (cond-> (:val resp)
               (= (:tag resp) :ret) (result/value)
@@ -119,7 +118,6 @@
 
     (when code?
       (nvim/display-virtual
-        (or ctx (nvim/current-ctx))
         [[(str "=> " (util/sample msg 128)) "comment"]]))
 
     (append {:origin (:tag conn)
