@@ -13,9 +13,7 @@
             [conjure.action :as action]
             [conjure.nvim :as nvim]))
 
-;; TODO Find a way to default ctx for ui/result
 ;; TODO Check if I can reuse ctx some more now, like for read-range win / cursor.
-;; TODO Actually do the bindings in rpc
 
 (defn- clean-up-and-exit []
   (log/info "Shutting down")
@@ -46,39 +44,50 @@
   (log/info "Everything's ready! Let's perform some magic.")
   @exit-handle!)
 
+(defmacro ^:private defrpc
+  "Register an RPC :notify or :request handler under the method keyword
+  with parameter bindings and body. Sets nvim/ctx to (nvim/current-ctx)."
+  [kind method params & body]
+  `(defmethod
+     ~(case kind
+        :notify 'rpc/handle-notify
+        :request 'rpc/handle-request)
+     ~method
+     [{~params :params}]
+     (binding [nvim/ctx (nvim/current-ctx)]
+       ~@body)))
+
 ;; Here we map RPC notifications and requests to their Clojure functions.
-(defmethod rpc/handle-notify :up [{:keys [params]}]
-  (-> (config/fetch {:flags (first params)
-                     :cwd (nvim/cwd)})
+(defrpc :notify :up [flags]
+  (-> (config/fetch {:flags flags, :cwd (nvim/cwd)})
       (get :conns)
       (prepl/sync!)))
 
-(defmethod rpc/handle-notify :status [_]
+(defrpc :notify :status []
   (prepl/status))
 
-(defmethod rpc/handle-notify :eval [{:keys [params]}]
-  (action/eval* {:code (first params)
-                 :line (nvim/current-line)}))
+(defrpc :notify :eval [code]
+  (action/eval* {:code code, :line (nvim/current-line)}))
 
-(defmethod rpc/handle-notify :eval-current-form [_]
+(defrpc :notify :eval-current-form []
   (action/eval-current-form))
 
-(defmethod rpc/handle-notify :eval-root-form [_]
+(defrpc :notify :eval-root-form []
   (action/eval-root-form))
 
-(defmethod rpc/handle-notify :eval-selection [_]
+(defrpc :notify :eval-selection []
   (action/eval-selection))
 
-(defmethod rpc/handle-notify :eval-buffer [_]
+(defrpc :notify :eval-buffer []
   (action/eval-buffer))
 
-(defmethod rpc/handle-notify :load-file [{:keys [params]}]
-  (action/load-file* (first params)))
+(defrpc :notify :load-file [file-path]
+  (action/load-file* file-path))
 
-(defmethod rpc/handle-notify :doc [{:keys [params]}]
-  (action/doc (first params)))
+(defrpc :notify :doc [symbol-name]
+  (action/doc symbol-name))
 
-(defmethod rpc/handle-notify :quick-doc [_]
+(defrpc :notify :quick-doc []
   (action/quick-doc))
 
 (def ^:private log-opts
@@ -86,33 +95,33 @@
    :resize? true
    :size :large})
 
-(defmethod rpc/handle-notify :open-log [_]
+(defrpc :notify :open-log []
   (ui/upsert-log log-opts))
 
-(defmethod rpc/handle-notify :close-log [_]
+(defrpc :notify :close-log []
   (ui/close-log))
 
-(defmethod rpc/handle-notify :toggle-log [_]
+(defrpc :notify :toggle-log []
   (if (ui/log-open?)
     (ui/close-log)
     (ui/upsert-log log-opts)))
 
-(defmethod rpc/handle-request :completions [{:keys [params]}]
-  (action/completions (first params)))
+(defrpc :request :completions [base]
+  (action/completions base))
 
-(defmethod rpc/handle-request :get-rpc-port [_]
+(defrpc :request :get-rpc-port []
   rpc/port)
 
-(defmethod rpc/handle-notify :definition [{:keys [params]}]
-  (action/definition (first params)))
+(defrpc :notify :definition [symbol-name]
+  (action/definition symbol-name))
 
-(defmethod rpc/handle-notify :run-tests [{:keys [params]}]
-  (action/run-tests (->> (str/split (first params) #"\s+")
+(defrpc :notify :run-tests [target-namespaces]
+  (action/run-tests (->> (str/split target-namespaces #"\s+")
                          (remove str/blank?))))
 
-(defmethod rpc/handle-notify :run-all-tests [{:keys [params]}]
-  (action/run-all-tests (when-not (str/blank? (first params))
-                          (first params))))
+(defrpc :notify :run-all-tests [target-namespaces]
+  (action/run-all-tests (when-not (str/blank? target-namespaces)
+                          target-namespaces)))
 
-(defmethod rpc/handle-notify :stop [_]
+(defrpc :notify :stop []
   (deliver exit-handle! true))

@@ -163,7 +163,7 @@
   [[file row col]]
   (api/call-batch
     [(api/command-output (str "edit " file))
-     (api/win-set-cursor (:win ctx) {:row row, :col col})]))
+     (api/win-set-cursor (:win (or ctx (current-ctx))) {:row row, :col col})]))
 
 (defn read-selection
   "Read the current selection into a string."
@@ -221,7 +221,7 @@
   (delay (api/call (api/create-namespace :conjure-virtual-text))))
 
 (defn display-virtual [chunks]
-  (let [{:keys [buf win]} ctx
+  (let [{:keys [buf win]} (or ctx (current-ctx))
         [row _] (api/call (api/win-get-cursor win))]
     (api/call-batch
       [(api/buf-clear-namespace buf {:ns-id @virtual-text-ns!})
