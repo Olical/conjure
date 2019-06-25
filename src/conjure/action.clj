@@ -133,7 +133,8 @@
                         "in" (:path nvim/ctx))
              (let [code (code/completions-str {:conn conn
                                                :prefix prefix
-                                               :context context})]
+                                               :context context
+                                               :ns (:ns nvim/ctx)})]
                (-> (wrapped-eval {:conn conn, :code code})
                    (get :val)
                    (result/value)
