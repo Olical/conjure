@@ -13,8 +13,6 @@
             [conjure.action :as action]
             [conjure.nvim :as nvim]))
 
-;; TODO Check if I can reuse ctx some more now, like for read-range win / cursor.
-
 (defn- clean-up-and-exit []
   (log/info "Shutting down")
   (shutdown-agents)
