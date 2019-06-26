@@ -3,9 +3,10 @@
   (:require [clojure.string :as str]
             [conjure.nvim :as nvim]
             [conjure.util :as util]
-            [conjure.result :as result]))
+            [conjure.result :as result]
+            [conjure.meta :as meta]))
 
-(def ^:private welcome-msg "; conjure/out | Welcome to Conjure!")
+(def ^:private welcome-msg (str "; conjure/out | Welcome to Conjure! (" meta/version ")"))
 (def ^:private max-log-buffer-length 2000)
 (defonce ^:private log-buffer-name "/tmp/conjure.cljc")
 
@@ -116,7 +117,8 @@
               code? (util/pprint))]
 
     (when code?
-      (nvim/display-virtual [[(str "=> " (util/sample msg 128)) "comment"]]))
+      (nvim/display-virtual
+        [[(str "=> " (util/sample msg 128)) "comment"]]))
 
     (append {:origin (:tag conn)
              :kind (:tag resp)

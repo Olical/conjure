@@ -4,7 +4,8 @@
             [clojure.edn :as edn]
             [clojure.tools.reader :as tr]
             [taoensso.timbre :as log]
-            [conjure.util :as util]))
+            [conjure.util :as util]
+            [conjure.meta :as meta]))
 
 (defn- parse-code* [code]
   (if (string? code)
@@ -15,7 +16,7 @@
 
 (defn parse-code [code]
   (try
-    (parse-code* code) 
+    (parse-code* code)
     (catch Throwable t
       (log/error "Failed to parse code" t)
       [:err (Throwable->map t)])))
@@ -42,20 +43,27 @@
 
 (defn prelude-str [{:keys [lang]}]
   (case lang
-    :clj (str "
-              (require 'clojure.repl
-                       'clojure.string
-                       'clojure.java.io
-                       'clojure.test)
-              "
-              (->> @injected-deps!
-                   (map slurp)
-                   (str/join "\n"))
-              "
-              :conjure/ready
-              ")
+    :clj (let [deps (str/join "\n" (map slurp @injected-deps!))]
+           (str "
+                (ns conjure.prelude." meta/ns-version "
+                  (:require [clojure.repl]
+                            [clojure.string]
+                            [clojure.java.io]
+                            [clojure.test]))
+
+                (defonce deps-hash! (atom nil))
+
+                (when (not= @deps-hash! " (hash deps) ")
+                  (load-string \"" (util/escape-quotes deps) "\")
+                  (reset! deps-hash! " (hash deps) "))
+
+                :conjure/ready
+                "))
     :cljs "
-          (require 'cljs.repl 'cljs.test)
+          (ns conjure.prelude." meta/ns-version "
+            (:require [cljs.repl]
+                      [cljs.test]))
+
           :conjure/ready
           "))
 
@@ -103,7 +111,7 @@
 (defn load-file-str [path]
   (str "(load-file \"" path "\")"))
 
-(defn completions-str [{:keys [ns]} {:keys [conn prefix context]}]
+(defn completions-str [{:keys [ns conn prefix context]}]
   (case (:lang conn)
     :clj
     (str "

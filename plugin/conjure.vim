@@ -26,6 +26,7 @@ let g:conjure_quick_doc_time = get(g:, 'conjure_quick_doc_time', 250) " ms
 let g:conjure_omnifunc = get(g:, 'conjure_omnifunc', 1) " 1/0
 
 let s:jobid = -1
+let s:dev = $CONJURE_ALLOWED_DIR != ""
 
 if $CONJURE_JOB_OPTS != ""
   let s:job_opts = $CONJURE_JOB_OPTS
@@ -226,8 +227,14 @@ endfunction
 " Initialise if not done already.
 function! conjure#init()
   if g:conjure_initialised == 0
-    let g:conjure_initialised = 1
-    call conjure#start()
-    ConjureUp
+    if s:dev ||
+          \(filereadable(s:cwd . "/classes/conjure/main$_main.class") &&
+          \ filereadable(s:cwd . "/target/mranderson/load-order.edn"))
+      let g:conjure_initialised = 1
+      call conjure#start()
+      ConjureUp
+    else
+      echomsg "Conjure not compiled, please run bin/compile then conjure#init() or restart"
+    endif
   endif
 endfunction

@@ -1,4 +1,4 @@
-# Conjure [![CircleCI](https://circleci.com/gh/Olical/conjure.svg?style=svg)](https://circleci.com/gh/Olical/conjure) [![codecov](https://codecov.io/gh/Olical/conjure/branch/master/graph/badge.svg)](https://codecov.io/gh/Olical/conjure)
+# Conjure [![CircleCI](https://circleci.com/gh/Olical/conjure.svg?style=svg)](https://circleci.com/gh/Olical/conjure) [![codecov](https://codecov.io/gh/Olical/conjure/branch/master/graph/badge.svg)](https://codecov.io/gh/Olical/conjure) [![Slack](https://img.shields.io/badge/chat-%23conjure-green.svg?style=flat)](http://clojurians.net)
 
 [Clojure][] (and [ClojureScript][]) tooling for [Neovim][] over a socket prepl connection.
 
@@ -31,7 +31,7 @@ You can find out more about socket prepls in my blog post, [Clojure socket prepl
 Here's an example with [vim-plug][], my plugin manager of choice.
 
 ```viml
-Plug 'Olical/conjure', { 'tag': 'v0.19.0', 'do': 'bin/compile'  }
+Plug 'Olical/conjure', { 'tag': 'v0.20.0', 'do': 'bin/compile'  }
 ```
 
 You should rely on a tag so that breaking changes don't end up disrupting your workflow, please don't depend on `master` (and especially not `develop`!). Make sure you watch the repository for releases using the menu in the top right, that way you can upgrade when it's convenient for you.
@@ -183,3 +183,4 @@ Find the full [unlicense][] in the `UNLICENSE` file, but here's a snippet.
 [@jlesquembre]: https://github.com/jlesquembre
 [deoplete]: https://github.com/Shougo/deoplete.nvim
 [async-clj-omni]: https://github.com/clojure-vim/async-clj-omni
+[clojurians]: http://clojurians.net/

@@ -10,24 +10,22 @@
             [conjure.util :as util]
             [conjure.result :as result]))
 
-(defn- current-ctx
-  "An enriched version of the nvim ctx with matching prepl connections."
-  ([] (current-ctx {}))
+(defn- current-conns
+  ([] (current-conns {}))
   ([{:keys [passive?] :or {passive? false}}]
-   (let [ctx (nvim/current-ctx)
-         conns (prepl/conns (:path ctx))]
+   (let [conns (prepl/conns (:path nvim/ctx))]
 
      (when (and (not passive?) (empty? conns))
-       (ui/error "No matching connections for" (:path ctx)))
+       (ui/error "No matching connections for" (:path nvim/ctx)))
 
-     (merge ctx {:conns conns}))))
+     conns)))
 
 (defn- wrapped-eval
   "Wraps up code with environment specific padding, sends it off for evaluation
   and blocks until we get a result."
-  [ctx {:keys [conn] :as opts}]
+  [{:keys [conn] :as opts}]
   (let [{:keys [eval-chan ret-chan]} (:chans conn)]
-    (a/>!! eval-chan (code/eval-str ctx opts))
+    (a/>!! eval-chan (code/eval-str nvim/ctx opts))
 
     ;; ClojureScript requires two evals:
     ;; * Call in-ns.
@@ -41,35 +39,33 @@
 (defn- raw-eval
   "Unlike wrapped-eval, it will send the exact code it is given and then block
   for a response."
-  [ctx {:keys [conn code]}]
+  [{:keys [conn code]}]
   (let [{:keys [eval-chan ret-chan]} (:chans conn)]
     (a/>!! eval-chan code)
     (a/<!! ret-chan)))
 
 ;; The following functions are called by the user through commands.
 
-(defn eval*
-  ([opts] (eval* (current-ctx) opts))
-  ([ctx {:keys [code line]}]
-   (when code
-     (doseq [conn (:conns ctx)]
-       (let [opts {:conn conn
-                   :code code
-                   :line line}]
-         (ui/eval* opts)
-         (ui/result {:conn conn, :resp (wrapped-eval ctx opts)}))))))
+(defn eval* [{:keys [code line]}]
+  (when code
+    (doseq [conn (current-conns)]
+      (let [opts {:conn conn
+                  :code code
+                  :line line}]
+        (ui/eval* opts)
+        (ui/result {:conn conn
+                    :resp (wrapped-eval opts)})))))
 
 (defn doc [name]
   (when (symbol? (code/parse-code-silent name))
-    (let [ctx (current-ctx)]
-      (doseq [conn (:conns ctx)]
-        (let [code (code/doc-str {:conn conn, :name name})
-              result (-> (wrapped-eval ctx {:conn conn, :code code})
-                         (update :val result/value))]
-          (ui/doc {:conn conn
-                   :resp (cond-> result
-                           (empty? (:val result))
-                           (assoc :val (str "No doc for " name)))}))))))
+    (doseq [conn (current-conns)]
+      (let [code (code/doc-str {:conn conn, :name name})
+            result (-> (wrapped-eval {:conn conn, :code code})
+                       (update :val result/value))]
+        (ui/doc {:conn conn
+                 :resp (cond-> result
+                         (empty? (:val result))
+                         (assoc :val (str "No doc for " name)))})))))
 
 (defn quick-doc []
   (when-let [name (some-> (nvim/read-form {:data-pairs? false})
@@ -79,18 +75,17 @@
                             (when (seq? x) (first x))
                             (when (symbol? x) x))
                           (str))]
-    (let [ctx (current-ctx {:passive? true})
-          resolve-var (code/resolve-var-str name)]
+    (let [resolve-var (code/resolve-var-str name)]
       (some-> (some (fn [conn]
-                      (when (-> (wrapped-eval ctx {:conn conn, :code resolve-var})
+                      (when (-> (wrapped-eval {:conn conn, :code resolve-var})
                                 (get :val)
                                 (result/ok))
-                        (-> (wrapped-eval ctx {:conn conn
-                                               :code (code/doc-str {:conn conn
-                                                                    :name name})})
+                        (-> (wrapped-eval {:conn conn
+                                           :code (code/doc-str {:conn conn
+                                                                :name name})})
                             (get :val)
                             (result/ok))))
-                    (:conns ctx))
+                    (current-conns {:passive? true}))
               (ui/quick-doc)))))
 
 (defn eval-current-form []
@@ -112,20 +107,18 @@
   (eval* {:code (nvim/read-buffer)}))
 
 (defn load-file* [path]
-  (let [ctx (current-ctx)
-        code (code/load-file-str path)]
-    (doseq [conn (:conns ctx)]
+  (let [code (code/load-file-str path)]
+    (doseq [conn (current-conns)]
       (let [opts {:conn conn, :code code, :path path}]
         (ui/load-file* opts)
-        (ui/result {:conn conn, :resp (raw-eval ctx opts)})))))
+        (ui/result {:conn conn
+                    :resp (raw-eval opts)})))))
 
 (defn completions [prefix]
-  (let [ctx (current-ctx {:passive? true})
-
-        ;; Context for Compliment to complete local bindings.
+  (let [;; Context for Compliment to complete local bindings.
         ;; We read the surrounding top level form from the current buffer
         ;; and add the __prefix__ symbol.
-        context (when-let [{:keys [form cursor]} (nvim/read-form {:root? true, :win (:win ctx)})]
+        context (when-let [{:keys [form cursor]} (nvim/read-form {:root? true, :win (:win nvim/ctx)})]
                   (-> (str/split-lines form)
                       (update (dec (first cursor))
                               #(util/splice %
@@ -133,15 +126,16 @@
                                             (second cursor)
                                             "__prefix__"))
                       (util/join-lines)))]
-    (->> (:conns ctx)
+    (->> (current-conns {:passive? true})
          (mapcat
            (fn [conn]
              (log/trace "Finding completions for" (str "\"" prefix "\"")
-                        "in" (:path ctx))
-             (let [code (code/completions-str ctx {:conn conn
-                                                   :prefix prefix
-                                                   :context context})]
-               (-> (wrapped-eval ctx {:conn conn, :code code})
+                        "in" (:path nvim/ctx))
+             (let [code (code/completions-str {:conn conn
+                                               :prefix prefix
+                                               :context context
+                                               :ns (:ns nvim/ctx)})]
+               (-> (wrapped-eval {:conn conn, :code code})
                    (get :val)
                    (result/value)
                    (->> (map
@@ -154,28 +148,25 @@
          (dedupe))))
 
 (defn definition [name]
-  (let [ctx (current-ctx)
-        lookup (fn [conn]
-                 (-> (wrapped-eval ctx
-                                   {:conn conn
+  (let [lookup (fn [conn]
+                 (-> (wrapped-eval {:conn conn
                                     :code (code/definition-str {:conn conn
                                                                 :name name})})
                      (get :val)
                      (result/value)))
-        coord (some lookup (:conns ctx))]
+        coord (some lookup (current-conns))]
     (if (vector? coord)
-      (nvim/edit-at ctx coord)
+      (nvim/edit-at coord)
       (do
         (log/warn "Non-vector definition result:" coord)
         (nvim/definition)))))
 
 (defn run-tests [targets]
-  (let [ctx (current-ctx)
-        ns (:ns ctx)
+  (let [{:keys [ns]} nvim/ctx
         other-ns (if (str/ends-with? ns "-test")
                    (str/replace ns #"-test$" "")
                    (str ns "-test"))]
-    (doseq [conn (:conns ctx)]
+    (doseq [conn (current-conns)]
       (let [code (code/run-tests-str
                    {:conn conn
                     :targets (if (empty? targets)
@@ -183,13 +174,12 @@
                                  (= (:lang conn) :clj) (conj other-ns))
                                targets)})]
         (ui/test* {:conn conn
-                   :resp (-> (wrapped-eval ctx {:conn conn, :code code})
+                   :resp (-> (wrapped-eval {:conn conn, :code code})
                              (update :val result/value))})))))
 
 (defn run-all-tests [re]
-  (let [ctx (current-ctx)]
-    (doseq [conn (:conns ctx)]
-      (let [code (code/run-all-tests-str {:re re, :conn conn})]
-        (ui/test* {:conn conn
-                   :resp (-> (wrapped-eval ctx {:conn conn, :code code})
-                             (update :val result/value))})))))
+  (doseq [conn (current-conns)]
+    (let [code (code/run-all-tests-str {:re re, :conn conn})]
+      (ui/test* {:conn conn
+                 :resp (-> (wrapped-eval {:conn conn, :code code})
+                           (update :val result/value))}))))
