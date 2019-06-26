@@ -4,6 +4,8 @@
 
 You can find out more about socket prepls in my blog post, [Clojure socket prepl cookbook][prepl-post], which has also been [translated into Russian][ru-prepl-post].
 
+Interested? Come and chat in `#conjure` on the [Clojurians][] Slack.
+
 > This software is still in early development, expect some breaking changes before [v1.0.0](https://github.com/Olical/conjure/milestone/1) is released. Keep up with changes by watching the repository for releases and depending on specific tags instead of master.
 
 ### Features
@@ -183,3 +185,4 @@ Find the full [unlicense][] in the `UNLICENSE` file, but here's a snippet.
 [@jlesquembre]: https://github.com/jlesquembre
 [deoplete]: https://github.com/Shougo/deoplete.nvim
 [async-clj-omni]: https://github.com/clojure-vim/async-clj-omni
+[clojurians]: http://clojurians.net/
