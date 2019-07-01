@@ -7,8 +7,7 @@
             [conjure.ui :as ui]
             [conjure.nvim :as nvim]
             [conjure.code :as code]
-            [conjure.util :as util]
-            [conjure.result :as result]))
+            [conjure.util :as util]))
 
 (defn- current-conns
   ([] (current-conns {}))
@@ -57,36 +56,31 @@
                     :resp (wrapped-eval opts)})))))
 
 (defn doc [name]
-  (when (symbol? (code/parse-code-silent name))
+  (when (symbol? (code/parse-code name))
     (doseq [conn (current-conns)]
       (let [code (code/doc-str {:conn conn, :name name})
-            result (-> (wrapped-eval {:conn conn, :code code})
-                       (update :val result/value))]
+            result (update (wrapped-eval {:conn conn, :code code}) :val code/parse-code)]
         (ui/doc {:conn conn
                  :resp (cond-> result
-                         (empty? (:val result))
+                         (str/blank? (:val result))
                          (assoc :val (str "No doc for " name)))})))))
 
 (defn quick-doc []
   (when-let [name (some-> (nvim/read-form {:data-pairs? false})
                           (get :form)
-                          (code/parse-code-silent)
+                          (code/parse-code)
                           (as-> x
                             (when (seq? x) (first x))
                             (when (symbol? x) x))
                           (str))]
-    (let [resolve-var (code/resolve-var-str name)]
-      (some-> (some (fn [conn]
-                      (when (-> (wrapped-eval {:conn conn, :code resolve-var})
-                                (get :val)
-                                (result/ok))
-                        (-> (wrapped-eval {:conn conn
-                                           :code (code/doc-str {:conn conn
-                                                                :name name})})
-                            (get :val)
-                            (result/ok))))
-                    (current-conns {:passive? true}))
-              (ui/quick-doc)))))
+    (some-> (some (fn [conn]
+                    (let [result (wrapped-eval {:conn conn
+                                                :code (code/doc-str {:conn conn
+                                                                     :name name})})]
+                      (when-not (:exception result)
+                        (:val result))))
+                  (current-conns {:passive? true}))
+            (ui/quick-doc))))
 
 (defn eval-current-form []
   (let [{:keys [form origin]} (nvim/read-form)]
@@ -134,26 +128,26 @@
              (let [code (code/completions-str {:conn conn
                                                :prefix prefix
                                                :context context
-                                               :ns (:ns nvim/ctx)})]
-               (-> (wrapped-eval {:conn conn, :code code})
-                   (get :val)
-                   (result/value)
-                   (->> (map
-                          (fn [{:keys [candidate type ns package]}]
-                            (let [menu (or ns package)]
-                              (util/kw->snake-map
-                                (cond-> {:word candidate
-                                         :kind (subs (name type) 0 1)}
-                                  menu (assoc :menu menu)))))))))))
+                                               :ns (:ns nvim/ctx)})
+                   result (wrapped-eval {:conn conn, :code code})]
+               (when-not (:exception result)
+                 (map
+                   (fn [{:keys [candidate type ns package]}]
+                     (let [menu (or ns package)]
+                       (util/kw->snake-map
+                         (cond-> {:word candidate
+                                  :kind (subs (name type) 0 1)}
+                           menu (assoc :menu menu)))))
+                   (:val result))))))
          (dedupe))))
 
 (defn definition [name]
   (let [lookup (fn [conn]
-                 (-> (wrapped-eval {:conn conn
-                                    :code (code/definition-str {:conn conn
-                                                                :name name})})
-                     (get :val)
-                     (result/value)))
+                 (let [result (wrapped-eval {:conn conn
+                                             :code (code/definition-str {:conn conn
+                                                                         :name name})})]
+                   (when-not (:exception result)
+                     (:val result))))
         coord (some lookup (current-conns))]
     (if (vector? coord)
       (nvim/edit-at coord)
@@ -174,12 +168,10 @@
                                  (= (:lang conn) :clj) (conj other-ns))
                                targets)})]
         (ui/test* {:conn conn
-                   :resp (-> (wrapped-eval {:conn conn, :code code})
-                             (update :val result/value))})))))
+                   :resp (wrapped-eval {:conn conn, :code code})})))))
 
 (defn run-all-tests [re]
   (doseq [conn (current-conns)]
     (let [code (code/run-all-tests-str {:re re, :conn conn})]
       (ui/test* {:conn conn
-                 :resp (-> (wrapped-eval {:conn conn, :code code})
-                           (update :val result/value))}))))
+                 :resp (wrapped-eval {:conn conn, :code code})}))))

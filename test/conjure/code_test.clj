@@ -1,14 +1,10 @@
 (ns conjure.code-test
   (:require [clojure.test :as t]
-            [conjure.code :as code]
-            [conjure.result :as result]))
+            [conjure.code :as code]))
 
 (t/deftest parse-code
-  (t/is (= (code/parse-code "{:foo :bar}") {:foo :bar})))
-
-(t/deftest parse-code-silent
-  (t/is (= (code/parse-code-silent "{:foo :bar}") {:foo :bar}))
-  (t/is (= (code/parse-code-silent "(ohno(})") nil)))
+  (t/is (= (code/parse-code "{:foo :bar}") {:foo :bar}))
+  (t/is (= (code/parse-code "(ohno(})") nil)))
 
 (t/deftest parse-ns
   (t/is (= (code/parse-ns "lol nope") [:ok nil]))

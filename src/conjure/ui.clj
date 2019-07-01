@@ -3,7 +3,6 @@
   (:require [clojure.string :as str]
             [conjure.nvim :as nvim]
             [conjure.util :as util]
-            [conjure.result :as result]
             [conjure.meta :as meta]))
 
 (def ^:private welcome-msg (str "; conjure/out | Welcome to Conjure! (" meta/version ")"))
@@ -113,7 +112,6 @@
   [{:keys [conn resp]}]
   (let [code? (contains? #{:ret :tap} (:tag resp))
         msg (cond-> (:val resp)
-              (= (:tag resp) :ret) (result/value)
               code? (util/pprint))]
 
     (when code?
@@ -124,7 +122,7 @@
              :kind (:tag resp)
              :code? code?
              :fold-text (and code?
-                             (or (when (result/error? (:val resp))
+                             (or (when (:exception resp)
                                    "Error folded")
                                  (when (and (= 1 (nvim/flag :fold-multiline-results))
                                             (util/multiline? msg))
