@@ -26,13 +26,11 @@
   (let [{:keys [eval-chan ret-chan]} (:chans conn)]
     (a/>!! eval-chan (code/eval-str nvim/ctx opts))
 
-    ;; ClojureScript requires two evals:
-    ;; * Call in-ns.
+    ;; Conjure requires two evals:
+    ;; * Change namespace.
     ;; * Execute the provided code.
-    ;; We throw away the in-ns result first.
-    (when (= (:lang conn) :cljs)
-      (a/<!! ret-chan))
-
+    ;; We throw away the namespace result first.
+    (a/<!! ret-chan)
     (a/<!! ret-chan)))
 
 (defn- raw-eval
@@ -78,7 +76,7 @@
                                                 :code (code/doc-str {:conn conn
                                                                      :name name})})]
                       (when-not (:exception result)
-                        (:val result))))
+                        (code/parse-code (:val result)))))
                   (current-conns {:passive? true}))
             (ui/quick-doc))))
 
@@ -131,14 +129,14 @@
                                                :ns (:ns nvim/ctx)})
                    result (wrapped-eval {:conn conn, :code code})]
                (when-not (:exception result)
-                 (map
-                   (fn [{:keys [candidate type ns package]}]
-                     (let [menu (or ns package)]
-                       (util/kw->snake-map
-                         (cond-> {:word candidate
-                                  :kind (subs (name type) 0 1)}
-                           menu (assoc :menu menu)))))
-                   (:val result))))))
+                 (->> (code/parse-code (:val result))
+                      (map
+                        (fn [{:keys [candidate type ns package]}]
+                          (let [menu (or ns package)]
+                            (util/kw->snake-map
+                              (cond-> {:word candidate
+                                       :kind (subs (name type) 0 1)}
+                                menu (assoc :menu menu)))))))))))
          (dedupe))))
 
 (defn definition [name]
@@ -147,7 +145,7 @@
                                              :code (code/definition-str {:conn conn
                                                                          :name name})})]
                    (when-not (:exception result)
-                     (:val result))))
+                     (code/parse-code (:val result)))))
         coord (some lookup (current-conns))]
     (if (vector? coord)
       (nvim/edit-at coord)
@@ -166,12 +164,16 @@
                     :targets (if (empty? targets)
                                (cond-> #{ns}
                                  (= (:lang conn) :clj) (conj other-ns))
-                               targets)})]
-        (ui/test* {:conn conn
-                   :resp (wrapped-eval {:conn conn, :code code})})))))
+                               targets)})
+            result (wrapped-eval {:conn conn, :code code})]
+        (when-not (:exception result)
+          (ui/test* {:conn conn
+                     :resp (update result :val code/parse-code)}))))))
 
 (defn run-all-tests [re]
   (doseq [conn (current-conns)]
-    (let [code (code/run-all-tests-str {:re re, :conn conn})]
-      (ui/test* {:conn conn
-                 :resp (wrapped-eval {:conn conn, :code code})}))))
+    (let [code (code/run-all-tests-str {:re re, :conn conn})
+          result (wrapped-eval {:conn conn, :code code})]
+      (when-not (:exception result)
+        (ui/test* {:conn conn
+                   :resp (update result :val code/parse-code)})))))

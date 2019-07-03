@@ -56,12 +56,12 @@
 
 (defn pprint
   "Parse and format the given string."
-  [data]
+  [code]
   (try
-    (zp/zprint-str data {:parse-string-all? true})
+    (zp/zprint-str code {:parse-string-all? true})
     (catch Throwable e
       (log/error "Error while pretty printing" e)
-      data)))
+      code)))
 
 (defn regexp? [o]
   (instance? java.util.regex.Pattern o))

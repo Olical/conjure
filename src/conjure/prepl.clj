@@ -103,9 +103,12 @@
   (remove! tag)
 
   (cond
+    ;; The port was probably supposed to be read from a file with #slurp-edn
+    ;; But it probably didn't exist yet.
     (nil? port)
     (ui/info "Skipping" tag "- nil port")
 
+    ;; The socket prepl server probably isn't running.
     (not (util/socket? {:host host, :port port}))
     (ui/info "Skipping" tag "- can't connect")
 

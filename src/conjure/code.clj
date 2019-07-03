@@ -71,7 +71,10 @@
            ")
 
       :cljs
-      (str "(in-ns '" (or ns "cljs.user") ")\n" code "\n"))))
+      (str "
+           (in-ns '" (or ns "cljs.user") ")
+           " code "
+           "))))
 
 (defn doc-str [{:keys [conn name]}]
   (case (:lang conn)
