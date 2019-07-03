@@ -57,11 +57,16 @@
   (when (symbol? (code/parse-code name))
     (doseq [conn (current-conns)]
       (let [code (code/doc-str {:conn conn, :name name})
-            result (update (wrapped-eval {:conn conn, :code code}) :val code/parse-code)]
-        (ui/doc {:conn conn
-                 :resp (cond-> result
-                         (str/blank? (:val result))
-                         (assoc :val (str "No doc for " name)))})))))
+            result (wrapped-eval {:conn conn, :code code})]
+        (if (:exception result)
+          (do
+            (ui/error "Failed to lookup documentation for" name)
+            (ui/result {:conn conn, :resp result}))
+          (let [result (update result :val code/parse-code)]
+            (ui/doc {:conn conn
+                     :resp (cond-> result
+                             (str/blank? (:val result))
+                             (assoc :val (str "No doc for " name)))})))))))
 
 (defn quick-doc []
   (when-let [name (some-> (nvim/read-form {:data-pairs? false})
@@ -76,7 +81,7 @@
                                                 :code (code/doc-str {:conn conn
                                                                      :name name})})]
                       (when-not (:exception result)
-                        (code/parse-code (:val result)))))
+                        (not-empty (code/parse-code (:val result))))))
                   (current-conns {:passive? true}))
             (ui/quick-doc))))
 
