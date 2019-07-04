@@ -41,6 +41,19 @@
     (a/>!! eval-chan code)
     (a/<!! ret-chan)))
 
+(defn- not-exception
+  "If the result has :exception true then display it with a nice message and
+  return nil, otherwise return the result. Useful for actions that might fail their evals.
+  It works kind of like not-empty."
+  [{:keys [conn resp msg]}]
+  (if (:exception resp)
+    (do
+      (log/error "Exception from" (pr-str (:tag conn)) (str "'" msg "'") (pr-str resp))
+      (when msg
+        (ui/result {:conn conn, :resp resp})
+        (ui/error msg)))
+    resp))
+
 ;; The following functions are called by the user through commands.
 
 (defn eval* [{:keys [code line]}]
@@ -54,34 +67,38 @@
                     :resp (wrapped-eval opts)})))))
 
 (defn doc [name]
-  (when (symbol? (code/parse-code name))
-    (doseq [conn (current-conns)]
-      (let [code (code/doc-str {:conn conn, :name name})
-            result (wrapped-eval {:conn conn, :code code})]
-        (if (:exception result)
-          (do
-            (ui/error "Failed to lookup documentation for" name)
-            (ui/result {:conn conn, :resp result}))
-          (let [result (update result :val code/parse-code)]
-            (ui/doc {:conn conn
-                     :resp (cond-> result
-                             (str/blank? (:val result))
-                             (assoc :val (str "No doc for " name)))})))))))
+  (doseq [conn (current-conns)]
+    (when-let [result (some-> (not-exception
+                                {:conn conn
+                                 :resp (wrapped-eval {:conn conn
+                                                      :code (code/doc-str
+                                                              {:conn conn
+                                                               :name name})})
+                                 :msg (str "Failed to lookup documentation for " name)})
+                              (update :val code/parse-code))]
+      (ui/doc {:conn conn
+               :resp (cond-> result
+                       (str/blank? (:val result))
+                       (assoc :val (str "No doc for " name)))}))))
 
 (defn quick-doc []
   (when-let [name (some-> (nvim/read-form {:data-pairs? false})
                           (get :form)
                           (code/parse-code)
                           (as-> x
-                            (when (seq? x) (first x))
-                            (when (symbol? x) x))
+                            (when (seq? x) (first x)))
                           (str))]
     (some-> (some (fn [conn]
-                    (let [result (wrapped-eval {:conn conn
-                                                :code (code/doc-str {:conn conn
-                                                                     :name name})})]
-                      (when-not (:exception result)
-                        (not-empty (code/parse-code (:val result))))))
+                    (some-> (not-exception
+                              {:conn conn
+                               :resp (wrapped-eval
+                                       {:conn conn
+                                        :code (code/doc-str
+                                                {:conn conn
+                                                 :name name})})})
+                            (get :val)
+                            (code/parse-code)
+                            (not-empty)))
                   (current-conns {:passive? true}))
             (ui/quick-doc))))
 
@@ -128,29 +145,38 @@
            (fn [conn]
              (log/trace "Finding completions for" (str "\"" prefix "\"")
                         "in" (:path nvim/ctx))
-             (let [code (code/completions-str {:conn conn
-                                               :prefix prefix
-                                               :context context
-                                               :ns (:ns nvim/ctx)})
-                   result (wrapped-eval {:conn conn, :code code})]
-               (when-not (:exception result)
-                 (->> (code/parse-code (:val result))
-                      (map
-                        (fn [{:keys [candidate type ns package]}]
-                          (let [menu (or ns package)]
-                            (util/kw->snake-map
-                              (cond-> {:word candidate
-                                       :kind (subs (name type) 0 1)}
-                                menu (assoc :menu menu)))))))))))
+             (some-> (not-exception
+                       {:conn conn
+                        :resp (wrapped-eval
+                                {:conn conn
+                                 :code (code/completions-str
+                                         {:conn conn
+                                          :prefix prefix
+                                          :context context
+                                          :ns (:ns nvim/ctx)})})})
+                     (get :val)
+                     (code/parse-code)
+                     (->> (map
+                            (fn [{:keys [candidate type ns package]}]
+                              (let [menu (or ns package)]
+                                (util/kw->snake-map
+                                  (cond-> {:word candidate
+                                           :kind (subs (name type) 0 1)}
+                                    menu (assoc :menu menu))))))))))
          (dedupe))))
 
 (defn definition [name]
   (let [lookup (fn [conn]
-                 (let [result (wrapped-eval {:conn conn
-                                             :code (code/definition-str {:conn conn
-                                                                         :name name})})]
-                   (when-not (:exception result)
-                     (code/parse-code (:val result)))))
+                 (some-> (not-exception
+                           {:conn conn
+                            :resp (wrapped-eval
+                                    {:conn conn
+                                     :code (code/definition-str
+                                             {:conn conn
+                                              :name name})})
+                            :msg (str "Failed to look up definition for " name)})
+                         (get :val)
+                         (code/parse-code)))
         coord (some lookup (current-conns))]
     (if (vector? coord)
       (nvim/edit-at coord)
@@ -164,21 +190,27 @@
                    (str/replace ns #"-test$" "")
                    (str ns "-test"))]
     (doseq [conn (current-conns)]
-      (let [code (code/run-tests-str
-                   {:conn conn
-                    :targets (if (empty? targets)
-                               (cond-> #{ns}
-                                 (= (:lang conn) :clj) (conj other-ns))
-                               targets)})
-            result (wrapped-eval {:conn conn, :code code})]
-        (when-not (:exception result)
-          (ui/test* {:conn conn
-                     :resp (update result :val code/parse-code)}))))))
+      (when-let [result (not-exception
+                          {:conn conn
+                           :resp (wrapped-eval
+                                   {:conn conn
+                                    :code (code/run-tests-str
+                                            {:conn conn
+                                             :targets (if (empty? targets)
+                                                        (cond-> #{ns}
+                                                          (= (:lang conn) :clj) (conj other-ns))
+                                                        targets)})})
+                           :msg (str "Failed to run tests for " (pr-str targets))})]
+        (ui/test* {:conn conn
+                   :resp (update result :val code/parse-code)})))))
 
 (defn run-all-tests [re]
   (doseq [conn (current-conns)]
-    (let [code (code/run-all-tests-str {:re re, :conn conn})
-          result (wrapped-eval {:conn conn, :code code})]
-      (when-not (:exception result)
-        (ui/test* {:conn conn
-                   :resp (update result :val code/parse-code)})))))
+    (when-let [result (not-exception
+                        {:conn conn
+                         :resp (wrapped-eval
+                                 {:conn conn
+                                  :code (code/run-all-tests-str {:re re, :conn conn})})
+                         :msg (str "Failed to run tests for " (pr-str re))})]
+      (ui/test* {:conn conn
+                 :resp (update result :val code/parse-code)}))))
