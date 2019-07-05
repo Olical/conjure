@@ -11,7 +11,7 @@ if [ ! -d classes ] || [ $(git show -s --format=%ct HEAD) -gt $(stat -c %Y class
 fi
 
 # Skip this if the Mr Anderson output is newer than the config.
-if [ ! -d target/mranderson ] || [ $(stat -c %Y injected-deps.edn) -gt $(stat -c %Y target/mranderson) ]; then
+if [ ! -d target/mranderson ] || [ $(date -r injected-deps.edn +%s) -gt $(date -r target/mranderson +%s) ]; then
   echo "[Conjure] Preparing dependencies for runtime injection..."
   mkdir -p target
   rm -rf target/mranderson
