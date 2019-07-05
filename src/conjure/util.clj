@@ -55,13 +55,13 @@
                  \" "\\\""}))
 
 (defn pprint
-  "Format the given data, assuming it's already parsed."
-  [data]
+  "Parse and format the given string."
+  [code]
   (try
-    (zp/zprint-str data)
+    (zp/zprint-str code {:parse-string-all? true})
     (catch Throwable e
       (log/error "Error while pretty printing" e)
-      (pr-str data))))
+      code)))
 
 (defn regexp? [o]
   (instance? java.util.regex.Pattern o))

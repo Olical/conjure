@@ -7,35 +7,21 @@
             [conjure.util :as util]
             [conjure.meta :as meta]))
 
-(defn- parse-code* [code]
-  (if (string? code)
+(defn parse-code [code]
+  (try
     (binding [tr/*default-data-reader-fn* tagged-literal
               tr/*alias-map* (constantly 'user)]
       (tr/read-string {:read-cond :preserve} code))
-    code))
-
-(defn parse-code [code]
-  (try
-    (parse-code* code)
-    (catch Throwable t
-      (log/error "Failed to parse code" t)
-      [:err (Throwable->map t)])))
-
-(defn parse-code-silent [code]
-  (try
-    (parse-code* code)
     (catch Throwable t
       (log/warn "Failed to parse code" t))))
 
-(defn parse-ns [code]
-  (try
-    (let [form (parse-code code)]
-      [:ok
-       (when (and (seq? form) (= (first form) 'ns))
-         (second (filter symbol? form)))])
-    (catch Throwable e
-      (log/error "Caught error while extracting ns" e)
-      [:error e])))
+(defn parse-ns
+  "Parse the ns symbol out of the code, return ::error if parsing failed."
+  [code]
+  (if-let [form (parse-code code)]
+    (when (and (seq? form) (= (first form) 'ns))
+      (second (filter symbol? form)))
+    ::error))
 
 (def injected-deps!
   "Files to load, in order, to add runtime dependencies to a REPL."
@@ -73,34 +59,19 @@
     (case (:lang conn)
       :clj
       (str "
-           (try
-             (ns " (or ns "user") ")
-             (let [rdr (-> (java.io.StringReader. \"(do " (util/escape-quotes code) "\n)\n\")
-                           (clojure.lang.LineNumberingPushbackReader.)
-                           (doto (.setLineNumber " (or line 1) ")))]
-               (binding [*default-data-reader-fn* tagged-literal]
-                 (let [res (. clojure.lang.Compiler (load rdr" path-args-str "))]
-                   [:ok (cond-> res (seq? res) (doall))])))
-             (catch Throwable e
-               (let [emap (Throwable->map e)]
-                 (binding [*out* *err*]
-                   (println (-> emap clojure.main/ex-triage clojure.main/ex-str)))
-                 [:error emap]))
-             (finally
-               (flush)))
+           (ns " (or ns "user") ")
+           (let [rdr (-> (java.io.StringReader. \"(do " (util/escape-quotes code) "\n)\n\")
+                         (clojure.lang.LineNumberingPushbackReader.)
+                         (doto (.setLineNumber " (or line 1) ")))]
+             (binding [*default-data-reader-fn* tagged-literal]
+               (let [res (. clojure.lang.Compiler (load rdr" path-args-str "))]
+                 (cond-> res (seq? res) (doall)))))
            ")
 
       :cljs
       (str "
            (in-ns '" (or ns "cljs.user") ")
-           (try
-             [:ok (do " code "\n)]
-             (catch :default e
-               (let [emap (cljs.repl/Error->map e)]
-                 (println (-> emap cljs.repl/ex-triage cljs.repl/ex-str))
-                 [:error emap]))
-             (finally
-               (flush)))
+           " code "
            "))))
 
 (defn doc-str [{:keys [conn name]}]
@@ -190,8 +161,3 @@
            (with-out-str
              (cljs.test/run-all-tests" re-str "))
            "))))
-
-(defn resolve-var-str [name]
-  (str "(let [x (resolve '" name ")]
-          (when (var? x)
-            x))"))

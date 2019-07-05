@@ -1,9 +1,10 @@
 (ns conjure.ui
   "Handle displaying and managing what's visible to the user."
   (:require [clojure.string :as str]
+            [clojure.main :as main]
             [conjure.nvim :as nvim]
             [conjure.util :as util]
-            [conjure.result :as result]
+            [conjure.code :as code]
             [conjure.meta :as meta]))
 
 (def ^:private welcome-msg (str "; conjure/out | Welcome to Conjure! (" meta/version ")"))
@@ -112,11 +113,11 @@
   Will also fold the output if it's an error."
   [{:keys [conn resp]}]
   (let [code? (contains? #{:ret :tap} (:tag resp))
+        exception? (boolean (:exception resp))
         msg (cond-> (:val resp)
-              (= (:tag resp) :ret) (result/value)
               code? (util/pprint))]
 
-    (when code?
+    (when (and code? (not exception?))
       (nvim/display-virtual
         [[(str "=> " (util/sample msg 128)) "comment"]]))
 
@@ -124,12 +125,20 @@
              :kind (:tag resp)
              :code? code?
              :fold-text (and code?
-                             (or (when (result/error? (:val resp))
+                             (or (when exception?
                                    "Error folded")
                                  (when (and (= 1 (nvim/flag :fold-multiline-results))
                                             (util/multiline? msg))
                                    "Result folded")))
-             :msg msg})))
+             :msg msg})
+
+    (when exception?
+      (append {:origin (:tag conn)
+               :kind :err
+               :msg (-> (:val resp)
+                        (code/parse-code)
+                        (main/ex-triage)
+                        (main/ex-str))}))))
 
 (defn load-file*
   "When we ask to load a whole file from disk."
