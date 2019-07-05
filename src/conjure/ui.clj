@@ -121,6 +121,14 @@
       (nvim/display-virtual
         [[(str "=> " (util/sample msg 128)) "comment"]]))
 
+    (when exception?
+      (append {:origin (:tag conn)
+               :kind :err
+               :msg (-> (:val resp)
+                        (code/parse-code)
+                        (main/ex-triage)
+                        (main/ex-str))}))
+
     (append {:origin (:tag conn)
              :kind (:tag resp)
              :code? code?
@@ -130,15 +138,7 @@
                                  (when (and (= 1 (nvim/flag :fold-multiline-results))
                                             (util/multiline? msg))
                                    "Result folded")))
-             :msg msg})
-
-    (when exception?
-      (append {:origin (:tag conn)
-               :kind :err
-               :msg (-> (:val resp)
-                        (code/parse-code)
-                        (main/ex-triage)
-                        (main/ex-str))}))))
+             :msg msg})))
 
 (defn load-file*
   "When we ask to load a whole file from disk."
