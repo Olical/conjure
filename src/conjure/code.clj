@@ -45,13 +45,13 @@
 
                 :conjure/ready
                 "))
-    :cljs "
-          (ns conjure.prelude." meta/ns-version "
-            (:require [cljs.repl]
-                      [cljs.test]))
+    :cljs (str "
+               (ns conjure.prelude." meta/ns-version "
+                 (:require [cljs.repl]
+                           [cljs.test]))
 
-          :conjure/ready
-          "))
+               :conjure/ready
+               ")))
 
 (defn eval-str [{:keys [ns path]} {:keys [conn code line]}]
   (let [path-args-str (when-not (str/blank? path)
