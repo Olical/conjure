@@ -15,15 +15,13 @@
     (catch Throwable t
       (log/warn "Failed to parse code" t))))
 
-(defn parse-ns [code]
-  (try
-    (let [form (parse-code code)]
-      [:ok
-       (when (and (seq? form) (= (first form) 'ns))
-         (second (filter symbol? form)))])
-    (catch Throwable e
-      (log/error "Caught error while extracting ns" e)
-      [:error e])))
+(defn parse-ns
+  "Parse the ns symbol out of the code, return ::error if parsing failed."
+  [code]
+  (if-let [form (parse-code code)]
+    (when (and (seq? form) (= (first form) 'ns))
+      (second (filter symbol? form)))
+    ::error))
 
 (def injected-deps!
   "Files to load, in order, to add runtime dependencies to a REPL."

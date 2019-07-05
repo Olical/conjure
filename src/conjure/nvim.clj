@@ -1,8 +1,7 @@
 (ns conjure.nvim
   (:require [conjure.nvim.api :as api]
             [conjure.code :as code]
-            [conjure.util :as util]
-            [conjure.result :as result]))
+            [conjure.util :as util]))
 
 (def ^:dynamic ctx
   "Dynamic var to be bound to some context map."
@@ -25,12 +24,12 @@
            line-count line-count]
       (let [ns-res (code/parse-ns (util/join-lines sample-lines))
             next-line-count (* line-count 2)]
-        (if (and (result/error? ns-res) (< line-count buf-length))
+        (if (and (= ns-res ::code/error) (< line-count buf-length))
           (recur (api/call (get-lines next-line-count)) next-line-count)
           {:path path
            :buf buf
            :win win
-           :ns (result/ok ns-res)})))))
+           :ns ns-res})))))
 
 (defn- read-range
   "Given some lines, start column, and end column it will trim the first and
