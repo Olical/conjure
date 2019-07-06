@@ -60,7 +60,7 @@
       :clj
       (str "
            (ns " (or ns "user") ")
-           (let [rdr (-> (java.io.StringReader. \"(do " (util/escape-quotes code) "\n)\n\")
+           (let [rdr (-> (java.io.StringReader. \"" (util/escape-quotes code) "\n\")
                          (clojure.lang.LineNumberingPushbackReader.)
                          (doto (.setLineNumber " (or line 1) ")))]
              (binding [*default-data-reader-fn* tagged-literal]
