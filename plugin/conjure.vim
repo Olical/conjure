@@ -47,7 +47,8 @@ command! -nargs=1 ConjureLoadFile call conjure#notify("load_file", <q-args>)
 
 command! -nargs=1 ConjureDefinition call conjure#notify("definition", <q-args>)
 command! -nargs=1 ConjureDoc call conjure#notify("doc", <q-args>)
-command! -nargs=1 ConjureQuickDoc call conjure#quick_doc()
+command! -nargs=0 ConjureQuickDoc call conjure#quick_doc()
+command! -nargs=0 ConjureClearVirtual call conjure#notify("clear_virtual")
 command! -nargs=0 ConjureOpenLog call conjure#notify("open_log")
 command! -nargs=0 ConjureCloseLog call conjure#notify("close_log")
 command! -nargs=0 ConjureToggleLog call conjure#notify("toggle_log")
@@ -86,10 +87,19 @@ augroup conjure
 
   if g:conjure_quick_doc_normal_mode
     autocmd CursorMoved *.edn,*.clj,*.clj[cs] :call conjure#quick_doc()
+
+    if !g:conjure_quick_doc_insert_mode
+      autocmd InsertEnter *.edn,*.clj,*.clj[cs] :ConjureClearVirtual
+    endif
   endif
 
   if g:conjure_quick_doc_insert_mode
     autocmd CursorMovedI *.edn,*.clj,*.clj[cs] :call conjure#quick_doc()
+
+    if !g:conjure_quick_doc_normal_mode
+      autocmd InsertEnter *.edn,*.clj,*.clj[cs] :call conjure#quick_doc()
+      autocmd InsertLeave *.edn,*.clj,*.clj[cs] :ConjureClearVirtual
+    endif
   endif
 
   if g:conjure_quick_doc_normal_mode || g:conjure_quick_doc_insert_mode

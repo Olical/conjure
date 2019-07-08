@@ -81,6 +81,9 @@
                        (str/blank? (:val result))
                        (assoc :val (str "No doc for " name)))}))))
 
+(defn clear-virtual []
+  (nvim/clear-virtual))
+
 (defn quick-doc []
   (when-let [name (some-> (nvim/read-form {:data-pairs? false})
                           (get :form)
@@ -88,19 +91,20 @@
                           (as-> x
                             (when (seq? x) (first x)))
                           (str))]
-    (some-> (some (fn [conn]
-                    (some-> (not-exception
-                              {:conn conn
-                               :resp (wrapped-eval
+    (if-let [doc-str (some (fn [conn]
+                             (some-> (not-exception
                                        {:conn conn
-                                        :code (code/doc-str
+                                        :resp (wrapped-eval
                                                 {:conn conn
-                                                 :name name})})})
-                            (get :val)
-                            (code/parse-code)
-                            (not-empty)))
-                  (current-conns {:passive? true}))
-            (ui/quick-doc))))
+                                                 :code (code/doc-str
+                                                         {:conn conn
+                                                          :name name})})})
+                                     (get :val)
+                                     (code/parse-code)
+                                     (not-empty)))
+                           (current-conns {:passive? true}))]
+      (ui/quick-doc doc-str)
+      (clear-virtual))))
 
 (defn eval-current-form []
   (let [{:keys [form origin]} (nvim/read-form)]

@@ -88,6 +88,9 @@
 (defrpc :notify :quick-doc []
   (action/quick-doc))
 
+(defrpc :notify :clear-virtual []
+  (action/clear-virtual))
+
 (def ^:private log-opts
   {:focus? true
    :resize? true
