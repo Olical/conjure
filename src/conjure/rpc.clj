@@ -6,7 +6,7 @@
             [msgpack.core :as msg]
             [msgpack.clojure-extensions]
             [net.tcp.server :as tcp]
-            [cheshire.core :as json]
+            [jsonista.core :as json]
             [conjure.util :as util]))
 
 ;; TCP port that the RPC opens up on for other plugins to use.
@@ -94,7 +94,7 @@
         (let [payload (encode data)]
           (case transport
             :msgpack (msg/pack payload)
-            :json (str (json/generate-string payload) "\n")))
+            :json (str (json/write-value-as-string payload) "\n")))
         (catch Throwable e
           (log/error "Error while packing" e))))))
 
@@ -147,7 +147,7 @@
                      (log/info "TCP connection opened")
 
                      (loop []
-                       (when-let [msg (some-> (json/parse-stream reader) (decode))]
+                       (when-let [msg (some-> (json/read-value reader) (decode))]
                          (try
                            (a/>!! in-chan (assoc msg :client writer))
                            (catch Throwable e
