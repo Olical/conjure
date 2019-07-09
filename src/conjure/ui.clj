@@ -85,7 +85,7 @@
   [s]
   (when (string? s)
     (nvim/display-virtual
-      [[(str "🛈 "
+      [[(str "?> "
              (-> (str/split s #"\n" 2)
                  (last)
                  (util/sample 256)))
