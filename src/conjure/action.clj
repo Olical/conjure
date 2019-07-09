@@ -85,24 +85,25 @@
   (nvim/clear-virtual))
 
 (defn quick-doc []
-  (when-let [name (some-> (nvim/read-form {:data-pairs? false})
-                          (get :form)
-                          (code/parse-code)
-                          (as-> x
-                            (when (seq? x) (first x)))
-                          (str))]
-    (if-let [doc-str (some (fn [conn]
-                             (some-> (not-exception
-                                       {:conn conn
-                                        :resp (wrapped-eval
-                                                {:conn conn
-                                                 :code (code/doc-str
-                                                         {:conn conn
-                                                          :name name})})})
-                                     (get :val)
-                                     (code/parse-code)
-                                     (not-empty)))
-                           (current-conns {:passive? true}))]
+  (let [name (some-> (nvim/read-form {:data-pairs? false})
+                     (get :form)
+                     (code/parse-code)
+                     (as-> x
+                       (when (seq? x) (first x)))
+                     (str))]
+    (if-let [doc-str (and name
+                          (some (fn [conn]
+                                  (some-> (not-exception
+                                            {:conn conn
+                                             :resp (wrapped-eval
+                                                     {:conn conn
+                                                      :code (code/doc-str
+                                                              {:conn conn
+                                                               :name name})})})
+                                          (get :val)
+                                          (code/parse-code)
+                                          (not-empty)))
+                                (current-conns {:passive? true})))]
       (ui/quick-doc doc-str)
       (clear-virtual))))
 
