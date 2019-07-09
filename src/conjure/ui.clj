@@ -104,9 +104,13 @@
   "When we send an eval and are awaiting a result, prints a short sample of the
   code we sent."
   [{:keys [conn code]}]
-  (append {:origin (:tag conn)
-           :kind :eval
-           :msg (util/sample code 50)}))
+  (let [sample (util/sample code 50)]
+    (nvim/display-virtual
+      [[(str "=> Evaluating " sample) "comment"]])
+
+    (append {:origin (:tag conn)
+             :kind :eval
+             :msg sample})))
 
 (defn result
   "Format, if it's code, and display a result from an evaluation.
@@ -117,7 +121,7 @@
         msg (cond-> (:val resp)
               code? (util/pprint))]
 
-    (when (and code? (not exception?))
+    (when (and (= :ret (:tag resp)) (not exception?))
       (nvim/display-virtual
         [[(str "=> " (util/sample msg 128)) "comment"]]))
 
