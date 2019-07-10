@@ -48,9 +48,10 @@
       (util/join-lines)))
 
 (defn- nil-pos?
-  "A more intention revealing way of checking for [0 0] positions."
+  "A more intention revealing way of checking for [0 0] or nil positions."
   [pos]
-  (= pos [0 0]))
+  (or (nil? pos)
+      (= pos [0 0])))
 
 (defn read-form
   "Read the current form under the cursor from the buffer by default. When
@@ -96,15 +97,16 @@
          ;; character, so we should use the cursor position. Don't do this for
          ;; root though since you want to keep searching outwards.
          ;; We also avoid a second api/call if the caller provides the window for us.
-         cursor (update (if win
+         cursor (some-> (if win
                           win-or-cursor
                           (api/call (api/win-get-cursor win-or-cursor)))
-                        1 inc)
+                        (update 1 inc))
 
          get-pos (fn [pos ch]
                    (if (or (and (= cur-char ch) (nil-pos? pos))
                            (and (not root?) (= cur-char ch)))
-                     cursor pos))
+                     cursor
+                     pos))
 
          ;; Find all of the pairs using the fns and data above.
          pairs (keep (fn [[[start sc] [end ec]]]
