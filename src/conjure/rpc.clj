@@ -7,10 +7,17 @@
             [msgpack.clojure-extensions]
             [net.tcp.server :as tcp]
             [jsonista.core :as json]
-            [conjure.util :as util]))
+            [conjure.util :as util])
+  (:import (com.fasterxml.jackson.core JsonParser$Feature)))
 
 ;; TCP port that the RPC opens up on for other plugins to use.
 (defonce port (util/free-port))
+
+;; Used to read and write JSON values.
+;; Need to do some weird Java stuff to prevent the JSON parser closing the socket.
+(def json-mapper
+  (doto (json/object-mapper)
+    (-> (.getFactory) (.disable JsonParser$Feature/AUTO_CLOSE_SOURCE))))
 
 ;; These channels handle all RPC I/O.
 (defonce ^:private in-chan (a/chan 128))
@@ -94,7 +101,7 @@
         (let [payload (encode data)]
           (case transport
             :msgpack (msg/pack payload)
-            :json (str (json/write-value-as-string payload) "\n")))
+            :json (str (json/write-value-as-string payload json-mapper) "\n")))
         (catch Throwable e
           (log/error "Error while packing" e))))))
 
@@ -147,7 +154,7 @@
                      (log/info "TCP connection opened")
 
                      (loop []
-                       (when-let [msg (some-> (json/read-value reader) (decode))]
+                       (when-let [msg (some-> (json/read-value reader json-mapper) (decode))]
                          (try
                            (a/>!! in-chan (assoc msg :client writer))
                            (catch Throwable e
