@@ -121,21 +121,22 @@
         msg (cond-> (:val resp)
               code? (util/pprint))]
 
-    (when (and (= :ret (:tag resp)) (not exception?))
-      (nvim/display-virtual
-        [[(str "=> " (util/sample msg 256)) "comment"]]))
-
-    (when exception?
-      (let [msg (-> (:val resp)
-                    (code/parse-code)
-                    (main/ex-triage)
-                    (main/ex-str))]
+    (cond
+      exception?
+      (let [err-msg (-> (:val resp)
+                        (code/parse-code)
+                        (main/ex-triage)
+                        (main/ex-str))]
         (nvim/display-virtual
-          [[(str "!> " (util/sample msg 256)) "comment"]])
+          [[(str "!> " (util/sample err-msg 256)) "comment"]])
 
         (append {:origin (:tag conn)
                  :kind :err
-                 :msg msg})))
+                 :msg err-msg}))
+
+      (= :ret (:tag resp))
+      (nvim/display-virtual
+        [[(str "=> " (util/sample msg 256)) "comment"]]))
 
     (append {:origin (:tag conn)
              :kind (:tag resp)
