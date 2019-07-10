@@ -104,9 +104,9 @@
   "When we send an eval and are awaiting a result, prints a short sample of the
   code we sent."
   [{:keys [conn code]}]
-  (let [sample (util/sample code 50)]
+  (let [sample (util/sample code 256)]
     (nvim/display-virtual
-      [[(str "=> Evaluating " sample) "comment"]])
+      [[(str "#> " sample) "comment"]])
 
     (append {:origin (:tag conn)
              :kind :eval
@@ -123,15 +123,19 @@
 
     (when (and (= :ret (:tag resp)) (not exception?))
       (nvim/display-virtual
-        [[(str "=> " (util/sample msg 128)) "comment"]]))
+        [[(str "=> " (util/sample msg 256)) "comment"]]))
 
     (when exception?
-      (append {:origin (:tag conn)
-               :kind :err
-               :msg (-> (:val resp)
-                        (code/parse-code)
-                        (main/ex-triage)
-                        (main/ex-str))}))
+      (let [msg (-> (:val resp)
+                    (code/parse-code)
+                    (main/ex-triage)
+                    (main/ex-str))]
+        (nvim/display-virtual
+          [[(str "!> " (util/sample msg 256)) "comment"]])
+
+        (append {:origin (:tag conn)
+                 :kind :err
+                 :msg msg})))
 
     (append {:origin (:tag conn)
              :kind (:tag resp)
