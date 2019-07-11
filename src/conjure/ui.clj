@@ -42,27 +42,30 @@
   wrapped with fold markers and automatically hidden with your text displayed instead."
   [{:keys [origin kind msg code? fold-text] :or {code? false}}]
 
-  (let [prefix (str "; " (name origin) "/" (name kind))
-        log (upsert-log {:open? (contains?
-                                  (nvim/flag :log-auto-open)
-                                  (if (and (= kind :ret) (util/multiline? msg))
-                                    :ret-multiline
-                                    kind))})
-        lines (str/split-lines msg)]
-    (nvim/append-lines
-      (merge
-        log
-        {:header welcome-msg
-         :trim-at max-log-buffer-length
-         :lines (if code?
-                  (concat (when fold-text
-                            [(str "; " fold-text " {{{1")])
-                          [(str prefix " ⤸")]
-                          lines
-                          (when fold-text
-                            ["; }}}1"]))
-                  (for [line lines]
-                    (str prefix " | " line)))}))))
+  ;; Ensure we have the essentials before attempting to append.
+  ;; Kind can be nil if the evaluation failed completely, like if the server is gone.
+  (when (and origin kind msg)
+    (let [prefix (str "; " (name origin) "/" (name kind))
+          log (upsert-log {:open? (contains?
+                                    (nvim/flag :log-auto-open)
+                                    (if (and (= kind :ret) (util/multiline? msg))
+                                      :ret-multiline
+                                      kind))})
+          lines (str/split-lines msg)]
+      (nvim/append-lines
+        (merge
+          log
+          {:header welcome-msg
+           :trim-at max-log-buffer-length
+           :lines (if code?
+                    (concat (when fold-text
+                              [(str "; " fold-text " {{{1")])
+                            [(str prefix " ⤸")]
+                            lines
+                            (when fold-text
+                              ["; }}}1"]))
+                    (for [line lines]
+                      (str prefix " | " line)))})))))
 
 (defn info
   "For general information from Conjure, this is like

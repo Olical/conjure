@@ -8,7 +8,7 @@
             [conjure.util :as util]
             [conjure.ui :as ui]
             [conjure.code :as code])
-  (:import [java.io PipedInputStream PipedOutputStream]))
+  (:import [java.io PipedInputStream PipedOutputStream IOException]))
 
 (defonce ^:private conns! (atom {}))
 
@@ -78,20 +78,24 @@
 
     (util/thread
       "writer loop"
-      (with-open [writer (io/writer output)]
-        (try
-          (loop []
-            (when-let [code (a/<!! eval-chan)]
-              (log/trace "Writing to tag:" tag "-" code)
-              (util/write writer code)
-              (recur)))
+      (try
+        (with-open [writer (io/writer output)]
+          (try
+            (loop []
+              (when-let [code (a/<!! eval-chan)]
+                (log/trace "Writing to tag:" tag "-" code)
+                (util/write writer code)
+                (recur)))
 
-          (catch Throwable e
-            (log/error "Error from eval-chan writing:" e))
+            (catch Throwable e
+              (log/error "Error from eval-chan writing:" e))
 
-          (finally
-            (log/trace "Exited eval-chan loop, cleaning up" tag)
-            (util/write writer ":repl/quit\n")))))
+            (finally
+              (log/trace "Exited eval-chan loop, cleaning up" tag)
+              (util/write writer ":repl/quit\n"))))
+
+        (catch IOException e
+          (log/error "Caught IO exception in writer thread" e))))
 
     {:eval-chan eval-chan
      :read-chan read-chan}))
