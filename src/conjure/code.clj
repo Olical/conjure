@@ -71,7 +71,7 @@
       :cljs
       (str "
            (in-ns '" (or ns "cljs.user") ")
-           " code "
+           (do " code "\n)
            "))))
 
 (defn doc-str [{:keys [conn name]}]
