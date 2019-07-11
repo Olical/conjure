@@ -8,24 +8,44 @@ if !has('nvim') || exists("g:conjure_loaded") || ($CONJURE_ALLOWED_DIR != "" && 
   finish
 endif
 
-let g:conjure_loaded = 1
-let g:conjure_initialised = 0
-let g:conjure_ready = 0
+let g:conjure_loaded = v:true
+let g:conjure_initialised = v:false
+let g:conjure_ready = v:false
 
 " User config with defaults.
-let g:conjure_default_mappings = get(g:, 'conjure_default_mappings', 1) " 1/0
-let g:conjure_log_direction = get(g:, 'conjure_log_direction', "vertical") " vertical/horizontal
-let g:conjure_log_size_small = get(g:, 'conjure_log_size_small', 25) " %
-let g:conjure_log_size_large = get(g:, 'conjure_log_size_large', 50) " %
-let g:conjure_log_auto_close = get(g:, 'conjure_log_auto_close', 1) " 1/0
-let g:conjure_log_auto_open = get(g:, 'conjure_log_auto_open', ["eval", "ret", "ret-multiline", "out", "err", "tap", "doc", "load-file", "test"]) " set
-let g:conjure_fold_results = get(g:, 'conjure_fold_multiline_results', 0) " 1/0
-let g:conjure_quick_doc_normal_mode = get(g:, 'conjure_quick_doc_normal_mode', 1) " 1/0
-let g:conjure_quick_doc_insert_mode = get(g:, 'conjure_quick_doc_insert_mode', 1) " 1/0
-let g:conjure_quick_doc_time = get(g:, 'conjure_quick_doc_time', 250) " ms
-let g:conjure_omnifunc = get(g:, 'conjure_omnifunc', 1) " 1/0
+function! s:def_config(name, default)
+  execute "let g:conjure_" . a:name . " = get(g:, 'conjure_" . a:name . "', " . string(a:default) . ")"
+endfunction
 
-let s:jobid = -1
+call s:def_config("log_direction", "vertical") " vertical/horizontal
+call s:def_config("log_size_small", 25) " %
+call s:def_config("log_size_large", 50) " %
+call s:def_config("log_auto_close", v:true) " boolean
+call s:def_config("log_auto_open", ["eval", "ret", "ret-multiline", "out", "err", "tap", "doc", "load-file", "test"]) " set
+call s:def_config("fold_results", v:false) " boolean
+call s:def_config("quick_doc_normal_mode", v:true) " boolean
+call s:def_config("quick_doc_insert_mode", v:true) " boolean
+call s:def_config("quick_doc_time", 250) " ms
+call s:def_config("omnifunc", v:true) " boolean
+
+" TODO Use these values in mappings, disable if v:null.
+call s:def_config("default_mappings", v:true) " boolean
+call s:def_config("map_prefix", "<localleader>")
+call s:def_config("nmap_eval_word", "ew")
+call s:def_config("nmap_eval_current_form", "ee")
+call s:def_config("nmap_eval_root_form", "er")
+call s:def_config("nmap_eval_buffer", "eb")
+call s:def_config("nmap_eval_file", "ef")
+call s:def_config("vmap_eval_selection", "ee")
+call s:def_config("nmap_up", "cu")
+call s:def_config("nmap_status", "cs")
+call s:def_config("nmap_open_log", "cl")
+call s:def_config("nmap_close_log", "cq")
+call s:def_config("nmap_toggle_log", "cL")
+call s:def_config("nmap_run_tests", "tt")
+call s:def_config("nmap_run_all_tests", "ta")
+
+let s:jobid = v:null
 let s:dev = $CONJURE_ALLOWED_DIR != ""
 
 if $CONJURE_JOB_OPTS != ""
@@ -131,14 +151,14 @@ function! conjure#on_exit(jobid, msg, event) dict
     echo "Conjure exited (" . a:msg . "), consider conjure#start()"
     echohl None
 
-    let s:jobid = -1
-    let g:conjure_ready = 0
+    let s:jobid = v:null
+    let g:conjure_ready = v:false
   endif
 endfunction
 
 " Start up the Clojure process if we haven't already.
 function! conjure#start()
-  if s:jobid == -1
+  if s:jobid == v:null
     let s:jobid = jobstart("clojure " . s:job_opts . " -m conjure.main " . getcwd(0), {
     \  "rpc": v:true,
     \  "cwd": s:cwd,
@@ -150,19 +170,19 @@ endfunction
 
 " Stop the Clojure process if it's running.
 function! conjure#stop()
-  if s:jobid != -1
+  if s:jobid != v:null
     call conjure#notify("stop")
   endif
 endfunction
 
 " Trigger quick doc on CursorMoved(I) with a debounce.
 " It displays the doc for the head of the current form using virtual text.
-let s:quick_doc_timer = -1
+let s:quick_doc_timer = v:null
 
 function! conjure#quick_doc_cancel()
-  if s:quick_doc_timer != -1
+  if s:quick_doc_timer != v:null
     call timer_stop(s:quick_doc_timer)
-    let s:quick_doc_timer = -1
+    let s:quick_doc_timer = v:null
   endif
 endfunction
 
@@ -175,14 +195,14 @@ endfunction
 
 " Cancel existing quick doc timers and notify/request Conjure over RPC.
 function! conjure#notify(method, ...)
-  if s:jobid != -1
+  if s:jobid != v:null
     call conjure#quick_doc_cancel()
     return rpcnotify(s:jobid, a:method, get(a:, 1, 0))
   endif
 endfunction
 
 function! conjure#request(method, ...)
-  if s:jobid != -1
+  if s:jobid != v:null
     call conjure#quick_doc_cancel()
     return rpcrequest(s:jobid, a:method, get(a:, 1, 0))
   endif
@@ -219,12 +239,12 @@ function! conjure#cursor_in_code()
   let l:stack = synstack(line("."), col("."))
 
   if len(l:stack) == 0
-    return 1
+    return v:true
   else
     let l:name = synIDattr(l:stack[-1], "name")
 
     " If it's comment or string we're not in code.
-    return l:name ==# "clojureComment" || l:name ==# "clojureString" ? 0 : 1
+    return !(l:name ==# "clojureComment" || l:name ==# "clojureString")
   endif
 endfunction
 
@@ -236,11 +256,11 @@ endfunction
 
 " Initialise if not done already.
 function! conjure#init()
-  if g:conjure_initialised == 0
+  if g:conjure_initialised == v:false
     if s:dev ||
           \(filereadable(s:cwd . "/classes/conjure/main$_main.class") &&
           \ filereadable(s:cwd . "/target/mranderson/load-order.edn"))
-      let g:conjure_initialised = 1
+      let g:conjure_initialised = v:true
       call conjure#start()
       ConjureUp
     else
