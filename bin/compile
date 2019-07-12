@@ -3,7 +3,7 @@
 # Only compile if there's a commit newer than the current classes directory.
 # This prevents every vim-plug update from compiling when nothing changed.
 # If you _need_ to have everything recompiled, just delete classes.
-if [ ! -d classes ] || [ $(git show -s --format=%ct HEAD) -gt $(stat -c %Y classes) ]; then
+if [ ! -d classes ] || [ $(git show -s --format=%ct HEAD) -gt $(date -r classes +%s) ]; then
   echo "[Conjure] AOT compiling..."
   rm -rf classes
   mkdir classes
