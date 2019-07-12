@@ -12,11 +12,20 @@ let g:conjure_loaded = v:true
 let g:conjure_initialised = v:false
 let g:conjure_ready = v:false
 
-" User config with defaults.
+" Helpers to remove boilerplate code.
 function! s:def_config(name, default)
   execute "let g:conjure_" . a:name . " = get(g:, 'conjure_" . a:name . "', " . string(a:default) . ")"
 endfunction
 
+function! s:def_map(mode, config_name, cmd)
+  let l:keys = get(g:, "conjure_" . a:mode . "map_" . a:config_name)
+
+  if l:keys != v:null
+    execute "autocmd FileType clojure " . a:mode . "noremap <silent> <buffer> " . l:keys . " " . a:cmd . "<cr>"
+  endif
+endfunction
+
+" User config with defaults.
 call s:def_config("log_direction", "vertical") " vertical/horizontal
 call s:def_config("log_size_small", 25) " %
 call s:def_config("log_size_large", 50) " %
@@ -27,23 +36,7 @@ call s:def_config("quick_doc_normal_mode", v:true) " boolean
 call s:def_config("quick_doc_insert_mode", v:true) " boolean
 call s:def_config("quick_doc_time", 250) " ms
 call s:def_config("omnifunc", v:true) " boolean
-
-" TODO Use these values in mappings, disable if v:null.
 call s:def_config("default_mappings", v:true) " boolean
-call s:def_config("map_prefix", "<localleader>")
-call s:def_config("nmap_eval_word", "ew")
-call s:def_config("nmap_eval_current_form", "ee")
-call s:def_config("nmap_eval_root_form", "er")
-call s:def_config("nmap_eval_buffer", "eb")
-call s:def_config("nmap_eval_file", "ef")
-call s:def_config("vmap_eval_selection", "ee")
-call s:def_config("nmap_up", "cu")
-call s:def_config("nmap_status", "cs")
-call s:def_config("nmap_open_log", "cl")
-call s:def_config("nmap_close_log", "cq")
-call s:def_config("nmap_toggle_log", "cL")
-call s:def_config("nmap_run_tests", "tt")
-call s:def_config("nmap_run_all_tests", "ta")
 
 let s:jobid = v:null
 let s:dev = $CONJURE_ALLOWED_DIR != ""
@@ -81,24 +74,41 @@ augroup conjure
   autocmd VimLeavePre * call conjure#stop()
 
   if g:conjure_default_mappings
-    autocmd FileType clojure nnoremap <silent> <buffer> <localleader>ew :ConjureEval <c-r><c-w><cr>
-    autocmd FileType clojure nnoremap <silent> <buffer> <localleader>ee :ConjureEvalCurrentForm<cr>
-    autocmd FileType clojure nnoremap <silent> <buffer> <localleader>er :ConjureEvalRootForm<cr>
-    autocmd FileType clojure vnoremap <silent> <buffer> <localleader>ee :ConjureEvalSelection<cr>
-    autocmd FileType clojure nnoremap <silent> <buffer> <localleader>eb :ConjureEvalBuffer<cr>
-    autocmd FileType clojure nnoremap <silent> <buffer> <localleader>ef :ConjureLoadFile <c-r>=expand('%:p')<cr><cr>
+    call s:def_config("map_prefix", "<localleader>")
+    call s:def_config("nmap_eval_word", g:conjure_map_prefix . "ew")
+    call s:def_config("nmap_eval_current_form", g:conjure_map_prefix . "ee")
+    call s:def_config("nmap_eval_root_form", g:conjure_map_prefix . "er")
+    call s:def_config("vmap_eval_selection", g:conjure_map_prefix . "ee")
+    call s:def_config("nmap_eval_buffer", g:conjure_map_prefix . "eb")
+    call s:def_config("nmap_eval_file", g:conjure_map_prefix . "ef")
+    call s:def_config("nmap_up", g:conjure_map_prefix . "cu")
+    call s:def_config("nmap_status", g:conjure_map_prefix . "cs")
+    call s:def_config("nmap_open_log", g:conjure_map_prefix . "cl")
+    call s:def_config("nmap_close_log", g:conjure_map_prefix . "cq")
+    call s:def_config("nmap_toggle_log", g:conjure_map_prefix . "cL")
+    call s:def_config("nmap_run_tests", g:conjure_map_prefix . "tt")
+    call s:def_config("nmap_run_all_tests", g:conjure_map_prefix . "ta")
+    call s:def_config("nmap_doc", "K")
+    call s:def_config("nmap_definition", "gd")
 
-    autocmd FileType clojure nnoremap <silent> <buffer> <localleader>cu :ConjureUp<cr>
-    autocmd FileType clojure nnoremap <silent> <buffer> <localleader>cs :ConjureStatus<cr>
-    autocmd FileType clojure nnoremap <silent> <buffer> <localleader>cl :ConjureOpenLog<cr>
-    autocmd FileType clojure nnoremap <silent> <buffer> <localleader>cq :ConjureCloseLog<cr>
-    autocmd FileType clojure nnoremap <silent> <buffer> <localleader>cL :ConjureToggleLog<cr>
+    call s:def_map("n", "eval_word", ":ConjureEval <c-r><c-w>")
+    call s:def_map("n", "eval_current_form", ":ConjureEvalCurrentForm")
+    call s:def_map("n", "eval_root_form", ":ConjureEvalRootForm")
+    call s:def_map("v", "eval_selection", ":ConjureEvalSelection")
+    call s:def_map("n", "eval_buffer", ":ConjureEvalBuffer")
+    call s:def_map("n", "eval_file", ":ConjureLoadFile <c-r>=expand('%:p')<cr>")
 
-    autocmd FileType clojure nnoremap <silent> <buffer> <localleader>tt :ConjureRunTests<cr>
-    autocmd FileType clojure nnoremap <silent> <buffer> <localleader>ta :ConjureRunAllTests<cr>
+    call s:def_map("n", "up", ":ConjureUp")
+    call s:def_map("n", "status", ":ConjureStatus")
+    call s:def_map("n", "open_log", ":ConjureOpenLog")
+    call s:def_map("n", "close_log", ":ConjureCloseLog")
+    call s:def_map("n", "toggle_log", ":ConjureToggleLog")
 
-    autocmd FileType clojure nnoremap <silent> <buffer> K :ConjureDoc <c-r><c-w><cr>
-    autocmd FileType clojure nnoremap <silent> <buffer> gd :ConjureDefinition <c-r><c-w><cr>
+    call s:def_map("n", "run_tests", ":ConjureRunTests")
+    call s:def_map("n", "run_all_tests", ":ConjureRunAllTests")
+
+    call s:def_map("n", "doc", ":ConjureDoc <c-r><c-w>")
+    call s:def_map("n", "definition", ":ConjureDefinition <c-r><c-w>")
   endif
 
   if g:conjure_log_auto_close
@@ -160,11 +170,11 @@ endfunction
 function! conjure#start()
   if s:jobid == v:null
     let s:jobid = jobstart("clojure " . s:job_opts . " -m conjure.main " . getcwd(0), {
-    \  "rpc": v:true,
-    \  "cwd": s:cwd,
-    \  "on_stderr": "conjure#on_stderr",
-    \  "on_exit": "conjure#on_exit"
-    \})
+          \  "rpc": v:true,
+          \  "cwd": s:cwd,
+          \  "on_stderr": "conjure#on_stderr",
+          \  "on_exit": "conjure#on_exit"
+          \})
   endif
 endfunction
 
