@@ -26,11 +26,13 @@
   (let [{:keys [eval-chan ret-chan]} (:chans conn)]
     (a/>!! eval-chan (code/eval-str nvim/ctx opts))
 
-    ;; Conjure requires two evals:
-    ;; * Change namespace.
-    ;; * Execute the provided code.
-    ;; We throw away the namespace result first.
-    (a/<!! ret-chan)
+    (when (= (:lang conn) :cljs)
+      ;; ClojureScript requires two evals:
+      ;; * Change namespace.
+      ;; * Execute the provided code.
+      ;; We throw away the namespace result first.
+      (a/<!! ret-chan))
+
     (a/<!! ret-chan)))
 
 (defn- raw-eval

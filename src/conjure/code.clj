@@ -59,13 +59,14 @@
     (case (:lang conn)
       :clj
       (str "
-           (ns " (or ns "user") ")
-           (let [rdr (-> (java.io.StringReader. \"" (util/escape-quotes code) "\n\")
-                         (clojure.lang.LineNumberingPushbackReader.)
-                         (doto (.setLineNumber " (or line 1) ")))]
-             (binding [*default-data-reader-fn* tagged-literal]
-               (let [res (. clojure.lang.Compiler (load rdr" path-args-str "))]
-                 (cond-> res (seq? res) (doall)))))
+           (do
+             (ns " (or ns "user") ")
+             (let [rdr (-> (java.io.StringReader. \"" (util/escape-quotes code) "\n\")
+                           (clojure.lang.LineNumberingPushbackReader.)
+                           (doto (.setLineNumber " (or line 1) ")))]
+               (binding [*default-data-reader-fn* tagged-literal]
+                 (let [res (. clojure.lang.Compiler (load rdr" path-args-str "))]
+                   (cond-> res (seq? res) (doall))))))
            ")
 
       :cljs
