@@ -136,6 +136,10 @@ augroup conjure
     autocmd BufLeave *.edn,*.clj,*.clj[cs] :call conjure#quick_doc_cancel()
   endif
 
+  if !g:conjure_quick_doc_normal_mode && !g:conjure_quick_doc_insert_mode
+    autocmd CursorMoved *.edn,*.clj,*.clj[cs] :ConjureClearVirtual
+  endif
+
   if g:conjure_omnifunc
     autocmd FileType clojure setlocal omnifunc=conjure#omnicomplete
   endif
