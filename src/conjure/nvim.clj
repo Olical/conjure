@@ -36,16 +36,18 @@
   last line using those columns then join the lines into once string. Useful
   for trimming api/buf-get-lines results by some sort of col/row range."
   [{:keys [lines start end]}]
-  (-> lines
-      (update (dec (count lines))
-              (fn [line]
-                (when line
-                  (subs line 0 (min end (count line))))))
-      (update 0
-              (fn [line]
-                (when line
-                  (subs line (max start 0)))))
-      (util/join-lines)))
+  (if (empty? lines)
+    ""
+    (-> lines
+        (update (dec (count lines))
+                (fn [line]
+                  (when line
+                    (subs line 0 (min end (count line))))))
+        (update 0
+                (fn [line]
+                  (when line
+                    (subs line (max start 0)))))
+        (util/join-lines))))
 
 (defn- nil-pos?
   "A more intention revealing way of checking for [0 0] or nil positions."
