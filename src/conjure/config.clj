@@ -60,7 +60,7 @@
 
   (if (empty? conns)
     (do
-      (ui/conn "Warning: No conns configured, connecting to Conjure's own JVM by default.")
+      (ui/up "Warning: No conns configured, connecting to Conjure's own JVM by default.")
       (assoc-in config [:conns :conjure] {:port prepl/internal-port}))
     config))
 

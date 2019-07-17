@@ -48,7 +48,10 @@ Here's an exhaustive example of what you can configure with these files. If you 
 
 ```clojure
 {:conns
- {:api {:port 5885}
+ {;; Minimal example.
+  :api {:port 5885}
+
+  ;; ClojureScript.
   :frontend {:port 5556
 
              ;; You need to explicitly tell Conjure if it's a ClojureScript connection.
@@ -121,7 +124,7 @@ You may set these globals with `let` before Conjure loads to configure it's beha
  * `g:conjure_log_size_large = 50` (%) - Size of the log window when explicitly opened by  `ConjureOpenLog`.
  * `g:conjure_log_auto_close = 1` - Enable closing the log window as you enter insert mode in a Clojure buffer.
  * `g:conjure_log_auto_open = ["conn", "eval", "ret", "ret-multiline", "out", "err", "tap", "doc", "load-file", "test"]` - Open the log window for different kinds of log entries, remove unwanted kinds.
-   * `conn` - Information about connections being added or removed.
+   * `up` - Output from `ConjureUp` and other connection related information.
    * `status` - Output from `ConjureStatus`.
    * `eval` - Code you just evaluated and which connection it went to.
    * `ret` - Returned value from an evaluation (single line).

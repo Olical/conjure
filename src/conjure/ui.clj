@@ -72,13 +72,13 @@
   [& parts]
   (append {:origin :conjure, :kind :err, :msg (util/join-words parts)}))
 
-(defn conn
-  "For messages related to connections."
+(defn up
+  "Output from the up command."
   [& parts]
-  (append {:origin :conjure, :kind :conn, :msg (util/join-words parts)}))
+  (append {:origin :conjure, :kind :up, :msg (util/join-words parts)}))
 
 (defn status
-  "For connection status output."
+  "Output from the status command."
   [& parts]
   (append {:origin :conjure, :kind :status, :msg (util/join-words parts)}))
 

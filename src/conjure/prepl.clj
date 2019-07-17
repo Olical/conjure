@@ -23,7 +23,7 @@
   [tag]
   (when-let [conn (get @conns! tag)]
     (log/info "Removing" tag)
-    (ui/conn "Removing" tag)
+    (ui/up "Removing" tag)
     (swap! conns! dissoc tag)
 
     ;; read-chan is closed when the remote-prepl exits. This
@@ -110,16 +110,16 @@
     ;; The port was probably supposed to be read from a file with #slurp-edn
     ;; But it probably didn't exist yet.
     (nil? port)
-    (ui/conn "Skipping" tag "- nil port")
+    (ui/up "Skipping" tag "- nil port")
 
     ;; The socket prepl server probably isn't running.
     (not (util/socket? {:host host, :port port}))
-    (ui/conn "Skipping" tag "- can't connect")
+    (ui/up "Skipping" tag "- can't connect")
 
     :else
     (do
       (log/info "Adding" tag host port)
-      (ui/conn "Adding" tag)
+      (ui/up "Adding" tag)
 
       (let [ret-chan (a/chan 32)
             conn {:tag tag
