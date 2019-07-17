@@ -84,7 +84,9 @@ function conjure.upsert_log(log_buf_name, size, focus, resize, open)
 
     if open then
       if focus ~= true then
-        vim.api.nvim_command("wincmd p")
+        -- Using pcall because there's the potential for this to fail.
+        -- https://github.com/Olical/conjure/issues/50
+        pcall(vim.api.nvim_command, "wincmd p")
       end
     else
       vim.api.nvim_command("wincmd q")
