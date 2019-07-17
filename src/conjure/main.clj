@@ -5,7 +5,6 @@
             [taoensso.timbre :as log]
             [taoensso.timbre.appenders.core :as appenders]
             [me.raynes.fs :as fs]
-            [conjure.config :as config]
             [conjure.util :as util]
             [conjure.rpc :as rpc]
             [conjure.prepl :as prepl]
@@ -62,9 +61,7 @@
 
 ;; Here we map RPC notifications and requests to their Clojure functions.
 (defrpc :notify :up [flags]
-  (-> (config/fetch {:flags flags, :cwd (nvim/cwd)})
-      (get :conns)
-      (prepl/sync!)))
+  (action/up flags))
 
 (defrpc :notify :status []
   (prepl/status))

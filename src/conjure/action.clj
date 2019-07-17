@@ -7,7 +7,8 @@
             [conjure.ui :as ui]
             [conjure.nvim :as nvim]
             [conjure.code :as code]
-            [conjure.util :as util]))
+            [conjure.util :as util]
+            [conjure.config :as config]))
 
 (defn- current-conns
   ([] (current-conns {}))
@@ -57,6 +58,11 @@
     resp))
 
 ;; The following functions are called by the user through commands.
+
+(defn up [flags]
+  (-> (config/fetch {:flags flags, :cwd (nvim/cwd)})
+      (get :conns)
+      (prepl/sync!)))
 
 (defn eval* [{:keys [code line]}]
   (when code
