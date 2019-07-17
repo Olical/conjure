@@ -67,16 +67,20 @@
                     (for [line lines]
                       (str prefix " | " line)))})))))
 
-(defn info
-  "For general information from Conjure, this is like
-  a println from the system itself."
-  [& parts]
-  (append {:origin :conjure, :kind :out, :msg (util/join-words parts)}))
-
 (defn error
   "For errors out of Conjure that shouldn't go to stderr."
   [& parts]
   (append {:origin :conjure, :kind :err, :msg (util/join-words parts)}))
+
+(defn conn
+  "For messages related to connections."
+  [& parts]
+  (append {:origin :conjure, :kind :conn, :msg (util/join-words parts)}))
+
+(defn status
+  "For connection status output."
+  [& parts]
+  (append {:origin :conjure, :kind :status, :msg (util/join-words parts)}))
 
 (defn doc
   "Results from a (doc ...) call."

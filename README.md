@@ -120,7 +120,9 @@ You may set these globals with `let` before Conjure loads to configure it's beha
  * `g:conjure_log_size_small = 25` (%) - Regular size of the log window when it opens automatically.
  * `g:conjure_log_size_large = 50` (%) - Size of the log window when explicitly opened by  `ConjureOpenLog`.
  * `g:conjure_log_auto_close = 1` - Enable closing the log window as you enter insert mode in a Clojure buffer.
- * `g:conjure_log_auto_open = ["eval", "ret", "ret-multiline", "out", "err", "tap", "doc", "load-file", "test"]` - Open the log window for different kinds of log entries, remove unwanted kinds.
+ * `g:conjure_log_auto_open = ["conn", "eval", "ret", "ret-multiline", "out", "err", "tap", "doc", "load-file", "test"]` - Open the log window for different kinds of log entries, remove unwanted kinds.
+   * `conn` - Information about connections being added or removed.
+   * `status` - Output from `ConjureStatus`.
    * `eval` - Code you just evaluated and which connection it went to.
    * `ret` - Returned value from an evaluation (single line).
    * `ret-multiline` - Returned value from an evaluation (multiple lines).
