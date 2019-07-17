@@ -57,7 +57,7 @@
 (defn- ^:dynamic fallback
   "If there's no connections still fallback to connecting to Conjure's own JVM."
   [{:keys [conns] :as config}]
-  
+
   (if (empty? conns)
     (do
       (ui/info "Warning: No conns configured, connecting to Conjure's own JVM by default.")
