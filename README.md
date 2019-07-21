@@ -156,8 +156,7 @@ Deoplete is supported by default since the source is contained within this repos
 I also recommend configuring Deoplete using settings that I first found in the [async-clj-omni][] repository.
 
 ```vim
-let g:deoplete#keyword_patterns = {}
-let g:deoplete#keyword_patterns.clojure = '[\w!$%&*+/:<=>?@\^_~\-\.#]*'
+call deoplete#custom#option('keyword_patterns', {'clojure': '[\w!$%&+/:<=>?@^_~-.#]'})
 ```
 
 #### [Coc][]
