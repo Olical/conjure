@@ -30,7 +30,7 @@ call s:def_config("log_direction", "vertical") " vertical/horizontal
 call s:def_config("log_size_small", 25) " %
 call s:def_config("log_size_large", 50) " %
 call s:def_config("log_auto_close", v:true) " boolean
-call s:def_config("log_auto_open", ["conn", "status", "eval", "ret", "ret-multiline", "out", "err", "tap", "doc", "load-file", "test"]) " set
+call s:def_config("log_blacklist", []) " set
 call s:def_config("fold_results", v:false) " boolean
 call s:def_config("quick_doc_normal_mode", v:true) " boolean
 call s:def_config("quick_doc_insert_mode", v:true) " boolean

@@ -46,11 +46,12 @@
   ;; Kind can be nil if the evaluation failed completely, like if the server is gone.
   (when (and origin kind msg)
     (let [prefix (str "; " (name origin) "/" (name kind))
-          log (upsert-log {:open? (contains?
-                                    (nvim/flag :log-auto-open)
-                                    (if (and (= kind :ret) (util/multiline? msg))
-                                      :ret-multiline
-                                      kind))})
+          log (upsert-log {:open? (not
+                                    (contains?
+                                      (nvim/flag :log-blacklist)
+                                      (if (and (= kind :ret) (util/multiline? msg))
+                                        :ret-multiline
+                                        kind)))})
           lines (str/split-lines msg)]
       (nvim/append-lines
         (merge

@@ -123,7 +123,7 @@ You may set these globals with `let` before Conjure loads to configure it's beha
  * `g:conjure_log_size_small = 25` (%) - Regular size of the log window when it opens automatically.
  * `g:conjure_log_size_large = 50` (%) - Size of the log window when explicitly opened by  `ConjureOpenLog`.
  * `g:conjure_log_auto_close = 1` - Enable closing the log window as you enter insert mode in a Clojure buffer.
- * `g:conjure_log_auto_open = ["conn", "eval", "ret", "ret-multiline", "out", "err", "tap", "doc", "load-file", "test"]` - Open the log window for different kinds of log entries, remove unwanted kinds.
+ * `g:conjure_log_blacklist = []` - Don't open the log window for specific kinds of messages. To suppress `conjure/up` you'd use `["up"]`.
    * `up` - Output from `ConjureUp` and other connection related information.
    * `status` - Output from `ConjureStatus`.
    * `eval` - Code you just evaluated and which connection it went to.
@@ -140,6 +140,13 @@ You may set these globals with `let` before Conjure loads to configure it's beha
  * `g:conjure_quick_doc_insert_mode = 1` - Enable small doc strings appearing as virtual text in insert mode as you type.
  * `g:conjure_quick_doc_time = 250` (ms) - How long your cursor has to hold before the quick doc will be queried, if enabled.
  * `g:conjure_omnifunc = 1` - Enable Conjure's built in omnifunc.
+
+Here's my current configuration as an example.
+
+```vim
+let g:conjure_log_direction = "horizontal"
+let g:conjure_log_blacklist = ["up", "ret", "ret-multiline", "load-file", "eval"]
+```
 
 ## Completion
 
