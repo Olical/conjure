@@ -116,6 +116,27 @@ If you open Conjure without any connections configured it'll self prepl into it'
  * `K` - `ConjureDoc`
  * `gd` - `ConjureDefinition`
 
+You can change or remove the following mappings by setting the appropriate global variable. Here's the default mappings, set to `v:null` to disable mappings entirely.
+
+ * `g:conjure_map_prefix = "<localleader>"` (this might not be defined yet if your config is loaded before Conjure, you may have to define it yourself if you wish to use it)
+ * `g:conjure_nmap_eval_word = g:conjure_map_prefix . "ew"`
+ * `g:conjure_nmap_eval_current_form = g:conjure_map_prefix . "ee"`
+ * `g:conjure_nmap_eval_root_form = g:conjure_map_prefix . "er"`
+ * `g:conjure_vmap_eval_selection = g:conjure_map_prefix . "ee"`
+ * `g:conjure_nmap_eval_buffer = g:conjure_map_prefix . "eb"`
+ * `g:conjure_nmap_eval_file = g:conjure_map_prefix . "ef"`
+ * `g:conjure_nmap_up = g:conjure_map_prefix . "cu"`
+ * `g:conjure_nmap_status = g:conjure_map_prefix . "cs"`
+ * `g:conjure_nmap_open_log = g:conjure_map_prefix . "cl"`
+ * `g:conjure_nmap_close_log = g:conjure_map_prefix . "cq"`
+ * `g:conjure_nmap_toggle_log = g:conjure_map_prefix . "cL"`
+ * `g:conjure_nmap_run_tests = g:conjure_map_prefix . "tt"`
+ * `g:conjure_nmap_run_all_tests = g:conjure_map_prefix . "ta"`
+ * `g:conjure_nmap_doc = "K"`
+ * `g:conjure_nmap_definition = "gd"`
+
+You can disable the entire default mapping system with `let g:conjure_default_mappings = 0`, you'll then have to define your own mappings to various commands.
+
 ### Options
 
 You may set these globals with `let` before Conjure loads to configure it's behaviour slightly. Their default values are displayed after the `=`, with a `1` indicating true and `0` indicating false.
