@@ -4,6 +4,8 @@
 
 You can find out more about socket prepls in my blog post, [Clojure socket prepl cookbook][prepl-post], which has also been [translated into Russian][ru-prepl-post].
 
+That article will show you how to start a prepl for Clojure or ClojureScript from the Clojure CLI or Leiningen. I want to emphasise that starting a prepl has nothing to do with Conjure and is purely down to you and your project setup. You can start a prepl from _any_ Clojure project, your tooling does not matter.
+
 > This software is still in early development, expect some breaking changes before [v1.0.0](https://github.com/Olical/conjure/milestone/1) is released. Keep up with changes by watching the repository for releases and depending on specific tags instead of master.
 
 ### Features
@@ -31,7 +33,7 @@ You can find out more about socket prepls in my blog post, [Clojure socket prepl
 Here's an example with [vim-plug][], my plugin manager of choice.
 
 ```viml
-Plug 'Olical/conjure', { 'tag': 'v0.22.0', 'do': 'bin/compile'  }
+Plug 'Olical/conjure', { 'tag': 'v0.23.0', 'do': 'bin/compile'  }
 ```
 
 You should rely on a tag so that breaking changes don't end up disrupting your workflow, please don't depend on `master` (and especially not `develop`!). Make sure you watch the repository for releases using the menu in the top right, that way you can upgrade when it's convenient for you.
