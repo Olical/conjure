@@ -154,16 +154,20 @@
                 (a/>!! ret-chan out)
                 (ui/result {:conn conn, :resp out}))
 
-              (recur))))))))
+              (recur)))))
+
+      ::added)))
 
 (defn sync!
-  "Disconnect from everything and attempt to connect to every new conn."
+  "Disconnect from everything and attempt to connect to every new conn.
+  Returns the tags of successful connections."
   [conns]
   (remove-all!)
 
-  (doseq [[tag conn] conns
-          :when (:enabled? conn)]
-    (add! (assoc conn :tag tag))))
+  (for [[tag conn] conns
+        :when (and (:enabled? conn)
+                   (add! (assoc conn :tag tag)))]
+    tag))
 
 (defn conns
   "Without a path it'll return all current connections. With a path it finds

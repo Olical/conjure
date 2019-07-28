@@ -99,6 +99,16 @@
                  (util/sample 256)))
         "comment"]])))
 
+(defn up-summary
+  "Display which connections have been made by ConjureUp inline."
+  [tags]
+  (nvim/display-virtual
+    [[(str "@> "
+           (if (empty? tags)
+             "No connections"
+             (str "Connected to " (str/join ", " tags))))
+      "comment"]]))
+
 (defn test*
   "Results from tests."
   [{:keys [conn resp]}]
