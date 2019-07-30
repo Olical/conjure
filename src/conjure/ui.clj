@@ -130,6 +130,18 @@
              :kind :eval
              :msg sample})))
 
+;; Notes for pretty errors:
+; "Constructs a data representation for a Throwable with keys:
+;   :cause - root cause message
+;   :phase - error phase
+;   :via - cause chain, with cause keys:
+;            :type - exception class symbol
+;            :message - exception message
+;            :data - ex-data
+;            :at - top stack element
+;   :trace - root cause stack elements"
+;; I'll want to use clojure.lang.Compiler/demunge to parse the symbols.
+
 (defn result
   "Format, if it's code, and display a result from an evaluation.
   Will also fold the output if it's an error."
