@@ -60,8 +60,17 @@
   (try
     (zp/zprint-str code {:parse-string-all? true})
     (catch Throwable e
-      (log/error "Error while pretty printing" e)
+      (log/error "Error while pretty printing code" e)
       code)))
+
+(defn pprint-data
+  "Skip parsing, just format the given data."
+  [data]
+  (try
+    (zp/zprint-str data)
+    (catch Throwable e
+      (log/error "Error while pretty printing data" e)
+      (pr-str data))))
 
 (defn regexp? [o]
   (instance? java.util.regex.Pattern o))
