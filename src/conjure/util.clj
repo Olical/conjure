@@ -54,11 +54,17 @@
   (str/escape s {\\ "\\\\"
                  \" "\\\""}))
 
+(def ^:private zprint-opts
+  {:style :community
+   :width 120
+   :map {:lift-ns? false
+         :unlift-ns? true}})
+
 (defn pprint
   "Parse and format the given string."
   [code]
   (try
-    (zp/zprint-str code {:parse-string-all? true})
+    (zp/zprint-str code (merge zprint-opts {:parse-string-all? true}))
     (catch Throwable e
       (log/error "Error while pretty printing code" e)
       code)))
@@ -67,7 +73,7 @@
   "Skip parsing, just format the given data."
   [data]
   (try
-    (zp/zprint-str data)
+    (zp/zprint-str data zprint-opts)
     (catch Throwable e
       (log/error "Error while pretty printing data" e)
       (pr-str data))))
