@@ -7,7 +7,8 @@
             [zprint.core :as zp]
             [camel-snake-kebab.core :as csk]
             [camel-snake-kebab.extras :as cske])
-  (:import [java.net Socket]))
+  (:import [java.net Socket]
+           [java.util.regex Pattern]))
 
 (defn join-words [parts]
   (str/join " " parts))
@@ -78,8 +79,44 @@
       (log/error "Error while pretty printing data" e)
       (pr-str data))))
 
+(defn pretty-error [{:keys [via trace phase cause]}]
+  (letfn [(as-comment [s]
+            (when s
+              (join-lines
+                (for [line (str/split-lines s)]
+                  (str "; " line)))))
+          (demunge [sym]
+            (Compiler/demunge (name sym)))
+          (format-stack-frame [[sym method file line]]
+            (str (demunge sym) " (" method " " file ":" line ")"))]
+    (->>
+      (concat
+        [(when phase
+           (str "; Phase: " (name phase)))
+         (when cause
+           (str "; Reason...\n"
+                (as-comment cause) "\n"))]
+        (map-indexed
+          (fn [n stack-frame]
+            (str "; #" (inc n) " " (format-stack-frame stack-frame)))
+          (reverse trace))
+        (map-indexed
+          (fn [n {:keys [message type data at]}]
+            (->> (concat
+                   [(str "\n; Exception #" (inc n) " " (demunge type)
+                         (when at
+                           (str " @ " (format-stack-frame at))))
+                    (as-comment message)
+                    (when data
+                      (pprint-data data))])
+                 (remove nil?)
+                 (join-lines)))
+          via))
+      (remove nil?)
+      (join-lines))))
+
 (defn regexp? [o]
-  (instance? java.util.regex.Pattern o))
+  (instance? Pattern o))
 
 (defn write
   "Write the full data to the stream and then flush the stream."

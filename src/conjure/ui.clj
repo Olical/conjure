@@ -9,7 +9,7 @@
   (:import [clojure.lang Compiler]))
 
 (def ^:private welcome-msg (str "; conjure/out | Welcome to Conjure! (" meta/version ")"))
-(def ^:private max-log-buffer-length 1000)
+(def ^:private max-log-buffer-length 2000)
 (defonce ^:private log-buffer-name "/tmp/conjure.cljc")
 
 (defn upsert-log
@@ -131,42 +131,6 @@
              :kind :eval
              :msg sample})))
 
-(defn- pretty-error [{:keys [via trace phase cause]}]
-  (letfn [(as-comment [s]
-            (when s
-              (util/join-lines
-                (for [line (str/split-lines s)]
-                  (str "; " line)))))
-          (demunge [sym]
-            (Compiler/demunge (name sym)))
-          (format-stack-frame [[sym method file line]]
-            (str (demunge sym) " (" method " " file ":" line ")"))]
-    (->>
-      (concat
-        [(when phase
-           (str "; Phase: " (name phase)))
-         (when cause
-           (str "; Reason...\n"
-                (as-comment cause) "\n"))]
-        (map-indexed
-          (fn [n stack-frame]
-            (str "; #" (inc n) " " (format-stack-frame stack-frame)))
-          (reverse trace))
-        (map-indexed
-          (fn [n {:keys [message type data at]}]
-            (->> (concat
-                   [(str "\n; Exception #" (inc n) " " (demunge type)
-                         (when at
-                           (str " @ " (format-stack-frame at))))
-                    (as-comment message)
-                    (when data
-                      (util/pprint-data data))])
-                 (remove nil?)
-                 (util/join-lines)))
-          via))
-      (remove nil?)
-      (util/join-lines))))
-
 (defn result
   "Format, if it's code, and display a result from an evaluation.
   Will also fold the output if it's an error."
@@ -174,7 +138,8 @@
   (let [code? (contains? #{:ret :tap} (:tag resp))
         exception? (boolean (:exception resp))
         msg (cond
-              exception? (pretty-error (code/parse-code (:val resp)))
+              exception? (util/pretty-error
+                           (code/parse-code (:val resp)))
               code? (util/pprint (:val resp))
               :else (:val resp))]
 
