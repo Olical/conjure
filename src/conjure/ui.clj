@@ -145,31 +145,42 @@
 
 
 #_(do
-    (defn- pretty-error [{:keys [via phase trace _cause]}]
-      (letfn [(->comment [s]
+    (defn- pretty-error [{:keys [via trace phase cause]}]
+      (letfn [(as-comment [s]
                 (when s
                   (util/join-lines
                     (for [line (str/split-lines s)]
                       (str "; " line)))))
               (demunge [sym]
                 (Compiler/demunge (name sym)))
-              (stack-frame [[sym _method file line]]
-                (when sym
-                  (str ":at " (demunge sym) " ; " file ":" line "")))]
+              (format-stack-frame [[sym method file line]]
+                (str (demunge sym) " (" method " " file ":" line ")"))]
         (->> (concat
-               (map (fn [{:keys [message type data at]}]
-                      (->> (concat
-                             [(->comment message)
-                              (str ":type " (demunge type))
-                              (stack-frame at)
-                              (when data
-                                (util/pprint-data data))])
-                           (remove nil?)
-                           (util/join-lines)))
-                    (reverse via))
-               [(->comment cause)])
+               ["; Trace..."]
+               (map-indexed
+                 (fn [n stack-frame]
+                   (str "; #" (inc n) " " (format-stack-frame stack-frame)))
+                 trace)
+               ["\n; Via..."]
+               (map-indexed
+                 (fn [n {:keys [message type data at]}]
+                   (->> (concat
+                          [(str "\n; Exception #" (inc n) " " (demunge type)
+                                (when at
+                                  (str " @ " (format-stack-frame at))))
+                           (as-comment message)
+                           (when data
+                             (util/pprint-data data))])
+                        (remove nil?)
+                        (util/join-lines)))
+                 via)
+               [(when phase
+                  (str "\n; Phase: " (name phase)))
+                (when cause
+                  (str "\n; Cause...\n"
+                       (as-comment cause)))])
           (remove nil?)
-          (str/join "\n; ===================================================================\n"))))
+          (util/join-lines))))
 
     (append {:origin :foo
              :kind :ret
