@@ -73,3 +73,13 @@
 
 (t/deftest thread
   (t/is (= @(util/thread "adding" (+ 10 10)) 20)))
+
+(t/deftest pretty-error
+  (t/is (re-matches #"; Reason\.\.\.
+; ohno
+
+(; #\d+ [\w\./\-]+ \(\w+ [\w\.\-\_]+:\d+\)\n?)+
+
+; Exception #1 java\.lang\.Error @ conjure\.util-test/fn--\d+ \(invokeStatic util_test\.clj:\d+\)
+; ohno"
+           (util/pretty-error (Throwable->map (Error. "ohno"))))))
