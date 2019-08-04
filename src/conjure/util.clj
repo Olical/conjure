@@ -135,7 +135,7 @@
        (catch Throwable e#
          ;; stdout is redirected to stderr.
          ;; So it appears in Neovim as well as the log file.
-         (println "Error from thread" (str "'" ~use-case "':\n") (pprint (Throwable->map e#)))
+         (println "Error from thread" (str "'" ~use-case "':\n") (pretty-error (Throwable->map e#)))
          (log/error "Error from thread" (str "'" ~use-case "':") e#)))))
 
 (def snake->kw "some_method -> :some-method"
