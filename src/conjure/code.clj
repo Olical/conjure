@@ -70,10 +70,16 @@
            ")
 
       :cljs
-      (str "
-           (in-ns '" (or ns "cljs.user") ")
-           (do " code "\n)
-           "))))
+      (let [wrap-forms? (-> (str "[\n" code "\n]")
+                            (parse-code)
+                            (count)
+                            (not= 1))
+            code (str (when wrap-forms?
+                        "(do ")
+                      code "\n"
+                      (when wrap-forms?
+                        ")"))]
+        (str "(in-ns '" (or ns "cljs.user") ")\n" code)))))
 
 (defn doc-str [{:keys [conn name]}]
   (str "(with-out-str ("
