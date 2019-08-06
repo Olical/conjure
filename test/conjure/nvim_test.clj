@@ -98,7 +98,7 @@
     (t/testing "a skip is provided to non-root form reads"
       ;; Non-root has skip.
       (defmethod call :nvim-call-function [{:keys [params]}]
-        (t/is (= (count (second params)) 7))
+        (t/is (= (count (second params)) 5))
         (pair-pos params
                   {"(" [2 16]
                    ")" [2 30]}))
@@ -110,7 +110,7 @@
 
       ;; Root does not.
       (defmethod call :nvim-call-function [{:keys [params]}]
-        (t/is (= (count (second params)) 7))
+        (t/is (= (count (second params)) 4))
         (pair-pos params
                   {"(" [2 16]
                    ")" [2 30]}))

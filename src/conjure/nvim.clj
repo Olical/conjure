@@ -72,14 +72,11 @@
          ;; Ignore matches inside comments or strings.
          ;; We only have to do this for non-root form reading.
          ;;  https://github.com/Olical/conjure/issues/34
-         skip (if root?
-                0
+         skip (when-not root?
                 "!conjure#cursor_in_code()")
-         stopline 0
-         timeout 50
 
          get-pair (fn [s e]
-                    (let [extra-args [skip stopline timeout]]
+                    (let [extra-args (remove nil? [skip])]
                       [(apply api/call-function :searchpairpos s "" e backwards extra-args)
                        (apply api/call-function :searchpairpos s "" e forwards extra-args)]))
 
