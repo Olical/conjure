@@ -8,8 +8,6 @@ That article will show you how to start a prepl for Clojure or ClojureScript fro
 
 > This software is still in early development, expect some breaking changes before [v1.0.0](https://github.com/Olical/conjure/milestone/1) is released. Keep up with changes by watching the repository for releases and depending on specific tags instead of master.
 
-[![ko-fi](https://www.ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/A0A510RXZ)
-
 ### Features
 
  * Connect to multiple Clojure or ClojureScript prepls at the same time.
