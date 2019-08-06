@@ -201,7 +201,7 @@
 (defn append-lines [{:keys [trim-at buf win lines header]}]
   (let [line-count (api/call (api/buf-line-count buf))
         trim (if (> line-count trim-at)
-               (/ trim-at 2)
+               (- line-count (/ trim-at 2))
                0)
         new-line-count (+ line-count (count lines) (- trim))]
     (api/call-batch
