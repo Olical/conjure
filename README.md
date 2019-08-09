@@ -1,6 +1,6 @@
 # Conjure [![CircleCI](https://circleci.com/gh/Olical/conjure.svg?style=svg)](https://circleci.com/gh/Olical/conjure) [![codecov](https://codecov.io/gh/Olical/conjure/branch/master/graph/badge.svg)](https://codecov.io/gh/Olical/conjure) [![Slack](https://img.shields.io/badge/chat-%23conjure-green.svg?style=flat)](http://clojurians.net)
 
-[Clojure][] (and [ClojureScript][]) tooling for [Neovim][] over a socket prepl connection.
+[Clojure][] (and [ClojureScript][]) tooling for [Neovim][] over a socket prepl connection. You might want to use my other project, [Propel][], to start your prepls.
 
 You can find out more about socket prepls in my blog post, [Clojure socket prepl cookbook][prepl-post], which has also been [translated into Russian][ru-prepl-post].
 
@@ -218,3 +218,4 @@ Find the full [unlicense][] in the `UNLICENSE` file, but here's a snippet.
 [deoplete]: https://github.com/Shougo/deoplete.nvim
 [async-clj-omni]: https://github.com/clojure-vim/async-clj-omni
 [clojurians]: http://clojurians.net/
+[propel]: https://github.com/Olical/propel
