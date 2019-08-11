@@ -171,8 +171,9 @@
                      (get :val)
                      (code/parse-code)
                      (->> (map
-                            (fn [{:keys [candidate type ns package]}]
-                              (let [menu (or ns package)]
+                            (fn [{:keys [candidate type ns package doc]}]
+                              (let [doc (some-> doc (util/sample 512))
+                                    menu (or doc ns package)]
                                 (util/kw->snake-map
                                   (cond-> {:word candidate
                                            :kind (subs (name type) 0 1)}
