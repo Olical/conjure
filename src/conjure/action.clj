@@ -171,12 +171,9 @@
                      (get :val)
                      (code/parse-code)
                      (->> (map
-                            (fn [{:keys [candidate type ns package doc]}]
-                              (let [ns+args (some-> doc
-                                                    (str/split-lines)
-                                                    (->> (take 2)
-                                                         (str/join " "))
-                                                    (str/replace #"^(.*?)/.*? " "$1 "))
+                            (fn [{:keys [candidate type ns package doc arglists]}]
+                              (let [ns+args (when arglists
+                                              (str ns " (" (str/join " " arglists) ")"))
                                     menu (or ns+args ns package)]
                                 (util/kw->snake-map
                                   (cond-> {:word candidate

@@ -98,7 +98,7 @@
          (conjure.compliment.v0v3v8.compliment.core/completions
            \"" (util/escape-quotes prefix) "\"
            {:ns (find-ns '" (or ns "user") ")
-            :extra-metadata #{:doc}
+            :extra-metadata #{:doc :arglists}
             " (when context
                 (str ":context \"" (util/escape-quotes context) "\""))
            "})
