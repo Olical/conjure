@@ -172,12 +172,17 @@
                      (code/parse-code)
                      (->> (map
                             (fn [{:keys [candidate type ns package doc]}]
-                              (let [doc (some-> doc (util/sample 512))
-                                    menu (or doc ns package)]
+                              (let [args (some-> doc
+                                                 (str/split-lines)
+                                                 (->> (take 2)
+                                                      (str/join " "))
+                                                 (str/replace #"^(.*?)/.*? " "$1 "))
+                                    menu (or args ns package)]
                                 (util/kw->snake-map
                                   (cond-> {:word candidate
                                            :kind (subs (name type) 0 1)}
-                                    menu (assoc :menu menu))))))))))
+                                    menu (assoc :menu menu)
+                                    doc (assoc :info doc))))))))))
          (dedupe))))
 
 (defn definition [name]
