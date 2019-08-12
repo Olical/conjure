@@ -229,7 +229,7 @@ function! conjure#close_unused_log()
   endif
 endfunction
 
-" Handle omnicomplete requests through complement if it's there.
+" Handle omnicomplete requests through compliment if it's there.
 function! conjure#omnicomplete(findstart, base)
   if a:findstart
     let l:line = getline('.')[0 : col('.')-2]

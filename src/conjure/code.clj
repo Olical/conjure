@@ -95,7 +95,7 @@
   (case (:lang conn)
     :clj
     (str "
-         (conjure.compliment.v0v3v8.compliment.core/completions
+         (conjure.compliment.v0v3v9.compliment.core/completions
            \"" (util/escape-quotes prefix) "\"
            {:ns (find-ns '" (or ns "user") ")
             :extra-metadata #{:doc :arglists}
