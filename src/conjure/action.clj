@@ -177,7 +177,7 @@
                                     menu (or ns+args ns package)]
                                 (util/kw->snake-map
                                   (cond-> {:word candidate
-                                           :kind (subs (name type) 0 1)}
+                                           :kind (util/safe-subs (name type) 0 1)}
                                     menu (assoc :menu menu)
                                     doc (assoc :info doc))))))))))
          (dedupe))))

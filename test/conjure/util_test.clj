@@ -83,3 +83,12 @@
 ; Exception #1 java\.lang\.Error @ conjure\.util-test/fn--\d+ \(invokeStatic util_test\.clj:\d+\)
 ; ohno"
            (util/pretty-error (Throwable->map (Error. "ohno"))))))
+
+(t/deftest safe-subs
+  (t/is (= "oba" (util/safe-subs "foobar" 2 5)))
+  (t/is (= "obar" (util/safe-subs "foobar" 2 6)))
+  (t/is (= "obar" (util/safe-subs "foobar" 2 7)))
+  (t/is (= "oob" (util/safe-subs "foobar" 1 4)))
+  (t/is (= "foo" (util/safe-subs "foobar" 0 3)))
+  (t/is (= "foo" (util/safe-subs "foobar" -1 3)))
+  (t/is (= "foobar" (util/safe-subs "foobar" -1))))

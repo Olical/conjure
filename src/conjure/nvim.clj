@@ -42,11 +42,11 @@
         (update (dec (count lines))
                 (fn [line]
                   (when line
-                    (subs line 0 (min end (count line))))))
+                    (util/safe-subs line 0 (min end (count line))))))
         (update 0
                 (fn [line]
                   (when line
-                    (subs line (max start 0)))))
+                    (util/safe-subs line (max start 0)))))
         (util/join-lines))))
 
 (defn- nil-pos?

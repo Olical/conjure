@@ -16,14 +16,22 @@
 (defn join-lines [lines]
   (str/join "\n" lines))
 
+(defn safe-subs
+  "Just like subs but will cap the start
+  and end based on the string length."
+  ([s start]
+   (subs s (max 0 start)))
+  ([s start end]
+   (subs s (max 0 start) (min end (count s)))))
+
 (defn splice
   "Splice a string into another one from the starting character to the end
   character. Will cap the start and end values to keep it inside the original
   string."
   [s start end r]
-  (str (subs s 0 (max 0 start))
+  (str (safe-subs s 0 (max 0 start))
        r
-       (subs s (min (count s) end))))
+       (safe-subs s (min (count s) end))))
 
 (defn sample
   "Get a one line sample of some string. If the string had to be trimmed an
@@ -32,7 +40,7 @@
   (when code
     (let [flat (str/replace code #"\s+" " ")]
       (if (> (count flat) length)
-        (str (subs flat 0 length) "…")
+        (str (safe-subs flat 0 length) "…")
         flat))))
 
 (defn multiline? [s]

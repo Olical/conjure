@@ -90,7 +90,7 @@
     (transduce
       (comp
         (map (fn [flag]
-               {:tag (keyword (subs flag 1))
+               {:tag (keyword (util/safe-subs flag 1))
                 :enabled? (case (first flag)
                             \- false
                             \+ true
