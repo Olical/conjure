@@ -1,5 +1,6 @@
 (ns conjure.code
-  "Tools to render or format Clojure code."
+  "Tools to render or format Clojure code. The response from these functions
+  should be sent to an environment for evaluation."
   (:require [clojure.string :as str]
             [clojure.edn :as edn]
             [clojure.tools.reader :as tr]
@@ -7,7 +8,10 @@
             [conjure.util :as util]
             [conjure.meta :as meta]))
 
-(defn parse-code [code]
+(defn parse-code
+  "Parse code as data and return it, returns nil if it fails.
+  Will preserve reader conditionals."
+  [code]
   (try
     (binding [tr/*default-data-reader-fn* tagged-literal
               tr/*alias-map* (constantly 'user)]
@@ -27,15 +31,22 @@
   "Files to load, in order, to add runtime dependencies to a REPL."
   (delay (edn/read-string (slurp "target/mranderson/load-order.edn"))))
 
-(defonce ^:private prelude-ns (str "conjure.prelude." meta/ns-version))
+(def ^:private deps-ns
+  "Namespace to store injected dependency related information under."
+  (str "conjure.prelude." meta/ns-version))
 
-(defn deps-hash-str []
+(defn deps-hash-str
+  "Upserts the deps-hash atom and namespace then fetches the current value."
+  []
   (str "(do
-          (ns " prelude-ns ")
+          (ns " deps-ns ")
           (defonce deps-hash! (atom nil))
           @deps-hash!)\n"))
 
-(defn- wrap-clojure-eval [{:keys [path code line]}]
+(defn- wrap-clojure-eval
+  "Ensure the code is evaluated with reader conditionals and an optional
+  line number of file path."
+  [{:keys [path code line]}]
   (let [path-args-str (when-not (str/blank? path)
                         (str " \"" path "\" \"" (last (str/split path #"/")) "\""))]
     (str "
@@ -47,12 +58,15 @@
                (cond-> res (seq? res) (doall)))))
          ")))
 
-(defn deps-strs [{:keys [lang current-deps-hash]}]
+(defn deps-strs
+  "Sequence of forms to evaluate to ensure that all dependencies are loaded.
+  Requires current-deps-hash to work out if there's any work to do or not."
+  [{:keys [lang current-deps-hash]}]
   (case lang
     :clj (let [injected-deps @injected-deps!
                deps-hash (hash injected-deps)]
            (concat
-             [(str "(ns " prelude-ns "
+             [(str "(ns " deps-ns "
                       (:require [clojure.repl]
                                 [clojure.string]
                                 [clojure.java.io]
@@ -62,11 +76,13 @@
                (map #(wrap-clojure-eval {:code (slurp %)
                                          :path %})
                     injected-deps))))
-    :cljs [(str "(ns conjure.prelude." meta/ns-version "
+    :cljs [(str "(ns " deps-ns "
                    (:require [cljs.repl]
                              [cljs.test]))\n")]))
 
-(defn eval-str [{:keys [ns path]} {:keys [conn code line]}]
+(defn eval-str
+  "Prepare code for evaluation."
+  [{:keys [ns path]} {:keys [conn code line]}]
   (case (:lang conn)
     :clj
     (str "
@@ -88,17 +104,23 @@
                       ")"))]
       (str "(in-ns '" (or ns "cljs.user") ")\n" code))))
 
-(defn doc-str [{:keys [conn name]}]
+(defn doc-str
+  "Lookup documentation and capture the *out* into a string."
+  [{:keys [conn name]}]
   (str "(with-out-str ("
        (case (:lang conn)
          :clj "clojure"
          :cljs "cljs")
        ".repl/doc " name "))"))
 
-(defn load-file-str [path]
+(defn load-file-str
+  "Loads a file, won't work on remote environments."
+  [path]
   (str "(load-file \"" path "\")"))
 
-(defn completions-str [{:keys [ns conn prefix context]}]
+(defn completions-str
+  "Find completions for a prefix and context string."
+  [{:keys [ns conn prefix context]}]
   (case (:lang conn)
     :clj
     (str "(conjure.compliment.v0v3v9.compliment.core/completions
@@ -113,7 +135,9 @@
     ;; https://github.com/alexander-yakushev/compliment/pull/62
     :cljs "[]"))
 
-(defn definition-str [{:keys [name conn]}]
+(defn definition-str
+  "Find where a given symbol is defined, returns [file line column]."
+  [{:keys [name conn]}]
   (str "
        (when-let [loc (if-let [sym (and (not (find-ns '"name")) (resolve '"name"))]
                         (mapv (meta sym) [:file :line :column])
@@ -141,7 +165,9 @@
                (update 2 dec))))
        "))
 
-(defn run-tests-str [{:keys [targets conn]}]
+(defn run-tests-str
+  "Executes tests in the given namespaces."
+  [{:keys [targets conn]}]
   (let [targets-str (->> targets
                          (map #(str "'" %))
                          (str/join " "))]
@@ -155,7 +181,9 @@
       (str "(with-out-str
               (cljs.test/run-tests " targets-str "))\n"))))
 
-(defn run-all-tests-str [{:keys [re conn]}]
+(defn run-all-tests-str
+  "Executes all tests with an optional namespace filter regular expression."
+  [{:keys [re conn]}]
   (let [re-str (when re
                  (str " #\"" (util/escape-quotes re) "\""))]
 
