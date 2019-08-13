@@ -4,5 +4,6 @@
 ;; When you change these versions you need to update the symbols used in conjure.code.
 ;; The version numbers in the munged namespaces will change!
 
-[[compliment "0.3.8"]
- [cider/orchard "0.4.0"]]
+[[compliment "0.3.9"]
+ [cider/orchard "0.4.0"]
+ [org.clojure/tools.namespace "0.3.1"]]

@@ -27,63 +27,66 @@
   "Files to load, in order, to add runtime dependencies to a REPL."
   (delay (edn/read-string (slurp "target/mranderson/load-order.edn"))))
 
-(defn prelude-strs [{:keys [lang]}]
-  (case lang
-    :clj (let [deps (mapv slurp @injected-deps!)
-               deps-hash (hash deps)]
-           (concat
-             [(str "
-                   (ns conjure.prelude." meta/ns-version "
-                     (:require [clojure.repl]
-                               [clojure.string]
-                               [clojure.java.io]
-                               [clojure.test]))
+(defonce ^:private prelude-ns (str "conjure.prelude." meta/ns-version))
 
-                   (defonce deps-hash! (atom nil))
+(defn deps-hash-str []
+  (str "(do
+          (ns " prelude-ns ")
+          (defonce deps-hash! (atom nil))
+          @deps-hash!)\n"))
 
-                   (when (not= @deps-hash! " deps-hash ")
-                     ")]
-             deps
-             [(str "
-                     (reset! deps-hash! " deps-hash "))
-
-                   :conjure/ready
-                   ")]))
-    :cljs [(str "
-                (ns conjure.prelude." meta/ns-version "
-                  (:require [cljs.repl]
-                            [cljs.test]))
-
-                :conjure/ready
-                ")]))
-
-(defn eval-str [{:keys [ns path]} {:keys [conn code line]}]
+(defn- wrap-clojure-eval [{:keys [path code line]}]
   (let [path-args-str (when-not (str/blank? path)
                         (str " \"" path "\" \"" (last (str/split path #"/")) "\""))]
-    (case (:lang conn)
-      :clj
-      (str "
-           (do
-             (ns " (or ns "user") ")
-             (let [rdr (-> (java.io.StringReader. \"" (util/escape-quotes code) "\n\")
-                           (clojure.lang.LineNumberingPushbackReader.)
-                           (doto (.setLineNumber " (or line 1) ")))]
-               (binding [*default-data-reader-fn* tagged-literal]
-                 (let [res (. clojure.lang.Compiler (load rdr" path-args-str "))]
-                   (cond-> res (seq? res) (doall))))))
-           ")
+    (str "
+         (let [rdr (-> (java.io.StringReader. \"" (util/escape-quotes code) "\n\")
+                       (clojure.lang.LineNumberingPushbackReader.)
+                       (doto (.setLineNumber " (or line 1) ")))]
+           (binding [*default-data-reader-fn* tagged-literal]
+             (let [res (. clojure.lang.Compiler (load rdr" path-args-str "))]
+               (cond-> res (seq? res) (doall)))))
+         ")))
 
-      :cljs
-      (let [wrap-forms? (-> (str "[\n" code "\n]")
-                            (parse-code)
-                            (count)
-                            (not= 1))
-            code (str (when wrap-forms?
-                        "(do ")
-                      code "\n"
-                      (when wrap-forms?
-                        ")"))]
-        (str "(in-ns '" (or ns "cljs.user") ")\n" code)))))
+(defn deps-strs [{:keys [lang current-deps-hash]}]
+  (case lang
+    :clj (let [injected-deps @injected-deps!
+               deps-hash (hash injected-deps)]
+           (concat
+             [(str "(ns " prelude-ns "
+                      (:require [clojure.repl]
+                                [clojure.string]
+                                [clojure.java.io]
+                                [clojure.test]))\n")
+              (str "(reset! deps-hash! " deps-hash ")\n")]
+             (when (not= current-deps-hash deps-hash)
+               (map #(wrap-clojure-eval {:code (slurp %)
+                                         :path %})
+                    injected-deps))))
+    :cljs [(str "(ns conjure.prelude." meta/ns-version "
+                   (:require [cljs.repl]
+                             [cljs.test]))\n")]))
+
+(defn eval-str [{:keys [ns path]} {:keys [conn code line]}]
+  (case (:lang conn)
+    :clj
+    (str "
+         (do
+           (ns " (or ns "user") ")
+           " (wrap-clojure-eval {:code code
+                                 :path path
+                                 :line line}) ")\n")
+
+    :cljs
+    (let [wrap-forms? (-> (str "[\n" code "\n]")
+                          (parse-code)
+                          (count)
+                          (not= 1))
+          code (str (when wrap-forms?
+                      "(do ")
+                    code "\n"
+                    (when wrap-forms?
+                      ")"))]
+      (str "(in-ns '" (or ns "cljs.user") ")\n" code))))
 
 (defn doc-str [{:keys [conn name]}]
   (str "(with-out-str ("
@@ -98,15 +101,13 @@
 (defn completions-str [{:keys [ns conn prefix context]}]
   (case (:lang conn)
     :clj
-    (str "
-         (conjure.compliment.v0v3v8.compliment.core/completions
-           \"" (util/escape-quotes prefix) "\"
-           {:ns (find-ns '" (or ns "user") ")
-            :extra-metadata #{:doc :arglists}
-            " (when context
-                (str ":context \"" (util/escape-quotes context) "\""))
-           "})
-         ")
+    (str "(conjure.compliment.v0v3v9.compliment.core/completions
+            \"" (util/escape-quotes prefix) "\"
+            {:ns (find-ns '" (or ns "user") ")
+             :extra-metadata #{:doc :arglists}
+             " (when context
+                 (str ":context \"" (util/escape-quotes context) "\""))
+            "})\n")
 
     ;; ClojureScript isn't supported by Compliment yet.
     ;; https://github.com/alexander-yakushev/compliment/pull/62
@@ -146,17 +147,13 @@
                          (str/join " "))]
     (case (:lang conn)
       :clj
-      (str "
-           (with-out-str
-             (binding [clojure.test/*test-out* *out*]
-               (apply clojure.test/run-tests (keep find-ns #{" targets-str "}))))
-           ")
+      (str "(with-out-str
+              (binding [clojure.test/*test-out* *out*]
+                (apply clojure.test/run-tests (keep find-ns #{" targets-str "}))))\n")
 
       :cljs
-      (str "
-           (with-out-str
-             (cljs.test/run-tests " targets-str "))
-           "))))
+      (str "(with-out-str
+              (cljs.test/run-tests " targets-str "))\n"))))
 
 (defn run-all-tests-str [{:keys [re conn]}]
   (let [re-str (when re
@@ -164,14 +161,10 @@
 
     (case (:lang conn)
       :clj
-      (str "
-           (with-out-str
-             (binding [clojure.test/*test-out* *out*]
-               (clojure.test/run-all-tests" re-str ")))
-           ")
+      (str "(with-out-str
+              (binding [clojure.test/*test-out* *out*]
+                (clojure.test/run-all-tests" re-str ")))\n")
 
       :cljs
-      (str "
-           (with-out-str
-             (cljs.test/run-all-tests" re-str "))
-           "))))
+      (str "(with-out-str
+              (cljs.test/run-all-tests" re-str "))\n"))))
