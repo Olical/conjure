@@ -27,31 +27,35 @@
   "Files to load, in order, to add runtime dependencies to a REPL."
   (delay (edn/read-string (slurp "target/mranderson/load-order.edn"))))
 
-(defn prelude-str [{:keys [lang]}]
+(defn prelude-strs [{:keys [lang]}]
   (case lang
-    :clj (let [deps (str/join "\n" (map slurp @injected-deps!))]
-           (str "
+    :clj (let [deps (mapv slurp @injected-deps!)
+               deps-hash (hash deps)]
+           (concat
+             [(str "
+                   (ns conjure.prelude." meta/ns-version "
+                     (:require [clojure.repl]
+                               [clojure.string]
+                               [clojure.java.io]
+                               [clojure.test]))
+
+                   (defonce deps-hash! (atom nil))
+
+                   (when (not= @deps-hash! " deps-hash ")
+                     ")]
+             deps
+             [(str "
+                     (reset! deps-hash! " deps-hash "))
+
+                   :conjure/ready
+                   ")]))
+    :cljs [(str "
                 (ns conjure.prelude." meta/ns-version "
-                  (:require [clojure.repl]
-                            [clojure.string]
-                            [clojure.java.io]
-                            [clojure.test]))
-
-                (defonce deps-hash! (atom nil))
-
-                (when (not= @deps-hash! " (hash deps) ")
-                  (load-string \"" (util/escape-quotes deps) "\")
-                  (reset! deps-hash! " (hash deps) "))
+                  (:require [cljs.repl]
+                            [cljs.test]))
 
                 :conjure/ready
-                "))
-    :cljs (str "
-               (ns conjure.prelude." meta/ns-version "
-                 (:require [cljs.repl]
-                           [cljs.test]))
-
-               :conjure/ready
-               ")))
+                ")]))
 
 (defn eval-str [{:keys [ns path]} {:keys [conn code line]}]
   (let [path-args-str (when-not (str/blank? path)
@@ -95,7 +99,7 @@
   (case (:lang conn)
     :clj
     (str "
-         (conjure.compliment.v0v3v9.compliment.core/completions
+         (conjure.compliment.v0v3v8.compliment.core/completions
            \"" (util/escape-quotes prefix) "\"
            {:ns (find-ns '" (or ns "user") ")
             :extra-metadata #{:doc :arglists}

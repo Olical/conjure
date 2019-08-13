@@ -132,12 +132,14 @@
                            (connect {:tag tag
                                      :host host
                                      :port port}))}
-            prelude (code/prelude-str {:lang lang})]
+            prelude-strs (code/prelude-strs {:lang lang})
+            eval-chan (get-in conn [:chans :eval-chan])]
 
         (swap! conns! assoc tag conn)
 
-        (log/trace "Sending prelude:" (util/sample prelude 20))
-        (a/>!! (get-in conn [:chans :eval-chan]) prelude)
+        (log/trace "Sending" (count prelude-strs) "prelude strings...")
+        (doseq [prelude prelude-strs]
+          (a/>!! eval-chan prelude))
 
         (loop []
           (if (= ":conjure/ready" (:val (a/<!! (get-in conn [:chans :read-chan]))))
