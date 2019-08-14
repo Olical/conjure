@@ -58,6 +58,11 @@
                (cond-> res (seq? res) (doall)))))
          ")))
 
+(defn- wrap-disable-slurp
+  "It wraps the code in more code to disable slurping."
+  [code]
+  (str "(with-redefs [slurp (constantly nil)]" code "\n)\n"))
+
 (defn deps-strs
   "Sequence of forms to evaluate to ensure that all dependencies are loaded.
   Requires current-deps-hash to work out if there's any work to do or not."
@@ -73,8 +78,10 @@
                                 [clojure.test]))\n")
               (str "(reset! deps-hash! " deps-hash ")\n")]
              (when (not= current-deps-hash deps-hash)
-               (map #(wrap-clojure-eval {:code (slurp %)
-                                         :path %})
+               (map (comp
+                      wrap-disable-slurp
+                      #(wrap-clojure-eval {:code (slurp %)
+                                           :path %}))
                     injected-deps))))
     :cljs [(str "(ns " deps-ns "
                    (:require [cljs.repl]
