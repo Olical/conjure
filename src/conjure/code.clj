@@ -111,15 +111,6 @@
                       ")"))]
       (str "(in-ns '" (or ns "cljs.user") ")\n" code))))
 
-(defn doc-str
-  "Lookup documentation and capture the *out* into a string."
-  [{:keys [conn name]}]
-  (str "(with-out-str ("
-       (case (:lang conn)
-         :clj "clojure"
-         :cljs "cljs")
-       ".repl/doc " name "))"))
-
 (defn load-file-str
   "Loads a file, won't work on remote environments."
   [path]
@@ -141,6 +132,23 @@
     ;; ClojureScript isn't supported by Compliment yet.
     ;; https://github.com/alexander-yakushev/compliment/pull/62
     :cljs "[]"))
+
+;; TODO Replace doc and definition with info.
+(defn info-str
+  "Get the information map for a given namespace and symbol."
+  [{:keys [conn ns name]}]
+  (case (:lang conn)
+    :clj (str "(conjure.orchard.v0v4v0.orchard.info/info '" ns " '" name ")")
+    :cljs "{}"))
+
+(defn doc-str
+  "Lookup documentation and capture the *out* into a string."
+  [{:keys [conn name]}]
+  (str "(with-out-str ("
+       (case (:lang conn)
+         :clj "clojure"
+         :cljs "cljs")
+       ".repl/doc " name "))"))
 
 (defn definition-str
   "Find where a given symbol is defined, returns [file line column]."
