@@ -133,12 +133,11 @@
     ;; https://github.com/alexander-yakushev/compliment/pull/62
     :cljs "[]"))
 
-;; TODO Replace doc and definition with info.
 (defn info-str
   "Get the information map for a given namespace and symbol."
-  [{:keys [conn ns name]}]
+  [{:keys [conn name]}]
   (case (:lang conn)
-    :clj (str "(conjure.orchard.v0v4v0.orchard.info/info '" ns " '" name ")")
+    :clj (str "(conjure.orchard.v0v4v0.orchard.info/info (symbol (str *ns*)) '" name ")")
     :cljs "{}"))
 
 (defn doc-str
