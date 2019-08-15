@@ -78,15 +78,17 @@ Here's an exhaustive example of what you can configure with these files. If you 
          :enabled? false}}
 
  ;; Optional configuration for tools.namespace refreshing.
- :refresh {;; Function to run before reloading.
-           :before my.ns/stop
+ ;; Set what you need and ignore the rest.
+ :refresh
+ {;; Function to run before reloading.
+  :before my.ns/stop
 
-           ;; Function to run after reloading successfully.
-           :after my.ns/start
+  ;; Function to run after reloading successfully.
+  :after my.ns/start
 
-           ;; Directories to search for changed namespaces in.
-           ;; Defaults to all directories on the Java classpath.
-           :dirs #{"src"}}}
+  ;; Directories to search for changed namespaces in.
+  ;; Defaults to all directories on the Java classpath.
+  :dirs #{"src"}}}
 ```
 
 If you open Conjure without any connections configured it'll self prepl into it's _own_ JVM. This allows you to have autocompletion and evaluation in any directory or Clojure file. This can be really useful for quickly trying something out in a temporary file where a regular REPL won't quite cut it.
