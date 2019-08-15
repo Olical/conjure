@@ -186,11 +186,20 @@
 
 (defn refresh-str
   "Refresh changed namespaces."
-  [{:keys [conn op]}]
+  [{:keys [conn op config]
+    {:keys [before after dirs]} :config}]
   (when (= (:lang conn) :clj)
-    (str "(conjure.toolsnamespace.v0v3v1.clojure.tools.namespace.repl/"
-         (case op
-           :clear "clear"
-           :changed "refresh"
-           :all "refresh-all")
-         ")")))
+    (let [prefix "conjure.toolsnamespace.v0v3v1.clojure.tools.namespace.repl"]
+      (str (when before
+             (str "(require '" (namespace before) ") "
+                  "(" before ") "))
+           (when dirs
+             (str "(apply " prefix "/set-refresh-dirs " (pr-str dirs) ") "))
+           "(" prefix "/"
+           (case op
+             :clear "clear"
+             :changed "refresh"
+             :all "refresh-all")
+           (when (and (not= op :clear) after)
+             (str " :after '" after))
+           ")"))))

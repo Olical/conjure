@@ -2,4 +2,9 @@
  {:dev {:port 5885}
   :jvm {:port 5555}
   :node {:port 5556, :lang :cljs}
-  :browser {:port 5557, :lang :cljs}}}
+  :browser {:port 5557, :lang :cljs}}
+ 
+ :refresh
+ {:before clojure.core/prn
+  :after clojure.core/prn
+  :dirs #{"src"}}}
