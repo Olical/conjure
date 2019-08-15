@@ -204,3 +204,21 @@
       :cljs
       (str "(with-out-str
               (cljs.test/run-all-tests" re-str "))\n"))))
+
+(defn refresh
+  "Refresh changed namespaces."
+  [{:keys [conn]}]
+  (when (= (:lang conn) :clj)
+    "(conjure.toolsnamespace.v0v3v1.clojure.tools.namespace.repl/refresh)"))
+
+(defn refresh-all
+  "Refresh changed namespaces."
+  [{:keys [conn]}]
+  (when (= (:lang conn) :clj)
+    "(conjure.toolsnamespace.v0v3v1.clojure.tools.namespace.repl/refresh-all)"))
+
+(defn refresh-clear
+  "Refresh changed namespaces."
+  [{:keys [conn]}]
+  (when (= (:lang conn) :clj)
+    "(conjure.toolsnamespace.v0v3v1.clojure.tools.namespace.repl/refresh-clear)"))

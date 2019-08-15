@@ -126,5 +126,14 @@
   (action/run-all-tests (when-not (str/blank? target-namespaces)
                           target-namespaces)))
 
+(defrpc :notify :refresh []
+  (action/refresh))
+
+(defrpc :notify :refresh-all []
+  (action/refresh-all))
+
+(defrpc :notify :refresh-clear []
+  (action/refresh-clear))
+
 (defrpc :notify :stop []
   (deliver exit-handle! true))

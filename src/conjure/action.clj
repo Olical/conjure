@@ -231,3 +231,24 @@
                          :msg (str "Failed to run tests for " (pr-str re))})]
       (ui/test* {:conn conn
                  :resp (update result :val code/parse-code)}))))
+
+(defn refresh []
+  (doseq [conn (current-conns)]
+    (when-let [code (code/refresh {:conn conn})]
+      (doto (wrapped-eval
+        {:conn conn
+         :code code}) tap>))))
+
+(defn refresh-all []
+  (doseq [conn (current-conns)]
+    (when-let [code (code/refresh-all {:conn conn})]
+      (wrapped-eval
+        {:conn conn
+         :code code}))))
+
+(defn refresh-clear []
+  (doseq [conn (current-conns)]
+    (when-let [code (code/refresh-clear {:conn conn})]
+      (wrapped-eval
+        {:conn conn
+         :code code}))))
