@@ -77,9 +77,15 @@ Here's an exhaustive example of what you can configure with these files. If you 
          ;; This allows you to toggle parts of your config with different custom mappings.
          :enabled? false}}
 
- ;; TODO...
- :refresh {:before my.ns/stop
+ ;; Optional configuration for tools.namespace refreshing.
+ :refresh {;; Function to run before reloading.
+           :before my.ns/stop
+
+           ;; Function to run after reloading successfully.
            :after my.ns/start
+
+           ;; Directories to search for changed namespaces in.
+           ;; Defaults to all directories on the Java classpath.
            :dirs #{"src"}}}
 ```
 
