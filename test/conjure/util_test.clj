@@ -1,6 +1,6 @@
 (ns conjure.util-test
   (:require [clojure.test :as t]
-            [zprint.core :as zp]
+            [clojure.pprint :as pprint]
             [conjure.util :as util]))
 
 (t/deftest join-words
@@ -11,6 +11,18 @@
 (t/deftest join-lines
   (t/is (= (util/join-lines []) ""))
   (t/is (= (util/join-lines ["foo" "bar"]) "foo\nbar")))
+
+(t/deftest parse-code
+  (t/is (= (util/parse-code "{:foo :bar}") {:foo :bar}))
+  (t/is (= (util/parse-code "(ohno(})") nil)))
+
+(t/deftest parse-ns
+  (t/is (= (util/parse-ns "lol nope") nil))
+  (t/is (= (util/parse-ns "(+ 10 10)") nil))
+  (t/is (= (util/parse-ns "(ns some.ns-woo)") 'some.ns-woo))
+  (t/is (= (util/parse-ns "(ns some.ns-woo \"some docs\")") 'some.ns-woo))
+  (t/is (= (util/parse-ns "(ns ^{:doc \"foo\"} best.ns)") 'best.ns))
+  (t/is (= (util/parse-ns "(bad") ::util/error)))
 
 (t/deftest splice
   (t/is (= (util/splice "" 0 0 "") ""))
@@ -33,7 +45,7 @@
 (t/deftest pprint
   (t/is (util/pprint "{:foo :bar}") "{:foo :bar}")
 
-  (with-redefs [zp/zprint-str (fn [_] (throw (Error. "ohno")))]
+  (with-redefs [pprint/pprint (fn [_] (throw (Error. "ohno")))]
     (t/is (= (util/pprint "{:an :error}") "{:an :error}"))))
 
 (t/deftest throwable->str

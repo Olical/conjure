@@ -9,7 +9,6 @@
   clojure-msgpack {:mvn/version "1.2.1"}
   camel-snake-kebab {:mvn/version "0.4.0"}
   expound {:mvn/version "0.7.2"}
-  zprint {:mvn/version "0.4.16"}
   tcp-server {:mvn/version "0.1.0"}
   metosin/jsonista {:mvn/version "0.2.3"}
   me.raynes/fs {:mvn/version "1.4.6"}

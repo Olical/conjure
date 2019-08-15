@@ -3,8 +3,9 @@
   (:require [clojure.main :as clj]
             [clojure.string :as str]
             [clojure.core.memoize :as memo]
+            [clojure.tools.reader :as tr]
+            [clojure.pprint :as pprint]
             [taoensso.timbre :as log]
-            [zprint.core :as zp]
             [camel-snake-kebab.core :as csk]
             [camel-snake-kebab.extras :as cske])
   (:import [java.net Socket]
@@ -63,17 +64,31 @@
   (str/escape s {\\ "\\\\"
                  \" "\\\""}))
 
-(def ^:private zprint-opts
-  {:style :community
-   :width 120
-   :map {:lift-ns? false
-         :unlift-ns? true}})
+(defn parse-code
+  "Parse code as data and return it, returns nil if it fails.
+  Will preserve reader conditionals."
+  [code]
+  (try
+    (binding [tr/*default-data-reader-fn* tagged-literal
+              tr/*alias-map* (constantly 'user)]
+      (tr/read-string {:read-cond :preserve} code))
+    (catch Throwable t
+      (log/warn "Failed to parse code" t))))
+
+(defn parse-ns
+  "Parse the ns symbol out of the code, return ::error if parsing failed."
+  [code]
+  (if-let [form (parse-code code)]
+    (when (and (seq? form) (= (first form) 'ns))
+      (second (filter symbol? form)))
+    ::error))
 
 (defn pprint
   "Parse and format the given string."
   [code]
   (try
-    (zp/zprint-str code (merge zprint-opts {:parse-string-all? true}))
+    (with-out-str
+      (pprint/pprint (parse-code code)))
     (catch Throwable e
       (log/error "Error while pretty printing code" e)
       code)))
@@ -82,7 +97,8 @@
   "Skip parsing, just format the given data."
   [data]
   (try
-    (zp/zprint-str data zprint-opts)
+    (with-out-str
+      (pprint/pprint data))
     (catch Throwable e
       (log/error "Error while pretty printing data" e)
       (pr-str data))))

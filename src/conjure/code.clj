@@ -1,31 +1,10 @@
 (ns conjure.code
-  "Tools to render or format Clojure code. The response from these functions
+  "Tools to render code for evaluation. The response from these functions
   should be sent to an environment for evaluation."
   (:require [clojure.string :as str]
             [clojure.edn :as edn]
-            [clojure.tools.reader :as tr]
-            [taoensso.timbre :as log]
             [conjure.util :as util]
             [conjure.meta :as meta]))
-
-(defn parse-code
-  "Parse code as data and return it, returns nil if it fails.
-  Will preserve reader conditionals."
-  [code]
-  (try
-    (binding [tr/*default-data-reader-fn* tagged-literal
-              tr/*alias-map* (constantly 'user)]
-      (tr/read-string {:read-cond :preserve} code))
-    (catch Throwable t
-      (log/warn "Failed to parse code" t))))
-
-(defn parse-ns
-  "Parse the ns symbol out of the code, return ::error if parsing failed."
-  [code]
-  (if-let [form (parse-code code)]
-    (when (and (seq? form) (= (first form) 'ns))
-      (second (filter symbol? form)))
-    ::error))
 
 (def injected-deps!
   "Files to load, in order, to add runtime dependencies to a REPL."
@@ -94,7 +73,7 @@
 
     :cljs
     (let [wrap-forms? (-> (str "[\n" code "\n]")
-                          (parse-code)
+                          (util/parse-code)
                           (count)
                           (not= 1))
           code (str (when wrap-forms?

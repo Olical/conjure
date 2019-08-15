@@ -139,14 +139,14 @@
         exception? (boolean (:exception resp))
         msg (cond
               exception? (util/pretty-error
-                           (code/parse-code (:val resp)))
+                           (util/parse-code (:val resp)))
               code? (util/pprint (:val resp))
               :else (:val resp))]
 
     (cond
       exception?
       (let [err-msg (-> (:val resp)
-                        (code/parse-code)
+                        (util/parse-code)
                         (main/ex-triage)
                         (main/ex-str))]
         (nvim/display-virtual

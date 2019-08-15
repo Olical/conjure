@@ -22,7 +22,7 @@
            (api/get-current-win)])]
     (loop [sample-lines sample-lines
            line-count line-count]
-      (let [ns-res (code/parse-ns (util/join-lines sample-lines))
+      (let [ns-res (util/parse-ns (util/join-lines sample-lines))
             next-line-count (* line-count 2)]
         (if (and (= ns-res ::code/error) (< line-count buf-length))
           (recur (api/call (get-lines next-line-count)) next-line-count)

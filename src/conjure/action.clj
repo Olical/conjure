@@ -84,7 +84,7 @@
                                                               {:conn conn
                                                                :name name})})
                                  :msg (str "Failed to lookup documentation for " name)})
-                              (update :val code/parse-code))]
+                              (update :val util/parse-code))]
       (ui/doc {:conn conn
                :resp (cond-> result
                        (str/blank? (:val result))
@@ -96,7 +96,7 @@
 (defn quick-doc []
   (let [name (some-> (nvim/read-form {:data-pairs? false})
                      (get :form)
-                     (code/parse-code)
+                     (util/parse-code)
                      (as-> x
                        (when (seq? x) (first x)))
                      (str))]
@@ -110,7 +110,7 @@
                                                               {:conn conn
                                                                :name name})})})
                                           (get :val)
-                                          (code/parse-code)
+                                          (util/parse-code)
                                           (not-empty)))
                                 (current-conns {:passive? true})))]
       (ui/quick-doc doc-str)
@@ -169,7 +169,7 @@
                                           :context context
                                           :ns (:ns nvim/ctx)})})})
                      (get :val)
-                     (code/parse-code)
+                     (util/parse-code)
                      (->> (map
                             (fn [{:keys [candidate type ns package doc arglists]}]
                               (let [ns+args (when arglists
@@ -193,7 +193,7 @@
                                               :name name})})
                             :msg (str "Failed to look up definition for " name)})
                          (get :val)
-                         (code/parse-code)))
+                         (util/parse-code)))
         coord (some lookup (current-conns))]
     (if (vector? coord)
       (nvim/edit-at coord)
@@ -219,7 +219,7 @@
                                                         targets)})})
                            :msg (str "Failed to run tests for " (pr-str targets))})]
         (ui/test* {:conn conn
-                   :resp (update result :val code/parse-code)})))))
+                   :resp (update result :val util/parse-code)})))))
 
 (defn run-all-tests [re]
   (doseq [conn (current-conns)]
@@ -230,7 +230,7 @@
                                   :code (code/run-all-tests-str {:re re, :conn conn})})
                          :msg (str "Failed to run tests for " (pr-str re))})]
       (ui/test* {:conn conn
-                 :resp (update result :val code/parse-code)}))))
+                 :resp (update result :val util/parse-code)}))))
 
 (defn refresh [flags]
   (doseq [conn (current-conns)]
