@@ -67,9 +67,7 @@ command! -nargs=0 ConjureCloseLog call conjure#notify("close_log")
 command! -nargs=0 ConjureToggleLog call conjure#notify("toggle_log")
 command! -nargs=* ConjureRunTests call conjure#notify("run_tests", <q-args>)
 command! -nargs=? ConjureRunAllTests call conjure#notify("run_all_tests", <q-args>)
-command! -nargs=0 ConjureRefresh call conjure#notify("refresh")
-command! -nargs=0 ConjureRefreshAll call conjure#notify("refresh_all")
-command! -nargs=0 ConjureRefreshClear call conjure#notify("refresh_clear")
+command! -nargs=* ConjureRefresh call conjure#notify("refresh", <q-args>)
 
 augroup conjure
   autocmd!
@@ -91,9 +89,10 @@ augroup conjure
     call s:def_config("nmap_toggle_log", g:conjure_map_prefix . "cL")
     call s:def_config("nmap_run_tests", g:conjure_map_prefix . "tt")
     call s:def_config("nmap_run_all_tests", g:conjure_map_prefix . "ta")
-    call s:def_config("nmap_refresh", g:conjure_map_prefix . "rr")
+    call s:def_config("nmap_refresh_changed", g:conjure_map_prefix . "rr")
     call s:def_config("nmap_refresh_all", g:conjure_map_prefix . "ra")
     call s:def_config("nmap_refresh_clear", g:conjure_map_prefix . "rc")
+    call s:def_config("nmap_refresh_full", g:conjure_map_prefix . "rf")
     call s:def_config("nmap_doc", "K")
     call s:def_config("nmap_definition", "gd")
 
@@ -113,9 +112,11 @@ augroup conjure
     call s:def_map("n", "run_tests", ":ConjureRunTests")
     call s:def_map("n", "run_all_tests", ":ConjureRunAllTests")
 
-    call s:def_map("n", "refresh", ":ConjureRefresh")
-    call s:def_map("n", "refresh_all", ":ConjureRefreshAll")
-    call s:def_map("n", "refresh_clear", ":ConjureRefreshClear")
+    " TODO Maybe pass a changed flag?
+    call s:def_map("n", "refresh_changed", ":ConjureRefresh")
+    call s:def_map("n", "refresh_all", ":ConjureRefresh all")
+    call s:def_map("n", "refresh_clear", ":ConjureRefresh clear")
+    call s:def_map("n", "refresh_full", ":ConjureRefresh clear all")
 
     call s:def_map("n", "doc", ":ConjureDoc <c-r><c-w>")
     call s:def_map("n", "definition", ":ConjureDefinition <c-r><c-w>")

@@ -177,3 +177,12 @@
   (append {:origin (:tag conn)
            :kind :load-file
            :msg path}))
+
+(defn refresh
+  "When namespaces are being refreshed."
+  [{:keys [conn flags]}]
+  (append {:origin (:tag conn)
+           :kind :refresh
+           :msg (str "Refreshing"
+                     (when (seq flags)
+                       (str " " (str/join ", " flags))))}))

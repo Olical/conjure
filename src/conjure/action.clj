@@ -232,23 +232,11 @@
       (ui/test* {:conn conn
                  :resp (update result :val code/parse-code)}))))
 
-(defn refresh []
+(defn refresh [flags]
   (doseq [conn (current-conns)]
-    (when-let [code (code/refresh {:conn conn})]
-      (doto (wrapped-eval
-        {:conn conn
-         :code code}) tap>))))
-
-(defn refresh-all []
-  (doseq [conn (current-conns)]
-    (when-let [code (code/refresh-all {:conn conn})]
-      (wrapped-eval
-        {:conn conn
-         :code code}))))
-
-(defn refresh-clear []
-  (doseq [conn (current-conns)]
-    (when-let [code (code/refresh-clear {:conn conn})]
-      (wrapped-eval
-        {:conn conn
-         :code code}))))
+    (when-let [code (code/refresh-str {:conn conn, :flags flags})]
+      (ui/refresh {:conn conn, :flags flags})
+      (ui/result {:conn conn
+                  :resp (wrapped-eval
+                          {:conn conn
+                           :code code})}))))
