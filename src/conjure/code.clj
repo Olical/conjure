@@ -186,13 +186,11 @@
 
 (defn refresh-str
   "Refresh changed namespaces."
-  [{:keys [conn flags]}]
+  [{:keys [conn op]}]
   (when (= (:lang conn) :clj)
-    (let [prefix "conjure.toolsnamespace.v0v3v1.clojure.tools.namespace.repl"]
-      (str (when (contains? flags :clear)
-             (str "(" prefix  "/clear)"))
-
-           (str "(" prefix  "/refresh"
-                (when (contains? flags :all)
-                  "-all")
-                ")")))))
+    (str "(conjure.toolsnamespace.v0v3v1.clojure.tools.namespace.repl/"
+         (case op
+           :clear "clear"
+           :changed "refresh"
+           :all "refresh-all")
+         ")")))

@@ -126,11 +126,8 @@
   (action/run-all-tests (when-not (str/blank? target-namespaces)
                           target-namespaces)))
 
-(defrpc :notify :refresh [flags]
-  (action/refresh (some-> (not-empty flags)
-                          (str/split #"\s+")
-                          (->> (map keyword)
-                               (set)))))
+(defrpc :notify :refresh [op]
+  (action/refresh (keyword op)))
 
 (defrpc :notify :stop []
   (deliver exit-handle! true))

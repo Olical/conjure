@@ -232,10 +232,10 @@
       (ui/test* {:conn conn
                  :resp (update result :val util/parse-code)}))))
 
-(defn refresh [flags]
+(defn refresh [op]
   (doseq [conn (current-conns)]
-    (when-let [code (code/refresh-str {:conn conn, :flags flags})]
-      (ui/refresh {:conn conn, :flags flags})
+    (when-let [code (code/refresh-str {:conn conn, :op op})]
+      (ui/refresh {:conn conn, :op op})
       (ui/result {:conn conn
                   :resp (wrapped-eval
                           {:conn conn
