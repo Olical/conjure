@@ -234,12 +234,12 @@
 
 (defn refresh [op]
   (doseq [conn (current-conns)]
-    (when-let [code (code/refresh-str
-                      {:conn conn
-                       :op op
-                       :config (:refresh (config/fetch))})]
-      (ui/refresh {:conn conn, :op op})
-      (ui/result {:conn conn
-                  :resp (wrapped-eval
-                          {:conn conn
-                           :code code})}))))
+    (let [opts {:conn conn
+                :op op
+                :config (:refresh (config/fetch))}]
+      (when-let [code (code/refresh-str opts)]
+        (ui/refresh opts)
+        (ui/result {:conn conn
+                    :resp (wrapped-eval
+                            {:conn conn
+                             :code code})})))))

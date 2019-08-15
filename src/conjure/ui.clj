@@ -180,10 +180,13 @@
 
 (defn refresh
   "When namespaces are being refreshed."
-  [{:keys [conn op]}]
+  [{:keys [conn op config]}]
   (append {:origin (:tag conn)
            :kind :refresh
-           :msg (case op
-                  :clear "Clearing refresh namespace cache."
-                  :changed "Refreshing changed namespaces."
-                  :all "Refreshing all namespaces.")}))
+           :msg (str
+                  (case op
+                    :clear "Clearing refresh namespace cache."
+                    :changed "Refreshing changed namespaces."
+                    :all "Refreshing all namespaces.")
+                  (when (and (not= op :clear) config)
+                    (str " " (pr-str config))))}))
