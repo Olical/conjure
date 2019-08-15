@@ -132,22 +132,27 @@
                            (connect {:tag tag
                                      :host host
                                      :port port}))}
-            prelude (code/prelude-str {:lang lang})]
+            {:keys [eval-chan read-chan]} (get conn :chans)]
 
         (swap! conns! assoc tag conn)
 
-        (log/trace "Sending prelude:" (util/sample prelude 20))
-        (a/>!! (get-in conn [:chans :eval-chan]) prelude)
+        (log/trace "Fetching current deps-hash.")
+        (a/>!! eval-chan (code/deps-hash-str))
 
-        (loop []
-          (if (= ":conjure/ready" (:val (a/<!! (get-in conn [:chans :read-chan]))))
-            (log/trace "Prelude loaded")
-            (recur)))
+        (let [deps (code/deps-strs
+                     {:lang lang
+                      :current-deps-hash (-> (a/<!! read-chan)
+                                             (get :val)
+                                             (edn/read-string))})]
+          (log/trace "Evaluating" (count deps) "dep strings...")
+          (doseq [dep deps] (a/>!! eval-chan dep))
+          (doseq [_ deps] (a/<!! read-chan))
+          (log/trace "Deps done"))
 
         (util/thread
           "read-chan handler"
           (loop []
-            (when-let [out (a/<!! (get-in conn [:chans :read-chan]))]
+            (when-let [out (a/<!! read-chan)]
               (log/trace "Read value from" (:tag conn) "-" (update out :form util/sample 20))
 
               (if (= (:tag out) :ret)
