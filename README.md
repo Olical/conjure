@@ -19,7 +19,7 @@ That article will show you how to start a prepl for Clojure or ClojureScript fro
  * Go to definition.
  * Documentation lookup on a key press and when your cursor is idle.
  * Declarative prepl connections with `.conjure.edn`.
- * Changed namespace reloading via `tools.namespace`.
+ * Changed namespace refreshing via `tools.namespace`.
 
 ### Upcoming for v1.0.0
 
@@ -75,7 +75,12 @@ Here's an exhaustive example of what you can configure with these files. If you 
          ;; Disabled conns will be ignored on ConjureUp.
          ;; They can be enabled and disabled with `:ConjureUp -staging +boot`
          ;; This allows you to toggle parts of your config with different custom mappings.
-         :enabled? false}}}
+         :enabled? false}}
+
+ ;; TODO...
+ :refresh {:before my.ns/stop
+           :after my.ns/start
+           :dirs #{"src"}}}
 ```
 
 If you open Conjure without any connections configured it'll self prepl into it's _own_ JVM. This allows you to have autocompletion and evaluation in any directory or Clojure file. This can be really useful for quickly trying something out in a temporary file where a regular REPL won't quite cut it.
@@ -97,7 +102,7 @@ If you open Conjure without any connections configured it'll self prepl into it'
  * `ConjureToggleLog` - open or close the log depending on it's current state.
  * `ConjureRunTests` - run tests in the current namespace and it's `-test` equivalent (as well as the other way around) or with the provided namespace names separated by spaces.
  * `ConjureRunAllTests` - run all tests with an optional namespace filter regex.
- * `ConjureReload` - Clojure only, reload namespaces, takes one of `changed`, `all` or `clear` as an argument.
+ * `ConjureRefresh` - Clojure only, refresh namespaces, takes one of `changed`, `all` or `clear` as an argument.
 
 ### Mappings
 
@@ -116,9 +121,9 @@ If you open Conjure without any connections configured it'll self prepl into it'
  * `<localleader>cL` - `ConjureToggleLog`
  * `<localleader>tt` - `ConjureRunTests`
  * `<localleader>ta` - `ConjureRunAllTests`
- * `<localleader>rr` - `ConjureReload changed`
- * `<localleader>rR` - `ConjureReload all`
- * `<localleader>rc` - `ConjureReload clear`
+ * `<localleader>rr` - `ConjureRefresh changed`
+ * `<localleader>rR` - `ConjureRefresh all`
+ * `<localleader>rc` - `ConjureRefresh clear`
  * `K` - `ConjureDoc`
  * `gd` - `ConjureDefinition`
 
@@ -138,9 +143,9 @@ You can change or remove the following mappings by setting the appropriate globa
  * `g:conjure_nmap_toggle_log = g:conjure_map_prefix . "cL"`
  * `g:conjure_nmap_run_tests = g:conjure_map_prefix . "tt"`
  * `g:conjure_nmap_run_all_tests = g:conjure_map_prefix . "ta"`
- * `g:conjure_nmap_reload_changed = g:conjure_map_prefix . "rr"`
- * `g:conjure_nmap_reload_all = g:conjure_map_prefix . "rR"`
- * `g:conjure_nmap_clean = g:conjure_map_prefix . "rc"`
+ * `g:conjure_nmap_refresh_changed = g:conjure_map_prefix . "rr"`
+ * `g:conjure_nmap_refresh_all = g:conjure_map_prefix . "rR"`
+ * `g:conjure_nmap_refresh_clean = g:conjure_map_prefix . "rc"`
  * `g:conjure_nmap_doc = "K"`
  * `g:conjure_nmap_definition = "gd"`
 
@@ -167,7 +172,7 @@ You may set these globals with `let` before Conjure loads to configure it's beha
    * `doc` - Documentation output.
    * `load-file` - Path to the file you just loaded from disk.
    * `test` - Test results.
-   * `reload` - Namespace reloading, you'll also get some `out` and a `ret`.
+   * `refresh` - Namespace refreshing, you'll also get some `out` and a `ret`.
  * `g:conjure_fold_multiline_results = 0` - Fold multiline results in the log window.
  * `g:conjure_quick_doc_normal_mode = 1` - Enable small doc strings appearing as virtual text in normal mode.
  * `g:conjure_quick_doc_insert_mode = 1` - Enable small doc strings appearing as virtual text in insert mode as you type.
