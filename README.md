@@ -80,10 +80,10 @@ Here's an exhaustive example of what you can configure with these files. If you 
  ;; Optional configuration for tools.namespace refreshing.
  ;; Set what you need and ignore the rest.
  :refresh
- {;; Function to run before reloading.
+ {;; Function to run before refreshing.
   :before my.ns/stop
 
-  ;; Function to run after reloading successfully.
+  ;; Function to run after refreshing successfully.
   :after my.ns/start
 
   ;; Directories to search for changed namespaces in.
