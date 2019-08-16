@@ -6,7 +6,7 @@
             [conjure.util :as util]
             [conjure.meta :as meta]))
 
-(def injected-deps!
+(def ^:private injected-deps!
   "Files to load, in order, to add runtime dependencies to a REPL."
   (delay (edn/read-string (slurp "target/mranderson/load-order.edn"))))
 
