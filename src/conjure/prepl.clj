@@ -137,7 +137,7 @@
         (swap! conns! assoc tag conn)
 
         (log/trace "Fetching current deps-hash.")
-        (a/>!! eval-chan (code/deps-hash-str))
+        (a/>!! eval-chan (code/render :deps-hash {}))
 
         (let [deps (code/deps-strs
                      {:lang lang

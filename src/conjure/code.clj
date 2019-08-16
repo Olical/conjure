@@ -3,6 +3,7 @@
   should be sent to an environment for evaluation."
   (:require [clojure.string :as str]
             [clojure.edn :as edn]
+            [clojure.template :as tmpl]
             [conjure.util :as util]
             [conjure.meta :as meta]))
 
@@ -12,15 +13,38 @@
 
 (def ^:private deps-ns
   "Namespace to store injected dependency related information under."
-  (str "conjure.deps." meta/ns-version))
+  (symbol (str "conjure.deps." meta/ns-version)))
 
-(defn deps-hash-str
-  "Upserts the deps-hash atom and namespace then fetches the current value."
-  []
-  (str "(do
-          (ns " deps-ns ")
-          (defonce deps-hash! (atom nil))
-          @deps-hash!)\n"))
+(defmulti template
+  "Templates for use with (conjure.code/render name opts).
+  Return a vector of three args, the params, body and values, like:
+  ['[-foo] '(+ 10 -foo) [10]]"
+  (fn [name _opts]
+    name))
+
+(defmacro deftemplate
+  "Small helper to define templates with.
+  See conjure.code/template multimethod."
+  [name params & body]
+  `(defmethod template ~name [_name# opts#]
+     (let [~params [opts#]]
+       ~@body)))
+
+(defn render
+  "Render some data to a code string to be evaluated."
+  [name opts]
+  (str
+    (util/pprint-data
+      (apply tmpl/apply-template (template name opts)))
+    "\n"))
+
+(deftemplate :deps-hash [_opts]
+  ['[-deps-ns]
+   '(do
+      (ns -deps-ns)
+      (defonce deps-hash! (atom nil))
+      @deps-hash!)
+   [deps-ns]])
 
 (defn- wrap-clojure-eval
   "Ensure the code is evaluated with reader conditionals and an optional
