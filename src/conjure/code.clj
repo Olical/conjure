@@ -186,7 +186,7 @@
 
 (defn refresh-str
   "Refresh changed namespaces."
-  [{:keys [conn op config]
+  [{:keys [conn op]
     {:keys [before after dirs]} :config}]
   (when (= (:lang conn) :clj)
     (let [prefix "conjure.toolsnamespace.v0v3v1.clojure.tools.namespace.repl"]
