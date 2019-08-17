@@ -26,7 +26,7 @@
   [name params & body]
   `(defmethod render ~name [_name# opts#]
      (let [~params [opts#]]
-       [~@body])))
+       ~@body)))
 
 (defmacro ^:private let-tmpl
   "Build a template with let bindings, returns a pprinted string."

@@ -137,8 +137,7 @@
         (swap! conns! assoc tag conn)
 
         (log/trace "Fetching current deps-hash.")
-        ;; TODO Make all evals expect vectors of strings.
-        (a/>!! eval-chan (first (code/render :deps-hash {})))
+        (a/>!! eval-chan (code/render :deps-hash {}))
 
         (let [deps (code/deps-strs
                      {:lang lang
