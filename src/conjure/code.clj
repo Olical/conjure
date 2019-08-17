@@ -15,36 +15,38 @@
   "Namespace to store injected dependency related information under."
   (symbol (str "conjure.deps." meta/ns-version)))
 
-(defmulti template
-  "Templates for use with (conjure.code/render name opts).
-  Return a vector of three args, the params, body and values, like:
-  ['[-foo] '(+ 10 -foo) [10]]"
+(defmulti render
+  "Render the template strings with opts."
   (fn [name _opts]
     name))
 
-(defmacro deftemplate
+(defmacro ^:private deftemplate
   "Small helper to define templates with.
   See conjure.code/template multimethod."
   [name params & body]
-  `(defmethod template ~name [_name# opts#]
+  `(defmethod render ~name [_name# opts#]
      (let [~params [opts#]]
-       ~@body)))
+       [~@body])))
 
-(defn render
-  "Render some data to a code string to be evaluated."
-  [name opts]
-  (str
-    (util/pprint-data
-      (apply tmpl/apply-template (template name opts)))
-    "\n"))
+(defmacro ^:private let-tmpl
+  "Build a template with let bindings, returns a pprinted string."
+  [bindings & exprs]
+  (let [argv (vec (take-nth 2 bindings))
+        values (vec (take-nth 2 (rest bindings)))]
+    `(util/pprint-data
+       (apply tmpl/apply-template
+              '~argv
+              '~(if (= (count exprs) 1)
+                  (first exprs)
+                  `(do ~@exprs))
+              ~values
+              nil))))
 
 (deftemplate :deps-hash [_opts]
-  ['[-deps-ns]
-   '(do
-      (ns -deps-ns)
-      (defonce deps-hash! (atom nil))
-      @deps-hash!)
-   [deps-ns]])
+  (let-tmpl [-deps-ns deps-ns]
+    (ns -deps-ns)
+    (defonce deps-hash! (atom nil))
+    @deps-hash!))
 
 (defn- wrap-clojure-eval
   "Ensure the code is evaluated with reader conditionals and an optional
