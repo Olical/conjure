@@ -222,22 +222,27 @@
         (with-out-str
           -run)))))
 
-(defn refresh-str
-  "Refresh changed namespaces."
-  [{:keys [conn op]
-    {:keys [before after dirs]} :config}]
+(deftemplate :refresh [{:keys [conn op]
+                        {:keys [before after dirs]} :config}]
   (when (= (:lang conn) :clj)
-    (let [prefix "conjure.toolsnamespace.v0v3v1.clojure.tools.namespace.repl"]
-      (str (when before
-             (str "(require '" (namespace before) ") "
-                  "(" before ") "))
-           (when dirs
-             (str "(apply " prefix "/set-refresh-dirs " (pr-str dirs) ") "))
-           "(" prefix "/"
-           (case op
-             :clear "clear"
-             :changed "refresh"
-             :all "refresh-all")
-           (when (and (not= op :clear) after)
-             (str " :after '" after))
-           ")"))))
+    (let-tmpl [-ns 'conjure.toolsnamespace.v0v3v1.clojure.tools.namespace.repl
+               -before before
+               -after after
+               -dirs dirs
+               -op (case op
+                     :clear 'clear
+                     :changed 'refresh
+                     :all 'refresh-all)]
+      (let [repl-ns '-ns
+            before '-before
+            after '-after
+            op '-op
+            dirs -dirs]
+        (when before
+          (require (symbol (namespace before)))
+          ((resolve before)))
+        (when dirs
+          (apply (ns-resolve repl-ns 'set-refresh-dirs) dirs))
+        (apply (ns-resolve repl-ns op)
+               (when (and (not= op 'clear) after)
+                 [:after after]))))))

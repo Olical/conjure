@@ -238,7 +238,7 @@
     (let [opts {:conn conn
                 :op op
                 :config (:refresh (config/fetch {:cwd (nvim/cwd)}))}]
-      (when-let [code (code/refresh-str opts)]
+      (when-let [code (code/render :refresh opts)]
         (ui/refresh opts)
         (ui/result {:conn conn
                     :resp (wrapped-eval
