@@ -25,7 +25,7 @@
   and blocks until we get a result."
   [{:keys [conn] :as opts}]
   (let [{:keys [eval-chan ret-chan]} (:chans conn)]
-    (a/>!! eval-chan (code/eval-str nvim/ctx opts))
+    (a/>!! eval-chan (code/render :eval (assoc opts :ctx nvim/ctx)))
 
     (when (= (:lang conn) :cljs)
       ;; ClojureScript requires two evals:

@@ -28,20 +28,25 @@
      (let [~params [opts#]]
        ~@body)))
 
+(def ^:private ^:dynamic *pprint-tmpl?* true)
+
 (defmacro ^:private let-tmpl
   "Build a template with let bindings, returns a pprinted string.
-  Does not support destructuring since it uses clojure.template."
+  Does not support destructuring since it uses clojure.template.
+  Only the top most let-tmpl will be pprinted, any sub-templates in the value
+  side of the bindings will be returned as data."
   [bindings & exprs]
   (let [argv (vec (take-nth 2 bindings))
         values (vec (take-nth 2 (rest bindings)))]
-    `(util/pprint-data
-       (apply tmpl/apply-template
-              '~argv
-              '~(if (= (count exprs) 1)
-                  (first exprs)
-                  `(do ~@exprs))
-              ~values
-              nil))))
+    `(cond-> (apply tmpl/apply-template
+                    '~argv
+                    '~(if (= (count exprs) 1)
+                        (first exprs)
+                        `(do ~@exprs))
+                    (binding [*pprint-tmpl?* false]
+                      ~values)
+                    nil)
+       *pprint-tmpl?* (util/pprint-data))))
 
 (defn- wrap-clojure-eval
   "Ensure the code is evaluated with reader conditionals and an optional
@@ -94,18 +99,16 @@
                (-require [cljs.repl]
                          [cljs.test])))]))
 
-(defn eval-str
-  "Prepare code for evaluation."
-  [{:keys [ns path]} {:keys [conn code line]}]
+(deftemplate :eval [{:keys [conn code line]
+                     {:keys [ns path]} :ctx}]
   (case (:lang conn)
     :clj
-    (str "
-         (do
-           (ns " (or ns "user") ")
-           " (wrap-clojure-eval {:code code
-                                 :path path
-                                 :line line}) ")\n")
-
+    (let-tmpl [-eval-ns (list 'ns (or ns 'user))
+               -code (wrap-clojure-eval {:code code
+                                         :path path
+                                         :line line})]
+      -eval-ns
+      -code)
     :cljs
     (let [wrap-forms? (-> (str "[\n" code "\n]")
                           (util/parse-code)
