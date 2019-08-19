@@ -154,6 +154,7 @@
       :clj (str "(conjure.orchard.v0v5v0-beta11.orchard.info/info (symbol (str *ns*)) '" name ")")
       :cljs "{}"))
 
+;; TODO Replace with Orchard.
 (deftemplate :doc [{:keys [conn name]}]
   (let-tmpl [-doc-sym (case (:lang conn)
                         :clj 'clojure.repl/doc
@@ -162,6 +163,7 @@
     (with-out-str
       (-doc-sym -name))))
 
+;; TODO Replace with Orchard
 (defn definition-str
   "Find where a given symbol is defined, returns [file line column]."
   [{:keys [name conn]}]
@@ -192,21 +194,19 @@
                (update 2 dec))))
        "))
 
-(defn run-tests-str
-  "Executes tests in the given namespaces."
-  [{:keys [targets conn]}]
-  (let [targets-str (->> targets
-                         (map #(str "'" %))
-                         (str/join " "))]
-    (case (:lang conn)
-      :clj
-      (str "(with-out-str
-              (binding [clojure.test/*test-out* *out*]
-                (apply clojure.test/run-tests (keep find-ns #{" targets-str "}))))\n")
+(deftemplate :run-tests [{:keys [targets conn]}]
+  (case (:lang conn)
+    :clj
+    (let-tmpl [-targets targets]
+      (with-out-str
+        (binding [clojure.test/*test-out* *out*]
+          (apply clojure.test/run-tests (keep find-ns '-targets)))))
 
-      :cljs
-      (str "(with-out-str
-              (cljs.test/run-tests " targets-str "))\n"))))
+    :cljs
+    ;; TODO Test that this is working...
+    (let-tmpl [-targets targets]
+      (with-out-str
+        (apply cljs.test/run-tests -targets)))))
 
 (defn run-all-tests-str
   "Executes all tests with an optional namespace filter regular expression."

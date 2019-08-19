@@ -203,20 +203,21 @@
 
 (defn run-tests [targets]
   (let [{:keys [ns]} nvim/ctx
-        other-ns (if (str/ends-with? ns "-test")
-                   (str/replace ns #"-test$" "")
-                   (str ns "-test"))]
+        other-ns (symbol
+                   (if (str/ends-with? ns "-test")
+                     (str/replace ns #"-test$" "")
+                     (str ns "-test")))]
     (doseq [conn (current-conns)]
       (when-let [result (not-exception
                           {:conn conn
                            :resp (wrapped-eval
                                    {:conn conn
-                                    :code (code/run-tests-str
-                                            {:conn conn
-                                             :targets (if (empty? targets)
-                                                        (cond-> #{ns}
-                                                          (= (:lang conn) :clj) (conj other-ns))
-                                                        targets)})})
+                                    :code (code/render :run-tests
+                                                       {:conn conn
+                                                        :targets (if (empty? targets)
+                                                                   (cond-> #{ns}
+                                                                     (= (:lang conn) :clj) (conj other-ns))
+                                                                   targets)})})
                            :msg (str "Failed to run tests for " (pr-str targets))})]
         (ui/test* {:conn conn
                    :resp (update result :val util/parse-code)})))))

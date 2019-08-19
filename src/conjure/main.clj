@@ -120,7 +120,9 @@
 
 (defrpc :notify :run-tests [target-namespaces]
   (action/run-tests (->> (str/split target-namespaces #"\s+")
-                         (remove str/blank?))))
+                         (remove str/blank?)
+                         (map symbol)
+                         (set))))
 
 (defrpc :notify :run-all-tests [target-namespaces]
   (action/run-all-tests (when-not (str/blank? target-namespaces)
