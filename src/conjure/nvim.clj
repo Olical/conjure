@@ -1,6 +1,5 @@
 (ns conjure.nvim
   (:require [conjure.nvim.api :as api]
-            [conjure.code :as code]
             [conjure.util :as util]))
 
 (def ^:dynamic ctx
@@ -24,7 +23,7 @@
            line-count line-count]
       (let [ns-res (util/parse-ns (util/join-lines sample-lines))
             next-line-count (* line-count 2)]
-        (if (and (= ns-res ::code/error) (< line-count buf-length))
+        (if (and (= ns-res ::util/error) (< line-count buf-length))
           (recur (api/call (get-lines next-line-count)) next-line-count)
           {:path path
            :buf buf
