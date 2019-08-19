@@ -143,7 +143,8 @@
 
     ;; ClojureScript isn't supported by Compliment yet.
     ;; https://github.com/alexander-yakushev/compliment/pull/62
-    :cljs (let-tmpl [] [])))
+    :cljs (let-tmpl []
+            [])))
 
 ;; TODO Swap to Orchard when 0.5 is released.
 #_(defn info-str
@@ -153,14 +154,13 @@
       :clj (str "(conjure.orchard.v0v5v0-beta11.orchard.info/info (symbol (str *ns*)) '" name ")")
       :cljs "{}"))
 
-(defn doc-str
-  "Lookup documentation and capture the *out* into a string."
-  [{:keys [conn name]}]
-  (str "(with-out-str ("
-       (case (:lang conn)
-         :clj "clojure"
-         :cljs "cljs")
-       ".repl/doc " name "))"))
+(deftemplate :doc [{:keys [conn name]}]
+  (let-tmpl [-doc-sym (case (:lang conn)
+                        :clj 'clojure.repl/doc
+                        :cljs 'cljs.repl/doc)
+             -name (symbol name)]
+    (with-out-str
+      (-doc-sym -name))))
 
 (defn definition-str
   "Find where a given symbol is defined, returns [file line column]."

@@ -80,9 +80,9 @@
     (when-let [result (some-> (not-exception
                                 {:conn conn
                                  :resp (wrapped-eval {:conn conn
-                                                      :code (code/doc-str
-                                                              {:conn conn
-                                                               :name name})})
+                                                      :code (code/render :doc
+                                                                         {:conn conn
+                                                                          :name name})})
                                  :msg (str "Failed to lookup documentation for " name)})
                               (update :val util/parse-code))]
       (ui/doc {:conn conn
@@ -106,9 +106,9 @@
                                             {:conn conn
                                              :resp (wrapped-eval
                                                      {:conn conn
-                                                      :code (code/doc-str
-                                                              {:conn conn
-                                                               :name name})})})
+                                                      :code (code/render :doc
+                                                                         {:conn conn
+                                                                          :name name})})})
                                           (get :val)
                                           (util/parse-code)
                                           (not-empty)))
