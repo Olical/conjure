@@ -43,12 +43,6 @@
               ~values
               nil))))
 
-(deftemplate :deps-hash [_opts]
-  (let-tmpl [-deps-ns (list 'ns deps-ns)]
-    -deps-ns
-    (defonce deps-hash! (atom nil))
-    @deps-hash!))
-
 (defn- wrap-clojure-eval
   "Ensure the code is evaluated with reader conditionals and an optional
   line number of file path."
@@ -66,10 +60,13 @@
                     (. clojure.lang.Compiler (load rdr)))]
           (cond-> res (seq? res) (doall)))))))
 
-(defn deps-strs
-  "Sequence of forms to evaluate to ensure that all dependencies are loaded.
-  Requires current-deps-hash to work out if there's any work to do or not."
-  [{:keys [lang current-deps-hash]}]
+(deftemplate :deps-hash [_opts]
+  (let-tmpl [-deps-ns (list 'ns deps-ns)]
+    -deps-ns
+    (defonce deps-hash! (atom nil))
+    @deps-hash!))
+
+(deftemplate :deps [{:keys [lang current-deps-hash]}]
   (case lang
     :clj (let [injected-deps @injected-deps!
                deps-hash (hash injected-deps)]

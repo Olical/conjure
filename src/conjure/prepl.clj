@@ -139,11 +139,10 @@
         (log/trace "Fetching current deps-hash.")
         (a/>!! eval-chan (code/render :deps-hash {}))
 
-        (let [deps (code/deps-strs
-                     {:lang lang
-                      :current-deps-hash (-> (a/<!! read-chan)
-                                             (get :val)
-                                             (edn/read-string))})]
+        (let [deps (code/render :deps {:lang lang
+                                       :current-deps-hash (-> (a/<!! read-chan)
+                                                              (get :val)
+                                                              (edn/read-string))})]
           (log/trace "Evaluating" (count deps) "dep strings...")
           (doseq [dep deps] (a/>!! eval-chan dep))
           (doseq [_ deps] (a/<!! read-chan))
