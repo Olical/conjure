@@ -22,14 +22,15 @@
 
 (defmacro ^:private deftemplate
   "Small helper to define templates with.
-  See conjure.code/template multimethod."
+  See conjure.code/render multimethod."
   [name params & body]
   `(defmethod render ~name [_name# opts#]
      (let [~params [opts#]]
        ~@body)))
 
 (defmacro ^:private let-tmpl
-  "Build a template with let bindings, returns a pprinted string."
+  "Build a template with let bindings, returns a pprinted string.
+  Does not support destructuring since it uses clojure.template."
   [bindings & exprs]
   (let [argv (vec (take-nth 2 bindings))
         values (vec (take-nth 2 (rest bindings)))]
@@ -43,8 +44,8 @@
               nil))))
 
 (deftemplate :deps-hash [_opts]
-  (let-tmpl [-deps-ns deps-ns]
-    (ns -deps-ns)
+  (let-tmpl [-deps-ns (list 'ns deps-ns)]
+    -deps-ns
     (defonce deps-hash! (atom nil))
     @deps-hash!))
 
@@ -52,16 +53,18 @@
   "Ensure the code is evaluated with reader conditionals and an optional
   line number of file path."
   [{:keys [path code line]}]
-  (let [path-args-str (when-not (str/blank? path)
-                        (str " \"" path "\" \"" (last (str/split path #"/")) "\""))]
-    (str "
-         (let [rdr (-> (java.io.StringReader. \"" (util/escape-quotes code) "\n\")
-                       (clojure.lang.LineNumberingPushbackReader.)
-                       (doto (.setLineNumber " (or line 1) ")))]
-           (binding [*default-data-reader-fn* tagged-literal]
-             (let [res (. clojure.lang.Compiler (load rdr" path-args-str "))]
-               (cond-> res (seq? res) (doall)))))
-         ")))
+  (let-tmpl [-code code
+             -line (or line 1)
+             -path-args (when-not (str/blank? path)
+                          [path (last (str/split path #"/"))])]
+    (let [rdr (-> (java.io.StringReader. -code)
+                  (clojure.lang.LineNumberingPushbackReader.)
+                  (doto (.setLineNumber -line)))]
+      (binding [*default-data-reader-fn* tagged-literal]
+        (let [res (if-let [[dir file] -path-args]
+                    (. clojure.lang.Compiler (load rdr dir file))
+                    (. clojure.lang.Compiler (load rdr)))]
+          (cond-> res (seq? res) (doall)))))))
 
 (defn deps-strs
   "Sequence of forms to evaluate to ensure that all dependencies are loaded.
@@ -71,19 +74,28 @@
     :clj (let [injected-deps @injected-deps!
                deps-hash (hash injected-deps)]
            (concat
-             [(str "(ns " deps-ns "
-                      (:require [clojure.repl]
-                                [clojure.string]
-                                [clojure.java.io]
-                                [clojure.test]))\n")
-              (str "(reset! deps-hash! " deps-hash ")\n")]
+             [(let-tmpl [-ns 'ns
+                         -require :require
+                         -deps-ns deps-ns]
+                (-ns
+                  -deps-ns
+                  (-require [clojure.repl]
+                            [clojure.string]
+                            [clojure.java.io]
+                            [clojure.test])))
+              (let-tmpl [-deps-hash deps-hash]
+                (reset! deps-hash! -deps-hash))]
              (when (not= current-deps-hash deps-hash)
                (map #(wrap-clojure-eval {:code (slurp %)
                                          :path %})
                     injected-deps))))
-    :cljs [(str "(ns " deps-ns "
-                   (:require [cljs.repl]
-                             [cljs.test]))\n")]))
+    :cljs [(let-tmpl [-ns 'ns
+                      -require :require
+                      -deps-ns deps-ns]
+             (-ns
+               -deps-ns
+               (-require [cljs.repl]
+                         [cljs.test])))]))
 
 (defn eval-str
   "Prepare code for evaluation."
