@@ -135,7 +135,7 @@
   (eval* {:code (nvim/read-buffer)}))
 
 (defn load-file* [path]
-  (let [code (code/load-file-str path)]
+  (let [code (code/render :load-file {:path path})]
     (doseq [conn (current-conns)]
       (let [opts {:conn conn, :code code, :path path}]
         (ui/load-file* opts)

@@ -110,6 +110,8 @@
       -eval-ns
       -code)
     :cljs
+    ;; let-tmpl can't be used here unless it supports direct string injection.
+    ;; This could be possible if I do replacement of variables in the string.
     (let [wrap-forms? (-> (str "[\n" code "\n]")
                           (util/parse-code)
                           (count)
@@ -121,10 +123,9 @@
                       ")"))]
       (str "(in-ns '" (or ns "cljs.user") ")\n" code))))
 
-(defn load-file-str
-  "Loads a file, won't work on remote environments."
-  [path]
-  (str "(load-file \"" path "\")"))
+(deftemplate :load-file [{:keys [path]}]
+  (let-tmpl [-path path]
+    (load-file -path)))
 
 (defn completions-str
   "Find completions for a prefix and context string."
