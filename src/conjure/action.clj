@@ -228,7 +228,7 @@
                         {:conn conn
                          :resp (wrapped-eval
                                  {:conn conn
-                                  :code (code/run-all-tests-str {:re re, :conn conn})})
+                                  :code (code/render :run-all-tests {:re re, :conn conn})})
                          :msg (str "Failed to run tests for " (pr-str re))})]
       (ui/test* {:conn conn
                  :resp (update result :val util/parse-code)}))))

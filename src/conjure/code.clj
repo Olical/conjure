@@ -203,26 +203,24 @@
           (apply clojure.test/run-tests (keep find-ns '-targets)))))
 
     :cljs
-    ;; TODO Test that this is working...
-    (let-tmpl [-targets targets]
+    (let-tmpl [-run (concat '(cljs.test/run-tests) targets)]
       (with-out-str
-        (apply cljs.test/run-tests -targets)))))
+        -run))))
 
-(defn run-all-tests-str
-  "Executes all tests with an optional namespace filter regular expression."
-  [{:keys [re conn]}]
-  (let [re-str (when re
-                 (str " #\"" (util/escape-quotes re) "\""))]
-
+(deftemplate :run-all-tests [{:keys [re conn]}]
+  (let [args (when re
+               [(re-pattern re)])]
     (case (:lang conn)
       :clj
-      (str "(with-out-str
-              (binding [clojure.test/*test-out* *out*]
-                (clojure.test/run-all-tests" re-str ")))\n")
+      (let-tmpl [-run (concat '(clojure.test/run-all-tests) args)]
+        (with-out-str
+          (binding [clojure.test/*test-out* *out*]
+            -run)))
 
       :cljs
-      (str "(with-out-str
-              (cljs.test/run-all-tests" re-str "))\n"))))
+      (let-tmpl [-run (concat '(cljs.test/run-all-tests) args)]
+        (with-out-str
+          -run)))))
 
 (defn refresh-str
   "Refresh changed namespaces."
