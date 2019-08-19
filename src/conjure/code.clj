@@ -127,22 +127,23 @@
   (let-tmpl [-path path]
     (load-file -path)))
 
-(defn completions-str
-  "Find completions for a prefix and context string."
-  [{:keys [ns conn prefix context]}]
+(deftemplate :completions [{:keys [ns conn prefix context]}]
   (case (:lang conn)
     :clj
-    (str "(conjure.compliment.v0v3v9.compliment.core/completions
-            \"" (util/escape-quotes prefix) "\"
-            {:ns (find-ns '" (or ns "user") ")
-             :extra-metadata #{:doc :arglists}
-             " (when context
-                 (str ":context \"" (util/escape-quotes context) "\""))
-            "})\n")
+    (let-tmpl [-prefix prefix
+               -context context
+               -ns (or ns 'user)]
+      (conjure.compliment.v0v3v9.compliment.core/completions
+        -prefix
+        (merge
+          {:ns (find-ns '-ns)
+           :extra-metadata #{:doc :arglists}}
+          (when-let [context -context]
+            {:context context}))))
 
     ;; ClojureScript isn't supported by Compliment yet.
     ;; https://github.com/alexander-yakushev/compliment/pull/62
-    :cljs "[]"))
+    :cljs (let-tmpl [] [])))
 
 ;; TODO Swap to Orchard when 0.5 is released.
 #_(defn info-str

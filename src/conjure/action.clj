@@ -163,11 +163,11 @@
                        {:conn conn
                         :resp (wrapped-eval
                                 {:conn conn
-                                 :code (code/completions-str
-                                         {:conn conn
-                                          :prefix prefix
-                                          :context context
-                                          :ns (:ns nvim/ctx)})})})
+                                 :code (code/render :completions
+                                                    {:conn conn
+                                                     :prefix prefix
+                                                     :context context
+                                                     :ns (:ns nvim/ctx)})})})
                      (get :val)
                      (util/parse-code)
                      (->> (map
