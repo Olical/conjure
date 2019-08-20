@@ -99,7 +99,9 @@
                            :path path
                            :line line}))
     :cljs
-    ;; TODO Support ~@ splicing.
+    ;; Can't use tmpl since it's a code string, not data.
+    ;; We could parse it but I'd like to avoid that, it can break.
+    ;; If we start using self hosted ClojureScript tmpl will be fine.
     (let [wrap-forms? (-> (str "[\n" code "\n]")
                           (util/parse-code)
                           (count)
