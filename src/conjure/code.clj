@@ -110,8 +110,7 @@
       -eval-ns
       -code)
     :cljs
-    ;; let-tmpl can't be used here unless it supports direct string injection.
-    ;; This could be possible if I do replacement of variables in the string.
+    ;; TODO Support ~@ splicing.
     (let [wrap-forms? (-> (str "[\n" code "\n]")
                           (util/parse-code)
                           (count)
@@ -201,11 +200,11 @@
       (with-out-str
         (binding [clojure.test/*test-out* *out*]
           (apply clojure.test/run-tests (keep find-ns '-targets)))))
-
     :cljs
-    (let-tmpl [-run (concat '(cljs.test/run-tests) targets)]
-      (with-out-str
-        -run))))
+    ;; TODO Support ~@ splicing.
+    (str "(with-out-str (cljs.test/run-tests "
+         (str/join " " (map #(str "'" %) targets))
+         "))")))
 
 (deftemplate :run-all-tests [{:keys [re conn]}]
   (let [args (when re
