@@ -2,6 +2,7 @@
   "Tools to render code for evaluation. The response from these functions
   should be sent to an environment for evaluation."
   (:require [clojure.string :as str]
+            [backtick :as bt]
             [clojure.edn :as edn]
             [clojure.template :as tmpl]
             [conjure.util :as util]
@@ -48,26 +49,38 @@
                     nil)
        *pprint-tmpl?* (util/pprint-data))))
 
+(defmacro tmpl
+  "Render code templates like syntax quoting in macros.
+  Returns a pprinted string, sub-calls to tmpl will return data for composition."
+  [& exprs]
+  `(cond-> (binding [*pprint-tmpl?* false]
+             (bt/template
+               ~(if (= (count exprs) 1)
+                  (first exprs)
+                  `(do ~@exprs))))
+     *pprint-tmpl?* (util/pprint-data)))
+
 (defn- wrap-clojure-eval
   "Ensure the code is evaluated with reader conditionals and an optional
   line number of file path."
   [{:keys [path code line]}]
-  (let-tmpl [-code code
-             -line (or line 1)
-             -path-args (when-not (str/blank? path)
-                          [path (last (str/split path #"/"))])]
-    (let [rdr (-> (java.io.StringReader. -code)
-                  (clojure.lang.LineNumberingPushbackReader.)
-                  (doto (.setLineNumber -line)))]
-      (binding [*default-data-reader-fn* tagged-literal]
-        (let [res (if-let [[dir file] -path-args]
-                    (. clojure.lang.Compiler (load rdr dir file))
-                    (. clojure.lang.Compiler (load rdr)))]
-          (cond-> res (seq? res) (doall)))))))
+  (let [path-args (when-not (str/blank? path)
+                    [path (last (str/split path #"/"))])]
+    (tmpl
+      (let [rdr (-> (java.io.StringReader. ~code)
+                    (clojure.lang.LineNumberingPushbackReader.)
+                    (doto (.setLineNumber ~(or line 1))))]
+        (binding [*default-data-reader-fn* tagged-literal]
+          (let [res (. clojure.lang.Compiler (load rdr ~@path-args))]
+            (cond-> res (seq? res) (doall))))))))
+
+;; Used in templates because my linter freaks out otherwise.
+(def ^:private ns-sym 'ns)
+(def ^:private require-kw :require)
 
 (deftemplate :deps-hash [_opts]
-  (let-tmpl [-deps-ns (list 'ns deps-ns)]
-    -deps-ns
+  (tmpl
+    (~ns-sym ~deps-ns)
     (defonce deps-hash! (atom nil))
     @deps-hash!))
 
@@ -76,39 +89,34 @@
     :clj (let [injected-deps @injected-deps!
                deps-hash (hash injected-deps)]
            (concat
-             [(let-tmpl [-ns 'ns
-                         -require :require
-                         -deps-ns deps-ns]
-                (-ns
-                  -deps-ns
-                  (-require [clojure.repl]
-                            [clojure.string]
-                            [clojure.java.io]
-                            [clojure.test])))
-              (let-tmpl [-deps-hash deps-hash]
-                (reset! deps-hash! -deps-hash))]
+             [(tmpl
+                (~ns-sym
+                  ~deps-ns
+                  (~require-kw [clojure.repl]
+                               [clojure.string]
+                               [clojure.java.io]
+                               [clojure.test])))
+              (tmpl
+                (reset! deps-hash! ~deps-hash))]
              (when (not= current-deps-hash deps-hash)
                (map #(wrap-clojure-eval {:code (slurp %)
                                          :path %})
                     injected-deps))))
-    :cljs [(let-tmpl [-ns 'ns
-                      -require :require
-                      -deps-ns deps-ns]
-             (-ns
-               -deps-ns
-               (-require [cljs.repl]
-                         [cljs.test])))]))
+    :cljs [(tmpl
+             (~ns-sym
+               ~deps-ns
+               (~require-kw [cljs.repl]
+                            [cljs.test])))]))
 
 (deftemplate :eval [{:keys [conn code line]
                      {:keys [ns path]} :ctx}]
   (case (:lang conn)
     :clj
-    (let-tmpl [-eval-ns (list 'ns (or ns 'user))
-               -code (wrap-clojure-eval {:code code
-                                         :path path
-                                         :line line})]
-      -eval-ns
-      -code)
+    (tmpl
+      (~ns-sym ~(or ns 'user))
+      ~(wrap-clojure-eval {:code code
+                           :path path
+                           :line line}))
     :cljs
     ;; TODO Support ~@ splicing.
     (let [wrap-forms? (-> (str "[\n" code "\n]")

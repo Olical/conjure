@@ -12,6 +12,7 @@
   tcp-server {:mvn/version "0.1.0"}
   metosin/jsonista {:mvn/version "0.2.3"}
   me.raynes/fs {:mvn/version "1.4.6"}
+  backtick {:mvn/version "0.3.4"}
   medley {:mvn/version "1.2.0"}
   traversy {:mvn/version "0.5.0"}}
 
