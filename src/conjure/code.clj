@@ -189,7 +189,7 @@
     :cljs
     (tmpl
       (with-out-str
-        (cljs.test/run-tests ~@targets)))))
+        (cljs.test/run-tests ~@(map #(list 'quote %) targets))))))
 
 (deftemplate :run-all-tests [{:keys [re conn]}]
   (let [args (when re
