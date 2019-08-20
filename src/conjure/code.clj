@@ -34,7 +34,7 @@
   "Render code templates like syntax quoting in macros.
   Returns a pprinted string, sub-calls to tmpl will return data for composition."
   [& exprs]
-  `(cond-> (binding [*pprint-tmpl?* false]
+  `(cond-> (binding [*tmpl-pprint?* false]
              (bt/template
                ~(if (= (count exprs) 1)
                   (first exprs)
@@ -209,20 +209,15 @@
 (deftemplate :refresh [{:keys [conn op]
                         {:keys [before after dirs]} :config}]
   (when (= (:lang conn) :clj)
-    (tmpl
-      (let [repl-ns 'conjure.toolsnamespace.v0v3v1.clojure.tools.namespace.repl
-            before '~before
-            after '~after
-            op '~(case op
-                   :clear 'clear
-                   :changed 'refresh
-                   :all 'refresh-all)
-            dirs ~dirs]
-        (when before
-          (require (symbol (namespace before)))
-          ((resolve before)))
-        (when dirs
-          (apply (ns-resolve repl-ns 'set-refresh-dirs) dirs))
-        (apply (ns-resolve repl-ns op)
-               (when (and (not= op 'clear) after)
-                 [:after after]))))))
+    (let [args (when (and (not= op :clear) after)
+                 [:after after])]
+      (tmpl
+        (let [repl-ns 'conjure.toolsnamespace.v0v3v1.clojure.tools.namespace.repl
+              before '~before
+              dirs ~dirs]
+          (when before
+            (require (symbol (namespace before)))
+            ((resolve before)))
+          (when dirs
+            (apply (ns-resolve repl-ns 'set-refresh-dirs) dirs))
+          ((ns-resolve repl-ns ~(symbol op)) ~@args))))))
