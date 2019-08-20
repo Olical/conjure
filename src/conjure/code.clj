@@ -4,7 +4,6 @@
   (:require [clojure.string :as str]
             [backtick :as bt]
             [clojure.edn :as edn]
-            [clojure.template :as tmpl]
             [conjure.util :as util]
             [conjure.meta :as meta]))
 
@@ -29,27 +28,9 @@
      (let [~params [opts#]]
        ~@body)))
 
-(def ^:private ^:dynamic *pprint-tmpl?* true)
+(def ^:private ^:dynamic *tmpl-pprint?* true)
 
-(defmacro ^:private let-tmpl
-  "Build a template with let bindings, returns a pprinted string.
-  Does not support destructuring since it uses clojure.template.
-  Only the top most let-tmpl will be pprinted, any sub-templates in the value
-  side of the bindings will be returned as data."
-  [bindings & exprs]
-  (let [argv (vec (take-nth 2 bindings))
-        values (vec (take-nth 2 (rest bindings)))]
-    `(cond-> (apply tmpl/apply-template
-                    '~argv
-                    '~(if (= (count exprs) 1)
-                        (first exprs)
-                        `(do ~@exprs))
-                    (binding [*pprint-tmpl?* false]
-                      ~values)
-                    nil)
-       *pprint-tmpl?* (util/pprint-data))))
-
-(defmacro tmpl
+(defmacro ^:private tmpl
   "Render code templates like syntax quoting in macros.
   Returns a pprinted string, sub-calls to tmpl will return data for composition."
   [& exprs]
@@ -58,7 +39,7 @@
                ~(if (= (count exprs) 1)
                   (first exprs)
                   `(do ~@exprs))))
-     *pprint-tmpl?* (util/pprint-data)))
+     *tmpl-pprint?* (util/pprint-data)))
 
 (defn- wrap-clojure-eval
   "Ensure the code is evaluated with reader conditionals and an optional
@@ -131,27 +112,24 @@
       (str "(in-ns '" (or ns "cljs.user") ")\n" code))))
 
 (deftemplate :load-file [{:keys [path]}]
-  (let-tmpl [-path path]
-    (load-file -path)))
+  (tmpl
+    (load-file ~path)))
 
 (deftemplate :completions [{:keys [ns conn prefix context]}]
   (case (:lang conn)
     :clj
-    (let-tmpl [-prefix prefix
-               -context context
-               -ns (or ns 'user)]
+    (tmpl
       (conjure.compliment.v0v3v9.compliment.core/completions
-        -prefix
+        ~prefix
         (merge
-          {:ns (find-ns '-ns)
+          {:ns (find-ns '~(or ns 'user))
            :extra-metadata #{:doc :arglists}}
-          (when-let [context -context]
+          (when-let [context ~context]
             {:context context}))))
 
     ;; ClojureScript isn't supported by Compliment yet.
     ;; https://github.com/alexander-yakushev/compliment/pull/62
-    :cljs (let-tmpl []
-            [])))
+    :cljs (tmpl [])))
 
 ;; TODO Swap to Orchard when 0.5 is released.
 #_(defn info-str
@@ -163,12 +141,12 @@
 
 ;; TODO Replace with Orchard.
 (deftemplate :doc [{:keys [conn name]}]
-  (let-tmpl [-doc-sym (case (:lang conn)
-                        :clj 'clojure.repl/doc
-                        :cljs 'cljs.repl/doc)
-             -name (symbol name)]
-    (with-out-str
-      (-doc-sym -name))))
+  (let [doc-symbol (case (:lang conn)
+                     :clj 'clojure.repl/doc
+                     :cljs 'cljs.repl/doc)]
+    (tmpl
+      (with-out-str
+        (~doc-symbol ~(symbol name))))))
 
 ;; TODO Replace with Orchard
 (defn definition-str
@@ -204,47 +182,42 @@
 (deftemplate :run-tests [{:keys [targets conn]}]
   (case (:lang conn)
     :clj
-    (let-tmpl [-targets targets]
+    (tmpl
       (with-out-str
         (binding [clojure.test/*test-out* *out*]
-          (apply clojure.test/run-tests (keep find-ns '-targets)))))
+          (apply clojure.test/run-tests (keep find-ns '~targets)))))
     :cljs
-    ;; TODO Support ~@ splicing.
-    (str "(with-out-str (cljs.test/run-tests "
-         (str/join " " (map #(str "'" %) targets))
-         "))")))
+    (tmpl
+      (with-out-str
+        (cljs.test/run-tests ~@targets)))))
 
 (deftemplate :run-all-tests [{:keys [re conn]}]
   (let [args (when re
                [(re-pattern re)])]
     (case (:lang conn)
       :clj
-      (let-tmpl [-run (concat '(clojure.test/run-all-tests) args)]
+      (tmpl
         (with-out-str
           (binding [clojure.test/*test-out* *out*]
-            -run)))
+            (clojure.test/run-all-tests ~@args))))
 
       :cljs
-      (let-tmpl [-run (concat '(cljs.test/run-all-tests) args)]
+      (tmpl
         (with-out-str
-          -run)))))
+          (cljs.test/run-all-tests ~@args))))))
 
 (deftemplate :refresh [{:keys [conn op]
                         {:keys [before after dirs]} :config}]
   (when (= (:lang conn) :clj)
-    (let-tmpl [-ns 'conjure.toolsnamespace.v0v3v1.clojure.tools.namespace.repl
-               -before before
-               -after after
-               -dirs dirs
-               -op (case op
-                     :clear 'clear
-                     :changed 'refresh
-                     :all 'refresh-all)]
-      (let [repl-ns '-ns
-            before '-before
-            after '-after
-            op '-op
-            dirs -dirs]
+    (tmpl
+      (let [repl-ns 'conjure.toolsnamespace.v0v3v1.clojure.tools.namespace.repl
+            before '~before
+            after '~after
+            op '~(case op
+                   :clear 'clear
+                   :changed 'refresh
+                   :all 'refresh-all)
+            dirs ~dirs]
         (when before
           (require (symbol (namespace before)))
           ((resolve before)))
