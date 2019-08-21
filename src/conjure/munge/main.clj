@@ -9,6 +9,30 @@
 
 (def ma-root (io/file "target/mranderson"))
 
+(defn- topo-sort
+  "Sort the source paths in dependency order."
+  [files]
+  (let [parsed (->> files
+                    (into {} (map
+                               (fn [file]
+                                 (let [decl (file/read-file-ns-decl file)]
+                                   [(parse/name-from-ns-decl decl)
+                                    {:file file
+                                     :deps (parse/deps-from-ns-decl decl)}])))))]
+    (->> (vals parsed)
+         (reduce
+           (fn [g {:keys [deps] :as node}]
+             (reduce
+               (fn [g dep]
+                 (if-let [target (get parsed dep)]
+                   (dep/depend g node target)
+                   g))
+               g
+               deps))
+           (dep/graph))
+         (dep/topo-sort)
+         (mapv (comp str :file)))))
+
 (defn -main []
   (ma/mranderson {:clojars "https://repo.clojars.org"
                   :central "https://repo.maven.apache.org/maven2"}
@@ -22,27 +46,9 @@
                   :parent-clj-dirs []
                   :branch []})
 
-  (let [parsed (into {} (map
-                          (fn [file]
-                            (let [decl (file/read-file-ns-decl file)]
-                              [(parse/name-from-ns-decl decl)
-                               {:file file
-                                :deps (parse/deps-from-ns-decl decl)}])))
-                     (find/find-sources-in-dir ma-root))]
-    (->> (vals parsed)
-         (reduce
-           (fn [g {:keys [deps] :as node}]
-             (reduce
-               (fn [g dep]
-                 (if-let [target (get parsed dep)]
-                   (dep/depend g node target)
-                   g))
-               g
-               deps))
-           (dep/graph))
-         (dep/topo-sort)
-         (mapv (comp str :file))
-         (pr-str)
-         (spit (io/file ma-root "load-order.edn"))))
+  (->> {:clj (topo-sort (find/find-sources-in-dir ma-root find/clj))
+        :cljs (topo-sort (find/find-sources-in-dir ma-root find/cljs))}
+       (pr-str)
+       (spit (io/file ma-root "load-order.edn")))
 
   (shutdown-agents))

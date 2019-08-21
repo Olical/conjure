@@ -66,28 +66,36 @@
     @deps-hash!))
 
 (deftemplate :deps [{:keys [lang current-deps-hash]}]
-  (case lang
-    :clj (let [injected-deps @injected-deps!
-               deps-hash (hash injected-deps)]
-           (concat
-             [(tmpl
-                (~ns-sym
-                  ~deps-ns
-                  (~require-kw [clojure.repl]
-                               [clojure.string]
-                               [clojure.java.io]
-                               [clojure.test])))
-              (tmpl
-                (reset! deps-hash! ~deps-hash))]
-             (when (not= current-deps-hash deps-hash)
-               (map #(wrap-clojure-eval {:code (slurp %)
-                                         :path %})
-                    injected-deps))))
-    :cljs [(tmpl
-             (~ns-sym
-               ~deps-ns
-               (~require-kw [cljs.repl]
-                            [cljs.test])))]))
+  (let [injected-deps @injected-deps!
+        deps-hash (hash injected-deps)
+        deps-changed? (not= current-deps-hash deps-hash)]
+    (case lang
+      :clj 
+      (concat
+        [(tmpl
+           (~ns-sym
+             ~deps-ns
+             (~require-kw [clojure.repl]
+                          [clojure.string]
+                          [clojure.java.io]
+                          [clojure.test])))
+         (tmpl
+           (reset! deps-hash! ~deps-hash))]
+        (when deps-changed?
+          (->> (:clj injected-deps)
+               (map #(wrap-clojure-eval {:code (slurp %), :path %})))))
+      :cljs
+      (concat
+        [(tmpl
+           (~ns-sym
+             ~deps-ns
+             (~require-kw [cljs.repl]
+                          [cljs.test])))
+         (tmpl
+           (reset! deps-hash! ~deps-hash))]
+        (when deps-changed?
+          (->> (:cljs injected-deps)
+               (map #(str "(load-file \"" % "\")"))))))))
 
 (deftemplate :eval [{:keys [conn code line]
                      {:keys [ns path]} :ctx}]
