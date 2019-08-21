@@ -99,19 +99,19 @@
                            :path path
                            :line line}))
     :cljs
-    ;; Can't use tmpl since it's a code string, not data.
+    ;; Can't use tmpl completely since it's a code string, not data.
     ;; We could parse it but I'd like to avoid that, it can break.
     ;; If we start using self hosted ClojureScript tmpl will be fine.
     (let [wrap-forms? (-> (str "[\n" code "\n]")
                           (util/parse-code)
                           (count)
-                          (not= 1))
-          code (str (when wrap-forms?
-                      "(do ")
-                    code "\n"
-                    (when wrap-forms?
-                      ")"))]
-      (str "(in-ns '" (or ns "cljs.user") ")\n" code))))
+                          (not= 1))]
+      (str
+        (tmpl
+          (in-ns '~(or ns 'cljs.user)))
+        (when wrap-forms? "(do ")
+        code "\n"
+        (when wrap-forms? ")")))))
 
 (deftemplate :load-file [{:keys [path]}]
   (tmpl
