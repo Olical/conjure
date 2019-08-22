@@ -146,7 +146,7 @@
           (log/trace "Evaluating" (count deps) "dep strings...")
           (doseq [dep deps] (a/>!! eval-chan dep))
           (doseq [_ deps] (a/<!! read-chan))
-          (log/trace "Deps done"))
+          (log/trace "Deps done!"))
 
         (util/thread
           "read-chan handler"

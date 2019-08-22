@@ -79,8 +79,7 @@
                           [clojure.string]
                           [clojure.java.io]
                           [clojure.test])))
-         (tmpl
-           (reset! deps-hash! ~deps-hash))]
+         (tmpl (reset! deps-hash! ~deps-hash))]
         (when deps-changed?
           (->> (:clj injected-deps)
                (map #(wrap-clojure-eval {:code (slurp %), :path %})))))
@@ -91,11 +90,11 @@
              ~deps-ns
              (~require-kw [cljs.repl]
                           [cljs.test])))
-         (tmpl
-           (reset! deps-hash! ~deps-hash))]
+         (tmpl (reset! deps-hash! ~deps-hash))]
         (when deps-changed?
           (->> (:cljs injected-deps)
-               (map #(str "(load-file \"" % "\")"))))))))
+               (map (fn [path]
+                      (tmpl (load-file ~path))))))))))
 
 (deftemplate :eval [{:keys [conn code line]
                      {:keys [ns path]} :ctx}]
@@ -115,11 +114,11 @@
                           (count)
                           (not= 1))]
       (str
-        (tmpl
-          (in-ns '~(or ns 'cljs.user)))
+        (tmpl (in-ns '~(or ns 'cljs.user)))
         (when wrap-forms? "(do ")
         code "\n"
-        (when wrap-forms? ")")))))
+        (when wrap-forms? ")")
+        "\n"))))
 
 (deftemplate :load-file [{:keys [path]}]
   (tmpl
