@@ -210,14 +210,18 @@
                         {:keys [before after dirs]} :config}]
   (when (= (:lang conn) :clj)
     (let [args (when (and (not= op :clear) after)
-                 [:after after])]
+                 [:after (list 'quote after)])
+          repl-ns "conjure.toolsnamespace.v0v3v1.clojure.tools.namespace.repl"
+          op-str (case op
+                   :clear "clear"
+                   :changed "refresh"
+                   :all "refresh-all")]
       (tmpl
-        (let [repl-ns 'conjure.toolsnamespace.v0v3v1.clojure.tools.namespace.repl
-              before '~before
+        (let [before '~before
               dirs ~dirs]
           (when before
             (require (symbol (namespace before)))
             ((resolve before)))
           (when dirs
-            (apply (ns-resolve repl-ns 'set-refresh-dirs) dirs))
-          ((ns-resolve repl-ns ~(symbol op)) ~@args))))))
+            (apply ~(symbol repl-ns "set-refresh-dirs") dirs))
+          (~(symbol repl-ns op-str) ~@args))))))
