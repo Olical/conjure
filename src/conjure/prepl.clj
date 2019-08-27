@@ -134,7 +134,9 @@
                                      :port port}))}
             {:keys [eval-chan read-chan]} (get conn :chans)]
 
-        (swap! conns! assoc tag conn)
+        (log/trace "Changing to Conjure deps namespace.")
+        (a/>!! eval-chan (code/render :deps-ns {}))
+        (a/<!! read-chan)
 
         (log/trace "Fetching current deps-hash.")
         (a/>!! eval-chan (code/render :deps-hash {}))
@@ -145,8 +147,13 @@
                                                               (edn/read-string))})]
           (log/trace "Evaluating" (count deps) "dep strings...")
           (doseq [dep deps] (a/>!! eval-chan dep))
-          (doseq [_ deps] (a/<!! read-chan))
-          (log/trace "Deps done!"))
+
+          (log/trace "Reading until we see :conjure/deps-ready...")
+          (loop [read-val nil]
+            (when (not= read-val ":conjure/deps-ready")
+              (recur (:val (a/<!! read-chan)))))
+
+          (log/trace "Deps ready!"))
 
         (util/thread
           "read-chan handler"
@@ -158,7 +165,9 @@
                 (a/>!! ret-chan out)
                 (ui/result {:conn conn, :resp out}))
 
-              (recur)))))
+              (recur))))
+
+        (swap! conns! assoc tag conn))
 
       ::added)))
 

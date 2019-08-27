@@ -57,11 +57,13 @@
 
 ;; Used in templates because my linter freaks out otherwise.
 (def ^:private ns-sym 'ns)
-(def ^:private require-kw :require)
+(def ^:private require-sym 'require)
+
+(deftemplate :deps-ns [_opts]
+  (tmpl (~ns-sym ~deps-ns)))
 
 (deftemplate :deps-hash [_opts]
   (tmpl
-    (~ns-sym ~deps-ns)
     (defonce deps-hash! (atom nil))
     @deps-hash!))
 
@@ -73,28 +75,30 @@
       :clj 
       (concat
         [(tmpl
-           (~ns-sym
-             ~deps-ns
-             (~require-kw [clojure.repl]
-                          [clojure.string]
-                          [clojure.java.io]
-                          [clojure.test])))
-         (tmpl (reset! deps-hash! ~deps-hash))]
+           (~require-sym '[clojure.repl]
+                         '[clojure.string]
+                         '[clojure.java.io]
+                         '[clojure.test])
+           (reset! deps-hash! ~deps-hash))]
         (when deps-changed?
           (->> (:clj injected-deps)
-               (map #(wrap-clojure-eval {:code (slurp %), :path %})))))
+               (map #(wrap-clojure-eval {:code (slurp %), :path %}))))
+        [(tmpl :conjure/deps-ready)])
       :cljs
       (concat
         [(tmpl
-           (~ns-sym
-             ~deps-ns
-             (~require-kw [cljs.repl]
-                          [cljs.test])))
-         (tmpl (reset! deps-hash! ~deps-hash))]
+           (~require-sym '[cljs.repl]
+                         '[cljs.test]))]
+        [(tmpl (reset! deps-hash! ~deps-hash))]
         (when deps-changed?
           (->> (:cljs injected-deps)
-               (map (fn [path]
-                      (tmpl (load-file ~path))))))))))
+               #_(map slurp)
+               (mapcat
+                 (fn [path]
+                   (let [code (slurp path)]
+                     [(tmpl (~ns-sym ~(util/parse-ns code)))
+                      code])))))
+        [(tmpl :conjure/deps-ready)]))))
 
 (deftemplate :eval [{:keys [conn code line]
                      {:keys [ns path]} :ctx}]
@@ -121,8 +125,7 @@
         "\n"))))
 
 (deftemplate :load-file [{:keys [path]}]
-  (tmpl
-    (load-file ~path)))
+  (tmpl (load-file ~path)))
 
 (deftemplate :completions [{:keys [ns conn prefix context]}]
   (case (:lang conn)
