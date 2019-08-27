@@ -121,8 +121,7 @@
         (tmpl (in-ns '~(or ns 'cljs.user)))
         (when wrap-forms? "(do ")
         code "\n"
-        (when wrap-forms? ")")
-        "\n"))))
+        (when wrap-forms? ")\n")))))
 
 (deftemplate :load-file [{:keys [path]}]
   (tmpl (load-file ~path)))

@@ -10,13 +10,13 @@
                                 :code code}))]
     (t/is (str/ends-with?
             (eval-tmpl :cljs "(inc a) (inc b)")
-            "(do (inc a) (inc b)\n)"))
+            "(do (inc a) (inc b)\n)\n"))
     (t/is (str/ends-with?
             (eval-tmpl :cljs ":foo :bar")
-            "(do :foo :bar\n)"))
+            "(do :foo :bar\n)\n"))
     (t/is (str/ends-with?
             (eval-tmpl :cljs "(ns xyz)")
             "(ns xyz)\n"))
     (t/is (str/ends-with?
             (eval-tmpl :cljs "(oh no")
-            "(do (oh no\n)"))))
+            "(do (oh no\n)\n"))))
