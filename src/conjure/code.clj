@@ -92,12 +92,21 @@
         [(tmpl (reset! deps-hash! ~deps-hash))]
         (when deps-changed?
           (->> (:cljs injected-deps)
-               #_(map slurp)
-               (mapcat
+               (map
                  (fn [path]
-                   (let [code (slurp path)]
-                     [(tmpl (~ns-sym ~(util/parse-ns code)))
-                      code])))))
+                   (if (str/ends-with? path ".cljc")
+                     (tmpl (load ~path)
+                           (load-file ~path))
+                     (tmpl (load-file ~path)))))
+               #_(mapcat
+                   (fn [path]
+                     (let [code (slurp path)]
+                       [(tmpl (~ns-sym ~(util/parse-ns code)))
+                        code
+                        #_(tmpl
+                            (loop []
+                              (when-not ~(util/parse-ns code)
+                                (recur))))])))))
         [(tmpl :conjure/deps-ready)]))))
 
 (deftemplate :eval [{:keys [conn code line]

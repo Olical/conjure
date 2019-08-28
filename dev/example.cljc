@@ -20,3 +20,8 @@
     (t/is (= 10 10))))
 
 [(henlo "Ollie") (get-env)]
+
+(comment
+  (:doc
+    #?(:clj (conjure.orchard.v0v5v0-beta12.orchard.meta/var-meta #'clojure.core/+)
+       :cljs (conjure.orchard.v0v5v0-beta12.orchard.cljs.analysis/var-meta #'clojure.core/+))))
