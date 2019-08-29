@@ -11,7 +11,7 @@
 (def ^:private injected-deps!
   "Files to load, in order, to add runtime dependencies to a REPL."
   (delay
-    (-> "conjure_deps/injection_orders/ac6b0c506eb32178bec4d55701829dca.edn"
+    (-> "conjure_deps/injection_orders/6b53f84be627e910707403dd597432e7.edn"
         (io/resource)
         (slurp)
         (edn/read-string))))
@@ -138,15 +138,6 @@
     ;; https://github.com/alexander-yakushev/compliment/pull/62
     :cljs (tmpl [])))
 
-;; TODO Swap to Orchard when 0.5 is released.
-#_(defn info-str
-    "Get the information map for a given namespace and symbol."
-    [{:keys [conn name]}]
-    (case (:lang conn)
-      :clj (str "(conjure-deps.orchard.v0v5v0-beta11.orchard.info/info (symbol (str *ns*)) '" name ")")
-      :cljs "{}"))
-
-;; TODO Replace with Orchard.
 (deftemplate :doc [{:keys [conn name]}]
   (let [doc-symbol (case (:lang conn)
                      :clj 'clojure.repl/doc
@@ -155,7 +146,6 @@
       (with-out-str
         (~doc-symbol ~(symbol name))))))
 
-;; TODO Replace with Orchard
 (defn definition-str
   "Find where a given symbol is defined, returns [file line column]."
   [{:keys [name conn]}]

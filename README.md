@@ -24,7 +24,6 @@ That article will show you how to start a prepl for Clojure or ClojureScript fro
 ### Upcoming for v1.0.0
 
  * ClojureScript autocompletion.
- * Orchard integration.
  * More testing.
  * Polished documentation and README. ([#6](https://github.com/Olical/conjure/issues/6))
 
