@@ -8,14 +8,14 @@
             [conjure.util :as util]
             [conjure.meta :as meta]))
 
-(def ^:private injection-order-hash
-  "Injection order file hash to load and use."
-  "6b53f84be627e910707403dd597432e7")
+(def ^:private deps-hash
+  "Injection order file hash to load and use from olical/conjure-deps."
+  "1aff385bf80202248bffe30baa607b5f")
 
 (def ^:private injected-deps!
   "Files to load, in order, to add runtime dependencies to a REPL."
   (delay
-    (-> (str "conjure_deps/injection_orders/" injection-order-hash ".edn")
+    (-> (str "conjure_deps/injection_orders/" deps-hash ".edn")
         (io/resource)
         (slurp)
         (edn/read-string))))
@@ -78,7 +78,6 @@
 
 (deftemplate :deps [{:keys [lang current-deps-hash]}]
   (let [injected-deps @injected-deps!
-        deps-hash (hash injected-deps)
         deps-changed? (not= current-deps-hash deps-hash)]
     (case lang
       :clj 
