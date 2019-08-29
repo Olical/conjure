@@ -138,21 +138,16 @@
         (a/>!! eval-chan (code/render :deps-ns {}))
         (a/<!! read-chan)
 
-        (log/trace "Fetching current deps-hash.")
-        (a/>!! eval-chan (code/render :deps-hash {}))
-
-        (let [deps (code/render :deps {:lang lang
-                                       :current-deps-hash (-> (a/<!! read-chan)
-                                                              (get :val)
-                                                              (edn/read-string))})]
+        (let [current-deps-hash (when (= lang :clj)
+                                  (log/trace "Fetching current deps-hash.")
+                                  (a/>!! eval-chan (code/render :deps-hash {}))
+                                  (-> (a/<!! read-chan)
+                                      (get :val)
+                                      (edn/read-string)))
+              deps (code/render :deps {:lang lang, :current-deps-hash current-deps-hash})]
           (log/trace "Evaluating" (count deps) "dep strings...")
           (doseq [dep deps] (a/>!! eval-chan dep))
-
-          (log/trace "Reading until we see :conjure/deps-ready...")
-          (loop [read-val nil]
-            (when (not= read-val ":conjure/deps-ready")
-              (recur (:val (a/<!! read-chan)))))
-
+          (doseq [_ deps] (a/<!! read-chan))
           (log/trace "Deps ready!"))
 
         (util/thread

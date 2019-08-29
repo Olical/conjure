@@ -81,33 +81,12 @@
                          '[clojure.test])
            (reset! deps-hash! ~deps-hash))]
         (when deps-changed?
-          (->> (:clj injected-deps)
-               (map #(wrap-clojure-eval {:code (slurp %), :path %}))))
-        [(tmpl :conjure/deps-ready)])
+          (->> injected-deps
+               (map #(wrap-clojure-eval {:code (slurp %), :path %})))))
       :cljs
-      (concat
-        [(tmpl
-           (~require-sym '[cljs.repl]
-                         '[cljs.test]))]
-        [(tmpl (reset! deps-hash! ~deps-hash))]
-        (when deps-changed?
-          (->> (:cljs injected-deps)
-               (map
-                 (fn [path]
-                   (if (str/ends-with? path ".cljc")
-                     (tmpl (load ~path)
-                           (load-file ~path))
-                     (tmpl (load-file ~path)))))
-               #_(mapcat
-                   (fn [path]
-                     (let [code (slurp path)]
-                       [(tmpl (~ns-sym ~(util/parse-ns code)))
-                        code
-                        #_(tmpl
-                            (loop []
-                              (when-not ~(util/parse-ns code)
-                                (recur))))])))))
-        [(tmpl :conjure/deps-ready)]))))
+      [(tmpl
+         (~require-sym '[cljs.repl]
+                       '[cljs.test]))])))
 
 (deftemplate :eval [{:keys [conn code line]
                      {:keys [ns path]} :ctx}]

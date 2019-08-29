@@ -33,9 +33,6 @@
          (dep/topo-sort)
          (mapv (comp str :file)))))
 
-
-;; TODO prepend target/mranderson/conjure/orchard/v0v5v0_beta12/orchard/java/legacy_parser.clj
-
 (defn -main []
   (ma/mranderson {:clojars "https://repo.clojars.org"
                   :central "https://repo.maven.apache.org/maven2"}
@@ -49,8 +46,8 @@
                   :parent-clj-dirs []
                   :branch []})
 
-  (->> {:clj (topo-sort (find/find-sources-in-dir ma-root find/clj))
-        :cljs (topo-sort (find/find-sources-in-dir ma-root find/cljs))}
+  (->> (find/find-sources-in-dir ma-root find/clj)
+       (topo-sort)
        (pr-str)
        (spit (io/file ma-root "load-order.edn")))
 
