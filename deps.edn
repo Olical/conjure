@@ -14,7 +14,8 @@
   me.raynes/fs {:mvn/version "1.4.6"}
   backtick {:mvn/version "0.3.4"}
   medley {:mvn/version "1.2.0"}
-  traversy {:mvn/version "0.5.0"}}
+  traversy {:mvn/version "0.5.0"}
+  olical/conjure-deps {:mvn/version "0.1.0"}}
 
  :aliases
  {:test
@@ -26,11 +27,9 @@
   {:extra-deps
    {org.clojure/clojurescript {:mvn/version "1.10.520"}}}
 
-  :tools
+  :dev
   {:extra-deps
-   {org.clojure/tools.namespace {:mvn/version "0.3.0"}
-    leiningen {:mvn/version "2.9.1"}
-    thomasa/mranderson {:mvn/version "0.5.1"}}}
+   {olical/conjure-deps {:local/root "../conjure-deps"}}}}
 
   :compile
   {:extra-paths ["classes"]
@@ -40,4 +39,4 @@
   :fast
   {:extra-paths ["classes"]
    :jvm-opts ["-client" "-Xmx128m" "-Xverify:none"
-              "-XX:+TieredCompilation" "-XX:TieredStopAtLevel=1"]}}}
+              "-XX:+TieredCompilation" "-XX:TieredStopAtLevel=1"]}}

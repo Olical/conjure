@@ -1,7 +1,8 @@
 (ns conjure.code
   "Tools to render code for evaluation. The response from these functions
   should be sent to an environment for evaluation."
-  (:require [clojure.string :as str]
+  (:require [clojure.java.io :as io]
+            [clojure.string :as str]
             [backtick :as bt]
             [clojure.edn :as edn]
             [conjure.util :as util]
@@ -9,11 +10,15 @@
 
 (def ^:private injected-deps!
   "Files to load, in order, to add runtime dependencies to a REPL."
-  (delay (edn/read-string (slurp "target/mranderson/load-order.edn"))))
+  (delay
+    (-> "conjure_deps/injection_orders/ac6b0c506eb32178bec4d55701829dca.edn"
+        (io/resource)
+        (slurp)
+        (edn/read-string))))
 
 (def ^:private deps-ns
   "Namespace to store injected dependency related information under."
-  (symbol (str "conjure.deps." meta/ns-version)))
+  (symbol (str "conjure-deps." meta/ns-version)))
 
 (defmulti render
   "Render the template strings with opts."
@@ -81,8 +86,11 @@
                          '[clojure.test])
            (reset! deps-hash! ~deps-hash))]
         (when deps-changed?
-          (->> injected-deps
-               (map #(wrap-clojure-eval {:code (slurp %), :path %})))))
+          (->> (:clj injected-deps)
+               (map #(wrap-clojure-eval
+                       {:code (-> (io/resource %)
+                                  (slurp))
+                        :path %})))))
       :cljs
       [(tmpl
          (~require-sym '[cljs.repl]
@@ -118,7 +126,7 @@
   (case (:lang conn)
     :clj
     (tmpl
-      (conjure.compliment.v0v3v9.compliment.core/completions
+      (conjure-deps.compliment.v0v3v9.compliment.core/completions
         ~prefix
         (merge
           {:ns (find-ns '~(or ns 'user))
@@ -135,7 +143,7 @@
     "Get the information map for a given namespace and symbol."
     [{:keys [conn name]}]
     (case (:lang conn)
-      :clj (str "(conjure.orchard.v0v5v0-beta11.orchard.info/info (symbol (str *ns*)) '" name ")")
+      :clj (str "(conjure-deps.orchard.v0v5v0-beta11.orchard.info/info (symbol (str *ns*)) '" name ")")
       :cljs "{}"))
 
 ;; TODO Replace with Orchard.
@@ -210,7 +218,7 @@
   (when (= (:lang conn) :clj)
     (let [args (when (and (not= op :clear) after)
                  [:after (list 'quote after)])
-          repl-ns "conjure.toolsnamespace.v0v3v1.clojure.tools.namespace.repl"
+          repl-ns "conjure-deps.toolsnamespace.v0v3v1.clojure.tools.namespace.repl"
           op-str (case op
                    :clear "clear"
                    :changed "refresh"

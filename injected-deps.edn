@@ -1,9 +1,0 @@
-;; These dependencies are fetched and munged by bin/compile (conjure.munge.main)
-;; for injection over a prepl at runtime.
-
-;; When you change these versions you need to update the symbols used in conjure.code.
-;; The version numbers in the munged namespaces will change!
-
-[[org.clojure/tools.namespace "0.3.1"]
- [cider/orchard "0.5.0-beta12"]
- [compliment "0.3.9"]]

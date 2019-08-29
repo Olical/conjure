@@ -9,11 +9,3 @@ if [ ! -d classes ] || [ $(git show -s --format=%ct HEAD) -gt $(date -r classes 
   mkdir classes
   clojure -Sforce -A:compile --eval "(compile 'conjure.main)"
 fi
-
-# Skip this if the Mr Anderson output is newer than the config.
-if [ ! -d target/mranderson ] || [ $(date -r injected-deps.edn +%s) -gt $(date -r target/mranderson +%s) ]; then
-  echo "[Conjure] Preparing dependencies for runtime injection..."
-  mkdir -p target
-  rm -rf target/mranderson
-  clojure -Sforce -A:tools --main conjure.munge.main
-fi
