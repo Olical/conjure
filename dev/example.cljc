@@ -13,15 +13,8 @@
 (+ 10 20)
 
 (comment
-  (this-will-error))
+  (this-will-error)
 
-(t/deftest something-simple
-  (t/testing "hmm"
-    (t/is (= 10 10))))
-
-[(henlo "Ollie") (get-env)]
-
-(comment
   (:doc
     #?(:clj (do
               (require 'conjure-deps.orchard.v0v5v0-beta12.orchard.meta)
@@ -29,3 +22,9 @@
        :cljs (do
                (require 'conjure-deps.orchard.v0v5v0-beta12.orchard.cljs.analysis)
                (conjure-deps.orchard.v0v5v0-beta12.orchard.cljs.analysis/var-meta #'clojure.core/+)))))
+
+(t/deftest something-simple
+  (t/testing "hmm"
+    (t/is (= 10 10))))
+
+[(henlo "Ollie") (get-env)]
