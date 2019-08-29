@@ -29,7 +29,7 @@
 
   :dev
   {:extra-deps
-   {olical/conjure-deps {:local/root "../conjure-deps"}}}}
+   {olical/conjure-deps {:local/root "../conjure-deps"}}}
 
   :compile
   {:extra-paths ["classes"]
@@ -39,4 +39,4 @@
   :fast
   {:extra-paths ["classes"]
    :jvm-opts ["-client" "-Xmx128m" "-Xverify:none"
-              "-XX:+TieredCompilation" "-XX:TieredStopAtLevel=1"]}}
+              "-XX:+TieredCompilation" "-XX:TieredStopAtLevel=1"]}}}
