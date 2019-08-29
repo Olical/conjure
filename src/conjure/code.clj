@@ -8,10 +8,14 @@
             [conjure.util :as util]
             [conjure.meta :as meta]))
 
+(def ^:private injection-order-hash
+  "Injection order file hash to load and use."
+  "6b53f84be627e910707403dd597432e7")
+
 (def ^:private injected-deps!
   "Files to load, in order, to add runtime dependencies to a REPL."
   (delay
-    (-> "conjure_deps/injection_orders/6b53f84be627e910707403dd597432e7.edn"
+    (-> (str "conjure_deps/injection_orders/" injection-order-hash ".edn")
         (io/resource)
         (slurp)
         (edn/read-string))))
