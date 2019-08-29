@@ -36,7 +36,7 @@ jobs:
     executor: clojure
     steps:
       - with-deps:
-          cache-key: compile-{{ checksum "deps.edn" }}-{{ checksum "injected-deps.edn" }}
+          cache-key: compile-{{ checksum "deps.edn" }}
           steps:
             - run: bin/compile
 
