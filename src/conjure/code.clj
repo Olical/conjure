@@ -83,10 +83,10 @@
       :clj 
       (concat
         [(tmpl
-           (~require-sym '[clojure.repl]
-                         '[clojure.string]
-                         '[clojure.java.io]
-                         '[clojure.test])
+           (~require-sym 'clojure.repl
+                         'clojure.string
+                         'clojure.java.io
+                         'clojure.test)
            (reset! deps-hash! ~deps-hash))]
         (when deps-changed?
           (->> (:clj injected-deps)
@@ -96,8 +96,9 @@
                         :path %})))))
       :cljs
       [(tmpl
-         (~require-sym '[cljs.repl]
-                       '[cljs.test]))])))
+         (~require-sym 'cljs.repl
+                       'cljs.test
+                       'clojure.string))])))
 
 (deftemplate :eval [{:keys [conn code line]
                      {:keys [ns path]} :ctx}]
