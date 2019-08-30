@@ -8,7 +8,7 @@
  * Declarative connection configuration through `.conjure.edn`.
  * Log buffer, like a REPL you can edit.
  * Liberal use of virtual text to display help and results.
- * Completion through [Complement][] (ClojureScript support _soon_).
+ * Omnicompletion (`<C-x><C-o>`) through [Complement][] (ClojureScript support _soon_).
  * Documentation lookup as you type (or with `K`).
  * Refreshing of changed namespaces (Clojure only).
  * Go to definition (limited ClojureScript support).
@@ -48,6 +48,26 @@ And now all we need to do is open a Clojure file, write some code and evaluate i
 
 > Neovim lost all theming in the asciinema video for some reason, it usually looks a lot better.
 
+## Autocompletion
+
+[Deoplete][] will work out of the box to provide fully asynchronous completion as you type. You will probably want to configure it to pop up more often using a snippet I first saw in the [async-clj-omni][] repository.
+
+```viml
+call deoplete#custom#option('keyword_patterns', {'clojure': '[\w!$%&+/:<=>?@^_~-.#]'})
+```
+
+If you prefer [CoC][] you can add [coc-conjure][] to get the same asynchronous completion experience.
+
+The Python to hook up Deoplete and the JavaScript to connect CoC should be good enough of an example for how you can write your own plugin for another completion framework. There's a JSON RPC server inside Conjure you can connect to that allows you to execute anything within Conjure, including fetching completions or evaluating code.
+
+## Mappings
+
+## Config
+
+## Issues
+
+## Contributing
+
 ## Rationale and history
 
 I've always been a Vim user, historically to edit things like JavaScript and Python, and probably always will be. There's great emulations out there but they never quite cut it for me.
@@ -84,3 +104,7 @@ Find the full [unlicense][] in the `UNLICENSE` file, but here's a snippet.
 [vim-plug]: https://github.com/junegunn/vim-plug
 [cookbook]: https://oli.me.uk/2019-03-22-clojure-socket-prepl-cookbook/
 [propel]: https://github.com/Olical/propel
+[deoplete]: https://github.com/Shougo/deoplete.nvim
+[async-clj-omni]: https://github.com/clojure-vim/async-clj-omni
+[coc]: https://github.com/neoclide/coc.nvim
+[coc-conjure]: https://github.com/jlesquembre/coc-conjure
