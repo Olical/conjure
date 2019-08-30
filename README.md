@@ -64,7 +64,22 @@ The Python to hook up Deoplete and the JavaScript to connect CoC should be good 
 
 | Command | Mapping | Description |
 | --- | --- | --- |
-| ConjureUp | `<localleader>cu` | Synchronise connections with your `.conjure.edn` config files, takes flags like `-foo +bar` which will set the `:enabled?` flags of matching connections. |
+| `ConjureUp` | `<localleader>cu` | Synchronise connections with your `.conjure.edn` config files, takes flags like `-foo +bar` which will set the `:enabled?` flags of matching connections. |
+| `ConjureStatus` | `<localleader>cs` | Display the current connections in the log buffer. |
+| `ConjureEval` | `<localleader>ew` (word under cursor) | Evaluate the argument in the appropriate prepl. |
+| `ConjureEvalSelection` | `<localleader>ee` (visual mode) | Evaluates the current (or previous) visual selection. |
+| `ConjureEvalCurrentForm` | `<localleader>ee` | Evaluates the form under the cursor. |
+| `ConjureEvalRootForm` | `<localleader>er` | Evaluates the outermost form under the cursor. |
+| `ConjureEvalBuffer` | `<localleader>eb` | Evaluate the entire buffer (not from the disk). |
+| `ConjureLoadFile` | `<localleader>ef` | Load and evaluate the file from the disk. |
+| `ConjureDoc` | `K` | Display the documentation for the given symbol in the log buffer. |
+| `ConjureDefinition` | `gd` | Go to the source of the given symbol, providing we can find it - falls back to vanilla `gd`. |
+| `ConjureOpenLog` | `<localleader>cl` | Open and focus the log buffer in a large window. |
+| `ConjureCloseLog` | `<localleader>cq` | Close the log window if it's open in this tab. |
+| `ConjureToggleLog` | `<localleader>cL` | Open or close the log depending on it's current state. |
+| `ConjureRunTests` | `<localleader>tt` | Run tests in the current namespace and it's `-test` equivalent (as well as the other way around) or with the provided namespace names separated by spaces. |
+| `ConjureRunAllTests` | `<localleader>ta` | Run all tests with an optional namespace filter regex. |
+| `ConjureRefresh` | `<localleader>rr` / `<localleader>rR` / `<localleader>rc` | Clojure only, refresh namespaces, takes `changed`, `all` or `clear` as an argument. |
 
 ## Config
 
