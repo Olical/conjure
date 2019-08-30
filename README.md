@@ -6,7 +6,6 @@
 
  * Connect to multiple Clojure or ClojureScript prepls at once.
  * Declarative connection configuration through `.conjure.edn`.
- * No dependencies required in your project.
  * Log buffer, like a REPL you can edit.
  * Liberal use of virtual text to display help and results.
  * Completion through [Complement][] (ClojureScript support _soon_).
@@ -25,6 +24,8 @@ I highly recommend you pin it to a tag and then subscribe to releases through th
 Plug 'Olical/conjure', { 'tag': 'v1.0.0', 'do': 'bin/compile'  }
 ```
 
+No dependencies are required in your project, anything required for things like autocomplete will be injected upon first connection. The initial connection to a prepl will take a few seconds because of this.
+
 ## Hello, World!
 
 Here's a minimal example of using Conjure after successfully installing it. In an empty directory we'll create this simple `.conjure.edn`.
@@ -39,9 +40,11 @@ Conjure is now configured to connect to a local prepl on port `5678`, let's star
 clojure -J-Dclojure.server.jvm="{:port 5678 :accept clojure.core.server/io-prepl}"
 ```
 
-> Read more about starting prepls in my [Clojure socket prepl cookbook][cookbook] post. Also check out [Propel][] my tool that helps you start up various prepls, it might come in handy!
+> Read more about starting prepls in my [Clojure socket prepl cookbook][cookbook] post. Also check out [Propel][], my tool that helps you start prepls in various ways.
 
-And now all we need to do is open a Clojure file, here's a clip of what you should see with autocompletion and evaluation. It takes a few seconds upon first connection because the required dependencies for a few fancier features are being injected.
+And now all we need to do is open a Clojure file, write some code and evaluate it with `<localleader>ee` to evaluate the current expression. There are many more mappings such as `<localleader>er` to evaluate the root form of the expression, they can all be remapped.
+
+Here's a clip of what you should see with autocompletion, documentation lookup and evaluation.
 
 [![asciicast](https://asciinema.org/a/mIH4x3ma71Mha4L7oPhrTiSEA.svg?t=13)](https://asciinema.org/a/mIH4x3ma71Mha4L7oPhrTiSEA)
 
