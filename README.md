@@ -39,6 +39,8 @@ Conjure is now configured to connect to a local prepl on port `5678`, let's star
 clojure -J-Dclojure.server.jvm="{:port 5678 :accept clojure.core.server/io-prepl}"
 ```
 
+> Read more about starting prepls in my [Clojure socket prepl cookbook][cookbook] post. Also check out [Propel][] my tool that helps you start up various prepls, it might come in handy!
+
 And now all we need to do is open a Clojure file, here's a clip of what you should see with autocompletion and evaluation. It takes a few seconds upon first connection because the required dependencies for a few fancier features are being injected.
 
 [![asciicast](https://asciinema.org/a/mIH4x3ma71Mha4L7oPhrTiSEA.svg?t=12)](https://asciinema.org/a/mIH4x3ma71Mha4L7oPhrTiSEA)
@@ -59,3 +61,5 @@ Find the full [unlicense][] in the `UNLICENSE` file, but here's a snippet.
 [neovim]: https://neovim.io/
 [complement]: https://github.com/alexander-yakushev/compliment
 [vim-plug]: https://github.com/junegunn/vim-plug
+[cookbook]: https://oli.me.uk/2019-03-22-clojure-socket-prepl-cookbook/
+[propel]: https://github.com/Olical/propel
