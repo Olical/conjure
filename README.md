@@ -62,24 +62,34 @@ The Python to hook up Deoplete and the JavaScript to connect CoC should be good 
 
 ## Mappings
 
-| Command | Mapping | Description |
-| --- | --- | --- |
-| `ConjureUp` | `<localleader>cu` | Synchronise connections with your `.conjure.edn` config files, takes flags like `-foo +bar` which will set the `:enabled?` flags of matching connections. |
-| `ConjureStatus` | `<localleader>cs` | Display the current connections in the log buffer. |
-| `ConjureEval` | `<localleader>ew` (word under cursor) | Evaluate the argument in the appropriate prepl. |
-| `ConjureEvalSelection` | `<localleader>ee` (visual mode) | Evaluates the current (or previous) visual selection. |
-| `ConjureEvalCurrentForm` | `<localleader>ee` | Evaluates the form under the cursor. |
-| `ConjureEvalRootForm` | `<localleader>er` | Evaluates the outermost form under the cursor. |
-| `ConjureEvalBuffer` | `<localleader>eb` | Evaluate the entire buffer (not from the disk). |
-| `ConjureLoadFile` | `<localleader>ef` | Load and evaluate the file from the disk. |
-| `ConjureDoc` | `K` | Display the documentation for the given symbol in the log buffer. |
-| `ConjureDefinition` | `gd` | Go to the source of the given symbol, providing we can find it - falls back to vanilla `gd`. |
-| `ConjureOpenLog` | `<localleader>cl` | Open and focus the log buffer in a large window. |
-| `ConjureCloseLog` | `<localleader>cq` | Close the log window if it's open in this tab. |
-| `ConjureToggleLog` | `<localleader>cL` | Open or close the log depending on it's current state. |
-| `ConjureRunTests` | `<localleader>tt` | Run tests in the current namespace and it's `-test` equivalent (as well as the other way around) or with the provided namespace names separated by spaces. |
-| `ConjureRunAllTests` | `<localleader>ta` | Run all tests with an optional namespace filter regex. |
-| `ConjureRefresh` | `<localleader>rr` `<localleader>rR` `<localleader>rc` | Clojure only, refresh namespaces, takes `changed`, `all` or `clear` as an argument. |
+| Command | Mapping | Configuration | Description |
+| --- | --- | --- | --- |
+| `ConjureUp` | `<localleader>cu` | `g:conjure_nmap_up` | Synchronise connections with your `.conjure.edn` config files, takes flags like `-foo +bar` which will set the `:enabled?` flags of matching connections. |
+| `ConjureStatus` | `<localleader>cs` | `g:conjure_nmap_status` | Display the current connections in the log buffer. |
+| `ConjureEval` | `<localleader>ew` (word under cursor) | `g:conjure_nmap_eval_word` | Evaluate the argument in the appropriate prepl. |
+| `ConjureEvalSelection` | `<localleader>ee` (visual mode) | `g:conjure_vmap_eval_selection` | Evaluates the current (or previous) visual selection. |
+| `ConjureEvalCurrentForm` | `<localleader>ee` | `g:conjure_nmap_eval_current_form` | Evaluates the form under the cursor. |
+| `ConjureEvalRootForm` | `<localleader>er` | `g:conjure_nmap_eval_root_form` | Evaluates the outermost form under the cursor. |
+| `ConjureEvalBuffer` | `<localleader>eb` | `g:conjure_nmap_eval_buffer` | Evaluate the entire buffer (not from the disk). |
+| `ConjureLoadFile` | `<localleader>ef` | `g:conjure_nmap_eval_file` | Load and evaluate the file from the disk. |
+| `ConjureDoc` | `K` | `g:conjure_nmap_doc` | Display the documentation for the given symbol in the log buffer. |
+| `ConjureDefinition` | `gd` | `g:conjure_nmap_definition` | Go to the source of the given symbol, providing we can find it - falls back to vanilla `gd`. |
+| `ConjureOpenLog` | `<localleader>cl` | `g:conjure_nmap_open_log` | Open and focus the log buffer in a large window. |
+| `ConjureCloseLog` | `<localleader>cq` | `g:conjure_nmap_close_log` | Close the log window if it's open in this tab. |
+| `ConjureToggleLog` | `<localleader>cL` | `g:conjure_nmap_toggle_log` | Open or close the log depending on it's current state. |
+| `ConjureRunTests` | `<localleader>tt` | `g:conjure_nmap_run_tests` | Run tests in the current namespace and it's `-test` equivalent (as well as the other way around) or with the provided namespace names separated by spaces. |
+| `ConjureRunAllTests` | `<localleader>ta` | `g:conjure_nmap_run_all_tests` | Run all tests with an optional namespace filter regex. |
+| `ConjureRefresh` | `<localleader>rr` `<localleader>rR` `<localleader>rc` | `g:conjure_nmap_refresh_changed` `g:conjure_nmap_refresh_all` `g:conjure_nmap_refresh_clear` | Clojure only, refresh namespaces, takes `changed`, `all` or `clear` as an argument. |
+
+You can disable the entire default mapping system with `let g:conjure_default_mappings = 0`, you'll then have to define your own mappings to various commands.
+
+The prefix can be changed from `<localleader>` by setting `g:conjure_map_prefix`.
+
+To override a mapping such as the one for evaluating the word under the cursor while respecting the prefix you'd use the following.
+
+```viml
+let g:conjure_nmap_eval_word = g:conjure_map_prefix . "ew"
+```
 
 ## Config
 
