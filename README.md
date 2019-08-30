@@ -79,7 +79,7 @@ The Python to hook up Deoplete and the JavaScript to connect CoC should be good 
 | `ConjureToggleLog` | `<localleader>cL` | Open or close the log depending on it's current state. |
 | `ConjureRunTests` | `<localleader>tt` | Run tests in the current namespace and it's `-test` equivalent (as well as the other way around) or with the provided namespace names separated by spaces. |
 | `ConjureRunAllTests` | `<localleader>ta` | Run all tests with an optional namespace filter regex. |
-| `ConjureRefresh` | `<localleader>rr` / `<localleader>rR` / `<localleader>rc` | Clojure only, refresh namespaces, takes `changed`, `all` or `clear` as an argument. |
+| `ConjureRefresh` | `<localleader>rr` `<localleader>rR` `<localleader>rc` | Clojure only, refresh namespaces, takes `changed`, `all` or `clear` as an argument. |
 
 ## Config
 
