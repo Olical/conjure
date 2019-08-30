@@ -15,7 +15,7 @@
   backtick {:mvn/version "0.3.4"}
   medley {:mvn/version "1.2.0"}
   traversy {:mvn/version "0.5.0"}
-  olical/conjure-deps {:mvn/version "0.1.0"}}
+  olical/conjure-deps {:mvn/version "0.2.0"}}
 
  :aliases
  {:test
