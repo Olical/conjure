@@ -62,6 +62,10 @@ The Python to hook up Deoplete and the JavaScript to connect CoC should be good 
 
 ## Mappings
 
+| Command | Mapping | Description |
+| --- | --- | --- |
+| ConjureUp | `<localleader>cu` | Synchronise connections with your `.conjure.edn` config files, takes flags like `-foo +bar` which will set the `:enabled?` flags of matching connections. |
+
 ## Config
 
 ## Issues
