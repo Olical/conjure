@@ -172,10 +172,15 @@
   [conns]
   (remove-all!)
 
-  (for [[tag conn] conns
-        :when (and (:enabled? conn)
-                   (add! (assoc conn :tag tag)))]
-    tag))
+  (-> (for [[tag conn] conns
+            :when (and (:enabled? conn)
+                       (add! (assoc conn :tag tag)))]
+        tag)
+      (doall)
+      (as-> results
+        (do
+          (ui/up "Done.")
+          results))))
 
 (defn conns
   "Without a path it'll return all current connections. With a path it finds
