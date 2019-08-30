@@ -43,7 +43,7 @@ clojure -J-Dclojure.server.jvm="{:port 5678 :accept clojure.core.server/io-prepl
 
 And now all we need to do is open a Clojure file, here's a clip of what you should see with autocompletion and evaluation. It takes a few seconds upon first connection because the required dependencies for a few fancier features are being injected.
 
-[![asciicast](https://asciinema.org/a/mIH4x3ma71Mha4L7oPhrTiSEA.svg?t=12)](https://asciinema.org/a/mIH4x3ma71Mha4L7oPhrTiSEA)
+[![asciicast](https://asciinema.org/a/mIH4x3ma71Mha4L7oPhrTiSEA.svg?t=13)](https://asciinema.org/a/mIH4x3ma71Mha4L7oPhrTiSEA)
 
 > Neovim lost all theming in the asciinema video for some reason, it usually looks a lot better.
 
