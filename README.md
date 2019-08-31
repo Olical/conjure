@@ -9,16 +9,16 @@
  * Log buffer, like a REPL you can edit.
  * Liberal use of virtual text to display help and results.
  * Omnicompletion (`<C-x><C-o>`) through [Complement][] (ClojureScript support _soon_).
- * Documentation lookup as you type (or with `K`).
+ * Documentation display as you type (or with `K`).
  * Refreshing of changed namespaces (Clojure only).
  * Go to definition (limited ClojureScript support).
- * Running tests.
+ * Test running.
 
 ## Install
 
-Use your favourite plugin manager (I use [vim-plug][]) to fetch and AOT compile Conjure.
+Use your favourite plugin manager, I highly recommend [vim-plug][], to fetch and AOT compile Conjure.
 
-I highly recommend you pin it to a tag and then subscribe to releases through the GitHub repository. This will allow you to keep up to date without having your workflow interrupted by an unexpected breaking change, not that I intend to ever release many of those.
+I strongly suggest you pin it to a tag and then subscribe to releases through the GitHub repository. This will allow you to keep up to date without having your workflow interrupted by an unexpected breaking change, not that I intend to ever release many of those.
 
 ```viml
 Plug 'Olical/conjure', { 'tag': 'v1.0.0', 'do': 'bin/compile'  }
@@ -46,7 +46,7 @@ And now all we need to do is open a Clojure file, write some code and evaluate i
 
 [![asciicast](https://asciinema.org/a/mIH4x3ma71Mha4L7oPhrTiSEA.svg?t=13)](https://asciinema.org/a/mIH4x3ma71Mha4L7oPhrTiSEA)
 
-> Neovim lost all theming in the asciinema video for some reason, it usually looks a lot better.
+> Neovim lost all theming in the asciinema video for some reason, it usually looks a lot prettier.
 
 ## Autocompletion
 
@@ -56,23 +56,23 @@ And now all we need to do is open a Clojure file, write some code and evaluate i
 call deoplete#custom#option('keyword_patterns', {'clojure': '[\w!$%&+/:<=>?@^_~-.#]'})
 ```
 
-If you prefer [CoC][] you can add [coc-conjure][] to get the same asynchronous completion experience.
+If you prefer to use [CoC][] you can add [coc-conjure][] to get the same asynchronous completion experience.
 
 The Python to hook up Deoplete and the JavaScript to connect CoC should be good enough of an example for how you can write your own plugin for another completion framework. There's a JSON RPC server inside Conjure you can connect to that allows you to execute anything within Conjure, including fetching completions or evaluating code.
 
 ## Configuration
 
-Conjure is configured through a mixture of Vim Script variables and the `.conjure.edn` file (the dot prefix is optional). The `.conjure.edn` file in your local directory will be deeply merged with every other one found above it in the directory tree.
+Conjure is configured through a mixture of Vim Script variables and the `.conjure.edn` file (the dot prefix is optional). The `.conjure.edn` file in your local directory will be deeply merged with every other one found in parent directories.
 
 This means you can store global things in `~/.conjure.edn` or `~/.config/conjure/.conjure.edn` and override specific values with your project local configuration file. `~/.config` should be the default value of your `XDG_CONFIG_HOME` variable which Conjure respects.
 
-Once configured you'll simply need to open up a Clojure or ClojureScript file and the connections will be made automatically. To synchronise the configuration and connections while Neovim is open simply execute `ConjureUp` (`<localleader>cu` by default).
+Once configured you'll simply need to open up a Clojure or ClojureScript file and the connections will be made automatically. To synchronise the configuration and connections when Neovim is already open simply execute `ConjureUp` (`<localleader>cu` by default) after making your changes.
 
 If you get anything wrong in your `.conjure.edn` you'll see a spec validation error formatted by [expound][] which should help you work it out.
 
 ### `.conjure.edn`
 
-This is an exhaustive `.conjure.edn`, mine usually end up being 1-5 lines long. Hopefully you'll be able to find anything you might need in here though!
+This is an exhaustive `.conjure.edn`, mine usually end up being between 1-5 lines long. Hopefully you'll be able to find anything you might need in here though!
 
 ```edn
 {:conns
@@ -120,11 +120,12 @@ This is an exhaustive `.conjure.edn`, mine usually end up being 1-5 lines long. 
 
 ### Options
 
-You may set these globals with `let` before Conjure loads to configure it's behaviour.
+You may set these globals with `let` _before_ Conjure is loaded to configure it's behaviour.
 
 | Variable | Default value | Description |
 | --- | --- | --- |
 | `g:conjure_default_mappings` | `v:true` | Enable default key mappings. |
+| `g:conjure_map_prefix` | `"<localleader>"` | Prefix to most of the default mappings. |
 | `g:conjure_log_direction` | `"vertical"` | How to split the log window. Either `"vertical"` or `"horizontal"`. |
 | `g:conjure_log_size_small` | `25` (%) | Regular size of the log window when it opens automatically. |
 | `g:conjure_log_size_large` | `50` (%) | Size of the log window when explicitly opened by  `ConjureOpenLog`. |
@@ -160,16 +161,6 @@ let g:conjure_log_blacklist = ["up", "ret", "ret-multiline", "load-file", "eval"
 
 ### Mappings
 
-You can disable the entire default mapping system with `let g:conjure_default_mappings = 0`, you'll then have to define your own mappings to various commands.
-
-The prefix can be changed from `<localleader>` by setting `g:conjure_map_prefix`.
-
-To override a mapping such as for evaluating the word under the cursor while respecting the prefix you'd use the following.
-
-```viml
-let g:conjure_nmap_eval_word = g:conjure_map_prefix . "ew"
-```
-
 | Command | Mapping | Configuration | Description |
 | --- | --- | --- | --- |
 | `ConjureUp` | `<localleader>cu` | `g:conjure_nmap_up` | Synchronise connections with your `.conjure.edn` config files, takes flags like `-foo +bar` which will set the `:enabled?` flags of matching connections. |
@@ -188,6 +179,12 @@ let g:conjure_nmap_eval_word = g:conjure_map_prefix . "ew"
 | `ConjureRunTests` | `<localleader>tt` | `g:conjure_nmap_run_tests` | Run tests in the current namespace and it's `-test` equivalent (as well as the other way around) or with the provided namespace names separated by spaces. |
 | `ConjureRunAllTests` | `<localleader>ta` | `g:conjure_nmap_run_all_tests` | Run all tests with an optional namespace filter regex. |
 | `ConjureRefresh` | `<localleader>rr` `<localleader>rR` `<localleader>rc` | `g:conjure_nmap_refresh_changed` `g:conjure_nmap_refresh_all` `g:conjure_nmap_refresh_clear` | Clojure only, refresh namespaces, takes `changed`, `all` or `clear` as an argument. |
+
+To override a mapping such as for evaluating the outermost form while respecting the prefix option you'd use the following.
+
+```viml
+let g:conjure_nmap_eval_root_form = g:conjure_map_prefix . "eE"
+```
 
 ## Issues
 
