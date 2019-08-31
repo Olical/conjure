@@ -72,6 +72,8 @@ If you get anything wrong in your `.conjure.edn` you'll see a spec validation er
 
 ### `.conjure.edn`
 
+This is an exhaustive `.conjure.edn`, mine usually end up being 1-5 lines long. Hopefully you'll be able to find anything you might need in here though!
+
 ```edn
 {:conns
  {;; Minimal example.
@@ -114,6 +116,46 @@ If you get anything wrong in your `.conjure.edn` you'll see a spec validation er
   ;; Directories to search for changed namespaces in.
   ;; Defaults to all directories on the Java classpath.
   :dirs #{"src"}}}
+```
+
+### Options
+
+You may set these globals with `let` before Conjure loads to configure it's behaviour.
+
+| Variable | Default value | Description |
+| --- | --- | --- |
+| `g:conjure_default_mappings` | `v:true` | Enable default key mappings. |
+| `g:conjure_log_direction` | `"vertical"` | How to split the log window. Either `"vertical"` or `"horizontal"`. |
+| `g:conjure_log_size_small` | `25` (%) | Regular size of the log window when it opens automatically. |
+| `g:conjure_log_size_large` | `50` (%) | Size of the log window when explicitly opened by  `ConjureOpenLog`. |
+| `g:conjure_log_auto_close` | `v:true` | Enable closing the log window as you enter insert mode in a Clojure buffer. |
+| `g:conjure_log_blacklist` | `[]` | Don't open the log window for specific kinds of messages. To suppress `conjure/up` you'd use `["up"]`. |
+| `g:conjure_fold_multiline_results` | `v:false` | Fold multiline results in the log window. |
+| `g:conjure_quick_doc_normal_mode` | `v:true` | Enable small doc strings appearing as virtual text in normal mode. |
+| `g:conjure_quick_doc_insert_mode` | `v:true` | Enable small doc strings appearing as virtual text in insert mode as you type. |
+| `g:conjure_quick_doc_time` | `250` (ms) | How long your cursor has to hold before the quick doc will be queried, if enabled. |
+| `g:conjure_omnifunc` | `v:true` | Enable Conjure's built in omnifunc. |
+
+Here's all of the possible values that you could add to `g:conjure_log_blacklist`.
+
+ * `up` - Output from `ConjureUp` and other connection related information.
+ * `status` - Output from `ConjureStatus`.
+ * `eval` - Code you just evaluated and which connection it went to.
+ * `ret` - Returned value from an evaluation (single line).
+ * `ret-multiline` - Returned value from an evaluation (multiple lines).
+ * `out` - `stdout` from an evaluation.
+ * `err` - `stderr` from an evaluation.
+ * `tap` - Results from `(tap> ...)` calls within an evaluation.
+ * `doc` - Documentation output.
+ * `load-file` - Path to the file you just loaded from disk.
+ * `test` - Test results.
+ * `refresh` - Namespace refreshing, you'll also get some `out` and a `ret`.
+
+Here's my current configuration as a real world example. My log buffer opens across the bottom of my screen and will only open for things that I can't see through the virtual text display.
+
+```viml
+let g:conjure_log_direction = "horizontal"
+let g:conjure_log_blacklist = ["up", "ret", "ret-multiline", "load-file", "eval"]
 ```
 
 ### Mappings
