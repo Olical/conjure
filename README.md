@@ -60,7 +60,73 @@ If you prefer [CoC][] you can add [coc-conjure][] to get the same asynchronous c
 
 The Python to hook up Deoplete and the JavaScript to connect CoC should be good enough of an example for how you can write your own plugin for another completion framework. There's a JSON RPC server inside Conjure you can connect to that allows you to execute anything within Conjure, including fetching completions or evaluating code.
 
-## Mappings
+## Configuration
+
+Conjure is configured through a mixture of Vim Script variables and the `.conjure.edn` file (the dot prefix is optional). The `.conjure.edn` file in your local directory will be deeply merged with every other one found above it in the directory tree.
+
+This means you can store global things in `~/.conjure.edn` or `~/.config/conjure/.conjure.edn` and override specific values with your project local configuration file. `~/.config` should be the default value of your `XDG_CONFIG_HOME` variable which Conjure respects.
+
+Once configured you'll simply need to open up a Clojure or ClojureScript file and the connections will be made automatically. To synchronise the configuration and connections while Neovim is open simply execute `ConjureUp` (`<localleader>cu` by default).
+
+If you get anything wrong in your `.conjure.edn` you'll see a spec validation error formatted by [expound][] which should help you work it out.
+
+### `.conjure.edn`
+
+```edn
+{:conns
+ {;; Minimal example.
+  :api {:port 5885}
+
+  ;; ClojureScript.
+  :frontend {:port 5556
+
+             ;; You need to explicitly tell Conjure if it's a ClojureScript connection.
+             :lang :cljs}
+
+  :staging {:host "foo.com"
+            :port 424242
+
+            ;; This is EDN so you need to specify that you want a regex.
+            ;; Clojure(Script)'s #"..." syntax won't work here.
+            :expr #regex "\\.(cljc?|edn|another.extension)$"}
+
+  ;; You can slurp in valid EDN which allows you to use random port files from other tools (such as Propel!).
+  ;; If the file doesn't exist yet the connection will simply be ignored because of the nil :port value.
+
+  ;; For example, this will start a JVM prepl and write the random port to .prepl-port.
+  ;; clj -Sdeps '{:deps {olical/propel {:mvn/version "1.0.0"}}}' -m propel.main -w
+  :propel {:port #slurp-edn ".prepl-port"
+
+           ;; Disabled conns will be ignored on ConjureUp.
+           ;; They can be enabled and disabled with `:ConjureUp -staging +boot`
+           ;; This allows you to toggle parts of your config with different custom mappings.
+           :enabled? false}}
+
+ ;; Optional configuration for tools.namespace refreshing.
+ ;; Set what you need and ignore the rest.
+ :refresh
+ {;; Function to run before refreshing.
+  :before my.ns/stop
+
+  ;; Function to run after refreshing successfully.
+  :after my.ns/start
+
+  ;; Directories to search for changed namespaces in.
+  ;; Defaults to all directories on the Java classpath.
+  :dirs #{"src"}}}
+```
+
+### Mappings
+
+You can disable the entire default mapping system with `let g:conjure_default_mappings = 0`, you'll then have to define your own mappings to various commands.
+
+The prefix can be changed from `<localleader>` by setting `g:conjure_map_prefix`.
+
+To override a mapping such as for evaluating the word under the cursor while respecting the prefix you'd use the following.
+
+```viml
+let g:conjure_nmap_eval_word = g:conjure_map_prefix . "ew"
+```
 
 | Command | Mapping | Configuration | Description |
 | --- | --- | --- | --- |
@@ -80,18 +146,6 @@ The Python to hook up Deoplete and the JavaScript to connect CoC should be good 
 | `ConjureRunTests` | `<localleader>tt` | `g:conjure_nmap_run_tests` | Run tests in the current namespace and it's `-test` equivalent (as well as the other way around) or with the provided namespace names separated by spaces. |
 | `ConjureRunAllTests` | `<localleader>ta` | `g:conjure_nmap_run_all_tests` | Run all tests with an optional namespace filter regex. |
 | `ConjureRefresh` | `<localleader>rr` `<localleader>rR` `<localleader>rc` | `g:conjure_nmap_refresh_changed` `g:conjure_nmap_refresh_all` `g:conjure_nmap_refresh_clear` | Clojure only, refresh namespaces, takes `changed`, `all` or `clear` as an argument. |
-
-You can disable the entire default mapping system with `let g:conjure_default_mappings = 0`, you'll then have to define your own mappings to various commands.
-
-The prefix can be changed from `<localleader>` by setting `g:conjure_map_prefix`.
-
-To override a mapping such as the one for evaluating the word under the cursor while respecting the prefix you'd use the following.
-
-```viml
-let g:conjure_nmap_eval_word = g:conjure_map_prefix . "ew"
-```
-
-## Config
 
 ## Issues
 
@@ -137,3 +191,4 @@ Find the full [unlicense][] in the `UNLICENSE` file, but here's a snippet.
 [async-clj-omni]: https://github.com/clojure-vim/async-clj-omni
 [coc]: https://github.com/neoclide/coc.nvim
 [coc-conjure]: https://github.com/jlesquembre/coc-conjure
+[expound]: https://github.com/bhb/expound
