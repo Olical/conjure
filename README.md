@@ -141,14 +141,14 @@ Here's all of the possible values that you could add to `g:conjure_log_blacklist
 
  * `up` - Output from `ConjureUp` and other connection related information.
  * `status` - Output from `ConjureStatus`.
- * `eval` - Code you just evaluated and which connection it went to.
- * `ret` - Returned value from an evaluation (single line).
- * `ret-multiline` - Returned value from an evaluation (multiple lines).
- * `out` - `stdout` from an evaluation.
- * `err` - `stderr` from an evaluation.
- * `tap` - Results from `(tap> ...)` calls within an evaluation.
+ * `eval` - Code you just evaluated, not the result, and which connection it went to.
+ * `ret` - Returned value from an evaluation (when it's a single line).
+ * `ret-multiline` - Returned value from an evaluation (when it's multiple lines).
+ * `out` - From `stdout`.
+ * `err` - From `stderr`.
+ * `tap` - Results from `(tap> ...)` calls within an evaluation, great for debugging.
  * `doc` - Documentation output.
- * `load-file` - Path to the file you just loaded from disk.
+ * `load-file` - Path to the file you just loaded from disk and which connection it went to.
  * `test` - Test results.
  * `refresh` - Namespace refreshing, you'll also get some `out` and a `ret`.
 
