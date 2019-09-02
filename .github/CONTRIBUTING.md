@@ -7,7 +7,7 @@
  3. Speak to someone about it, raise an issue and start a discussion. Of course if you're just fixing a typo then go ahead, but if it's not an entirely trivial change let's work out what to do together. Perhaps someone has already solved your problem and just needs a poke to share their work or findings.
  4. Develop your change on a branch keeping in line with how the project is currently structured, try to keep your change minimal and focussed.
 
-When working on Conjure you can start the development version through `bin/dev`. When working on Conjure you'll have the following extras by default:
+After also cloning [conjure-deps][] into the same parent directory as Conjure you can start the development version with `bin/dev`. This script enables the following extras by default:
 
  * Your global version of Conjure will be overridden by the one in your current directory.
  * Logs are sent to `logs/conjure.log`. (I `tail -f` this file in another terminal while working)
@@ -34,3 +34,4 @@ Above all, have fun with it. Help build and improve something you love to use.
 [codecov]: https://codecov.io/
 [kaocha]: https://github.com/lambdaisland/kaocha
 [code-of-conduct]: ./CODE_OF_CONDUCT.md
+[conjure-deps]: https://github.com/Olical/conjure-deps
