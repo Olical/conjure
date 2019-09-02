@@ -6,25 +6,25 @@
 
  * Connect to multiple Clojure or ClojureScript prepls at once.
  * Declarative connection configuration through `.conjure.edn`.
- * Log buffer, like a REPL you can edit.
+ * Output buffer, like a REPL you can edit!
  * Liberal use of virtual text to display help and results.
  * Omnicompletion (`<C-x><C-o>`) through [Complement][] (ClojureScript support _soon_).
- * Documentation display as you type (or with `K`).
+ * Documentation displayed as you type (or with `K`).
  * Refreshing of changed namespaces (Clojure only).
  * Go to definition (limited ClojureScript support).
  * Test running.
 
 ## Install
 
-Use your favourite plugin manager, I highly recommend [vim-plug][], to fetch and AOT compile Conjure.
+Use your favourite plugin manager, I recommend [vim-plug][], to fetch and AOT compile Conjure.
 
-I strongly suggest you pin it to a tag and then subscribe to releases through the GitHub repository. This will allow you to keep up to date without having your workflow interrupted by an unexpected breaking change, not that I intend to ever release many of those.
+I strongly suggest you pin it to a tag and then subscribe to releases through the GitHub repository. This will allow you to keep up to date without having your workflow disrupted by an unexpected breaking change, not that I intend to release any.
 
 ```viml
 Plug 'Olical/conjure', { 'tag': 'v1.0.0', 'do': 'bin/compile'  }
 ```
 
-No dependencies are required in your project, anything required for things like autocomplete will be injected upon first connection. The initial connection to a prepl will take a few seconds because of this.
+No dependencies are required in your project, any dependencies required for things like autocomplete will be injected upon connection. The initial connection to a prepl will take a few seconds because of this.
 
 ## Hello, World!
 
@@ -34,13 +34,13 @@ Here's a minimal example of using Conjure after successfully installing it. In a
 {:conns {:dev {:port 5678}}}
 ```
 
-Conjure is now configured to connect to a local prepl on port `5678`, let's start that with this command in another terminal.
+Conjure is now configured to connect to a local prepl on port `5678`, let's start the prepl with this command in another terminal.
 
 ```sh
 clojure -J-Dclojure.server.jvm="{:port 5678 :accept clojure.core.server/io-prepl}"
 ```
 
-> Read more about starting prepls in my [Clojure socket prepl cookbook][cookbook] post. Also check out [Propel][], my tool that helps you start prepls in various ways.
+> You can read more about starting prepls in my [Clojure socket prepl cookbook][cookbook] post. Also check out [Propel][], my tool that helps you start prepls in various ways.
 
 And now all we need to do is open a Clojure file, write some code and evaluate it. Here's a clip of what you should see with autocompletion, documentation lookup and evaluation.
 
@@ -50,7 +50,7 @@ And now all we need to do is open a Clojure file, write some code and evaluate i
 
 ## Autocompletion
 
-[Deoplete][] will work out of the box to provide fully asynchronous completion as you type. You will probably want to configure it to pop up more often using a snippet I first saw in the [async-clj-omni][] repository.
+[Deoplete][] will work out of the box to provide fully asynchronous completion as you type. You will probably want to configure it to pop up more often using a snippet I found in the [async-clj-omni][] repository.
 
 ```viml
 call deoplete#custom#option('keyword_patterns', {'clojure': '[\w!$%&+/:<=>?@^_~-.#]'})
@@ -64,7 +64,7 @@ The Python to hook up Deoplete and the JavaScript to connect CoC should be good 
 
 Conjure is configured through a mixture of Vim Script variables and the `.conjure.edn` file (the dot prefix is optional). The `.conjure.edn` file in your local directory will be deeply merged with every other one found in parent directories.
 
-This means you can store global things in `~/.conjure.edn` or `~/.config/conjure/.conjure.edn` and override specific values with your project local configuration file. `~/.config` should be the default value of your `XDG_CONFIG_HOME` variable which Conjure respects.
+This means you can store global things in `~/.conjure.edn` or `~/.config/conjure/.conjure.edn` and override specific values with your project local configuration file. `~/.config` should be the default value of your `XDG_CONFIG_HOME` environment variable which Conjure respects.
 
 Once configured you'll simply need to open up a Clojure or ClojureScript file and the connections will be made automatically. To synchronise the configuration and connections when Neovim is already open simply execute `ConjureUp` (`<localleader>cu` by default) after making your changes.
 
