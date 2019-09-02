@@ -196,7 +196,7 @@ CONJURE_LOG_PATH=conjure.log nvim
 
 Then open a new issue with as much context as possible with the logging output pasted below or in a GitHub gist.
 
-If you're worried about sensitive material entering the logs, feel free to redact anything you can find or send it to me privately or [encrypted][keybase].
+If you're worried about sensitive material entering the logs, feel free to redact anything you can find, send it to me privately or [encrypted][keybase].
 
 ## Contributions
 
