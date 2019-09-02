@@ -201,7 +201,7 @@ If you're worried about sensitive material entering the logs, feel free to redac
 ## Contributions
 
  * Adhere to [`.github/CODE_OF_CONDUCT.md`][code-of-conduct].
- * Search to see if what you're thinking has been discussed before.
+ * Search to see if what you're thinking about has been discussed before.
  * Raise an issue and talk about what you want to do.
  * Develop your change on a branch in the style of the rest of the project.
 
