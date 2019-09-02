@@ -188,7 +188,24 @@ let g:conjure_nmap_eval_root_form = g:conjure_map_prefix . "eE"
 
 ## Issues
 
-## Contributing
+When you encounter an issue, please reproduce it with logging enabled like so.
+
+```bash
+CONJURE_LOG_PATH=conjure.log nvim
+```
+
+Then open a new issue with as much context as possible with the logging output pasted below or in a GitHub gist.
+
+If you're worried about sensitive material entering the logs, feel free to redact anything you can find or send it to me privately or [encrypted][keybase].
+
+## Contributions
+
+ * Adhere to [`.github/CODE_OF_CONDUCT.md`][code-of-conduct].
+ * Search to see if what you're thinking has been discussed before.
+ * Raise an issue and talk about what you want to do.
+ * Develop your change on a branch in the style of the rest of the project.
+
+Please see [`.github/CONTRIBUTING.md`][contributing] for more details.
 
 ## Rationale and history
 
@@ -231,3 +248,6 @@ Find the full [unlicense][] in the `UNLICENSE` file, but here's a snippet.
 [coc]: https://github.com/neoclide/coc.nvim
 [coc-conjure]: https://github.com/jlesquembre/coc-conjure
 [expound]: https://github.com/bhb/expound
+[contributing]: ./.github/CODE_OF_CONDUCT.md
+[code-of-conduct]: ./.github/CODE_OF_CONDUCT.md
+[keybase]: https://keybase.io/olical

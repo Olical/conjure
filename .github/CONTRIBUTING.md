@@ -2,7 +2,7 @@
 
 > Note: All development should take place on the develop branch and all pull requests should target it. Merges to master are performed at release time.
 
- 1. Check out `CODE_OF_CONDUCT.md`, I will not tolerate behavior that violates that document. Let's all be wonderful humans to each other.
+ 1. Check out [`.github/CODE_OF_CONDUCT.md`][code-of-conduct], I will not tolerate behavior that violates that document in any way. Let's all be wonderful humans to each other.
  2. Have a look around the issues to see if something similar to your feature or change has been discussed before.
  3. Speak to someone about it, raise an issue and start a discussion. Of course if you're just fixing a typo then go ahead, but if it's not an entirely trivial change let's work out what to do together. Perhaps someone has already solved your problem and just needs a poke to share their work or findings.
  4. Develop your change on a branch keeping in line with how the project is currently structured, try to keep your change minimal and focussed.
@@ -33,3 +33,4 @@ Above all, have fun with it. Help build and improve something you love to use.
 [circleci]: https://circleci.com/
 [codecov]: https://codecov.io/
 [kaocha]: https://github.com/lambdaisland/kaocha
+[code-of-conduct]: ./CODE_OF_CONDUCT.md
