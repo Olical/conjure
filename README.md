@@ -249,5 +249,5 @@ Find the full [unlicense][] in the `UNLICENSE` file, but here's a snippet.
 [coc-conjure]: https://github.com/jlesquembre/coc-conjure
 [expound]: https://github.com/bhb/expound
 [contributing]: ./.github/CODE_OF_CONDUCT.md
-[code-of-conduct]: ./.github/CODE_OF_CONDUCT.md
+[code-of-conduct]: ./.github/CONTRIBUTING.md
 [keybase]: https://keybase.io/olical
