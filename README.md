@@ -4,8 +4,8 @@
 
 ## Overview
 
- * Connect to multiple Clojure or ClojureScript prepls at once.
  * Declarative connection configuration through `.conjure.edn`.
+ * Connect to multiple Clojure or ClojureScript prepls at once.
  * Output buffer, like a REPL you can edit!
  * Liberal use of virtual text to display help and results.
  * Omnicompletion (`<C-x><C-o>`) through [Complement][] (ClojureScript support _soon_).
@@ -18,13 +18,13 @@
 
 Use your favourite plugin manager, I recommend [vim-plug][], to fetch and AOT compile Conjure.
 
-I strongly suggest you pin it to a tag and then subscribe to releases through the GitHub repository. This will allow you to keep up to date without having your workflow disrupted by an unexpected breaking change, not that I intend to release any.
+I strongly suggest you pin it to a tag and then subscribe to releases through the GitHub repository. This will allow you to keep up to date without having your workflow disrupted by an unexpected breaking change, not that I _intend_ to release any.
 
 ```viml
 Plug 'Olical/conjure', { 'tag': 'v1.0.0', 'do': 'bin/compile'  }
 ```
 
-No dependencies are required in your project, any dependencies required for things like autocomplete will be injected upon connection. The initial connection to a prepl will take a few seconds because of this.
+No dependencies are required in your project, tools for features such as autocomplete will be injected upon connection. The initial connection to a prepl will take a few seconds because of this, I think it's worth it.
 
 ## Hello, World!
 
@@ -50,7 +50,7 @@ And now all we need to do is open a Clojure file, write some code and evaluate i
 
 ## Autocompletion
 
-[Deoplete][] will work out of the box to provide fully asynchronous completion as you type. You will probably want to configure it to pop up more often using a snippet I found in the [async-clj-omni][] repository.
+[Deoplete][], once installed, will work out of the box to provide fully asynchronous completion as you type. You will probably want to configure it to pop up more often using a snippet I found in the [async-clj-omni][] repository.
 
 ```viml
 call deoplete#custom#option('keyword_patterns', {'clojure': '[\w!$%&+/:<=>?@^_~-.#]'})
