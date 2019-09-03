@@ -10,8 +10,7 @@
             [me.raynes.fs :as fs]
             [traversy.lens :as tl]
             [conjure.ui :as ui]
-            [conjure.util :as util]
-            [conjure.prepl :as prepl]))
+            [conjure.util :as util]))
 
 (s/def ::expr util/regexp?)
 (s/def ::port (s/nilable number?))
@@ -27,7 +26,7 @@
   {:clj #"\.(cljc?|edn)$"
    :cljs #"\.(clj(s|c)|edn)$"})
 
-(defn- ^:dynamic gather
+(defn- ^:dynamic gather!
   "Gather all config files from disk and merge them together, deepest file wins."
   [{:keys [cwd] :as _opts}]
   (->> (concat [(fs/file (or (util/env :xdg-config-home)
@@ -54,27 +53,20 @@
                        %)))
          m/deep-merge)))
 
-(defn- ^:dynamic fallback
-  "If there's no connections still fallback to connecting to Conjure's own JVM."
-  [{:keys [conns] :as config}]
-
-  (if (empty? conns)
-    (do
-      (ui/up "Warning: No conns configured, connecting to Conjure's own JVM by default.")
-      (assoc-in config [:conns :conjure] {:port prepl/internal-port}))
-    config))
+(defn hydrate-conn
+  "Infer some values of a specific connection."
+  [conn]
+  (merge {:lang :clj
+          :expr (get default-exprs (get conn :lang :clj))
+          :host "127.0.0.1"
+          :enabled? true}
+         conn))
 
 (defn- hydrate
   "Infer some more values from the existing config."
   [config]
   (-> config
-      (tl/update (tl/*> (tl/in [:conns]) tl/all-values)
-                 (fn [conn]
-                   (merge {:lang :clj
-                           :expr (get default-exprs (get conn :lang :clj))
-                           :host "127.0.0.1"
-                           :enabled? true}
-                          conn)))))
+      (tl/update (tl/*> (tl/in [:conns]) tl/all-values) hydrate-conn)))
 
 (defn- validate
   "Ensure the config conforms to the ::config spec, throws."
@@ -109,8 +101,7 @@
   "Gather, hydrate and validate the config."
   ([] (fetch {}))
   ([{:keys [flags cwd] :or {cwd "."} :as _opts}]
-   (-> (gather {:cwd cwd})
-       (fallback)
+   (-> (gather! {:cwd cwd})
        (hydrate)
        (toggle flags)
        (validate))))

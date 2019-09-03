@@ -63,7 +63,8 @@
   (-> (config/fetch {:flags flags, :cwd (nvim/cwd)})
       (get :conns)
       (prepl/sync!)
-      (ui/up-summary)))
+      (ui/up-summary))
+  (ui/up "Done."))
 
 (defn eval* [{:keys [code line]}]
   (when code

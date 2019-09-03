@@ -4,12 +4,12 @@
 
 (t/deftest fetch
   (t/testing "empty"
-    (binding [config/gather (constantly nil)
+    (binding [config/gather! (constantly nil)
               config/fallback identity]
       (t/is (= (config/fetch) nil))))
 
   (t/testing "basic"
-    (binding [config/gather (constantly {:conns {:foo {:port 5555}}})]
+    (binding [config/gather! (constantly {:conns {:foo {:port 5555}}})]
       (t/is (= (config/fetch)
                {:conns {:foo {:port 5555
                               :host "127.0.0.1"
@@ -18,8 +18,8 @@
                               :enabled? true}}}))))
 
   (t/testing "flags"
-    (binding [config/gather (constantly {:conns {:foo {:port 5555}
-                                                 :bar {:port 5556, :enabled? false}}})]
+    (binding [config/gather! (constantly {:conns {:foo {:port 5555}
+                                                  :bar {:port 5556, :enabled? false}}})]
       (t/is (= (config/fetch)
                {:conns {:foo {:port 5555
                               :host "127.0.0.1"

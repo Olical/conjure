@@ -7,6 +7,7 @@
             [taoensso.timbre :as log]
             [conjure.util :as util]
             [conjure.ui :as ui]
+            [conjure.config :as config]
             [conjure.code :as code])
   (:import [java.io PipedInputStream PipedOutputStream IOException]))
 
@@ -167,20 +168,24 @@
       ::added)))
 
 (defn sync!
-  "Disconnect from everything and attempt to connect to every new conn.
+  "Disconnect from everything and attempt to connect to provided connection.
   Returns the tags of successful connections."
   [conns]
   (remove-all!)
 
-  (-> (for [[tag conn] conns
-            :when (and (:enabled? conn)
-                       (add! (assoc conn :tag tag)))]
-        tag)
-      (doall)
-      (as-> results
-        (do
-          (ui/up "Done.")
-          results))))
+  (let [results (into []
+                      (comp (filter
+                              (fn [[tag conn]]
+                                (and (:enabled? conn))
+                                (add! (assoc conn :tag tag))))
+                            (map key))
+                      conns)]
+    (cond-> results
+      (empty? results)
+      (do
+        (ui/up "Warning: No successful connections, connecting to Conjure's own JVM by default.")
+        (add! (config/hydrate-conn {:tag :conjure, :port internal-port}))
+        [:conjure]))))
 
 (defn conns
   "Without a path it'll return all current connections. With a path it finds
