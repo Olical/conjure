@@ -4,8 +4,7 @@
 
 (t/deftest fetch
   (t/testing "empty"
-    (binding [config/gather! (constantly nil)
-              config/fallback identity]
+    (binding [config/gather! (constantly nil)]
       (t/is (= (config/fetch) nil))))
 
   (t/testing "basic"
