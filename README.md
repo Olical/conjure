@@ -7,7 +7,7 @@
  * Declarative connection configuration through `.conjure.edn`.
  * Connect to multiple Clojure or ClojureScript prepls at once.
  * Output buffer, like a REPL you can edit!
- * Liberal use of virtual text to display help and results.
+ * Liberal use of virtual text to display documentation and results.
  * Omnicompletion (`<C-x><C-o>`) through [Complement][] (ClojureScript support _soon_).
  * Documentation displayed as you type (or with `K`).
  * Refreshing of changed namespaces (Clojure only).
@@ -18,7 +18,7 @@
 
 Use your favourite plugin manager, I recommend [vim-plug][], to fetch and AOT compile Conjure.
 
-I strongly suggest you pin it to a tag and then subscribe to releases through the GitHub repository. This will allow you to keep up to date without having your workflow disrupted by an unexpected breaking change, not that I _intend_ to release any.
+I strongly suggest you use a tag and then subscribe to releases through the GitHub repository. This will allow you to keep up to date without having your workflow disrupted by an unexpected breaking change, not that I _intend_ to release any.
 
 ```viml
 Plug 'Olical/conjure', { 'tag': 'v1.0.0', 'do': 'bin/compile'  }
