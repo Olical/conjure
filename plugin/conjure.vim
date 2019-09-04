@@ -279,9 +279,7 @@ endfunction
 " Initialise if not done already.
 function! conjure#init()
   if g:conjure_initialised == v:false
-    if s:dev ||
-          \(filereadable(s:cwd . "/classes/conjure/main$_main.class") &&
-          \ filereadable(s:cwd . "/target/mranderson/load-order.edn"))
+    if s:dev || filereadable(s:cwd . "/classes/conjure/main$_main.class")
       let g:conjure_initialised = v:true
       call conjure#start()
       ConjureUp
