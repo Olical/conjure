@@ -101,3 +101,7 @@
   (t/is (= "foo" (util/safe-subs "foobar" 0 3)))
   (t/is (= "foo" (util/safe-subs "foobar" -1 3)))
   (t/is (= "foobar" (util/safe-subs "foobar" -1))))
+
+(t/deftest path->ns
+  (t/is (= 'conjure-deps.javaclasspath.v0v3v0.clojure.java.classpath
+           (util/path->ns "conjure_deps/javaclasspath/v0v3v0/clojure/java/classpath.clj"))))

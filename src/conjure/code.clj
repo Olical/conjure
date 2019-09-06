@@ -3,26 +3,24 @@
   should be sent to an environment for evaluation."
   (:require [clojure.java.io :as io]
             [clojure.string :as str]
-            [backtick :as bt]
             [clojure.edn :as edn]
-            [conjure.util :as util]
-            [conjure.meta :as meta]))
-
-(def ^:private deps-hash
-  "Injection order file hash to load and use from olical/conjure-deps."
-  "1aff385bf80202248bffe30baa607b5f")
+            [backtick :as bt]
+            [conjure.util :as util]))
 
 (def ^:private injected-deps!
   "Files to load, in order, to add runtime dependencies to a REPL."
   (delay
-    (-> (str "conjure_deps/injection_orders/" deps-hash ".edn")
-        (io/resource)
-        (slurp)
-        (edn/read-string))))
+    (let [injected-deps
+          (-> (str "conjure_deps/injection_orders/1aff385bf80202248bffe30baa607b5f.edn")
+              (io/resource)
+              (slurp)
+              (edn/read-string))]
+      (run! require (map util/path->ns (:clj injected-deps)))
+      injected-deps)))
 
 (def ^:private deps-ns
   "Namespace to store injected dependency related information under."
-  (symbol (str "conjure-deps." meta/ns-version)))
+  'conjure-deps)
 
 (defmulti render
   "Render the template strings with opts."
@@ -71,14 +69,22 @@
 (deftemplate :deps-ns [_opts]
   (tmpl (~ns-sym ~deps-ns)))
 
-(deftemplate :deps-hash [_opts]
+(deftemplate :current-deps [{:keys [lang]}]
   (tmpl
-    (defonce deps-hash! (atom nil))
-    @deps-hash!))
+    (defonce current-deps!
+      (atom (->> '~(->> (get @injected-deps! lang)
+                        (map util/path->ns))
+                 (filter find-ns)
+                 (set))))
+    @current-deps!))
 
-(deftemplate :deps [{:keys [lang current-deps-hash]}]
-  (let [injected-deps @injected-deps!
-        deps-changed? (not= current-deps-hash deps-hash)]
+(find-ns 'clojure.core)
+
+(deftemplate :prepare-deps [{:keys [lang current-deps]}]
+  (let [new-deps (remove
+                   (fn [dep]
+                     (contains? current-deps (util/path->ns dep)))
+                   (get @injected-deps! lang))]
     (case lang
       :clj 
       (concat
@@ -87,13 +93,12 @@
                          'clojure.string
                          'clojure.java.io
                          'clojure.test)
-           (reset! deps-hash! ~deps-hash))]
-        (when deps-changed?
-          (->> (:clj injected-deps)
-               (map #(wrap-clojure-eval
-                       {:code (-> (io/resource %)
-                                  (slurp))
-                        :path %})))))
+           (swap! current-deps! into '~(map util/path->ns new-deps)))]
+        (map #(wrap-clojure-eval
+                {:code (-> (io/resource %)
+                           (slurp))
+                 :path %})
+             new-deps))
       :cljs
       [(tmpl
          (~require-sym 'cljs.repl

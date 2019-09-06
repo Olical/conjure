@@ -193,3 +193,12 @@
     true
     (catch Throwable _
       false)))
+
+(defn path->ns
+  "Demunge a path into what is probably it's namespace name."
+  [path]
+  (-> path
+      (str/replace #"/" ".")
+      (str/replace #"\.clj[cs]?$" "")
+      (clj/demunge)
+      (symbol)))
