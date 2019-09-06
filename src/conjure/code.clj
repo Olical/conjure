@@ -7,20 +7,16 @@
             [backtick :as bt]
             [conjure.util :as util]))
 
-(def ^:private injected-deps!
+(def ^:private required-deps!
   "Files to load, in order, to add runtime dependencies to a REPL."
   (delay
-    (let [injected-deps
+    (let [required-deps
           (-> (str "conjure_deps/injection_order.edn")
               (io/resource)
               (slurp)
               (edn/read-string))]
-      (run! require (map util/path->ns (:clj injected-deps)))
-      injected-deps)))
-
-(def ^:private deps-ns
-  "Namespace to store injected dependency related information under."
-  'conjure-deps)
+      (run! require (map util/path->ns (:clj required-deps)))
+      required-deps)))
 
 (defmulti render
   "Render the template strings with opts."
@@ -66,25 +62,18 @@
 (def ^:private ns-sym 'ns)
 (def ^:private require-sym 'require)
 
-(deftemplate :deps-ns [_opts]
-  (tmpl (~ns-sym ~deps-ns)))
-
-(deftemplate :current-deps [{:keys [lang]}]
+(deftemplate :loaded-deps [{:keys [lang]}]
   (tmpl
-    (defonce current-deps!
-      (atom (->> '~(->> (get @injected-deps! lang)
-                        (map util/path->ns))
-                 (filter find-ns)
-                 (set))))
-    @current-deps!))
+    (->> '~(->> (get @required-deps! lang)
+                (map util/path->ns))
+         (filter find-ns)
+         (set))))
 
-(find-ns 'clojure.core)
-
-(deftemplate :prepare-deps [{:keys [lang current-deps]}]
+(deftemplate :inject-deps [{:keys [lang loaded-deps]}]
   (let [new-deps (remove
                    (fn [dep]
-                     (contains? current-deps (util/path->ns dep)))
-                   (get @injected-deps! lang))]
+                     (contains? loaded-deps (util/path->ns dep)))
+                   (get @required-deps! lang))]
     (case lang
       :clj 
       (concat
@@ -92,8 +81,7 @@
            (~require-sym 'clojure.repl
                          'clojure.string
                          'clojure.java.io
-                         'clojure.test)
-           (swap! current-deps! into '~(map util/path->ns new-deps)))]
+                         'clojure.test))]
         (map #(wrap-clojure-eval
                 {:code (-> (io/resource %)
                            (slurp))
