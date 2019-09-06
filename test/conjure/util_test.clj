@@ -1,6 +1,5 @@
 (ns conjure.util-test
   (:require [clojure.test :as t]
-            [clojure.pprint :as pprint]
             [conjure.util :as util]))
 
 (t/deftest join-words
@@ -44,9 +43,7 @@
 
 (t/deftest pprint
   (t/is (util/pprint "{:foo :bar}") "{:foo :bar}")
-
-  (with-redefs [pprint/pprint (fn [_] (throw (Error. "ohno")))]
-    (t/is (= (util/pprint "{:an :error}") "{:an :error}"))))
+  (t/is (util/pprint "oh} no ('") "oh} no ('"))
 
 (t/deftest throwable->str
   (t/is (re-matches #"Execution error \(Error\) at conjure\.util-test/fn \(util_test\.clj:\d+\)\.\nohno\n"
