@@ -11,7 +11,7 @@
   "Files to load, in order, to add runtime dependencies to a REPL."
   (delay
     (let [injected-deps
-          (-> (str "conjure_deps/injection_orders/1aff385bf80202248bffe30baa607b5f.edn")
+          (-> (str "conjure_deps/injection_order.edn")
               (io/resource)
               (slurp)
               (edn/read-string))]
