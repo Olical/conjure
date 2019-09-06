@@ -42,8 +42,8 @@
   (t/is (= (util/escape-quotes "\"\"") "\\\"\\\"")))
 
 (t/deftest pprint
-  (t/is (util/pprint "{:foo :bar}") "{:foo :bar}")
-  (t/is (util/pprint "oh} no ('") "oh} no ('"))
+  (t/is (= (util/pprint "{:foo :bar}") "{:foo :bar}"))
+  (t/is (= (util/pprint "#something.Bad{}\n") "#something.Bad{}")))
 
 (t/deftest throwable->str
   (t/is (re-matches #"Execution error \(Error\) at conjure\.util-test/fn \(util_test\.clj:\d+\)\.\nohno\n"

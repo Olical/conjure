@@ -86,10 +86,11 @@
 (defn pprint
   "Parse and format the given string."
   [code]
-  (if-let [data (parse-code code)]
-    (with-out-str
-      (pprint/pprint data))
-    code))
+  (str/trim
+    (if-let [data (parse-code code)]
+      (with-out-str
+        (pprint/pprint data))
+      code)))
 
 (defn pprint-data
   "Skip parsing, just format the given data."
