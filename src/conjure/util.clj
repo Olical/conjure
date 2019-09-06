@@ -72,8 +72,8 @@
     (binding [tr/*default-data-reader-fn* tagged-literal
               tr/*alias-map* (constantly 'user)]
       (tr/read-string {:read-cond :preserve} code))
-    (catch Throwable t
-      (log/warn "Failed to parse code" t))))
+    (catch Throwable e
+      (log/warn "Failed to parse code" e))))
 
 (defn parse-ns
   "Parse the ns symbol out of the code, return ::error if parsing failed."
@@ -86,12 +86,10 @@
 (defn pprint
   "Parse and format the given string."
   [code]
-  (try
+  (if-let [data (parse-code code)]
     (with-out-str
-      (pprint/pprint (parse-code code)))
-    (catch Throwable e
-      (log/error "Error while pretty printing code" e)
-      code)))
+      (pprint/pprint data))
+    code))
 
 (defn pprint-data
   "Skip parsing, just format the given data."
