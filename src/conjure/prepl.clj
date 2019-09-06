@@ -176,8 +176,8 @@
   (let [results (into []
                       (comp (filter
                               (fn [[tag conn]]
-                                (and (:enabled? conn))
-                                (add! (assoc conn :tag tag))))
+                                (and (:enabled? conn)
+                                     (add! (assoc conn :tag tag)))))
                             (map key))
                       conns)]
     (cond-> results
