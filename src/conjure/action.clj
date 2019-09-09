@@ -60,7 +60,7 @@
 ;; The following functions are called by the user through commands.
 
 (defn up [flags]
-  (-> (config/fetch {:flags flags, :cwd (nvim/cwd)})
+  (-> (config/fetch {:flags flags, :cwd (:cwd nvim/ctx)})
       (get :conns)
       (prepl/sync!)
       (ui/up-summary))
@@ -198,7 +198,7 @@
         coord (some lookup (current-conns))]
     (if (vector? coord)
       (-> coord
-          (update 0 util/resolve-relative)
+          (update 0 util/resolve-relative (:cwd nvim/ctx))
           (nvim/edit-at))
       (do
         (log/warn "Non-vector definition result:" coord)
@@ -240,7 +240,7 @@
   (doseq [conn (current-conns)]
     (let [opts {:conn conn
                 :op op
-                :config (:refresh (config/fetch {:cwd (nvim/cwd)}))}]
+                :config (:refresh (config/fetch {:cwd (:cwd nvim/ctx)}))}]
       (when-let [code (code/render :refresh opts)]
         (ui/refresh opts)
         (ui/result {:conn conn

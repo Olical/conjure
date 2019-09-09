@@ -207,12 +207,12 @@
 (defn resolve-relative
   "Successively remove parts of the path until we get to a relative path that
   points to a file we can read. If we run out of parts default to the original path."
-  [original-file]
+  [original-file cwd]
   (loop [parts (cond-> (fs/split original-file)
                  (str/starts-with? original-file "/") (rest))]
     (if (seq parts)
-      (let [file (str/join "/" parts)]
+      (let [file (apply fs/file cwd parts)]
         (if (and (fs/file? file) (fs/readable? file))
-          file
+          (str/join "/" parts)
           (recur (rest parts))))
       original-file)))
