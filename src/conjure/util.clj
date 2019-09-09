@@ -6,6 +6,7 @@
             [clojure.tools.reader :as tr]
             [clojure.pprint :as pprint]
             [taoensso.timbre :as log]
+            [me.raynes.fs :as fs]
             [camel-snake-kebab.core :as csk]
             [camel-snake-kebab.extras :as cske])
   (:import [java.net Socket]
@@ -202,3 +203,16 @@
       (str/replace #"\.clj[cs]?$" "")
       (clj/demunge)
       (symbol)))
+
+(defn resolve-file-to-relative
+  "If the file isn't a readable file path then it'll successively remove path
+  parts until we either run out of parts or we find a good relative path.
+  Magic!"
+  [original-file]
+  (loop [file original-file
+         [_ & parts] (fs/split file)]
+    (if (and (fs/file? file) (fs/readable? file))
+      file
+      (if (seq parts)
+        (recur (apply fs/file parts) parts)
+        original-file))))
