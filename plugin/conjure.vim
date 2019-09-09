@@ -100,7 +100,7 @@ augroup conjure
     call s:def_map("n", "eval_root_form", ":ConjureEvalRootForm")
     call s:def_map("v", "eval_selection", ":ConjureEvalSelection")
     call s:def_map("n", "eval_buffer", ":ConjureEvalBuffer")
-    call s:def_map("n", "eval_file", ":ConjureLoadFile <c-r>=expand('%:p')<cr>")
+    call s:def_map("n", "eval_file", ":ConjureLoadFile <c-r>=expand('%')<cr>")
 
     call s:def_map("n", "up", ":ConjureUp")
     call s:def_map("n", "status", ":ConjureStatus")
