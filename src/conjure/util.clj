@@ -204,15 +204,15 @@
       (clj/demunge)
       (symbol)))
 
-(defn resolve-file-to-relative
-  "If the file isn't a readable file path then it'll successively remove path
-  parts until we either run out of parts or we find a good relative path.
-  Magic!"
+(defn resolve-relative
+  "Successively remove parts of the path until we get to a relative path that
+  points to a file we can read. If we run out of parts default to the original path."
   [original-file]
-  (loop [file original-file
-         [_ & parts] (fs/split file)]
-    (if (and (fs/file? file) (fs/readable? file))
-      file
-      (if (seq parts)
-        (recur (apply fs/file parts) parts)
-        original-file))))
+  (loop [parts (cond-> (fs/split original-file)
+                 (str/starts-with? original-file "/") (rest))]
+    (if (seq parts)
+      (let [file (str/join "/" parts)]
+        (if (and (fs/file? file) (fs/readable? file))
+          file
+          (recur (rest parts))))
+      original-file)))

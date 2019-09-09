@@ -198,7 +198,7 @@
         coord (some lookup (current-conns))]
     (if (vector? coord)
       (-> coord
-          (update 0 util/resolve-file-to-relative)
+          (update 0 util/resolve-relative)
           (nvim/edit-at))
       (do
         (log/warn "Non-vector definition result:" coord)

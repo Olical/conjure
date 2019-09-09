@@ -25,7 +25,7 @@
             next-line-count (* line-count 2)]
         (if (and (= ns-res ::util/error) (< line-count buf-length))
           (recur (api/call (get-lines next-line-count)) next-line-count)
-          {:path path
+          {:path (util/resolve-relative path)
            :buf buf
            :win win
            :ns ns-res})))))
