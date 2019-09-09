@@ -3,6 +3,7 @@
   (:require [clojure.core.async :as a]
             [clojure.string :as str]
             [taoensso.timbre :as log]
+            [me.raynes.fs :as fs]
             [conjure.prepl :as prepl]
             [conjure.ui :as ui]
             [conjure.nvim :as nvim]
@@ -183,6 +184,20 @@
                                     doc (assoc :info doc))))))))))
          (dedupe))))
 
+(defn- resolve-coord-file
+  "If the first part of the coord isn't a readable file path then it'll successively
+  remove path parts until we either run out of parts or we find a good relative path.
+  Magic!"
+  [[original-file & _ :as coord]]
+  (assoc coord 0
+         (loop [file original-file
+                [_ & parts] (fs/split file)]
+           (if (and (fs/file? file) (fs/readable? file))
+             file
+             (if (seq parts)
+               (recur (apply fs/file parts) parts)
+               original-file)))))
+
 (defn definition [name]
   (let [lookup (fn [conn]
                  (some-> (not-exception
@@ -197,7 +212,9 @@
                          (util/parse-code)))
         coord (some lookup (current-conns))]
     (if (vector? coord)
-      (nvim/edit-at coord)
+      (-> coord
+          (resolve-coord-file)
+          (nvim/edit-at))
       (do
         (log/warn "Non-vector definition result:" coord)
         (nvim/definition)))))
