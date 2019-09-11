@@ -44,9 +44,7 @@ clojure -J-Dclojure.server.jvm="{:port 5678 :accept clojure.core.server/io-prepl
 
 And now all we need to do is open a Clojure file, write some code and evaluate it. Here's a clip of what you should see with autocompletion, documentation lookup and evaluation.
 
-[![asciicast](https://asciinema.org/a/mIH4x3ma71Mha4L7oPhrTiSEA.svg?t=13)](https://asciinema.org/a/mIH4x3ma71Mha4L7oPhrTiSEA)
-
-> Neovim lost all theming in the asciinema video for some reason, it usually looks a lot prettier.
+[![asciicast](https://asciinema.org/a/267614.svg?t=24)](https://asciinema.org/a/267614)
 
 ## Autocompletion
 
