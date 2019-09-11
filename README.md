@@ -21,7 +21,7 @@ Use your favourite plugin manager, I recommend [vim-plug][], to fetch and AOT co
 I strongly suggest you use a tag and then subscribe to releases through the GitHub repository. This will allow you to keep up to date without having your workflow disrupted by an unexpected breaking change, not that I _intend_ to release any.
 
 ```viml
-Plug 'Olical/conjure', { 'tag': 'v1.0.2', 'do': 'bin/compile'  }
+Plug 'Olical/conjure', { 'tag': 'v1.1.0', 'do': 'bin/compile'  }
 ```
 
 No dependencies are required in your project, tools for features such as autocomplete will be injected upon connection. The initial connection to a prepl will take a few seconds because of this, I think it's worth it.
@@ -44,9 +44,7 @@ clojure -J-Dclojure.server.jvm="{:port 5678 :accept clojure.core.server/io-prepl
 
 And now all we need to do is open a Clojure file, write some code and evaluate it. Here's a clip of what you should see with autocompletion, documentation lookup and evaluation.
 
-[![asciicast](https://asciinema.org/a/mIH4x3ma71Mha4L7oPhrTiSEA.svg?t=13)](https://asciinema.org/a/mIH4x3ma71Mha4L7oPhrTiSEA)
-
-> Neovim lost all theming in the asciinema video for some reason, it usually looks a lot prettier.
+[![asciicast](https://asciinema.org/a/267614.svg?t=24)](https://asciinema.org/a/267614)
 
 ## Autocompletion
 

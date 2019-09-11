@@ -22,6 +22,7 @@
 (t/deftest current-ctx
   (defmethod call :nvim-get-current-buf [_] 5)
   (defmethod call :nvim-get-current-win [_] 10)
+  (defmethod call :nvim-call-function [_] "~/foo")
   (defmethod call :nvim-buf-get-name [{[buf] :params}]
     (t/is (= buf 5))
     "foo.clj")
@@ -34,6 +35,7 @@
            {:path "foo.clj"
             :buf 5
             :win 10
+            :cwd "~/foo"
             :ns 'foo})))
 
 (t/deftest read-form
@@ -46,6 +48,7 @@
                         [0 0]))]
     (defmethod call :nvim-get-current-buf [_] 5)
     (defmethod call :nvim-get-current-win [_] 10)
+    (defmethod call :nvim-call-function [_] "~/foo")
     (defmethod call :nvim-eval [_]
       (let [[row col] (call {:method :nvim-win-get-cursor})]
         (str (get-in src [(dec row) col]))))

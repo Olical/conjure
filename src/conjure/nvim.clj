@@ -13,19 +13,21 @@
   (let [line-count 25
         buf (api/call (api/get-current-buf))
         get-lines (fn [end] (api/buf-get-lines buf {:start 0, :end end}))
-        [path buf-length sample-lines win]
+        [path buf-length sample-lines win cwd]
         (api/call-batch
           [(api/buf-get-name buf)
            (api/buf-line-count buf)
            (get-lines line-count)
-           (api/get-current-win)])]
+           (api/get-current-win)
+           (api/call-function "getcwd" 0)])]
     (loop [sample-lines sample-lines
            line-count line-count]
       (let [ns-res (util/parse-ns (util/join-lines sample-lines))
             next-line-count (* line-count 2)]
         (if (and (= ns-res ::util/error) (< line-count buf-length))
           (recur (api/call (get-lines next-line-count)) next-line-count)
-          {:path path
+          {:path (util/resolve-relative path cwd)
+           :cwd cwd
            :buf buf
            :win win
            :ns ns-res})))))
@@ -246,11 +248,6 @@
             (cond-> result
               (string? result) (keyword)
               (vector? result) (->> (map keyword) (set))))))))
-
-(defn cwd
-  "Get the current working directory of the editor."
-  []
-  (api/call (api/call-function "getcwd" 0)))
 
 (defn current-line
   "Get the current line number of the cursor.

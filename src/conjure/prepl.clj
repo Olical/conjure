@@ -135,17 +135,13 @@
                                      :port port}))}
             {:keys [eval-chan read-chan]} (get conn :chans)]
 
-        (log/trace "Changing to Conjure deps namespace.")
-        (a/>!! eval-chan (code/render :deps-ns {}))
-        (a/<!! read-chan)
-
-        (let [current-deps-hash (when (= lang :clj)
-                                  (log/trace "Fetching current deps-hash.")
-                                  (a/>!! eval-chan (code/render :deps-hash {}))
-                                  (-> (a/<!! read-chan)
-                                      (get :val)
-                                      (edn/read-string)))
-              deps (code/render :deps {:lang lang, :current-deps-hash current-deps-hash})]
+        (let [loaded-deps (when (= lang :clj)
+                            (log/trace "Fetching current deps.")
+                            (a/>!! eval-chan (code/render :loaded-deps {:lang lang}))
+                            (-> (a/<!! read-chan)
+                                (get :val)
+                                (edn/read-string)))
+              deps (code/render :inject-deps {:lang lang, :loaded-deps loaded-deps})]
           (log/trace "Evaluating" (count deps) "dep strings...")
           (doseq [dep deps] (a/>!! eval-chan dep))
           (doseq [_ deps] (a/<!! read-chan))
