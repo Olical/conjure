@@ -60,6 +60,7 @@ command! -nargs=1 ConjureLoadFile call conjure#notify("load_file", <q-args>)
 
 command! -nargs=1 ConjureDefinition call conjure#notify("definition", <q-args>)
 command! -nargs=1 ConjureDoc call conjure#notify("doc", <q-args>)
+command! -nargs=1 ConjureSource call conjure#notify("source", <q-args>)
 command! -nargs=0 ConjureQuickDoc call conjure#quick_doc()
 command! -nargs=0 ConjureClearVirtual call conjure#notify("clear_virtual")
 command! -nargs=0 ConjureOpenLog call conjure#notify("open_log")
@@ -92,6 +93,7 @@ augroup conjure
     call s:def_config("nmap_refresh_changed", g:conjure_map_prefix . "rr")
     call s:def_config("nmap_refresh_all", g:conjure_map_prefix . "rR")
     call s:def_config("nmap_refresh_clear", g:conjure_map_prefix . "rc")
+    call s:def_config("nmap_source", g:conjure_map_prefix . "ss")
     call s:def_config("nmap_doc", "K")
     call s:def_config("nmap_definition", "gd")
 
@@ -116,6 +118,7 @@ augroup conjure
     call s:def_map("n", "refresh_clear", ":ConjureRefresh clear")
 
     call s:def_map("n", "doc", ":ConjureDoc <c-r><c-w>")
+    call s:def_map("n", "source", ":ConjureSource <c-r><c-w>")
     call s:def_map("n", "definition", ":ConjureDefinition <c-r><c-w>")
   endif
 

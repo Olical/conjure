@@ -146,6 +146,7 @@ Here's all of the possible values that you could add to `g:conjure_log_blacklist
  * `err` - From `stderr`.
  * `tap` - Results from `(tap> ...)` calls within an evaluation, great for debugging.
  * `doc` - Documentation output.
+ * `source` - Source output.
  * `load-file` - Path to the file you just loaded from disk and which connection it went to.
  * `test` - Test results.
  * `refresh` - Namespace refreshing, you'll also get some `out` and a `ret`.

@@ -76,6 +76,21 @@
         (ui/result {:conn conn
                     :resp (wrapped-eval opts)})))))
 
+(defn source [name]
+  (doseq [conn (current-conns)]
+    (when-let [result (some-> (not-exception
+                                {:conn conn
+                                 :resp (wrapped-eval {:conn conn
+                                                      :code (code/render :source
+                                                                         {:conn conn
+                                                                          :name name})})
+                                 :msg (str "Failed to lookup source for " name)})
+                              (update :val util/parse-code))]
+      (ui/source {:conn conn
+                  :resp (cond-> result
+                          (str/blank? (:val result))
+                          (assoc :val (str "No source for " name)))}))))
+
 (defn doc [name]
   (doseq [conn (current-conns)]
     (when-let [result (some-> (not-exception
