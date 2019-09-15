@@ -4,7 +4,6 @@
             [clojure.main :as main]
             [conjure.nvim :as nvim]
             [conjure.util :as util]
-            [conjure.code :as code]
             [conjure.meta :as meta])
   (:import [clojure.lang Compiler]))
 
