@@ -91,7 +91,10 @@
 (defn source
   "Results from a (source ...) call."
   [{:keys [conn resp]}]
-  (append {:origin (:tag conn), :kind :source, :msg (:val resp)}))
+  (append {:origin (:tag conn)
+           :kind :source
+           :msg (:val resp)
+           :code? true}))
 
 (defn quick-doc
   "Display inline documentation."
