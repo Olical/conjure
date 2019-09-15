@@ -143,6 +143,14 @@
       (with-out-str
         (~doc-symbol ~(symbol name))))))
 
+(deftemplate :source [{:keys [conn name]}]
+  (let [source-symbol (case (:lang conn)
+                        :clj 'clojure.repl/source
+                        :cljs 'cljs.repl/source)]
+    (tmpl
+      (with-out-str
+        (~source-symbol ~(symbol name))))))
+
 (defn definition-str
   "Find where a given symbol is defined, returns [file line column]."
   [{:keys [name conn]}]

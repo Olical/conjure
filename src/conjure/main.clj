@@ -87,6 +87,9 @@
 (defrpc :notify :doc [symbol-name]
   (action/doc symbol-name))
 
+(defrpc :notify :source [symbol-name]
+  (action/source symbol-name))
+
 (defrpc :notify :quick-doc []
   (action/quick-doc))
 
