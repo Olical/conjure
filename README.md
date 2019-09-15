@@ -171,6 +171,7 @@ let g:conjure_log_blacklist = ["up", "ret", "ret-multiline", "load-file", "eval"
 | `ConjureEvalBuffer` | `<localleader>eb` | `g:conjure_nmap_eval_buffer` | Evaluate the entire buffer (not from the disk). |
 | `ConjureLoadFile` | `<localleader>ef` | `g:conjure_nmap_eval_file` | Load and evaluate the file from the disk. |
 | `ConjureDoc` | `K` | `g:conjure_nmap_doc` | Display the documentation for the given symbol in the log buffer. |
+| `ConjureSource` | `<localleader>ss` | `g:conjure_nmap_source` | Display the source for the given symbol in the log buffer. |
 | `ConjureDefinition` | `gd` | `g:conjure_nmap_definition` | Go to the source of the given symbol, providing we can find it - falls back to vanilla `gd`. |
 | `ConjureOpenLog` | `<localleader>cl` | `g:conjure_nmap_open_log` | Open and focus the log buffer in a large window. |
 | `ConjureCloseLog` | `<localleader>cq` | `g:conjure_nmap_close_log` | Close the log window if it's open in this tab. |
