@@ -253,8 +253,7 @@ function! conjure#omnicomplete(findstart, base)
 endfunction
 
 function! conjure#command_completions(arglead, cmdline, cursorpos)
-  return map(conjure#completions(a:arglead),
-        \ {n, completion -> get(completion, "word")})
+  return map(conjure#completions(a:arglead), {n, completion -> get(completion, "word")})
 endfunction
 
 function! conjure#completions(base)
