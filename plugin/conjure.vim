@@ -51,7 +51,9 @@ endif
 command! -nargs=* ConjureUp call conjure#notify("up", <q-args>)
 command! -nargs=0 ConjureStatus call conjure#notify("status")
 
-command! -nargs=1 ConjureEval call conjure#notify("eval", <q-args>)
+command! -nargs=1 -complete=customlist,conjure#command_completions
+      \ ConjureEval call conjure#notify("eval", <q-args>)
+
 command! -range   ConjureEvalSelection call conjure#notify("eval_selection")
 command! -nargs=0 ConjureEvalCurrentForm call conjure#notify("eval_current_form")
 command! -nargs=0 ConjureEvalRootForm call conjure#notify("eval_root_form")
@@ -248,6 +250,11 @@ function! conjure#omnicomplete(findstart, base)
   else
     return conjure#completions(a:base)
   endif
+endfunction
+
+function! conjure#command_completions(arglead, cmdline, cursorpos)
+  return map(conjure#completions(a:arglead),
+        \ {n, completion -> get(completion, "word")})
 endfunction
 
 function! conjure#completions(base)
