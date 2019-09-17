@@ -173,7 +173,7 @@ endfunction
 
 " Reset the jobid, notify that you can restart easily.
 function! conjure#on_exit(jobid, msg, event) dict
-  if a:msg != 0
+  if a:msg != 0 && a:msg != 143
     echohl ErrorMsg
     echo "Conjure exited (" . a:msg . "), consider conjure#start()"
     echohl None
