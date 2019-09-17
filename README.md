@@ -51,7 +51,7 @@ And now all we need to do is open a Clojure file, write some code and evaluate i
 [Deoplete][], once installed, will work out of the box to provide fully asynchronous completion as you type. You will probably want to configure it to pop up more often using a snippet I found in the [async-clj-omni][] repository.
 
 ```viml
-call deoplete#custom#option('keyword_patterns', {'clojure': '[\w!$%&*+/:<=>?@\^_~\-\.#]*'}) 
+call deoplete#custom#option('keyword_patterns', {'clojure': '[\w!$%&*+/:<=>?@\^_~\-\.#]*'})
 ```
 
 If you prefer to use [CoC][] you can add [coc-conjure][] to get the same asynchronous completion experience.
