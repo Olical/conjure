@@ -21,7 +21,7 @@ Use your favourite plugin manager, I recommend [vim-plug][], to fetch and AOT co
 I strongly suggest you use a tag and then subscribe to releases through the GitHub repository. This will allow you to keep up to date without having your workflow disrupted by an unexpected breaking change, not that I _intend_ to release any.
 
 ```viml
-Plug 'Olical/conjure', { 'tag': 'v1.1.0', 'do': 'bin/compile'  }
+Plug 'Olical/conjure', { 'tag': 'v1.2.0', 'do': 'bin/compile'  }
 ```
 
 No dependencies are required in your project, tools for features such as autocomplete will be injected upon connection. The initial connection to a prepl will take a few seconds because of this, I think it's worth it.
@@ -94,7 +94,7 @@ This is an exhaustive `.conjure.edn`, mine usually end up being between 1-5 line
   ;; If the file doesn't exist yet the connection will simply be ignored because of the nil :port value.
 
   ;; For example, this will start a JVM prepl and write the random port to .prepl-port.
-  ;; clj -Sdeps '{:deps {olical/propel {:mvn/version "1.0.0"}}}' -m propel.main -w
+  ;; clj -Sdeps '{:deps {olical/propel {:mvn/version "1.3.0"}}}' -m propel.main -w
   :propel {:port #slurp-edn ".prepl-port"
 
            ;; Disabled conns will be ignored on ConjureUp.
