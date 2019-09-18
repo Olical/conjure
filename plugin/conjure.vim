@@ -175,7 +175,7 @@ endfunction
 function! conjure#on_exit(jobid, msg, event) dict
   if a:msg != 0 && a:msg != 143
     echohl ErrorMsg
-    echo "Conjure exited (" . a:msg . "), consider conjure#start()"
+    echo "Conjure exited unexpectedly (" . a:msg . "). Consider restarting it by running ':call conjure#start()'"
     echohl None
 
     let s:jobid = v:null
