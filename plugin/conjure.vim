@@ -253,9 +253,18 @@ function! conjure#omnicomplete(findstart, base)
 endfunction
 
 function! conjure#command_completions(arglead, cmdline, cursorpos)
-  return map(conjure#completions(a:arglead), {n, completion -> get(completion, "word")})
+  let l:keyword = '\v(.{-})([a-zA-Z0-9!$%&*+/:<=>?@\^_~\-\.#]*)$'
+  let l:parts = matchlist(a:arglead, l:keyword)
+
+  if get(l:parts, 2) != ""
+    return map(conjure#completions(get(l:parts, 2)),
+          \ {n, completion -> get(l:parts, 1) . get(completion, "word")})
+  else
+    return []
+  endif
 endfunction
 
+echo 
 function! conjure#completions(base)
   return conjure#request("completions", a:base)
 endfunction
