@@ -40,7 +40,7 @@ Conjure is now configured to connect to a local prepl on port `5678`, let's star
 clojure -J-Dclojure.server.jvm="{:port 5678 :accept clojure.core.server/io-prepl}"
 ```
 
-> You can read more about starting prepls in my [Clojure socket prepl cookbook][cookbook] post. Also check out [Propel][], my tool that helps you start prepls in various ways.
+> You can read more about starting prepls in my [Clojure socket prepl cookbook][cookbook] post. Also check out [Propel][], my tool that helps you start prepls in various ways. I've written about using Propel in [REPLing into projects with prepl and Propel][propel-post].
 
 And now all we need to do is open a Clojure file, write some code and evaluate it. Here's a clip of what you should see with autocompletion, documentation lookup and evaluation.
 
@@ -251,3 +251,4 @@ Find the full [unlicense][] in the `UNLICENSE` file, but here's a snippet.
 [contributing]: ./.github/CODE_OF_CONDUCT.md
 [code-of-conduct]: ./.github/CONTRIBUTING.md
 [keybase]: https://keybase.io/olical
+[propel-post]: https://oli.me.uk/2019-09-14-repling-into-projects-with-prepl-and-propel/
