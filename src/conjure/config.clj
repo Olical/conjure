@@ -6,7 +6,6 @@
             [clojure.spec.alpha :as s]
             [expound.alpha :as expound]
             [taoensso.timbre :as log]
-            [medley.core :as m]
             [me.raynes.fs :as fs]
             [traversy.lens :as tl]
             [conjure.ui :as ui]
@@ -51,7 +50,7 @@
                                         (catch Throwable t
                                           (log/error "Caught error while slurping EDN" t))))}}
                        %)))
-         m/deep-merge)))
+         util/deep-merge)))
 
 (defn hydrate-conn
   "Infer some values of a specific connection."
