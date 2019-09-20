@@ -14,7 +14,6 @@
   me.raynes/fs {:mvn/version "1.4.6"}
   backtick {:mvn/version "0.3.4"}
   traversy {:mvn/version "0.5.0"}
-  mount {:mvn/version "0.1.16"}
   olical/conjure-deps {:mvn/version "0.3.0"}}
 
  :aliases

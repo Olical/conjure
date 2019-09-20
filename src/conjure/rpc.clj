@@ -5,36 +5,26 @@
             [taoensso.timbre :as log]
             [msgpack.core :as msg]
             [msgpack.clojure-extensions]
-            [mount.core :as mount]
             [net.tcp.server :as tcp]
             [jsonista.core :as json]
             [conjure.util :as util])
   (:import (com.fasterxml.jackson.core JsonParser$Feature)))
 
-(mount/defstate port
-  "Port that the RPC opens up on for other plugins to use."
-  :start (util/free-port))
+;; TCP port that the RPC opens up on for other plugins to use.
+(defonce port (util/free-port))
 
-(def ^:private json-mapper
-  "Used to read and write JSON values.
-  Need to do some weird Java stuff to prevent the JSON parser closing the socket."
+;; Used to read and write JSON values.
+;; Need to do some weird Java stuff to prevent the JSON parser closing the socket.
+(def json-mapper
   (doto (json/object-mapper)
     (-> (.getFactory) (.disable JsonParser$Feature/AUTO_CLOSE_SOURCE))))
 
-(mount/defstate ^:private in-chan
-  "Handle incoming RPC I/O"
-  :start (a/chan 128)
-  :stop (a/close! in-chan))
+;; These channels handle all RPC I/O.
+(defonce ^:private in-chan (a/chan 128))
+(defonce ^:private out-chan (a/chan 128))
 
-(mount/defstate ^:private out-chan
-  "Handle outgoing RPC I/O"
-  :start (a/chan 128)
-  :stop (a/close! out-chan))
-
-(mount/defstate ^:private open-requests!
-  "Used to keep track of which requests are in flight."
-  :start (atom {})
-  :stop (reset! open-requests! nil))
+;; Used to keep track of which requests are in flight.
+(defonce ^:private open-requests! (atom {}))
 
 ;; These three functions work together to deal
 ;; with all incoming RPC messages from Neovim.
@@ -145,73 +135,72 @@
 
     @reqp))
 
-(mount/defstate tcp-server
-  "This server allows other plugins to make RPC calls over a JSON TCP socket."
-  :start (do
-           (log/info "Starting RPC TCP server on port" port)
-           (-> (tcp/tcp-server
-                 :port port
-                 :handler (tcp/wrap-io
-                            (fn [reader writer]
-                              (log/info "TCP connection opened")
-
-                              (loop []
-                                (when-let [msg (some-> (json/read-value reader json-mapper) (decode))]
-                                  (try
-                                    (a/>!! in-chan (assoc msg :client writer))
-                                    (catch Throwable e
-                                      (log/error "Error while writing to in-chan:" e)))
-                                  (recur)))
-
-                              (log/info "TCP connection closing"))))
-               (tcp/start)))
-  :stop (tcp/stop tcp-server))
-
-(mount/defstate rpc-loop-threads
+(defn init
   "Start up the loops that read and write to stdin/stdout.
-  This allows us to communicate with Neovim through RPC."
-  :start (do
-           ;; Prevent anyone writing to *out* since that's for msgpack-rpc.
-           (alter-var-root #'*out* (constantly *err*))
+  This allows us to communicate with Neovim through RPC.
+  There is also a TCP server started on {conjure.rpc/port} that
+  allows other plugins to communicate with Conjure over JSON RPC."
+  []
 
-           (log/info "Starting RPC loops")
+  ;; Prevent anyone writing to *out* since that's for msgpack-rpc.
+  (alter-var-root #'*out* (constantly *err*))
 
-           [;; Read from stdin and place messages on in-chan.
-            (util/thread
-              "RPC stdin handler"
-              (loop []
-                (when-let [msg (decode (msg/unpack System/in))]
-                  (try
-                    (a/>!! in-chan (assoc msg :client :stdio))
-                    (catch Throwable e
-                      (log/error "Error while writing to in-chan:" e)))
-                  (recur))))
+  ;; This server allows other plugins to make RPC calls over a JSON TCP socket.
+  (log/info "Starting RPC TCP server on port" port)
+  (-> (tcp/tcp-server
+        :port port
+        :handler (tcp/wrap-io
+                   (fn [reader writer]
+                     (log/info "TCP connection opened")
 
-            ;; Read from out-chan and send messages to the client.
-            (util/thread
-              "RPC stdout"
-              (loop []
-                (when-let [msg (a/<!! out-chan)]
-                  (try
-                    (log/trace "Sending RPC message:" msg)
-                    (if (= (:client msg) :stdio)
-                      (util/write System/out (pack {:data msg, :transport :msgpack}))
-                      (util/write (:client msg) (pack {:data msg, :transport :json})))
-                    (catch Throwable e
-                      (log/error "Error while writing to client:" (:client msg) e)))
-                  (recur))))
+                     (loop []
+                       (when-let [msg (some-> (json/read-value reader json-mapper) (decode))]
+                         (try
+                           (a/>!! in-chan (assoc msg :client writer))
+                           (catch Throwable e
+                             (log/error "Error while writing to in-chan:" e)))
+                         (recur)))
 
-            ;; Handle all messages on in-chan through the handler-* functions.
-            (util/thread
-              "RPC event loop"
-              (loop []
-                (when-let [msg (a/<!! in-chan)]
-                  (log/trace "Received RPC message:" msg)
-                  (util/thread
-                    "RPC message handler"
-                    (case (:type msg)
-                      :request  (handle-request-response msg)
-                      :response (handle-response msg)
-                      :notify   (handle-notify msg)))
-                  (recur))))])
-  :stop (run! future-cancel rpc-loop-threads))
+                     (log/info "TCP connection closing"))))
+      (tcp/start))
+
+  (log/info "Starting RPC loops")
+
+  ;; Read from stdin and place messages on in-chan.
+  (util/thread
+    "RPC stdin handler"
+    (loop []
+      (when-let [msg (decode (msg/unpack System/in))]
+        (try
+          (a/>!! in-chan (assoc msg :client :stdio))
+          (catch Throwable e
+            (log/error "Error while writing to in-chan:" e)))
+        (recur))))
+
+  ;; Read from out-chan and send messages to the client.
+  (util/thread
+    "RPC stdout"
+    (loop []
+      (when-let [msg (a/<!! out-chan)]
+        (try
+          (log/trace "Sending RPC message:" msg)
+          (if (= (:client msg) :stdio)
+            (util/write System/out (pack {:data msg, :transport :msgpack}))
+            (util/write (:client msg) (pack {:data msg, :transport :json})))
+          (catch Throwable e
+            (log/error "Error while writing to client:" (:client msg) e)))
+        (recur))))
+
+  ;; Handle all messages on in-chan through the handler-* functions.
+  (util/thread
+    "RPC event loop"
+    (loop []
+      (when-let [msg (a/<!! in-chan)]
+        (log/trace "Received RPC message:" msg)
+        (util/thread
+          "RPC message handler"
+          (case (:type msg)
+            :request  (handle-request-response msg)
+            :response (handle-response msg)
+            :notify   (handle-notify msg)))
+        (recur)))))

@@ -5,7 +5,6 @@
             [taoensso.timbre :as log]
             [taoensso.timbre.appenders.core :as appenders]
             [me.raynes.fs :as fs]
-            [mount.core :as mount]
             [conjure.util :as util]
             [conjure.rpc :as rpc]
             [conjure.prepl :as prepl]
@@ -41,8 +40,7 @@
 
   (log/info (str "System versions\n" (:out (shell/sh "bin/versions"))))
 
-  (mount/start)
-
+  (rpc/init)
   (prepl/init)
   (nvim/set-ready!)
   (log/info "Everything's ready! Let's perform some magic.")
