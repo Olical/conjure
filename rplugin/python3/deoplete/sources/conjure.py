@@ -1,6 +1,7 @@
 from .base import Base
 import deoplete.logger
 import socket
+import errno
 import json
 import os
 
@@ -9,6 +10,30 @@ import os
 allowed_dir = os.environ.get("CONJURE_ALLOWED_DIR", "/")
 current_path = os.path.realpath(__file__)
 is_enabled = current_path.startswith(allowed_dir)
+
+# Return True if this socket is connected.
+def is_socket_valid(socket_instance):
+  if not socket_instance:
+    return False
+
+  err_type = False
+
+  try:
+    socket_instance.getsockname()
+  except socket.error as err:
+    err_type = err.args[0]
+    if err_type == errno.EBADF:  # 9: Bad file descriptor
+      return False
+
+  try:
+    socket_instance.getpeername()
+  except socket.error as err:
+    err_type = err.args[0]
+
+  if err_type in [errno.EBADF, errno.ENOTCONN]:  #   9: Bad file descriptor.
+    return False                               # 107: Transport endpoint is not connected
+
+  return True
 
 # Create a class to perform completions, inherit from Deoplete's Base class.
 class Source(Base):
@@ -24,8 +49,8 @@ class Source(Base):
 
   def gather_candidates(self, context):
     if is_enabled and self.vim.api.call_function("conjure#should_autocomplete", []):
-      # Connect if we haven't already.
-      if not hasattr(self, "sock"):
+      # Connect if we haven't already or the socket has died.
+      if not (hasattr(self, "sock") and is_socket_valid(self.sock)):
         # This call fetches the port for the JSON RPC TCP server. Acronyms!
         rpc_port = self.vim.api.call_function("conjure#get_rpc_port", [])
 
