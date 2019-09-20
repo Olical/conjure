@@ -135,6 +135,52 @@
 
     @reqp))
 
+(defn- handle-tcp-server-message
+  "Handle and respond to messages on the internal RPC TCP server."
+  [reader writer]
+  (when-let [msg (some-> (json/read-value reader json-mapper) (decode))]
+    (try
+      (a/>!! in-chan (assoc msg :client writer))
+      (catch Throwable e
+        (log/error "Error while writing to in-chan:" e)))
+    ::recur))
+
+(defn- handle-rpc-stdin
+  "Read from stdin and place messages on in-chan."
+  []
+  (when-let [msg (decode (msg/unpack System/in))]
+    (try
+      (a/>!! in-chan (assoc msg :client :stdio))
+      (catch Throwable e
+        (log/error "Error while writing to in-chan:" e)))
+    (recur)))
+
+(defn- handle-rpc-stdout
+  "Read from out-chan and send messages to the client."
+  []
+  (when-let [msg (a/<!! out-chan)]
+    (try
+      (log/trace "Sending RPC message:" msg)
+      (if (= (:client msg) :stdio)
+        (util/write System/out (pack {:data msg, :transport :msgpack}))
+        (util/write (:client msg) (pack {:data msg, :transport :json})))
+      (catch Throwable e
+        (log/error "Error while writing to client:" (:client msg) e)))
+    ::recur))
+
+(defn- handle-rpc-event
+  "Handle messages on in-chan through the handler-* functions."
+  []
+  (when-let [msg (a/<!! in-chan)]
+    (log/trace "Received RPC message:" msg)
+    (util/thread
+      "RPC message handler"
+      (case (:type msg)
+        :request  (handle-request-response msg)
+        :response (handle-response msg)
+        :notify   (handle-notify msg)))
+    ::recur))
+
 (defn init
   "Start up the loops that read and write to stdin/stdout.
   This allows us to communicate with Neovim through RPC.
@@ -152,55 +198,28 @@
         :handler (tcp/wrap-io
                    (fn [reader writer]
                      (log/info "TCP connection opened")
-
                      (loop []
-                       (when-let [msg (some-> (json/read-value reader json-mapper) (decode))]
-                         (try
-                           (a/>!! in-chan (assoc msg :client writer))
-                           (catch Throwable e
-                             (log/error "Error while writing to in-chan:" e)))
+                       (when (= (handle-tcp-server-message reader writer) ::recur)
                          (recur)))
-
                      (log/info "TCP connection closing"))))
       (tcp/start))
 
   (log/info "Starting RPC loops")
 
-  ;; Read from stdin and place messages on in-chan.
   (util/thread
     "RPC stdin handler"
     (loop []
-      (when-let [msg (decode (msg/unpack System/in))]
-        (try
-          (a/>!! in-chan (assoc msg :client :stdio))
-          (catch Throwable e
-            (log/error "Error while writing to in-chan:" e)))
+      (when (= (handle-rpc-stdin) ::recur)
         (recur))))
 
-  ;; Read from out-chan and send messages to the client.
   (util/thread
     "RPC stdout"
     (loop []
-      (when-let [msg (a/<!! out-chan)]
-        (try
-          (log/trace "Sending RPC message:" msg)
-          (if (= (:client msg) :stdio)
-            (util/write System/out (pack {:data msg, :transport :msgpack}))
-            (util/write (:client msg) (pack {:data msg, :transport :json})))
-          (catch Throwable e
-            (log/error "Error while writing to client:" (:client msg) e)))
+      (when (= (handle-rpc-stdout) ::recur)
         (recur))))
 
-  ;; Handle all messages on in-chan through the handler-* functions.
   (util/thread
     "RPC event loop"
     (loop []
-      (when-let [msg (a/<!! in-chan)]
-        (log/trace "Received RPC message:" msg)
-        (util/thread
-          "RPC message handler"
-          (case (:type msg)
-            :request  (handle-request-response msg)
-            :response (handle-response msg)
-            :notify   (handle-notify msg)))
+      (when (= (handle-rpc-event) ::recur)
         (recur)))))
