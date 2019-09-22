@@ -13,9 +13,9 @@
             [conjure.nvim :as nvim]))
 
 (Thread/setDefaultUncaughtExceptionHandler
- (reify Thread$UncaughtExceptionHandler
-   (uncaughtException [_ thread ex]
-     (log/error "Uncaught exception on" (.getName thread) ex))))
+  (reify Thread$UncaughtExceptionHandler
+    (uncaughtException [_ thread ex]
+      (log/error "Uncaught exception on" (.getName thread) ex))))
 
 (defn- clean-up-and-exit []
   (log/info "Shutting down")
