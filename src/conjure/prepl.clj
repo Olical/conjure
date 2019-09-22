@@ -135,6 +135,7 @@
                                      :port port}))}
             {:keys [eval-chan read-chan]} (get conn :chans)]
 
+        (ui/up-start tag)
         (let [loaded-deps (when (= lang :clj)
                             (log/trace "Fetching current deps.")
                             (a/>!! eval-chan (code/render :loaded-deps {:lang lang}))
@@ -142,9 +143,14 @@
                                 (get :val)
                                 (edn/read-string)))
               deps (code/render :inject-deps {:lang lang, :loaded-deps loaded-deps})]
-          (log/trace "Evaluating" (count deps) "dep strings...")
-          (doseq [dep deps] (a/>!! eval-chan dep))
-          (doseq [_ deps] (a/<!! read-chan))
+
+          (let [out-of (count deps)]
+            (log/trace "Evaluating" out-of "dep strings...")
+            (doseq [dep deps] (a/>!! eval-chan dep))
+            (doseq [n (take (count deps) (range))]
+              (ui/up-progress tag (inc n) out-of)
+              (a/<!! read-chan)))
+
           (log/trace "Deps ready!"))
 
         (util/thread

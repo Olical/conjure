@@ -107,6 +107,22 @@
                  (util/sample 256)))
         "comment"]])))
 
+(defn up-start
+  "Display a message when we start to connect to a certain tag.
+  This is when we're working out what we have to inject."
+  [tag]
+  (nvim/display-virtual
+    [[(str "@> Assessing " tag) "comment"]]))
+
+(defn up-progress
+  "Display progress of each connection being added. Useful for when
+  dependencies are being injected and it's taking a few seconds."
+  [tag n out-of]
+  (nvim/display-virtual
+    [[(str "@> Connecting to " tag " "
+           (int (* (/ n out-of) 100.0)) "%")
+      "comment"]]))
+
 (defn up-summary
   "Display which connections have been made by ConjureUp inline."
   [tags]
