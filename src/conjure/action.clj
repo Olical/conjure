@@ -204,9 +204,9 @@
                            {:conn conn
                             :resp (wrapped-eval
                                     {:conn conn
-                                     :code (code/definition-str
-                                             {:conn conn
-                                              :name name})})
+                                     :code (code/render :definition
+                                                        {:conn conn
+                                                         :name name})})
                             :msg (str "Failed to look up definition for " name)})
                          (get :val)
                          (util/parse-code)))

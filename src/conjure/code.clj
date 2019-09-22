@@ -181,6 +181,35 @@
                (update 2 dec))))
        "))
 
+(deftemplate :definition [{:keys [name conn]}]
+  (let [name-sym (symbol name)]
+    (tmpl
+      (when-let [loc (if-let [sym (and (not (find-ns '~name-sym)) (resolve '~name-sym))]
+                       (mapv (meta sym) [:file :line :column])
+                       (when-let [syms (some-> '~name-sym
+                                               ~(case (:lang conn)
+                                                  :cljs 'identity
+                                                  :clj 'find-ns)
+                                               (ns-interns))]
+                         (when-let [file (some-> syms first val meta :file)]
+                           [file 1 1])))]
+        (when-not (or (clojure.string/blank? (first loc)) (= (first loc) "NO_SOURCE_PATH"))
+          (-> loc
+              (update
+                0
+                ~(case (:lang conn)
+                   :cljs 'identity
+                   :clj (tmpl
+                          (fn [file]
+                            (if (.exists (clojure.java.io/file file))
+                              file
+                              (-> (clojure.java.io/resource file)
+                                  (str)
+                                  (clojure.string/replace #"^file:" "")
+                                  (clojure.string/replace #"^jar:file" "zipfile")
+                                  (clojure.string/replace #"\.jar!/" ".jar::")))))))
+              (update 2 dec)))))))
+
 (deftemplate :run-tests [{:keys [targets conn]}]
   (case (:lang conn)
     :clj
