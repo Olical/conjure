@@ -128,29 +128,19 @@ augroup conjure
     autocmd InsertEnter *.edn,*.clj,*.clj[cs] :call conjure#close_unused_log()
   endif
 
+  autocmd CursorMoved * :call conjure#clear_virtual_on_line_change()
+  autocmd CursorMovedI * :call conjure#clear_virtual_on_line_change()
+
   if g:conjure_quick_doc_normal_mode
     autocmd CursorMoved *.edn,*.clj,*.clj[cs] :call conjure#quick_doc()
-
-    if !g:conjure_quick_doc_insert_mode
-      autocmd InsertEnter *.edn,*.clj,*.clj[cs] :ConjureClearVirtual
-    endif
   endif
 
   if g:conjure_quick_doc_insert_mode
     autocmd CursorMovedI *.edn,*.clj,*.clj[cs] :call conjure#quick_doc()
-
-    if !g:conjure_quick_doc_normal_mode
-      autocmd InsertEnter *.edn,*.clj,*.clj[cs] :call conjure#quick_doc()
-      autocmd InsertLeave *.edn,*.clj,*.clj[cs] :ConjureClearVirtual
-    endif
   endif
 
   if g:conjure_quick_doc_normal_mode || g:conjure_quick_doc_insert_mode
     autocmd BufLeave *.edn,*.clj,*.clj[cs] :call conjure#quick_doc_cancel()
-  endif
-
-  if !g:conjure_quick_doc_normal_mode && !g:conjure_quick_doc_insert_mode
-    autocmd CursorMoved *.edn,*.clj,*.clj[cs] :ConjureClearVirtual
   endif
 
   if g:conjure_omnifunc
@@ -205,7 +195,6 @@ endfunction
 " Trigger quick doc on CursorMoved(I) with a debounce.
 " It displays the doc for the head of the current form using virtual text.
 let s:quick_doc_timer = v:null
-
 function! conjure#quick_doc_cancel()
   if s:quick_doc_timer != v:null
     call timer_stop(s:quick_doc_timer)
@@ -217,6 +206,19 @@ function! conjure#quick_doc()
   if g:conjure_ready
     call conjure#quick_doc_cancel()
     let s:quick_doc_timer = timer_start(g:conjure_quick_doc_time, {-> conjure#notify("quick_doc")})
+  endif
+endfunction
+
+" Clear virtual text if the buffer + line number have changed since
+" the last time the function was called.
+let s:clear_virtual_bufline = []
+function! conjure#clear_virtual_on_line_change()
+  if g:conjure_ready
+    let l:current_bufline = [bufnr("%"), line(".")]
+    if s:clear_virtual_bufline != l:current_bufline
+      let s:clear_virtual_bufline = l:current_bufline
+      ConjureClearVirtual
+    endif
   endif
 endfunction
 
