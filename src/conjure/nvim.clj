@@ -24,7 +24,8 @@
            line-count line-count]
       (let [ns-res (util/parse-ns (util/join-lines sample-lines))
             next-line-count (* line-count 2)]
-        (if (and (= ns-res ::util/error) (< line-count buf-length))
+        (if (and (= ns-res ::util/error)
+                 (< line-count (min buf-length 150)))
           (recur (api/call (get-lines next-line-count)) next-line-count)
           {:path (util/resolve-relative path cwd)
            :cwd cwd
