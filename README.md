@@ -248,7 +248,7 @@ Find the full [unlicense][] in the `UNLICENSE` file, but here's a snippet.
 [coc]: https://github.com/neoclide/coc.nvim
 [coc-conjure]: https://github.com/jlesquembre/coc-conjure
 [expound]: https://github.com/bhb/expound
-[contributing]: ./.github/CODE_OF_CONDUCT.md
-[code-of-conduct]: ./.github/CONTRIBUTING.md
+[contributing]: ./.github/CONTRIBUTING.md
+[code-of-conduct]: ./.github/CODE_OF_CONDUCT.md
 [keybase]: https://keybase.io/olical
 [propel-post]: https://oli.me.uk/2019-09-14-repling-into-projects-with-prepl-and-propel/
