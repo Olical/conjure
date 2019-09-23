@@ -117,6 +117,14 @@
     (not (util/socket? {:host host, :port port}))
     (ui/up "Skipping" tag "- can't connect")
 
+    ;; Another connection exists for this host and port.
+    (some
+      (fn [[_tag conn]]
+        (and (= host (:host conn))
+             (= port (:port conn))))
+      @conns!)
+    (ui/up "Skipping" tag "- already connected to this host and port")
+
     :else
     (do
       (log/info "Adding" tag host port)
