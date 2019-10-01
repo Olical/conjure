@@ -97,8 +97,9 @@
   "Skip parsing, just format the given data."
   [data]
   (try
-    (with-out-str
-      (pprint/pprint data))
+    (str/trim
+      (with-out-str
+        (pprint/pprint data)))
     (catch Throwable e
       (log/error "Error while pretty printing data" e)
       (pr-str data))))

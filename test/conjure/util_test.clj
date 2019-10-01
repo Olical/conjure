@@ -1,5 +1,6 @@
 (ns conjure.util-test
   (:require [clojure.test :as t]
+            [clojure.pprint :as pprint]
             [conjure.util :as util]))
 
 (t/deftest join-words
@@ -44,6 +45,14 @@
 (t/deftest pprint
   (t/is (= (util/pprint "{:foo :bar}") "{:foo :bar}"))
   (t/is (= (util/pprint "#something.Bad{}\n") "#something.Bad{}")))
+
+(t/deftest pprint-data
+  (t/is (= (util/pprint-data {:foo :bar}) "{:foo :bar}"))
+  (t/is (= (util/pprint-data '(+ 10 10)) "(+ 10 10)"))
+
+  (t/testing "when pprinting fails for some reason"
+    (with-redefs [pprint/pprint (fn [] (throw (Error. "ohno")))]
+      (t/is (= (util/pprint-data {:foo :bar}) "{:foo :bar}")))))
 
 (t/deftest throwable->str
   (t/is (re-matches #"Execution error \(Error\) at conjure\.util-test/fn \(util_test\.clj:\d+\)\.\nohno\n"
@@ -105,3 +114,7 @@
 (t/deftest path->ns
   (t/is (= 'conjure-deps.javaclasspath.v0v3v0.clojure.java.classpath
            (util/path->ns "conjure_deps/javaclasspath/v0v3v0/clojure/java/classpath.clj"))))
+
+(t/deftest multiline?
+  (t/is (= true (util/multiline? "foo\nbar")))
+  (t/is (= false (util/multiline? "foo bar"))))
