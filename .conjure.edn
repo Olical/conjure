@@ -5,4 +5,4 @@
   :node {:port 5556
          :lang :cljs}
   :browser {:port 5557
-            :lang :cljs}} }
+            :lang :cljs}}}
