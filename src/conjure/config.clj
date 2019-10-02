@@ -17,9 +17,12 @@
 (s/def ::host string?)
 (s/def ::tag keyword?)
 (s/def ::enabled? boolean?)
-(s/def ::conn (s/keys :req-un [::port ::host ::lang ::expr ::enabled?]))
+(s/def ::hook #{:out})
+(s/def ::hooks (s/map-of ::hook any?))
+(s/def ::conn (s/keys :req-un [::port ::host ::lang ::expr ::enabled?]
+                      :opt-un [::hooks]))
 (s/def ::conns (s/map-of ::tag ::conn))
-(s/def ::config (s/nilable (s/keys :opt-un [::conns])))
+(s/def ::config (s/nilable (s/keys :opt-un [::conns ::hooks])))
 
 (def ^:private default-exprs
   {:clj #"\.(cljc?|edn)$"
@@ -104,3 +107,13 @@
        (hydrate)
        (toggle flags)
        (validate))))
+
+(defn hook
+  "Given config and a potential conn tag, fetch the given hook data.
+  The conn specific config will override the general one."
+  [{:keys [config tag hook]}]
+  (-> config
+      (merge
+        (when tag
+          (get-in config [:conns tag])))
+      (get-in [:hooks hook])))
