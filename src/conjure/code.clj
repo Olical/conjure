@@ -116,7 +116,7 @@
                           (count)
                           (not= 1))]
       (str
-        (tmpl (in-ns '~(or ns 'cljs.user)))
+        (tmpl (in-ns '~(or ns 'cljs.user))) "\n"
         (when wrap-forms? "(do ")
         code "\n"
         (when wrap-forms? ")\n")))))
