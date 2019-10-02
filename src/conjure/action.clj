@@ -253,10 +253,12 @@
 
 (defn refresh [op]
   (doseq [conn (current-conns)]
-    (let [opts {:conn conn
-                :op op
-                :config (:refresh (config/fetch {:cwd (:cwd nvim/ctx)}))}]
-      (when-let [code (code/render :refresh opts)]
+    (let [opts {:conn conn, :op op}
+          config (config/fetch {:cwd (:cwd nvim/ctx)})
+          hook (config/hook {:config config
+                             :tag (:tag conn)
+                             :hook :refresh})]
+      (when-let [code (code/render :refresh (assoc opts :hook hook))]
         (ui/refresh opts)
         (ui/result {:conn conn
                     :resp (wrapped-eval

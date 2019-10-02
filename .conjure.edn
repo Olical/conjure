@@ -1,5 +1,8 @@
 {:conns
  {:dev {:port 5885}
-  :jvm {:port 5555, :enabled? false}
-  :node {:port 5556, :lang :cljs}
-  :browser {:port 5557, :lang :cljs, :enabled? false}}}
+  :jvm {:port 5555
+        :hooks {:refresh (assoc :after 'test.example/get-env)}}
+  :node {:port 5556
+         :lang :cljs}
+  :browser {:port 5557
+            :lang :cljs}} }

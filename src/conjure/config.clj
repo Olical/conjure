@@ -17,7 +17,7 @@
 (s/def ::host string?)
 (s/def ::tag keyword?)
 (s/def ::enabled? boolean?)
-(s/def ::hook #{:out})
+(s/def ::hook #{:refresh})
 (s/def ::hooks (s/map-of ::hook any?))
 (s/def ::conn (s/keys :req-un [::port ::host ::lang ::expr ::enabled?]
                       :opt-un [::hooks]))
