@@ -10,8 +10,6 @@
 (defn get-env []
   #?(:clj :Clojure, :cljs :ClojureScript))
 
-;; TODO why does this die in CLJS
-;; TODO update docs for new hooks, get more working first
 (+ 10 20)
 
 (comment
