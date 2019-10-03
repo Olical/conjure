@@ -46,38 +46,38 @@
   (t/testing "hooks"
     (t/testing "entirely optional"
       (binding [config/gather! (constantly {:conns {:foo {:port 5555}}})]
-        (t/is (nil? (config/hook {:config (config/fetch), :hook :out})))))
+        (t/is (nil? (config/hook {:config (config/fetch), :hook :refresh})))))
 
     (t/testing "conn level"
       (binding [config/gather! (constantly {:conns {:foo
                                                     {:port 5555
-                                                     :hooks {:out '(clojure.string/upper-case)}}}})]
-        (t/is (nil? (config/hook {:config (config/fetch), :hook :out})))
+                                                     :hooks {:refresh '(clojure.string/upper-case)}}}})]
+        (t/is (nil? (config/hook {:config (config/fetch), :hook :refresh})))
         (t/is (= '(clojure.string/upper-case)
                  (config/hook {:config (config/fetch)
-                               :hook :out
+                               :hook :refresh
                                :tag :foo})))))
 
     (t/testing "top level"
       (binding [config/gather! (constantly {:conns {:foo {:port 5555}}
-                                            :hooks {:out '(clojure.string/upper-case)}})]
+                                            :hooks {:refresh '(clojure.string/upper-case)}})]
         (t/is (= '(clojure.string/upper-case)
                  (config/hook {:config (config/fetch)
-                               :hook :out})))
+                               :hook :refresh})))
         (t/is (= '(clojure.string/upper-case)
                  (config/hook {:config (config/fetch)
-                               :hook :out
+                               :hook :refresh
                                :tag :foo})))))
 
     (t/testing "override with conn level"
       (binding [config/gather! (constantly {:conns {:foo
                                                     {:port 5555
-                                                     :hooks {:out '(clojure.string/lower-case)}}}
-                                            :hooks {:out '(clojure.string/upper-case)}})]
+                                                     :hooks {:refresh '(clojure.string/lower-case)}}}
+                                            :hooks {:refresh '(clojure.string/upper-case)}})]
         (t/is (= '(clojure.string/upper-case)
                  (config/hook {:config (config/fetch)
-                               :hook :out})))
+                               :hook :refresh})))
         (t/is (= '(clojure.string/lower-case)
                  (config/hook {:config (config/fetch)
-                               :hook :out
+                               :hook :refresh
                                :tag :foo})))))))
