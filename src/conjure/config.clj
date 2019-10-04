@@ -18,7 +18,8 @@
 (s/def ::tag keyword?)
 (s/def ::enabled? boolean?)
 (s/def ::hook #{:connect :refresh :eval :result})
-(s/def ::hooks (s/map-of ::hook any?))
+(s/def ::hook-body (s/and list? (s/cat :binding vector?, :body (s/* any?))))
+(s/def ::hooks (s/map-of ::hook ::hook-body))
 (s/def ::conn (s/keys :req-un [::port ::host ::lang ::expr ::enabled?]
                       :opt-un [::hooks]))
 (s/def ::conns (s/map-of ::tag ::conn))

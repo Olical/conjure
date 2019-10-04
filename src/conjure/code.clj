@@ -64,7 +64,8 @@
 
 (deftemplate :hook [{:keys [value hook]}]
   (if hook
-    (tmpl (-> ~value ~hook))
+    (tmpl ((fn ~(first hook)
+             ~@(rest hook)) (quote ~value)))
     (tmpl ~value)))
 
 (deftemplate :loaded-deps [{:keys [lang]}]

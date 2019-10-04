@@ -51,20 +51,20 @@
     (t/testing "conn level"
       (binding [config/gather! (constantly {:conns {:foo
                                                     {:port 5555
-                                                     :hooks {:refresh '(clojure.string/upper-case)}}}})]
+                                                     :hooks {:refresh '([x] (prn x))}}}})]
         (t/is (nil? (config/hook {:config (config/fetch), :hook :refresh})))
-        (t/is (= '(clojure.string/upper-case)
+        (t/is (= '([x] (prn x))
                  (config/hook {:config (config/fetch)
                                :hook :refresh
                                :tag :foo})))))
 
     (t/testing "top level"
       (binding [config/gather! (constantly {:conns {:foo {:port 5555}}
-                                            :hooks {:refresh '(clojure.string/upper-case)}})]
-        (t/is (= '(clojure.string/upper-case)
+                                            :hooks {:refresh '([x] (prn x))}})]
+        (t/is (= '([x] (prn x))
                  (config/hook {:config (config/fetch)
                                :hook :refresh})))
-        (t/is (= '(clojure.string/upper-case)
+        (t/is (= '([x] (prn x))
                  (config/hook {:config (config/fetch)
                                :hook :refresh
                                :tag :foo})))))
@@ -72,12 +72,12 @@
     (t/testing "override with conn level"
       (binding [config/gather! (constantly {:conns {:foo
                                                     {:port 5555
-                                                     :hooks {:refresh '(clojure.string/lower-case)}}}
-                                            :hooks {:refresh '(clojure.string/upper-case)}})]
-        (t/is (= '(clojure.string/upper-case)
+                                                     :hooks {:refresh '([x] (prn x))}}}
+                                            :hooks {:refresh '([y] (prn y))}})]
+        (t/is (= '([y] (prn y))
                  (config/hook {:config (config/fetch)
                                :hook :refresh})))
-        (t/is (= '(clojure.string/lower-case)
+        (t/is (= '([x] (prn x))
                  (config/hook {:config (config/fetch)
                                :hook :refresh
                                :tag :foo})))))))

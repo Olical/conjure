@@ -59,10 +59,6 @@
 
 ;; The following functions are called by the user through commands.
 
-;; TODO Show errors from hooks like :connect.
-;; TODO Check that :refresh shows errors.
-;; TODO How does a hook perform multiple side effects? Should it be an implicit ->?
-
 (defn up [flags]
   (let [config (config/fetch {:flags flags, :cwd (:cwd nvim/ctx)})]
     (-> config
@@ -74,10 +70,13 @@
       (when-let [hook (config/hook {:config config
                                     :tag (:tag conn)
                                     :hook :connect})]
-        (wrapped-eval {:conn conn
-                       :code (code/render :hook
-                                          {:value (get-in config [:conns (:tag conn)])
-                                           :hook hook})}))))
+        (not-exception
+          {:conn conn
+           :resp (wrapped-eval {:conn conn
+                                :code (code/render :hook
+                                                   {:value (get-in config [:conns (:tag conn)])
+                                                    :hook hook})})
+           :msg (str "Failed to execute the :connect hook for " (:tag conn) ".")}))))
 
   (ui/up "Done."))
 
