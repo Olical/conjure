@@ -1,8 +1,10 @@
 {:conns
  {:dev {:port 5885}
   :jvm {:port 5555
-        :hooks {:refresh ([opts] (assoc opts :after 'test.example/get-env))
-                :connect ([conn] (prn conn))}}
+        :hooks {:refresh (fn [opts]
+                           (#(prn %) "Refreshing!")
+                           (assoc opts :after 'test.example/get-env))
+                :connect prn}}
   :node {:port 5556
          :lang :cljs}
   :browser {:port 5557
