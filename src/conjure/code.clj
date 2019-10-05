@@ -63,9 +63,10 @@
 (def ^:private require-sym 'require)
 
 (deftemplate :hook [{:keys [value hook]}]
-  (if hook
-    (tmpl (~hook (quote ~value)))
-    (tmpl ~value)))
+  (tmpl (~hook (quote ~value))))
+
+(deftemplate :hook-str [{:keys [value hook]}]
+  (str "(" hook "\n " value "\n)"))
 
 (deftemplate :loaded-deps [{:keys [lang]}]
   (tmpl
@@ -220,7 +221,8 @@
                    :changed "refresh"
                    :all "refresh-all")]
       (tmpl
-        (let [{:keys [before after dirs]} ~(render :hook {:hook hook})]
+        (let [{:keys [before after dirs]} ~(when hook
+                                             (render :hook {:hook hook}))]
           (when before
             (require (symbol (namespace before)))
             ((resolve before)))

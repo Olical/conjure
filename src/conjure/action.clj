@@ -100,14 +100,31 @@
   (when code
     (let [config (config/fetch {:cwd (:cwd nvim/ctx)})]
       (doseq [conn (current-conns)]
-        (let [opts {:conn conn
-                    :code (eval-hook {:conn conn
-                                      :code code
-                                      :config config})
+        (let [code (eval-hook {:conn conn
+                               :code code
+                               :config config})
+              opts {:conn conn
+                    :code code
                     :line line}]
           (ui/eval* opts)
-          (ui/result {:conn conn
-                      :resp (wrapped-eval opts)}))))))
+          (let [resp (wrapped-eval opts)
+                hook (config/hook {:config config
+                                   :tag (:tag conn)
+                                   :hook :result!})]
+
+            (ui/result {:conn conn
+                        :resp resp})
+
+            ;; When there's a non-exception response, pass it to the result! hook.
+            (when (and hook (not (:exception resp)))
+              (wrapped-eval
+                (assoc opts :code
+                       (code/render :hook-str
+                                    {:value (str "{:code '" code "\n"
+                                                 " :result " (:val resp) "\n}")
+                                     :hook (pr-str hook)}))))
+
+            nil))))))
 
 (defn source [name]
   (doseq [conn (current-conns)]
@@ -195,7 +212,9 @@
   (let [;; Context for Compliment to complete local bindings.
         ;; We read the surrounding top level form from the current buffer
         ;; and add the __prefix__ symbol.
-        context (when-let [{:keys [form cursor]} (nvim/read-form {:root? true, :win (:win nvim/ctx)})]
+        context (when-let [{:keys [form cursor]} (nvim/read-form
+                                                   {:root? true
+                                                    :win (:win nvim/ctx)})]
                   (-> (str/split-lines form)
                       (update (dec (first cursor))
                               #(util/splice %
