@@ -1,10 +1,19 @@
+;; (cognitect.rebl/submit '(+ 10 10) 20)
+
 {:conns
  {:dev {:port 5885}
   :jvm {:port 5555
         :hooks {:refresh (fn [opts]
                            (#(prn %) "Refreshing!")
                            (assoc opts :after 'test.example/get-env))
-                :connect prn}}
+                :connect! (fn [conn]
+                            (require 'cognitect.rebl)
+                            ((resolve 'cognitect.rebl/ui)))
+                :eval (fn [code]
+                        (str
+                          "(time \n"
+                          code
+                          "\n)"))}}
   :node {:port 5556
          :lang :cljs}
   :browser {:port 5557
