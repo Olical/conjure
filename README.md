@@ -71,12 +71,12 @@ If you get anything wrong in your `.conjure.edn` you'll see a spec validation er
 
 ### `.conjure.edn`
 
-This is an exhaustive `.conjure.edn`, mine usually end up being between 1-5 lines long. Hopefully you'll be able to find anything you might need in here though!
+Shown below is a completely configured `.conjure.edn`. Typically, you may expect your `.conjure.edn` to contain 1-5 lines as conjure works mostly out-of-the-box without the need for a lot of scaffolding or configuration.
 
 ```edn
 ;; The file is technically read as Clojure, so you can use things like #"..."
 ;; for regular expressions and #() to define functions in hooks.
-;; Don't let the .edn extension fool you.
+;; Don't let the .edn extension fool you :-)
 
 {:conns
  {;; Minimal example.
@@ -85,32 +85,30 @@ This is an exhaustive `.conjure.edn`, mine usually end up being between 1-5 line
   ;; ClojureScript.
   :frontend {:port 5556
 
-             ;; You need to explicitly tell Conjure if it's a ClojureScript connection.
+             ;; You'll need to explicitly tell Conjure if it's a ClojureScript connection.
              :lang :cljs}
 
   :staging {:host "foo.com"
             :port 424242
 
-            ;; Only use this connection for files matching this expression.
+            ;; Only use this connection for files matching the expression shown below.
             ;; You can use this to limit connections to certain project directories.
             ;; This should come in handy in monorepos!
             :expr #"\.(cljc?|edn|another.extension)$"}
 
   ;; You can slurp in valid EDN which allows you to use random port files from other tools (such as Propel!).
-  ;; If the file doesn't exist yet the connection will simply be ignored because of the nil :port value.
+  ;; If the file doesn't exist yet, the connection will simply be ignored because of the nil :port value.
 
-  ;; For example, this will start a JVM prepl and write the random port to .prepl-port.
+  ;; As an example, this will start a JVM prepl and write the random port to .prepl-port.
   ;; clj -Sdeps '{:deps {olical/propel {:mvn/version "1.3.0"}}}' -m propel.main -w
   :propel {:port #slurp-edn ".prepl-port"
 
-           ;; Disabled conns will be ignored on ConjureUp.
-           ;; They can be enabled and disabled with `:ConjureUp -staging +boot`
-           ;; This allows you to toggle parts of your config with different custom mappings.
+           ;; Disabled conn(ection)s will be ignored on ConjureUp.
+           ;; Connections can be enabled and disabled with `:ConjureUp -staging +boot`
+           ;; This allows for toggling parts of your config that may contain different custom mappings.
            :enabled? false}}
 
- ;; Optional configuration for tools.namespace refreshing.
- ;; Set what you need and ignore the rest.
- ;; This is done via hooks which I'll touch on seperately.
+ ;; Hooks are optional (yet powerful) and are described in more detail in the `hooks` section below.
  :hooks
  {:refresh (fn [opts]
              ;; opts defaults to nil for the refresh hook.
@@ -125,21 +123,32 @@ This is an exhaustive `.conjure.edn`, mine usually end up being between 1-5 line
                     ;; Defaults to all directories on the Java classpath.
                     :dirs #{"src"}))}}
 ```
+For example, a very minimal, yet completely functional `.conjure.edn` configuration might look like:
+```
+{:conns
+ {:local
+  {:port 55555}}}
+```
+This configures a `local` connection that connects to port `55555` of the running prepl.
 
 ### Hooks
 
-Conjure exposes hooks through `.conjure.edn`. You can set `:hooks` at the top level of your `.conjure.edn` alongside `:conns` or inside a specific connection to limit it's scope. `:hooks` within a specific connection will override `:hooks` at the top level.
+Conjure exposes `hooks` through the `.conjure.edn` configuration. You can set `:hooks` at the top level of your `.conjure.edn` alongside `:conns` or inside a specific connection in order to limit the scope of the `hook`.
+
+`:hooks` within a specific connection will override `:hooks` at the top level.
 
 A hook is a function that takes a single argument and, in some cases, returns the modified version of that value for Conjure to use.
 
- * `:refresh` as you've seen is used to configure the options to `ConjureRefresh`. Return a map containing your required configuration.
+ * `:refresh` is used to configure the options to `ConjureRefresh`. Return a map containing your required configuration.
  * `:eval` is called just before an evaluation with the code as a string. You can alter that string and return the new version.
  * `:result!` is run with a map of the `:code` that was called and the `:result` value as data. This can be sent off to [REBL][] or a similar tool. The return value of this function is ignored.
  * `:connect!` is run in every prepl when you execute `ConjureUp`. You can use this to start servers (or [REBL][]!), just make sure you set a flag or something to prevent it starting a new one on every `ConjureUp`.
 
 #### Integrating REBL
 
-If you have [REBL][] downloaded and configured in your `deps.edn` you can ask Conjure to open it upon connection as well as send the results of evaluations to it for display.
+If you have [REBL][] downloaded and configured in your `deps.edn` you can ask Conjure to open it upon connection *and* additionally send the results of evaluations for display and analysis.
+
+Here is an example of configuring a connection-specific hook to use REBL:
 
 ```edn
 {:conns
@@ -155,7 +164,7 @@ If you have [REBL][] downloaded and configured in your `deps.edn` you can ask Co
 
 #### Timing your evaluations
 
-For a simple example of the `:eval` hook, let's make sure all of our evaluations print how long they took.
+Shown below is a simple example of a (top-level) `:eval` hook prints out how long each evaluation takes to compute:
 
 ```edn
 {:conns
@@ -163,7 +172,10 @@ For a simple example of the `:eval` hook, let's make sure all of our evaluations
  :hooks {:eval #(str "(time " % "\n)")}}
 ```
 
-You could put `:hooks` inside the `:dev` connection if you want but it depends on your use case and project. Take note of how I've added a newline into the code for the `:eval` hook, it prevents a fun issue where evaluating code with a line comment at the end removes your closing parenthesis!
+You could put `:hooks` inside the `:dev` connection if you want but it depends on your particular use cases and project requirements.
+
+***Important!***
+Take note of how I've added a newline to the code for the `:eval` hook. This prevents a fun issue where evaluating code with a line comment at the end removes your closing parenthesis!
 
 ```clojure
 (+ 10 20) ;; Hmm
