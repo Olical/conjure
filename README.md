@@ -12,6 +12,7 @@
  * Documentation displayed as you type (or with `K`).
  * Refreshing of changed namespaces (Clojure only).
  * Go to definition (limited ClojureScript support).
+ * Hooks to allow integration with [REBL][] or any such tool.
  * Test running.
 
 ## Install
@@ -73,6 +74,10 @@ If you get anything wrong in your `.conjure.edn` you'll see a spec validation er
 This is an exhaustive `.conjure.edn`, mine usually end up being between 1-5 lines long. Hopefully you'll be able to find anything you might need in here though!
 
 ```edn
+;; The file is technically read as Clojure, so you can use things like #"..."
+;; for regular expressions and #() to define functions in hooks.
+;; Don't let the .edn extension fool you.
+
 {:conns
  {;; Minimal example.
   :api {:port 5885}
@@ -86,9 +91,10 @@ This is an exhaustive `.conjure.edn`, mine usually end up being between 1-5 line
   :staging {:host "foo.com"
             :port 424242
 
-            ;; This is EDN so you need to specify that you want a regex.
-            ;; Clojure(Script)'s #"..." syntax won't work here.
-            :expr #regex "\\.(cljc?|edn|another.extension)$"}
+            ;; Only use this connection for files matching this expression.
+            ;; You can use this to limit connections to certain project directories.
+            ;; This should come in handy in monorepos!
+            :expr #"\.(cljc?|edn|another.extension)$"}
 
   ;; You can slurp in valid EDN which allows you to use random port files from other tools (such as Propel!).
   ;; If the file doesn't exist yet the connection will simply be ignored because of the nil :port value.
@@ -104,16 +110,69 @@ This is an exhaustive `.conjure.edn`, mine usually end up being between 1-5 line
 
  ;; Optional configuration for tools.namespace refreshing.
  ;; Set what you need and ignore the rest.
- :refresh
- {;; Function to run before refreshing.
-  :before my.ns/stop
+ ;; This is done via hooks which I'll touch on seperately.
+ :hooks
+ {:refresh (fn [opts]
+             ;; opts defaults to nil for the refresh hook.
+             (merge opts
+                    ;; Function to run before refreshing.
+                    :before my.ns/stop
 
-  ;; Function to run after refreshing successfully.
-  :after my.ns/start
+                    ;; Function to run after refreshing successfully.
+                    :after my.ns/start
 
-  ;; Directories to search for changed namespaces in.
-  ;; Defaults to all directories on the Java classpath.
-  :dirs #{"src"}}}
+                    ;; Directories to search for changed namespaces in.
+                    ;; Defaults to all directories on the Java classpath.
+                    :dirs #{"src"}))}}
+```
+
+### Hooks
+
+Conjure exposes hooks through `.conjure.edn`. You can set `:hooks` at the top level of your `.conjure.edn` alongside `:conns` or inside a specific connection to limit it's scope. `:hooks` within a specific connection will override `:hooks` at the top level.
+
+A hook is a function that takes a single argument and, in some cases, returns the modified version of that value for Conjure to use.
+
+ * `:refresh` as you've seen is used to configure the options to `ConjureRefresh`. Return a map containing your required configuration.
+ * `:eval` is called just before an evaluation with the code as a string. You can alter that string and return the new version.
+ * `:result!` is run with a map of the `:code` that was called and the `:result` value as data. This can be sent off to [REBL][] or a similar tool. The return value of this function is ignored.
+ * `:connect!` is run in every prepl when you execute `ConjureUp`. You can use this to start servers (or [REBL][]!), just make sure you set a flag or something to prevent it starting a new one on every `ConjureUp`.
+
+#### Integrating REBL
+
+If you have [REBL][] downloaded and configured in your `deps.edn` you can ask Conjure to open it upon connection as well as send the results of evaluations to it for display.
+
+```edn
+{:conns
+ {:dev {:port #slurp-edn ".prepl-port"
+        :hooks {:connect! (fn [conn]
+                            #?(:clj
+                               (do
+                                 (require 'cognitect.rebl)
+                                 ((resolve 'cognitect.rebl/ui)))))
+                :result! (fn [{:keys [code result]}]
+                           #?(:clj (cognitect.rebl/submit code result)))}}}}
+```
+
+#### Timing your evaluations
+
+For a simple example of the `:eval` hook, let's make sure all of our evaluations print how long they took.
+
+```edn
+{:conns
+ {:dev {:port #slurp-edn ".prepl-port"}}
+ :hooks {:eval #(str "(time " % "\n)")}}
+```
+
+You could put `:hooks` inside the `:dev` connection if you want but it depends on your use case and project. Take note of how I've added a newline into the code for the `:eval` hook, it prevents a fun issue where evaluating code with a line comment at the end removes your closing parenthesis!
+
+```clojure
+(+ 10 20) ;; Hmm
+```
+
+Would result in the following code, I hope it makes the issue clear!
+
+```clojure
+(time (+ 10 20) ;; Hmm)
 ```
 
 ### Options
@@ -252,3 +311,4 @@ Find the full [unlicense][] in the `UNLICENSE` file, but here's a snippet.
 [code-of-conduct]: ./.github/CODE_OF_CONDUCT.md
 [keybase]: https://keybase.io/olical
 [propel-post]: https://oli.me.uk/2019-09-14-repling-into-projects-with-prepl-and-propel/
+[rebl]: https://github.com/cognitect-labs/REBL-distro
