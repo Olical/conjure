@@ -1,11 +1,7 @@
 {:conns
  {:dev {:port 5885}
   :jvm {:port 5555
-        :hooks {:eval (fn [code]
-                        (str
-                          "(time \n"
-                          code
-                          "\n)"))
+        :hooks {:eval #(str "(time \n" % "\n)")
                 :refresh (fn [opts]
                            (#(prn %) "Refreshing!")
                            (assoc opts :after 'test.example/get-env))
