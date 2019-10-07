@@ -25,13 +25,13 @@ I strongly suggest you use a tag and then subscribe to releases through the GitH
 Plug 'Olical/conjure', { 'tag': 'v1.4.0', 'do': 'bin/compile'  }
 ```
 
-No dependencies are required in your project, tools for features such as autocomplete will be injected upon connection. The initial connection to a prepl will take a few seconds because of this, I think it's worth it.
+No dependencies are required in your project, tools for features such as completion and namespace refreshing will be injected upon connection. The initial connection to a prepl will take a few seconds because of this, I think it's worth it.
 
 ## Hello, World!
 
 Here's a minimal example of using Conjure after successfully installing it. In an empty directory we'll create this simple `.conjure.edn`.
 
-```edn
+```clojure
 {:conns {:dev {:port 5678}}}
 ```
 
@@ -63,7 +63,7 @@ The Python to hook up Deoplete and the JavaScript to connect CoC should be good 
 
 Conjure is configured through a mixture of Vim Script variables and the `.conjure.edn` file (the dot prefix is optional). The `.conjure.edn` file in your local directory will be deeply merged with every other one found in parent directories.
 
-This means you can store global things in `~/.conjure.edn` or `~/.config/conjure/.conjure.edn` and override specific values with your project local configuration file. `~/.config` should be the default value of your `XDG_CONFIG_HOME` environment variable which Conjure respects.
+This means you can store configuration all the way up your directory tree as well as global things in `~/.config/conjure/.conjure.edn`, you can override specific values with your project local configuration file. `~/.config` should be the default value of your `XDG_CONFIG_HOME` environment variable which Conjure respects.
 
 Once configured you'll simply need to open up a Clojure or ClojureScript file and the connections will be made automatically. To synchronise the configuration and connections when Neovim is already open simply execute `ConjureUp` (`<localleader>cu` by default) after making your changes.
 
@@ -73,11 +73,10 @@ If you get anything wrong in your `.conjure.edn` you'll see a spec validation er
 
 Shown below is a completely configured `.conjure.edn`. Typically, you may expect your `.conjure.edn` to contain 1-5 lines as Conjure works mostly out-of-the-box without the need for a lot of scaffolding or configuration.
 
-```edn
-;; The file is technically read as Clojure, so you can use things like #"..."
-;; for regular expressions and #() to define functions in hooks.
-;; Don't let the .edn extension fool you :-)
+The file is technically read as Clojure, so you can use things like `#"..."` for regular expressions and `#(...)` to define functions in hooks. Don't let the .edn extension fool you.
 
+
+```clojure
 {:conns
  {;; Minimal example.
   :api {:port 5885}
@@ -89,12 +88,12 @@ Shown below is a completely configured `.conjure.edn`. Typically, you may expect
              :lang :cljs}
 
   :staging {:host "foo.com"
-            :port 424242
+            :port 5557
 
             ;; Only use this connection for files matching the expression shown below.
             ;; You can use this to limit connections to certain project directories.
             ;; This should come in handy in monorepos!
-            :expr #"\.(cljc?|edn|another.extension)$"}
+            :expr #"\.(cljc?|edn|another-extension)$"}
 
   ;; You can slurp in valid EDN which allows you to use random port files from other tools (such as Propel!).
   ;; If the file doesn't exist yet, the connection will simply be ignored because of the nil :port value.
@@ -109,6 +108,7 @@ Shown below is a completely configured `.conjure.edn`. Typically, you may expect
            :enabled? false}}
 
  ;; Hooks are optional (yet powerful) and are described in more detail in the section below.
+ ;; The hook shown here is used to configure the namespace refresh tooling.
  :hooks
  {:refresh (fn [opts]
              ;; opts defaults to nil for the refresh hook.
@@ -123,16 +123,6 @@ Shown below is a completely configured `.conjure.edn`. Typically, you may expect
                     ;; Defaults to all directories on the Java classpath.
                     :dirs #{"src"}))}}
 ```
-
-A very minimal, yet completely functional `.conjure.edn` configuration might look like the following.
-
-```
-{:conns
- {:local
-  {:port 55555}}}
-```
-
-This configures a `local` connection that connects to a running prepl on port `55555`.
 
 ### Hooks
 
@@ -153,7 +143,7 @@ If you have [REBL][] downloaded and configured in your `deps.edn` you can ask Co
 
 Here is an example of configuring a connection-specific hook to use REBL:
 
-```edn
+```clojure
 {:conns
  {:dev {:port #slurp-edn ".prepl-port"
         :hooks {:connect! (fn [conn]
@@ -169,7 +159,7 @@ Here is an example of configuring a connection-specific hook to use REBL:
 
 Shown below is a simple example of a (top-level) `:eval` hook that prints out how long each evaluation takes to compute.
 
-```edn
+```clojure
 {:conns
  {:dev {:port #slurp-edn ".prepl-port"}}
  :hooks {:eval #(str "(time " % "\n)")}}
