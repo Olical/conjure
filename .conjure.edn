@@ -1,21 +1,25 @@
 {:conns
- {:dev {:port 5885}
+ {:dev {:port 5885
+        :dirs #{"src" "test"}
+        :hooks {:connect! identity}}
   :jvm {:port 5555
-        :hooks {:eval #(str "(time " % "\n)")
-                :refresh (fn [opts]
+        :hooks {:refresh (fn [opts]
                            (#(prn %) "Refreshing!")
-                           (assoc opts :after 'test.example/get-env))
-                :connect! (fn [conn]
-                            #?(:clj
-                               (do
-                                 (require 'cognitect.rebl)
-                                 ((resolve 'cognitect.rebl/ui)))))
-                :result! (fn [{:keys [code result]}]
-                           #?(:clj (cognitect.rebl/submit code result)))}
-        :expr #"/dev/.*\.cljc?$"}
+                           (assoc opts
+                                  :after 'test.example/get-env
+                                  :dirs #{"dev"}))}
+        :dirs #{"dev"}}
   :node {:port 5556
          :lang :cljs
-         :expr #"/dev/.*\.clj(s|c)$"}
+         :dirs #{"dev"}
+         :hooks {:eval #(str "(time " % "\n)")}}
   :browser {:port 5557
             :lang :cljs
-            :expr #"/dev/.*\.clj(s|c)$"}}}
+            :dirs #{"dev"}}}
+
+ :hooks
+ {:connect! (fn [conn]
+              (println "Connected to a"
+                       #?(:clj "Clojure"
+                          :cljs "ClojureScript")
+                       "prepl!"))}}
