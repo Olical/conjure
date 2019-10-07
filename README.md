@@ -71,7 +71,7 @@ If you get anything wrong in your `.conjure.edn` you'll see a spec validation er
 
 ### `.conjure.edn`
 
-Shown below is a completely configured `.conjure.edn`. Typically, you may expect your `.conjure.edn` to contain 1-5 lines as conjure works mostly out-of-the-box without the need for a lot of scaffolding or configuration.
+Shown below is a completely configured `.conjure.edn`. Typically, you may expect your `.conjure.edn` to contain 1-5 lines as Conjure works mostly out-of-the-box without the need for a lot of scaffolding or configuration.
 
 ```edn
 ;; The file is technically read as Clojure, so you can use things like #"..."
@@ -103,12 +103,12 @@ Shown below is a completely configured `.conjure.edn`. Typically, you may expect
   ;; clj -Sdeps '{:deps {olical/propel {:mvn/version "1.3.0"}}}' -m propel.main -w
   :propel {:port #slurp-edn ".prepl-port"
 
-           ;; Disabled conn(ection)s will be ignored on ConjureUp.
+           ;; Disabled connections will be ignored on ConjureUp.
            ;; Connections can be enabled and disabled with `:ConjureUp -staging +boot`
            ;; This allows for toggling parts of your config that may contain different custom mappings.
            :enabled? false}}
 
- ;; Hooks are optional (yet powerful) and are described in more detail in the `hooks` section below.
+ ;; Hooks are optional (yet powerful) and are described in more detail in the section below.
  :hooks
  {:refresh (fn [opts]
              ;; opts defaults to nil for the refresh hook.
@@ -123,17 +123,20 @@ Shown below is a completely configured `.conjure.edn`. Typically, you may expect
                     ;; Defaults to all directories on the Java classpath.
                     :dirs #{"src"}))}}
 ```
-For example, a very minimal, yet completely functional `.conjure.edn` configuration might look like:
+
+A very minimal, yet completely functional `.conjure.edn` configuration might look like the following.
+
 ```
 {:conns
  {:local
   {:port 55555}}}
 ```
-This configures a `local` connection that connects to port `55555` of the running prepl.
+
+This configures a `local` connection that connects to a running prepl on port `55555`.
 
 ### Hooks
 
-Conjure exposes `hooks` through the `.conjure.edn` configuration. You can set `:hooks` at the top level of your `.conjure.edn` alongside `:conns` or inside a specific connection in order to limit the scope of the `hook`.
+Conjure exposes hooks through the `.conjure.edn` configuration. You can set `:hooks` at the top level of your `.conjure.edn` alongside `:conns` or inside a specific connection in order to limit the scope of the `hook`.
 
 `:hooks` within a specific connection will override `:hooks` at the top level.
 
@@ -164,7 +167,7 @@ Here is an example of configuring a connection-specific hook to use REBL:
 
 #### Timing your evaluations
 
-Shown below is a simple example of a (top-level) `:eval` hook prints out how long each evaluation takes to compute:
+Shown below is a simple example of a (top-level) `:eval` hook that prints out how long each evaluation takes to compute.
 
 ```edn
 {:conns
@@ -175,13 +178,16 @@ Shown below is a simple example of a (top-level) `:eval` hook prints out how lon
 You could put `:hooks` inside the `:dev` connection if you want but it depends on your particular use cases and project requirements.
 
 ***Important!***
+
 Take note of how I've added a newline to the code for the `:eval` hook. This prevents a fun issue where evaluating code with a line comment at the end removes your closing parenthesis!
+
+If we evaluated this code through visual selection, for example.
 
 ```clojure
 (+ 10 20) ;; Hmm
 ```
 
-Would result in the following code, I hope it makes the issue clear!
+It would result in the following code being executed, I hope it makes the issue clear!
 
 ```clojure
 (time (+ 10 20) ;; Hmm)
