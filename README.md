@@ -70,7 +70,7 @@ If you get anything wrong in your `.conjure.edn` you'll see a spec validation er
 
 ### `.conjure.edn`
 
-This is an exhaustive `.conjure.edn`, mine usually end up being between 1-5 lines long. Hopefully you'll be able to find anything you might need in here though!
+Shown below is a completely configured `.conjure.edn`. Typically, you may expect your `.conjure.edn` to contain 1-5 lines as conjure works mostly out-of-the-box without the need for a lot of scaffolding or configuration.
 
 ```edn
 {:conns
@@ -80,7 +80,7 @@ This is an exhaustive `.conjure.edn`, mine usually end up being between 1-5 line
   ;; ClojureScript.
   :frontend {:port 5556
 
-             ;; You need to explicitly tell Conjure if it's a ClojureScript connection.
+             ;; You'll need to explicitly tell Conjure if it's a ClojureScript connection.
              :lang :cljs}
 
   :staging {:host "foo.com"
@@ -91,15 +91,15 @@ This is an exhaustive `.conjure.edn`, mine usually end up being between 1-5 line
             :expr #regex "\\.(cljc?|edn|another.extension)$"}
 
   ;; You can slurp in valid EDN which allows you to use random port files from other tools (such as Propel!).
-  ;; If the file doesn't exist yet the connection will simply be ignored because of the nil :port value.
+  ;; If the file doesn't exist yet, the connection will simply be ignored because of the nil :port value.
 
-  ;; For example, this will start a JVM prepl and write the random port to .prepl-port.
+  ;; As an example, this will start a JVM prepl and write the random port to .prepl-port.
   ;; clj -Sdeps '{:deps {olical/propel {:mvn/version "1.3.0"}}}' -m propel.main -w
   :propel {:port #slurp-edn ".prepl-port"
 
-           ;; Disabled conns will be ignored on ConjureUp.
+           ;; Disabled conn(ection)s will be ignored on ConjureUp.
            ;; They can be enabled and disabled with `:ConjureUp -staging +boot`
-           ;; This allows you to toggle parts of your config with different custom mappings.
+           ;; This allows you to toggle parts of your config containing different custom mappings.
            :enabled? false}}
 
  ;; Optional configuration for tools.namespace refreshing.
@@ -115,6 +115,13 @@ This is an exhaustive `.conjure.edn`, mine usually end up being between 1-5 line
   ;; Defaults to all directories on the Java classpath.
   :dirs #{"src"}}}
 ```
+For example, a very minimal, yet completely functional configuration might look like:
+```
+{:conns
+ {:local
+  {:port 55555}}}
+```
+This configures a `local` connection that connects to port `55555` of the running prepl.
 
 ### Options
 
