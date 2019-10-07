@@ -1,7 +1,7 @@
 {:conns
  {:dev {:port 5885}
   :jvm {:port 5555
-        :hooks {:eval #(str "(time \n" % "\n)")
+        :hooks {:eval #(str "(time " % "\n)")
                 :refresh (fn [opts]
                            (#(prn %) "Refreshing!")
                            (assoc opts :after 'test.example/get-env))
@@ -11,8 +11,11 @@
                                  (require 'cognitect.rebl)
                                  ((resolve 'cognitect.rebl/ui)))))
                 :result! (fn [{:keys [code result]}]
-                           #?(:clj (cognitect.rebl/submit code result)))}}
+                           #?(:clj (cognitect.rebl/submit code result)))}
+        :expr #"/dev/.*\.cljc?$"}
   :node {:port 5556
-         :lang :cljs}
+         :lang :cljs
+         :expr #"/dev/.*\.clj(s|c)$"}
   :browser {:port 5557
-            :lang :cljs}}}
+            :lang :cljs
+            :expr #"/dev/.*\.clj(s|c)$"}}}
