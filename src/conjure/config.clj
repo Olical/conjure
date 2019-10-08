@@ -11,7 +11,7 @@
             [conjure.ui :as ui]
             [conjure.util :as util]))
 
-(s/def ::expr util/regexp?)
+(s/def ::extensions (s/coll-of string? :kind set?))
 (s/def ::port (s/nilable number?))
 (s/def ::lang #{:clj :cljs})
 (s/def ::host string?)
@@ -19,14 +19,14 @@
 (s/def ::enabled? boolean?)
 (s/def ::hook #{:connect! :result! :refresh :eval})
 (s/def ::hooks (s/map-of ::hook any?))
-(s/def ::conn (s/keys :req-un [::port ::host ::lang ::expr ::enabled?]
+(s/def ::conn (s/keys :req-un [::port ::host ::lang ::extensions ::enabled?]
                       :opt-un [::hooks]))
 (s/def ::conns (s/map-of ::tag ::conn))
 (s/def ::config (s/nilable (s/keys :opt-un [::conns ::hooks])))
 
-(def ^:private default-exprs
-  {:clj #"\.(cljc?|edn)$"
-   :cljs #"\.(clj(s|c)|edn)$"})
+(def ^:private default-extensions
+  {:clj #{"clj" "cljc" "edn"}
+   :cljs #{"cljs" "cljc" "edn"}})
 
 (defn- parse
   "Parse the given string as data with tools.reader.
@@ -65,7 +65,7 @@
   "Infer some values of a specific connection."
   [conn]
   (merge {:lang :clj
-          :expr (get default-exprs (get conn :lang :clj))
+          :extensions (get default-extensions (get conn :lang :clj))
           :host "127.0.0.1"
           :enabled? true}
          conn))

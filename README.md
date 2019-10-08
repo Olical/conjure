@@ -90,10 +90,11 @@ The file is technically read as Clojure, so you can use things like `#"..."` for
   :staging {:host "foo.com"
             :port 5557
 
-            ;; Only use this connection for files matching the expression shown below.
-            ;; You can use this to limit connections to certain project directories.
-            ;; This should come in handy in monorepos!
-            :expr #"\.(cljc?|edn|another-extension)$"}
+            ;; Only use this connection for files with the following extensions.
+            ;; Clojure defaults: clj, cljc and edn.
+            ;; ClojureScript defaults: cljs, cljc and edn.
+            ;; So we could remove edn and add a custom one with...
+            :extensions #{"clj" "cljc" "foo"}}
 
   ;; You can slurp in valid EDN which allows you to use random port files from other tools (such as Propel!).
   ;; If the file doesn't exist yet, the connection will simply be ignored because of the nil :port value.

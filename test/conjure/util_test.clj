@@ -70,10 +70,6 @@
   (binding [util/get-env-fn {"FOO_BAR" :baz}]
     (t/is (= (util/env :foo-bar) :baz))))
 
-(t/deftest regexp?
-  (t/is (util/regexp? #"foo"))
-  (t/is (not (util/regexp? "foo"))))
-
 (t/deftest snake->kw
   (t/is (= (util/snake->kw "foo_bar") :foo-bar)))
 

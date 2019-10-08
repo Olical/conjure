@@ -1,6 +1,7 @@
 (ns conjure.prepl
   "Remote prepl connection management and selection."
-  (:require [clojure.core.async :as a]
+  (:require [clojure.string :as str]
+            [clojure.core.async :as a]
             [clojure.core.server :as server]
             [clojure.java.io :as io]
             [clojure.edn :as edn]
@@ -103,7 +104,7 @@
 
 (defn- add!
   "Remove any existing connection under :tag then create a new connection."
-  [{:keys [tag lang expr host port]}]
+  [{:keys [tag lang extensions host port]}]
 
   (remove! tag)
 
@@ -135,7 +136,7 @@
                   :lang lang
                   :host host
                   :port port
-                  :expr expr
+                  :extensions extensions
                   :chans (merge
                            {:ret-chan ret-chan}
                            (connect {:tag tag
@@ -199,13 +200,13 @@
 
 (defn conns
   "Without a path it'll return all current connections. With a path it finds
-  any connection who's :expr matches that string."
+  any connection where the path ends with one of the :extensions."
   ([] (vals @conns!))
   ([path]
    (->> (conns)
         (filter
-          (fn [{:keys [expr]}]
-            (re-find expr path)))
+          (fn [{:keys [extensions]}]
+            (some #(str/ends-with? path %) extensions)))
         (seq))))
 
 (defn status
@@ -214,8 +215,8 @@
   []
   (let [conns (conns)
         intro (util/count-str conns "connection")
-        conn-strs (for [{:keys [tag host port expr lang]} conns]
-                    (str tag " @ " host ":" port " for " (pr-str expr) " (" lang ")"))]
+        conn-strs (for [{:keys [tag host port extensions lang]} conns]
+                    (str tag " @ " host ":" port " for extensions " (pr-str extensions) " (" lang ")"))]
     (ui/status (util/join-lines (into [intro] conn-strs)))))
 
 (defn init

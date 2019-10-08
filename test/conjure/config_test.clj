@@ -13,7 +13,7 @@
                {:conns {:foo {:port 5555
                               :host "127.0.0.1"
                               :lang :clj
-                              :expr (#'config/default-exprs :clj)
+                              :extensions (#'config/default-extensions :clj)
                               :enabled? true}}}))))
 
   (t/testing "flags"
@@ -23,24 +23,24 @@
                {:conns {:foo {:port 5555
                               :host "127.0.0.1"
                               :lang :clj
-                              :expr (#'config/default-exprs :clj)
+                              :extensions (#'config/default-extensions :clj)
                               :enabled? true}
                         :bar {:port 5556
                               :host "127.0.0.1"
                               :lang :clj
-                              :expr (#'config/default-exprs :clj)
+                              :extensions (#'config/default-extensions :clj)
                               :enabled? false}}}))
 
       (t/is (= (config/fetch {:flags "+bar -foo bad $also -notgood"})
                {:conns {:foo {:port 5555
                               :host "127.0.0.1"
                               :lang :clj
-                              :expr (#'config/default-exprs :clj)
+                              :extensions (#'config/default-extensions :clj)
                               :enabled? false}
                         :bar {:port 5556
                               :host "127.0.0.1"
                               :lang :clj
-                              :expr (#'config/default-exprs :clj)
+                              :extensions (#'config/default-extensions :clj)
                               :enabled? true}}}))))
 
   (t/testing "hooks"

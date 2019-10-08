@@ -9,8 +9,7 @@
             [me.raynes.fs :as fs]
             [camel-snake-kebab.core :as csk]
             [camel-snake-kebab.extras :as cske])
-  (:import [java.net Socket]
-           [java.util.regex Pattern]))
+  (:import [java.net Socket]))
 
 (defn join-words [parts]
   (str/join " " parts))
@@ -139,9 +138,6 @@
           via))
       (remove nil?)
       (join-lines))))
-
-(defn regexp? [o]
-  (instance? Pattern o))
 
 (defn write
   "Write the full data to the stream and then flush the stream."
