@@ -114,3 +114,10 @@
 (t/deftest multiline?
   (t/is (= true (util/multiline? "foo\nbar")))
   (t/is (= false (util/multiline? "foo bar"))))
+
+(t/deftest path-in-dirs?
+  (t/is (= false (util/path-in-dirs? "foo/bar/baz.clj" #{})))
+  (t/is (= true (util/path-in-dirs? "foo/bar/baz.clj" #{"foo"})))
+  (t/is (= false (util/path-in-dirs? "foo/bar/baz.clj" #{"bar"})))
+  (t/is (= true (util/path-in-dirs? "foo/bar/baz.clj" #{"foo/bar"})))
+  (t/is (= true (util/path-in-dirs? "foo/bar/baz.clj" #{"foo/bar" "bar"}))))

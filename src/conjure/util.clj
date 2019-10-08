@@ -230,3 +230,11 @@
      b))
   ([a b & more]
    (apply merge-with deep-merge a b more)))
+
+(defn path-in-dirs?
+  "Is the given path string contained within one of the directories."
+  [path dirs]
+  (boolean
+    (some
+      (into #{} (map fs/file) dirs)
+      (fs/parents path))))

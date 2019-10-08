@@ -12,6 +12,7 @@
             [conjure.util :as util]))
 
 (s/def ::extensions (s/coll-of string? :kind set?))
+(s/def ::dirs (s/coll-of string? :kind set?))
 (s/def ::port (s/nilable number?))
 (s/def ::lang #{:clj :cljs})
 (s/def ::host string?)
@@ -20,7 +21,7 @@
 (s/def ::hook #{:connect! :result! :refresh :eval})
 (s/def ::hooks (s/map-of ::hook any?))
 (s/def ::conn (s/keys :req-un [::port ::host ::lang ::extensions ::enabled?]
-                      :opt-un [::hooks]))
+                      :opt-un [::hooks ::dirs]))
 (s/def ::conns (s/map-of ::tag ::conn))
 (s/def ::config (s/nilable (s/keys :opt-un [::conns ::hooks])))
 

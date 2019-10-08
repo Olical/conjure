@@ -94,7 +94,11 @@ The file is technically read as Clojure, so you can use things like `#"..."` for
             ;; Clojure defaults: clj, cljc and edn.
             ;; ClojureScript defaults: cljs, cljc and edn.
             ;; So we could remove edn and add a custom one with...
-            :extensions #{"clj" "cljc" "foo"}}
+            :extensions #{"clj" "cljc" "foo"}
+
+            ;; You can also limit the scope of a connection to a set of specific directories.
+            ;; This can be useful if your config file presides over multiple projects.
+            :dirs #{"foo" "bar"}}
 
   ;; You can slurp in valid EDN which allows you to use random port files from other tools (such as Propel!).
   ;; If the file doesn't exist yet, the connection will simply be ignored because of the nil :port value.

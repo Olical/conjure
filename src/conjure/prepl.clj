@@ -104,7 +104,7 @@
 
 (defn- add!
   "Remove any existing connection under :tag then create a new connection."
-  [{:keys [tag lang extensions host port]}]
+  [{:keys [tag lang extensions dirs host port]}]
 
   (remove! tag)
 
@@ -137,6 +137,7 @@
                   :host host
                   :port port
                   :extensions extensions
+                  :dirs dirs
                   :chans (merge
                            {:ret-chan ret-chan}
                            (connect {:tag tag
@@ -199,14 +200,17 @@
         [:conjure]))))
 
 (defn conns
-  "Without a path it'll return all current connections. With a path it finds
-  any connection where the path ends with one of the :extensions."
+  "Without a path it'll return all current connections.
+  With a path a series of filters are applied to the list.
+  The path will have to match a :extension and one of the :dirs."
   ([] (vals @conns!))
   ([path]
    (->> (conns)
         (filter
-          (fn [{:keys [extensions]}]
-            (some #(str/ends-with? path %) extensions)))
+          (fn [{:keys [extensions dirs]}]
+            (and (some #(str/ends-with? path %) extensions)
+                 (or (nil? dirs)
+                     (util/path-in-dirs? path dirs)))))
         (seq))))
 
 (defn status
@@ -215,8 +219,12 @@
   []
   (let [conns (conns)
         intro (util/count-str conns "connection")
-        conn-strs (for [{:keys [tag host port extensions lang]} conns]
-                    (str tag " @ " host ":" port " for extensions " (pr-str extensions) " (" lang ")"))]
+        conn-strs (for [{:keys [tag host port extensions dirs lang]} conns]
+                    (str tag " @ " host ":" port
+                         " for extensions " (pr-str extensions)
+                         (when dirs
+                           (str " and dirs " (pr-str dirs)))
+                         " (" lang ")"))]
     (ui/status (util/join-lines (into [intro] conn-strs)))))
 
 (defn init
