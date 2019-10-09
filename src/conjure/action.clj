@@ -23,9 +23,9 @@
 (defn- wrapped-eval
   "Wraps up code with environment specific padding, sends it off for evaluation
   and blocks until we get a result."
-  [{:keys [conn] :as opts}]
+  [{:keys [conn ctx] :as opts}]
   (let [{:keys [eval-chan ret-chan]} (:chans conn)]
-    (a/>!! eval-chan (code/render :eval (assoc opts :ctx nvim/ctx)))
+    (a/>!! eval-chan (code/render :eval (assoc opts :ctx (or ctx nvim/ctx))))
 
     (when (= (:lang conn) :cljs)
       ;; ClojureScript requires two evals:
@@ -35,6 +35,18 @@
       (a/<!! ret-chan))
 
     (a/<!! ret-chan)))
+
+(defn- wrapped-hook-eval
+  "Evaluates a hook with some special tweaks to get reader conditionals
+  working in Clojure prepls consistently."
+  [{:keys [conn value hook]}]
+  (wrapped-eval
+    {:conn conn
+     :ctx {:path "conjure-hook.cljc"}
+     :code (code/render
+             :hook
+             {:value value
+              :hook hook})}))
 
 (defn- raw-eval
   "Unlike wrapped-eval, it will send the exact code it is given and then block
@@ -66,16 +78,16 @@
         (prepl/sync!)
         (ui/up-summary))
 
-    (doseq [conn (current-conns)]
+    (doseq [conn (prepl/conns)]
       (when-let [hook (config/hook {:config config
                                     :tag (:tag conn)
                                     :hook :connect!})]
         (not-exception
           {:conn conn
-           :resp (wrapped-eval {:conn conn
-                                :code (code/render :hook
-                                                   {:value (get-in config [:conns (:tag conn)])
-                                                    :hook hook})})
+           :resp (wrapped-hook-eval
+                   {:conn conn
+                    :value (get-in config [:conns (:tag conn)])
+                    :hook hook})
            :msg (str "Failed to execute the :connect! hook for " (:tag conn) ".")}))))
 
   (ui/up "Done."))
@@ -88,9 +100,10 @@
                               :hook :eval})]
     (-> (not-exception
           {:conn conn
-           :resp (wrapped-eval {:conn conn
-                                :code (code/render :hook {:value code
-                                                          :hook hook})})
+           :resp (wrapped-hook-eval
+                   {:conn conn
+                    :value code
+                    :hook hook})
            :msg (str "Failed to execute the :eval hook for " (:tag conn) ".")})
         (get :val)
         (util/parse-code))

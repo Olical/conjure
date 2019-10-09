@@ -12,7 +12,7 @@
   :node {:port 5556
          :lang :cljs
          :dirs #{"dev"}
-         :hooks {:eval #(str "(time " % "\n)")}}
+         :hooks {:eval #(str "(last (time [" % "\n]))")}}
   :browser {:port 5557
             :lang :cljs
             :dirs #{"dev"}}}
