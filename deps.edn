@@ -45,5 +45,6 @@
 
   :fast
   {:extra-paths ["classes"]
-   :jvm-opts ["-client" "-Xmx128m" "-Xverify:none"
-              "-XX:+TieredCompilation" "-XX:TieredStopAtLevel=1"]}}}
+   :jvm-opts ["-client" "-Xmx128m"
+              "-XX:+TieredCompilation" "-XX:TieredStopAtLevel=1"
+              "-XX:+UseConcMarkSweepGC" "-XX:+CMSClassUnloadingEnabled"]}}}
