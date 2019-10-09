@@ -119,8 +119,6 @@
   "Given config and a potential conn tag, fetch the given hook data.
   The conn specific config will override the general one."
   [{:keys [config tag hook]}]
-  (-> config
-      (merge
-        (when tag
-          (get-in config [:conns tag])))
-      (get-in [:hooks hook])))
+  (or (when tag
+        (get-in config [:conns tag hook]))
+      (get-in config [:hooks hook])))
