@@ -28,15 +28,7 @@
 
   :dev
   {:extra-deps
-   {olical/conjure-deps {:local/root "../conjure-deps"}
-
-    ;; Just for testing hooks in the :jvm REPL from bin/prepls.
-    com.cognitect/rebl {:local/root "/home/ollie/.clojure/REBL-0.9.220.jar"}
-    org.openjfx/javafx-fxml {:mvn/version "11.0.1"}
-    org.openjfx/javafx-controls {:mvn/version "11.0.1"}
-    org.openjfx/javafx-swing {:mvn/version "11.0.1"}
-    org.openjfx/javafx-base {:mvn/version "11.0.1"}
-    org.openjfx/javafx-web {:mvn/version "11.0.1"}}}
+   {olical/conjure-deps {:local/root "../conjure-deps"}}}
 
   :compile
   {:extra-paths ["classes"]
