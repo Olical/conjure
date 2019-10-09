@@ -208,9 +208,10 @@
    (->> (conns)
         (filter
           (fn [{:keys [extensions dirs]}]
-            (and (some #(str/ends-with? path %) extensions)
-                 (or (nil? dirs)
-                     (util/path-in-dirs? path dirs)))))
+            (or (nil? path)
+                (and (some #(str/ends-with? path %) extensions)
+                     (or (nil? dirs)
+                         (util/path-in-dirs? path dirs))))))
         (seq))))
 
 (defn status
