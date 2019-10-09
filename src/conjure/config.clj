@@ -120,5 +120,5 @@
   The conn specific config will override the general one."
   [{:keys [config tag hook]}]
   (or (when tag
-        (get-in config [:conns tag hook]))
+        (get-in config [:conns tag :hooks hook]))
       (get-in config [:hooks hook])))
