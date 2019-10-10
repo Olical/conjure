@@ -98,7 +98,12 @@ The file is technically read as Clojure, so you can use things like `#"..."` for
 
             ;; You can also limit the scope of a connection to a set of specific directories.
             ;; This can be useful if your config file presides over multiple projects.
-            :dirs #{"foo" "bar"}}
+            :dirs #{"foo" "bar"}
+
+            ;; Finally, if neither of the above filtering tools are enough for
+            ;; your use case, you can use the following option to exclude paths
+            ;; based on any function you want.
+            :exclude-path? #(clojure.string/includes? % "dev")}
 
   ;; You can slurp in valid EDN which allows you to use random port files from other tools (such as Propel!).
   ;; If the file doesn't exist yet, the connection will simply be ignored because of the nil :port value.

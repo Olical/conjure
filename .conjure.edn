@@ -1,6 +1,7 @@
 {:conns
  {:dev {:port 5885
-        :dirs #{"src" "test"}
+        :exclude-path? (fn [path]
+                         (clojure.string/includes? path "dev"))
         :hooks {:connect! identity}}
   :jvm {:port 5555
         :hooks {:refresh (fn [opts]

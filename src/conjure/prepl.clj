@@ -104,7 +104,7 @@
 
 (defn- add!
   "Remove any existing connection under :tag then create a new connection."
-  [{:keys [tag lang extensions dirs host port]}]
+  [{:keys [tag lang extensions dirs exclude-path? host port]}]
 
   (remove! tag)
 
@@ -138,6 +138,7 @@
                   :port port
                   :extensions extensions
                   :dirs dirs
+                  :exclude-path? exclude-path?
                   :chans (merge
                            {:ret-chan ret-chan}
                            (connect {:tag tag
@@ -202,16 +203,20 @@
 (defn conns
   "Without a path it'll return all current connections.
   With a path a series of filters are applied to the list.
-  The path will have to match a :extension and one of the :dirs."
+  The path will have to match a :extension and one of the :dirs.
+  Finally the path will be checked against :exclude-path? if it exists for the conn."
   ([] (vals @conns!))
   ([path]
    (->> (conns)
         (filter
-          (fn [{:keys [extensions dirs]}]
+          (fn [{:keys [extensions dirs exclude-path?]}]
             (or (nil? path)
-                (and (some #(str/ends-with? path %) extensions)
-                     (or (nil? dirs)
-                         (util/path-in-dirs? path dirs))))))
+                (and
+                  (and (some #(str/ends-with? path %) extensions)
+                       (or (nil? dirs)
+                           (util/path-in-dirs? path dirs)))
+                  (or (nil? exclude-path?)
+                      (not ((eval exclude-path?) path)))))))
         (seq))))
 
 (defn status

@@ -18,10 +18,11 @@
 (s/def ::host string?)
 (s/def ::tag keyword?)
 (s/def ::enabled? boolean?)
+(s/def ::exclude-path? any?)
 (s/def ::hook #{:connect! :result! :refresh :eval})
 (s/def ::hooks (s/map-of ::hook any?))
 (s/def ::conn (s/keys :req-un [::port ::host ::lang ::extensions ::enabled?]
-                      :opt-un [::hooks ::dirs]))
+                      :opt-un [::hooks ::dirs ::exclude-path?]))
 (s/def ::conns (s/map-of ::tag ::conn))
 (s/def ::config (s/nilable (s/keys :opt-un [::conns ::hooks])))
 
