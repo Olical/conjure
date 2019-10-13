@@ -62,6 +62,12 @@
 (def ^:private ns-sym 'ns)
 (def ^:private require-sym 'require)
 
+(deftemplate :hook [{:keys [value hook]}]
+  (tmpl (~hook (quote ~value))))
+
+(deftemplate :hook-str [{:keys [value hook]}]
+  (str "(" hook "\n " value "\n)"))
+
 (deftemplate :loaded-deps [{:keys [lang]}]
   (tmpl
     (->> '~(->> (get @required-deps! lang)
@@ -111,7 +117,7 @@
                           (count)
                           (not= 1))]
       (str
-        (tmpl (in-ns '~(or ns 'cljs.user)))
+        (tmpl (in-ns '~(or ns 'cljs.user))) "\n"
         (when wrap-forms? "(do ")
         code "\n"
         (when wrap-forms? ")\n")))))
@@ -150,36 +156,6 @@
     (tmpl
       (with-out-str
         (~source-symbol ~(symbol name))))))
-
-(defn definition-str
-  "Find where a given symbol is defined, returns [file line column]."
-  [{:keys [name conn]}]
-  (str "
-       (when-let [loc (if-let [sym (and (not (find-ns '"name")) (resolve '"name"))]
-                        (mapv (meta sym) [:file :line :column])
-                        (when-let [syms "(case (:lang conn)
-                                           :cljs (str "(ns-interns '"name")")
-                                           :clj (str "(some-> (find-ns '"name") ns-interns)"))"]
-                          (when-let [file (:file (meta (some-> syms first val)))]
-                            [file 1 1])))]
-         (when-not (or (clojure.string/blank? (first loc)) (= (first loc) \"NO_SOURCE_PATH\"))
-           (-> loc
-               (update
-                 0
-                 "
-                 (case (:lang conn)
-                   :cljs "identity"
-                   :clj "(fn [file]
-                           (if (.exists (clojure.java.io/file file))
-                             file
-                             (-> (clojure.java.io/resource file)
-                                 (str)
-                                 (clojure.string/replace #\"^file:\" \"\")
-                                 (clojure.string/replace #\"^jar:file\" \"zipfile\")
-                                 (clojure.string/replace #\"\\.jar!/\" \".jar::\"))))")
-                 ")
-               (update 2 dec))))
-       "))
 
 (deftemplate :definition [{:keys [name conn]}]
   (let [name-sym (symbol name)]
@@ -237,22 +213,21 @@
         (with-out-str
           (cljs.test/run-all-tests ~@args))))))
 
-(deftemplate :refresh [{:keys [conn op]
-                        {:keys [before after dirs]} :config}]
+(deftemplate :refresh [{:keys [conn op hook]}]
   (when (= (:lang conn) :clj)
-    (let [args (when (and (not= op :clear) after)
-                 [:after (list 'quote after)])
-          repl-ns "conjure-deps.toolsnamespace.v0v3v1.clojure.tools.namespace.repl"
+    (let [repl-ns "conjure-deps.toolsnamespace.v0v3v1.clojure.tools.namespace.repl"
           op-str (case op
                    :clear "clear"
                    :changed "refresh"
                    :all "refresh-all")]
       (tmpl
-        (let [before '~before
-              dirs ~dirs]
+        (let [{:keys [before after dirs]} ~(when hook
+                                             (render :hook {:hook hook}))]
           (when before
             (require (symbol (namespace before)))
             ((resolve before)))
           (when dirs
             (apply ~(symbol repl-ns "set-refresh-dirs") dirs))
-          (~(symbol repl-ns op-str) ~@args))))))
+          (apply ~(symbol repl-ns op-str)
+                 (when (and (not= ~op :clear) after)
+                   [:after after])))))))

@@ -1,9 +1,9 @@
 (ns conjure.config
   "Tools to load all relevant  .conjure.edn files.
   They're used to manage connection configuration."
-  (:require [clojure.edn :as edn]
-            [clojure.string :as str]
+  (:require [clojure.string :as str]
             [clojure.spec.alpha :as s]
+            [clojure.tools.reader :as tr]
             [expound.alpha :as expound]
             [taoensso.timbre :as log]
             [me.raynes.fs :as fs]
@@ -11,19 +11,40 @@
             [conjure.ui :as ui]
             [conjure.util :as util]))
 
-(s/def ::expr util/regexp?)
+(s/def ::extensions (s/coll-of string? :kind set?))
+(s/def ::dirs (s/coll-of string? :kind set?))
 (s/def ::port (s/nilable number?))
 (s/def ::lang #{:clj :cljs})
 (s/def ::host string?)
 (s/def ::tag keyword?)
 (s/def ::enabled? boolean?)
-(s/def ::conn (s/keys :req-un [::port ::host ::lang ::expr ::enabled?]))
+(s/def ::exclude-path? any?)
+(s/def ::hook #{:connect! :result! :refresh :eval})
+(s/def ::hooks (s/map-of ::hook any?))
+(s/def ::conn (s/keys :req-un [::port ::host ::lang ::extensions ::enabled?]
+                      :opt-un [::hooks ::dirs ::exclude-path?]))
 (s/def ::conns (s/map-of ::tag ::conn))
-(s/def ::config (s/nilable (s/keys :opt-un [::conns])))
+(s/def ::config (s/nilable (s/keys :opt-un [::conns ::hooks])))
 
-(def ^:private default-exprs
-  {:clj #"\.(cljc?|edn)$"
-   :cljs #"\.(clj(s|c)|edn)$"})
+(def ^:private default-extensions
+  {:clj #{"clj" "cljc" "edn"}
+   :cljs #{"cljs" "cljc" "edn"}})
+
+(defn- parse
+  "Parse the given string as data with tools.reader.
+  Allows for slurping further files."
+  [s cwd]
+  (let [readers {'slurp-edn
+                 (fn [path]
+                   (try
+                     (-> (fs/file cwd path)
+                         (slurp)
+                         (parse cwd))
+                     (catch Throwable t
+                       (log/error "Caught error while slurping EDN" t))))}]
+    (binding [tr/*data-readers* (merge tr/default-data-readers readers)
+              *read-eval* false]
+      (tr/read-string {:read-cond :preserve} s))))
 
 (defn- ^:dynamic gather!
   "Gather all config files from disk and merge them together, deepest file wins."
@@ -39,24 +60,14 @@
                                   (fs/file dir ".conjure.edn")]))
                (filter (every-pred fs/file? fs/readable?))
                (map slurp)
-               (map #(edn/read-string
-                       {:readers
-                        {'regex re-pattern
-                         'slurp-edn (fn [path]
-                                      (try
-                                        (-> (fs/file cwd path)
-                                            (slurp)
-                                            (edn/read-string))
-                                        (catch Throwable t
-                                          (log/error "Caught error while slurping EDN" t))))}}
-                       %)))
+               (map #(parse % cwd)))
          util/deep-merge)))
 
 (defn hydrate-conn
   "Infer some values of a specific connection."
   [conn]
   (merge {:lang :clj
-          :expr (get default-exprs (get conn :lang :clj))
+          :extensions (get default-extensions (get conn :lang :clj))
           :host "127.0.0.1"
           :enabled? true}
          conn))
@@ -104,3 +115,11 @@
        (hydrate)
        (toggle flags)
        (validate))))
+
+(defn hook
+  "Given config and a potential conn tag, fetch the given hook data.
+  The conn specific config will override the general one."
+  [{:keys [config tag hook]}]
+  (or (when tag
+        (get-in config [:conns tag :hooks hook]))
+      (get-in config [:hooks hook])))

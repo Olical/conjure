@@ -23,9 +23,9 @@
 (defn- wrapped-eval
   "Wraps up code with environment specific padding, sends it off for evaluation
   and blocks until we get a result."
-  [{:keys [conn] :as opts}]
+  [{:keys [conn ctx] :as opts}]
   (let [{:keys [eval-chan ret-chan]} (:chans conn)]
-    (a/>!! eval-chan (code/render :eval (assoc opts :ctx nvim/ctx)))
+    (a/>!! eval-chan (code/render :eval (assoc opts :ctx (or ctx nvim/ctx))))
 
     (when (= (:lang conn) :cljs)
       ;; ClojureScript requires two evals:
@@ -35,6 +35,18 @@
       (a/<!! ret-chan))
 
     (a/<!! ret-chan)))
+
+(defn- wrapped-hook-eval
+  "Evaluates a hook with some special tweaks to get reader conditionals
+  working in Clojure prepls consistently."
+  [{:keys [conn value hook]}]
+  (wrapped-eval
+    {:conn conn
+     :ctx {:path "conjure-hook.cljc"}
+     :code (code/render
+             :hook
+             {:value value
+              :hook hook})}))
 
 (defn- raw-eval
   "Unlike wrapped-eval, it will send the exact code it is given and then block
@@ -60,21 +72,72 @@
 ;; The following functions are called by the user through commands.
 
 (defn up [flags]
-  (-> (config/fetch {:flags flags, :cwd (:cwd nvim/ctx)})
-      (get :conns)
-      (prepl/sync!)
-      (ui/up-summary))
+  (let [config (config/fetch {:flags flags, :cwd (:cwd nvim/ctx)})]
+    (-> config
+        (get :conns)
+        (prepl/sync!)
+        (ui/up-summary))
+
+    (doseq [conn (prepl/conns)]
+      (when-let [hook (config/hook {:config config
+                                    :tag (:tag conn)
+                                    :hook :connect!})]
+        (not-exception
+          {:conn conn
+           :resp (wrapped-hook-eval
+                   {:conn conn
+                    :value (get-in config [:conns (:tag conn)])
+                    :hook hook})
+           :msg (str "Failed to execute the :connect! hook for " (:tag conn) ".")}))))
+
   (ui/up "Done."))
+
+(defn- eval-hook
+  "Runs the code through the eval hook if there is one."
+  [{:keys [conn code config]}]
+  (if-let [hook (config/hook {:config config
+                              :tag (:tag conn)
+                              :hook :eval})]
+    (-> (not-exception
+          {:conn conn
+           :resp (wrapped-hook-eval
+                   {:conn conn
+                    :value code
+                    :hook hook})
+           :msg (str "Failed to execute the :eval hook for " (:tag conn) ".")})
+        (get :val)
+        (util/parse-code))
+    code))
 
 (defn eval* [{:keys [code line]}]
   (when code
-    (doseq [conn (current-conns)]
-      (let [opts {:conn conn
-                  :code code
-                  :line line}]
-        (ui/eval* opts)
-        (ui/result {:conn conn
-                    :resp (wrapped-eval opts)})))))
+    (let [config (config/fetch {:cwd (:cwd nvim/ctx)})]
+      (doseq [conn (current-conns)]
+        (let [code (eval-hook {:conn conn
+                               :code code
+                               :config config})
+              opts {:conn conn
+                    :code code
+                    :line line}]
+          (ui/eval* opts)
+          (let [resp (wrapped-eval opts)
+                hook (config/hook {:config config
+                                   :tag (:tag conn)
+                                   :hook :result!})]
+
+            (ui/result {:conn conn
+                        :resp resp})
+
+            ;; When there's a non-exception response, pass it to the result! hook.
+            (when (and hook (not (:exception resp)))
+              (wrapped-eval
+                (assoc opts :code
+                       (code/render :hook-str
+                                    {:value (str "{:code '" code "\n"
+                                                 " :result " (:val resp) "\n}")
+                                     :hook (pr-str hook)}))))
+
+            nil))))))
 
 (defn source [name]
   (doseq [conn (current-conns)]
@@ -162,7 +225,9 @@
   (let [;; Context for Compliment to complete local bindings.
         ;; We read the surrounding top level form from the current buffer
         ;; and add the __prefix__ symbol.
-        context (when-let [{:keys [form cursor]} (nvim/read-form {:root? true, :win (:win nvim/ctx)})]
+        context (when-let [{:keys [form cursor]} (nvim/read-form
+                                                   {:root? true
+                                                    :win (:win nvim/ctx)})]
                   (-> (str/split-lines form)
                       (update (dec (first cursor))
                               #(util/splice %
@@ -253,10 +318,12 @@
 
 (defn refresh [op]
   (doseq [conn (current-conns)]
-    (let [opts {:conn conn
-                :op op
-                :config (:refresh (config/fetch {:cwd (:cwd nvim/ctx)}))}]
-      (when-let [code (code/render :refresh opts)]
+    (let [opts {:conn conn, :op op}
+          config (config/fetch {:cwd (:cwd nvim/ctx)})
+          hook (config/hook {:config config
+                             :tag (:tag conn)
+                             :hook :refresh})]
+      (when-let [code (code/render :refresh (assoc opts :hook hook))]
         (ui/refresh opts)
         (ui/result {:conn conn
                     :resp (wrapped-eval

@@ -1,5 +1,26 @@
 {:conns
- {:dev {:port 5885}
-  :jvm {:port 5555, :enabled? false}
-  :node {:port 5556, :lang :cljs}
-  :browser {:port 5557, :lang :cljs, :enabled? false}}}
+ {:dev {:port 5885
+        :exclude-path? (fn [path]
+                         (clojure.string/includes? path "dev"))
+        :hooks {:connect! identity}}
+  :jvm {:port 5555
+        :hooks {:refresh (fn [opts]
+                           (#(prn %) "Refreshing!")
+                           (assoc opts
+                                  :after 'test.example/get-env
+                                  :dirs #{"dev"}))}
+        :dirs #{"dev"}}
+  :node {:port 5556
+         :lang :cljs
+         :dirs #{"dev"}
+         :hooks {:eval #(str "(last (time [" % "\n]))")}}
+  :browser {:port 5557
+            :lang :cljs
+            :dirs #{"dev"}}}
+
+ :hooks
+ {:connect! (fn [conn]
+              (println "Connected to a"
+                       #?(:clj "Clojure"
+                          :cljs "ClojureScript")
+                       "prepl!"))}}

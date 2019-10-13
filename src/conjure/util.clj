@@ -9,8 +9,7 @@
             [me.raynes.fs :as fs]
             [camel-snake-kebab.core :as csk]
             [camel-snake-kebab.extras :as cske])
-  (:import [java.net Socket]
-           [java.util.regex Pattern]))
+  (:import [java.net Socket]))
 
 (defn join-words [parts]
   (str/join " " parts))
@@ -97,8 +96,9 @@
   "Skip parsing, just format the given data."
   [data]
   (try
-    (with-out-str
-      (pprint/pprint data))
+    (str/trim
+      (with-out-str
+        (pprint/pprint data)))
     (catch Throwable e
       (log/error "Error while pretty printing data" e)
       (pr-str data))))
@@ -138,9 +138,6 @@
           via))
       (remove nil?)
       (join-lines))))
-
-(defn regexp? [o]
-  (instance? Pattern o))
 
 (defn write
   "Write the full data to the stream and then flush the stream."
@@ -233,3 +230,11 @@
      b))
   ([a b & more]
    (apply merge-with deep-merge a b more)))
+
+(defn path-in-dirs?
+  "Is the given path string contained within one of the directories."
+  [path dirs]
+  (boolean
+    (some
+      (into #{} (map fs/file) dirs)
+      (fs/parents path))))

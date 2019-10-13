@@ -1,5 +1,6 @@
 (ns conjure.util-test
   (:require [clojure.test :as t]
+            [clojure.pprint :as pprint]
             [conjure.util :as util]))
 
 (t/deftest join-words
@@ -45,6 +46,14 @@
   (t/is (= (util/pprint "{:foo :bar}") "{:foo :bar}"))
   (t/is (= (util/pprint "#something.Bad{}\n") "#something.Bad{}")))
 
+(t/deftest pprint-data
+  (t/is (= (util/pprint-data {:foo :bar}) "{:foo :bar}"))
+  (t/is (= (util/pprint-data '(+ 10 10)) "(+ 10 10)"))
+
+  (t/testing "when pprinting fails for some reason"
+    (with-redefs [pprint/pprint (fn [] (throw (Error. "ohno")))]
+      (t/is (= (util/pprint-data {:foo :bar}) "{:foo :bar}")))))
+
 (t/deftest throwable->str
   (t/is (re-matches #"Execution error \(Error\) at conjure\.util-test/fn \(util_test\.clj:\d+\)\.\nohno\n"
                     (util/throwable->str (Error. "ohno")))))
@@ -60,10 +69,6 @@
 (t/deftest env
   (binding [util/get-env-fn {"FOO_BAR" :baz}]
     (t/is (= (util/env :foo-bar) :baz))))
-
-(t/deftest regexp?
-  (t/is (util/regexp? #"foo"))
-  (t/is (not (util/regexp? "foo"))))
 
 (t/deftest snake->kw
   (t/is (= (util/snake->kw "foo_bar") :foo-bar)))
@@ -105,3 +110,14 @@
 (t/deftest path->ns
   (t/is (= 'conjure-deps.javaclasspath.v0v3v0.clojure.java.classpath
            (util/path->ns "conjure_deps/javaclasspath/v0v3v0/clojure/java/classpath.clj"))))
+
+(t/deftest multiline?
+  (t/is (= true (util/multiline? "foo\nbar")))
+  (t/is (= false (util/multiline? "foo bar"))))
+
+(t/deftest path-in-dirs?
+  (t/is (= false (util/path-in-dirs? "foo/bar/baz.clj" #{})))
+  (t/is (= true (util/path-in-dirs? "foo/bar/baz.clj" #{"foo"})))
+  (t/is (= false (util/path-in-dirs? "foo/bar/baz.clj" #{"bar"})))
+  (t/is (= true (util/path-in-dirs? "foo/bar/baz.clj" #{"foo/bar"})))
+  (t/is (= true (util/path-in-dirs? "foo/bar/baz.clj" #{"foo/bar" "bar"}))))

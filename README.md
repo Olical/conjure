@@ -1,4 +1,4 @@
-# Conjure [![Slack](https://img.shields.io/badge/chat-%23conjure-green.svg?style=flat)](http://clojurians.net) [![CircleCI](https://circleci.com/gh/Olical/conjure.svg?style=svg)](https://circleci.com/gh/Olical/conjure) [![codecov](https://codecov.io/gh/Olical/conjure/branch/master/graph/badge.svg)](https://codecov.io/gh/Olical/conjure)
+# Conjure [![Slack](https://img.shields.io/badge/chat-%23conjure-green.svg?style=flat)](http://clojurians.net) [![CircleCI](https://circleci.com/gh/Olical/conjure.svg?style=svg)](https://circleci.com/gh/Olical/conjure)
 
 [Clojure][] (and [ClojureScript][]) tooling for [Neovim][] over a socket prepl connection.
 
@@ -11,7 +11,8 @@
  * Omnicompletion (`<C-x><C-o>`) through [Complement][] (ClojureScript support _soon_).
  * Documentation displayed as you type (or with `K`).
  * Refreshing of changed namespaces (Clojure only).
- * Go to definition (limited ClojureScript support).
+ * Hooks to allow integration with [REBL][] or any such tool.
+ * Go to definition.
  * Test running.
 
 ## Install
@@ -21,16 +22,16 @@ Use your favourite plugin manager, I recommend [vim-plug][], to fetch and AOT co
 I strongly suggest you use a tag and then subscribe to releases through the GitHub repository. This will allow you to keep up to date without having your workflow disrupted by an unexpected breaking change, not that I _intend_ to release any.
 
 ```viml
-Plug 'Olical/conjure', { 'tag': 'v1.3.0', 'do': 'bin/compile'  }
+Plug 'Olical/conjure', { 'tag': 'v2.0.0', 'do': 'bin/compile'  }
 ```
 
-No dependencies are required in your project, tools for features such as autocomplete will be injected upon connection. The initial connection to a prepl will take a few seconds because of this, I think it's worth it.
+No dependencies are required in your project, tools for features such as completion and namespace refreshing will be injected upon connection. The initial connection to a prepl will take a few seconds because of this, I think it's worth it.
 
 ## Hello, World!
 
 Here's a minimal example of using Conjure after successfully installing it. In an empty directory we'll create this simple `.conjure.edn`.
 
-```edn
+```clojure
 {:conns {:dev {:port 5678}}}
 ```
 
@@ -62,7 +63,7 @@ The Python to hook up Deoplete and the JavaScript to connect CoC should be good 
 
 Conjure is configured through a mixture of Vim Script variables and the `.conjure.edn` file (the dot prefix is optional). The `.conjure.edn` file in your local directory will be deeply merged with every other one found in parent directories.
 
-This means you can store global things in `~/.conjure.edn` or `~/.config/conjure/.conjure.edn` and override specific values with your project local configuration file. `~/.config` should be the default value of your `XDG_CONFIG_HOME` environment variable which Conjure respects.
+This means you can store configuration all the way up your directory tree as well as global things in `~/.config/conjure/.conjure.edn`, you can override specific values with your project local configuration file. `~/.config` should be the default value of your `XDG_CONFIG_HOME` environment variable which Conjure respects.
 
 Once configured you'll simply need to open up a Clojure or ClojureScript file and the connections will be made automatically. To synchronise the configuration and connections when Neovim is already open simply execute `ConjureUp` (`<localleader>cu` by default) after making your changes.
 
@@ -70,9 +71,12 @@ If you get anything wrong in your `.conjure.edn` you'll see a spec validation er
 
 ### `.conjure.edn`
 
-This is an exhaustive `.conjure.edn`, mine usually end up being between 1-5 lines long. Hopefully you'll be able to find anything you might need in here though!
+Shown below is a completely configured `.conjure.edn`. Typically, you may expect your `.conjure.edn` to contain 1-5 lines as Conjure works mostly out-of-the-box without the need for a lot of scaffolding or configuration.
 
-```edn
+The file is technically read as Clojure, so you can use things like `#"..."` for regular expressions and `#(...)` to define functions in hooks. Don't let the .edn extension fool you.
+
+
+```clojure
 {:conns
  {;; Minimal example.
   :api {:port 5885}
@@ -80,40 +84,113 @@ This is an exhaustive `.conjure.edn`, mine usually end up being between 1-5 line
   ;; ClojureScript.
   :frontend {:port 5556
 
-             ;; You need to explicitly tell Conjure if it's a ClojureScript connection.
+             ;; You'll need to explicitly tell Conjure if it's a ClojureScript connection.
              :lang :cljs}
 
   :staging {:host "foo.com"
-            :port 424242
+            :port 5557
 
-            ;; This is EDN so you need to specify that you want a regex.
-            ;; Clojure(Script)'s #"..." syntax won't work here.
-            :expr #regex "\\.(cljc?|edn|another.extension)$"}
+            ;; Only use this connection for files with the following extensions.
+            ;; Clojure defaults: clj, cljc and edn.
+            ;; ClojureScript defaults: cljs, cljc and edn.
+            ;; So we could remove edn and add a custom one with...
+            :extensions #{"clj" "cljc" "foo"}
+
+            ;; You can also limit the scope of a connection to a set of specific directories.
+            ;; This can be useful if your config file presides over multiple projects.
+            :dirs #{"foo" "bar"}
+
+            ;; Finally, if neither of the above filtering tools are enough for
+            ;; your use case, you can use the following option to exclude paths
+            ;; based on any function you want.
+            :exclude-path? #(clojure.string/includes? % "dev")}
 
   ;; You can slurp in valid EDN which allows you to use random port files from other tools (such as Propel!).
-  ;; If the file doesn't exist yet the connection will simply be ignored because of the nil :port value.
+  ;; If the file doesn't exist yet, the connection will simply be ignored because of the nil :port value.
 
-  ;; For example, this will start a JVM prepl and write the random port to .prepl-port.
+  ;; As an example, this will start a JVM prepl and write the random port to .prepl-port.
   ;; clj -Sdeps '{:deps {olical/propel {:mvn/version "1.3.0"}}}' -m propel.main -w
   :propel {:port #slurp-edn ".prepl-port"
 
-           ;; Disabled conns will be ignored on ConjureUp.
-           ;; They can be enabled and disabled with `:ConjureUp -staging +boot`
-           ;; This allows you to toggle parts of your config with different custom mappings.
+           ;; Disabled connections will be ignored on ConjureUp.
+           ;; Connections can be enabled and disabled with `:ConjureUp -staging +boot`
+           ;; This allows for toggling parts of your config that may contain different custom mappings.
            :enabled? false}}
 
- ;; Optional configuration for tools.namespace refreshing.
- ;; Set what you need and ignore the rest.
- :refresh
- {;; Function to run before refreshing.
-  :before my.ns/stop
+ ;; Hooks are optional (yet powerful) and are described in more detail in the section below.
+ ;; The hook shown here is used to configure the namespace refresh tooling.
+ :hooks
+ {:refresh (fn [opts]
+             ;; opts defaults to nil for the refresh hook.
+             (merge opts
+                    ;; Function to run before refreshing.
+                    :before my.ns/stop
 
-  ;; Function to run after refreshing successfully.
-  :after my.ns/start
+                    ;; Function to run after refreshing successfully.
+                    :after my.ns/start
 
-  ;; Directories to search for changed namespaces in.
-  ;; Defaults to all directories on the Java classpath.
-  :dirs #{"src"}}}
+                    ;; Directories to search for changed namespaces in.
+                    ;; Defaults to all directories on the Java classpath.
+                    :dirs #{"src"}))}}
+```
+
+### Hooks
+
+Conjure exposes hooks through the `.conjure.edn` configuration. You can set `:hooks` at the top level of your `.conjure.edn` alongside `:conns` or inside a specific connection in order to limit the scope of the `hook`.
+
+`:hooks` within a specific connection will override `:hooks` at the top level.
+
+A hook is a function that takes a single argument and, in some cases, returns the modified version of that value for Conjure to use.
+
+ * `:refresh` is used to configure the options to `ConjureRefresh`. Return a map containing your required configuration.
+ * `:eval` is called just before an evaluation with the code as a string. You can alter that string and return the new version.
+ * `:result!` is run with a map of the `:code` that was called and the `:result` value as data. This can be sent off to [REBL][] or a similar tool. The return value of this function is ignored.
+ * `:connect!` is run in every prepl when you execute `ConjureUp`. You can use this to start servers (or [REBL][]!), just make sure you set a flag or something to prevent it starting a new one on every `ConjureUp`.
+
+#### Integrating REBL
+
+If you have [REBL][] downloaded and configured in your `deps.edn` you can ask Conjure to open it upon connection *and* additionally send the results of evaluations for display and analysis.
+
+Here is an example of configuring a connection-specific hook to use REBL:
+
+```clojure
+{:conns
+ {:dev {:port #slurp-edn ".prepl-port"
+        :hooks {:connect! (fn [conn]
+                            #?(:clj
+                               (do
+                                 (require 'cognitect.rebl)
+                                 ((resolve 'cognitect.rebl/ui)))))
+                :result! (fn [{:keys [code result]}]
+                           #?(:clj (cognitect.rebl/submit code result)))}}}}
+```
+
+#### Timing your evaluations
+
+Shown below is a simple example of a (top-level) `:eval` hook that prints out how long each evaluation takes to compute.
+
+```clojure
+{:conns
+ {:dev {:port #slurp-edn ".prepl-port"}}
+ :hooks {:eval #(str "(time " % "\n)")}}
+```
+
+You could put `:hooks` inside the `:dev` connection if you want but it depends on your particular use cases and project requirements.
+
+***Important!***
+
+Take note of how I've added a newline to the code for the `:eval` hook. This prevents a fun issue where evaluating code with a line comment at the end removes your closing parenthesis!
+
+If we evaluated this code through visual selection, for example.
+
+```clojure
+(+ 10 20) ;; Hmm
+```
+
+It would result in the following code being executed, I hope it makes the issue clear!
+
+```clojure
+(time (+ 10 20) ;; Hmm)
 ```
 
 ### Options
@@ -252,3 +329,4 @@ Find the full [unlicense][] in the `UNLICENSE` file, but here's a snippet.
 [code-of-conduct]: ./.github/CODE_OF_CONDUCT.md
 [keybase]: https://keybase.io/olical
 [propel-post]: https://oli.me.uk/2019-09-14-repling-into-projects-with-prepl-and-propel/
+[rebl]: https://github.com/cognitect-labs/REBL-distro

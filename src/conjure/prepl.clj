@@ -1,6 +1,7 @@
 (ns conjure.prepl
   "Remote prepl connection management and selection."
-  (:require [clojure.core.async :as a]
+  (:require [clojure.string :as str]
+            [clojure.core.async :as a]
             [clojure.core.server :as server]
             [clojure.java.io :as io]
             [clojure.edn :as edn]
@@ -103,7 +104,7 @@
 
 (defn- add!
   "Remove any existing connection under :tag then create a new connection."
-  [{:keys [tag lang expr host port]}]
+  [{:keys [tag lang extensions dirs exclude-path? host port]}]
 
   (remove! tag)
 
@@ -135,7 +136,9 @@
                   :lang lang
                   :host host
                   :port port
-                  :expr expr
+                  :extensions extensions
+                  :dirs dirs
+                  :exclude-path? exclude-path?
                   :chans (merge
                            {:ret-chan ret-chan}
                            (connect {:tag tag
@@ -198,14 +201,22 @@
         [:conjure]))))
 
 (defn conns
-  "Without a path it'll return all current connections. With a path it finds
-  any connection who's :expr matches that string."
+  "Without a path it'll return all current connections.
+  With a path a series of filters are applied to the list.
+  The path will have to match a :extension and one of the :dirs.
+  Finally the path will be checked against :exclude-path? if it exists for the conn."
   ([] (vals @conns!))
   ([path]
    (->> (conns)
         (filter
-          (fn [{:keys [expr]}]
-            (re-find expr path)))
+          (fn [{:keys [extensions dirs exclude-path?]}]
+            (or (nil? path)
+                (and
+                  (and (some #(str/ends-with? path %) extensions)
+                       (or (nil? dirs)
+                           (util/path-in-dirs? path dirs)))
+                  (or (nil? exclude-path?)
+                      (not ((eval exclude-path?) path)))))))
         (seq))))
 
 (defn status
@@ -214,8 +225,12 @@
   []
   (let [conns (conns)
         intro (util/count-str conns "connection")
-        conn-strs (for [{:keys [tag host port expr lang]} conns]
-                    (str tag " @ " host ":" port " for " (pr-str expr) " (" lang ")"))]
+        conn-strs (for [{:keys [tag host port extensions dirs lang]} conns]
+                    (str tag " @ " host ":" port
+                         " for extensions " (pr-str extensions)
+                         (when dirs
+                           (str " and dirs " (pr-str dirs)))
+                         " (" lang ")"))]
     (ui/status (util/join-lines (into [intro] conn-strs)))))
 
 (defn init
