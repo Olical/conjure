@@ -11,8 +11,8 @@
  * Omnicompletion (`<C-x><C-o>`) through [Complement][] (ClojureScript support _soon_).
  * Documentation displayed as you type (or with `K`).
  * Refreshing of changed namespaces (Clojure only).
- * Go to definition (limited ClojureScript support).
  * Hooks to allow integration with [REBL][] or any such tool.
+ * Go to definition.
  * Test running.
 
 ## Install
