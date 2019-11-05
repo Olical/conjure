@@ -257,3 +257,25 @@
   (-> (api/call (api/get-current-win))
       (as-> win
         (first (api/call (api/win-get-cursor win))))))
+
+(defn at-mark
+  "Jumps the user to the specified mark, executes the function and then jumps back."
+  [mark-name action]
+  (let [[lazyredraw eventignore mark-pos]
+        (api/call-batch
+          [(api/get-option :lazyredraw)
+           (api/get-option :eventignore)
+           (api/call-function "getpos" (str "'" mark-name))])]
+    (when (not= [0 0 0 0] mark-pos)
+      (try
+        (api/call-batch [(api/set-option :lazyredraw true)
+                         (api/set-option :eventignore "all")
+                         (api/feedkeys {:keys (str "`" mark-name)
+                                        :mode :n})])
+        (action)
+        (finally
+          (api/call-batch
+            [(api/feedkeys {:keys ""
+                            :mode :n})
+             (api/set-option :eventignore eventignore)
+             (api/set-option :lazyredraw lazyredraw)]))))))

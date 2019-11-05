@@ -64,6 +64,10 @@
   {:method :nvim-buf-set-var
    :params [buf (util/kw->snake name) value]})
 
+(defn buf-get-mark [buf name]
+  {:method :nvim-buf-get-mark
+   :params [buf name]})
+
 (defn get-var
   [name]
   {:method :nvim-get-var

@@ -75,6 +75,9 @@
 (defrpc :notify :eval-root-form []
   (action/eval-root-form))
 
+(defrpc :notify :eval-form-at-mark [mark-name]
+  (action/eval-form-at-mark mark-name))
+
 (defrpc :notify :eval-selection []
   (action/eval-selection))
 

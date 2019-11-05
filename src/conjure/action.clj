@@ -205,6 +205,9 @@
     (eval* {:code form
             :line (first origin)})))
 
+(defn eval-form-at-mark [mark-name]
+  (nvim/at-mark mark-name eval-current-form))
+
 (defn eval-selection []
   (let [{:keys [selection origin]} (nvim/read-selection)]
     (eval* {:code selection

@@ -57,6 +57,7 @@ command! -nargs=1 -complete=customlist,conjure#command_completions
 command! -range   ConjureEvalSelection call conjure#notify("eval_selection")
 command! -nargs=0 ConjureEvalCurrentForm call conjure#notify("eval_current_form")
 command! -nargs=0 ConjureEvalRootForm call conjure#notify("eval_root_form")
+command! -nargs=0 ConjureEvalFormAtMark call conjure#notify("eval_form_at_mark", nr2char(getchar()))
 command! -nargs=0 ConjureEvalBuffer call conjure#notify("eval_buffer")
 command! -nargs=1 ConjureLoadFile call conjure#notify("load_file", <q-args>)
 
@@ -72,6 +73,7 @@ command! -nargs=* ConjureRunTests call conjure#notify("run_tests", <q-args>)
 command! -nargs=? ConjureRunAllTests call conjure#notify("run_all_tests", <q-args>)
 command! -nargs=* ConjureRefresh call conjure#notify("refresh", <q-args>)
 
+
 augroup conjure
   autocmd!
   autocmd BufEnter *.clj,*.clj[cs] call conjure#init()
@@ -85,6 +87,7 @@ augroup conjure
     call s:def_config("vmap_eval_selection", g:conjure_map_prefix . "ee")
     call s:def_config("nmap_eval_buffer", g:conjure_map_prefix . "eb")
     call s:def_config("nmap_eval_file", g:conjure_map_prefix . "ef")
+    call s:def_config("nmap_eval_form_at_mark", g:conjure_map_prefix . "em")
     call s:def_config("nmap_up", g:conjure_map_prefix . "cu")
     call s:def_config("nmap_status", g:conjure_map_prefix . "cs")
     call s:def_config("nmap_open_log", g:conjure_map_prefix . "cl")
@@ -102,6 +105,7 @@ augroup conjure
     call s:def_map("n", "eval_word", ":ConjureEval <c-r><c-w>")
     call s:def_map("n", "eval_current_form", ":ConjureEvalCurrentForm")
     call s:def_map("n", "eval_root_form", ":ConjureEvalRootForm")
+    call s:def_map("n", "eval_form_at_mark", ":ConjureEvalFormAtMark")
     call s:def_map("v", "eval_selection", ":ConjureEvalSelection")
     call s:def_map("n", "eval_buffer", ":ConjureEvalBuffer")
     call s:def_map("n", "eval_file", ":ConjureLoadFile <c-r>=expand('%')<cr>")
