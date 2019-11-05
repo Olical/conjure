@@ -157,12 +157,11 @@ Here is an example of configuring a connection-specific hook to use REBL:
 {:conns
  {:dev {:port #slurp-edn ".prepl-port"
         :hooks {:connect! (fn [conn]
-                            #?(:clj
-                               (do
-                                 (require 'cognitect.rebl)
-                                 ((resolve 'cognitect.rebl/ui)))))
+                            (do
+                              (require 'cognitect.rebl)
+                              ((resolve 'cognitect.rebl/ui))))
                 :result! (fn [{:keys [code result]}]
-                           #?(:clj (cognitect.rebl/submit code result)))}}}}
+                           (cognitect.rebl/submit code result))}}}}
 ```
 
 #### Timing your evaluations
