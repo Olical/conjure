@@ -244,6 +244,7 @@ let g:conjure_log_blacklist = ["up", "ret", "ret-multiline", "load-file", "eval"
 | `ConjureEvalSelection` | `<localleader>ee` (visual mode) | `g:conjure_vmap_eval_selection` | Evaluates the current (or previous) visual selection. |
 | `ConjureEvalCurrentForm` | `<localleader>ee` | `g:conjure_nmap_eval_current_form` | Evaluates the form under the cursor. |
 | `ConjureEvalRootForm` | `<localleader>er` | `g:conjure_nmap_eval_root_form` | Evaluates the outermost form under the cursor. |
+| `ConjureEvalFormAtMark` | `<localleader>em{KEY}` | `g:conjure_nmap_eval_form_at_mark` | Jump to the [mark][] denoted by the `{KEY}` you press, evaluate the form found there and then jump back to where you started. |
 | `ConjureEvalBuffer` | `<localleader>eb` | `g:conjure_nmap_eval_buffer` | Evaluate the entire buffer (not from the disk). |
 | `ConjureLoadFile` | `<localleader>ef` | `g:conjure_nmap_eval_file` | Load and evaluate the file from the disk. |
 | `ConjureDoc` | `K` | `g:conjure_nmap_doc` | Display the documentation for the given symbol in the log buffer. |
@@ -329,3 +330,4 @@ Find the full [unlicense][] in the `UNLICENSE` file, but here's a snippet.
 [keybase]: https://keybase.io/olical
 [propel-post]: https://oli.me.uk/2019-09-14-repling-into-projects-with-prepl-and-propel/
 [rebl]: https://github.com/cognitect-labs/REBL-distro
+[mark]: https://vim.fandom.com/wiki/Using_marks
