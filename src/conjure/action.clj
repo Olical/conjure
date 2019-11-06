@@ -111,33 +111,34 @@
 
 (defn eval* [{:keys [code line]}]
   (when code
-    (let [config (config/fetch {:cwd (:cwd nvim/ctx)})]
-      (doseq [conn (current-conns)]
-        (let [code (eval-hook {:conn conn
-                               :code code
-                               :config config})
-              opts {:conn conn
-                    :code code
-                    :line line}]
-          (ui/eval* opts)
-          (let [resp (wrapped-eval opts)
-                hook (config/hook {:config config
-                                   :tag (:tag conn)
-                                   :hook :result!})]
+    (future
+      (let [config (config/fetch {:cwd (:cwd nvim/ctx)})]
+        (doseq [conn (current-conns)]
+          (let [code (eval-hook {:conn conn
+                                 :code code
+                                 :config config})
+                opts {:conn conn
+                      :code code
+                      :line line}]
+            (ui/eval* opts)
+            (let [resp (wrapped-eval opts)
+                  hook (config/hook {:config config
+                                     :tag (:tag conn)
+                                     :hook :result!})]
 
-            (ui/result {:conn conn
-                        :resp resp})
+              (ui/result {:conn conn
+                          :resp resp})
 
-            ;; When there's a non-exception response, pass it to the result! hook.
-            (when (and hook (not (:exception resp)))
-              (wrapped-eval
-                (assoc opts :code
-                       (code/render :hook-str
-                                    {:value (str "{:code '" code "\n"
-                                                 " :result " (:val resp) "\n}")
-                                     :hook (pr-str hook)}))))
+              ;; When there's a non-exception response, pass it to the result! hook.
+              (when (and hook (not (:exception resp)))
+                (wrapped-eval
+                  (assoc opts :code
+                         (code/render :hook-str
+                                      {:value (str "{:code '" code "\n"
+                                                   " :result " (:val resp) "\n}")
+                                       :hook (pr-str hook)}))))
 
-            nil))))))
+              nil)))))))
 
 (defn source [name]
   (doseq [conn (current-conns)]
@@ -206,7 +207,8 @@
             :line (first origin)})))
 
 (defn eval-form-at-mark [mark-name]
-  (nvim/at-mark mark-name eval-current-form))
+  (when (= ::nvim/mark-not-found (nvim/at-mark mark-name eval-current-form))
+    (ui/error "Mark not found:" mark-name)))
 
 (defn eval-selection []
   (let [{:keys [selection origin]} (nvim/read-selection)]

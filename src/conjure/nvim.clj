@@ -266,7 +266,7 @@
           [(api/get-option :lazyredraw)
            (api/get-option :eventignore)
            (api/call-function "getpos" (str "'" mark-name))])]
-    (when (not= [0 0 0 0] mark-pos)
+    (if (not= [0 0 0 0] mark-pos)
       (try
         (api/call-batch [(api/set-option :lazyredraw true)
                          (api/set-option :eventignore "all")
@@ -278,4 +278,5 @@
             [(api/feedkeys {:keys ""
                             :mode :n})
              (api/set-option :eventignore eventignore)
-             (api/set-option :lazyredraw lazyredraw)]))))))
+             (api/set-option :lazyredraw lazyredraw)])))
+      ::mark-not-found)))
