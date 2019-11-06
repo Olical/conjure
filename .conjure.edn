@@ -8,12 +8,14 @@
                            (#(prn %) "Refreshing!")
                            (assoc opts
                                   :after 'test.example/get-env
-                                  :dirs #{"dev"}))}
+                                  :dirs #{"dev"}))
+                :eval #(str "(last (time [" % "\n]))")}
         :dirs #{"dev"}}
   :node {:port 5556
          :lang :cljs
          :dirs #{"dev"}
-         :hooks {:eval #(str "(last (time [" % "\n]))")}}
+         :hooks {:connect! (fn [_]
+                             (println "Connected to node!"))}}
   :browser {:port 5557
             :lang :cljs
             :dirs #{"dev"}}}
