@@ -110,8 +110,8 @@
     code))
 
 (defn eval* [{:keys [code line]}]
-  (when code
-    (future
+  (future
+    (when code
       (let [config (config/fetch {:cwd (:cwd nvim/ctx)})]
         (doseq [conn (current-conns)]
           (let [code (eval-hook {:conn conn
