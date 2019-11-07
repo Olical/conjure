@@ -1,0 +1,3 @@
+#!/usr/bin/env sh
+
+clojure -A:depot -m depot.outdated.main -a test,cljs,dev,depot "$@"
