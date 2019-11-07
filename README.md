@@ -2,6 +2,8 @@
 
 [Clojure][] (and [ClojureScript][]) tooling for [Neovim][] over a socket prepl connection.
 
+Be sure to check out the [Conjure wiki][wiki] for various articles and guides that'll help you get up and running. I also regularly write about Conjure and prepl related topics at [oli.me.uk][].
+
 ## Overview
 
  * Declarative connection configuration through `.conjure.edn`.
@@ -332,3 +334,5 @@ Find the full [unlicense][] in the `UNLICENSE` file, but here's a snippet.
 [propel-post]: https://oli.me.uk/2019-09-14-repling-into-projects-with-prepl-and-propel/
 [rebl]: https://github.com/cognitect-labs/REBL-distro
 [mark]: https://vim.fandom.com/wiki/Using_marks
+[wiki]: https://github.com/Olical/conjure/wiki
+[oli.me.uk]: https://oli.me.uk
