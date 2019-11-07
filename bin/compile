@@ -1,9 +1,8 @@
-#!/usr/bin/env bash
+#!/usr/bin/env sh
 
 # Check if there's been a new commit since the path was last touched.
 git_newer_than () {
-  if [ ! -e "$1" ] || [ $(git show -s --format=%ct HEAD) -gt $(date -r "$1" +%s) ]
-  then
+  if [ ! -e "$1" ] || [ $(git show -s --format=%ct HEAD) -gt $(date -r "$1" +%s) ]; then
     return 0
   else
     return 1
@@ -11,8 +10,12 @@ git_newer_than () {
 }
 
 if git_newer_than classes; then
-  echo "[Conjure] AOT compiling..."
+  echo "[Conjure] Compiling Clojure..."
   rm -rf classes
   mkdir classes
   clojure -Sforce -A:compile --eval "(compile 'conjure.main)"
+fi
+
+if git_newer_than lua; then
+  echo "[Conjure] Compiling Lua..."
 fi
