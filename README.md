@@ -12,6 +12,7 @@
  * Documentation displayed as you type (or with `K`).
  * Refreshing of changed namespaces (Clojure only).
  * Hooks to allow integration with [REBL][] or any such tool.
+ * Evaluate a form at a [mark][] (`<localleader>em{KEY}`), even if it's in another file!
  * Go to definition.
  * Test running.
 
