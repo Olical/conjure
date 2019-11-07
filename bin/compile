@@ -1,11 +1,14 @@
 #!/usr/bin/env sh
 
-# Only compile if there's a commit newer than the current classes directory.
+# Only compile if there's a commit newer than the last compile time file.
 # This prevents every vim-plug update from compiling when nothing changed.
-# If you _need_ to have everything recompiled, just delete classes.
-if [ ! -d classes ] || [ $(git show -s --format=%ct HEAD) -gt $(date -r classes +%s) ]; then
+# If you _need_ to have everything recompiled, just delete .last-compile-time.
+if [ ! -f .last-compile-time ] || [ $(git show -s --format=%ct HEAD) -gt $(cat .last-compile-time) ]; then
   echo "[Conjure] AOT compiling..."
   rm -rf classes
   mkdir classes
   clojure -Sforce -A:compile --eval "(compile 'conjure.main)"
+
+  echo "[Conjure] Writing .last-compile-time file."
+  date +%s > .last-compile-time
 fi
