@@ -3,7 +3,7 @@ let s:cwd = resolve(expand("<sfile>:p:h") . "/..")
 " Don't load if...
 "  * Not in Neovim
 "  * Already loaded
-"  * Blocked by CONJURE_ALLOWED_DIR (bin/dev)
+"  * Blocked by CONJURE_ALLOWED_DIR (make dev)
 if !has('nvim') || exists("g:conjure_loaded") || ($CONJURE_ALLOWED_DIR != "" && $CONJURE_ALLOWED_DIR != s:cwd)
   finish
 endif

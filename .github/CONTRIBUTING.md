@@ -7,7 +7,7 @@
  3. Speak to someone about it, raise an issue and start a discussion. Of course if you're just fixing a typo then go ahead, but if it's not an entirely trivial change let's work out what to do together. Perhaps someone has already solved your problem and just needs a poke to share their work or findings.
  4. Develop your change on a branch keeping in line with how the project is currently structured, try to keep your change minimal and focussed.
 
-After also cloning [conjure-deps][] into the same parent directory as Conjure you can start the development version with `bin/dev`. This script enables the following extras by default:
+After also cloning [conjure-deps][] into the same parent directory as Conjure you can start the development version with `make dev`. This method enables the following extras by default:
 
  * Your global version of Conjure will be overridden by the one in your current directory.
  * Logs are sent to `logs/conjure.log`. (I `tail -f` this file in another terminal while working)
@@ -16,11 +16,11 @@ After also cloning [conjure-deps][] into the same parent directory as Conjure yo
 
 ## Checking your work
 
-The test suite is run through [CircleCI][] automatically on every change and coverage reports are uploaded to [Codecov][], you can execute it all yourself with `bin/kaocha`. Check out the [Kaocha documentation][kaocha] for more information.
+The test suite is run through [CircleCI][] automatically on every change and coverage reports are uploaded to [Codecov][], you can execute it all yourself with `make test`. Check out the [Kaocha documentation][kaocha] for more information.
 
 Try to grow the coverage instead of shrinking it where possible but I'm never going to be super strict about this. Add tests where you feel like they help, don't bother where the value is negligible.
 
-For ad-hoc interactive testing you can start a few test prepls with `bin/prepls`:
+For ad-hoc interactive testing you can start a few test prepls with `make prepls`:
 
  * `jvm` on `5555`
  * `node` on `5556`
