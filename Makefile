@@ -18,10 +18,3 @@ dev:
 
 depot:
 	clojure -A:depot -m depot.outdated.main -a test,cljs,dev,depot
-
-fennel:
-	mkdir -p tools
-	if [ ! -d tools/fennel ]; then  git clone https://github.com/bakpakin/Fennel.git tools/fennel; fi
-	cd tools/fennel && git fetch && git checkout 0.3.0
-	tools/fennel/fennel -e '(print "Success!")'
-	@echo "If that doesn't look okay, make sure you have a Lua interpretor installed."
