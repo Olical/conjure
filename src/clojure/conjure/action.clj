@@ -207,7 +207,12 @@
             :line (first origin)})))
 
 (defn eval-form-at-mark [mark-name]
-  (when (= ::nvim/mark-not-found (nvim/at-mark mark-name eval-current-form))
+  (when (= ::nvim/mark-not-found
+           (nvim/at-mark
+             mark-name
+             (fn []
+               (binding [nvim/ctx (nvim/current-ctx)]
+                 (eval-current-form)))))
     (ui/error "Mark not found:" mark-name)))
 
 (defn eval-selection []

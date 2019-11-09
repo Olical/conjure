@@ -11,6 +11,8 @@
 (def ^:private max-log-buffer-length 1000)
 (defonce ^:private log-buffer-name "/tmp/conjure.cljc")
 
+(do log-buffer-name)
+
 (defn upsert-log
   "Get, create, or update the log window and buffer."
   ([] (upsert-log {}))
