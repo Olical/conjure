@@ -50,7 +50,7 @@ jobs:
                 bin/kaocha
                 --plugin kaocha.plugin/junit-xml
                 --junit-xml-file test-results/kaocha/results.xml
-                --plugin cloverage --no-cov-html --codecov --cov-ns-exclude-regex "^conjure\.munge\.main$"
+                --plugin cloverage --no-cov-html --codecov
             - store_test_results:
                 path: test-results
             - codecov/upload:
