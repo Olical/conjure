@@ -18,3 +18,6 @@ dev:
 
 depot:
 	clojure -A:depot -m depot.outdated.main -a test,cljs,dev,depot
+
+lua-deps:
+	sudo luarocks install --tree .luarocks fennel 0.3.0-1
