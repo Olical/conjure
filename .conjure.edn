@@ -7,7 +7,7 @@
         :hooks {:refresh (fn [opts]
                            (#(prn %) "Refreshing!")
                            (assoc opts
-                                  :after 'test.example/get-env
+                                  :after 'dev.example/get-env
                                   :dirs #{"dev"}))
                 :eval #(str "(last (time [" % "\n]))")}
         :dirs #{"dev"}}

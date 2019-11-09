@@ -28,7 +28,8 @@
    {org.clojure/clojurescript {:mvn/version "1.10.520"}}}
 
   :dev
-  {:extra-deps
+  {:extra-paths ["."]
+   :extra-deps
    {olical/conjure-deps {:local/root "../conjure-deps"}}}
 
   :compile

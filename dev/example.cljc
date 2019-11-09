@@ -1,6 +1,6 @@
 ;; Some example code to test Conjure with.
 
-(ns test.example
+(ns dev.example
   (:require [clojure.test :as t]))
 
 (defn henlo [name]

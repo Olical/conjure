@@ -55,8 +55,10 @@
                     (clojure.lang.LineNumberingPushbackReader.)
                     (doto (.setLineNumber ~(or line 1))))]
         (binding [*default-data-reader-fn* tagged-literal]
-          (let [res (. clojure.lang.Compiler (load rdr ~@path-args))]
-            (cond-> res (seq? res) (doall))))))))
+          (let [res (. clojure.lang.Compiler (load rdr ~@path-args))
+                forced-res (cond-> res (seq? res) (doall))]
+            (flush)
+            forced-res))))))
 
 ;; Used in templates because my linter freaks out otherwise.
 (def ^:private ns-sym 'ns)
