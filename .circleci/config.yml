@@ -6,7 +6,7 @@ orbs:
 executors:
   clojure:
     docker:
-      - image: circleci/clojure:tools-deps-1.10.0.442
+      - image: circleci/clojure:tools-deps-1.10.1.483
     working_directory: ~/conjure
 
 commands:
