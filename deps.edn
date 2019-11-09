@@ -19,7 +19,8 @@
 
  :aliases
  {:test
-  {:extra-deps {lambdaisland/kaocha {:mvn/version "0.0-554"}
+  {:extra-paths ["test/clojure"]
+   :extra-deps {lambdaisland/kaocha {:mvn/version "0.0-554"}
                 lambdaisland/kaocha-junit-xml {:mvn/version "0.0-70"}
                 lambdaisland/kaocha-cloverage {:mvn/version "0.0-41"}}}
 

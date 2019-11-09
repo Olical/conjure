@@ -1,5 +1,7 @@
 let s:cwd = resolve(expand("<sfile>:p:h") . "/..")
 
+let &runtimepath.=",".s:cwd."/src"
+
 " Don't load if...
 "  * Not in Neovim
 "  * Already loaded
