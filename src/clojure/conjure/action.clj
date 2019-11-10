@@ -244,7 +244,8 @@
                                             (- (second cursor) (count prefix))
                                             (second cursor)
                                             "__prefix__"))
-                      (util/join-lines)))]
+                      (util/join-lines)))
+        config (config/fetch {:cwd (:cwd nvim/ctx)})]
     (->> (current-conns {:passive? true})
          (mapcat
            (fn [conn]
@@ -258,7 +259,10 @@
                                                     {:conn conn
                                                      :prefix prefix
                                                      :context context
-                                                     :ns (:ns nvim/ctx)})})})
+                                                     :ns (:ns nvim/ctx)
+                                                     :hook (config/hook {:config config
+                                                                         :tag (:tag conn)
+                                                                         :hook :completions})})})})
                      (get :val)
                      (util/parse-code)
                      (->> (map

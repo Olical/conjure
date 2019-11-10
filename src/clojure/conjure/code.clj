@@ -83,7 +83,7 @@
                      (contains? loaded-deps (util/path->ns dep)))
                    (get @required-deps! lang))]
     (case lang
-      :clj 
+      :clj
       (concat
         [(tmpl
            (~require-sym 'clojure.repl
@@ -127,17 +127,19 @@
 (deftemplate :load-file [{:keys [path]}]
   (tmpl (load-file ~path)))
 
-(deftemplate :completions [{:keys [ns conn prefix context]}]
+(deftemplate :completions [{:keys [ns conn prefix context hook]}]
   (case (:lang conn)
     :clj
     (tmpl
-      (conjure-deps.compliment.v0v3v9.compliment.core/completions
-        ~prefix
-        (merge
-          {:ns (find-ns '~(or ns 'user))
-           :extra-metadata #{:doc :arglists}}
-          (when-let [context ~context]
-            {:context context}))))
+      (let [hook# ~hook]
+        (cond-> (conjure-deps.compliment.v0v3v9.compliment.core/completions
+                  ~prefix
+                  (merge
+                    {:ns (find-ns '~(or ns 'user))
+                     :extra-metadata #{:doc :arglists}}
+                    (when-let [context ~context]
+                      {:context context})))
+          hook# (hook#))))
 
     ;; ClojureScript isn't supported by Compliment yet.
     ;; https://github.com/alexander-yakushev/compliment/pull/62

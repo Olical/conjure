@@ -147,6 +147,7 @@ A hook is a function that takes a single argument and, in some cases, returns th
 
  * `:refresh` is used to configure the options to `ConjureRefresh`. Return a map containing your required configuration.
  * `:eval` is called just before an evaluation with the code as a string. You can alter that string and return the new version.
+ * `:completions` is called with the completion results from each connection. You can alter this list of completions any way you see fit! See below for an example that replaces a namespace of `foo.bar.baz` with `f.b.baz`.
  * `:result!` is run with a map of the `:code` that was called and the `:result` value as data. This can be sent off to [REBL][] or a similar tool. The return value of this function is ignored.
  * `:connect!` is run in every prepl when you execute `ConjureUp`. You can use this to start servers (or [REBL][]!), just make sure you set a flag or something to prevent it starting a new one on every `ConjureUp`.
 
@@ -194,6 +195,28 @@ It would result in the following code being executed, I hope it makes the issue 
 ```clojure
 (time (+ 10 20) ;; Hmm)
 ```
+
+#### Shortening namespace paths in completion results
+
+If you haven't got much screen space or you're working with very long namespace names you might want to abbreviate the namespace names shown in the completion results. We can do this with the `:completions` hook like so.
+
+```clojure
+{:conns
+ {:dev {:port #slurp-edn ".prepl-port"}}
+ :hooks {:completions (fn [entries]
+                        (map
+                          (fn [entry]
+                            (update entry :ns
+                                    (fn [ns]
+                                      (let [parts (clojure.string/split ns #"\.")
+                                            prefix (map first (butlast parts))
+                                            suffix (last parts)]
+                                        (str (clojure.string/join "." prefix)
+                                             "." suffix)))))
+                          entries))}}
+```
+
+We end up with a list of maps from Complement to work with. We can then add, remove or alter the items as we see fit. This code will turn `foo.bar.baz` into `f.b.baz` which might be very useful for some people!
 
 ### Options
 

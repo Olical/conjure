@@ -9,7 +9,18 @@
                            (assoc opts
                                   :after 'dev.example/get-env
                                   :dirs #{"dev"}))
-                :eval #(str "(last (time [" % "\n]))")}
+                :eval #(str "(last (time [" % "\n]))")
+                :completions (fn [entries]
+                               (map
+                                 (fn [entry]
+                                   (update entry :ns
+                                           (fn [ns]
+                                             (let [parts (clojure.string/split ns #"\.")
+                                                   prefix (map first (butlast parts))
+                                                   suffix (last parts)]
+                                               (str (clojure.string/join "." prefix)
+                                                    "." suffix)))))
+                                 entries))}
         :dirs #{"dev"}}
   :node {:port 5556
          :lang :cljs
