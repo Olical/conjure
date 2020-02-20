@@ -1,5 +1,7 @@
 # Conjure [![Slack](https://img.shields.io/badge/chat-%23conjure-green.svg?style=flat)](http://clojurians.net)
 
+> I'm working on a rewrite over at [Olical/conjure-sourcery][rewrite]. It won't require an extra JVM and it'll support multiple Lisps! Keep an eye on my Twitter ([@OliverCaldwell][twitter]) for updates.
+
 [Clojure][] (and [ClojureScript][]) tooling for [Neovim][] over a socket prepl connection.
 
 Be sure to check out the [Conjure wiki][wiki] for various articles and guides that'll help you get up and running. I also regularly write about Conjure and prepl related topics at [oli.me.uk][].
@@ -359,3 +361,5 @@ Find the full [unlicense][] in the `UNLICENSE` file, but here's a snippet.
 [mark]: https://vim.fandom.com/wiki/Using_marks
 [wiki]: https://github.com/Olical/conjure/wiki
 [oli.me.uk]: https://oli.me.uk
+[rewrite]: https://github.com/Olical/conjure-sourcery
+[twitter]: https://twitter.com/OliverCaldwell
