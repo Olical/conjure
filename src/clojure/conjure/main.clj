@@ -10,7 +10,8 @@
             [conjure.prepl :as prepl]
             [conjure.ui :as ui]
             [conjure.action :as action]
-            [conjure.nvim :as nvim]))
+            [conjure.nvim :as nvim]
+            [conjure.json :as json]))
 
 (Thread/setDefaultUncaughtExceptionHandler
   (reify Thread$UncaughtExceptionHandler
@@ -55,7 +56,7 @@
         :notify 'rpc/handle-notify
         :request 'rpc/handle-request)
      ~method
-     [{~params :params}]
+     [{[~params] :params}]
      (binding [nvim/ctx (nvim/current-ctx)]
        ~@body)))
 
@@ -68,6 +69,15 @@
 
 (defrpc :notify :eval [code]
   (action/eval* {:code code, :line (nvim/current-line)}))
+
+(defrpc :request :eval [code silent?]
+  (-> (action/eval*
+        {:code code
+         :line (nvim/current-line)
+         :silent? silent?})
+      (deref)
+      (json/encode)
+      (json/decode)))
 
 (defrpc :notify :eval-current-form []
   (action/eval-current-form))

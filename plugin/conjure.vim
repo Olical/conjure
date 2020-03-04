@@ -232,14 +232,14 @@ endfunction
 function! conjure#notify(method, ...)
   if s:jobid != v:null
     call conjure#quick_doc_cancel()
-    return rpcnotify(s:jobid, a:method, get(a:, 1, 0))
+    return rpcnotify(s:jobid, a:method, a:000)
   endif
 endfunction
 
 function! conjure#request(method, ...)
   if s:jobid != v:null
     call conjure#quick_doc_cancel()
-    return rpcrequest(s:jobid, a:method, get(a:, 1, 0))
+    return rpcrequest(s:jobid, a:method, a:000)
   endif
 endfunction
 
@@ -272,13 +272,20 @@ function! conjure#command_completions(arglead, cmdline, cursorpos)
   endif
 endfunction
 
-echo 
 function! conjure#completions(base)
   return conjure#request("completions", a:base)
 endfunction
 
 function! conjure#get_rpc_port()
   return conjure#request("get_rpc_port")
+endfunction
+
+function! conjure#eval(code)
+  return conjure#request("eval", a:code)
+endfunction
+
+function! conjure#eval_silent(code)
+  return conjure#request("eval", a:code, v:true)
 endfunction
 
 " Is the cursor inside code or is it in a comment / string.

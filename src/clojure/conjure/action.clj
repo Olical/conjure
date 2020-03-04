@@ -109,36 +109,42 @@
         (util/parse-code))
     code))
 
-(defn eval* [{:keys [code line]}]
+(defn eval* [{:keys [code line silent?]}]
   (future
     (when code
       (let [config (config/fetch {:cwd (:cwd nvim/ctx)})]
-        (doseq [conn (current-conns)]
-          (let [code (eval-hook {:conn conn
-                                 :code code
-                                 :config config})
-                opts {:conn conn
-                      :code code
-                      :line line}]
-            (ui/eval* opts)
-            (let [resp (wrapped-eval opts)
-                  hook (config/hook {:config config
-                                     :tag (:tag conn)
-                                     :hook :result!})]
+        (doall
+          (for [conn (current-conns)]
+            (let [code (eval-hook {:conn conn
+                                   :code code
+                                   :config config})
+                  opts {:conn conn
+                        :code code
+                        :line line}]
 
-              (ui/result {:conn conn
-                          :resp resp})
+              (when-not silent?
+                (ui/eval* opts))
 
-              ;; When there's a non-exception response, pass it to the result! hook.
-              (when (and hook (not (:exception resp)))
-                (wrapped-eval
-                  (assoc opts :code
-                         (code/render :hook-str
-                                      {:value (str "{:code '" code "\n"
-                                                   " :result " (:val resp) "\n}")
-                                       :hook (pr-str hook)}))))
+              (let [resp (wrapped-eval opts)
+                    hook (config/hook {:config config
+                                       :tag (:tag conn)
+                                       :hook :result!})]
 
-              nil)))))))
+                (when-not silent?
+                  (ui/result {:conn conn
+                              :resp resp}))
+
+                ;; When there's a non-exception response, pass it to the result! hook.
+                (when (and hook (not (:exception resp)))
+                  (wrapped-eval
+                    (assoc opts :code
+                           (code/render :hook-str
+                                        {:value (str "{:code '" code "\n"
+                                                     " :result " (:val resp) "\n}")
+                                         :hook (pr-str hook)}))))
+
+                {:conn (select-keys conn #{:tag :lang :host :port :extensions :dirs})
+                 :resp resp}))))))))
 
 (defn source [name]
   (doseq [conn (current-conns)]
