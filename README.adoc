@@ -1,12 +1,39 @@
-= Conjure Sourcery
+= Conjure
 
-____
-As they say in Discworld, we are trying to unravel the Mighty Infinite using a language which was designed to tell one another where the fresh fruit was.
+== Conversational software development for https://neovim.io[Neovim]
 
-— Terry Pratchett in Sourcery 
-____
+Conjure is an interactive environment for evaluating code and inspecting your program.
 
-A reimplementation of Conjure (master branch) in Lua via https://github.com/bakpakin/Fennel[Fennel]. This is mostly made possible by my precursor project to this one, https://github.com/Olical/aniseed[Aniseed]. It's a toolkit that aids development of Neovim plugins and configuration through Fennel.
+_insert demo gif here_
+
+The core features of Conjure are language agnostic (although it's targeted at Lisps for now), with each language module providing their own tools on top. Here's the language support so far, unchecked items are planned for the future.
+
+ * [x] https://clojure.org/[Clojure] over an https://nrepl.org/[nREPL] connection.
+ * [x] https://fennel-lang.org/[Fennel] directly within Neovim's process via Lua and https://github.com/Olical/aniseed[Aniseed]
+ * [ ] https://janet-lang.org/[Janet]
+ * [ ] https://racket-lang.org/[Racket]
+ * [ ] Scheme (Chicken, Chez or Guile? All?)
+
+== Installation
+
+Use your favourite plugin manager, mine is https://github.com/junegunn/vim-plug[vim-plug] but any will do. Be sure to pin it to a tag and subscribe to releases through GitHub to avoid any surprises in the future.
+
+[source,viml]
+----
+Plug 'Olical/conjure', {'tag': 'v3.0.0'}
+----
+
+You'll need to be using the latest stable Neovim for all of the features (such as floating windows) to work. If you see errors on launch try checking what version you have against the latest stable release first.
+
+== Introduction
+
+All further documentation is found within Neovim itself, so hop into Neovim with Conjure installed and execute `:help conjure-intro` to begin your journey.
+
+Good luck and have fun!
+
+== Behind the curtain
+
+Conjure is written entirely in Lua (so it's _fast_) which is compiled from https://fennel-lang.org/[Fennel] by https://github.com/Olical/aniseed[Aniseed] ahead of time. Check out `CONTRIBUTING.adoc` for more on how to work on Conjure using itself, contributions are more than welcome!
 
 == Unlicenced
 
