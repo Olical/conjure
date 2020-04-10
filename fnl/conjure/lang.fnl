@@ -3,6 +3,10 @@
             fennel conjure.aniseed.fennel
             config conjure.config}})
 
+;; TODO Warn when a lang isn't implemented correctly.
+;; Either through a check on require or for each individual get / call.
+;; Maybe have specific functions that access things, rather than generic ones.
+
 (defn- safe-require [name]
   (let [(ok? result) (xpcall
                        (fn []
