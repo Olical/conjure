@@ -1,0 +1,3 @@
+*.fnl linguist-language=Lisp
+lua/* linguist-generated
+lua/conjure/aniseed linguist-vendored

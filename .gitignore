@@ -1,7 +1,7 @@
-/.cljs_node_repl/
+/deps/
+/.lnvim.lua
+/test/results.txt
+/test/lua/
 /.cpcache/
-/classes/
-/logs/
-__pycache__/
-/out/
-/.luarocks
+/.cljs_node_repl/
+/.nrepl-port

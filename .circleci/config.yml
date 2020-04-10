@@ -1,64 +1,9 @@
-version: 2.1
-
-orbs:
-  codecov: codecov/codecov@1.0.2
-
-executors:
-  clojure:
+version: 2
+jobs:
+  build:
     docker:
-      - image: circleci/clojure:tools-deps-1.10.1.483
-    working_directory: ~/conjure
-
-commands:
-  with-deps:
-    parameters:
-      cache-key:
-        description: "Checksums to differentiate the job's cache."
-        type: string
-        default: "default"
-      steps:
-        description: "Steps to execute after the repo and deps are fetched but before the cache is saved."
-        type: steps
-        default: []
+      - image: olical/conjure-sourcery-circleci:0.0.3
     steps:
       - checkout
-      - restore_cache:
-          keys:
-            - deps-<< parameters.cache-key >>
-      - steps: << parameters.steps >>
-      - save_cache:
-          paths:
-            - ~/.m2
-          key: deps-<< parameters.cache-key >>
-
-jobs:
-  compile:
-    executor: clojure
-    steps:
-      - with-deps:
-          cache-key: compile-{{ checksum "deps.edn" }}
-          steps:
-            - run: bin/compile
-
-  test:
-    executor: clojure
-    steps:
-      - with-deps:
-          cache-key: test-{{ checksum "deps.edn" }}
-          steps:
-            - run: >
-                bin/kaocha
-                --plugin kaocha.plugin/junit-xml
-                --junit-xml-file test-results/kaocha/results.xml
-                --plugin cloverage --no-cov-html --codecov
-            - store_test_results:
-                path: test-results
-            - codecov/upload:
-                file: target/coverage/codecov.json
-
-workflows:
-  version: 2
-  checks:
-    jobs:
-      - compile
-      - test
+      - run: make deps
+      - run: make test

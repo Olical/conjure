@@ -1,3 +1,0 @@
-#!/usr/bin/env sh
-
-git describe --long --dirty --abbrev=10 --tags

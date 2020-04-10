@@ -1,0 +1,19 @@
+= Conjure Sourcery
+
+____
+As they say in Discworld, we are trying to unravel the Mighty Infinite using a language which was designed to tell one another where the fresh fruit was.
+
+— Terry Pratchett in Sourcery 
+____
+
+A reimplementation of Conjure (master branch) in Lua via https://github.com/bakpakin/Fennel[Fennel]. This is mostly made possible by my precursor project to this one, https://github.com/Olical/aniseed[Aniseed]. It's a toolkit that aids development of Neovim plugins and configuration through Fennel.
+
+== Unlicenced
+
+Find the full http://unlicense.org/[unlicense] in the `UNLICENSE` file, but here's a snippet.
+
+____
+This is free and unencumbered software released into the public domain.
+
+Anyone is free to copy, modify, publish, use, compile, sell, or distribute this software, either in source code form or as a compiled binary, for any purpose, commercial or non-commercial, and by any means.
+____

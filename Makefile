@@ -1,20 +1,15 @@
-.PHONY: test prepls dev depot
+.PHONY: deps compile test
+
+deps:
+	scripts/dep.sh Olical aniseed origin/develop
+	scripts/dep.sh Olical bencode origin/master
+
+compile:
+	rm -rf lua
+	deps/aniseed/scripts/compile.sh
+	deps/aniseed/scripts/embed.sh aniseed conjure
+	cp deps/bencode/bencode.lua lua/conjure/bencode.lua
 
 test:
-	./bin/kaocha
-
-prepls:
-	clj -A:dev:cljs \
-		-J-Dclojure.server.jvm="{:port 5555 :accept clojure.core.server/io-prepl}" \
-		-J-Dclojure.server.node="{:port 5556 :accept cljs.server.node/prepl}" \
-		-J-Dclojure.server.browser="{:port 5557 :accept cljs.server.browser/prepl}"
-
-dev:
-	CONJURE_LOG_PATH=logs/conjure.log \
-	CONJURE_PREPL_SERVER_PORT=5885 \
-	CONJURE_JOB_OPTS="-A:dev" \
-	CONJURE_ALLOWED_DIR="$(shell pwd)" \
-	nvim -S dev/load.vim
-
-depot:
-	clojure -A:depot -m depot.outdated.main -a test,cljs,dev,depot
+	rm -rf test/lua
+	deps/aniseed/scripts/test.sh
