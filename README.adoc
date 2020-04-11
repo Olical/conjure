@@ -26,9 +26,9 @@ Plug 'Olical/conjure', {'tag': 'v3.0.0'}
 
 You'll need to be on the latest stable Neovim for all of the features (such as floating windows) to work. If you see errors, please check what version you have against the latest stable release first.
 
-== Introduction
+== Getting started
 
-All further documentation is found within Neovim itself, so hop into Neovim with Conjure installed and execute `:help conjure-intro` to begin your journey.
+All further documentation is found within Neovim itself, so hop into Neovim with Conjure installed and execute `:help conjure` to begin your journey.
 
 == Behind the curtain
 
