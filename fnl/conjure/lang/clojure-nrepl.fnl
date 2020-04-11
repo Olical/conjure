@@ -20,6 +20,7 @@
 ;; TODO Refreshing of namespaces.
 ;; TODO Test running.
 ;; TODO Handle stdin requests.
+;; TODO Name sessions after cities.
 
 (def buf-suffix ".cljc")
 (def context-pattern "[(]%s*ns%s*(.-)[%s){]")
