@@ -909,7 +909,7 @@ do
           local function _4_()
             nvim.ex.redraw_()
             do
-              local n = nvim.fn.str2nr(extract.input("Session number: "))
+              local n = nvim.fn.str2nr(extract.prompt("Session number: "))
               local _5_ = a.count(sessions)
               if ((1 <= n) and (n <= _5_)) then
                 return assume_session(a.get(sessions, n))

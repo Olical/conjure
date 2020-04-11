@@ -429,7 +429,7 @@
           sessions
           (fn []
             (nvim.ex.redraw_)
-            (let [n (nvim.fn.str2nr (extract.input "Session number: "))]
+            (let [n (nvim.fn.str2nr (extract.prompt "Session number: "))]
               (if (<= 1 n (a.count sessions))
                 (assume-session (a.get sessions n))
                 (display ["; Invalid session number."])))))))))
