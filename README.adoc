@@ -32,7 +32,7 @@ All further documentation is found within Neovim itself, so hop into Neovim with
 
 == Behind the curtain
 
-Conjure is written entirely in Lua (so it's _fast_) which is compiled from https://fennel-lang.org/[Fennel] by https://github.com/Olical/aniseed[Aniseed] ahead of time. Check out `CONTRIBUTING.adoc` for more on how to work on Conjure using itself, contributions are more than welcome!
+Conjure is written entirely in Lua (no Vim Script or external processes!) which is compiled from https://fennel-lang.org/[Fennel] by https://github.com/Olical/aniseed[Aniseed] ahead of time. Check out `CONTRIBUTING.adoc` for more on how to work on Conjure using itself, contributions are more than welcome!
 
 Historically Conjure has been a Clojure specific plugin with an entirely different implementation, you can still find that version at https://github.com/Olical/conjure/tree/v2.1.2[v2.1.2].
 
