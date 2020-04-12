@@ -66,7 +66,7 @@ local config = nil
 do
   local v_23_0_ = nil
   do
-    local v_23_0_0 = {["aniseed-module-prefix"] = "conjure.aniseed.", mappings = {["run-all-tests"] = "ta", ["run-buf-tests"] = "tt"}}
+    local v_23_0_0 = {["aniseed-module-prefix"] = "conjure.aniseed.", ["use-metadata?"] = true, mappings = {["run-all-tests"] = "ta", ["run-buf-tests"] = "tt"}}
     _0_0["config"] = v_23_0_0
     v_23_0_ = v_23_0_0
   end
@@ -147,12 +147,17 @@ do
       local code = (("(module " .. (opts.context or "aniseed.user") .. ") ") .. opts.code .. "\n")
       local out = nil
       local function _3_()
-        local _4_ = {ani.eval.str(code, {filename = opts["file-path"]})}
-        local ok_3f = _4_[1]
-        local results = {(table.unpack or unpack)(_4_, 2)}
-        opts["ok?"] = ok_3f
-        opts.results = results
-        return nil
+        if config["use-metadata?"] then
+          package.loaded.fennel = ani.fennel
+        end
+        do
+          local _5_ = {ani.eval.str(code, {filename = opts["file-path"], useMetadata = config["use-metadata?"]})}
+          local ok_3f = _5_[1]
+          local results = {(table.unpack or unpack)(_5_, 2)}
+          opts["ok?"] = ok_3f
+          opts.results = results
+          return nil
+        end
       end
       out = ani.core["with-out-str"](_3_)
       if not a["empty?"](out) then

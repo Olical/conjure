@@ -16,7 +16,8 @@
 (def config
   {:mappings {:run-buf-tests "tt"
               :run-all-tests "ta"}
-   :aniseed-module-prefix :conjure.aniseed.})
+   :aniseed-module-prefix :conjure.aniseed.
+   :use-metadata? true})
 
 (def- ani
   (let [req #(require (.. config.aniseed-module-prefix $1))]
@@ -46,12 +47,13 @@
                  opts.code "\n")
         out (ani.core.with-out-str
               (fn []
+                (when config.use-metadata?
+                  (set package.loaded.fennel ani.fennel))
+
                 (let [[ok? & results]
                       [(ani.eval.str code
                                      {:filename opts.file-path
-                                      ;; Enable when I can swap in a fennel module.
-                                      ; :useMetadata true
-                                      })]]
+                                      :useMetadata config.use-metadata?})]]
                   (set opts.ok? ok?)
                   (set opts.results results))))]
     (when (not (a.empty? out))
