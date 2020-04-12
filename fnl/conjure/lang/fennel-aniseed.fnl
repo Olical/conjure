@@ -3,9 +3,6 @@
             a conjure.aniseed.core
             str conjure.aniseed.string
             view conjure.aniseed.view
-            ani-core aniseed.core
-            ani-eval aniseed.eval
-            ani-test aniseed.test
             lang conjure.lang
             mapping conjure.mapping
             text conjure.text
@@ -18,7 +15,15 @@
 
 (def config
   {:mappings {:run-buf-tests "tt"
-              :run-all-tests "ta"}})
+              :run-all-tests "ta"}
+   :aniseed-module-prefix :conjure.aniseed.})
+
+(def- ani
+  (let [req #(require (.. config.aniseed-module-prefix $1))]
+    {:core (req :core)
+     :eval (req :eval)
+     :test (req :test)
+     :fennel (req :fennel)}))
 
 (defn- display [lines opts]
   (lang.with-filetype :fennel log.append lines opts))
@@ -39,10 +44,10 @@
 (defn eval-str [opts]
   (let [code (.. (.. "(module " (or opts.context "aniseed.user") ") ")
                  opts.code "\n")
-        out (ani-core.with-out-str
+        out (ani.core.with-out-str
               (fn []
                 (let [[ok? & results]
-                      [(ani-eval.str code
+                      [(ani.eval.str code
                                      {:filename opts.file-path
                                       ;; Enable when I can swap in a fennel module.
                                       ; :useMetadata true
@@ -70,7 +75,7 @@
 
 (defn- wrapped-test [req-lines f]
   (display req-lines {:break? true})
-  (let [res (ani-core.with-out-str f)]
+  (let [res (ani.core.with-out-str f)]
     (display
       (-> (if (= "" res)
             "No results."
@@ -82,10 +87,10 @@
     (when c
       (wrapped-test
         [(.. "; run-buf-tests (" c ")")]
-        #(ani-test.run c)))))
+        #(ani.test.run c)))))
 
 (defn run-all-tests []
-  (wrapped-test ["; run-all-tests"] ani-test.run-all))
+  (wrapped-test ["; run-all-tests"] ani.test.run-all))
 
 (defn on-filetype []
   (mapping.buf :n config.mappings.run-buf-tests

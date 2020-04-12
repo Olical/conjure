@@ -15,22 +15,19 @@ do
   _0_0 = module_23_0_
 end
 local function _1_(...)
-  _0_0["aniseed/local-fns"] = {require = {["ani-core"] = "aniseed.core", ["ani-eval"] = "aniseed.eval", ["ani-test"] = "aniseed.test", a = "conjure.aniseed.core", extract = "conjure.extract", lang = "conjure.lang", log = "conjure.log", mapping = "conjure.mapping", nvim = "conjure.aniseed.nvim", str = "conjure.aniseed.string", text = "conjure.text", view = "conjure.aniseed.view"}}
-  return {require("conjure.aniseed.core"), require("aniseed.core"), require("aniseed.eval"), require("aniseed.test"), require("conjure.extract"), require("conjure.lang"), require("conjure.log"), require("conjure.mapping"), require("conjure.aniseed.nvim"), require("conjure.aniseed.string"), require("conjure.text"), require("conjure.aniseed.view")}
+  _0_0["aniseed/local-fns"] = {require = {a = "conjure.aniseed.core", extract = "conjure.extract", lang = "conjure.lang", log = "conjure.log", mapping = "conjure.mapping", nvim = "conjure.aniseed.nvim", str = "conjure.aniseed.string", text = "conjure.text", view = "conjure.aniseed.view"}}
+  return {require("conjure.aniseed.core"), require("conjure.extract"), require("conjure.lang"), require("conjure.log"), require("conjure.mapping"), require("conjure.aniseed.nvim"), require("conjure.aniseed.string"), require("conjure.text"), require("conjure.aniseed.view")}
 end
 local _2_ = _1_(...)
 local a = _2_[1]
-local ani_core = _2_[2]
-local ani_eval = _2_[3]
-local ani_test = _2_[4]
-local extract = _2_[5]
-local lang = _2_[6]
-local log = _2_[7]
-local mapping = _2_[8]
-local nvim = _2_[9]
-local str = _2_[10]
-local text = _2_[11]
-local view = _2_[12]
+local extract = _2_[2]
+local lang = _2_[3]
+local log = _2_[4]
+local mapping = _2_[5]
+local nvim = _2_[6]
+local str = _2_[7]
+local text = _2_[8]
+local view = _2_[9]
 do local _ = ({nil, _0_0, nil})[2] end
 local buf_suffix = nil
 do
@@ -69,12 +66,26 @@ local config = nil
 do
   local v_23_0_ = nil
   do
-    local v_23_0_0 = {mappings = {["run-all-tests"] = "ta", ["run-buf-tests"] = "tt"}}
+    local v_23_0_0 = {["aniseed-module-prefix"] = "conjure.aniseed.", mappings = {["run-all-tests"] = "ta", ["run-buf-tests"] = "tt"}}
     _0_0["config"] = v_23_0_0
     v_23_0_ = v_23_0_0
   end
   _0_0["aniseed/locals"]["config"] = v_23_0_
   config = v_23_0_
+end
+local ani = nil
+do
+  local v_23_0_ = nil
+  do
+    local req = nil
+    local function _3_(_241)
+      return require((config["aniseed-module-prefix"] .. _241))
+    end
+    req = _3_
+    v_23_0_ = {core = req("core"), eval = req("eval"), fennel = req("fennel"), test = req("test")}
+  end
+  _0_0["aniseed/locals"]["ani"] = v_23_0_
+  ani = v_23_0_
 end
 local display = nil
 do
@@ -136,14 +147,14 @@ do
       local code = (("(module " .. (opts.context or "aniseed.user") .. ") ") .. opts.code .. "\n")
       local out = nil
       local function _3_()
-        local _4_ = {ani_eval.str(code, {filename = opts["file-path"]})}
+        local _4_ = {ani.eval.str(code, {filename = opts["file-path"]})}
         local ok_3f = _4_[1]
         local results = {(table.unpack or unpack)(_4_, 2)}
         opts["ok?"] = ok_3f
         opts.results = results
         return nil
       end
-      out = ani_core["with-out-str"](_3_)
+      out = ani.core["with-out-str"](_3_)
       if not a["empty?"](out) then
         display(text["prefixed-lines"](out, "; (out) "))
       end
@@ -221,7 +232,7 @@ do
   local function wrapped_test0(req_lines, f)
     display(req_lines, {["break?"] = true})
     do
-      local res = ani_core["with-out-str"](f)
+      local res = ani.core["with-out-str"](f)
       local _3_
       if ("" == res) then
         _3_ = "No results."
@@ -244,7 +255,7 @@ do
       local c = extract.context()
       if c then
         local function _3_()
-          return ani_test.run(c)
+          return ani.test.run(c)
         end
         return wrapped_test({("; run-buf-tests (" .. c .. ")")}, _3_)
       end
@@ -262,7 +273,7 @@ do
   do
     local v_23_0_0 = nil
     local function run_all_tests0()
-      return wrapped_test({"; run-all-tests"}, ani_test["run-all"])
+      return wrapped_test({"; run-all-tests"}, ani.test["run-all"])
     end
     v_23_0_0 = run_all_tests0
     _0_0["run-all-tests"] = v_23_0_0
