@@ -84,7 +84,7 @@ do
     local v_23_0_0 = nil
     local function start0()
       local buf = upsert_buf()
-      nvim.win_set_buf(0, buf)
+      nvim.ex.edit(log_buf_name)
       nvim.buf_set_lines(buf, 0, -1, false, {})
       return append({"(module user.conjure-school", "  {require {school conjure.school}})", "", ";; Welcome to Conjure school!", ";; Run :ConjureSchool again at any time to start fresh.", ";; This is a Fennel buffer, we can evaluate parts of it using Conjure.", ";; Conjure will compile the Fennel to Lua and execute it within Neovim's process.", (";; Try evaluating this buffer with " .. map_str("eval-buf")), "(school.lesson-1)"})
     end

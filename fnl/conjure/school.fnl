@@ -26,7 +26,7 @@
 
 (defn start []
   (let [buf (upsert-buf)]
-    (nvim.win_set_buf 0 buf)
+    (nvim.ex.edit log-buf-name)
     (nvim.buf_set_lines buf 0 -1 false [])
     (append
       ["(module user.conjure-school"
