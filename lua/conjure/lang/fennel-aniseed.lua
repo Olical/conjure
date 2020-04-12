@@ -94,13 +94,17 @@ do
     local function display_result0(opts)
       if opts then
         local _3_ = opts
-        local result = _3_["result"]
+        local results = _3_["results"]
         local ok_3f = _3_["ok?"]
         local result_str = nil
         if ok_3f then
-          result_str = view.serialise(result)
+          if a["empty?"](results) then
+            result_str = "nil"
+          else
+            result_str = str.join("\n", a.map(view.serialise, results))
+          end
         else
-          result_str = result
+          result_str = a.first(results)
         end
         local result_lines = str.split(result_str, "[^\n]+")
         local function _5_()
@@ -132,9 +136,11 @@ do
       local code = (("(module " .. (opts.context or "aniseed.user") .. ") ") .. opts.code .. "\n")
       local out = nil
       local function _3_()
-        local ok_3f, result = ani_eval.str(code, {filename = opts["file-path"]})
+        local _4_ = {ani_eval.str(code, {filename = opts["file-path"]})}
+        local ok_3f = _4_[1]
+        local results = {(table.unpack or unpack)(_4_, 2)}
         opts["ok?"] = ok_3f
-        opts.result = result
+        opts.results = results
         return nil
       end
       out = ani_core["with-out-str"](_3_)

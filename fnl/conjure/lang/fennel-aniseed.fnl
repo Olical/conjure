@@ -12,8 +12,6 @@
             log conjure.log
             extract conjure.extract}})
 
-;; TODO Display all results from multi returns.
-
 (def buf-suffix ".fnl")
 (def context-pattern "[(]%s*module%s*(.-)[%s){]")
 (def comment-prefix "; ")
@@ -27,10 +25,12 @@
 
 (defn display-result [opts]
   (when opts
-    (let [{: ok? : result} opts
+    (let [{: ok? : results} opts
           result-str (if ok?
-                       (view.serialise result)
-                       result)
+                       (if (a.empty? results)
+                         "nil"
+                         (str.join "\n" (a.map view.serialise results)))
+                       (a.first results))
           result-lines (str.split result-str "[^\n]+")] 
       (display (if ok?
                  result-lines
@@ -41,9 +41,14 @@
                  opts.code "\n")
         out (ani-core.with-out-str
               (fn []
-                (let [(ok? result) (ani-eval.str code {:filename opts.file-path})]
+                (let [[ok? & results]
+                      [(ani-eval.str code
+                                     {:filename opts.file-path
+                                      ;; Enable when I can swap in a fennel module.
+                                      ; :useMetadata true
+                                      })]]
                   (set opts.ok? ok?)
-                  (set opts.result result))))]
+                  (set opts.results results))))]
     (when (not (a.empty? out))
       (display (text.prefixed-lines out "; (out) ")))
     (display-result opts)))
