@@ -11,8 +11,6 @@
 ;     end)
 ; end
 
-(math.randomseed (os.time)) 
-
 (defn v4 []
   (string.gsub
     "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx"

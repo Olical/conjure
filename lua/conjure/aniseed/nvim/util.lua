@@ -43,8 +43,8 @@ do
     local v_23_0_0 = nil
     local function fn_bridge0(viml_name, mod, lua_name, opts)
       local _3_ = (opts or {})
-      local range = _3_["range"]
       local _return = _3_["return"]
+      local range = _3_["range"]
       local function _4_()
         if range then
           return " range"
@@ -104,5 +104,30 @@ do
   end
   _0_0["aniseed/locals"]["plug"] = v_23_0_
   plug = v_23_0_
+end
+local with_out_str = nil
+do
+  local v_23_0_ = nil
+  do
+    local v_23_0_0 = nil
+    local function with_out_str0(f)
+      nvim.ex.redir("=> g:aniseed_nvim_util_out_str")
+      do
+        local ok_3f, err = pcall(f)
+        nvim.ex.redir("END")
+        nvim.ex.echon("")
+        nvim.ex.redraw()
+        if not ok_3f then
+          error(err)
+        end
+      end
+      return string.gsub(nvim.g.aniseed_nvim_util_out_str, "^(\n?)(.*)$", "%2%1")
+    end
+    v_23_0_0 = with_out_str0
+    _0_0["with-out-str"] = v_23_0_0
+    v_23_0_ = v_23_0_0
+  end
+  _0_0["aniseed/locals"]["with-out-str"] = v_23_0_
+  with_out_str = v_23_0_
 end
 return nil

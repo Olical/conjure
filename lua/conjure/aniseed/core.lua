@@ -21,6 +21,22 @@ end
 local _2_ = _1_(...)
 local view = _2_[1]
 do local _ = ({nil, _0_0, nil})[2] end
+math.randomseed(os.time())
+local rand = nil
+do
+  local v_23_0_ = nil
+  do
+    local v_23_0_0 = nil
+    local function rand0(n)
+      return (math.random() * (n or 1))
+    end
+    v_23_0_0 = rand0
+    _0_0["rand"] = v_23_0_0
+    v_23_0_ = v_23_0_0
+  end
+  _0_0["aniseed/locals"]["rand"] = v_23_0_
+  rand = v_23_0_
+end
 local string_3f = nil
 do
   local v_23_0_ = nil
@@ -491,40 +507,6 @@ do
   _0_0["aniseed/locals"]["mapcat"] = v_23_0_
   mapcat = v_23_0_
 end
-local _2aprinter_2a = nil
-do
-  local v_23_0_ = print
-  _0_0["aniseed/locals"]["*printer*"] = v_23_0_
-  _2aprinter_2a = v_23_0_
-end
-local with_out_str = nil
-do
-  local v_23_0_ = nil
-  do
-    local v_23_0_0 = nil
-    local function with_out_str0(f)
-      local acc = ""
-      local function _3_(_241)
-        acc = (acc .. _241 .. "\n")
-        return nil
-      end
-      _2aprinter_2a = _3_
-      do
-        local ok_3f, result = pcall(f)
-        _2aprinter_2a = print
-        if not ok_3f then
-          error(result)
-        end
-      end
-      return acc
-    end
-    v_23_0_0 = with_out_str0
-    _0_0["with-out-str"] = v_23_0_0
-    v_23_0_ = v_23_0_0
-  end
-  _0_0["aniseed/locals"]["with-out-str"] = v_23_0_
-  with_out_str = v_23_0_
-end
 local pr_str = nil
 do
   local v_23_0_ = nil
@@ -575,7 +557,7 @@ do
           return pr_str(s)
         end
       end
-      return _2aprinter_2a(reduce(_3_, "", map_indexed(_4_, map(_6_, {...}))))
+      return print(reduce(_3_, "", map_indexed(_4_, map(_6_, {...}))))
     end
     v_23_0_0 = println0
     _0_0["println"] = v_23_0_0

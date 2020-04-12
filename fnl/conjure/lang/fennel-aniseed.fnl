@@ -22,6 +22,7 @@
 (def- ani
   (let [req #(require (.. config.aniseed-module-prefix $1))]
     {:core (req :core)
+     :nu (req :nvim.util)
      :eval (req :eval)
      :test (req :test)
      :fennel (req :fennel)}))
@@ -45,7 +46,7 @@
 (defn eval-str [opts]
   (let [code (.. (.. "(module " (or opts.context "aniseed.user") ") ")
                  opts.code "\n")
-        out (ani.core.with-out-str
+        out (ani.nu.with-out-str
               (fn []
                 (when config.use-metadata?
                   (set package.loaded.fennel ani.fennel))
@@ -77,7 +78,7 @@
 
 (defn- wrapped-test [req-lines f]
   (display req-lines {:break? true})
-  (let [res (ani.core.with-out-str f)]
+  (let [res (ani.nu.with-out-str f)]
     (display
       (-> (if (= "" res)
             "No results."

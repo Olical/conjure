@@ -82,7 +82,7 @@ do
       return require((config["aniseed-module-prefix"] .. _241))
     end
     req = _3_
-    v_23_0_ = {core = req("core"), eval = req("eval"), fennel = req("fennel"), test = req("test")}
+    v_23_0_ = {core = req("core"), eval = req("eval"), fennel = req("fennel"), nu = req("nvim.util"), test = req("test")}
   end
   _0_0["aniseed/locals"]["ani"] = v_23_0_
   ani = v_23_0_
@@ -159,7 +159,7 @@ do
           return nil
         end
       end
-      out = ani.core["with-out-str"](_3_)
+      out = ani.nu["with-out-str"](_3_)
       if not a["empty?"](out) then
         display(text["prefixed-lines"](out, "; (out) "))
       end
@@ -237,7 +237,7 @@ do
   local function wrapped_test0(req_lines, f)
     display(req_lines, {["break?"] = true})
     do
-      local res = ani.core["with-out-str"](f)
+      local res = ani.nu["with-out-str"](f)
       local _3_
       if ("" == res) then
         _3_ = "No results."

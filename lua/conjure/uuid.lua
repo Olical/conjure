@@ -20,7 +20,6 @@ local function _1_(...)
 end
 local _2_ = _1_(...)
 do local _ = ({nil, _0_0, nil})[2] end
-math.randomseed(os.time())
 local v4 = nil
 do
   local v_23_0_ = nil
