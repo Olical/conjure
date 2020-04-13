@@ -21,6 +21,7 @@
 ;; TODO Test running.
 ;; TODO Handle stdin requests.
 ;; TODO Name sessions after cities.
+;; TODO Have all auto completion tools working.
 
 (def buf-suffix ".cljc")
 (def context-pattern "[(]%s*ns%s*(.-)[%s){]")
