@@ -10,11 +10,126 @@
 CONTENTS                                                    *conjure-contents*
 
     1. Introduction ............................. |conjure-introduction|
+    2. Mappings ..................................... |conjure-mappings|
+    3. Configuration ........................... |conjure-configuration|
+    4. Log ............................................... |conjure-log|
+    5. Languages ................................... |conjure-languages|
 
 ==============================================================================
 INTRODUCTION                                            *conjure-introduction*
 
-Conjure allows you to evaluate parts of your code through various mappings and
-see the results.
+Conjure allows you to evaluate code and perform actions in a few different
+languages. The results of your actions are stored in a log buffer that you can
+access at any time.
+
+If you don't have the log buffer open the results will be shown temporarily in
+the heads up display (HUD), a floating window that vanishes after you move
+your cursor. The HUD can be turned off entirely if would rather check for
+results in your own time.
+
+This documentation will show you which mappings are available by default and
+how to configure them to suit you. You'll also be able to learn about the
+specific languages you're interested, such as how to connect to a running
+Clojure process.
+
+==============================================================================
+MAPPINGS                                                    *conjure-mappings*
+
+These are the default mappings, |conjure-configuration| will show you how to
+remap them to keys that suit you if required. The default prefix key for most
+mappings is `<localleader>`, you'll need to set |maplocalleader| if you
+haven't already.
+
+I've also included some commands since they're related to the mappings.
+
+:ConjureEval [code]      Evaluates the given code in the current buffer's
+                         language and context. Accepts a range so
+                         `:%ConjureEval` would evaluate the entire buffer,
+                         this also works with visual selections.
+
+<localleader>ls          Open the log buffer in a new horizontal split window.
+
+<localleader>lv          Open the log buffer in a new vertical split window.
+
+<localleader>lt          Open the log buffer in a new tab. Great for viewing
+                         large output. Just close the window to close the tab
+                         when you're done and return to your previous layout.
+
+<localleader>E (visual)  Evaluate the current visual selection.
+
+<localleader>E[motion]   Evaluate any given motion following this mapping such
+                         as <localleader>`E2j` to evaluate this line and the
+                         two below it.
+
+<localleader>ee          Evaluate the current form under the cursor. This is
+                         the innermost pair of parenthesis (ignoring those in
+                         comments or strings).
+
+<localleader>er          Evaluate the root form under the cursor. This is the
+                         outermost pair of parenthesis. Great for evaluating a
+                         function you're editing if your cursor is within a
+                         few nested forms.
+
+<localleader>em[mark]    Evaluate the form under the cursor at the given
+                         |mark|. Set a regular Neovim mark on a form using
+                         `mF` for example in any file, then jump to another
+                         file. You can evaluate that form at any time with
+                         `<localleader>emF`.
+
+<localleader>ew          Evaluate the word under the cursor, good for peeking
+                         inside vars defined in your file.
+
+<localleader>ef          Evaluate the current file from disk. This may be
+                         different to what's currently in your buffer if you
+                         haven't saved!
+
+<localleader>eb          Evaluate the current buffer contents. This may be
+                         different to what's on disk if you've edited it
+                         without saving.
+
+K                        Look up documentation for the word under the cursor.
+                         Support for this may vary between languages.
+
+gd                       Go to the definition of the word under the cursor.
+                         Support for this may vary between languages.
+
+Language modules will provide their own extra mappings on top of these, you
+can find links to their help in |conjure-languages|.
+
+==============================================================================
+CONFIGURATION                                          *conjure-configuration*
+
+TODO
+
+==============================================================================
+LOG                                                              *conjure-log*
+
+The log buffer is a regular buffer that you can edit and interact with as you
+normally would. You can even insert new code and evaluate it, seeing the
+results at the bottom of the buffer, kind of like a regular REPL.
+
+The log buffer will scroll along with new results if you leave your cursor on
+the last line, like a terminal following along with new output.
+
+If you'd like to stop it scrolling and just see a specific result for a while
+you can move your cursor to it. Conjure will then leave that cursor where it
+is, it'll only follow along if left on the last line of the buffer. To
+continue following new output you can just press `G` to go to the bottom.
+
+If a result is appended to the end of the log and you don't currently have a
+log on your screen (current tab) with the cursor following along, the HUD will
+appear (unless you've disabled it through config). This is to ensure you
+always see new entries, even if you're looking at something further up in the
+log.
+
+The HUD is a floating window that shows you the current bottom of the log. It
+tries to show you the top of extremely large results since the top of a data
+structure tends to be more interesting than all the bottom. It'll vanish when
+you move the cursor.
+
+==============================================================================
+LANGUAGES                                                  *conjure-languages*
+
+TODO
 
 vim:tw=78:sw=2:ts=2:ft=help:norl:et:listchars=

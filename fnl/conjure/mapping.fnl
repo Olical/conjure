@@ -33,7 +33,6 @@
   (buf :n config.mappings.eval-file :conjure.eval :file)
   (buf :n config.mappings.eval-buf :conjure.eval :buf)
   (buf :v config.mappings.eval-visual :conjure.eval :selection)
-  (buf :n config.mappings.close-hud :conjure.log :close-hud)
   (buf :n config.mappings.doc-word :conjure.eval :doc-word)
   (buf :n config.mappings.def-word :conjure.eval :def-word)
 
