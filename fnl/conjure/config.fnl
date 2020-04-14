@@ -40,3 +40,18 @@
 
 (defn filetype->module-name [filetype]
   (. langs filetype))
+
+(defn get [{: lang : path}]
+  (a.get-in
+    (if lang
+      (a.get (require (.. "conjure.lang." lang)) :config)
+      (require :conjure.config))
+    path))
+
+(defn assoc [{: lang : path : val}]
+  (a.assoc-in
+    (if lang
+      (a.get (require (.. "conjure.lang." lang)) :config)
+      (require :conjure.config))
+    path
+    val))

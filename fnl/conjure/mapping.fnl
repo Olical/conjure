@@ -6,7 +6,8 @@
             extract conjure.extract
             lang conjure.lang
             eval conjure.eval
-            bridge conjure.bridge}})
+            bridge conjure.bridge
+            fennel conjure.aniseed.fennel}})
 
 (defn buf [mode keys ...]
   (let [args [...]]
@@ -59,6 +60,22 @@
     (eval.range (a.dec start) end)
     (eval.command code)))
 
+(defn config-command [target val]
+  (let [lang-path (str.split target "[^/]+")
+        opts {:lang (when (= 2 (a.count lang-path))
+                      (a.first lang-path))
+              :path (str.split (a.last lang-path) "[^.]+")}
+        current (config.get opts)]
+
+    (if val
+      (config.assoc
+        (a.assoc
+          opts :val
+          (if (a.string? current)
+            val
+            (fennel.eval val))))
+      (a.println target "=" (a.pr-str current)))))
+
 (nvim.ex.function_
   (->> ["ConjureEvalMotion(kind)"
         "call luaeval(\"require('conjure.eval')['selection'](_A)\", a:kind)"
@@ -71,3 +88,9 @@
   (bridge.viml->lua
     :conjure.mapping :eval-ranged-command
     {:args "<line1>, <line2>, <q-args>"}))
+
+(nvim.ex.command_
+  "-nargs=+ ConjureConfig"
+  (bridge.viml->lua
+    :conjure.mapping :config-command
+    {:args "<f-args>"}))

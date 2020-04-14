@@ -15,8 +15,8 @@ do
   _0_0 = module_23_0_
 end
 local function _1_(...)
-  _0_0["aniseed/local-fns"] = {require = {a = "conjure.aniseed.core", bridge = "conjure.bridge", config = "conjure.config", eval = "conjure.eval", extract = "conjure.extract", lang = "conjure.lang", nvim = "conjure.aniseed.nvim", str = "conjure.aniseed.string"}}
-  return {require("conjure.aniseed.core"), require("conjure.bridge"), require("conjure.config"), require("conjure.eval"), require("conjure.extract"), require("conjure.lang"), require("conjure.aniseed.nvim"), require("conjure.aniseed.string")}
+  _0_0["aniseed/local-fns"] = {require = {a = "conjure.aniseed.core", bridge = "conjure.bridge", config = "conjure.config", eval = "conjure.eval", extract = "conjure.extract", fennel = "conjure.aniseed.fennel", lang = "conjure.lang", nvim = "conjure.aniseed.nvim", str = "conjure.aniseed.string"}}
+  return {require("conjure.aniseed.core"), require("conjure.bridge"), require("conjure.config"), require("conjure.eval"), require("conjure.extract"), require("conjure.aniseed.fennel"), require("conjure.lang"), require("conjure.aniseed.nvim"), require("conjure.aniseed.string")}
 end
 local _2_ = _1_(...)
 local a = _2_[1]
@@ -24,9 +24,10 @@ local bridge = _2_[2]
 local config = _2_[3]
 local eval = _2_[4]
 local extract = _2_[5]
-local lang = _2_[6]
-local nvim = _2_[7]
-local str = _2_[8]
+local fennel = _2_[6]
+local lang = _2_[7]
+local nvim = _2_[8]
+local str = _2_[9]
 do local _ = ({nil, _0_0, nil})[2] end
 local buf = nil
 do
@@ -123,5 +124,42 @@ do
   _0_0["aniseed/locals"]["eval-ranged-command"] = v_23_0_
   eval_ranged_command = v_23_0_
 end
+local config_command = nil
+do
+  local v_23_0_ = nil
+  do
+    local v_23_0_0 = nil
+    local function config_command0(target, val)
+      local lang_path = str.split(target, "[^/]+")
+      local opts = nil
+      local _3_
+      if (2 == a.count(lang_path)) then
+        _3_ = a.first(lang_path)
+      else
+      _3_ = nil
+      end
+      opts = {lang = _3_, path = str.split(a.last(lang_path), "[^.]+")}
+      local current = config.get(opts)
+      if val then
+        local function _5_()
+          if a["string?"](current) then
+            return val
+          else
+            return fennel.eval(val)
+          end
+        end
+        return config.assoc(a.assoc(opts, "val", _5_()))
+      else
+        return a.println(target, "=", a["pr-str"](current))
+      end
+    end
+    v_23_0_0 = config_command0
+    _0_0["config-command"] = v_23_0_0
+    v_23_0_ = v_23_0_0
+  end
+  _0_0["aniseed/locals"]["config-command"] = v_23_0_
+  config_command = v_23_0_
+end
 nvim.ex.function_(str.join("\n", {"ConjureEvalMotion(kind)", "call luaeval(\"require('conjure.eval')['selection'](_A)\", a:kind)", "endfunction"}))
-return nvim.ex.command_("-nargs=? -range ConjureEval", bridge["viml->lua"]("conjure.mapping", "eval-ranged-command", {args = "<line1>, <line2>, <q-args>"}))
+nvim.ex.command_("-nargs=? -range ConjureEval", bridge["viml->lua"]("conjure.mapping", "eval-ranged-command", {args = "<line1>, <line2>, <q-args>"}))
+return nvim.ex.command_("-nargs=+ ConjureConfig", bridge["viml->lua"]("conjure.mapping", "config-command", {args = "<f-args>"}))

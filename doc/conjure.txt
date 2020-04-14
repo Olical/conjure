@@ -46,6 +46,17 @@ I've also included some commands since they're related to the mappings.
                          `:%ConjureEval` would evaluate the entire buffer,
                          this also works with visual selections.
 
+:ConjureConfig [args]    Looks up or sets a configuration value with an
+                         optional language module prefix.
+                          - `:ConjureConfig mappings.prefix`
+                            Show the current mapping prefix.
+                          - `:ConjureConfig mapping.prefix <leader>`
+                            Set the mapping prefix.
+                          - `:ConjureConfig clojure-nrepl/mappings.interrupt`
+                            Show a language specific configuration value.
+                          - `:ConjureConfig clojure-nrepl/debug? true`
+                            Set a language specific configuration value.
+
 <localleader>ls          Open the log buffer in a new horizontal split window.
 
 <localleader>lv          Open the log buffer in a new vertical split window.

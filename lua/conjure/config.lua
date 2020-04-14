@@ -106,4 +106,53 @@ do
   _0_0["aniseed/locals"]["filetype->module-name"] = v_23_0_
   filetype__3emodule_name = v_23_0_
 end
+local get = nil
+do
+  local v_23_0_ = nil
+  do
+    local v_23_0_0 = nil
+    local function get0(_3_0)
+      local _4_ = _3_0
+      local path = _4_["path"]
+      local lang = _4_["lang"]
+      local _5_
+      if lang then
+        _5_ = a.get(require(("conjure.lang." .. lang)), "config")
+      else
+        _5_ = require("conjure.config")
+      end
+      return a["get-in"](_5_, path)
+    end
+    v_23_0_0 = get0
+    _0_0["get"] = v_23_0_0
+    v_23_0_ = v_23_0_0
+  end
+  _0_0["aniseed/locals"]["get"] = v_23_0_
+  get = v_23_0_
+end
+local assoc = nil
+do
+  local v_23_0_ = nil
+  do
+    local v_23_0_0 = nil
+    local function assoc0(_3_0)
+      local _4_ = _3_0
+      local path = _4_["path"]
+      local val = _4_["val"]
+      local lang = _4_["lang"]
+      local _5_
+      if lang then
+        _5_ = a.get(require(("conjure.lang." .. lang)), "config")
+      else
+        _5_ = require("conjure.config")
+      end
+      return a["assoc-in"](_5_, path, val)
+    end
+    v_23_0_0 = assoc0
+    _0_0["assoc"] = v_23_0_0
+    v_23_0_ = v_23_0_0
+  end
+  _0_0["aniseed/locals"]["assoc"] = v_23_0_
+  assoc = v_23_0_
+end
 return nil

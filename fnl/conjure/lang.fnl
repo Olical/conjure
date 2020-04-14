@@ -7,6 +7,7 @@
 ;; Either through a check on require or for each individual get / call.
 ;; Maybe have specific functions that access things, rather than generic ones.
 ;; TODO Should it be lang or impl?
+;; TODO First load fn that isn't fired on config assoc.
 
 (defn- safe-require [name]
   (let [(ok? result) (xpcall
