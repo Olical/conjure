@@ -50,9 +50,7 @@
               :session-select "ss"
               :session-type "st"}})
 
-(defonce- state
-  {:loaded? false
-   :conn nil})
+(defonce- state {:conn nil})
 
 (defonce- bs (bencode-stream.new))
 
@@ -470,15 +468,12 @@
   (mapping.buf :n config.mappings.session-type
                :conjure.client.clojure-nrepl :display-session-type))
 
-(when (not state.loaded?)
-  (a.assoc state :loaded? true)
-  (vim.schedule
-    (fn []
-      (nvim.ex.augroup :conjure_clojure_nrepl_cleanup)
-      (nvim.ex.autocmd_)
-      (nvim.ex.autocmd
-        "VimLeavePre *"
-        (bridge.viml->lua :conjure.client.clojure-nrepl :disconnect {}))
-      (nvim.ex.augroup :END)
+(defn on-load []
+  (nvim.ex.augroup :conjure_clojure_nrepl_cleanup)
+  (nvim.ex.autocmd_)
+  (nvim.ex.autocmd
+    "VimLeavePre *"
+    (bridge.viml->lua :conjure.client.clojure-nrepl :disconnect {}))
+  (nvim.ex.augroup :END)
 
-      (connect-port-file))))
+  (connect-port-file))

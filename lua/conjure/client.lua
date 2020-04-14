@@ -15,32 +15,45 @@ do
   _0_0 = module_23_0_
 end
 local function _1_(...)
-  _0_0["aniseed/local-fns"] = {require = {config = "conjure.config", fennel = "conjure.aniseed.fennel", nvim = "conjure.aniseed.nvim"}}
-  return {require("conjure.config"), require("conjure.aniseed.fennel"), require("conjure.aniseed.nvim")}
+  _0_0["aniseed/local-fns"] = {require = {a = "conjure.aniseed.core", config = "conjure.config", fennel = "conjure.aniseed.fennel", nvim = "conjure.aniseed.nvim"}}
+  return {require("conjure.aniseed.core"), require("conjure.config"), require("conjure.aniseed.fennel"), require("conjure.aniseed.nvim")}
 end
 local _2_ = _1_(...)
-local config = _2_[1]
-local fennel = _2_[2]
-local nvim = _2_[3]
+local a = _2_[1]
+local config = _2_[2]
+local fennel = _2_[3]
+local nvim = _2_[4]
 do local _ = ({nil, _0_0, nil})[2] end
-local safe_require = nil
+local loaded = nil
+do
+  local v_23_0_ = (_0_0["aniseed/locals"].loaded or {})
+  _0_0["aniseed/locals"]["loaded"] = v_23_0_
+  loaded = v_23_0_
+end
+local smart_require = nil
 do
   local v_23_0_ = nil
-  local function safe_require0(name)
+  local function smart_require0(name)
     local ok_3f, result = nil, nil
     local function _3_()
       return require(name)
     end
     ok_3f, result = xpcall(_3_, fennel.traceback)
+    if a["nil?"](a.get(loaded, name)) then
+      a.assoc(loaded, name, true)
+      if result["on-load"] then
+        result["on-load"]()
+      end
+    end
     if ok_3f then
       return result
     else
       return error(result)
     end
   end
-  v_23_0_ = safe_require0
-  _0_0["aniseed/locals"]["safe-require"] = v_23_0_
-  safe_require = v_23_0_
+  v_23_0_ = smart_require0
+  _0_0["aniseed/locals"]["smart-require"] = v_23_0_
+  smart_require = v_23_0_
 end
 local overrides = nil
 do
@@ -81,7 +94,7 @@ do
       local ft = (overrides.filetype or nvim.bo.filetype)
       local mod_name = config["filetype->module-name"](ft)
       if mod_name then
-        return safe_require(mod_name)
+        return smart_require(mod_name)
       else
         return error(("No Conjure client for filetype: '" .. ft .. "'"))
       end

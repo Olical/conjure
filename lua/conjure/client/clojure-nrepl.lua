@@ -82,7 +82,7 @@ do
 end
 local state = nil
 do
-  local v_23_0_ = (_0_0["aniseed/locals"].state or {["loaded?"] = false, conn = nil})
+  local v_23_0_ = (_0_0["aniseed/locals"].state or {conn = nil})
   _0_0["aniseed/locals"]["state"] = v_23_0_
   state = v_23_0_
 end
@@ -961,14 +961,23 @@ do
   _0_0["aniseed/locals"]["on-filetype"] = v_23_0_
   on_filetype = v_23_0_
 end
-if not state["loaded?"] then
-  a.assoc(state, "loaded?", true)
-  local function _3_()
-    nvim.ex.augroup("conjure_clojure_nrepl_cleanup")
-    nvim.ex.autocmd_()
-    nvim.ex.autocmd("VimLeavePre *", bridge["viml->lua"]("conjure.client.clojure-nrepl", "disconnect", {}))
-    nvim.ex.augroup("END")
-    return connect_port_file()
+local on_load = nil
+do
+  local v_23_0_ = nil
+  do
+    local v_23_0_0 = nil
+    local function on_load0()
+      nvim.ex.augroup("conjure_clojure_nrepl_cleanup")
+      nvim.ex.autocmd_()
+      nvim.ex.autocmd("VimLeavePre *", bridge["viml->lua"]("conjure.client.clojure-nrepl", "disconnect", {}))
+      nvim.ex.augroup("END")
+      return connect_port_file()
+    end
+    v_23_0_0 = on_load0
+    _0_0["on-load"] = v_23_0_0
+    v_23_0_ = v_23_0_0
   end
-  return vim.schedule(_3_)
+  _0_0["aniseed/locals"]["on-load"] = v_23_0_
+  on_load = v_23_0_
 end
+return nil

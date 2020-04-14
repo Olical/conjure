@@ -1,15 +1,22 @@
 (module conjure.client
-  {require {nvim conjure.aniseed.nvim
+  {require {a conjure.aniseed.core
+            nvim conjure.aniseed.nvim
             fennel conjure.aniseed.fennel
             config conjure.config}})
 
-;; TODO First load fn that isn't fired on config assoc.
+(defonce- loaded {})
 
-(defn- safe-require [name]
+(defn- smart-require [name]
   (let [(ok? result) (xpcall
                        (fn []
                          (require name))
                        fennel.traceback)]
+
+    (when (a.nil? (a.get loaded name))
+      (a.assoc loaded name true)
+      (when result.on-load
+        (result.on-load)))
+
     (if ok?
       result
       (error result))))
@@ -28,7 +35,7 @@
   (let [ft (or overrides.filetype nvim.bo.filetype)
         mod-name (config.filetype->module-name ft)]
     (if mod-name
-      (safe-require mod-name)
+      (smart-require mod-name)
       (error (.. "No Conjure client for filetype: '" ft "'")))))
 
 (defn get [k]
