@@ -135,7 +135,7 @@ do
   do
     local v_23_0_0 = nil
     local function on_filetype0()
-      mapping.buf("n", config0.mappings.disconnect, "conjure.client.clojure.nrepl.action", "disconnect")
+      mapping.buf("n", config0.mappings.disconnect, "conjure.client.clojure.nrepl.server", "disconnect")
       mapping.buf("n", config0.mappings["connect-port-file"], "conjure.client.clojure.nrepl.action", "connect-port-file")
       mapping.buf("n", config0.mappings.interrupt, "conjure.client.clojure.nrepl.action", "interrupt")
       mapping.buf("n", config0.mappings["last-exception"], "conjure.client.clojure.nrepl.action", "last-exception")
@@ -168,7 +168,7 @@ do
     local function on_load0()
       nvim.ex.augroup("conjure_clojure_nrepl_cleanup")
       nvim.ex.autocmd_()
-      nvim.ex.autocmd("VimLeavePre *", bridge["viml->lua"]("conjure.client.clojure.nrepl.action", "disconnect", {}))
+      nvim.ex.autocmd("VimLeavePre *", bridge["viml->lua"]("conjure.client.clojure.nrepl.server", "disconnect", {}))
       nvim.ex.augroup("END")
       return action["connect-port-file"]()
     end

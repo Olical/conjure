@@ -30,7 +30,7 @@
 
 (defn on-filetype []
   (mapping.buf :n config.mappings.disconnect
-               :conjure.client.clojure.nrepl.action :disconnect)
+               :conjure.client.clojure.nrepl.server :disconnect)
   (mapping.buf :n config.mappings.connect-port-file
                :conjure.client.clojure.nrepl.action :connect-port-file)
   (mapping.buf :n config.mappings.interrupt
@@ -71,7 +71,7 @@
   (nvim.ex.autocmd_)
   (nvim.ex.autocmd
     "VimLeavePre *"
-    (bridge.viml->lua :conjure.client.clojure.nrepl.action :disconnect {}))
+    (bridge.viml->lua :conjure.client.clojure.nrepl.server :disconnect {}))
   (nvim.ex.augroup :END)
 
   (action.connect-port-file))
