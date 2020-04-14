@@ -69,9 +69,7 @@
       (config.assoc
         (a.assoc
           opts :val
-          (if (a.string? current)
-            val
-            (fennel.eval val))))
+          (fennel.eval val)))
       (a.println target "=" (a.pr-str current)))))
 
 (nvim.ex.function_

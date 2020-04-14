@@ -25,9 +25,9 @@
   {:hud {:width 0.42
          :height 0.3
          :enabled? true}
-   :break-length 0.42
+   :break-length 80
    :trim {:at 10000
-          :to 7000}})
+          :to 6000}})
 
 (def extract
   {:context-header-lines 24})

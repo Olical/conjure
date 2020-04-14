@@ -141,14 +141,7 @@ do
       opts = {lang = _3_, path = str.split(a.last(lang_path), "[^.]+")}
       local current = config.get(opts)
       if val then
-        local function _5_()
-          if a["string?"](current) then
-            return val
-          else
-            return fennel.eval(val)
-          end
-        end
-        return config.assoc(a.assoc(opts, "val", _5_()))
+        return config.assoc(a.assoc(opts, "val", fennel.eval(val)))
       else
         return a.println(target, "=", a["pr-str"](current))
       end

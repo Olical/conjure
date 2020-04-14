@@ -11,7 +11,7 @@
 
 (defn- break []
   (.. (lang.get :comment-prefix)
-      (string.rep "-" (editor.percent-width config.log.break-length))))
+      (string.rep "-" config.log.break-length)))
 
 (defn- log-buf-name []
   (.. "conjure-log-" (nvim.fn.getpid) (lang.get :buf-suffix)))

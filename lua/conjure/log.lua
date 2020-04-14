@@ -36,7 +36,7 @@ local _break = nil
 do
   local v_23_0_ = nil
   local function _break0()
-    return (lang.get("comment-prefix") .. string.rep("-", editor["percent-width"](config.log["break-length"])))
+    return (lang.get("comment-prefix") .. string.rep("-", config.log["break-length"]))
   end
   v_23_0_ = _break0
   _0_0["aniseed/locals"]["break"] = v_23_0_
