@@ -6,7 +6,7 @@ Conjure is an interactive environment for evaluating code and inspecting your pr
 
 _insert demo gif here_
 
-The core features of Conjure are language agnostic (although it's targeted at Lisps for now), with each language module providing their own extra tools. Here's the language support so far, unchecked items are planned for the future.
+The core features of Conjure are language agnostic (although it's targeted at Lisps for now), with each language client providing their own extra tools. Here's the language support so far, unchecked items are planned for the future.
 
  * [x] https://fennel-lang.org/[Fennel] inside Neovim via Lua and https://github.com/Olical/aniseed[Aniseed] (which Conjure is written in)
  * [x] https://clojure.org/[Clojure] over https://nrepl.org/[nREPL]

@@ -4,7 +4,7 @@
             nu conjure.aniseed.nvim.util
             str conjure.aniseed.string
             config conjure.config
-            lang conjure.lang}})
+            client conjure.client}})
 
 (defn- read-range [[srow scol] [erow ecol]]
   (let [lines (nvim.buf_get_lines
@@ -118,7 +118,7 @@
   (let [header (->> (nvim.buf_get_lines
                       0 0 config.extract.context-header-lines false)
                     (str.join "\n"))]
-    (string.match header (lang.get :context-pattern))))
+    (string.match header (client.get :context-pattern))))
 
 (defn prompt [prefix]
   (nvim.fn.input (or prefix "")))

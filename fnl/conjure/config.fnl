@@ -1,9 +1,9 @@
 (module conjure.config
   {require {a conjure.aniseed.core}})
 
-(def langs
-  {:fennel :conjure.lang.fennel-aniseed
-   :clojure :conjure.lang.clojure-nrepl})
+(def clients
+  {:fennel :conjure.client.fennel-aniseed
+   :clojure :conjure.client.clojure-nrepl})
 
 (def mappings
   {:prefix "<localleader>"
@@ -36,22 +36,22 @@
   {:sample-limit 0.3})
 
 (defn filetypes []
-  (a.keys langs))
+  (a.keys clients))
 
 (defn filetype->module-name [filetype]
-  (. langs filetype))
+  (. clients filetype))
 
-(defn get [{: lang : path}]
+(defn get [{: client : path}]
   (a.get-in
-    (if lang
-      (a.get (require (.. "conjure.lang." lang)) :config)
+    (if client
+      (a.get (require (.. "conjure.client." client)) :config)
       (require :conjure.config))
     path))
 
-(defn assoc [{: lang : path : val}]
+(defn assoc [{: client : path : val}]
   (a.assoc-in
-    (if lang
-      (a.get (require (.. "conjure.lang." lang)) :config)
+    (if client
+      (a.get (require (.. "conjure.client." client)) :config)
       (require :conjure.config))
     path
     val))

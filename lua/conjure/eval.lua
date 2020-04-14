@@ -15,15 +15,15 @@ do
   _0_0 = module_23_0_
 end
 local function _1_(...)
-  _0_0["aniseed/local-fns"] = {require = {a = "conjure.aniseed.core", config = "conjure.config", editor = "conjure.editor", extract = "conjure.extract", lang = "conjure.lang", log = "conjure.log", nvim = "conjure.aniseed.nvim", text = "conjure.text"}}
-  return {require("conjure.aniseed.core"), require("conjure.config"), require("conjure.editor"), require("conjure.extract"), require("conjure.lang"), require("conjure.log"), require("conjure.aniseed.nvim"), require("conjure.text")}
+  _0_0["aniseed/local-fns"] = {require = {a = "conjure.aniseed.core", client = "conjure.client", config = "conjure.config", editor = "conjure.editor", extract = "conjure.extract", log = "conjure.log", nvim = "conjure.aniseed.nvim", text = "conjure.text"}}
+  return {require("conjure.aniseed.core"), require("conjure.client"), require("conjure.config"), require("conjure.editor"), require("conjure.extract"), require("conjure.log"), require("conjure.aniseed.nvim"), require("conjure.text")}
 end
 local _2_ = _1_(...)
 local a = _2_[1]
-local config = _2_[2]
-local editor = _2_[3]
-local extract = _2_[4]
-local lang = _2_[5]
+local client = _2_[2]
+local config = _2_[3]
+local editor = _2_[4]
+local extract = _2_[5]
 local log = _2_[6]
 local nvim = _2_[7]
 local text = _2_[8]
@@ -40,7 +40,7 @@ do
         return text["left-sample"](opts.code, sample_limit)
       end
     end
-    return (lang.get("comment-prefix") .. opts.action .. " (" .. opts.origin .. "): " .. _3_())
+    return (client.get("comment-prefix") .. opts.action .. " (" .. opts.origin .. "): " .. _3_())
   end
   v_23_0_ = preview0
   _0_0["aniseed/locals"]["preview"] = v_23_0_
@@ -65,7 +65,7 @@ do
       local opts = {["file-path"] = extract["file-path"](), action = "eval", origin = "file"}
       opts.preview = preview(opts)
       display_request(opts)
-      return lang.call("eval-file", opts)
+      return client.call("eval-file", opts)
     end
     v_23_0_0 = file0
     _0_0["file"] = v_23_0_0
@@ -74,39 +74,39 @@ do
   _0_0["aniseed/locals"]["file"] = v_23_0_
   file = v_23_0_
 end
-local lang_exec_fn = nil
+local client_exec_fn = nil
 do
   local v_23_0_ = nil
-  local function lang_exec_fn0(action, f_name)
+  local function client_exec_fn0(action, f_name)
     local function _3_(opts)
       opts.action = action
       opts.context = (nvim.b.conjure_context or extract.context())
       opts["file-path"] = extract["file-path"]()
       opts.preview = preview(opts)
       display_request(opts)
-      return lang.call(f_name, opts)
+      return client.call(f_name, opts)
     end
     return _3_
   end
-  v_23_0_ = lang_exec_fn0
-  _0_0["aniseed/locals"]["lang-exec-fn"] = v_23_0_
-  lang_exec_fn = v_23_0_
+  v_23_0_ = client_exec_fn0
+  _0_0["aniseed/locals"]["client-exec-fn"] = v_23_0_
+  client_exec_fn = v_23_0_
 end
 local eval_str = nil
 do
-  local v_23_0_ = lang_exec_fn("eval", "eval-str")
+  local v_23_0_ = client_exec_fn("eval", "eval-str")
   _0_0["aniseed/locals"]["eval-str"] = v_23_0_
   eval_str = v_23_0_
 end
 local doc_str = nil
 do
-  local v_23_0_ = lang_exec_fn("doc", "doc-str")
+  local v_23_0_ = client_exec_fn("doc", "doc-str")
   _0_0["aniseed/locals"]["doc-str"] = v_23_0_
   doc_str = v_23_0_
 end
 local def_str = nil
 do
-  local v_23_0_ = lang_exec_fn("def", "def-str")
+  local v_23_0_ = client_exec_fn("def", "def-str")
   _0_0["aniseed/locals"]["def-str"] = v_23_0_
   def_str = v_23_0_
 end
@@ -159,7 +159,7 @@ do
     local v_23_0_0 = nil
     local function marked_form0()
       local mark = extract["prompt-char"]()
-      local comment_prefix = lang.get("comment-prefix")
+      local comment_prefix = client.get("comment-prefix")
       local ok_3f, err = nil, nil
       local function _3_()
         return editor["go-to-mark"](mark)

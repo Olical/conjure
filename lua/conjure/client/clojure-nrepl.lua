@@ -1,6 +1,6 @@
 local _0_0 = nil
 do
-  local name_23_0_ = "conjure.lang.clojure-nrepl"
+  local name_23_0_ = "conjure.client.clojure-nrepl"
   local loaded_23_0_ = package.loaded[name_23_0_]
   local module_23_0_ = nil
   if ("table" == type(loaded_23_0_)) then
@@ -15,18 +15,18 @@ do
   _0_0 = module_23_0_
 end
 local function _1_(...)
-  _0_0["aniseed/local-fns"] = {require = {["bencode-stream"] = "conjure.bencode-stream", a = "conjure.aniseed.core", bencode = "conjure.bencode", bridge = "conjure.bridge", editor = "conjure.editor", eval = "conjure.aniseed.eval", extract = "conjure.extract", lang = "conjure.lang", ll = "conjure.linked-list", log = "conjure.log", mapping = "conjure.mapping", nvim = "conjure.aniseed.nvim", str = "conjure.aniseed.string", text = "conjure.text", uuid = "conjure.uuid", view = "conjure.aniseed.view"}}
-  return {require("conjure.aniseed.core"), require("conjure.bencode"), require("conjure.bencode-stream"), require("conjure.bridge"), require("conjure.editor"), require("conjure.aniseed.eval"), require("conjure.extract"), require("conjure.lang"), require("conjure.linked-list"), require("conjure.log"), require("conjure.mapping"), require("conjure.aniseed.nvim"), require("conjure.aniseed.string"), require("conjure.text"), require("conjure.uuid"), require("conjure.aniseed.view")}
+  _0_0["aniseed/local-fns"] = {require = {["bencode-stream"] = "conjure.bencode-stream", a = "conjure.aniseed.core", bencode = "conjure.bencode", bridge = "conjure.bridge", client = "conjure.client", editor = "conjure.editor", eval = "conjure.aniseed.eval", extract = "conjure.extract", ll = "conjure.linked-list", log = "conjure.log", mapping = "conjure.mapping", nvim = "conjure.aniseed.nvim", str = "conjure.aniseed.string", text = "conjure.text", uuid = "conjure.uuid", view = "conjure.aniseed.view"}}
+  return {require("conjure.aniseed.core"), require("conjure.bencode"), require("conjure.bencode-stream"), require("conjure.bridge"), require("conjure.client"), require("conjure.editor"), require("conjure.aniseed.eval"), require("conjure.extract"), require("conjure.linked-list"), require("conjure.log"), require("conjure.mapping"), require("conjure.aniseed.nvim"), require("conjure.aniseed.string"), require("conjure.text"), require("conjure.uuid"), require("conjure.aniseed.view")}
 end
 local _2_ = _1_(...)
 local a = _2_[1]
 local bencode = _2_[2]
 local bencode_stream = _2_[3]
 local bridge = _2_[4]
-local editor = _2_[5]
-local eval = _2_[6]
-local extract = _2_[7]
-local lang = _2_[8]
+local client = _2_[5]
+local editor = _2_[6]
+local eval = _2_[7]
+local extract = _2_[8]
 local ll = _2_[9]
 local log = _2_[10]
 local mapping = _2_[11]
@@ -96,7 +96,7 @@ local display = nil
 do
   local v_23_0_ = nil
   local function display0(lines, opts)
-    return lang["with-filetype"]("clojure", log.append, lines, opts)
+    return client["with-filetype"]("clojure", log.append, lines, opts)
   end
   v_23_0_ = display0
   _0_0["aniseed/locals"]["display"] = v_23_0_
@@ -361,7 +361,7 @@ do
             cb = a["get-in"](conn, {"msgs", msg.id, "cb"}, _5_)
             local ok_3f, err0 = pcall(cb, msg)
             if not ok_3f then
-              display({("; conjure.lang.clojure-nrepl error: " .. err0)})
+              display({("; conjure.client.clojure-nrepl error: " .. err0)})
             end
             if status_3d(msg, "unknown-session") then
               display({"; Unknown session, correcting"})
@@ -936,23 +936,23 @@ do
   do
     local v_23_0_0 = nil
     local function on_filetype0()
-      mapping.buf("n", config.mappings.disconnect, "conjure.lang.clojure-nrepl", "disconnect")
-      mapping.buf("n", config.mappings["connect-port-file"], "conjure.lang.clojure-nrepl", "connect-port-file")
-      mapping.buf("n", config.mappings.interrupt, "conjure.lang.clojure-nrepl", "interrupt")
-      mapping.buf("n", config.mappings["last-exception"], "conjure.lang.clojure-nrepl", "last-exception")
-      mapping.buf("n", config.mappings["result-1"], "conjure.lang.clojure-nrepl", "result-1")
-      mapping.buf("n", config.mappings["result-2"], "conjure.lang.clojure-nrepl", "result-2")
-      mapping.buf("n", config.mappings["result-3"], "conjure.lang.clojure-nrepl", "result-3")
-      mapping.buf("n", config.mappings["view-source"], "conjure.lang.clojure-nrepl", "view-source")
-      mapping.buf("n", config.mappings["session-clone"], "conjure.lang.clojure-nrepl", "clone-current-session")
-      mapping.buf("n", config.mappings["session-fresh"], "conjure.lang.clojure-nrepl", "clone-fresh-session")
-      mapping.buf("n", config.mappings["session-close"], "conjure.lang.clojure-nrepl", "close-current-session")
-      mapping.buf("n", config.mappings["session-close-all"], "conjure.lang.clojure-nrepl", "close-all-sessions")
-      mapping.buf("n", config.mappings["session-list"], "conjure.lang.clojure-nrepl", "display-sessions")
-      mapping.buf("n", config.mappings["session-next"], "conjure.lang.clojure-nrepl", "next-session")
-      mapping.buf("n", config.mappings["session-prev"], "conjure.lang.clojure-nrepl", "prev-session")
-      mapping.buf("n", config.mappings["session-select"], "conjure.lang.clojure-nrepl", "select-session-interactive")
-      return mapping.buf("n", config.mappings["session-type"], "conjure.lang.clojure-nrepl", "display-session-type")
+      mapping.buf("n", config.mappings.disconnect, "conjure.client.clojure-nrepl", "disconnect")
+      mapping.buf("n", config.mappings["connect-port-file"], "conjure.client.clojure-nrepl", "connect-port-file")
+      mapping.buf("n", config.mappings.interrupt, "conjure.client.clojure-nrepl", "interrupt")
+      mapping.buf("n", config.mappings["last-exception"], "conjure.client.clojure-nrepl", "last-exception")
+      mapping.buf("n", config.mappings["result-1"], "conjure.client.clojure-nrepl", "result-1")
+      mapping.buf("n", config.mappings["result-2"], "conjure.client.clojure-nrepl", "result-2")
+      mapping.buf("n", config.mappings["result-3"], "conjure.client.clojure-nrepl", "result-3")
+      mapping.buf("n", config.mappings["view-source"], "conjure.client.clojure-nrepl", "view-source")
+      mapping.buf("n", config.mappings["session-clone"], "conjure.client.clojure-nrepl", "clone-current-session")
+      mapping.buf("n", config.mappings["session-fresh"], "conjure.client.clojure-nrepl", "clone-fresh-session")
+      mapping.buf("n", config.mappings["session-close"], "conjure.client.clojure-nrepl", "close-current-session")
+      mapping.buf("n", config.mappings["session-close-all"], "conjure.client.clojure-nrepl", "close-all-sessions")
+      mapping.buf("n", config.mappings["session-list"], "conjure.client.clojure-nrepl", "display-sessions")
+      mapping.buf("n", config.mappings["session-next"], "conjure.client.clojure-nrepl", "next-session")
+      mapping.buf("n", config.mappings["session-prev"], "conjure.client.clojure-nrepl", "prev-session")
+      mapping.buf("n", config.mappings["session-select"], "conjure.client.clojure-nrepl", "select-session-interactive")
+      return mapping.buf("n", config.mappings["session-type"], "conjure.client.clojure-nrepl", "display-session-type")
     end
     v_23_0_0 = on_filetype0
     _0_0["on-filetype"] = v_23_0_0
@@ -966,7 +966,7 @@ if not state["loaded?"] then
   local function _3_()
     nvim.ex.augroup("conjure_clojure_nrepl_cleanup")
     nvim.ex.autocmd_()
-    nvim.ex.autocmd("VimLeavePre *", bridge["viml->lua"]("conjure.lang.clojure-nrepl", "disconnect", {}))
+    nvim.ex.autocmd("VimLeavePre *", bridge["viml->lua"]("conjure.client.clojure-nrepl", "disconnect", {}))
     nvim.ex.augroup("END")
     return connect_port_file()
   end

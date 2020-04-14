@@ -21,16 +21,16 @@ end
 local _2_ = _1_(...)
 local a = _2_[1]
 do local _ = ({nil, _0_0, nil})[2] end
-local langs = nil
+local clients = nil
 do
   local v_23_0_ = nil
   do
-    local v_23_0_0 = {clojure = "conjure.lang.clojure-nrepl", fennel = "conjure.lang.fennel-aniseed"}
-    _0_0["langs"] = v_23_0_0
+    local v_23_0_0 = {clojure = "conjure.client.clojure-nrepl", fennel = "conjure.client.fennel-aniseed"}
+    _0_0["clients"] = v_23_0_0
     v_23_0_ = v_23_0_0
   end
-  _0_0["aniseed/locals"]["langs"] = v_23_0_
-  langs = v_23_0_
+  _0_0["aniseed/locals"]["clients"] = v_23_0_
+  clients = v_23_0_
 end
 local mappings = nil
 do
@@ -82,7 +82,7 @@ do
   do
     local v_23_0_0 = nil
     local function filetypes0()
-      return a.keys(langs)
+      return a.keys(clients)
     end
     v_23_0_0 = filetypes0
     _0_0["filetypes"] = v_23_0_0
@@ -97,7 +97,7 @@ do
   do
     local v_23_0_0 = nil
     local function filetype__3emodule_name0(filetype)
-      return langs[filetype]
+      return clients[filetype]
     end
     v_23_0_0 = filetype__3emodule_name0
     _0_0["filetype->module-name"] = v_23_0_0
@@ -113,11 +113,11 @@ do
     local v_23_0_0 = nil
     local function get0(_3_0)
       local _4_ = _3_0
+      local client = _4_["client"]
       local path = _4_["path"]
-      local lang = _4_["lang"]
       local _5_
-      if lang then
-        _5_ = a.get(require(("conjure.lang." .. lang)), "config")
+      if client then
+        _5_ = a.get(require(("conjure.client." .. client)), "config")
       else
         _5_ = require("conjure.config")
       end
@@ -138,11 +138,11 @@ do
     local function assoc0(_3_0)
       local _4_ = _3_0
       local path = _4_["path"]
+      local client = _4_["client"]
       local val = _4_["val"]
-      local lang = _4_["lang"]
       local _5_
-      if lang then
-        _5_ = a.get(require(("conjure.lang." .. lang)), "config")
+      if client then
+        _5_ = a.get(require(("conjure.client." .. client)), "config")
       else
         _5_ = require("conjure.config")
       end

@@ -13,7 +13,7 @@ CONTENTS                                                    *conjure-contents*
     2. Mappings ..................................... |conjure-mappings|
     3. Configuration ........................... |conjure-configuration|
     4. Log ............................................... |conjure-log|
-    5. Languages ................................... |conjure-languages|
+    5. Clients ....................................... |conjure-clients|
 
 ==============================================================================
 INTRODUCTION                                            *conjure-introduction*
@@ -29,7 +29,7 @@ results in your own time.
 
 This documentation will show you which mappings are available by default and
 how to configure them to suit you. You'll also learn about the extra features
-and mappings that are provided by the language specific modules.
+and mappings that are provided by each language client.
 
 ==============================================================================
 MAPPINGS                                                    *conjure-mappings*
@@ -47,7 +47,7 @@ I've also included some commands since they're related to the mappings.
                          this also works with visual selections.
 
 :ConjureConfig [args]    Looks up or sets a configuration value with an
-                         optional language module prefix. The values are
+                         optional language client prefix. The values are
                          actual values, not strings. If you want to set
                          something to a string it must be "double quoted".
                          This is so that you can set booleans, lists and
@@ -107,16 +107,16 @@ K                        Look up documentation for the word under the cursor.
 gd                       Go to the definition of the word under the cursor.
                          Support for this may vary between languages.
 
-Language modules will provide their own extra mappings on top of these, you
-can find links to their help in |conjure-languages|.
+Language clients will provide their own extra mappings on top of these, you
+can find links to their help in |conjure-clients|.
 
 ==============================================================================
 CONFIGURATION                                          *conjure-configuration*
 
 As mentioned in |conjure-mappings|, you can use `:ConjureConfig` to display or
 set the different configuration values within Conjure. Here's the full list of
-configuration available in the core plugin. Each language implementation will
-also have it's own set of mappings and configuration you can tweak.
+configuration available in the core plugin. Each language client will also
+have it's own set of mappings and configuration you can tweak.
 
 As an example, we can change the default prefix from `<localleader>` to `,c`
 with the following command:
@@ -130,13 +130,12 @@ the prefix simply wrap the string in a list.
 
 Now you can hit `ClS` without a prefix in any Conjure support filetype buffer.
 
-`langs.[filetype]`
-            Lua module path to use as an implementation for a filetype. This
-            can be any Lua module that adheres to the Conjure language
-            implementation interface.
+`clients.[filetype]`
+            Lua module path to use as a client for a filetype. This can be any
+            module that adheres to the |conjure-clients| interface.
             Defaults:
-             - `langs.fennel = "conjure.lang.fennel-aniseed"`
-             - `langs.clojure = "conjure.lang.clojure-nrepl"`
+             - `clients.fennel = "conjure.client.fennel-aniseed"`
+             - `clients.clojure = "conjure.client.clojure-nrepl"`
 
 `mappings.prefix`
             The key that proceeds most mappings.
@@ -270,7 +269,7 @@ point so as to not cut a large data structure or string in half resulting in
 broken highlighting in the rest of the log buffer.
 
 ==============================================================================
-LANGUAGES                                                  *conjure-languages*
+CLIENTS                                                      *conjure-clients*
 
 TODO
 

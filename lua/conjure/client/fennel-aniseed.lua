@@ -1,6 +1,6 @@
 local _0_0 = nil
 do
-  local name_23_0_ = "conjure.lang.fennel-aniseed"
+  local name_23_0_ = "conjure.client.fennel-aniseed"
   local loaded_23_0_ = package.loaded[name_23_0_]
   local module_23_0_ = nil
   if ("table" == type(loaded_23_0_)) then
@@ -15,13 +15,13 @@ do
   _0_0 = module_23_0_
 end
 local function _1_(...)
-  _0_0["aniseed/local-fns"] = {require = {a = "conjure.aniseed.core", extract = "conjure.extract", lang = "conjure.lang", log = "conjure.log", mapping = "conjure.mapping", nvim = "conjure.aniseed.nvim", str = "conjure.aniseed.string", text = "conjure.text", view = "conjure.aniseed.view"}}
-  return {require("conjure.aniseed.core"), require("conjure.extract"), require("conjure.lang"), require("conjure.log"), require("conjure.mapping"), require("conjure.aniseed.nvim"), require("conjure.aniseed.string"), require("conjure.text"), require("conjure.aniseed.view")}
+  _0_0["aniseed/local-fns"] = {require = {a = "conjure.aniseed.core", client = "conjure.client", extract = "conjure.extract", log = "conjure.log", mapping = "conjure.mapping", nvim = "conjure.aniseed.nvim", str = "conjure.aniseed.string", text = "conjure.text", view = "conjure.aniseed.view"}}
+  return {require("conjure.aniseed.core"), require("conjure.client"), require("conjure.extract"), require("conjure.log"), require("conjure.mapping"), require("conjure.aniseed.nvim"), require("conjure.aniseed.string"), require("conjure.text"), require("conjure.aniseed.view")}
 end
 local _2_ = _1_(...)
 local a = _2_[1]
-local extract = _2_[2]
-local lang = _2_[3]
+local client = _2_[2]
+local extract = _2_[3]
 local log = _2_[4]
 local mapping = _2_[5]
 local nvim = _2_[6]
@@ -91,7 +91,7 @@ local display = nil
 do
   local v_23_0_ = nil
   local function display0(lines, opts)
-    return lang["with-filetype"]("fennel", log.append, lines, opts)
+    return client["with-filetype"]("fennel", log.append, lines, opts)
   end
   v_23_0_ = display0
   _0_0["aniseed/locals"]["display"] = v_23_0_
@@ -192,7 +192,7 @@ local not_implemented = nil
 do
   local v_23_0_ = nil
   local function not_implemented0()
-    return display({"; Not implemented for conjure.lang.fennel-aniseed"})
+    return display({"; Not implemented for conjure.client.fennel-aniseed"})
   end
   v_23_0_ = not_implemented0
   _0_0["aniseed/locals"]["not-implemented"] = v_23_0_
@@ -293,8 +293,8 @@ do
   do
     local v_23_0_0 = nil
     local function on_filetype0()
-      mapping.buf("n", config.mappings["run-buf-tests"], "conjure.lang.fennel-aniseed", "run-buf-tests")
-      return mapping.buf("n", config.mappings["run-all-tests"], "conjure.lang.fennel-aniseed", "run-all-tests")
+      mapping.buf("n", config.mappings["run-buf-tests"], "conjure.client.fennel-aniseed", "run-buf-tests")
+      return mapping.buf("n", config.mappings["run-all-tests"], "conjure.client.fennel-aniseed", "run-all-tests")
     end
     v_23_0_0 = on_filetype0
     _0_0["on-filetype"] = v_23_0_0

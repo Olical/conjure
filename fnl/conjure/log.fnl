@@ -2,7 +2,7 @@
   {require {a conjure.aniseed.core
             nvim conjure.aniseed.nvim
             buffer conjure.buffer
-            lang conjure.lang
+            client conjure.client
             config conjure.config
             editor conjure.editor}})
 
@@ -10,11 +10,11 @@
   {:hud {:id nil}})
 
 (defn- break []
-  (.. (lang.get :comment-prefix)
+  (.. (client.get :comment-prefix)
       (string.rep "-" config.log.break-length)))
 
 (defn- log-buf-name []
-  (.. "conjure-log-" (nvim.fn.getpid) (lang.get :buf-suffix)))
+  (.. "conjure-log-" (nvim.fn.getpid) (client.get :buf-suffix)))
 
 (defn- upsert-buf []
   (buffer.upsert-hidden (log-buf-name)))

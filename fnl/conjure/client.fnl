@@ -1,12 +1,8 @@
-(module conjure.lang
+(module conjure.client
   {require {nvim conjure.aniseed.nvim
             fennel conjure.aniseed.fennel
             config conjure.config}})
 
-;; TODO Warn when a lang isn't implemented correctly.
-;; Either through a check on require or for each individual get / call.
-;; Maybe have specific functions that access things, rather than generic ones.
-;; TODO Should it be lang or impl?
 ;; TODO First load fn that isn't fired on config assoc.
 
 (defn- safe-require [name]
@@ -33,7 +29,7 @@
         mod-name (config.filetype->module-name ft)]
     (if mod-name
       (safe-require mod-name)
-      (error (.. "No Conjure language for filetype: '" ft "'")))))
+      (error (.. "No Conjure client for filetype: '" ft "'")))))
 
 (defn get [k]
   (-?> (current)

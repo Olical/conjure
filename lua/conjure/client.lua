@@ -1,6 +1,6 @@
 local _0_0 = nil
 do
-  local name_23_0_ = "conjure.lang"
+  local name_23_0_ = "conjure.client"
   local loaded_23_0_ = package.loaded[name_23_0_]
   local module_23_0_ = nil
   if ("table" == type(loaded_23_0_)) then
@@ -83,7 +83,7 @@ do
       if mod_name then
         return safe_require(mod_name)
       else
-        return error(("No Conjure language for filetype: '" .. ft .. "'"))
+        return error(("No Conjure client for filetype: '" .. ft .. "'"))
       end
     end
     v_23_0_0 = current0

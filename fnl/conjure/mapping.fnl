@@ -4,7 +4,7 @@
             str conjure.aniseed.string
             config conjure.config
             extract conjure.extract
-            lang conjure.lang
+            client conjure.client
             eval conjure.eval
             bridge conjure.bridge
             fennel conjure.aniseed.fennel}})
@@ -37,7 +37,7 @@
   (buf :n config.mappings.doc-word :conjure.eval :doc-word)
   (buf :n config.mappings.def-word :conjure.eval :def-word)
 
-  (lang.call :on-filetype))
+  (client.call :on-filetype))
 
 (defn init [filetypes]
   (nvim.ex.augroup :conjure_init_filetypes)
@@ -59,10 +59,10 @@
     (eval.command code)))
 
 (defn config-command [target val]
-  (let [lang-path (str.split target "[^/]+")
-        opts {:lang (when (= 2 (a.count lang-path))
-                      (a.first lang-path))
-              :path (str.split (a.last lang-path) "[^.]+")}
+  (let [client-path (str.split target "[^/]+")
+        opts {:client (when (= 2 (a.count client-path))
+                        (a.first client-path))
+              :path (str.split (a.last client-path) "[^.]+")}
         current (config.get opts)]
 
     (if val

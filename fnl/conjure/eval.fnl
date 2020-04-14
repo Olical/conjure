@@ -2,19 +2,19 @@
   {require {a conjure.aniseed.core
             nvim conjure.aniseed.nvim
             extract conjure.extract
-            lang conjure.lang
+            client conjure.client
             text conjure.text
             config conjure.config
             editor conjure.editor
             log conjure.log}})
 
 ;; TODO Completion.
-;; TODO Languages: Janet, Racket, MIT Scheme.
+;; TODO Clients: Janet, Racket, MIT Scheme.
 
 (defn- preview [opts]
   (let [sample-limit (editor.percent-width
                        config.preview.sample-limit)]
-    (.. (lang.get :comment-prefix)
+    (.. (client.get :comment-prefix)
         opts.action " (" opts.origin "): "
         (if (or (= :file opts.origin) (= :buf opts.origin))
           (text.right-sample opts.file-path sample-limit)
@@ -29,9 +29,9 @@
               :action :eval}]
     (set opts.preview (preview opts))
     (display-request opts)
-    (lang.call :eval-file opts)))
+    (client.call :eval-file opts)))
 
-(defn- lang-exec-fn [action f-name]
+(defn- client-exec-fn [action f-name]
   (fn [opts]
     (set opts.action action)
     (set opts.context
@@ -40,11 +40,11 @@
     (set opts.file-path (extract.file-path))
     (set opts.preview (preview opts))
     (display-request opts)
-    (lang.call f-name opts)))
+    (client.call f-name opts)))
 
-(def- eval-str (lang-exec-fn :eval :eval-str))
-(def- doc-str (lang-exec-fn :doc :doc-str))
-(def- def-str (lang-exec-fn :def :def-str))
+(def- eval-str (client-exec-fn :eval :eval-str))
+(def- doc-str (client-exec-fn :doc :doc-str))
+(def- def-str (client-exec-fn :def :def-str))
 
 (defn current-form [extra-opts]
   (let [form (extract.form {})]
@@ -68,7 +68,7 @@
 
 (defn marked-form []
   (let [mark (extract.prompt-char)
-        comment-prefix (lang.get :comment-prefix)
+        comment-prefix (client.get :comment-prefix)
         (ok? err) (pcall #(editor.go-to-mark mark))]
     (if ok?
       (do 

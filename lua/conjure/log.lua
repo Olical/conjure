@@ -15,15 +15,15 @@ do
   _0_0 = module_23_0_
 end
 local function _1_(...)
-  _0_0["aniseed/local-fns"] = {require = {a = "conjure.aniseed.core", buffer = "conjure.buffer", config = "conjure.config", editor = "conjure.editor", lang = "conjure.lang", nvim = "conjure.aniseed.nvim"}}
-  return {require("conjure.aniseed.core"), require("conjure.buffer"), require("conjure.config"), require("conjure.editor"), require("conjure.lang"), require("conjure.aniseed.nvim")}
+  _0_0["aniseed/local-fns"] = {require = {a = "conjure.aniseed.core", buffer = "conjure.buffer", client = "conjure.client", config = "conjure.config", editor = "conjure.editor", nvim = "conjure.aniseed.nvim"}}
+  return {require("conjure.aniseed.core"), require("conjure.buffer"), require("conjure.client"), require("conjure.config"), require("conjure.editor"), require("conjure.aniseed.nvim")}
 end
 local _2_ = _1_(...)
 local a = _2_[1]
 local buffer = _2_[2]
-local config = _2_[3]
-local editor = _2_[4]
-local lang = _2_[5]
+local client = _2_[3]
+local config = _2_[4]
+local editor = _2_[5]
 local nvim = _2_[6]
 do local _ = ({nil, _0_0, nil})[2] end
 local state = nil
@@ -36,7 +36,7 @@ local _break = nil
 do
   local v_23_0_ = nil
   local function _break0()
-    return (lang.get("comment-prefix") .. string.rep("-", config.log["break-length"]))
+    return (client.get("comment-prefix") .. string.rep("-", config.log["break-length"]))
   end
   v_23_0_ = _break0
   _0_0["aniseed/locals"]["break"] = v_23_0_
@@ -46,7 +46,7 @@ local log_buf_name = nil
 do
   local v_23_0_ = nil
   local function log_buf_name0()
-    return ("conjure-log-" .. nvim.fn.getpid() .. lang.get("buf-suffix"))
+    return ("conjure-log-" .. nvim.fn.getpid() .. client.get("buf-suffix"))
   end
   v_23_0_ = log_buf_name0
   _0_0["aniseed/locals"]["log-buf-name"] = v_23_0_

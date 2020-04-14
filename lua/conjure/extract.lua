@@ -15,13 +15,13 @@ do
   _0_0 = module_23_0_
 end
 local function _1_(...)
-  _0_0["aniseed/local-fns"] = {require = {a = "conjure.aniseed.core", config = "conjure.config", lang = "conjure.lang", nu = "conjure.aniseed.nvim.util", nvim = "conjure.aniseed.nvim", str = "conjure.aniseed.string"}}
-  return {require("conjure.aniseed.core"), require("conjure.config"), require("conjure.lang"), require("conjure.aniseed.nvim.util"), require("conjure.aniseed.nvim"), require("conjure.aniseed.string")}
+  _0_0["aniseed/local-fns"] = {require = {a = "conjure.aniseed.core", client = "conjure.client", config = "conjure.config", nu = "conjure.aniseed.nvim.util", nvim = "conjure.aniseed.nvim", str = "conjure.aniseed.string"}}
+  return {require("conjure.aniseed.core"), require("conjure.client"), require("conjure.config"), require("conjure.aniseed.nvim.util"), require("conjure.aniseed.nvim"), require("conjure.aniseed.string")}
 end
 local _2_ = _1_(...)
 local a = _2_[1]
-local config = _2_[2]
-local lang = _2_[3]
+local client = _2_[2]
+local config = _2_[3]
 local nu = _2_[4]
 local nvim = _2_[5]
 local str = _2_[6]
@@ -284,7 +284,7 @@ do
     local v_23_0_0 = nil
     local function context0()
       local header = str.join("\n", nvim.buf_get_lines(0, 0, config.extract["context-header-lines"], false))
-      return string.match(header, lang.get("context-pattern"))
+      return string.match(header, client.get("context-pattern"))
     end
     v_23_0_0 = context0
     _0_0["context"] = v_23_0_0
