@@ -1,4 +1,4 @@
-(module conjure.client.fennel-aniseed
+(module conjure.client.fennel.aniseed
   {require {nvim conjure.aniseed.nvim
             a conjure.aniseed.core
             str conjure.aniseed.string
@@ -66,7 +66,7 @@
   (eval-str opts))
 
 (defn- not-implemented []
-  (display ["; Not implemented for conjure.client.fennel-aniseed"]))
+  (display ["; Not implemented for conjure.client.fennel.aniseed"]))
 
 (defn def-str [opts]
   (not-implemented))
@@ -97,6 +97,6 @@
 
 (defn on-filetype []
   (mapping.buf :n config.mappings.run-buf-tests
-               :conjure.client.fennel-aniseed :run-buf-tests)
+               :conjure.client.fennel.aniseed :run-buf-tests)
   (mapping.buf :n config.mappings.run-all-tests
-               :conjure.client.fennel-aniseed :run-all-tests))
+               :conjure.client.fennel.aniseed :run-all-tests))

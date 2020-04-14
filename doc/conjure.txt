@@ -56,9 +56,9 @@ I've also included some commands since they're related to the mappings.
                             Show the current mapping prefix.
                           - `:ConjureConfig mapping.prefix "<leader>"`
                             Set the mapping prefix.
-                          - `:ConjureConfig clojure-nrepl/mappings.interrupt`
+                          - `:ConjureConfig clojure.nrepl/mappings.interrupt`
                             Show a language specific configuration value.
-                          - `:ConjureConfig clojure-nrepl/debug? true`
+                          - `:ConjureConfig clojure.nrepl/debug? true`
                             Set a language specific configuration value.
 
 <localleader>ls          Open the log buffer in a new horizontal split window.
@@ -134,8 +134,8 @@ Now you can hit `ClS` without a prefix in any Conjure support filetype buffer.
             Lua module path to use as a client for a filetype. This can be any
             module that adheres to the |conjure-clients| interface.
             Defaults:
-             - `clients.fennel = "conjure.client.fennel-aniseed"`
-             - `clients.clojure = "conjure.client.clojure-nrepl"`
+             - `clients.fennel = "conjure.client.fennel.aniseed"`
+             - `clients.clojure = "conjure.client.clojure.nrepl"`
 
 `mappings.prefix`
             The key that proceeds most mappings.

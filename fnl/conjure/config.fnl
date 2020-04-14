@@ -2,8 +2,8 @@
   {require {a conjure.aniseed.core}})
 
 (def clients
-  {:fennel :conjure.client.fennel-aniseed
-   :clojure :conjure.client.clojure-nrepl})
+  {:fennel :conjure.client.fennel.aniseed
+   :clojure :conjure.client.clojure.nrepl})
 
 (def mappings
   {:prefix "<localleader>"

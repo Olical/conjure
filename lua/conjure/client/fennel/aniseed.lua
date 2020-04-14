@@ -1,6 +1,6 @@
 local _0_0 = nil
 do
-  local name_23_0_ = "conjure.client.fennel-aniseed"
+  local name_23_0_ = "conjure.client.fennel.aniseed"
   local loaded_23_0_ = package.loaded[name_23_0_]
   local module_23_0_ = nil
   if ("table" == type(loaded_23_0_)) then
@@ -192,7 +192,7 @@ local not_implemented = nil
 do
   local v_23_0_ = nil
   local function not_implemented0()
-    return display({"; Not implemented for conjure.client.fennel-aniseed"})
+    return display({"; Not implemented for conjure.client.fennel.aniseed"})
   end
   v_23_0_ = not_implemented0
   _0_0["aniseed/locals"]["not-implemented"] = v_23_0_
@@ -293,8 +293,8 @@ do
   do
     local v_23_0_0 = nil
     local function on_filetype0()
-      mapping.buf("n", config.mappings["run-buf-tests"], "conjure.client.fennel-aniseed", "run-buf-tests")
-      return mapping.buf("n", config.mappings["run-all-tests"], "conjure.client.fennel-aniseed", "run-all-tests")
+      mapping.buf("n", config.mappings["run-buf-tests"], "conjure.client.fennel.aniseed", "run-buf-tests")
+      return mapping.buf("n", config.mappings["run-all-tests"], "conjure.client.fennel.aniseed", "run-all-tests")
     end
     v_23_0_0 = on_filetype0
     _0_0["on-filetype"] = v_23_0_0

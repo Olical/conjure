@@ -1,4 +1,4 @@
-(module conjure.client.clojure-nrepl
+(module conjure.client.clojure.nrepl
   {require {nvim conjure.aniseed.nvim
             a conjure.aniseed.core
             str conjure.aniseed.string
@@ -14,9 +14,10 @@
             bridge conjure.bridge
             editor conjure.editor
             uuid conjure.uuid
-            ll conjure.linked-list}})
+            ll conjure.linked-list
+            config conjure.client.clojure.nrepl.config
+            state conjure.client.clojure.nrepl.state}})
 
-;; TODO Split up into multiple modules.
 ;; TODO Refreshing of namespaces.
 ;; TODO Test running.
 ;; TODO Handle stdin requests.
@@ -26,33 +27,7 @@
 (def buf-suffix ".cljc")
 (def context-pattern "[(]%s*ns%s*(.-)[%s){]")
 (def comment-prefix "; ")
-
-(def config
-  {:debug? false
-   :interrupt {:sample-limit 0.3}
-   :mappings {:disconnect "cd"
-              :connect-port-file "cf"
-
-              :interrupt "ei"
-              :last-exception "ex"
-              :result-1 "e1"
-              :result-2 "e2"
-              :result-3 "e3"
-              :view-source "es"
-
-              :session-clone "sc"
-              :session-fresh "sf"
-              :session-close "sq"
-              :session-close-all "sQ"
-              :session-list "sl"
-              :session-next "sn"
-              :session-prev "sp"
-              :session-select "ss"
-              :session-type "st"}})
-
-(defonce- state {:conn nil})
-
-(defonce- bs (bencode-stream.new))
+(def config config)
 
 (defn- display [lines opts]
   (client.with-filetype :clojure log.append lines opts))
@@ -184,14 +159,14 @@
         (if
           err (display-conn-status err)
           (not chunk) (disconnect)
-          (->> (bencode-stream.decode-all bs chunk)
+          (->> (bencode-stream.decode-all state.bs chunk)
                (a.run!
                  (fn [msg]
                    (dbg "<-" msg)
                    (let [cb (a.get-in conn [:msgs msg.id :cb] #(display-result nil $1))
                          (ok? err) (pcall cb msg)]
                      (when (not ok?)
-                       (display [(.. "; conjure.client.clojure-nrepl error: " err)]))
+                       (display [(.. "; conjure.client.clojure.nrepl error: " err)]))
                      (when (status= msg :unknown-session)
                        (display ["; Unknown session, correcting"])
                        (assume-or-create-session))
@@ -436,44 +411,44 @@
 
 (defn on-filetype []
   (mapping.buf :n config.mappings.disconnect
-               :conjure.client.clojure-nrepl :disconnect)
+               :conjure.client.clojure.nrepl :disconnect)
   (mapping.buf :n config.mappings.connect-port-file
-               :conjure.client.clojure-nrepl :connect-port-file)
+               :conjure.client.clojure.nrepl :connect-port-file)
   (mapping.buf :n config.mappings.interrupt
-               :conjure.client.clojure-nrepl :interrupt)
+               :conjure.client.clojure.nrepl :interrupt)
 
   (mapping.buf :n config.mappings.last-exception
-               :conjure.client.clojure-nrepl :last-exception)
-  (mapping.buf :n config.mappings.result-1 :conjure.client.clojure-nrepl :result-1)
-  (mapping.buf :n config.mappings.result-2 :conjure.client.clojure-nrepl :result-2)
-  (mapping.buf :n config.mappings.result-3 :conjure.client.clojure-nrepl :result-3)
-  (mapping.buf :n config.mappings.view-source :conjure.client.clojure-nrepl :view-source)
+               :conjure.client.clojure.nrepl :last-exception)
+  (mapping.buf :n config.mappings.result-1 :conjure.client.clojure.nrepl :result-1)
+  (mapping.buf :n config.mappings.result-2 :conjure.client.clojure.nrepl :result-2)
+  (mapping.buf :n config.mappings.result-3 :conjure.client.clojure.nrepl :result-3)
+  (mapping.buf :n config.mappings.view-source :conjure.client.clojure.nrepl :view-source)
 
   (mapping.buf :n config.mappings.session-clone
-               :conjure.client.clojure-nrepl :clone-current-session)
+               :conjure.client.clojure.nrepl :clone-current-session)
   (mapping.buf :n config.mappings.session-fresh
-               :conjure.client.clojure-nrepl :clone-fresh-session)
+               :conjure.client.clojure.nrepl :clone-fresh-session)
   (mapping.buf :n config.mappings.session-close
-               :conjure.client.clojure-nrepl :close-current-session)
+               :conjure.client.clojure.nrepl :close-current-session)
   (mapping.buf :n config.mappings.session-close-all
-               :conjure.client.clojure-nrepl :close-all-sessions)
+               :conjure.client.clojure.nrepl :close-all-sessions)
   (mapping.buf :n config.mappings.session-list
-               :conjure.client.clojure-nrepl :display-sessions)
+               :conjure.client.clojure.nrepl :display-sessions)
   (mapping.buf :n config.mappings.session-next
-               :conjure.client.clojure-nrepl :next-session)
+               :conjure.client.clojure.nrepl :next-session)
   (mapping.buf :n config.mappings.session-prev
-               :conjure.client.clojure-nrepl :prev-session)
+               :conjure.client.clojure.nrepl :prev-session)
   (mapping.buf :n config.mappings.session-select
-               :conjure.client.clojure-nrepl :select-session-interactive)
+               :conjure.client.clojure.nrepl :select-session-interactive)
   (mapping.buf :n config.mappings.session-type
-               :conjure.client.clojure-nrepl :display-session-type))
+               :conjure.client.clojure.nrepl :display-session-type))
 
 (defn on-load []
   (nvim.ex.augroup :conjure_clojure_nrepl_cleanup)
   (nvim.ex.autocmd_)
   (nvim.ex.autocmd
     "VimLeavePre *"
-    (bridge.viml->lua :conjure.client.clojure-nrepl :disconnect {}))
+    (bridge.viml->lua :conjure.client.clojure.nrepl :disconnect {}))
   (nvim.ex.augroup :END)
 
   (connect-port-file))
