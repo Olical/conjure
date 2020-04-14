@@ -47,10 +47,14 @@ I've also included some commands since they're related to the mappings.
                          this also works with visual selections.
 
 :ConjureConfig [args]    Looks up or sets a configuration value with an
-                         optional language module prefix.
+                         optional language module prefix. The values are
+                         actual values, not strings. If you want to set
+                         something to a string it must be "double quoted".
+                         This is so that you can set booleans, lists and
+                         numbers where required.
                           - `:ConjureConfig mappings.prefix`
                             Show the current mapping prefix.
-                          - `:ConjureConfig mapping.prefix <leader>`
+                          - `:ConjureConfig mapping.prefix "<leader>"`
                             Set the mapping prefix.
                           - `:ConjureConfig clojure-nrepl/mappings.interrupt`
                             Show a language specific configuration value.
@@ -109,7 +113,130 @@ can find links to their help in |conjure-languages|.
 ==============================================================================
 CONFIGURATION                                          *conjure-configuration*
 
-TODO
+As mentioned in |conjure-mappings|, you can use `:ConjureConfig` to display or
+set the different configuration values within Conjure. Here's the full list of
+configuration available in the core plugin. Each language implementation will
+also have it's own set of mappings and configuration you can tweak.
+
+As an example, we can change the default prefix from `<localleader>` to `,c`
+with the following command:
+>
+    :ConjureConfig mappings.prefix ",c"
+
+All mappings are prefixed by this by default. To have a mapping work without
+the prefix simply wrap the string in a list.
+>
+    :ConjureConfig mappings.log-split ["ClS"]
+
+Now you can hit `ClS` without a prefix in any Conjure support filetype buffer.
+
+`langs.[filetype]`
+            Lua module path to use as an implementation for a filetype. This
+            can be any Lua module that adheres to the Conjure language
+            implementation interface.
+            Defaults:
+             - `langs.fennel = "conjure.lang.fennel-aniseed"`
+             - `langs.clojure = "conjure.lang.clojure-nrepl"`
+
+`mappings.prefix`
+            The key that proceeds most mappings.
+            Default: `"<localleader>"`
+
+`mappings.log-split`
+            Opens the log in a horizontal split.
+            Default: `"ls"`
+
+`mappings.log-vsplit`
+            Opens the log in a vertical split.
+            Default: `"lv"`
+
+`mappings.log-tab`
+            Opens the log in a new tab.
+            Default: `"lt"`
+
+`mappings.eval-current-form`
+            Evaluates the form under the cursor.
+            Default: `"ee"`
+
+`mappings.eval-root-form`
+            Evaluates the root form under the cursor.
+            Default: `"er"`
+
+`mappings.eval-marked-form`
+            Evaluates the form at the marks location.
+            Default: `"em"`
+
+`mappings.eval-word`
+            Evaluates the word under the cursor.
+            Default: `"ew"`
+
+`mappings.eval-file`
+            Evaluates the file from disk.
+            Default: `"ef"`
+
+`mappings.eval-buf`
+            Evaluates the buffer from memory.
+            Default: `"eb"`
+
+`mappings.eval-visual`
+            Evaluates the visual selection.
+            Default: `"E"`
+
+`mappings.eval-motion`
+            Evaluates the following motion.
+            Default: `"E"`
+
+`mappings.doc-word`
+            Looks up documentation for the word under the cursor.
+            Default: `["K"]`
+
+`mappings.def-word`
+            Goes to the definition of the word under the cursor.
+            Default: `["gd"]`
+
+`log.hud.width`
+            Width of the HUD as a percentage of the editor width.
+            A float between 0.0 and 1.0.
+            Default: `0.42`
+
+`log.hud.height`
+            Height of the HUD as a percentage of the editor height.
+            A float between 0.0 and 1.0.
+            Default: `0.3`
+
+`log.hud.enabled?`
+            Should the HUD be displayed at all.
+            Default: `true`
+
+`log.break-length`
+            Length of the break comment (`; ---------...`) between log results
+            in characters.
+            Default: `80`
+
+`log.trim.at`
+            Trim the log once the line count passes the value.
+            Default: `10000`
+
+`log.trim.to`
+            Trim the log down to this many lines when it gets too long.
+            Default: `7000`
+
+`extract.context-header-lines`
+            How many lines of the file should be checked for a context
+            (namespace name) such as `(module foo.bar)` or `(ns foo.bar)`
+            which is used for setting the right context of evaluations.
+            If you have buffers with huge comment headers you may want to set
+            this higher.
+            Default: `24`
+
+`preview.sample-limit`
+            Most evaluation actions create a line in the log buffer with a
+            preview of the code that was evaluated as a reminder. This setting
+            controls how long that preview should be before it trails off into
+            ellipsis. It is a percentage value based on the width of the
+            editor. This is so you can align it with the width of your HUD.
+            A float between 0.0 and 1.0.
+            Default: `0.3`
 
 ==============================================================================
 LOG                                                              *conjure-log*
@@ -136,6 +263,11 @@ The HUD is a floating window that shows you the current tail of the log. It
 tries to show you the top of extremely large results since the top of a data
 structure tends to be more interesting than all the bottom. It'll vanish when
 you move the cursor and can be turned off entirely through configuration.
+
+The log will be automatically trimmed when it gets too long, this can be
+tweaked with configuration. It will attempt to trim to a known good break
+point so as to not cut a large data structure or string in half resulting in
+broken highlighting in the rest of the log buffer.
 
 ==============================================================================
 LANGUAGES                                                  *conjure-languages*
