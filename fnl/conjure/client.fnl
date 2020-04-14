@@ -31,18 +31,32 @@
       result
       (error result))))
 
+(defn- current-filetype []
+  (or overrides.filetype nvim.bo.filetype))
+
+(defn- current-client-module-name []
+  (config.filetype->module-name (current-filetype)))
+
 (defn current []
-  (let [ft (or overrides.filetype nvim.bo.filetype)
-        mod-name (config.filetype->module-name ft)]
+  (let [ft (current-filetype)
+        mod-name (current-client-module-name)]
     (if mod-name
       (smart-require mod-name)
       (error (.. "No Conjure client for filetype: '" ft "'")))))
 
-(defn get [k]
-  (-?> (current)
-       (. k)))
+(defn get [...]
+  (a.get-in (current) [...]))
 
 (defn call [fn-name ...]
+  (let [f (get fn-name)]
+    (if f
+      (f ...)
+      (error (.. "Conjure client '"
+                 (current-client-module-name)
+                 "' doesn't support function: "
+                 fn-name)))))
+
+(defn optional-call [fn-name ...]
   (let [f (get fn-name)]
     (when f
       (f ...))))

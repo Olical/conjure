@@ -76,7 +76,7 @@ do
       buf("v", config.mappings["eval-visual"], "conjure.eval", "selection")
       buf("n", config.mappings["doc-word"], "conjure.eval", "doc-word")
       buf("n", config.mappings["def-word"], "conjure.eval", "def-word")
-      return client.call("on-filetype")
+      return client["optional-call"]("on-filetype")
     end
     v_23_0_0 = on_filetype0
     _0_0["on-filetype"] = v_23_0_0

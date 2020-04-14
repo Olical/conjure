@@ -85,14 +85,34 @@ do
   _0_0["aniseed/locals"]["with-filetype"] = v_23_0_
   with_filetype = v_23_0_
 end
+local current_filetype = nil
+do
+  local v_23_0_ = nil
+  local function current_filetype0()
+    return (overrides.filetype or nvim.bo.filetype)
+  end
+  v_23_0_ = current_filetype0
+  _0_0["aniseed/locals"]["current-filetype"] = v_23_0_
+  current_filetype = v_23_0_
+end
+local current_client_module_name = nil
+do
+  local v_23_0_ = nil
+  local function current_client_module_name0()
+    return config["filetype->module-name"](current_filetype())
+  end
+  v_23_0_ = current_client_module_name0
+  _0_0["aniseed/locals"]["current-client-module-name"] = v_23_0_
+  current_client_module_name = v_23_0_
+end
 local current = nil
 do
   local v_23_0_ = nil
   do
     local v_23_0_0 = nil
     local function current0()
-      local ft = (overrides.filetype or nvim.bo.filetype)
-      local mod_name = config["filetype->module-name"](ft)
+      local ft = current_filetype()
+      local mod_name = current_client_module_name()
       if mod_name then
         return smart_require(mod_name)
       else
@@ -111,13 +131,8 @@ do
   local v_23_0_ = nil
   do
     local v_23_0_0 = nil
-    local function get0(k)
-      local _3_0 = current()
-      if _3_0 then
-        return _3_0[k]
-      else
-        return _3_0
-      end
+    local function get0(...)
+      return a["get-in"](current(), {...})
     end
     v_23_0_0 = get0
     _0_0["get"] = v_23_0_0
@@ -135,6 +150,8 @@ do
       local f = get(fn_name)
       if f then
         return f(...)
+      else
+        return error(("Conjure client '" .. current_client_module_name() .. "' doesn't support function: " .. fn_name))
       end
     end
     v_23_0_0 = call0
@@ -143,5 +160,23 @@ do
   end
   _0_0["aniseed/locals"]["call"] = v_23_0_
   call = v_23_0_
+end
+local optional_call = nil
+do
+  local v_23_0_ = nil
+  do
+    local v_23_0_0 = nil
+    local function optional_call0(fn_name, ...)
+      local f = get(fn_name)
+      if f then
+        return f(...)
+      end
+    end
+    v_23_0_0 = optional_call0
+    _0_0["optional-call"] = v_23_0_0
+    v_23_0_ = v_23_0_0
+  end
+  _0_0["aniseed/locals"]["optional-call"] = v_23_0_
+  optional_call = v_23_0_
 end
 return nil

@@ -37,7 +37,7 @@
   (buf :n config.mappings.doc-word :conjure.eval :doc-word)
   (buf :n config.mappings.def-word :conjure.eval :def-word)
 
-  (client.call :on-filetype))
+  (client.optional-call :on-filetype))
 
 (defn init [filetypes]
   (nvim.ex.augroup :conjure_init_filetypes)
