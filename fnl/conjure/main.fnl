@@ -3,4 +3,4 @@
             config conjure.config}})
 
 (defn main []
-  (mapping.setup-filetypes (config.filetypes)))
+  (mapping.init (config.filetypes)))

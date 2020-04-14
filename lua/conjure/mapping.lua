@@ -76,8 +76,6 @@ do
       buf("v", config.mappings["eval-visual"], "conjure.eval", "selection")
       buf("n", config.mappings["doc-word"], "conjure.eval", "doc-word")
       buf("n", config.mappings["def-word"], "conjure.eval", "def-word")
-      nvim.ex.autocmd("CursorMoved", "<buffer>", bridge["viml->lua"]("conjure.log", "close-hud", {}))
-      nvim.ex.autocmd("CursorMovedI", "<buffer>", bridge["viml->lua"]("conjure.log", "close-hud", {}))
       return lang.call("on-filetype")
     end
     v_23_0_0 = on_filetype0
@@ -87,23 +85,25 @@ do
   _0_0["aniseed/locals"]["on-filetype"] = v_23_0_
   on_filetype = v_23_0_
 end
-local setup_filetypes = nil
+local init = nil
 do
   local v_23_0_ = nil
   do
     local v_23_0_0 = nil
-    local function setup_filetypes0(filetypes)
+    local function init0(filetypes)
       nvim.ex.augroup("conjure_init_filetypes")
       nvim.ex.autocmd_()
       nvim.ex.autocmd("FileType", str.join(",", filetypes), bridge["viml->lua"]("conjure.mapping", "on-filetype", {}))
+      nvim.ex.autocmd("CursorMoved", "*", bridge["viml->lua"]("conjure.log", "close-hud", {}))
+      nvim.ex.autocmd("CursorMovedI", "*", bridge["viml->lua"]("conjure.log", "close-hud", {}))
       return nvim.ex.augroup("END")
     end
-    v_23_0_0 = setup_filetypes0
-    _0_0["setup-filetypes"] = v_23_0_0
+    v_23_0_0 = init0
+    _0_0["init"] = v_23_0_0
     v_23_0_ = v_23_0_0
   end
-  _0_0["aniseed/locals"]["setup-filetypes"] = v_23_0_
-  setup_filetypes = v_23_0_
+  _0_0["aniseed/locals"]["init"] = v_23_0_
+  init = v_23_0_
 end
 local eval_ranged_command = nil
 do

@@ -37,22 +37,20 @@
   (buf :n config.mappings.doc-word :conjure.eval :doc-word)
   (buf :n config.mappings.def-word :conjure.eval :def-word)
 
-  (nvim.ex.autocmd
-    :CursorMoved :<buffer>
-    (bridge.viml->lua :conjure.log :close-hud {}))
-
-  (nvim.ex.autocmd
-    :CursorMovedI :<buffer>
-    (bridge.viml->lua :conjure.log :close-hud {}))
-
   (lang.call :on-filetype))
 
-(defn setup-filetypes [filetypes]
+(defn init [filetypes]
   (nvim.ex.augroup :conjure_init_filetypes)
   (nvim.ex.autocmd_)
   (nvim.ex.autocmd
     :FileType (str.join "," filetypes)
     (bridge.viml->lua :conjure.mapping :on-filetype {}))
+  (nvim.ex.autocmd
+    :CursorMoved :*
+    (bridge.viml->lua :conjure.log :close-hud {}))
+  (nvim.ex.autocmd
+    :CursorMovedI :*
+    (bridge.viml->lua :conjure.log :close-hud {}))
   (nvim.ex.augroup :END))
 
 (defn eval-ranged-command [start end code]

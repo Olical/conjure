@@ -28,7 +28,7 @@ do
   do
     local v_23_0_0 = nil
     local function main0()
-      return mapping["setup-filetypes"](config.filetypes())
+      return mapping.init(config.filetypes())
     end
     v_23_0_0 = main0
     _0_0["main"] = v_23_0_0
