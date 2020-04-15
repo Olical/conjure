@@ -24,7 +24,7 @@ local connection = nil
 do
   local v_23_0_ = nil
   do
-    local v_23_0_0 = {localhost = "127.0.0.1"}
+    local v_23_0_0 = {["default-host"] = "localhost"}
     _0_0["connection"] = v_23_0_0
     v_23_0_ = v_23_0_0
   end

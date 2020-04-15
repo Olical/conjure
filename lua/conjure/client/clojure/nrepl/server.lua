@@ -15,19 +15,20 @@ do
   _0_0 = module_23_0_
 end
 local function _1_(...)
-  _0_0["aniseed/local-fns"] = {require = {["bencode-stream"] = "conjure.bencode-stream", a = "conjure.aniseed.core", bencode = "conjure.bencode", config = "conjure.client.clojure.nrepl.config", state = "conjure.client.clojure.nrepl.state", text = "conjure.text", ui = "conjure.client.clojure.nrepl.ui", uuid = "conjure.uuid", view = "conjure.aniseed.view"}}
-  return {require("conjure.aniseed.core"), require("conjure.bencode"), require("conjure.bencode-stream"), require("conjure.client.clojure.nrepl.config"), require("conjure.client.clojure.nrepl.state"), require("conjure.text"), require("conjure.client.clojure.nrepl.ui"), require("conjure.uuid"), require("conjure.aniseed.view")}
+  _0_0["aniseed/local-fns"] = {require = {["bencode-stream"] = "conjure.bencode-stream", a = "conjure.aniseed.core", bencode = "conjure.bencode", config = "conjure.client.clojure.nrepl.config", net = "conjure.net", state = "conjure.client.clojure.nrepl.state", text = "conjure.text", ui = "conjure.client.clojure.nrepl.ui", uuid = "conjure.uuid", view = "conjure.aniseed.view"}}
+  return {require("conjure.aniseed.core"), require("conjure.bencode"), require("conjure.bencode-stream"), require("conjure.client.clojure.nrepl.config"), require("conjure.net"), require("conjure.client.clojure.nrepl.state"), require("conjure.text"), require("conjure.client.clojure.nrepl.ui"), require("conjure.uuid"), require("conjure.aniseed.view")}
 end
 local _2_ = _1_(...)
 local a = _2_[1]
 local bencode = _2_[2]
 local bencode_stream = _2_[3]
 local config = _2_[4]
-local state = _2_[5]
-local text = _2_[6]
-local ui = _2_[7]
-local uuid = _2_[8]
-local view = _2_[9]
+local net = _2_[5]
+local state = _2_[6]
+local text = _2_[7]
+local ui = _2_[8]
+local uuid = _2_[9]
+local view = _2_[10]
 do local _ = ({nil, _0_0, nil})[2] end
 local with_conn_or_warn = nil
 do
@@ -92,7 +93,7 @@ do
   local v_23_0_ = nil
   local function display_conn_status0(status)
     local function _3_(conn)
-      return ui.display({("; " .. conn.host .. ":" .. conn.port .. " (" .. status .. ")")}, {["break?"] = true})
+      return ui.display({("; " .. conn["raw-host"] .. ":" .. conn.port .. " (" .. status .. ")")}, {["break?"] = true})
     end
     return with_conn_or_warn(_3_)
   end
@@ -329,12 +330,13 @@ do
       local host = _4_["host"]
       local port = _4_["port"]
       do
-        local conn = {host = host, msgs = {}, port = port, session = nil, sock = vim.loop.new_tcp()}
+        local resolved_host = net.resolve(host)
+        local conn = {["raw-host"] = host, host = resolved_host, msgs = {}, port = port, session = nil, sock = vim.loop.new_tcp()}
         if a.get(state, "conn") then
           disconnect()
         end
         a.assoc(state, "conn", conn)
-        return (conn.sock):connect(host, port, handle_connect_fn())
+        return (conn.sock):connect(resolved_host, port, handle_connect_fn())
       end
     end
     v_23_0_0 = connect0

@@ -2,6 +2,7 @@
   {require {a conjure.aniseed.core
             uuid conjure.uuid
             text conjure.text
+            net conjure.net
             view conjure.aniseed.view
             bencode conjure.bencode
             bencode-stream conjure.bencode-stream
@@ -39,7 +40,7 @@
 (defn- display-conn-status [status]
   (with-conn-or-warn
     (fn [conn]
-      (ui.display [(.. "; " conn.host ":" conn.port " (" status ")")]
+      (ui.display [(.. "; " conn.raw-host ":" conn.port " (" status ")")]
                   {:break? true}))))
 
 (defn disconnect []
@@ -134,8 +135,10 @@
             (assume-or-create-session)))))))
 
 (defn connect [{: host : port}]
-  (let [conn {:sock (vim.loop.new_tcp)
-              :host host
+  (let [resolved-host (net.resolve host)
+        conn {:sock (vim.loop.new_tcp)
+              :host resolved-host
+              :raw-host host
               :port port
               :msgs {}
               :session nil}]
@@ -144,7 +147,7 @@
       (disconnect))
 
     (a.assoc state :conn conn)
-    (conn.sock:connect host port (handle-connect-fn))))
+    (conn.sock:connect resolved-host port (handle-connect-fn))))
 
 (defn eval [opts cb]
   (with-conn-or-warn

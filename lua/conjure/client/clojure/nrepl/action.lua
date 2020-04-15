@@ -67,7 +67,7 @@ do
         end
       end
       if port then
-        return server.connect({host = config.connection.localhost, port = port})
+        return server.connect({host = config.connection["default-host"], port = port})
       else
         return ui.display({"; No .nrepl-port file found"})
       end
@@ -88,7 +88,7 @@ do
       local args = {...}
       local _3_
       if (1 == a.count(args)) then
-        _3_ = config.connection.localhost
+        _3_ = config.connection["default-host"]
       else
         _3_ = a.first(args)
       end
