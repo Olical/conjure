@@ -9,7 +9,6 @@
             log conjure.log}})
 
 ;; TODO Completion.
-;; TODO Clients: Janet, Racket, MIT Scheme.
 
 (defn- preview [opts]
   (let [sample-limit (editor.percent-width

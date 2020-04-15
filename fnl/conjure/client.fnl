@@ -4,6 +4,9 @@
             fennel conjure.aniseed.fennel
             config conjure.config}})
 
+;; TODO Clients: Janet, Racket, MIT Scheme.
+;; https://gitlab.com/technomancy/ogion
+
 (defonce- loaded {})
 
 (defn- load-module [name]
