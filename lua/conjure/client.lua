@@ -42,7 +42,7 @@ do
     if a["nil?"](a.get(loaded, name)) then
       a.assoc(loaded, name, true)
       if result["on-load"] then
-        result["on-load"]()
+        vim.schedule(result["on-load"])
       end
     end
     if ok_3f then

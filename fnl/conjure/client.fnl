@@ -18,7 +18,7 @@
     (when (a.nil? (a.get loaded name))
       (a.assoc loaded name true)
       (when result.on-load
-        (result.on-load)))
+        (vim.schedule result.on-load)))
 
     (if ok?
       result

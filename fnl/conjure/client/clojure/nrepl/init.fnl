@@ -10,6 +10,7 @@
 ;; TODO Handle stdin requests.
 ;; TODO Name sessions after cities (or similar) and show type in list.
 ;; TODO Have all auto completion tools working.
+;; TODO Pretty error output.
 
 (def buf-suffix ".cljc")
 (def context-pattern "[(]%s*ns%s*(.-)[%s){]")
