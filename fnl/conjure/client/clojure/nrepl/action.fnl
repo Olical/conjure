@@ -32,9 +32,17 @@
   (let [port (-?> (a.slurp ".nrepl-port") (tonumber))]
     (if port
       (server.connect
-        {:host "127.0.0.1"
+        {:host config.connection.localhost
          :port port})
       (ui.display ["; No .nrepl-port file found"]))))
+
+(defn connect-host-port [...]
+  (let [args [...]]
+    (server.connect
+      {:host (if (= 1 (a.count args))
+               config.connection.localhost
+               (a.first args))
+       :port (tonumber (a.last args))})))
 
 (defn eval-str [opts]
   (server.with-conn-or-warn

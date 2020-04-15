@@ -20,6 +20,17 @@ local function _1_(...)
 end
 local _2_ = _1_(...)
 do local _ = ({nil, _0_0, nil})[2] end
+local connection = nil
+do
+  local v_23_0_ = nil
+  do
+    local v_23_0_0 = {localhost = "127.0.0.1"}
+    _0_0["connection"] = v_23_0_0
+    v_23_0_ = v_23_0_0
+  end
+  _0_0["aniseed/locals"]["connection"] = v_23_0_
+  connection = v_23_0_
+end
 local debug_3f = nil
 do
   local v_23_0_ = nil

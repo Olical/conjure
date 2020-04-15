@@ -64,7 +64,13 @@
   (mapping.buf :n config.mappings.session-select
                :conjure.client.clojure.nrepl.action :select-session-interactive)
   (mapping.buf :n config.mappings.session-type
-               :conjure.client.clojure.nrepl.action :display-session-type))
+               :conjure.client.clojure.nrepl.action :display-session-type)
+
+  (nvim.ex.command_
+    "-nargs=+ -buffer ConjureConnect"
+    (bridge.viml->lua
+      :conjure.client.clojure.nrepl.action :connect-host-port
+      {:args "<f-args>"})))
 
 (defn on-load []
   (nvim.ex.augroup :conjure_clojure_nrepl_cleanup)

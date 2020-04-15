@@ -41,6 +41,7 @@
 (defn filetype->module-name [filetype]
   (. clients filetype))
 
+;; TODO Try to require conjure.client.* then try global.
 (defn get [{: client : path}]
   (a.get-in
     (if client

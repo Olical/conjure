@@ -67,7 +67,7 @@ do
         end
       end
       if port then
-        return server.connect({host = "127.0.0.1", port = port})
+        return server.connect({host = config.connection.localhost, port = port})
       else
         return ui.display({"; No .nrepl-port file found"})
       end
@@ -78,6 +78,28 @@ do
   end
   _0_0["aniseed/locals"]["connect-port-file"] = v_23_0_
   connect_port_file = v_23_0_
+end
+local connect_host_port = nil
+do
+  local v_23_0_ = nil
+  do
+    local v_23_0_0 = nil
+    local function connect_host_port0(...)
+      local args = {...}
+      local _3_
+      if (1 == a.count(args)) then
+        _3_ = config.connection.localhost
+      else
+        _3_ = a.first(args)
+      end
+      return server.connect({host = _3_, port = tonumber(a.last(args))})
+    end
+    v_23_0_0 = connect_host_port0
+    _0_0["connect-host-port"] = v_23_0_0
+    v_23_0_ = v_23_0_0
+  end
+  _0_0["aniseed/locals"]["connect-host-port"] = v_23_0_
+  connect_host_port = v_23_0_
 end
 local eval_str = nil
 do

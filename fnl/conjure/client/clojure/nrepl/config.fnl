@@ -1,5 +1,8 @@
 (module conjure.client.clojure.nrepl.config)
 
+(def connection
+  {:localhost "127.0.0.1"})
+
 (def debug?
   false)
 
