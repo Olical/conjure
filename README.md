@@ -29,6 +29,10 @@ I strongly suggest you use a tag and then subscribe to releases through the GitH
 > Warning! This implementation of Conjure is nearing end of life and will soon be replaced by the `develop` branch, a full rewrite. To keep things as they are please use the `legacy-jvm` branch which will remain in the repository for users who do not wish to upgrade.
 
 ```viml
+" Current latest version.
+Plug 'Olical/conjure', { 'tag': 'v2.1.2', 'do': 'bin/compile' }
+
+" Archive branch which won't change after the rewrite is finished and released.
 Plug 'Olical/conjure', { 'branch': 'legacy-jvm', 'do': 'bin/compile' }
 ```
 
