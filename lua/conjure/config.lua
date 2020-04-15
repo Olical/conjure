@@ -15,11 +15,12 @@ do
   _0_0 = module_23_0_
 end
 local function _1_(...)
-  _0_0["aniseed/local-fns"] = {require = {a = "conjure.aniseed.core"}}
-  return {require("conjure.aniseed.core")}
+  _0_0["aniseed/local-fns"] = {require = {a = "conjure.aniseed.core", str = "conjure.aniseed.string"}}
+  return {require("conjure.aniseed.core"), require("conjure.aniseed.string")}
 end
 local _2_ = _1_(...)
 local a = _2_[1]
+local str = _2_[2]
 do local _ = ({nil, _0_0, nil})[2] end
 local clients = nil
 do
@@ -106,6 +107,27 @@ do
   _0_0["aniseed/locals"]["filetype->module-name"] = v_23_0_
   filetype__3emodule_name = v_23_0_
 end
+local require_client = nil
+do
+  local v_23_0_ = nil
+  local function require_client0(suffix)
+    local attempts = {("conjure.client." .. suffix), suffix}
+    local function _3_(name)
+      local ok_3f, mod_or_err = nil, nil
+      local function _4_()
+        return require(name)
+      end
+      ok_3f, mod_or_err = pcall(_4_)
+      if ok_3f then
+        return mod_or_err
+      end
+    end
+    return (a.some(_3_, attempts) or error(("No Conjure client found, attempted: " .. str.join(", ", attempts))))
+  end
+  v_23_0_ = require_client0
+  _0_0["aniseed/locals"]["require-client"] = v_23_0_
+  require_client = v_23_0_
+end
 local get = nil
 do
   local v_23_0_ = nil
@@ -117,7 +139,7 @@ do
       local path = _4_["path"]
       local _5_
       if client then
-        _5_ = a.get(require(("conjure.client." .. client)), "config")
+        _5_ = a.get(require_client(client), "config")
       else
         _5_ = require("conjure.config")
       end
@@ -142,7 +164,7 @@ do
       local val = _4_["val"]
       local _5_
       if client then
-        _5_ = a.get(require(("conjure.client." .. client)), "config")
+        _5_ = a.get(require_client(client), "config")
       else
         _5_ = require("conjure.config")
       end

@@ -1,5 +1,6 @@
 (module conjure.config
-  {require {a conjure.aniseed.core}})
+  {require {a conjure.aniseed.core
+            str conjure.aniseed.string}})
 
 (def clients
   {:fennel :conjure.client.fennel.aniseed
@@ -41,18 +42,29 @@
 (defn filetype->module-name [filetype]
   (. clients filetype))
 
-;; TODO Try to require conjure.client.* then try global.
+(defn- require-client [suffix]
+  "Requires a client module, will try with a 'conjure.client.' prefix first
+  then unprefixed. This allows internal and external modules to work."
+  (let [attempts [(.. "conjure.client." suffix) suffix]]
+    (or (a.some
+          (fn [name]
+            (let [(ok? mod-or-err) (pcall #(require name))]
+              (when ok?
+                mod-or-err)))
+          attempts)
+        (error (.. "No Conjure client found, attempted: " (str.join ", " attempts))))))
+
 (defn get [{: client : path}]
   (a.get-in
     (if client
-      (a.get (require (.. "conjure.client." client)) :config)
+      (a.get (require-client client) :config)
       (require :conjure.config))
     path))
 
 (defn assoc [{: client : path : val}]
   (a.assoc-in
     (if client
-      (a.get (require (.. "conjure.client." client)) :config)
+      (a.get (require-client client) :config)
       (require :conjure.config))
     path
     val))

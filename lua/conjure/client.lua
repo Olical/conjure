@@ -30,10 +30,10 @@ do
   _0_0["aniseed/locals"]["loaded"] = v_23_0_
   loaded = v_23_0_
 end
-local smart_require = nil
+local load_module = nil
 do
   local v_23_0_ = nil
-  local function smart_require0(name)
+  local function load_module0(name)
     local ok_3f, result = nil, nil
     local function _3_()
       return require(name)
@@ -51,9 +51,9 @@ do
       return error(result)
     end
   end
-  v_23_0_ = smart_require0
-  _0_0["aniseed/locals"]["smart-require"] = v_23_0_
-  smart_require = v_23_0_
+  v_23_0_ = load_module0
+  _0_0["aniseed/locals"]["load-module"] = v_23_0_
+  load_module = v_23_0_
 end
 local overrides = nil
 do
@@ -114,7 +114,7 @@ do
       local ft = current_filetype()
       local mod_name = current_client_module_name()
       if mod_name then
-        return smart_require(mod_name)
+        return load_module(mod_name)
       else
         return error(("No Conjure client for filetype: '" .. ft .. "'"))
       end

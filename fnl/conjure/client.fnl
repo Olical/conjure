@@ -6,7 +6,7 @@
 
 (defonce- loaded {})
 
-(defn- smart-require [name]
+(defn- load-module [name]
   (let [(ok? result) (xpcall
                        (fn []
                          (require name))
@@ -41,7 +41,7 @@
   (let [ft (current-filetype)
         mod-name (current-client-module-name)]
     (if mod-name
-      (smart-require mod-name)
+      (load-module mod-name)
       (error (.. "No Conjure client for filetype: '" ft "'")))))
 
 (defn get [...]
