@@ -1,6 +1,6 @@
 # Conjure [![Slack](https://img.shields.io/badge/chat-%23conjure-green.svg?style=flat)](http://clojurians.net)
 
-> I'm working on a rewrite on the `develop` branch. It doesn't require an extra JVM and it supports multiple Lisps! Keep an eye on my Twitter ([@OliverCaldwell][twitter]) or the `#conjure` Slack channel for updates.
+> I'm working on a rewrite on the `develop` branch (almost done!). It doesn't require an extra JVM and it supports multiple Lisps! Keep an eye on my Twitter ([@OliverCaldwell][twitter]) or the `#conjure` Slack channel for updates.
 
 [Clojure][] (and [ClojureScript][]) tooling for [Neovim][] over a socket prepl connection.
 
@@ -26,8 +26,10 @@ Use your favourite plugin manager, I recommend [vim-plug][], to fetch and AOT co
 
 I strongly suggest you use a tag and then subscribe to releases through the GitHub repository. This will allow you to keep up to date without having your workflow disrupted by an unexpected breaking change, not that I _intend_ to release any.
 
+> Warning! This implementation of Conjure is nearing end of life and will soon be replaced by the `develop` branch, a full rewrite. To keep things as they are please use the `legacy-jvm` branch which will remain in the repository for users who do not wish to upgrade.
+
 ```viml
-Plug 'Olical/conjure', { 'tag': 'v2.1.2', 'do': 'bin/compile' }
+Plug 'Olical/conjure', { 'branch': 'legacy-jvm', 'do': 'bin/compile' }
 ```
 
 No dependencies are required in your project, tools for features such as completion and namespace refreshing will be injected upon connection. The initial connection to a prepl will take a few seconds because of this, I think it's worth it.
