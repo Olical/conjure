@@ -57,21 +57,24 @@
           (fn [])))
       (server.eval opts (or opts.cb #(ui.display-result opts $1))))))
 
+(defn display-commented-fn [key]
+  (server.with-all-msgs-fn
+    (fn [msgs]
+      (-> msgs
+          (->> (a.map #(a.get $1 key))
+               (a.filter a.string?)
+               (a.rest)
+               (str.join "\n"))
+          (text.prefixed-lines "; ")
+          (ui.display)))))
+
 (defn doc-str [opts]
   (eval-str
     (a.merge
       opts
       {:code (.. "(do (require 'clojure.repl)"
                  "    (clojure.repl/doc " opts.code "))")
-       :cb (server.with-all-msgs-fn
-             (fn [msgs]
-               (-> msgs
-                   (->> (a.map #(a.get $1 :out))
-                        (a.filter a.string?)
-                        (a.rest)
-                        (str.join "\n"))
-                   (text.prefixed-lines "; ")
-                   (ui.display))))})))
+       :cb (display-commented-fn :out)})))
 
 (defn- jar->zip [path]
   (if (text.starts-with path "jar:file:")
@@ -230,3 +233,12 @@
               (if (<= 1 n (a.count sessions))
                 (server.assume-session (a.get sessions n))
                 (ui.display ["; Invalid session number."])))))))))
+
+(defn run-all-tests []
+  (ui.display ["; run-all-tests"] {:break? true})
+  (server.eval
+    {:code "(require 'clojure.test) (clojure.test/run-all-tests)"}
+    (display-commented-fn :out)))
+
+(defn run-ns-tests [])
+(defn run-current-test [])

@@ -135,19 +135,34 @@ do
   _0_0["aniseed/locals"]["eval-str"] = v_23_0_
   eval_str = v_23_0_
 end
+local display_commented_fn = nil
+do
+  local v_23_0_ = nil
+  do
+    local v_23_0_0 = nil
+    local function display_commented_fn0(key)
+      local function _3_(msgs)
+        local function _4_(_241)
+          return a.get(_241, key)
+        end
+        return ui.display(text["prefixed-lines"](str.join("\n", a.rest(a.filter(a["string?"], a.map(_4_, msgs)))), "; "))
+      end
+      return server["with-all-msgs-fn"](_3_)
+    end
+    v_23_0_0 = display_commented_fn0
+    _0_0["display-commented-fn"] = v_23_0_0
+    v_23_0_ = v_23_0_0
+  end
+  _0_0["aniseed/locals"]["display-commented-fn"] = v_23_0_
+  display_commented_fn = v_23_0_
+end
 local doc_str = nil
 do
   local v_23_0_ = nil
   do
     local v_23_0_0 = nil
     local function doc_str0(opts)
-      local function _3_(msgs)
-        local function _4_(_241)
-          return a.get(_241, "out")
-        end
-        return ui.display(text["prefixed-lines"](str.join("\n", a.rest(a.filter(a["string?"], a.map(_4_, msgs)))), "; "))
-      end
-      return eval_str(a.merge(opts, {cb = server["with-all-msgs-fn"](_3_), code = ("(do (require 'clojure.repl)" .. "    (clojure.repl/doc " .. opts.code .. "))")}))
+      return eval_str(a.merge(opts, {cb = display_commented_fn("out"), code = ("(do (require 'clojure.repl)" .. "    (clojure.repl/doc " .. opts.code .. "))")}))
     end
     v_23_0_0 = doc_str0
     _0_0["doc-str"] = v_23_0_0
@@ -538,5 +553,49 @@ do
   end
   _0_0["aniseed/locals"]["select-session-interactive"] = v_23_0_
   select_session_interactive = v_23_0_
+end
+local run_all_tests = nil
+do
+  local v_23_0_ = nil
+  do
+    local v_23_0_0 = nil
+    local function run_all_tests0()
+      ui.display({"; run-all-tests"}, {["break?"] = true})
+      return server.eval({code = "(require 'clojure.test) (clojure.test/run-all-tests)"}, display_commented_fn("out"))
+    end
+    v_23_0_0 = run_all_tests0
+    _0_0["run-all-tests"] = v_23_0_0
+    v_23_0_ = v_23_0_0
+  end
+  _0_0["aniseed/locals"]["run-all-tests"] = v_23_0_
+  run_all_tests = v_23_0_
+end
+local run_ns_tests = nil
+do
+  local v_23_0_ = nil
+  do
+    local v_23_0_0 = nil
+    local function run_ns_tests0()
+    end
+    v_23_0_0 = run_ns_tests0
+    _0_0["run-ns-tests"] = v_23_0_0
+    v_23_0_ = v_23_0_0
+  end
+  _0_0["aniseed/locals"]["run-ns-tests"] = v_23_0_
+  run_ns_tests = v_23_0_
+end
+local run_current_test = nil
+do
+  local v_23_0_ = nil
+  do
+    local v_23_0_0 = nil
+    local function run_current_test0()
+    end
+    v_23_0_0 = run_current_test0
+    _0_0["run-current-test"] = v_23_0_0
+    v_23_0_ = v_23_0_0
+  end
+  _0_0["aniseed/locals"]["run-current-test"] = v_23_0_
+  run_current_test = v_23_0_
 end
 return nil

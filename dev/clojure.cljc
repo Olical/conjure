@@ -1,4 +1,5 @@
-(ns dev.foo)
+(ns dev.foo
+  (:require [clojure.test :as t]))
 
 (defn add [a b]
   (+ a b))
@@ -8,6 +9,14 @@
 (println "foo" #?(:clj :clojure! :cljs :clojurescript!))
 
 *1 *2 *3 *e
+
+(t/deftest test-a
+  (t/testing "foo"
+    (t/is (= 10 10))))
+
+(t/deftest test-b
+  (t/testing "bar"
+    (t/is (= 10 10))))
 
 (comment
   (throw (Error. "ohno"))

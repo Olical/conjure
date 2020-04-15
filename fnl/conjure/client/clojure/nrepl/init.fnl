@@ -6,7 +6,6 @@
             action conjure.client.clojure.nrepl.action}})
 
 ;; TODO Refreshing of namespaces.
-;; TODO Test running.
 ;; TODO Handle stdin requests.
 ;; TODO Name sessions after cities (or similar) and show type in list.
 ;; TODO Have all auto completion tools working.
@@ -66,6 +65,13 @@
                :conjure.client.clojure.nrepl.action :select-session-interactive)
   (mapping.buf :n config.mappings.session-type
                :conjure.client.clojure.nrepl.action :display-session-type)
+
+  (mapping.buf :n config.mappings.run-all-tests
+               :conjure.client.clojure.nrepl.action :run-all-tests)
+  (mapping.buf :n config.mappings.run-ns-tests
+               :conjure.client.clojure.nrepl.action :run-ns-tests)
+  (mapping.buf :n config.mappings.run-current-test
+               :conjure.client.clojure.nrepl.action :run-current-test)
 
   (nvim.ex.command_
     "-nargs=+ -buffer ConjureConnect"

@@ -152,6 +152,9 @@ do
       mapping.buf("n", config0.mappings["session-prev"], "conjure.client.clojure.nrepl.action", "prev-session")
       mapping.buf("n", config0.mappings["session-select"], "conjure.client.clojure.nrepl.action", "select-session-interactive")
       mapping.buf("n", config0.mappings["session-type"], "conjure.client.clojure.nrepl.action", "display-session-type")
+      mapping.buf("n", config0.mappings["run-all-tests"], "conjure.client.clojure.nrepl.action", "run-all-tests")
+      mapping.buf("n", config0.mappings["run-ns-tests"], "conjure.client.clojure.nrepl.action", "run-ns-tests")
+      mapping.buf("n", config0.mappings["run-current-test"], "conjure.client.clojure.nrepl.action", "run-current-test")
       return nvim.ex.command_("-nargs=+ -buffer ConjureConnect", bridge["viml->lua"]("conjure.client.clojure.nrepl.action", "connect-host-port", {args = "<f-args>"}))
     end
     v_23_0_0 = on_filetype0

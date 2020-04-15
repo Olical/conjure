@@ -28,4 +28,8 @@
    :session-next "sn"
    :session-prev "sp"
    :session-select "ss"
-   :session-type "st"})
+   :session-type "st"
+
+   :run-all-tests "ta"
+   :run-ns-tests "tn"
+   :run-current-test "tc"})
