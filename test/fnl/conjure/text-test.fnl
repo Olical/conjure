@@ -20,3 +20,13 @@
   (t.pr= [] (text.prefixed-lines "" "; ") "nothing to nothing")
   (t.pr= ["; foo"] (text.prefixed-lines "foo" "; ") "single line")
   (t.pr= ["; foo" "; bar"] (text.prefixed-lines "foo\nbar" "; ") "multiple lines"))
+
+(deftest starts-with
+  (t.= true (text.starts-with "foobar" "foo"))
+  (t.= true (text.starts-with "foobar" "foob"))
+  (t.= false (text.starts-with "foobar" "foox")))
+
+(deftest ends-with
+  (t.= true (text.ends-with "foobar" "bar"))
+  (t.= true (text.ends-with "foobar" "obar"))
+  (t.= false (text.ends-with "foobar" "xbar")))

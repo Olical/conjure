@@ -57,24 +57,21 @@
           (fn [])))
       (server.eval opts (or opts.cb #(ui.display-result opts $1))))))
 
-(defn display-commented-fn [key]
-  (server.with-all-msgs-fn
-    (fn [msgs]
-      (-> msgs
-          (->> (a.map #(a.get $1 key))
-               (a.filter a.string?)
-               (a.rest)
-               (str.join "\n"))
-          (text.prefixed-lines "; ")
-          (ui.display)))))
-
 (defn doc-str [opts]
   (eval-str
     (a.merge
       opts
       {:code (.. "(do (require 'clojure.repl)"
                  "    (clojure.repl/doc " opts.code "))")
-       :cb (display-commented-fn :out)})))
+       :cb (server.with-all-msgs-fn
+             (fn [msgs]
+               (-> msgs
+                   (->> (a.map #(a.get $1 :out))
+                        (a.filter a.string?)
+                        (a.rest)
+                        (str.join "\n"))
+                   (text.prefixed-lines "; ")
+                   (ui.display))))})))
 
 (defn- jar->zip [path]
   (if (text.starts-with path "jar:file:")
@@ -234,11 +231,42 @@
                 (server.assume-session (a.get sessions n))
                 (ui.display ["; Invalid session number."])))))))))
 
+;; TODO Make all of these our printers DRYer.
 (defn run-all-tests []
   (ui.display ["; run-all-tests"] {:break? true})
   (server.eval
     {:code "(require 'clojure.test) (clojure.test/run-all-tests)"}
-    (display-commented-fn :out)))
+    (server.with-all-msgs-fn
+      (fn [msgs]
+        (-> msgs
+            (->> (a.map #(a.get $1 :out))
+                 (a.filter a.string?)
+                 (str.join "\n"))
+            (text.prefixed-lines "; ")
+            (ui.display))))))
 
-(defn run-ns-tests [])
+(defn run-ns-tests []
+  (let [current-ns (extract.context)]
+    (when current-ns
+      (let [alt-ns (if (text.ends-with current-ns "-test")
+                     (string.sub current-ns 1 -6)
+                     (.. current-ns "-test"))
+            nss [current-ns alt-ns]]
+        (ui.display [(.. "; run-ns-tests: " (str.join ", " nss))]
+                    {:break? true})
+        (server.eval
+          {:code (.. "(require 'clojure.test) (clojure.test/run-tests "
+                     (->> nss
+                          (a.map #(.. "'" $1))
+                          (str.join " "))
+                     ")")}
+          (server.with-all-msgs-fn
+            (fn [msgs]
+              (-> msgs
+                  (->> (a.map #(a.get $1 :out))
+                       (a.filter a.string?)
+                       (str.join "\n"))
+                  (text.prefixed-lines "; ")
+                  (ui.display)))))))))
+
 (defn run-current-test [])

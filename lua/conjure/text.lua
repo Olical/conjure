@@ -115,4 +115,19 @@ do
   _0_0["aniseed/locals"]["starts-with"] = v_23_0_
   starts_with = v_23_0_
 end
+local ends_with = nil
+do
+  local v_23_0_ = nil
+  do
+    local v_23_0_0 = nil
+    local function ends_with0(str0, _end)
+      return ((_end == "") or (_end == string.sub(str0, ( - a.count(_end)))))
+    end
+    v_23_0_0 = ends_with0
+    _0_0["ends-with"] = v_23_0_0
+    v_23_0_ = v_23_0_0
+  end
+  _0_0["aniseed/locals"]["ends-with"] = v_23_0_
+  ends_with = v_23_0_
+end
 return nil

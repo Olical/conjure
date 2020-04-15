@@ -135,34 +135,19 @@ do
   _0_0["aniseed/locals"]["eval-str"] = v_23_0_
   eval_str = v_23_0_
 end
-local display_commented_fn = nil
-do
-  local v_23_0_ = nil
-  do
-    local v_23_0_0 = nil
-    local function display_commented_fn0(key)
-      local function _3_(msgs)
-        local function _4_(_241)
-          return a.get(_241, key)
-        end
-        return ui.display(text["prefixed-lines"](str.join("\n", a.rest(a.filter(a["string?"], a.map(_4_, msgs)))), "; "))
-      end
-      return server["with-all-msgs-fn"](_3_)
-    end
-    v_23_0_0 = display_commented_fn0
-    _0_0["display-commented-fn"] = v_23_0_0
-    v_23_0_ = v_23_0_0
-  end
-  _0_0["aniseed/locals"]["display-commented-fn"] = v_23_0_
-  display_commented_fn = v_23_0_
-end
 local doc_str = nil
 do
   local v_23_0_ = nil
   do
     local v_23_0_0 = nil
     local function doc_str0(opts)
-      return eval_str(a.merge(opts, {cb = display_commented_fn("out"), code = ("(do (require 'clojure.repl)" .. "    (clojure.repl/doc " .. opts.code .. "))")}))
+      local function _3_(msgs)
+        local function _4_(_241)
+          return a.get(_241, "out")
+        end
+        return ui.display(text["prefixed-lines"](str.join("\n", a.rest(a.filter(a["string?"], a.map(_4_, msgs)))), "; "))
+      end
+      return eval_str(a.merge(opts, {cb = server["with-all-msgs-fn"](_3_), code = ("(do (require 'clojure.repl)" .. "    (clojure.repl/doc " .. opts.code .. "))")}))
     end
     v_23_0_0 = doc_str0
     _0_0["doc-str"] = v_23_0_0
@@ -561,7 +546,13 @@ do
     local v_23_0_0 = nil
     local function run_all_tests0()
       ui.display({"; run-all-tests"}, {["break?"] = true})
-      return server.eval({code = "(require 'clojure.test) (clojure.test/run-all-tests)"}, display_commented_fn("out"))
+      local function _3_(msgs)
+        local function _4_(_241)
+          return a.get(_241, "out")
+        end
+        return ui.display(text["prefixed-lines"](str.join("\n", a.filter(a["string?"], a.map(_4_, msgs))), "; "))
+      end
+      return server.eval({code = "(require 'clojure.test) (clojure.test/run-all-tests)"}, server["with-all-msgs-fn"](_3_))
     end
     v_23_0_0 = run_all_tests0
     _0_0["run-all-tests"] = v_23_0_0
@@ -576,6 +567,27 @@ do
   do
     local v_23_0_0 = nil
     local function run_ns_tests0()
+      local current_ns = extract.context()
+      if current_ns then
+        local alt_ns = nil
+        if text["ends-with"](current_ns, "-test") then
+          alt_ns = string.sub(current_ns, 1, -6)
+        else
+          alt_ns = (current_ns .. "-test")
+        end
+        local nss = {current_ns, alt_ns}
+        ui.display({("; run-ns-tests: " .. str.join(", ", nss))}, {["break?"] = true})
+        local function _4_(_241)
+          return ("'" .. _241)
+        end
+        local function _5_(msgs)
+          local function _6_(_241)
+            return a.get(_241, "out")
+          end
+          return ui.display(text["prefixed-lines"](str.join("\n", a.filter(a["string?"], a.map(_6_, msgs))), "; "))
+        end
+        return server.eval({code = ("(require 'clojure.test) (clojure.test/run-tests " .. str.join(" ", a.map(_4_, nss)) .. ")")}, server["with-all-msgs-fn"](_5_))
+      end
     end
     v_23_0_0 = run_ns_tests0
     _0_0["run-ns-tests"] = v_23_0_0
