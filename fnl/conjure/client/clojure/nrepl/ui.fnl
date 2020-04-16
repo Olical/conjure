@@ -8,13 +8,26 @@
 (defn display [lines opts]
   (client.with-filetype :clojure log.append lines opts))
 
-(defn display-result [opts resp]
-  (let [lines (if
-                resp.out (text.prefixed-lines resp.out "; (out) ")
-                resp.err (text.prefixed-lines resp.err "; (err) ")
-                resp.value (text.split-lines resp.value)
-                nil)]
-    (display lines)))
+(defn display-result [resp opts]
+  (local opts (or opts {}))
+  (display
+    (if
+      resp.out
+      (text.prefixed-lines
+        resp.out
+        (if
+          opts.simple-out? "; "
+          opts.raw-out? ""
+          "; (out) "))
+
+      resp.err
+      (text.prefixed-lines resp.err "; (err) ")
+
+      resp.value
+      (when (not (and opts.ignore-nil? (= "nil" resp.value)))
+        (text.split-lines resp.value))
+
+      nil)))
 
 (defn display-given-sessions [sessions cb]
   (let [current (a.get-in state [:conn :session])]

@@ -55,7 +55,7 @@ do
   local v_23_0_ = nil
   local function dbg0(desc, data)
     if config["debug?"] then
-      ui.display(a.concat({("; debug " .. desc)}, text["split-lines"](view.serialise(data))))
+      ui.display(a.concat({("; debug: " .. desc)}, text["split-lines"](view.serialise(data))))
     end
     return data
   end
@@ -73,7 +73,7 @@ do
       if conn then
         local msg_id = uuid.v4()
         a.assoc(msg, "id", msg_id)
-        dbg("->", msg)
+        dbg("send", msg)
         local function _3_()
         end
         a["assoc-in"](conn, {"msgs", msg_id}, {["sent-at"] = os.time(), cb = (cb or _3_), msg = msg})
@@ -270,11 +270,11 @@ do
         return disconnect()
       else
         local function _4_(msg)
-          dbg("<-", msg)
+          dbg("receive", msg)
           do
             local cb = nil
             local function _5_(_241)
-              return ui["display-result"](nil, _241)
+              return ui["display-result"](_241)
             end
             cb = a["get-in"](conn, {"msgs", msg.id, "cb"}, _5_)
             local ok_3f, err0 = pcall(cb, msg)

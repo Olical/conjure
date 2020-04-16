@@ -69,7 +69,7 @@ do
       if port then
         return server.connect({host = config.connection["default-host"], port = port})
       else
-        return ui.display({"; No .nrepl-port file found"})
+        return ui.display({"; No .nrepl-port file found"}, {["break?"] = true})
       end
     end
     v_23_0_0 = connect_port_file0
@@ -122,7 +122,7 @@ do
           server.eval({code = ("(do " .. _4_() .. " *1)")}, _5_)
         end
         local function _4_(_241)
-          return ui["display-result"](opts, _241)
+          return ui["display-result"](_241, opts)
         end
         return server.eval(opts, (opts.cb or _4_))
       end
@@ -141,13 +141,10 @@ do
   do
     local v_23_0_0 = nil
     local function doc_str0(opts)
-      local function _3_(msgs)
-        local function _4_(_241)
-          return a.get(_241, "out")
-        end
-        return ui.display(text["prefixed-lines"](str.join("", a.rest(a.filter(a["string?"], a.map(_4_, msgs)))), "; "))
+      local function _3_(_241)
+        return ui["display-result"](_241, {["ignore-nil?"] = true, ["simple-out?"] = true})
       end
-      return eval_str(a.merge(opts, {cb = server["with-all-msgs-fn"](_3_), code = ("(do (require 'clojure.repl)" .. "    (clojure.repl/doc " .. opts.code .. "))")}))
+      return eval_str(a.merge(opts, {cb = _3_, code = ("(do (require 'clojure.repl)" .. "    (clojure.repl/doc " .. opts.code .. "))")}))
     end
     v_23_0_0 = doc_str0
     _0_0["doc-str"] = v_23_0_0
@@ -213,7 +210,7 @@ do
     local v_23_0_0 = nil
     local function eval_file0(opts)
       local function _3_(_241)
-        return ui["display-result"](opts, _241)
+        return ui["display-result"](_241, opts)
       end
       return server.eval(a.assoc(opts, "code", ("(load-file \"" .. opts["file-path"] .. "\")")), _3_)
     end
@@ -325,22 +322,10 @@ do
       local word = a.get(extract.word(), "content")
       if not a["empty?"](word) then
         ui.display({("; source (word): " .. word)}, {["break?"] = true})
-        local function _3_(msgs)
-          local source = nil
-          local function _4_(_241)
-            return a.get(_241, "out")
-          end
-          source = str.join("", a.filter(a["string?"], a.map(_4_, msgs)))
-          local function _5_()
-            if ("Source not found\n" == source) then
-              return ("; " .. source)
-            else
-              return source
-            end
-          end
-          return ui.display(text["split-lines"](_5_()))
+        local function _3_(_241)
+          return ui["display-result"](_241, {["ignore-nil?"] = true, ["raw-out?"] = true})
         end
-        return eval_str({cb = server["with-all-msgs-fn"](_3_), code = ("(do (require 'clojure.repl)" .. "(clojure.repl/source " .. word .. "))"), context = extract.context()})
+        return eval_str({cb = _3_, code = ("(do (require 'clojure.repl)" .. "(clojure.repl/source " .. word .. "))"), context = extract.context()})
       end
     end
     v_23_0_0 = view_source0
@@ -546,13 +531,10 @@ do
     local v_23_0_0 = nil
     local function run_all_tests0()
       ui.display({"; run-all-tests"}, {["break?"] = true})
-      local function _3_(msgs)
-        local function _4_(_241)
-          return a.get(_241, "out")
-        end
-        return ui.display(text["prefixed-lines"](str.join("", a.filter(a["string?"], a.map(_4_, msgs))), "; "))
+      local function _3_(_241)
+        return ui["display-result"](_241, {["ignore-nil?"] = true, ["simple-out?"] = true})
       end
-      return server.eval({code = "(require 'clojure.test) (clojure.test/run-all-tests)"}, server["with-all-msgs-fn"](_3_))
+      return server.eval({code = "(require 'clojure.test) (clojure.test/run-all-tests)"}, _3_)
     end
     v_23_0_0 = run_all_tests0
     _0_0["run-all-tests"] = v_23_0_0
@@ -567,13 +549,10 @@ do
   local function run_ns_tests0(ns)
     if ns then
       ui.display({("; run-ns-tests: " .. ns)}, {["break?"] = true})
-      local function _3_(msgs)
-        local function _4_(_241)
-          return a.get(_241, "out")
-        end
-        return ui.display(text["prefixed-lines"](str.join("", a.filter(a["string?"], a.map(_4_, msgs))), "; "))
+      local function _3_(_241)
+        return ui["display-result"](_241, {["ignore-nil?"] = true, ["simple-out?"] = true})
       end
-      return server.eval({code = ("(require 'clojure.test)" .. "(clojure.test/run-tests '" .. ns .. ")")}, server["with-all-msgs-fn"](_3_))
+      return server.eval({code = ("(require 'clojure.test)" .. "(clojure.test/run-tests '" .. ns .. ")")}, _3_)
     end
   end
   v_23_0_ = run_ns_tests0

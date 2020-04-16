@@ -20,7 +20,7 @@
   (when config.debug?
     (ui.display
       (a.concat
-        [(.. "; debug " desc)]
+        [(.. "; debug: " desc)]
         (text.split-lines (view.serialise data)))))
   data)
 
@@ -29,7 +29,7 @@
     (when conn
       (let [msg-id (uuid.v4)]
         (a.assoc msg :id msg-id)
-        (dbg "->" msg)
+        (dbg "send" msg)
         (a.assoc-in conn [:msgs msg-id]
                     {:msg msg
                      :cb (or cb (fn []))
@@ -109,8 +109,8 @@
           (->> (bencode-stream.decode-all state.bs chunk)
                (a.run!
                  (fn [msg]
-                   (dbg "<-" msg)
-                   (let [cb (a.get-in conn [:msgs msg.id :cb] #(ui.display-result nil $1))
+                   (dbg "receive" msg)
+                   (let [cb (a.get-in conn [:msgs msg.id :cb] #(ui.display-result $1))
                          (ok? err) (pcall cb msg)]
                      (when (not ok?)
                        (ui.display [(.. "; conjure.client.clojure.nrepl error: " err)]))

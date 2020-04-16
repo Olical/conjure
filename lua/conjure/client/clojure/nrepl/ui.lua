@@ -45,18 +45,31 @@ do
   local v_23_0_ = nil
   do
     local v_23_0_0 = nil
-    local function display_result0(opts, resp)
-      local lines = nil
-      if resp.out then
-        lines = text["prefixed-lines"](resp.out, "; (out) ")
-      elseif resp.err then
-        lines = text["prefixed-lines"](resp.err, "; (err) ")
-      elseif resp.value then
-        lines = text["split-lines"](resp.value)
-      else
-        lines = nil
+    local function display_result0(resp, opts)
+      local opts0 = (opts or {})
+      local function _3_()
+        if resp.out then
+          local function _3_()
+            if opts0["simple-out?"] then
+              return "; "
+            elseif opts0["raw-out?"] then
+              return ""
+            else
+              return "; (out) "
+            end
+          end
+          return text["prefixed-lines"](resp.out, _3_())
+        elseif resp.err then
+          return text["prefixed-lines"](resp.err, "; (err) ")
+        elseif resp.value then
+          if not (opts0["ignore-nil?"] and ("nil" == resp.value)) then
+            return text["split-lines"](resp.value)
+          end
+        else
+          return nil
+        end
       end
-      return display(lines)
+      return display(_3_())
     end
     v_23_0_0 = display_result0
     _0_0["display-result"] = v_23_0_0

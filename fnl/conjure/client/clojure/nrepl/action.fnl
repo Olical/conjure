@@ -13,9 +13,6 @@
             ui conjure.client.clojure.nrepl.ui
             a conjure.aniseed.core}})
 
-;; TODO Consistent result printing.
-;; Use opts to configure prefixing / result display / tail etc.
-
 (defn display-session-type []
   (server.eval
     {:code (.. "#?("
@@ -37,7 +34,7 @@
       (server.connect
         {:host config.connection.default-host
          :port port})
-      (ui.display ["; No .nrepl-port file found"]))))
+      (ui.display ["; No .nrepl-port file found"] {:break? true}))))
 
 (defn connect-host-port [...]
   (let [args [...]]
@@ -58,7 +55,7 @@
                        "(in-ns #?(:clj 'user, :cljs 'cljs.user))")
                      " *1)")}
           (fn [])))
-      (server.eval opts (or opts.cb #(ui.display-result opts $1))))))
+      (server.eval opts (or opts.cb #(ui.display-result $1 opts))))))
 
 (defn doc-str [opts]
   (eval-str
@@ -66,15 +63,10 @@
       opts
       {:code (.. "(do (require 'clojure.repl)"
                  "    (clojure.repl/doc " opts.code "))")
-       :cb (server.with-all-msgs-fn
-             (fn [msgs]
-               (-> msgs
-                   (->> (a.map #(a.get $1 :out))
-                        (a.filter a.string?)
-                        (a.rest)
-                        (str.join ""))
-                   (text.prefixed-lines "; ")
-                   (ui.display))))})))
+       :cb #(ui.display-result
+              $1
+              {:simple-out? true
+               :ignore-nil? true})})))
 
 (defn- jar->zip [path]
   (if (text.starts-with path "jar:file:")
@@ -105,7 +97,7 @@
 (defn eval-file [opts]
   (server.eval
     (a.assoc opts :code (.. "(load-file \"" opts.file-path "\")"))
-    #(ui.display-result opts $1)))
+    #(ui.display-result $1 opts)))
 
 (defn interrupt []
   (server.with-conn-or-warn
@@ -150,17 +142,10 @@
         {:code (.. "(do (require 'clojure.repl)"
                    "(clojure.repl/source " word "))")
          :context (extract.context)
-         :cb (server.with-all-msgs-fn
-               (fn [msgs]
-                 (let [source (->> msgs
-                                   (a.map #(a.get $1 :out))
-                                   (a.filter a.string?)
-                                   (str.join ""))]
-                   (ui.display
-                     (text.split-lines
-                       (if (= "Source not found\n" source)
-                         (.. "; " source)
-                         source))))))}))))
+         :cb #(ui.display-result
+                $1
+                {:raw-out? true
+                 :ignore-nil? true})}))))
 
 (defn clone-current-session []
   (server.with-conn-or-warn
@@ -234,19 +219,14 @@
                 (server.assume-session (a.get sessions n))
                 (ui.display ["; Invalid session number."])))))))))
 
-;; TODO Make all of these our printers DRYer.
 (defn run-all-tests []
   (ui.display ["; run-all-tests"] {:break? true})
   (server.eval
     {:code "(require 'clojure.test) (clojure.test/run-all-tests)"}
-    (server.with-all-msgs-fn
-      (fn [msgs]
-        (-> msgs
-            (->> (a.map #(a.get $1 :out))
-                 (a.filter a.string?)
-                 (str.join ""))
-            (text.prefixed-lines "; ")
-            (ui.display))))))
+    #(ui.display-result
+       $1
+       {:simple-out? true
+        :ignore-nil? true})))
 
 (defn- run-ns-tests [ns]
   (when ns
@@ -255,14 +235,10 @@
     (server.eval
       {:code (.. "(require 'clojure.test)"
                  "(clojure.test/run-tests '" ns ")")}
-      (server.with-all-msgs-fn
-        (fn [msgs]
-          (-> msgs
-              (->> (a.map #(a.get $1 :out))
-                   (a.filter a.string?)
-                   (str.join ""))
-              (text.prefixed-lines "; ")
-              (ui.display)))))))
+      #(ui.display-result
+         $1
+         {:simple-out? true
+          :ignore-nil? true}))))
 
 (defn run-current-ns-tests []
   (run-ns-tests (extract.context)))
