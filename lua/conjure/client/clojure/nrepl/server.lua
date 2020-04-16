@@ -299,6 +299,49 @@ do
   _0_0["aniseed/locals"]["handle-read-fn"] = v_23_0_
   handle_read_fn = v_23_0_
 end
+local eval = nil
+do
+  local v_23_0_ = nil
+  do
+    local v_23_0_0 = nil
+    local function eval0(opts, cb)
+      local function _3_(_)
+        local _4_
+        if config.eval["pretty-print?"] then
+          _4_ = "conjure.nrepl.pprint/pprint"
+        else
+        _4_ = nil
+        end
+        local _7_
+        do
+          local _6_0 = a["get-in"](opts, {"range", "start", 2})
+          if _6_0 then
+            _7_ = a.inc(_6_0)
+          else
+            _7_ = _6_0
+          end
+        end
+        return send({["nrepl.middleware.print/print"] = _4_, code = opts.code, column = _7_, file = opts["file-path"], line = a["get-in"](opts, {"range", "start", 1}), op = "eval", session = a["get-in"](state, {"conn", "session"})}, cb)
+      end
+      return with_conn_or_warn(_3_)
+    end
+    v_23_0_0 = eval0
+    _0_0["eval"] = v_23_0_0
+    v_23_0_ = v_23_0_0
+  end
+  _0_0["aniseed/locals"]["eval"] = v_23_0_
+  eval = v_23_0_
+end
+local inject_pprint_wrapper = nil
+do
+  local v_23_0_ = nil
+  local function inject_pprint_wrapper0()
+    return send({code = ("(ns conjure.nrepl.pprint" .. "  (:require [clojure.pprint :as pp]))" .. "(defn pprint [val w opts]" .. "  (apply pp/write val" .. "    (mapcat identity (assoc opts :stream w))))"), op = "eval"})
+  end
+  v_23_0_ = inject_pprint_wrapper0
+  _0_0["aniseed/locals"]["inject-pprint-wrapper"] = v_23_0_
+  inject_pprint_wrapper = v_23_0_
+end
 local handle_connect_fn = nil
 do
   local v_23_0_ = nil
@@ -311,6 +354,7 @@ do
       else
         do end (conn.sock):read_start(handle_read_fn())
         display_conn_status("connected")
+        inject_pprint_wrapper()
         return assume_or_create_session()
       end
     end
@@ -345,32 +389,5 @@ do
   end
   _0_0["aniseed/locals"]["connect"] = v_23_0_
   connect = v_23_0_
-end
-local eval = nil
-do
-  local v_23_0_ = nil
-  do
-    local v_23_0_0 = nil
-    local function eval0(opts, cb)
-      local function _3_(_)
-        local _5_
-        do
-          local _4_0 = a["get-in"](opts, {"range", "start", 2})
-          if _4_0 then
-            _5_ = a.inc(_4_0)
-          else
-            _5_ = _4_0
-          end
-        end
-        return send({code = opts.code, column = _5_, file = opts["file-path"], line = a["get-in"](opts, {"range", "start", 1}), op = "eval", session = a["get-in"](state, {"conn", "session"})}, cb)
-      end
-      return with_conn_or_warn(_3_)
-    end
-    v_23_0_0 = eval0
-    _0_0["eval"] = v_23_0_0
-    v_23_0_ = v_23_0_0
-  end
-  _0_0["aniseed/locals"]["eval"] = v_23_0_
-  eval = v_23_0_
 end
 return nil

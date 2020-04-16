@@ -31,6 +31,17 @@ do
   _0_0["aniseed/locals"]["connection"] = v_23_0_
   connection = v_23_0_
 end
+local eval = nil
+do
+  local v_23_0_ = nil
+  do
+    local v_23_0_0 = {["pretty-print?"] = true}
+    _0_0["eval"] = v_23_0_0
+    v_23_0_ = v_23_0_0
+  end
+  _0_0["aniseed/locals"]["eval"] = v_23_0_
+  eval = v_23_0_
+end
 local debug_3f = nil
 do
   local v_23_0_ = nil

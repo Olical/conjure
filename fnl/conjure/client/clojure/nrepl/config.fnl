@@ -3,6 +3,9 @@
 (def connection
   {:default-host "localhost"})
 
+(def eval
+  {:pretty-print? true})
+
 (def debug?
   false)
 

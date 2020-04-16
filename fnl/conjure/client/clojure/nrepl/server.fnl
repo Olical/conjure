@@ -120,6 +120,31 @@
                      (when (status= msg :done)
                        (a.assoc-in conn [:msgs msg.id] nil)))))))))))
 
+(defn eval [opts cb]
+  (with-conn-or-warn
+    (fn [_]
+      (send
+        {:op :eval
+         :code opts.code
+         :file opts.file-path
+         :line (a.get-in opts [:range :start 1])
+         :column (-?> (a.get-in opts [:range :start 2]) (a.inc))
+         :session (a.get-in state [:conn :session])
+
+         :nrepl.middleware.print/print
+         (when config.eval.pretty-print?
+           :conjure.nrepl.pprint/pprint)}
+        cb))))
+
+(defn- inject-pprint-wrapper []
+  (send
+    {:op :eval
+     :code (.. "(ns conjure.nrepl.pprint"
+               "  (:require [clojure.pprint :as pp]))"
+               "(defn pprint [val w opts]"
+               "  (apply pp/write val"
+               "    (mapcat identity (assoc opts :stream w))))")}))
+
 (defn- handle-connect-fn []
   (vim.schedule_wrap
     (fn [err]
@@ -132,6 +157,7 @@
           (do
             (conn.sock:read_start (handle-read-fn))
             (display-conn-status :connected)
+            (inject-pprint-wrapper)
             (assume-or-create-session)))))))
 
 (defn connect [{: host : port}]
@@ -148,15 +174,3 @@
 
     (a.assoc state :conn conn)
     (conn.sock:connect resolved-host port (handle-connect-fn))))
-
-(defn eval [opts cb]
-  (with-conn-or-warn
-    (fn [_]
-      (send
-        {:op :eval
-         :code opts.code
-         :file opts.file-path
-         :line (a.get-in opts [:range :start 1])
-         :column (-?> (a.get-in opts [:range :start 2]) (a.inc))
-         :session (a.get-in state [:conn :session])}
-        cb))))
