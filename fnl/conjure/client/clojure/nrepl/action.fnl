@@ -250,4 +250,25 @@
         (string.sub current-ns 1 -6)
         (.. current-ns "-test")))))
 
-(defn run-current-test [])
+(defn run-current-test []
+  (let [form (extract.form {:root? true})]
+    (when form
+      (let [(test-name sub-count)
+            (string.gsub form.content ".*deftest%s+(.-)%s+.*" "%1")]
+        (when (and (not (a.empty? test-name)) (= 1 sub-count))
+          (ui.display [(.. "; run-current-test: " test-name)]
+                      {:break? true})
+          (server.eval
+            {:code (.. "(do (require 'clojure.test)"
+                       "(clojure.test/test-var"
+                       "  (resolve '" test-name ")))")}
+            (server.with-all-msgs-fn
+              (fn [msgs]
+                (if (and (= 2 (a.count msgs))
+                         (= "nil" (a.get (a.first msgs) :value)))
+                  (ui.display ["; Success!"])
+                  (a.run! #(ui.display-result
+                             $1
+                             {:simple-out? true
+                              :ignore-nil? true})
+                          msgs))))))))))

@@ -603,6 +603,24 @@ do
   do
     local v_23_0_0 = nil
     local function run_current_test0()
+      local form = extract.form({["root?"] = true})
+      if form then
+        local test_name, sub_count = string.gsub(form.content, ".*deftest%s+(.-)%s+.*", "%1")
+        if (not a["empty?"](test_name) and (1 == sub_count)) then
+          ui.display({("; run-current-test: " .. test_name)}, {["break?"] = true})
+          local function _3_(msgs)
+            if ((2 == a.count(msgs)) and ("nil" == a.get(a.first(msgs), "value"))) then
+              return ui.display({"; Success!"})
+            else
+              local function _4_(_241)
+                return ui["display-result"](_241, {["ignore-nil?"] = true, ["simple-out?"] = true})
+              end
+              return a["run!"](_4_, msgs)
+            end
+          end
+          return server.eval({code = ("(do (require 'clojure.test)" .. "(clojure.test/test-var" .. "  (resolve '" .. test_name .. ")))")}, server["with-all-msgs-fn"](_3_))
+        end
+      end
     end
     v_23_0_0 = run_current_test0
     _0_0["run-current-test"] = v_23_0_0
