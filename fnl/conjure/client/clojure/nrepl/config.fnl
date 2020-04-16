@@ -31,5 +31,6 @@
    :session-type "st"
 
    :run-all-tests "ta"
-   :run-ns-tests "tn"
+   :run-current-ns-tests "tn"
+   :run-alternate-ns-tests "tN"
    :run-current-test "tc"})

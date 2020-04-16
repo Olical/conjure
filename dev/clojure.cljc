@@ -16,7 +16,7 @@
 
 (t/deftest test-b
   (t/testing "bar"
-    (t/is (= 20 10))))
+    (t/is (= 10 10))))
 
 (comment
   (throw (Error. "ohno"))

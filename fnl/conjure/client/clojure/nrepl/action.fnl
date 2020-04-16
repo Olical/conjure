@@ -13,6 +13,9 @@
             ui conjure.client.clojure.nrepl.ui
             a conjure.aniseed.core}})
 
+;; TODO Consistent result printing.
+;; Use opts to configure prefixing / result display / tail etc.
+
 (defn display-session-type []
   (server.eval
     {:code (.. "#?("
@@ -245,28 +248,30 @@
             (text.prefixed-lines "; ")
             (ui.display))))))
 
-(defn run-ns-tests []
+(defn- run-ns-tests [ns]
+  (when ns
+    (ui.display [(.. "; run-ns-tests: " ns)]
+                {:break? true})
+    (server.eval
+      {:code (.. "(require 'clojure.test)"
+                 "(clojure.test/run-tests '" ns ")")}
+      (server.with-all-msgs-fn
+        (fn [msgs]
+          (-> msgs
+              (->> (a.map #(a.get $1 :out))
+                   (a.filter a.string?)
+                   (str.join ""))
+              (text.prefixed-lines "; ")
+              (ui.display)))))))
+
+(defn run-current-ns-tests []
+  (run-ns-tests (extract.context)))
+
+(defn run-alternate-ns-tests []
   (let [current-ns (extract.context)]
-    (when current-ns
-      (let [alt-ns (if (text.ends-with current-ns "-test")
-                     (string.sub current-ns 1 -6)
-                     (.. current-ns "-test"))
-            nss [current-ns alt-ns]]
-        (ui.display [(.. "; run-ns-tests: " (str.join ", " nss))]
-                    {:break? true})
-        (server.eval
-          {:code (.. "(require 'clojure.test) (clojure.test/run-tests "
-                     (->> nss
-                          (a.map #(.. "'" $1))
-                          (str.join " "))
-                     ")")}
-          (server.with-all-msgs-fn
-            (fn [msgs]
-              (-> msgs
-                  (->> (a.map #(a.get $1 :out))
-                       (a.filter a.string?)
-                       (str.join ""))
-                  (text.prefixed-lines "; ")
-                  (ui.display)))))))))
+    (run-ns-tests
+      (if (text.ends-with current-ns "-test")
+        (string.sub current-ns 1 -6)
+        (.. current-ns "-test")))))
 
 (defn run-current-test [])

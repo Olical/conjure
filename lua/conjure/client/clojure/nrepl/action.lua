@@ -564,37 +564,59 @@ end
 local run_ns_tests = nil
 do
   local v_23_0_ = nil
-  do
-    local v_23_0_0 = nil
-    local function run_ns_tests0()
-      local current_ns = extract.context()
-      if current_ns then
-        local alt_ns = nil
-        if text["ends-with"](current_ns, "-test") then
-          alt_ns = string.sub(current_ns, 1, -6)
-        else
-          alt_ns = (current_ns .. "-test")
-        end
-        local nss = {current_ns, alt_ns}
-        ui.display({("; run-ns-tests: " .. str.join(", ", nss))}, {["break?"] = true})
+  local function run_ns_tests0(ns)
+    if ns then
+      ui.display({("; run-ns-tests: " .. ns)}, {["break?"] = true})
+      local function _3_(msgs)
         local function _4_(_241)
-          return ("'" .. _241)
+          return a.get(_241, "out")
         end
-        local function _5_(msgs)
-          local function _6_(_241)
-            return a.get(_241, "out")
-          end
-          return ui.display(text["prefixed-lines"](str.join("", a.filter(a["string?"], a.map(_6_, msgs))), "; "))
-        end
-        return server.eval({code = ("(require 'clojure.test) (clojure.test/run-tests " .. str.join(" ", a.map(_4_, nss)) .. ")")}, server["with-all-msgs-fn"](_5_))
+        return ui.display(text["prefixed-lines"](str.join("", a.filter(a["string?"], a.map(_4_, msgs))), "; "))
       end
+      return server.eval({code = ("(require 'clojure.test)" .. "(clojure.test/run-tests '" .. ns .. ")")}, server["with-all-msgs-fn"](_3_))
     end
-    v_23_0_0 = run_ns_tests0
-    _0_0["run-ns-tests"] = v_23_0_0
-    v_23_0_ = v_23_0_0
   end
+  v_23_0_ = run_ns_tests0
   _0_0["aniseed/locals"]["run-ns-tests"] = v_23_0_
   run_ns_tests = v_23_0_
+end
+local run_current_ns_tests = nil
+do
+  local v_23_0_ = nil
+  do
+    local v_23_0_0 = nil
+    local function run_current_ns_tests0()
+      return run_ns_tests(extract.context())
+    end
+    v_23_0_0 = run_current_ns_tests0
+    _0_0["run-current-ns-tests"] = v_23_0_0
+    v_23_0_ = v_23_0_0
+  end
+  _0_0["aniseed/locals"]["run-current-ns-tests"] = v_23_0_
+  run_current_ns_tests = v_23_0_
+end
+local run_alternate_ns_tests = nil
+do
+  local v_23_0_ = nil
+  do
+    local v_23_0_0 = nil
+    local function run_alternate_ns_tests0()
+      local current_ns = extract.context()
+      local function _3_()
+        if text["ends-with"](current_ns, "-test") then
+          return string.sub(current_ns, 1, -6)
+        else
+          return (current_ns .. "-test")
+        end
+      end
+      return run_ns_tests(_3_())
+    end
+    v_23_0_0 = run_alternate_ns_tests0
+    _0_0["run-alternate-ns-tests"] = v_23_0_0
+    v_23_0_ = v_23_0_0
+  end
+  _0_0["aniseed/locals"]["run-alternate-ns-tests"] = v_23_0_
+  run_alternate_ns_tests = v_23_0_
 end
 local run_current_test = nil
 do

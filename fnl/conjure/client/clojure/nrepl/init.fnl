@@ -68,8 +68,12 @@
 
   (mapping.buf :n config.mappings.run-all-tests
                :conjure.client.clojure.nrepl.action :run-all-tests)
-  (mapping.buf :n config.mappings.run-ns-tests
-               :conjure.client.clojure.nrepl.action :run-ns-tests)
+  (mapping.buf
+    :n config.mappings.run-current-ns-tests
+    :conjure.client.clojure.nrepl.action :run-current-ns-tests)
+  (mapping.buf
+    :n config.mappings.run-alternate-ns-tests
+    :conjure.client.clojure.nrepl.action :run-alternate-ns-tests)
   (mapping.buf :n config.mappings.run-current-test
                :conjure.client.clojure.nrepl.action :run-current-test)
 
