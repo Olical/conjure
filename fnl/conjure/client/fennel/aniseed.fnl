@@ -38,7 +38,7 @@
                          "nil"
                          (str.join "\n" (a.map view.serialise results)))
                        (a.first results))
-          result-lines (str.split result-str "[^\n]+")] 
+          result-lines (str.split result-str "\n")] 
       (display (if ok?
                  result-lines
                  (a.map #(.. "; " $1) result-lines))))))

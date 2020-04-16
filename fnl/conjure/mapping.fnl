@@ -59,10 +59,10 @@
     (eval.command code)))
 
 (defn config-command [target val]
-  (let [client-path (str.split target "[^/]+")
+  (let [client-path (str.split target "/")
         opts {:client (when (= 2 (a.count client-path))
                         (a.first client-path))
-              :path (str.split (a.last client-path) "[^.]+")}
+              :path (str.split (a.last client-path) "%.")}
         current (config.get opts)]
 
     (if val

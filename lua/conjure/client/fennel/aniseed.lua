@@ -117,7 +117,7 @@ do
         else
           result_str = a.first(results)
         end
-        local result_lines = str.split(result_str, "[^\n]+")
+        local result_lines = str.split(result_str, "\n")
         local function _5_()
           if ok_3f then
             return result_lines

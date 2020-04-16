@@ -13,11 +13,12 @@
   (t.= "...o bar baz" (text.right-sample "foo    \n\n bar \n\n baz" 10) "same as left-sample, but we want the right"))
 
 (deftest split-lines
-  (t.pr= [] (text.split-lines "") "nothing to nothing")
-  (t.pr= ["foo" "bar"] (text.split-lines "foo\nbar") "basic split"))
+  (t.pr= [""] (text.split-lines "") "nothing to nothing")
+  (t.pr= ["foo" "bar"] (text.split-lines "foo\nbar") "basic split")
+  (t.pr= ["foo" "" "bar"] (text.split-lines "foo\n\nbar") "blank lines"))
 
 (deftest prefixed-lines
-  (t.pr= [] (text.prefixed-lines "" "; ") "nothing to nothing")
+  (t.pr= ["; "] (text.prefixed-lines "" "; ") "nothing to nothing")
   (t.pr= ["; foo"] (text.prefixed-lines "foo" "; ") "single line")
   (t.pr= ["; foo" "; bar"] (text.prefixed-lines "foo\nbar" "; ") "multiple lines"))
 

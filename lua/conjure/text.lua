@@ -73,7 +73,7 @@ do
   do
     local v_23_0_0 = nil
     local function split_lines0(s)
-      return str.split(s, "[^\n]+")
+      return str.split(s, "\n")
     end
     v_23_0_0 = split_lines0
     _0_0["split-lines"] = v_23_0_0

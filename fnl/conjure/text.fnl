@@ -16,9 +16,8 @@
 (defn right-sample [s limit]
   (string.reverse (left-sample (string.reverse s) limit)))
 
-;; TODO Maybe this is eliding blank lines?
 (defn split-lines [s]
-  (str.split s "[^\n]+"))
+  (str.split s "\n"))
 
 (defn prefixed-lines [s prefix]
   (->> (split-lines s)

@@ -77,11 +77,18 @@ do
   do
     local v_23_0_0 = nil
     local function split0(s, pat)
+      local s0 = s
       local acc = {}
-      local function _3_(part)
-        return table.insert(acc, part)
+      while s0 do
+        local start, _end = string.find(s0, pat)
+        if a["nil?"](start) then
+          table.insert(acc, s0)
+          s0 = nil
+        else
+          table.insert(acc, string.sub(s0, 1, a.dec(start)))
+          s0 = string.sub(s0, a.inc(_end))
+        end
       end
-      string.gsub(s, pat, _3_)
       return acc
     end
     v_23_0_0 = split0

@@ -50,9 +50,9 @@ do
       do
         local _3_ = results
         local assertions = _3_["assertions"]
-        local assertions_passed = _3_["assertions-passed"]
-        local tests_passed = _3_["tests-passed"]
         local tests = _3_["tests"]
+        local tests_passed = _3_["tests-passed"]
+        local assertions_passed = _3_["assertions-passed"]
         local function _4_()
           if ok_3f(results) then
             return "OK"

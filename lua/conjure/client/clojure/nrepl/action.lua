@@ -145,7 +145,7 @@ do
         local function _4_(_241)
           return a.get(_241, "out")
         end
-        return ui.display(text["prefixed-lines"](str.join("\n", a.rest(a.filter(a["string?"], a.map(_4_, msgs)))), "; "))
+        return ui.display(text["prefixed-lines"](str.join("", a.rest(a.filter(a["string?"], a.map(_4_, msgs)))), "; "))
       end
       return eval_str(a.merge(opts, {cb = server["with-all-msgs-fn"](_3_), code = ("(do (require 'clojure.repl)" .. "    (clojure.repl/doc " .. opts.code .. "))")}))
     end
@@ -330,7 +330,7 @@ do
           local function _4_(_241)
             return a.get(_241, "out")
           end
-          source = str.join("\n", a.filter(a["string?"], a.map(_4_, msgs)))
+          source = str.join("", a.filter(a["string?"], a.map(_4_, msgs)))
           local function _5_()
             if ("Source not found\n" == source) then
               return ("; " .. source)
@@ -550,7 +550,7 @@ do
         local function _4_(_241)
           return a.get(_241, "out")
         end
-        return ui.display(text["prefixed-lines"](str.join("\n", a.filter(a["string?"], a.map(_4_, msgs))), "; "))
+        return ui.display(text["prefixed-lines"](str.join("", a.filter(a["string?"], a.map(_4_, msgs))), "; "))
       end
       return server.eval({code = "(require 'clojure.test) (clojure.test/run-all-tests)"}, server["with-all-msgs-fn"](_3_))
     end
@@ -584,7 +584,7 @@ do
           local function _6_(_241)
             return a.get(_241, "out")
           end
-          return ui.display(text["prefixed-lines"](str.join("\n", a.filter(a["string?"], a.map(_6_, msgs))), "; "))
+          return ui.display(text["prefixed-lines"](str.join("", a.filter(a["string?"], a.map(_6_, msgs))), "; "))
         end
         return server.eval({code = ("(require 'clojure.test) (clojure.test/run-tests " .. str.join(" ", a.map(_4_, nss)) .. ")")}, server["with-all-msgs-fn"](_5_))
       end

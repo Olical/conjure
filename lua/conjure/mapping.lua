@@ -130,7 +130,7 @@ do
   do
     local v_23_0_0 = nil
     local function config_command0(target, val)
-      local client_path = str.split(target, "[^/]+")
+      local client_path = str.split(target, "/")
       local opts = nil
       local _3_
       if (2 == a.count(client_path)) then
@@ -138,7 +138,7 @@ do
       else
       _3_ = nil
       end
-      opts = {client = _3_, path = str.split(a.last(client_path), "[^.]+")}
+      opts = {client = _3_, path = str.split(a.last(client_path), "%.")}
       local current = config.get(opts)
       if val then
         return config.assoc(a.assoc(opts, "val", fennel.eval(val)))

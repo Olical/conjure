@@ -3,6 +3,10 @@
 
 ;; Automatically loaded through require-macros for all Aniseed based evaluations.
 
+;; TODO Support requiring of more macros.
+;; TODO Let the publicly defined values over the top of private.
+;; This should fix an issue where some top level defs getting set are being lost.
+
 (local module-sym (gensym))
 
 (fn sorted-each [f x]

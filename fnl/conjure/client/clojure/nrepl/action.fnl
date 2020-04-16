@@ -69,7 +69,7 @@
                    (->> (a.map #(a.get $1 :out))
                         (a.filter a.string?)
                         (a.rest)
-                        (str.join "\n"))
+                        (str.join ""))
                    (text.prefixed-lines "; ")
                    (ui.display))))})))
 
@@ -152,7 +152,7 @@
                  (let [source (->> msgs
                                    (a.map #(a.get $1 :out))
                                    (a.filter a.string?)
-                                   (str.join "\n"))]
+                                   (str.join ""))]
                    (ui.display
                      (text.split-lines
                        (if (= "Source not found\n" source)
@@ -241,7 +241,7 @@
         (-> msgs
             (->> (a.map #(a.get $1 :out))
                  (a.filter a.string?)
-                 (str.join "\n"))
+                 (str.join ""))
             (text.prefixed-lines "; ")
             (ui.display))))))
 
@@ -265,7 +265,7 @@
               (-> msgs
                   (->> (a.map #(a.get $1 :out))
                        (a.filter a.string?)
-                       (str.join "\n"))
+                       (str.join ""))
                   (text.prefixed-lines "; ")
                   (ui.display)))))))))
 
