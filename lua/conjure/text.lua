@@ -25,10 +25,15 @@ do local _ = ({nil, _0_0, nil})[2] end
 local trim = nil
 do
   local v_23_0_ = nil
-  local function trim0(s)
-    return string.gsub(s, "^%s*(.-)%s*$", "%1")
+  do
+    local v_23_0_0 = nil
+    local function trim0(s)
+      return string.gsub(s, "^%s*(.-)%s*$", "%1")
+    end
+    v_23_0_0 = trim0
+    _0_0["trim"] = v_23_0_0
+    v_23_0_ = v_23_0_0
   end
-  v_23_0_ = trim0
   _0_0["aniseed/locals"]["trim"] = v_23_0_
   trim = v_23_0_
 end
@@ -73,7 +78,7 @@ do
   do
     local v_23_0_0 = nil
     local function split_lines0(s)
-      return str.split(s, "\n")
+      return str.split(trim(s), "\n")
     end
     v_23_0_0 = split_lines0
     _0_0["split-lines"] = v_23_0_0

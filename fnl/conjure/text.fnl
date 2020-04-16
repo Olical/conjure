@@ -2,7 +2,7 @@
   {:require {a conjure.aniseed.core
              str conjure.aniseed.string}})
 
-(defn- trim [s]
+(defn trim [s]
   (string.gsub s "^%s*(.-)%s*$" "%1"))
 
 (defn left-sample [s limit]
@@ -17,7 +17,7 @@
   (string.reverse (left-sample (string.reverse s) limit)))
 
 (defn split-lines [s]
-  (str.split s "\n"))
+  (str.split (trim s) "\n"))
 
 (defn prefixed-lines [s prefix]
   (->> (split-lines s)
