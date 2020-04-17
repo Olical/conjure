@@ -52,45 +52,54 @@
         (fn []))
       (server.eval opts (or opts.cb #(ui.display-result $1 opts))))))
 
-(defn- render-doc-str [{: ns : class
-                        : name : eldoc
-                        : docstring :type kind}]
-  (a.concat
-    [(str.join
-       [(when eldoc
-          "(")
-        (when ns
-          (.. ns "/"))
-        (if class
-          (a.last class)
-          name)
-        (when eldoc
-          (.. " "
-              (str.join
-                " "
-                (a.map
-                  (fn [args]
-                    (.. "[" (str.join " " args) "]"))
-                  eldoc))))
-        (when eldoc
-          ")")])]
-    (when (and (a.string? docstring) (not (a.empty? docstring)))
-      (text.prefixed-lines docstring "; "))))
+(defn- render-doc-str [{: ns : class : name : member
+                        :doc docs
+                        :arglists-str args
+                        :type kind}]
+  (let [prefix (or ns class)
+        suffix (or name member)]
+    (a.concat
+      [(str.join
+         [(when args
+            "(")
+          (when prefix
+            (.. prefix "/"))
+          suffix
+          (when args
+            (.. " " (str.join " " (text.split-lines args))))
+          (when args
+            ")")])]
+      (when (and (a.string? docs) (not (a.empty? docs)))
+        (text.prefixed-lines docs "; ")))))
 
-(defn doc-str [opts]
+(defn- with-info [opts f]
   (server.with-conn-and-op-or-warn
-    :eldoc
+    :info
     (fn [conn]
       (server.send
-        {:op :eldoc
+        {:op :info
          :ns (or opts.context "user")
          :symbol opts.code
          :session conn.session}
         (fn [msg]
-          (ui.display
-            (if (server.status= msg :no-eldoc)
-              ["; No documentation found"]
-              (render-doc-str msg))))))))
+          (f (when (not (server.status= msg :no-info))
+               msg)))))))
+
+(defn doc-str [opts]
+  (with-info
+    opts
+    (fn [info]
+      (ui.display
+        (if
+          (a.nil? info)
+          ["; No documentation found"]
+
+          info.candidates
+          (a.concat
+            ["; Multiple candidates found"]
+            (a.map #(.. $1 "/" opts.code) (a.keys info.candidates)))
+
+          (render-doc-str info))))))
 
 (defn- jar->zip [path]
   (if (text.starts-with path "jar:file:")

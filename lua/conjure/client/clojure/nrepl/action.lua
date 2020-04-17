@@ -130,54 +130,71 @@ do
   local v_23_0_ = nil
   local function render_doc_str0(_3_0)
     local _4_ = _3_0
-    local docstring = _4_["docstring"]
-    local class = _4_["class"]
+    local member = _4_["member"]
+    local docs = _4_["doc"]
+    local args = _4_["arglists-str"]
     local kind = _4_["type"]
-    local ns = _4_["ns"]
+    local class = _4_["class"]
     local name = _4_["name"]
-    local eldoc = _4_["eldoc"]
-    local _5_
-    if eldoc then
-      _5_ = "("
-    else
-    _5_ = nil
-    end
-    local _7_
-    if ns then
-      _7_ = (ns .. "/")
-    else
-    _7_ = nil
-    end
-    local _9_
-    if class then
-      _9_ = a.last(class)
-    else
-      _9_ = name
-    end
-    local _11_
-    if eldoc then
-      local function _12_(args)
-        return ("[" .. str.join(" ", args) .. "]")
+    local ns = _4_["ns"]
+    do
+      local prefix = (ns or class)
+      local suffix = (name or member)
+      local _5_
+      if args then
+        _5_ = "("
+      else
+      _5_ = nil
       end
-      _11_ = (" " .. str.join(" ", a.map(_12_, eldoc)))
-    else
-    _11_ = nil
-    end
-    local function _13_()
-      if eldoc then
-        return ")"
+      local _7_
+      if prefix then
+        _7_ = (prefix .. "/")
+      else
+      _7_ = nil
       end
-    end
-    local function _14_()
-      if (a["string?"](docstring) and not a["empty?"](docstring)) then
-        return text["prefixed-lines"](docstring, "; ")
+      local _9_
+      if args then
+        _9_ = (" " .. str.join(" ", text["split-lines"](args)))
+      else
+      _9_ = nil
       end
+      local function _11_()
+        if args then
+          return ")"
+        end
+      end
+      local function _12_()
+        if (a["string?"](docs) and not a["empty?"](docs)) then
+          return text["prefixed-lines"](docs, "; ")
+        end
+      end
+      return a.concat({str.join({_5_, _7_, suffix, _9_, _11_()})}, _12_())
     end
-    return a.concat({str.join({_5_, _7_, _9_, _11_, _13_()})}, _14_())
   end
   v_23_0_ = render_doc_str0
   _0_0["aniseed/locals"]["render-doc-str"] = v_23_0_
   render_doc_str = v_23_0_
+end
+local with_info = nil
+do
+  local v_23_0_ = nil
+  local function with_info0(opts, f)
+    local function _3_(conn)
+      local function _4_(msg)
+        local function _5_()
+          if not server["status="](msg, "no-info") then
+            return msg
+          end
+        end
+        return f(_5_())
+      end
+      return server.send({ns = (opts.context or "user"), op = "info", session = conn.session, symbol = opts.code}, _4_)
+    end
+    return server["with-conn-and-op-or-warn"]("info", _3_)
+  end
+  v_23_0_ = with_info0
+  _0_0["aniseed/locals"]["with-info"] = v_23_0_
+  with_info = v_23_0_
 end
 local doc_str = nil
 do
@@ -185,20 +202,22 @@ do
   do
     local v_23_0_0 = nil
     local function doc_str0(opts)
-      local function _3_(conn)
-        local function _4_(msg)
-          local function _5_()
-            if server["status="](msg, "no-eldoc") then
-              return {"; No documentation found"}
-            else
-              return render_doc_str(msg)
+      local function _3_(info)
+        local function _4_()
+          if a["nil?"](info) then
+            return {"; No documentation found"}
+          elseif info.candidates then
+            local function _4_(_241)
+              return (_241 .. "/" .. opts.code)
             end
+            return a.concat({"; Multiple candidates found"}, a.map(_4_, a.keys(info.candidates)))
+          else
+            return render_doc_str(info)
           end
-          return ui.display(_5_())
         end
-        return server.send({ns = (opts.context or "user"), op = "eldoc", session = conn.session, symbol = opts.code}, _4_)
+        return ui.display(_4_())
       end
-      return server["with-conn-and-op-or-warn"]("eldoc", _3_)
+      return with_info(opts, _3_)
     end
     v_23_0_0 = doc_str0
     _0_0["doc-str"] = v_23_0_0
