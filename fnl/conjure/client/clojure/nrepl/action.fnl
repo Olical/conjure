@@ -47,24 +47,50 @@
 (defn eval-str [opts]
   (server.with-conn-or-warn
     (fn [_]
-      (let [context (a.get opts :context)]
-        (server.eval
-          {:code (if context
-                   (.. "(in-ns '" context ")")
-                   "(in-ns #?(:clj 'user, :cljs 'cljs.user))")}
-          (fn [])))
+      (server.eval
+        {:code (.. "(in-ns '" (or opts.context "user") ")")}
+        (fn []))
       (server.eval opts (or opts.cb #(ui.display-result $1 opts))))))
 
+(defn- render-doc-str [{: ns : class
+                        : name : eldoc
+                        : docstring :type kind}]
+  (a.concat
+    [(str.join
+       [(when eldoc
+          "(")
+        (when ns
+          (.. ns "/"))
+        (if class
+          (a.last class)
+          name)
+        (when eldoc
+          (.. " "
+              (str.join
+                " "
+                (a.map
+                  (fn [args]
+                    (.. "[" (str.join " " args) "]"))
+                  eldoc))))
+        (when eldoc
+          ")")])]
+    (when (and (a.string? docstring) (not (a.empty? docstring)))
+      (text.prefixed-lines docstring "; "))))
+
 (defn doc-str [opts]
-  (eval-str
-    (a.merge
-      opts
-      {:code (.. "(do (require 'clojure.repl)"
-                 "    (clojure.repl/doc " opts.code "))")
-       :cb #(ui.display-result
-              $1
-              {:simple-out? true
-               :ignore-nil? true})})))
+  (server.with-conn-and-op-or-warn
+    :eldoc
+    (fn [conn]
+      (server.send
+        {:op :eldoc
+         :ns (or opts.context "user")
+         :symbol opts.code
+         :session conn.session}
+        (fn [msg]
+          (ui.display
+            (if (server.status= msg :no-eldoc)
+              ["; No documentation found"]
+              (render-doc-str msg))))))))
 
 (defn- jar->zip [path]
   (if (text.starts-with path "jar:file:")

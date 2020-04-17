@@ -3,7 +3,7 @@
  ["dev/src"]
 
  :dependencies
- []
+ [[cider/cider-nrepl "0.24.0"]]
 
  :dev-http {8080 "dev/public"}
 

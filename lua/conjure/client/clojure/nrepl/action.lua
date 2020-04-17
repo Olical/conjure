@@ -108,22 +108,13 @@ do
     local v_23_0_0 = nil
     local function eval_str0(opts)
       local function _3_(_)
-        do
-          local context = a.get(opts, "context")
-          local _4_
-          if context then
-            _4_ = ("(in-ns '" .. context .. ")")
-          else
-            _4_ = "(in-ns #?(:clj 'user, :cljs 'cljs.user))"
-          end
-          local function _6_()
-          end
-          server.eval({code = _4_}, _6_)
+        local function _4_()
         end
-        local function _4_(_241)
+        server.eval({code = ("(in-ns '" .. (opts.context or "user") .. ")")}, _4_)
+        local function _5_(_241)
           return ui["display-result"](_241, opts)
         end
-        return server.eval(opts, (opts.cb or _4_))
+        return server.eval(opts, (opts.cb or _5_))
       end
       return server["with-conn-or-warn"](_3_)
     end
@@ -134,16 +125,80 @@ do
   _0_0["aniseed/locals"]["eval-str"] = v_23_0_
   eval_str = v_23_0_
 end
+local render_doc_str = nil
+do
+  local v_23_0_ = nil
+  local function render_doc_str0(_3_0)
+    local _4_ = _3_0
+    local docstring = _4_["docstring"]
+    local class = _4_["class"]
+    local kind = _4_["type"]
+    local ns = _4_["ns"]
+    local name = _4_["name"]
+    local eldoc = _4_["eldoc"]
+    local _5_
+    if eldoc then
+      _5_ = "("
+    else
+    _5_ = nil
+    end
+    local _7_
+    if ns then
+      _7_ = (ns .. "/")
+    else
+    _7_ = nil
+    end
+    local _9_
+    if class then
+      _9_ = a.last(class)
+    else
+      _9_ = name
+    end
+    local _11_
+    if eldoc then
+      local function _12_(args)
+        return ("[" .. str.join(" ", args) .. "]")
+      end
+      _11_ = (" " .. str.join(" ", a.map(_12_, eldoc)))
+    else
+    _11_ = nil
+    end
+    local function _13_()
+      if eldoc then
+        return ")"
+      end
+    end
+    local function _14_()
+      if (a["string?"](docstring) and not a["empty?"](docstring)) then
+        return text["prefixed-lines"](docstring, "; ")
+      end
+    end
+    return a.concat({str.join({_5_, _7_, _9_, _11_, _13_()})}, _14_())
+  end
+  v_23_0_ = render_doc_str0
+  _0_0["aniseed/locals"]["render-doc-str"] = v_23_0_
+  render_doc_str = v_23_0_
+end
 local doc_str = nil
 do
   local v_23_0_ = nil
   do
     local v_23_0_0 = nil
     local function doc_str0(opts)
-      local function _3_(_241)
-        return ui["display-result"](_241, {["ignore-nil?"] = true, ["simple-out?"] = true})
+      local function _3_(conn)
+        local function _4_(msg)
+          local function _5_()
+            if server["status="](msg, "no-eldoc") then
+              return {"; No documentation found"}
+            else
+              return render_doc_str(msg)
+            end
+          end
+          return ui.display(_5_())
+        end
+        return server.send({ns = (opts.context or "user"), op = "eldoc", session = conn.session, symbol = opts.code}, _4_)
       end
-      return eval_str(a.merge(opts, {cb = _3_, code = ("(do (require 'clojure.repl)" .. "    (clojure.repl/doc " .. opts.code .. "))")}))
+      return server["with-conn-and-op-or-warn"]("eldoc", _3_)
     end
     v_23_0_0 = doc_str0
     _0_0["doc-str"] = v_23_0_0

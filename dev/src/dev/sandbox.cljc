@@ -1,7 +1,11 @@
 (ns dev.sandbox
+  "This is a namespace."
   (:require [clojure.test :as t]))
 
-(defn add [a b]
+(defn add
+  "Hello, World!
+  This is a function."
+  [a b]
   (+ a b))
 
 (range 30)

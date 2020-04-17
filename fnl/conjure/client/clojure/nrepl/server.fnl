@@ -53,7 +53,7 @@
       (display-conn-status :disconnected)
       (a.assoc state :conn nil))))
 
-(defn- status= [msg state]
+(defn status= [msg state]
   (and msg msg.status (a.some #(= state $1) msg.status)))
 
 (defn with-all-msgs-fn [cb]
@@ -145,6 +145,22 @@
                "  (apply pp/write val"
                "    (mapcat identity (assoc opts :stream w))))")}))
 
+(defn- capture-describe []
+  (send
+    {:op :describe}
+    (fn [msg]
+      (a.assoc-in state [:conn :describe] msg))))
+
+(defn with-conn-and-op-or-warn [op f]
+  (with-conn-or-warn
+    (fn [conn]
+      (if (a.get-in conn [:describe :ops op])
+        (f conn)
+        (ui.display
+          [(.. "; Unsupported operation: " op)
+           "; Ensure the CIDER middleware is installed and up to date"
+           "; https://docs.cider.mx/cider-nrepl/usage.html"])))))
+
 (defn- handle-connect-fn []
   (vim.schedule_wrap
     (fn [err]
@@ -157,6 +173,7 @@
           (do
             (conn.sock:read_start (handle-read-fn))
             (display-conn-status :connected)
+            (capture-describe)
             (inject-pprint-wrapper)
             (assume-or-create-session)))))))
 

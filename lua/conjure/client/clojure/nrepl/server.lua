@@ -128,13 +128,18 @@ end
 local status_3d = nil
 do
   local v_23_0_ = nil
-  local function status_3d0(msg, state0)
-    local function _3_(_241)
-      return (state0 == _241)
+  do
+    local v_23_0_0 = nil
+    local function status_3d0(msg, state0)
+      local function _3_(_241)
+        return (state0 == _241)
+      end
+      return (msg and msg.status and a.some(_3_, msg.status))
     end
-    return (msg and msg.status and a.some(_3_, msg.status))
+    v_23_0_0 = status_3d0
+    _0_0["status="] = v_23_0_0
+    v_23_0_ = v_23_0_0
   end
-  v_23_0_ = status_3d0
   _0_0["aniseed/locals"]["status="] = v_23_0_
   status_3d = v_23_0_
 end
@@ -342,6 +347,41 @@ do
   _0_0["aniseed/locals"]["inject-pprint-wrapper"] = v_23_0_
   inject_pprint_wrapper = v_23_0_
 end
+local capture_describe = nil
+do
+  local v_23_0_ = nil
+  local function capture_describe0()
+    local function _3_(msg)
+      return a["assoc-in"](state, {"conn", "describe"}, msg)
+    end
+    return send({op = "describe"}, _3_)
+  end
+  v_23_0_ = capture_describe0
+  _0_0["aniseed/locals"]["capture-describe"] = v_23_0_
+  capture_describe = v_23_0_
+end
+local with_conn_and_op_or_warn = nil
+do
+  local v_23_0_ = nil
+  do
+    local v_23_0_0 = nil
+    local function with_conn_and_op_or_warn0(op, f)
+      local function _3_(conn)
+        if a["get-in"](conn, {"describe", "ops", op}) then
+          return f(conn)
+        else
+          return ui.display({("; Unsupported operation: " .. op), "; Ensure the CIDER middleware is installed and up to date", "; https://docs.cider.mx/cider-nrepl/usage.html"})
+        end
+      end
+      return with_conn_or_warn(_3_)
+    end
+    v_23_0_0 = with_conn_and_op_or_warn0
+    _0_0["with-conn-and-op-or-warn"] = v_23_0_0
+    v_23_0_ = v_23_0_0
+  end
+  _0_0["aniseed/locals"]["with-conn-and-op-or-warn"] = v_23_0_
+  with_conn_and_op_or_warn = v_23_0_
+end
 local handle_connect_fn = nil
 do
   local v_23_0_ = nil
@@ -354,6 +394,7 @@ do
       else
         do end (conn.sock):read_start(handle_read_fn())
         display_conn_status("connected")
+        capture_describe()
         inject_pprint_wrapper()
         return assume_or_create_session()
       end
