@@ -1,0 +1,14 @@
+;; shadow-cljs configuration
+{:source-paths
+ ["dev/src"]
+
+ :dependencies
+ []
+
+ :dev-http {8080 "dev/public"}
+
+ :builds
+ {:app {:target :browser
+        :output-dir "dev/public/js"
+        :asset-path "/js"
+        :modules {:main {:entries [dev.sandbox]}}}}}

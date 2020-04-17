@@ -59,7 +59,7 @@ do
     local function connect_port_file0()
       local port = nil
       do
-        local _3_0 = a.slurp(".nrepl-port")
+        local _3_0 = a.some(a.slurp, {".nrepl-port", ".shadow-cljs/nrepl.port"})
         if _3_0 then
           port = tonumber(_3_0)
         else
@@ -69,7 +69,7 @@ do
       if port then
         return server.connect({host = config.connection["default-host"], port = port})
       else
-        return ui.display({"; No .nrepl-port file found"}, {["break?"] = true})
+        return ui.display({"; No nREPL port file found"}, {["break?"] = true})
       end
     end
     v_23_0_0 = connect_port_file0
@@ -110,16 +110,15 @@ do
       local function _3_(_)
         do
           local context = a.get(opts, "context")
-          local function _4_()
-            if context then
-              return ("(in-ns '" .. context .. ")")
-            else
-              return "(in-ns #?(:clj 'user, :cljs 'cljs.user))"
-            end
+          local _4_
+          if context then
+            _4_ = ("(in-ns '" .. context .. ")")
+          else
+            _4_ = "(in-ns #?(:clj 'user, :cljs 'cljs.user))"
           end
-          local function _5_()
+          local function _6_()
           end
-          server.eval({code = ("(do " .. _4_() .. " *1)")}, _5_)
+          server.eval({code = _4_}, _6_)
         end
         local function _4_(_241)
           return ui["display-result"](_241, opts)

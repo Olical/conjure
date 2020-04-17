@@ -29,12 +29,12 @@
                     {:break? true})))))
 
 (defn connect-port-file []
-  (let [port (-?> (a.slurp ".nrepl-port") (tonumber))]
+  (let [port (-?> (a.some a.slurp [".nrepl-port" ".shadow-cljs/nrepl.port"]) (tonumber))]
     (if port
       (server.connect
         {:host config.connection.default-host
          :port port})
-      (ui.display ["; No .nrepl-port file found"] {:break? true}))))
+      (ui.display ["; No nREPL port file found"] {:break? true}))))
 
 (defn connect-host-port [...]
   (let [args [...]]
@@ -49,11 +49,9 @@
     (fn [_]
       (let [context (a.get opts :context)]
         (server.eval
-          {:code (.. "(do "
-                     (if context
-                       (.. "(in-ns '" context ")")
-                       "(in-ns #?(:clj 'user, :cljs 'cljs.user))")
-                     " *1)")}
+          {:code (if context
+                   (.. "(in-ns '" context ")")
+                   "(in-ns #?(:clj 'user, :cljs 'cljs.user))")}
           (fn [])))
       (server.eval opts (or opts.cb #(ui.display-result $1 opts))))))
 

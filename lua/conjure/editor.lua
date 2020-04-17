@@ -123,7 +123,7 @@ do
   do
     local v_23_0_0 = nil
     local function go_to0(path, line, column)
-      nvim.ex.edit(path)
+      nvim.ex.find(path)
       return nvim.win_set_cursor(0, {line, a.dec(column)})
     end
     v_23_0_0 = go_to0

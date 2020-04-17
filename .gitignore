@@ -6,3 +6,6 @@
 /.cljs_node_repl/
 /.nrepl-port
 /doc/tags
+/.shadow-cljs/
+/node_modules/
+/dev/public/

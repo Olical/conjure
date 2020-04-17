@@ -1,4 +1,4 @@
-(ns dev.foo
+(ns dev.sandbox
   (:require [clojure.test :as t]))
 
 (defn add [a b]
@@ -27,9 +27,15 @@
   (do (Thread/sleep 5000)
       (println "BAR"))
 
+  ;; Piggieback.
   (require '[cider.piggieback :as piggieback]
            '[cljs.repl.node :as node-repl])
   (piggieback/cljs-repl (node-repl/repl-env))
+
+  ;; Shadow.
+  ;; :ConjureConfig clojure.nrepl/go-to-definition.path-prefix "dev/src/"
+  (shadow.cljs.devtools.api/nrepl-select :app)
+
   (enable-console-print!)
   (throw (js/Error. "ohno"))
   :cljs/quit)
