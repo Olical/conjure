@@ -22,7 +22,7 @@
   (nvim.fn.screenrow))
 
 (defn go-to [path line column]
-  (nvim.ex.find path)
+  (nvim.ex.edit path)
   (nvim.win_set_cursor 0 [line (a.dec column)]))
 
 (defn go-to-mark [m]

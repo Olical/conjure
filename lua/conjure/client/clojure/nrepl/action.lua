@@ -134,12 +134,15 @@ do
     local docs = _4_["doc"]
     local args = _4_["arglists-str"]
     local kind = _4_["type"]
+    local ns = _4_["ns"]
+    local url = _4_["url"]
     local class = _4_["class"]
     local name = _4_["name"]
-    local ns = _4_["ns"]
+    local javadoc = _4_["javadoc"]
     do
       local prefix = (ns or class)
       local suffix = (name or member)
+      local link = (javadoc or url)
       local _5_
       if args then
         _5_ = "("
@@ -163,12 +166,18 @@ do
           return ")"
         end
       end
-      local function _12_()
+      local _12_
+      if link then
+        _12_ = {("; " .. link)}
+      else
+      _12_ = nil
+      end
+      local function _14_()
         if (a["string?"](docs) and not a["empty?"](docs)) then
           return text["prefixed-lines"](docs, "; ")
         end
       end
-      return a.concat({str.join({_5_, _7_, suffix, _9_, _11_()})}, _12_())
+      return a.concat({str.join({_5_, _7_, suffix, _9_, _11_()})}, _12_, _14_())
     end
   end
   v_23_0_ = render_doc_str0
@@ -226,22 +235,27 @@ do
   _0_0["aniseed/locals"]["doc-str"] = v_23_0_
   doc_str = v_23_0_
 end
-local jar__3ezip = nil
+local nrepl__3envim_path = nil
 do
   local v_23_0_ = nil
-  local function jar__3ezip0(path)
+  local function nrepl__3envim_path0(path)
     if text["starts-with"](path, "jar:file:") then
       local function _3_(zip, file)
         return ("zipfile:" .. zip .. "::" .. file)
       end
       return string.gsub(path, "^jar:file:(.+)!/?(.+)$", _3_)
+    elseif text["starts-with"](path, "file:") then
+      local function _3_(file)
+        return file
+      end
+      return string.gsub(path, "^file:(.+)$", _3_)
     else
       return path
     end
   end
-  v_23_0_ = jar__3ezip0
-  _0_0["aniseed/locals"]["jar->zip"] = v_23_0_
-  jar__3ezip = v_23_0_
+  v_23_0_ = nrepl__3envim_path0
+  _0_0["aniseed/locals"]["nrepl->nvim-path"] = v_23_0_
+  nrepl__3envim_path = v_23_0_
 end
 local def_str = nil
 do
@@ -249,25 +263,30 @@ do
   do
     local v_23_0_0 = nil
     local function def_str0(opts)
-      local function _3_(msgs)
-        local val = a.get(a.first(msgs), "value")
-        local ok_3f, res = nil, nil
-        if val then
-          ok_3f, res = eval.str(val)
+      local function _3_(info)
+        if a["nil?"](info) then
+          return ui.display({"; No definition information found"})
+        elseif info.candidates then
+          local function _4_(_241)
+            return (_241 .. "/" .. opts.code)
+          end
+          return ui.display(a.concat({"; Multiple candidates found"}, a.map(_4_, a.keys(info.candidates))))
+        elseif info.javadoc then
+          return ui.display({"; Can't open source, it's Java", ("; " .. info.javadoc)})
+        elseif info["special-form"] then
+          local function _4_()
+            if info.url then
+              return ("; " .. info.url)
+            end
+          end
+          return ui.display({"; Can't open source, it's a special form", _4_()})
+        elseif (info.file and info.line) then
+          return editor["go-to"](nrepl__3envim_path(info.file), info.line, (info.column or 0))
         else
-        ok_3f, res = nil
-        end
-        if ok_3f then
-          local _5_ = res
-          local path = _5_[1]
-          local line = _5_[2]
-          local column = _5_[3]
-          return editor["go-to"](jar__3ezip(path), line, column)
-        else
-          return ui.display({"; Couldn't find definition."})
+          return ui.display({"; Unsupported target", ("; " .. a["pr-str"](info))})
         end
       end
-      return eval_str(a.merge(opts, {cb = server["with-all-msgs-fn"](_3_), code = ("(mapv #(% (meta #'" .. opts.code .. "))\n      [(comp #(.toString %)\n      (some-fn (comp #?(:clj clojure.java.io/resource :cljs identity)\n      :file) :file))\n      :line :column])")}))
+      return with_info(opts, _3_)
     end
     v_23_0_0 = def_str0
     _0_0["def-str"] = v_23_0_0

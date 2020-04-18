@@ -10,7 +10,7 @@
 ;; TODO Name sessions after cities (or similar) and show type in list.
 ;; TODO Have all auto completion tools working.
 ;; TODO Pretty error output.
-;; TODO Ensure sideload namespaces don't break everything.
+;; TODO Ensure sideload sessions don't break everything.
 ;; TODO Tools to hook into shadow and figwheel.
 ;; TODO Build session language into the session list.
 

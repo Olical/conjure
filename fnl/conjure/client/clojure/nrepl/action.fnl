@@ -53,11 +53,13 @@
       (server.eval opts (or opts.cb #(ui.display-result $1 opts))))))
 
 (defn- render-doc-str [{: ns : class : name : member
+                        : javadoc : url
                         :doc docs
                         :arglists-str args
                         :type kind}]
   (let [prefix (or ns class)
-        suffix (or name member)]
+        suffix (or name member)
+        link (or javadoc url)]
     (a.concat
       [(str.join
          [(when args
@@ -69,6 +71,8 @@
             (.. " " (str.join " " (text.split-lines args))))
           (when args
             ")")])]
+      (when link
+        [(.. "; " link)])
       (when (and (a.string? docs) (not (a.empty? docs)))
         (text.prefixed-lines docs "; ")))))
 
@@ -101,31 +105,48 @@
 
           (render-doc-str info))))))
 
-(defn- jar->zip [path]
-  (if (text.starts-with path "jar:file:")
+(defn- nrepl->nvim-path [path]
+  (if
+    (text.starts-with path "jar:file:")
     (string.gsub path "^jar:file:(.+)!/?(.+)$"
                  (fn [zip file]
                    (.. "zipfile:" zip "::" file)))
+
+    (text.starts-with path "file:")
+    (string.gsub path "^file:(.+)$"
+                 (fn [file]
+                   file))
+
     path))
 
 (defn def-str [opts]
-  (eval-str
-    (a.merge
-      opts
-      {:code (.. "(mapv #(% (meta #'" opts.code "))
-      [(comp #(.toString %)
-      (some-fn (comp #?(:clj clojure.java.io/resource :cljs identity)
-      :file) :file))
-      :line :column])")
-       :cb (server.with-all-msgs-fn
-             (fn [msgs]
-               (let [val (a.get (a.first msgs) :value)
-                     (ok? res) (when val
-                                 (eval.str val))]
-                 (if ok?
-                   (let [[path line column] res]
-                     (editor.go-to (jar->zip path) line column))
-                   (ui.display ["; Couldn't find definition."])))))})))
+  (with-info
+    opts
+    (fn [info]
+      (if
+        (a.nil? info)
+        (ui.display ["; No definition information found"])
+
+        info.candidates
+        (ui.display
+          (a.concat
+            ["; Multiple candidates found"]
+            (a.map #(.. $1 "/" opts.code) (a.keys info.candidates))))
+
+        info.javadoc
+        (ui.display ["; Can't open source, it's Java"
+                     (.. "; " info.javadoc)])
+
+        info.special-form
+        (ui.display ["; Can't open source, it's a special form"
+                     (when info.url (.. "; " info.url))])
+
+        (and info.file info.line)
+        (editor.go-to (nrepl->nvim-path info.file)
+                      info.line (or info.column 0))
+
+        (ui.display ["; Unsupported target"
+                     (.. "; " (a.pr-str info))])))))
 
 (defn eval-file [opts]
   (server.eval
