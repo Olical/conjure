@@ -731,10 +731,12 @@ do
           return ui.display(msg.reloading)
         elseif msg.error then
           return ui.display({("; Error while reloading " .. msg["error-ns"])})
-        elseif msg.err then
-          return ui["display-result"](msg, {})
         elseif server["status="](msg, "ok") then
           return ui.display({"; Refresh complete"})
+        elseif server["status="](msg, "done") then
+          return nil
+        else
+          return ui["display-result"](msg, {})
         end
       end
       return server.send(a.merge({op = op, session = conn.session}, a.get(config, "refresh")), _4_)

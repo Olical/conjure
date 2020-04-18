@@ -8,6 +8,10 @@
   [a b]
   (+ a b))
 
+; :ConjureConfig clojure.nrepl/refresh.after "dev.sandbox/after-refresh"
+(defn after-refresh []
+  (println "All done!"))
+
 (range 30)
 
 (meta #'add)

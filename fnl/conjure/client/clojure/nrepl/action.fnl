@@ -345,11 +345,13 @@
             (ui.display [(.. "; Error while reloading "
                              msg.error-ns)])
 
-            msg.err
-            (ui.display-result msg {})
-
             (server.status= msg :ok)
-            (ui.display ["; Refresh complete"])))))))
+            (ui.display ["; Refresh complete"])
+
+            (server.status= msg :done)
+            nil
+
+            (ui.display-result msg {})))))))
 
 (defn refresh-changed []
   (ui.display ["; Refreshing changed namespaces"] {:break? true})
