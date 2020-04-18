@@ -35,9 +35,8 @@ and mappings that are provided by each language client.
 MAPPINGS                                                    *conjure-mappings*
 
 These are the default mappings, |conjure-configuration| will show you how to
-remap them to keys that suit you if required. The default prefix key for most
-mappings is `<localleader>`, you'll need to set |maplocalleader| if you
-haven't already.
+remap them to keys that suit you if required. The default prefix key for
+almost all of the mappings is `<localleader>` (|maplocalleader|).
 
 I've also included some commands since they're related to the mappings.
 
@@ -226,6 +225,8 @@ Now you can hit `ClS` without a prefix in any Conjure support filetype buffer.
             which is used for setting the right context of evaluations.
             If you have buffers with huge comment headers you may want to set
             this higher.
+            If a specific buffer isn't extracting the context correctly, you
+            can override it by setting `b:conjure_context`.
             Default: `24`
 
 `preview.sample-limit`
@@ -236,6 +237,14 @@ Now you can hit `ClS` without a prefix in any Conjure support filetype buffer.
             editor. This is so you can align it with the width of your HUD.
             A float between 0.0 and 1.0.
             Default: `0.3`
+
+And finally some regular Neovim variables.
+
+`b:conjure_context`
+            Override the context name for a specific buffer, preventing
+            Conjure from attempting to extract it from the first few lines
+            defined by the `extract.context-header-lines` configuration value.
+            Default: `undefined`
 
 ==============================================================================
 LOG                                                              *conjure-log*
