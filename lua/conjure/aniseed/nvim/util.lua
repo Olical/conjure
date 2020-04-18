@@ -43,8 +43,8 @@ do
     local v_23_0_0 = nil
     local function fn_bridge0(viml_name, mod, lua_name, opts)
       local _3_ = (opts or {})
-      local range = _3_["range"]
       local _return = _3_["return"]
+      local range = _3_["range"]
       local function _4_()
         if range then
           return " range"

@@ -586,11 +586,11 @@ do
   local v_23_0_ = nil
   do
     local v_23_0_0 = nil
-    local function slurp0(path)
+    local function slurp0(path, silent_3f)
       local _3_0, _4_0 = io.open(path, "r")
       if ((_3_0 == nil) and (nil ~= _4_0)) then
         local msg = _4_0
-        return println(("Could not open file: " .. msg))
+        return nil
       elseif (nil ~= _3_0) then
         local f = _3_0
         do
@@ -616,7 +616,7 @@ do
       local _3_0, _4_0 = io.open(path, "w")
       if ((_3_0 == nil) and (nil ~= _4_0)) then
         local msg = _4_0
-        return println(("Could not open file: " .. msg))
+        return error(("Could not open file: " .. msg))
       elseif (nil ~= _3_0) then
         local f = _3_0
         do
