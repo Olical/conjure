@@ -37,7 +37,6 @@
   (piggieback/cljs-repl (node-repl/repl-env))
 
   ;; Shadow.
-  ;; :ConjureConfig clojure.nrepl/go-to-definition.path-prefix "dev/src/"
   (shadow.cljs.devtools.api/nrepl-select :app)
 
   (enable-console-print!)
