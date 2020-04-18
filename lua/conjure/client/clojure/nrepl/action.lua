@@ -616,19 +616,6 @@ do
   _0_0["aniseed/locals"]["select-session-interactive"] = v_23_0_
   select_session_interactive = v_23_0_
 end
-local with_test_var_query = nil
-do
-  local v_23_0_ = nil
-  local function with_test_var_query0(var_query, f)
-    local function _3_(conn)
-      return server.send({["var-query"] = var_query, op = "test-var-query", session = conn.session}, f)
-    end
-    return server["with-conn-and-op-or-warn"]("test-var-query", _3_)
-  end
-  v_23_0_ = with_test_var_query0
-  _0_0["aniseed/locals"]["with-test-var-query"] = v_23_0_
-  with_test_var_query = v_23_0_
-end
 local run_all_tests = nil
 do
   local v_23_0_ = nil
@@ -636,10 +623,10 @@ do
     local v_23_0_0 = nil
     local function run_all_tests0()
       ui.display({"; run-all-tests"}, {["break?"] = true})
-      local function _3_(msgs)
-        return ui["display-test-result"](a.first(msgs))
+      local function _3_(_241)
+        return ui["display-result"](_241, {["ignore-nil?"] = true, ["simple-out?"] = true})
       end
-      return with_test_var_query({["private?"] = 1, ["test?"] = 1}, server["with-all-msgs-fn"](_3_))
+      return server.eval({code = "(require 'clojure.test) (clojure.test/run-all-tests)"}, _3_)
     end
     v_23_0_0 = run_all_tests0
     _0_0["run-all-tests"] = v_23_0_0
@@ -654,10 +641,10 @@ do
   local function run_ns_tests0(ns)
     if ns then
       ui.display({("; run-ns-tests: " .. ns)}, {["break?"] = true})
-      local function _3_(msgs)
-        return ui["display-test-result"](a.first(msgs))
+      local function _3_(_241)
+        return ui["display-result"](_241, {["ignore-nil?"] = true, ["simple-out?"] = true})
       end
-      return with_test_var_query({["ns-query"] = {exactly = {ns}}, ["private?"] = 1, ["test?"] = 1}, server["with-all-msgs-fn"](_3_))
+      return server.eval({code = ("(require 'clojure.test)" .. "(clojure.test/run-tests '" .. ns .. ")")}, _3_)
     end
   end
   v_23_0_ = run_ns_tests0
@@ -708,16 +695,22 @@ do
   do
     local v_23_0_0 = nil
     local function run_current_test0()
-      local ns = extract.context()
       local form = extract.form({["root?"] = true})
-      if (ns and form) then
+      if form then
         local test_name, sub_count = string.gsub(form.content, ".*deftest%s+(.-)%s+.*", "%1")
         if (not a["empty?"](test_name) and (1 == sub_count)) then
           ui.display({("; run-current-test: " .. test_name)}, {["break?"] = true})
           local function _3_(msgs)
-            return ui["display-test-result"](a.first(msgs))
+            if ((2 == a.count(msgs)) and ("nil" == a.get(a.first(msgs), "value"))) then
+              return ui.display({"; Success!"})
+            else
+              local function _4_(_241)
+                return ui["display-result"](_241, {["ignore-nil?"] = true, ["simple-out?"] = true})
+              end
+              return a["run!"](_4_, msgs)
+            end
           end
-          return with_test_var_query({["ns-query"] = {exactly = {ns}}, ["private?"] = 1, ["test?"] = 1, search = ("^" .. ns .. "/" .. test_name .. "$")}, server["with-all-msgs-fn"](_3_))
+          return server.eval({code = ("(do (require 'clojure.test)" .. "(clojure.test/test-var" .. "  (resolve '" .. test_name .. ")))")}, server["with-all-msgs-fn"](_3_))
         end
       end
     end

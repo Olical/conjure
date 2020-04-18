@@ -15,16 +15,15 @@ do
   _0_0 = module_23_0_
 end
 local function _1_(...)
-  _0_0["aniseed/local-fns"] = {require = {a = "conjure.aniseed.core", client = "conjure.client", log = "conjure.log", state = "conjure.client.clojure.nrepl.state", str = "conjure.aniseed.string", text = "conjure.text"}}
-  return {require("conjure.aniseed.core"), require("conjure.client"), require("conjure.log"), require("conjure.client.clojure.nrepl.state"), require("conjure.aniseed.string"), require("conjure.text")}
+  _0_0["aniseed/local-fns"] = {require = {a = "conjure.aniseed.core", client = "conjure.client", log = "conjure.log", state = "conjure.client.clojure.nrepl.state", text = "conjure.text"}}
+  return {require("conjure.aniseed.core"), require("conjure.client"), require("conjure.log"), require("conjure.client.clojure.nrepl.state"), require("conjure.text")}
 end
 local _2_ = _1_(...)
 local a = _2_[1]
 local client = _2_[2]
 local log = _2_[3]
 local state = _2_[4]
-local str = _2_[5]
-local text = _2_[6]
+local text = _2_[5]
 do local _ = ({nil, _0_0, nil})[2] end
 local display = nil
 do
@@ -78,84 +77,6 @@ do
   end
   _0_0["aniseed/locals"]["display-result"] = v_23_0_
   display_result = v_23_0_
-end
-local flatten_test_results = nil
-do
-  local v_23_0_ = nil
-  local function flatten_test_results0(results)
-    return a.concat(unpack(a.concat(unpack(a.map(a.vals, a.vals(results))))))
-  end
-  v_23_0_ = flatten_test_results0
-  _0_0["aniseed/locals"]["flatten-test-results"] = v_23_0_
-  flatten_test_results = v_23_0_
-end
-local display_test_result = nil
-do
-  local v_23_0_ = nil
-  do
-    local v_23_0_0 = nil
-    local function display_test_result0(_3_0)
-      local _4_ = _3_0
-      local summary = _4_["summary"]
-      local results = _4_["results"]
-      local function _5_()
-        if results then
-          local function _5_(_6_0)
-            local _7_ = _6_0
-            local name = _7_["var"]
-            local file = _7_["file"]
-            local actual = _7_["actual"]
-            local message = _7_["message"]
-            local context = _7_["context"]
-            local line = _7_["line"]
-            local status = _7_["type"]
-            local err = _7_["error"]
-            local expected = _7_["expected"]
-            local ns = _7_["ns"]
-            local _8_
-            if not a["empty?"](context) then
-              _8_ = (" (" .. text["left-sample"](context, 32) .. ")")
-            else
-            _8_ = nil
-            end
-            local _10_
-            if not a["empty?"](message) then
-              _10_ = text["prefixed-lines"](message, "; ")
-            else
-            _10_ = nil
-            end
-            local function _12_()
-              if err then
-                return text["prefixed-lines"](err, "; ")
-              elseif (expected ~= actual) then
-                return a.concat({"; Expected:"}, text["split-lines"](expected), {""}, {"; Actual:"}, text["split-lines"](actual), {""})
-              end
-            end
-            return a.concat({str.join({"; [", ns, "/", name, "] ", string.upper(status), _8_, " ", file, ":", line})}, _10_, _12_())
-          end
-          local function _7_(_241)
-            return ("pass" ~= a.get(_241, "type"))
-          end
-          local function _8_()
-            if (0 == summary.fail) then
-              return "OK"
-            else
-              return "FAILED"
-            end
-          end
-          return a.concat(a.concat(unpack(a.map(_5_, a.filter(_7_, flatten_test_results(results))))), {("; [total] " .. _8_() .. " " .. summary.pass .. "/" .. summary.test .. " assertions passed (" .. summary.var .. " tests, " .. summary.error .. " errors)")})
-        else
-          return {"; No results"}
-        end
-      end
-      return display(_5_())
-    end
-    v_23_0_0 = display_test_result0
-    _0_0["display-test-result"] = v_23_0_0
-    v_23_0_ = v_23_0_0
-  end
-  _0_0["aniseed/locals"]["display-test-result"] = v_23_0_
-  display_test_result = v_23_0_
 end
 local display_given_sessions = nil
 do
