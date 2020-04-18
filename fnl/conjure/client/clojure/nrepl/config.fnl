@@ -12,6 +12,11 @@
 (def interrupt
   {:sample-limit 0.3})
 
+(def refresh
+  {:after nil
+   :before nil
+   :dirs nil})
+
 (def mappings
   {:disconnect "cd"
    :connect-port-file "cf"
@@ -36,4 +41,8 @@
    :run-all-tests "ta"
    :run-current-ns-tests "tn"
    :run-alternate-ns-tests "tN"
-   :run-current-test "tc"})
+   :run-current-test "tc"
+
+   :refresh-changed "rr"
+   :refresh-all "ra"
+   :refresh-clear "rc"})

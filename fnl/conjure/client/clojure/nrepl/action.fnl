@@ -326,3 +326,47 @@
                              {:simple-out? true
                               :ignore-nil? true})
                           msgs))))))))))
+
+(defn- refresh-impl [op]
+  (server.with-conn-and-op-or-warn
+    op
+    (fn [conn]
+      (server.send
+        (a.merge
+          {:op op
+           :session conn.session}
+          (a.get config :refresh))
+        (fn [msg]
+          (if
+            msg.reloading
+            (ui.display msg.reloading)
+
+            msg.error
+            (ui.display [(.. "; Error while reloading "
+                             msg.error-ns)])
+
+            msg.err
+            (ui.display-result msg {})
+
+            (server.status= msg :ok)
+            (ui.display ["; Refresh complete"])))))))
+
+(defn refresh-changed []
+  (ui.display ["; Refreshing changed namespaces"] {:break? true})
+  (refresh-impl :refresh))
+
+(defn refresh-all []
+  (ui.display ["; Refreshing all namespaces"] {:break? true})
+  (refresh-impl :refresh-all))
+
+(defn refresh-clear []
+  (ui.display ["; Clearing refresh state"] {:break? true})
+  (server.with-conn-and-op-or-warn
+    :refresh-clear
+    (fn [conn]
+      (server.send
+        {:op :refresh-clear
+         :session conn.session}
+        (server.with-all-msgs-fn
+          (fn [msgs]
+            (ui.display ["; Clearing complete"])))))))

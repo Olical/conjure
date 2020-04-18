@@ -721,4 +721,82 @@ do
   _0_0["aniseed/locals"]["run-current-test"] = v_23_0_
   run_current_test = v_23_0_
 end
+local refresh_impl = nil
+do
+  local v_23_0_ = nil
+  local function refresh_impl0(op)
+    local function _3_(conn)
+      local function _4_(msg)
+        if msg.reloading then
+          return ui.display(msg.reloading)
+        elseif msg.error then
+          return ui.display({("; Error while reloading " .. msg["error-ns"])})
+        elseif msg.err then
+          return ui["display-result"](msg, {})
+        elseif server["status="](msg, "ok") then
+          return ui.display({"; Refresh complete"})
+        end
+      end
+      return server.send(a.merge({op = op, session = conn.session}, a.get(config, "refresh")), _4_)
+    end
+    return server["with-conn-and-op-or-warn"](op, _3_)
+  end
+  v_23_0_ = refresh_impl0
+  _0_0["aniseed/locals"]["refresh-impl"] = v_23_0_
+  refresh_impl = v_23_0_
+end
+local refresh_changed = nil
+do
+  local v_23_0_ = nil
+  do
+    local v_23_0_0 = nil
+    local function refresh_changed0()
+      ui.display({"; Refreshing changed namespaces"}, {["break?"] = true})
+      return refresh_impl("refresh")
+    end
+    v_23_0_0 = refresh_changed0
+    _0_0["refresh-changed"] = v_23_0_0
+    v_23_0_ = v_23_0_0
+  end
+  _0_0["aniseed/locals"]["refresh-changed"] = v_23_0_
+  refresh_changed = v_23_0_
+end
+local refresh_all = nil
+do
+  local v_23_0_ = nil
+  do
+    local v_23_0_0 = nil
+    local function refresh_all0()
+      ui.display({"; Refreshing all namespaces"}, {["break?"] = true})
+      return refresh_impl("refresh-all")
+    end
+    v_23_0_0 = refresh_all0
+    _0_0["refresh-all"] = v_23_0_0
+    v_23_0_ = v_23_0_0
+  end
+  _0_0["aniseed/locals"]["refresh-all"] = v_23_0_
+  refresh_all = v_23_0_
+end
+local refresh_clear = nil
+do
+  local v_23_0_ = nil
+  do
+    local v_23_0_0 = nil
+    local function refresh_clear0()
+      ui.display({"; Clearing refresh state"}, {["break?"] = true})
+      local function _3_(conn)
+        local function _4_(msgs)
+          return ui.display({"; Clearing complete"})
+        end
+        return server.send({op = "refresh-clear", session = conn.session}, server["with-all-msgs-fn"](_4_))
+      end
+      return server["with-conn-and-op-or-warn"]("refresh-clear", _3_)
+    end
+    v_23_0_0 = refresh_clear0
+    _0_0["refresh-clear"] = v_23_0_0
+    v_23_0_ = v_23_0_0
+  end
+  _0_0["aniseed/locals"]["refresh-clear"] = v_23_0_
+  refresh_clear = v_23_0_
+end
 return nil

@@ -156,6 +156,9 @@ do
       mapping.buf("n", config0.mappings["run-current-ns-tests"], "conjure.client.clojure.nrepl.action", "run-current-ns-tests")
       mapping.buf("n", config0.mappings["run-alternate-ns-tests"], "conjure.client.clojure.nrepl.action", "run-alternate-ns-tests")
       mapping.buf("n", config0.mappings["run-current-test"], "conjure.client.clojure.nrepl.action", "run-current-test")
+      mapping.buf("n", config0.mappings["refresh-changed"], "conjure.client.clojure.nrepl.action", "refresh-changed")
+      mapping.buf("n", config0.mappings["refresh-all"], "conjure.client.clojure.nrepl.action", "refresh-all")
+      mapping.buf("n", config0.mappings["refresh-clear"], "conjure.client.clojure.nrepl.action", "refresh-clear")
       return nvim.ex.command_("-nargs=+ -buffer ConjureConnect", bridge["viml->lua"]("conjure.client.clojure.nrepl.action", "connect-host-port", {args = "<f-args>"}))
     end
     v_23_0_0 = on_filetype0

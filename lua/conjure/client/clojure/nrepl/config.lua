@@ -64,11 +64,22 @@ do
   _0_0["aniseed/locals"]["interrupt"] = v_23_0_
   interrupt = v_23_0_
 end
+local refresh = nil
+do
+  local v_23_0_ = nil
+  do
+    local v_23_0_0 = {after = nil, before = nil, dirs = nil}
+    _0_0["refresh"] = v_23_0_0
+    v_23_0_ = v_23_0_0
+  end
+  _0_0["aniseed/locals"]["refresh"] = v_23_0_
+  refresh = v_23_0_
+end
 local mappings = nil
 do
   local v_23_0_ = nil
   do
-    local v_23_0_0 = {["connect-port-file"] = "cf", ["last-exception"] = "ex", ["result-1"] = "e1", ["result-2"] = "e2", ["result-3"] = "e3", ["run-all-tests"] = "ta", ["run-alternate-ns-tests"] = "tN", ["run-current-ns-tests"] = "tn", ["run-current-test"] = "tc", ["session-clone"] = "sc", ["session-close"] = "sq", ["session-close-all"] = "sQ", ["session-fresh"] = "sf", ["session-list"] = "sl", ["session-next"] = "sn", ["session-prev"] = "sp", ["session-select"] = "ss", ["session-type"] = "st", ["view-source"] = "es", disconnect = "cd", interrupt = "ei"}
+    local v_23_0_0 = {["connect-port-file"] = "cf", ["last-exception"] = "ex", ["refresh-all"] = "ra", ["refresh-changed"] = "rr", ["refresh-clear"] = "rc", ["result-1"] = "e1", ["result-2"] = "e2", ["result-3"] = "e3", ["run-all-tests"] = "ta", ["run-alternate-ns-tests"] = "tN", ["run-current-ns-tests"] = "tn", ["run-current-test"] = "tc", ["session-clone"] = "sc", ["session-close"] = "sq", ["session-close-all"] = "sQ", ["session-fresh"] = "sf", ["session-list"] = "sl", ["session-next"] = "sn", ["session-prev"] = "sp", ["session-select"] = "ss", ["session-type"] = "st", ["view-source"] = "es", disconnect = "cd", interrupt = "ei"}
     _0_0["mappings"] = v_23_0_0
     v_23_0_ = v_23_0_0
   end
