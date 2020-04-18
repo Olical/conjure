@@ -18,11 +18,14 @@
 
 (t/deftest test-a
   (t/testing "foo"
-    (t/is (= 10 10))))
+    (t/is (= 10 10))
+    (t/is (= :foo :foo) "keywords should be the same")))
 
 (t/deftest test-b
   (t/testing "bar"
-    (t/is (= 10 10))))
+    (t/is (= 10 10))
+    ; (t/is (/ 10 0))
+    ))
 
 (comment
   (throw (Error. "ohno"))

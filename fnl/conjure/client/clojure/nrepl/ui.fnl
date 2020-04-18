@@ -2,6 +2,7 @@
   {require {client conjure.client
             log conjure.log
             text conjure.text
+            str conjure.aniseed.string
             a conjure.aniseed.core
             state conjure.client.clojure.nrepl.state}})
 
@@ -28,6 +29,58 @@
         (text.split-lines resp.value))
 
       nil)))
+
+(defn- flatten-test-results [results]
+  (->> results
+       (a.vals)
+       (a.map a.vals)
+       (unpack)
+       (a.concat)
+       (unpack)
+       (a.concat)))
+
+(defn display-test-result [{: results : summary}]
+  "Abandon all hope ye who enter here."
+  (display
+    (if results
+      (a.concat
+        (->> (flatten-test-results results)
+             (a.filter #(not= :pass (a.get $1 :type)))
+             (a.map
+               (fn [{: context : ns :type status :var name
+                     : actual : expected : message
+                     : file : line
+                     :error err}]
+                 (a.concat
+                   [(str.join ["; [" ns "/" name "] " (string.upper status)
+                               (when (not (a.empty? context))
+                                 (.. " (" (text.left-sample context 32) ")"))
+                               " " file ":"
+                               line])]
+                   (when (not (a.empty? message))
+                     (text.prefixed-lines message "; "))
+                   (if
+                     err (text.prefixed-lines err "; ")
+
+                     (not= expected actual)
+                     (a.concat
+                       ["; Expected:"]
+                       (text.split-lines expected)
+                       [""]
+                       ["; Actual:"]
+                       (text.split-lines actual)
+                       [""])))))
+             (unpack)
+             (a.concat))
+        [(.. "; [total] "
+             (if (= 0 summary.fail)
+               "OK"
+               "FAILED")
+             " "
+             summary.pass "/" summary.test
+             " assertions passed (" summary.var
+             " tests, " summary.error " errors)")])
+      ["; No results"])))
 
 (defn display-given-sessions [sessions cb]
   (let [current (a.get-in state [:conn :session])]

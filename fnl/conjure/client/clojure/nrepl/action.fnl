@@ -273,26 +273,36 @@
                 (server.assume-session (a.get sessions n))
                 (ui.display ["; Invalid session number."])))))))))
 
+(defn- with-test-var-query [var-query f]
+  (server.with-conn-and-op-or-warn
+    :test-var-query
+    (fn [conn]
+      (server.send
+        {:op :test-var-query
+         :var-query var-query
+         :session conn.session}
+        f))))
+
 (defn run-all-tests []
   (ui.display ["; run-all-tests"] {:break? true})
-  (server.eval
-    {:code "(require 'clojure.test) (clojure.test/run-all-tests)"}
-    #(ui.display-result
-       $1
-       {:simple-out? true
-        :ignore-nil? true})))
+  (with-test-var-query
+    {:private? 1
+     :test? 1}
+    (server.with-all-msgs-fn
+      (fn [msgs]
+        (ui.display-test-result (a.first msgs))))))
 
 (defn- run-ns-tests [ns]
   (when ns
     (ui.display [(.. "; run-ns-tests: " ns)]
                 {:break? true})
-    (server.eval
-      {:code (.. "(require 'clojure.test)"
-                 "(clojure.test/run-tests '" ns ")")}
-      #(ui.display-result
-         $1
-         {:simple-out? true
-          :ignore-nil? true}))))
+    (with-test-var-query
+      {:ns-query {:exactly [ns]}
+       :private? 1
+       :test? 1}
+      (server.with-all-msgs-fn
+        (fn [msgs]
+          (ui.display-test-result (a.first msgs)))))))
 
 (defn run-current-ns-tests []
   (run-ns-tests (extract.context)))
@@ -305,24 +315,22 @@
         (.. current-ns "-test")))))
 
 (defn run-current-test []
-  (let [form (extract.form {:root? true})]
-    (when form
+  (let [ns (extract.context)
+        form (extract.form {:root? true})]
+    (when (and ns form)
       (let [(test-name sub-count)
             (string.gsub form.content ".*deftest%s+(.-)%s+.*" "%1")]
         (when (and (not (a.empty? test-name)) (= 1 sub-count))
           (ui.display [(.. "; run-current-test: " test-name)]
                       {:break? true})
-          (server.eval
-            {:code (.. "(do (require 'clojure.test)"
-                       "(clojure.test/test-var"
-                       "  (resolve '" test-name ")))")}
+          (with-test-var-query
+            {:ns-query {:exactly [ns]}
+             :private? 1
+             :test? 1
+
+             ;; This will break with some test names :(
+             ;; There's no way to specify one single var.
+             :search (.. "^" ns "/" test-name "$")}
             (server.with-all-msgs-fn
               (fn [msgs]
-                (if (and (= 2 (a.count msgs))
-                         (= "nil" (a.get (a.first msgs) :value)))
-                  (ui.display ["; Success!"])
-                  (a.run! #(ui.display-result
-                             $1
-                             {:simple-out? true
-                              :ignore-nil? true})
-                          msgs))))))))))
+                (ui.display-test-result (a.first msgs))))))))))
