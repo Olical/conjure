@@ -36,11 +36,14 @@
       (println "BAR"))
 
   ;; Piggieback.
+  ; :ConjureEval (require 'cljs.repl.node)
+  ; :ConjurePiggieback (cljs.repl.node/repl-env)
   (require '[cider.piggieback :as piggieback]
            '[cljs.repl.node :as node-repl])
   (piggieback/cljs-repl (node-repl/repl-env))
 
   ;; Shadow.
+  ; :ConjureShadowSelect app
   (shadow.cljs.devtools.api/nrepl-select :app)
 
   (enable-console-print!)

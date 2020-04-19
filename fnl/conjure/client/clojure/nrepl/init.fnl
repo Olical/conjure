@@ -94,6 +94,12 @@
     "-nargs=1 -buffer ConjureShadowSelect"
     (bridge.viml->lua
       :conjure.client.clojure.nrepl.action :shadow-select
+      {:args "<f-args>"}))
+
+  (nvim.ex.command_
+    "-nargs=1 -buffer ConjurePiggieback"
+    (bridge.viml->lua
+      :conjure.client.clojure.nrepl.action :piggieback
       {:args "<f-args>"})))
 
 (defn on-load []

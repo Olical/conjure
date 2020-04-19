@@ -790,12 +790,11 @@ do
     local v_23_0_0 = nil
     local function shadow_select0(build)
       local function _3_(conn)
-        local opts = {code = ("(shadow.cljs.devtools.api/nrepl-select :" .. build .. ")")}
         ui.display({("; shadow-cljs (select): " .. build)}, {["break?"] = true})
         local function _4_(_241)
-          return ui["display-result"](_241, opts)
+          return ui["display-result"](_241, {})
         end
-        return server.eval(opts, _4_)
+        return server.eval({code = ("(shadow.cljs.devtools.api/nrepl-select :" .. build .. ")")}, _4_)
       end
       return server["with-conn-or-warn"](_3_)
     end
@@ -805,5 +804,27 @@ do
   end
   _0_0["aniseed/locals"]["shadow-select"] = v_23_0_
   shadow_select = v_23_0_
+end
+local piggieback = nil
+do
+  local v_23_0_ = nil
+  do
+    local v_23_0_0 = nil
+    local function piggieback0(code)
+      local function _3_(conn)
+        ui.display({("; piggieback: " .. code)}, {["break?"] = true})
+        local function _4_(_241)
+          return ui["display-result"](_241, {})
+        end
+        return server.eval({code = ("(do (require 'cider.piggieback)" .. "(cider.piggieback/cljs-repl " .. code .. "))")}, _4_)
+      end
+      return server["with-conn-or-warn"](_3_)
+    end
+    v_23_0_0 = piggieback0
+    _0_0["piggieback"] = v_23_0_0
+    v_23_0_ = v_23_0_0
+  end
+  _0_0["aniseed/locals"]["piggieback"] = v_23_0_
+  piggieback = v_23_0_
 end
 return nil

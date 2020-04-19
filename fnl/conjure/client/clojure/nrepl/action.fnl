@@ -384,8 +384,16 @@
 (defn shadow-select [build]
   (server.with-conn-or-warn
     (fn [conn]
-      (let [opts {:code (.. "(shadow.cljs.devtools.api/nrepl-select :" build ")")}]
-        (ui.display [(.. "; shadow-cljs (select): " build)] {:break? true})
-        (server.eval
-          opts
-          #(ui.display-result $1 opts))))))
+      (ui.display [(.. "; shadow-cljs (select): " build)] {:break? true})
+      (server.eval
+        {:code (.. "(shadow.cljs.devtools.api/nrepl-select :" build ")")}
+        #(ui.display-result $1 {})))))
+
+(defn piggieback [code]
+  (server.with-conn-or-warn
+    (fn [conn]
+      (ui.display [(.. "; piggieback: " code)] {:break? true})
+      (server.eval
+        {:code (.. "(do (require 'cider.piggieback)"
+                   "(cider.piggieback/cljs-repl " code "))")}
+        #(ui.display-result $1 {})))))
