@@ -159,7 +159,8 @@ do
       mapping.buf("n", config0.mappings["refresh-changed"], "conjure.client.clojure.nrepl.action", "refresh-changed")
       mapping.buf("n", config0.mappings["refresh-all"], "conjure.client.clojure.nrepl.action", "refresh-all")
       mapping.buf("n", config0.mappings["refresh-clear"], "conjure.client.clojure.nrepl.action", "refresh-clear")
-      return nvim.ex.command_("-nargs=+ -buffer ConjureConnect", bridge["viml->lua"]("conjure.client.clojure.nrepl.action", "connect-host-port", {args = "<f-args>"}))
+      nvim.ex.command_("-nargs=+ -buffer ConjureConnect", bridge["viml->lua"]("conjure.client.clojure.nrepl.action", "connect-host-port", {args = "<f-args>"}))
+      return nvim.ex.command_("-nargs=1 -buffer ConjureShadowSelect", bridge["viml->lua"]("conjure.client.clojure.nrepl.action", "shadow-select", {args = "<f-args>"}))
     end
     v_23_0_0 = on_filetype0
     _0_0["on-filetype"] = v_23_0_0

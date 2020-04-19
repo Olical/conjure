@@ -380,3 +380,12 @@
         (server.with-all-msgs-fn
           (fn [msgs]
             (ui.display ["; Clearing complete"])))))))
+
+(defn shadow-select [build]
+  (server.with-conn-or-warn
+    (fn [conn]
+      (let [opts {:code (.. "(shadow.cljs.devtools.api/nrepl-select :" build ")")}]
+        (ui.display [(.. "; shadow-cljs (select): " build)] {:break? true})
+        (server.eval
+          opts
+          #(ui.display-result $1 opts))))))

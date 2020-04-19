@@ -783,4 +783,27 @@ do
   _0_0["aniseed/locals"]["refresh-clear"] = v_23_0_
   refresh_clear = v_23_0_
 end
+local shadow_select = nil
+do
+  local v_23_0_ = nil
+  do
+    local v_23_0_0 = nil
+    local function shadow_select0(build)
+      local function _3_(conn)
+        local opts = {code = ("(shadow.cljs.devtools.api/nrepl-select :" .. build .. ")")}
+        ui.display({("; shadow-cljs (select): " .. build)}, {["break?"] = true})
+        local function _4_(_241)
+          return ui["display-result"](_241, opts)
+        end
+        return server.eval(opts, _4_)
+      end
+      return server["with-conn-or-warn"](_3_)
+    end
+    v_23_0_0 = shadow_select0
+    _0_0["shadow-select"] = v_23_0_0
+    v_23_0_ = v_23_0_0
+  end
+  _0_0["aniseed/locals"]["shadow-select"] = v_23_0_
+  shadow_select = v_23_0_
+end
 return nil

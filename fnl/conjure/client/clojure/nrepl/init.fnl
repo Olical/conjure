@@ -5,9 +5,7 @@
             config conjure.client.clojure.nrepl.config
             action conjure.client.clojure.nrepl.action}})
 
-;; TODO Tools to hook into shadow and figwheel.
 ;; TODO Have all auto completion tools working.
-;; TODO Ensure sideload sessions don't break everything.
 ;; TODO Handle stdin requests.
 ;; TODO Name sessions after cities (or similar) and show type in list.
 ;; TODO Build session language into the session list.
@@ -90,6 +88,12 @@
     "-nargs=+ -buffer ConjureConnect"
     (bridge.viml->lua
       :conjure.client.clojure.nrepl.action :connect-host-port
+      {:args "<f-args>"}))
+
+  (nvim.ex.command_
+    "-nargs=1 -buffer ConjureShadowSelect"
+    (bridge.viml->lua
+      :conjure.client.clojure.nrepl.action :shadow-select
       {:args "<f-args>"})))
 
 (defn on-load []
