@@ -5,13 +5,13 @@
             config conjure.client.clojure.nrepl.config
             action conjure.client.clojure.nrepl.action}})
 
+;; TODO Tools to hook into shadow and figwheel.
+;; TODO Have all auto completion tools working.
+;; TODO Ensure sideload sessions don't break everything.
 ;; TODO Handle stdin requests.
 ;; TODO Name sessions after cities (or similar) and show type in list.
-;; TODO Have all auto completion tools working.
-;; TODO Pretty error output.
-;; TODO Ensure sideload sessions don't break everything.
-;; TODO Tools to hook into shadow and figwheel.
 ;; TODO Build session language into the session list.
+;; TODO Pretty error output.
 
 (def buf-suffix ".cljc")
 (def context-pattern "[(]%s*ns%s*(.-)[%s){]")
