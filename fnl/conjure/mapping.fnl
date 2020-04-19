@@ -66,12 +66,12 @@
         current (config.get opts)
         val (str.join [...])]
 
-    (if val
+    (if (a.empty? val)
+      (a.println target "=" (a.pr-str current))
       (config.assoc
         (a.assoc
           opts :val
-          (fennel.eval val)))
-      (a.println target "=" (a.pr-str current)))))
+          (fennel.eval val))))))
 
 (nvim.ex.function_
   (->> ["ConjureEvalMotion(kind)"

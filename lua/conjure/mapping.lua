@@ -141,10 +141,10 @@ do
       opts = {client = _3_, path = str.split(a.last(client_path), "%.")}
       local current = config.get(opts)
       local val = str.join({...})
-      if val then
-        return config.assoc(a.assoc(opts, "val", fennel.eval(val)))
-      else
+      if a["empty?"](val) then
         return a.println(target, "=", a["pr-str"](current))
+      else
+        return config.assoc(a.assoc(opts, "val", fennel.eval(val)))
       end
     end
     v_23_0_0 = config_command0
