@@ -52,29 +52,14 @@
         (fn []))
       (server.eval opts (or opts.cb #(ui.display-result $1 opts))))))
 
-(defn- render-doc-str [{: ns : class : name : member
-                        : javadoc : url
-                        :doc docs
-                        :arglists-str args
-                        :type kind}]
-  (let [prefix (or ns class)
-        suffix (or name member)
-        link (or javadoc url)]
-    (a.concat
-      [(str.join
-         [(when args
-            "(")
-          (when prefix
-            (.. prefix "/"))
-          suffix
-          (when args
-            (.. " " (str.join " " (text.split-lines args))))
-          (when args
-            ")")])]
-      (when link
-        [(.. "; " link)])
-      (when (and (a.string? docs) (not (a.empty? docs)))
-        (text.prefixed-lines docs "; ")))))
+(defn doc-str [opts]
+  (server.eval
+    (a.assoc opts :code (.. "(require 'clojure.repl)"
+                            "(clojure.repl/doc " opts.code ")"))
+    #(ui.display-result
+       $1
+       {:simple-out? true
+        :ignore-nil? true})))
 
 (defn- with-info [opts f]
   (server.with-conn-and-op-or-warn
@@ -88,22 +73,6 @@
         (fn [msg]
           (f (when (not (server.status= msg :no-info))
                msg)))))))
-
-(defn doc-str [opts]
-  (with-info
-    opts
-    (fn [info]
-      (ui.display
-        (if
-          (a.nil? info)
-          ["; No documentation found"]
-
-          info.candidates
-          (a.concat
-            ["; Multiple candidates found"]
-            (a.map #(.. $1 "/" opts.code) (a.keys info.candidates)))
-
-          (render-doc-str info))))))
 
 (defn- nrepl->nvim-path [path]
   (if
@@ -142,8 +111,10 @@
                      (when info.url (.. "; " info.url))])
 
         (and info.file info.line)
-        (editor.go-to (nrepl->nvim-path info.file)
-                      info.line (or info.column 0))
+        (let [column (or info.column 1)
+              path (nrepl->nvim-path info.file)]
+          (editor.go-to path info.line column)
+          (ui.display [(.. "; " path " [" info.line " " column "]") ]))
 
         (ui.display ["; Unsupported target"
                      (.. "; " (a.pr-str info))])))))
@@ -193,8 +164,8 @@
     (when (not (a.empty? word))
       (ui.display [(.. "; source (word): " word)] {:break? true})
       (eval-str
-        {:code (.. "(do (require 'clojure.repl)"
-                   "(clojure.repl/source " word "))")
+        {:code (.. "(require 'clojure.repl)"
+                   "(clojure.repl/source " word ")")
          :context (extract.context)
          :cb #(ui.display-result
                 $1
@@ -314,8 +285,8 @@
                       {:break? true})
           (server.eval
             {:code (.. "(do (require 'clojure.test)"
-                       "(clojure.test/test-var"
-                       "  (resolve '" test-name ")))")}
+                       "    (clojure.test/test-var"
+                       "      (resolve '" test-name ")))")}
             (server.with-all-msgs-fn
               (fn [msgs]
                 (if (and (= 2 (a.count msgs))

@@ -125,64 +125,23 @@ do
   _0_0["aniseed/locals"]["eval-str"] = v_23_0_
   eval_str = v_23_0_
 end
-local render_doc_str = nil
+local doc_str = nil
 do
   local v_23_0_ = nil
-  local function render_doc_str0(_3_0)
-    local _4_ = _3_0
-    local member = _4_["member"]
-    local docs = _4_["doc"]
-    local args = _4_["arglists-str"]
-    local kind = _4_["type"]
-    local ns = _4_["ns"]
-    local url = _4_["url"]
-    local class = _4_["class"]
-    local name = _4_["name"]
-    local javadoc = _4_["javadoc"]
-    do
-      local prefix = (ns or class)
-      local suffix = (name or member)
-      local link = (javadoc or url)
-      local _5_
-      if args then
-        _5_ = "("
-      else
-      _5_ = nil
+  do
+    local v_23_0_0 = nil
+    local function doc_str0(opts)
+      local function _3_(_241)
+        return ui["display-result"](_241, {["ignore-nil?"] = true, ["simple-out?"] = true})
       end
-      local _7_
-      if prefix then
-        _7_ = (prefix .. "/")
-      else
-      _7_ = nil
-      end
-      local _9_
-      if args then
-        _9_ = (" " .. str.join(" ", text["split-lines"](args)))
-      else
-      _9_ = nil
-      end
-      local function _11_()
-        if args then
-          return ")"
-        end
-      end
-      local _12_
-      if link then
-        _12_ = {("; " .. link)}
-      else
-      _12_ = nil
-      end
-      local function _14_()
-        if (a["string?"](docs) and not a["empty?"](docs)) then
-          return text["prefixed-lines"](docs, "; ")
-        end
-      end
-      return a.concat({str.join({_5_, _7_, suffix, _9_, _11_()})}, _12_, _14_())
+      return server.eval(a.assoc(opts, "code", ("(require 'clojure.repl)" .. "(clojure.repl/doc " .. opts.code .. ")")), _3_)
     end
+    v_23_0_0 = doc_str0
+    _0_0["doc-str"] = v_23_0_0
+    v_23_0_ = v_23_0_0
   end
-  v_23_0_ = render_doc_str0
-  _0_0["aniseed/locals"]["render-doc-str"] = v_23_0_
-  render_doc_str = v_23_0_
+  _0_0["aniseed/locals"]["doc-str"] = v_23_0_
+  doc_str = v_23_0_
 end
 local with_info = nil
 do
@@ -204,36 +163,6 @@ do
   v_23_0_ = with_info0
   _0_0["aniseed/locals"]["with-info"] = v_23_0_
   with_info = v_23_0_
-end
-local doc_str = nil
-do
-  local v_23_0_ = nil
-  do
-    local v_23_0_0 = nil
-    local function doc_str0(opts)
-      local function _3_(info)
-        local function _4_()
-          if a["nil?"](info) then
-            return {"; No documentation found"}
-          elseif info.candidates then
-            local function _4_(_241)
-              return (_241 .. "/" .. opts.code)
-            end
-            return a.concat({"; Multiple candidates found"}, a.map(_4_, a.keys(info.candidates)))
-          else
-            return render_doc_str(info)
-          end
-        end
-        return ui.display(_4_())
-      end
-      return with_info(opts, _3_)
-    end
-    v_23_0_0 = doc_str0
-    _0_0["doc-str"] = v_23_0_0
-    v_23_0_ = v_23_0_0
-  end
-  _0_0["aniseed/locals"]["doc-str"] = v_23_0_
-  doc_str = v_23_0_
 end
 local nrepl__3envim_path = nil
 do
@@ -281,7 +210,10 @@ do
           end
           return ui.display({"; Can't open source, it's a special form", _4_()})
         elseif (info.file and info.line) then
-          return editor["go-to"](nrepl__3envim_path(info.file), info.line, (info.column or 0))
+          local column = (info.column or 1)
+          local path = nrepl__3envim_path(info.file)
+          editor["go-to"](path, info.line, column)
+          return ui.display({("; " .. path .. " [" .. info.line .. " " .. column .. "]")})
         else
           return ui.display({"; Unsupported target", ("; " .. a["pr-str"](info))})
         end
@@ -417,7 +349,7 @@ do
         local function _3_(_241)
           return ui["display-result"](_241, {["ignore-nil?"] = true, ["raw-out?"] = true})
         end
-        return eval_str({cb = _3_, code = ("(do (require 'clojure.repl)" .. "(clojure.repl/source " .. word .. "))"), context = extract.context()})
+        return eval_str({cb = _3_, code = ("(require 'clojure.repl)" .. "(clojure.repl/source " .. word .. ")"), context = extract.context()})
       end
     end
     v_23_0_0 = view_source0
@@ -710,7 +642,7 @@ do
               return a["run!"](_4_, msgs)
             end
           end
-          return server.eval({code = ("(do (require 'clojure.test)" .. "(clojure.test/test-var" .. "  (resolve '" .. test_name .. ")))")}, server["with-all-msgs-fn"](_3_))
+          return server.eval({code = ("(do (require 'clojure.test)" .. "    (clojure.test/test-var" .. "      (resolve '" .. test_name .. ")))")}, server["with-all-msgs-fn"](_3_))
         end
       end
     end
