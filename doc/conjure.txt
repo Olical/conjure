@@ -59,6 +59,13 @@ I've also included some commands since they're related to the mappings.
                             Show a language specific configuration value.
                           - `:ConjureConfig clojure.nrepl/debug? true`
                             Set a language specific configuration value.
+                          - `:ConjureConfig some.other.module/magic? true`
+                            Set a 3rd party language specific configuration
+                            value. The previous example's `clojure.nrepl` is
+                            actually expanded to
+                            `conjure.client.clojure.nrepl`, if a module isn't
+                            found within `conjure.client.*` though it'll look
+                            further afield at 3rd party modules.
 
 <localleader>ls          Open the log buffer in a new horizontal split window.
 
@@ -279,6 +286,25 @@ broken highlighting in the rest of the log buffer.
 
 ==============================================================================
 CLIENTS                                                      *conjure-clients*
+
+Language clients are simply Lua modules (which can be compiled from Fennel
+using something like Aniseed) that have a few essential properties and
+functions in them.
+
+The module doesn't have to be within Conjure's source tree, it can be inside a
+3rd party plugin repository, you just connect a filetype to it with the
+`clients.[filetype]` configuration option.
+
+Conjure comes bundles with a set of built in clients, you can access their
+specific helpfiles with this list.
+
+ - |conjure-client-fennel-aniseed|
+ - |conjure-client-clojure-nrepl|
+
+When implementing a new language client you'll need to provide the following
+values and functions at the top level of your module. You can split your
+client up into separate modules and just build this API into your init module.
+See the `conjure.client.clojure.nrepl` module for an example of this.
 
 TODO
 
