@@ -15,8 +15,8 @@ do
   _0_0 = module_23_0_
 end
 local function _1_(...)
-  _0_0["aniseed/local-fns"] = {require = {a = "conjure.aniseed.core", client = "conjure.client", config = "conjure.client.clojure.nrepl.config", editor = "conjure.editor", eval = "conjure.aniseed.eval", extract = "conjure.extract", ll = "conjure.linked-list", nvim = "conjure.aniseed.nvim", server = "conjure.client.clojure.nrepl.server", state = "conjure.client.clojure.nrepl.state", str = "conjure.aniseed.string", text = "conjure.text", ui = "conjure.client.clojure.nrepl.ui"}}
-  return {require("conjure.aniseed.core"), require("conjure.client"), require("conjure.client.clojure.nrepl.config"), require("conjure.editor"), require("conjure.aniseed.eval"), require("conjure.extract"), require("conjure.linked-list"), require("conjure.aniseed.nvim"), require("conjure.client.clojure.nrepl.server"), require("conjure.client.clojure.nrepl.state"), require("conjure.aniseed.string"), require("conjure.text"), require("conjure.client.clojure.nrepl.ui")}
+  _0_0["aniseed/local-fns"] = {require = {a = "conjure.aniseed.core", client = "conjure.client", config = "conjure.client.clojure.nrepl.config", editor = "conjure.editor", eval = "conjure.aniseed.eval", extract = "conjure.extract", ll = "conjure.linked-list", nvim = "conjure.aniseed.nvim", server = "conjure.client.clojure.nrepl.server", state = "conjure.client.clojure.nrepl.state", str = "conjure.aniseed.string", text = "conjure.text", ui = "conjure.client.clojure.nrepl.ui", view = "conjure.aniseed.view"}}
+  return {require("conjure.aniseed.core"), require("conjure.client"), require("conjure.client.clojure.nrepl.config"), require("conjure.editor"), require("conjure.aniseed.eval"), require("conjure.extract"), require("conjure.linked-list"), require("conjure.aniseed.nvim"), require("conjure.client.clojure.nrepl.server"), require("conjure.client.clojure.nrepl.state"), require("conjure.aniseed.string"), require("conjure.text"), require("conjure.client.clojure.nrepl.ui"), require("conjure.aniseed.view")}
 end
 local _2_ = _1_(...)
 local a = _2_[1]
@@ -32,6 +32,7 @@ local state = _2_[10]
 local str = _2_[11]
 local text = _2_[12]
 local ui = _2_[13]
+local view = _2_[14]
 do local _ = ({nil, _0_0, nil})[2] end
 local display_session_type = nil
 do
@@ -125,24 +126,6 @@ do
   _0_0["aniseed/locals"]["eval-str"] = v_23_0_
   eval_str = v_23_0_
 end
-local doc_str = nil
-do
-  local v_23_0_ = nil
-  do
-    local v_23_0_0 = nil
-    local function doc_str0(opts)
-      local function _3_(_241)
-        return ui["display-result"](_241, {["ignore-nil?"] = true, ["simple-out?"] = true})
-      end
-      return server.eval(a.assoc(opts, "code", ("(require 'clojure.repl)" .. "(clojure.repl/doc " .. opts.code .. ")")), _3_)
-    end
-    v_23_0_0 = doc_str0
-    _0_0["doc-str"] = v_23_0_0
-    v_23_0_ = v_23_0_0
-  end
-  _0_0["aniseed/locals"]["doc-str"] = v_23_0_
-  doc_str = v_23_0_
-end
 local with_info = nil
 do
   local v_23_0_ = nil
@@ -163,6 +146,73 @@ do
   v_23_0_ = with_info0
   _0_0["aniseed/locals"]["with-info"] = v_23_0_
   with_info = v_23_0_
+end
+local java_info__3elines = nil
+do
+  local v_23_0_ = nil
+  local function java_info__3elines0(_3_0)
+    local _4_ = _3_0
+    local arglists_str = _4_["arglists-str"]
+    local class = _4_["class"]
+    local member = _4_["member"]
+    local javadoc = _4_["javadoc"]
+    local function _5_()
+      if member then
+        return {"/", member}
+      end
+    end
+    local _6_
+    if not a["empty?"](arglists_str) then
+      _6_ = {("; (" .. str.join(" ", text["split-lines"](arglists_str)) .. ")")}
+    else
+    _6_ = nil
+    end
+    local function _8_()
+      if javadoc then
+        return {("; " .. javadoc)}
+      end
+    end
+    return a.concat({str.join(a.concat({"; ", class}, _5_()))}, _6_, _8_())
+  end
+  v_23_0_ = java_info__3elines0
+  _0_0["aniseed/locals"]["java-info->lines"] = v_23_0_
+  java_info__3elines = v_23_0_
+end
+local doc_str = nil
+do
+  local v_23_0_ = nil
+  do
+    local v_23_0_0 = nil
+    local function doc_str0(opts)
+      local function _3_(msgs)
+        a.println(a.count(msgs))
+        if ((2 == a.count(msgs)) and ("nil" == a.get(a.first(msgs), "value"))) then
+          ui.display({"; No results, checking CIDER's info op"})
+          local function _4_(info)
+            if info.javadoc then
+              return ui.display(java_info__3elines(info))
+            elseif a["nil?"](info) then
+              return ui.display({"; No results"})
+            else
+              return ui.display(a.concat({"; Unknown result, it may still be helpful"}, text["prefixed-lines"](view.serialise(info), "; ")))
+            end
+          end
+          return with_info(opts, _4_)
+        else
+          local function _4_(_241)
+            return ui["display-result"](_241, {["ignore-nil?"] = true, ["simple-out?"] = true})
+          end
+          return a["run!"](_4_, msgs)
+        end
+      end
+      return server.eval(a.merge({}, opts, {code = ("(do (require 'clojure.repl)" .. "(clojure.repl/doc " .. opts.code .. "))")}), server["with-all-msgs-fn"](_3_))
+    end
+    v_23_0_0 = doc_str0
+    _0_0["doc-str"] = v_23_0_0
+    v_23_0_ = v_23_0_0
+  end
+  _0_0["aniseed/locals"]["doc-str"] = v_23_0_
+  doc_str = v_23_0_
 end
 local nrepl__3envim_path = nil
 do

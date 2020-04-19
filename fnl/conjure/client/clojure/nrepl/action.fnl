@@ -7,6 +7,7 @@
             eval conjure.aniseed.eval
             str conjure.aniseed.string
             nvim conjure.aniseed.nvim
+            view conjure.aniseed.view
             config conjure.client.clojure.nrepl.config
             state conjure.client.clojure.nrepl.state
             server conjure.client.clojure.nrepl.server
@@ -52,15 +53,6 @@
         (fn []))
       (server.eval opts (or opts.cb #(ui.display-result $1 opts))))))
 
-(defn doc-str [opts]
-  (server.eval
-    (a.assoc opts :code (.. "(require 'clojure.repl)"
-                            "(clojure.repl/doc " opts.code ")"))
-    #(ui.display-result
-       $1
-       {:simple-out? true
-        :ignore-nil? true})))
-
 (defn- with-info [opts f]
   (server.with-conn-and-op-or-warn
     :info
@@ -73,6 +65,51 @@
         (fn [msg]
           (f (when (not (server.status= msg :no-info))
                msg)))))))
+
+
+(defn- java-info->lines [{: arglists-str : class : member : javadoc}]
+  (a.concat
+    [(str.join
+       (a.concat ["; " class]
+                 (when member
+                   ["/" member])))]
+    (when (not (a.empty? arglists-str))
+      [(.. "; (" (str.join " " (text.split-lines arglists-str)) ")")])
+    (when javadoc
+      [(.. "; " javadoc)])))
+
+(defn doc-str [opts]
+  (server.eval
+    (a.merge
+      {} opts
+      {:code (.. "(do (require 'clojure.repl)"
+                 "(clojure.repl/doc " opts.code "))")})
+    (server.with-all-msgs-fn
+      (fn [msgs]
+        (a.println (a.count msgs))
+        (if (and (= 2 (a.count msgs))
+                 (= "nil" (a.get (a.first msgs) :value)))
+          (do
+            (ui.display ["; No results, checking CIDER's info op"])
+            (with-info
+              opts
+              (fn [info]
+                (if
+                  info.javadoc
+                  (ui.display (java-info->lines info))
+
+                  (a.nil? info)
+                  (ui.display ["; No results"])
+
+                  (ui.display
+                    (a.concat
+                      ["; Unknown result, it may still be helpful"]
+                      (text.prefixed-lines (view.serialise info) "; ")))))))
+          (a.run!
+            #(ui.display-result
+               $1
+               {:simple-out? true :ignore-nil? true})
+            msgs))))))
 
 (defn- nrepl->nvim-path [path]
   (if
