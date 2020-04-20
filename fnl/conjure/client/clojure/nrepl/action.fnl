@@ -95,11 +95,11 @@
               opts
               (fn [info]
                 (if
+                  (a.nil? info)
+                  (ui.display ["; Nothing found via CIDER's info either"])
+
                   info.javadoc
                   (ui.display (java-info->lines info))
-
-                  (a.nil? info)
-                  (ui.display ["; No results"])
 
                   (ui.display
                     (a.concat

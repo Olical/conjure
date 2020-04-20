@@ -189,10 +189,10 @@ do
         if ((2 == a.count(msgs)) and ("nil" == a.get(a.first(msgs), "value"))) then
           ui.display({"; No results, checking CIDER's info op"})
           local function _4_(info)
-            if info.javadoc then
+            if a["nil?"](info) then
+              return ui.display({"; Nothing found via CIDER's info either"})
+            elseif info.javadoc then
               return ui.display(java_info__3elines(info))
-            elseif a["nil?"](info) then
-              return ui.display({"; No results"})
             else
               return ui.display(a.concat({"; Unknown result, it may still be helpful"}, text["prefixed-lines"](view.serialise(info), "; ")))
             end
