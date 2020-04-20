@@ -4,11 +4,11 @@
  :aliases
  {:nrepl
   {:extra-deps
-   {nrepl {:mvn/version "0.7.0"}}}
+   {nrepl {:mvn/version "0.8.0-SNAPSHOT"}}} ; 0.7.0
 
   :cider
   {:extra-deps
-   {cider/cider-nrepl {:mvn/version "0.24.0"}}}
+   {cider/cider-nrepl {:mvn/version "0.25.0-SNAPSHOT"}}} ; "0.24.0"
 
   :cljs
   {:extra-deps

@@ -4,6 +4,7 @@
             text conjure.text
             net conjure.net
             view conjure.aniseed.view
+            extract conjure.extract
             bencode conjure.bencode
             bencode-stream conjure.bencode-stream
             state conjure.client.clojure.nrepl.state
@@ -110,6 +111,16 @@
                (a.run!
                  (fn [msg]
                    (dbg "receive" msg)
+
+                   (when (status= msg :need-input)
+                     (vim.schedule
+                       (fn []
+                         (send {:op :stdin
+                                :stdin (.. (or (extract.prompt "Input required: ")
+                                               "")
+                                           "\n")
+                                :session conn.session}))))
+
                    (let [cb (a.get-in conn [:msgs msg.id :cb] #(ui.display-result $1))
                          (ok? err) (pcall cb msg)]
                      (when (not ok?)

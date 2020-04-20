@@ -121,7 +121,9 @@
     (string.match header (client.get :context-pattern))))
 
 (defn prompt [prefix]
-  (nvim.fn.input (or prefix "")))
+  (let [(ok? val) (pcall #(nvim.fn.input (or prefix "")))]
+    (when ok?
+      val)))
 
 (defn prompt-char []
   (nvim.fn.nr2char (nvim.fn.getchar)))

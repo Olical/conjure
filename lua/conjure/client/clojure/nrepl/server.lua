@@ -15,20 +15,21 @@ do
   _0_0 = module_23_0_
 end
 local function _1_(...)
-  _0_0["aniseed/local-fns"] = {require = {["bencode-stream"] = "conjure.bencode-stream", a = "conjure.aniseed.core", bencode = "conjure.bencode", config = "conjure.client.clojure.nrepl.config", net = "conjure.net", state = "conjure.client.clojure.nrepl.state", text = "conjure.text", ui = "conjure.client.clojure.nrepl.ui", uuid = "conjure.uuid", view = "conjure.aniseed.view"}}
-  return {require("conjure.aniseed.core"), require("conjure.bencode"), require("conjure.bencode-stream"), require("conjure.client.clojure.nrepl.config"), require("conjure.net"), require("conjure.client.clojure.nrepl.state"), require("conjure.text"), require("conjure.client.clojure.nrepl.ui"), require("conjure.uuid"), require("conjure.aniseed.view")}
+  _0_0["aniseed/local-fns"] = {require = {["bencode-stream"] = "conjure.bencode-stream", a = "conjure.aniseed.core", bencode = "conjure.bencode", config = "conjure.client.clojure.nrepl.config", extract = "conjure.extract", net = "conjure.net", state = "conjure.client.clojure.nrepl.state", text = "conjure.text", ui = "conjure.client.clojure.nrepl.ui", uuid = "conjure.uuid", view = "conjure.aniseed.view"}}
+  return {require("conjure.aniseed.core"), require("conjure.bencode"), require("conjure.bencode-stream"), require("conjure.client.clojure.nrepl.config"), require("conjure.extract"), require("conjure.net"), require("conjure.client.clojure.nrepl.state"), require("conjure.text"), require("conjure.client.clojure.nrepl.ui"), require("conjure.uuid"), require("conjure.aniseed.view")}
 end
 local _2_ = _1_(...)
 local a = _2_[1]
 local bencode = _2_[2]
 local bencode_stream = _2_[3]
 local config = _2_[4]
-local net = _2_[5]
-local state = _2_[6]
-local text = _2_[7]
-local ui = _2_[8]
-local uuid = _2_[9]
-local view = _2_[10]
+local extract = _2_[5]
+local net = _2_[6]
+local state = _2_[7]
+local text = _2_[8]
+local ui = _2_[9]
+local uuid = _2_[10]
+local view = _2_[11]
 do local _ = ({nil, _0_0, nil})[2] end
 local with_conn_or_warn = nil
 do
@@ -276,12 +277,18 @@ do
       else
         local function _4_(msg)
           dbg("receive", msg)
+          if status_3d(msg, "need-input") then
+            local function _5_()
+              return send({op = "stdin", session = conn.session, stdin = ((extract.prompt("Input required: ") or "") .. "\n")})
+            end
+            vim.schedule(_5_)
+          end
           do
             local cb = nil
-            local function _5_(_241)
+            local function _6_(_241)
               return ui["display-result"](_241)
             end
-            cb = a["get-in"](conn, {"msgs", msg.id, "cb"}, _5_)
+            cb = a["get-in"](conn, {"msgs", msg.id, "cb"}, _6_)
             local ok_3f, err0 = pcall(cb, msg)
             if not ok_3f then
               ui.display({("; conjure.client.clojure.nrepl error: " .. err0)})

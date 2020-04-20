@@ -35,6 +35,9 @@
   (do (Thread/sleep 5000)
       (println "BAR"))
 
+  (read)
+  (read-line)
+
   ;; Piggieback.
   ; :ConjureEval (require 'cljs.repl.node)
   ; :ConjurePiggieback (cljs.repl.node/repl-env)

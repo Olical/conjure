@@ -299,7 +299,14 @@ do
   do
     local v_23_0_0 = nil
     local function prompt0(prefix)
-      return nvim.fn.input((prefix or ""))
+      local ok_3f, val = nil, nil
+      local function _3_()
+        return nvim.fn.input((prefix or ""))
+      end
+      ok_3f, val = pcall(_3_)
+      if ok_3f then
+        return val
+      end
     end
     v_23_0_0 = prompt0
     _0_0["prompt"] = v_23_0_0
