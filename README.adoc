@@ -21,7 +21,7 @@ Use your favourite plugin manager, mine is https://github.com/junegunn/vim-plug[
 
 [source,viml]
 ----
-Plug 'Olical/conjure', {'tag': 'v3.0.0'}
+Plug 'Olical/conjure', {'branch': 'develop'}
 ----
 
 You'll need to be on the latest stable Neovim for all of the features (such as floating windows) to work. If you see errors, please check what version you have against the latest stable release first.
