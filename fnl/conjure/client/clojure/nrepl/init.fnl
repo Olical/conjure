@@ -5,12 +5,6 @@
             config conjure.client.clojure.nrepl.config
             action conjure.client.clojure.nrepl.action}})
 
-;; TODO Have all auto completion tools working.
-;; TODO Handle stdin requests.
-;; TODO Name sessions after cities (or similar) and show type in list.
-;; TODO Build session language into the session list.
-;; TODO Pretty error output.
-
 (def buf-suffix ".cljc")
 (def context-pattern "[(]%s*ns%s*(.-)[%s){]")
 (def comment-prefix "; ")

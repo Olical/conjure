@@ -8,8 +8,6 @@
             editor conjure.editor
             log conjure.log}})
 
-;; TODO Completion.
-
 (defn- preview [opts]
   (let [sample-limit (editor.percent-width
                        config.preview.sample-limit)]

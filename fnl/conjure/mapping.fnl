@@ -79,7 +79,6 @@
         "endfunction"]
        (str.join "\n")))
 
-;; TODO Add completion via -complete=custom,{func}
 (nvim.ex.command_
   "-nargs=? -range ConjureEval"
   (bridge.viml->lua
