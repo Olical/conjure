@@ -419,27 +419,27 @@
              (string.sub kind 1 1)))})
 
 (defn- extract-completion-context [prefix]
-  (let [{: content : range}
-        (extract.form {:root? true})
-
-        lines (text.split-lines content)
-        [row col] (nvim.win_get_cursor 0)
-        lrow (- row (a.get-in range [:start 1]))
-        line-index (a.inc lrow)
-        lcol (if (= lrow 0)
-               (- col (a.get-in range [:start 2]))
-               col)
-        original (a.get lines line-index)
-        spliced (.. (string.sub
-                      original
-                      1 lcol)
-                    "__prefix__"
-                    (string.sub
-                      original
-                      (a.inc lcol)))]
-    (-> lines
-        (a.assoc line-index spliced)
-        (->> (str.join "\n")))))
+  (let [root-form (extract.form {:root? true})]
+    (when root-form
+      (let [{: content : range} root-form
+            lines (text.split-lines content)
+            [row col] (nvim.win_get_cursor 0)
+            lrow (- row (a.get-in range [:start 1]))
+            line-index (a.inc lrow)
+            lcol (if (= lrow 0)
+                   (- col (a.get-in range [:start 2]))
+                   col)
+            original (a.get lines line-index)
+            spliced (.. (string.sub
+                          original
+                          1 lcol)
+                        "__prefix__"
+                        (string.sub
+                          original
+                          (a.inc lcol)))]
+        (-> lines
+            (a.assoc line-index spliced)
+            (->> (str.join "\n")))))))
 
 (defn completions [opts]
   (server.with-conn-and-op-or-warn

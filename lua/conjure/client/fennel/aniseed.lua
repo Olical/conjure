@@ -188,47 +188,6 @@ do
   _0_0["aniseed/locals"]["doc-str"] = v_23_0_
   doc_str = v_23_0_
 end
-local not_implemented = nil
-do
-  local v_23_0_ = nil
-  local function not_implemented0()
-    return display({"; Not implemented for conjure.client.fennel.aniseed"})
-  end
-  v_23_0_ = not_implemented0
-  _0_0["aniseed/locals"]["not-implemented"] = v_23_0_
-  not_implemented = v_23_0_
-end
-local def_str = nil
-do
-  local v_23_0_ = nil
-  do
-    local v_23_0_0 = nil
-    local function def_str0(opts)
-      return not_implemented()
-    end
-    v_23_0_0 = def_str0
-    _0_0["def-str"] = v_23_0_0
-    v_23_0_ = v_23_0_0
-  end
-  _0_0["aniseed/locals"]["def-str"] = v_23_0_
-  def_str = v_23_0_
-end
-local omnifunc = nil
-do
-  local v_23_0_ = nil
-  do
-    local v_23_0_0 = nil
-    local function omnifunc0()
-      display({"; Omnicomplete"}, {["break?"] = true})
-      return not_implemented()
-    end
-    v_23_0_0 = omnifunc0
-    _0_0["omnifunc"] = v_23_0_0
-    v_23_0_ = v_23_0_0
-  end
-  _0_0["aniseed/locals"]["omnifunc"] = v_23_0_
-  omnifunc = v_23_0_
-end
 local eval_file = nil
 do
   local v_23_0_ = nil

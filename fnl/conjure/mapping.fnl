@@ -76,7 +76,22 @@
           (fennel.eval val))))))
 
 (defn omnifunc [find-start? base]
-  (or (client.call :omnifunc find-start? base) -3))
+  (if find-start?
+    (let [[row col] (nvim.win_get_cursor 0)
+          [line] (nvim.buf_get_lines 0 (a.dec row) row false)]
+      (- col
+         (a.count (nvim.fn.matchstr
+                    (string.sub line 1 col)
+                    "\\k\\+$"))))
+    (do
+      (var result nil)
+      (eval.completions
+        base
+        (fn [msg]
+          (set result msg)))
+      (while (a.nil? result)
+        (nvim.ex.sleep "1m"))
+      result)))
 
 (nvim.ex.function_
   (->> ["ConjureEvalMotion(kind)"

@@ -161,7 +161,25 @@ do
   do
     local v_23_0_0 = nil
     local function omnifunc0(find_start_3f, base)
-      return (client.call("omnifunc", find_start_3f, base) or -3)
+      if find_start_3f then
+        local _3_ = nvim.win_get_cursor(0)
+        local row = _3_[1]
+        local col = _3_[2]
+        local _4_ = nvim.buf_get_lines(0, a.dec(row), row, false)
+        local line = _4_[1]
+        return (col - a.count(nvim.fn.matchstr(string.sub(line, 1, col), "\\k\\+$")))
+      else
+        local result = nil
+        local function _3_(msg)
+          result = msg
+          return nil
+        end
+        eval.completions(base, _3_)
+        while a["nil?"](result) do
+          nvim.ex.sleep("1m")
+        end
+        return result
+      end
     end
     v_23_0_0 = omnifunc0
     _0_0["omnifunc"] = v_23_0_0
