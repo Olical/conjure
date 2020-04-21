@@ -28,12 +28,16 @@
     (display-request opts)
     (client.call :eval-file opts)))
 
+(defn- assoc-context [opts]
+  (set opts.context
+       (or nvim.b.conjure_context
+           (extract.context)))
+  opts)
+
 (defn- client-exec-fn [action f-name]
   (fn [opts]
     (set opts.action action)
-    (set opts.context
-         (or nvim.b.conjure_context
-             (extract.context)))
+    (assoc-context opts)
     (set opts.file-path (extract.file-path))
     (set opts.preview (preview opts))
     (display-request opts)
@@ -129,3 +133,10 @@
       {:code content
        :range range
        :origin :selection})))
+
+(defn completions [prefix cb]
+  (client.call
+    :completions
+    (-> {:prefix prefix
+         :cb cb}
+        (assoc-context))))

@@ -86,7 +86,6 @@
                  "(clojure.repl/doc " opts.code "))")})
     (server.with-all-msgs-fn
       (fn [msgs]
-        (a.println (a.count msgs))
         (if (and (= 2 (a.count msgs))
                  (= "nil" (a.get (a.first msgs) :value)))
           (do
@@ -397,3 +396,40 @@
         {:code (.. "(do (require 'cider.piggieback)"
                    "(cider.piggieback/cljs-repl " code "))")}
         #(ui.display-result $1 {})))))
+
+(defn- abbr-ns [ns]
+ ns)
+
+(defn- clojure->vim-completion [{:candidate word
+                                 :type kind
+                                 : ns
+                                 :doc info
+                                 : arglists}]
+  {:word word
+   :abbr (str.join
+           " "
+           (a.concat
+             [word]
+             (when arglists
+               [(str.join " " arglists)])))
+   :menu (abbr-ns ns)
+   :info info
+   :kind (when (not (a.empty? kind))
+           (string.upper
+             (string.sub kind 1 1)))})
+
+(defn completions [opts]
+  (server.with-conn-and-op-or-warn
+    :complete
+    (fn [conn]
+      (server.send
+        {:op :complete
+         :ns opts.context
+         :symbol opts.prefix
+         :context (extract.form {:root? true})
+         :extra-metadata [:arglists :doc]}
+        (server.with-all-msgs-fn
+          (fn [msgs]
+            (->> (a.get (a.last msgs) :completions)
+                 (a.map clojure->vim-completion)
+                 (opts.cb))))))))

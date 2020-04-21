@@ -185,7 +185,6 @@ do
     local v_23_0_0 = nil
     local function doc_str0(opts)
       local function _3_(msgs)
-        a.println(a.count(msgs))
         if ((2 == a.count(msgs)) and ("nil" == a.get(a.first(msgs), "value"))) then
           ui.display({"; No results, checking CIDER's info op"})
           local function _4_(info)
@@ -826,5 +825,63 @@ do
   end
   _0_0["aniseed/locals"]["piggieback"] = v_23_0_
   piggieback = v_23_0_
+end
+local abbr_ns = nil
+do
+  local v_23_0_ = nil
+  local function abbr_ns0(ns)
+    return ns
+  end
+  v_23_0_ = abbr_ns0
+  _0_0["aniseed/locals"]["abbr-ns"] = v_23_0_
+  abbr_ns = v_23_0_
+end
+local clojure__3evim_completion = nil
+do
+  local v_23_0_ = nil
+  local function clojure__3evim_completion0(_3_0)
+    local _4_ = _3_0
+    local word = _4_["candidate"]
+    local kind = _4_["type"]
+    local ns = _4_["ns"]
+    local arglists = _4_["arglists"]
+    local info = _4_["doc"]
+    local function _5_()
+      if arglists then
+        return {str.join(" ", arglists)}
+      end
+    end
+    local _6_
+    if not a["empty?"](kind) then
+      _6_ = string.upper(string.sub(kind, 1, 1))
+    else
+    _6_ = nil
+    end
+    return {abbr = str.join(" ", a.concat({word}, _5_())), info = info, kind = _6_, menu = abbr_ns(ns), word = word}
+  end
+  v_23_0_ = clojure__3evim_completion0
+  _0_0["aniseed/locals"]["clojure->vim-completion"] = v_23_0_
+  clojure__3evim_completion = v_23_0_
+end
+local completions = nil
+do
+  local v_23_0_ = nil
+  do
+    local v_23_0_0 = nil
+    local function completions0(opts)
+      local function _3_(conn)
+        local function _4_(msgs)
+          return opts.cb(a.map(clojure__3evim_completion, a.get(a.last(msgs), "completions")))
+        end
+        return server.send({["extra-metadata"] = {"arglists", "doc"}, context = extract.form({["root?"] = true}), ns = opts.context, op = "complete", symbol = opts.prefix}, server["with-all-msgs-fn"](_4_))
+      end
+      return server["with-conn-and-op-or-warn"]("complete", _3_)
+    end
+    v_23_0_0 = completions0
+    _0_0["completions"] = v_23_0_0
+    v_23_0_ = v_23_0_0
+  end
+  _0_0["aniseed/locals"]["completions"] = v_23_0_
+  completions = v_23_0_
 end
 return nil

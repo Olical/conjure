@@ -3,6 +3,7 @@
             a conjure.aniseed.core
             mapping conjure.mapping
             bridge conjure.bridge
+            eval conjure.eval
             config conjure.client.clojure.nrepl.config
             action conjure.client.clojure.nrepl.action}})
 
@@ -22,6 +23,23 @@
 
 (defn def-str [opts]
   (action.def-str opts))
+
+(defn completions [opts]
+  (action.completions opts))
+
+(defn omnifunc [find-start? base]
+  (if find-start?
+    ;; TODO Calculate start.
+    0
+    (do
+      (var result nil)
+      (eval.completions
+        base
+        (fn [msg]
+          (set result msg)))
+      (while (a.nil? result)
+        (nvim.ex.sleep "1m"))
+      result)))
 
 (defn on-filetype []
   (mapping.buf :n config.mappings.disconnect
@@ -106,8 +124,3 @@
   (nvim.ex.augroup :END)
 
   (action.connect-port-file))
-
-(defn omnifunc [find-start? base]
-  (if find-start?
-    (a.second (nvim.win_get_cursor 0))
-    ["clojure"]))

@@ -74,13 +74,24 @@ do
   _0_0["aniseed/locals"]["file"] = v_23_0_
   file = v_23_0_
 end
+local assoc_context = nil
+do
+  local v_23_0_ = nil
+  local function assoc_context0(opts)
+    opts.context = (nvim.b.conjure_context or extract.context())
+    return opts
+  end
+  v_23_0_ = assoc_context0
+  _0_0["aniseed/locals"]["assoc-context"] = v_23_0_
+  assoc_context = v_23_0_
+end
 local client_exec_fn = nil
 do
   local v_23_0_ = nil
   local function client_exec_fn0(action, f_name)
     local function _3_(opts)
       opts.action = action
-      opts.context = (nvim.b.conjure_context or extract.context())
+      assoc_context(opts)
       opts["file-path"] = extract["file-path"]()
       opts.preview = preview(opts)
       display_request(opts)
@@ -308,5 +319,20 @@ do
   end
   _0_0["aniseed/locals"]["selection"] = v_23_0_
   selection = v_23_0_
+end
+local completions = nil
+do
+  local v_23_0_ = nil
+  do
+    local v_23_0_0 = nil
+    local function completions0(prefix, cb)
+      return client.call("completions", assoc_context({cb = cb, prefix = prefix}))
+    end
+    v_23_0_0 = completions0
+    _0_0["completions"] = v_23_0_0
+    v_23_0_ = v_23_0_0
+  end
+  _0_0["aniseed/locals"]["completions"] = v_23_0_
+  completions = v_23_0_
 end
 return nil
