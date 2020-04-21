@@ -863,6 +863,33 @@ do
   _0_0["aniseed/locals"]["clojure->vim-completion"] = v_23_0_
   clojure__3evim_completion = v_23_0_
 end
+local extract_completion_context = nil
+do
+  local v_23_0_ = nil
+  local function extract_completion_context0(prefix)
+    local _3_ = extract.form({["root?"] = true})
+    local range = _3_["range"]
+    local content = _3_["content"]
+    local lines = text["split-lines"](content)
+    local _4_ = nvim.win_get_cursor(0)
+    local row = _4_[1]
+    local col = _4_[2]
+    local lrow = (row - a["get-in"](range, {"start", 1}))
+    local line_index = a.inc(lrow)
+    local lcol = nil
+    if (lrow == 0) then
+      lcol = (col - a["get-in"](range, {"start", 2}))
+    else
+      lcol = col
+    end
+    local original = a.get(lines, line_index)
+    local spliced = (string.sub(original, 1, lcol) .. "__prefix__" .. string.sub(original, a.inc(lcol)))
+    return str.join("\n", a.assoc(lines, line_index, spliced))
+  end
+  v_23_0_ = extract_completion_context0
+  _0_0["aniseed/locals"]["extract-completion-context"] = v_23_0_
+  extract_completion_context = v_23_0_
+end
 local completions = nil
 do
   local v_23_0_ = nil
@@ -870,10 +897,11 @@ do
     local v_23_0_0 = nil
     local function completions0(opts)
       local function _3_(conn)
+        a.println(extract_completion_context(opts.prefix))
         local function _4_(msgs)
           return opts.cb(a.map(clojure__3evim_completion, a.get(a.last(msgs), "completions")))
         end
-        return server.send({["extra-metadata"] = {"arglists", "doc"}, context = extract.form({["root?"] = true}), ns = opts.context, op = "complete", symbol = opts.prefix}, server["with-all-msgs-fn"](_4_))
+        return server.send({["extra-metadata"] = {"arglists", "doc"}, context = extract_completion_context(opts.prefix), ns = opts.context, op = "complete", symbol = opts.prefix}, server["with-all-msgs-fn"](_4_))
       end
       return server["with-conn-and-op-or-warn"]("complete", _3_)
     end
