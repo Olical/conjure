@@ -29,8 +29,12 @@
 
 (defn omnifunc [find-start? base]
   (if find-start?
-    ;; TODO Calculate start.
-    0
+    (let [[row col] (nvim.win_get_cursor 0)
+          [line] (nvim.buf_get_lines 0 (a.dec row) row false)]
+      (- col
+         (a.count (nvim.fn.matchstr
+                    (string.sub line 1 col)
+                    "\\k\\+$"))))
     (do
       (var result nil)
       (eval.completions
