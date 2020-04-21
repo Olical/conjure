@@ -826,16 +826,6 @@ do
   _0_0["aniseed/locals"]["piggieback"] = v_23_0_
   piggieback = v_23_0_
 end
-local abbr_ns = nil
-do
-  local v_23_0_ = nil
-  local function abbr_ns0(ns)
-    return ns
-  end
-  v_23_0_ = abbr_ns0
-  _0_0["aniseed/locals"]["abbr-ns"] = v_23_0_
-  abbr_ns = v_23_0_
-end
 local clojure__3evim_completion = nil
 do
   local v_23_0_ = nil
@@ -846,18 +836,18 @@ do
     local ns = _4_["ns"]
     local arglists = _4_["arglists"]
     local info = _4_["doc"]
-    local function _5_()
+    local _5_
+    if not a["empty?"](kind) then
+      _5_ = string.upper(string.sub(kind, 1, 1))
+    else
+    _5_ = nil
+    end
+    local function _7_()
       if arglists then
         return {str.join(" ", arglists)}
       end
     end
-    local _6_
-    if not a["empty?"](kind) then
-      _6_ = string.upper(string.sub(kind, 1, 1))
-    else
-    _6_ = nil
-    end
-    return {abbr = str.join(" ", a.concat({word}, _5_())), info = info, kind = _6_, menu = abbr_ns(ns), word = word}
+    return {info = info, kind = _5_, menu = str.join(" ", a.concat({ns}, _7_())), word = word}
   end
   v_23_0_ = clojure__3evim_completion0
   _0_0["aniseed/locals"]["clojure->vim-completion"] = v_23_0_

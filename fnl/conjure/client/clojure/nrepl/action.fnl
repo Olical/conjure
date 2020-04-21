@@ -397,22 +397,18 @@
                    "(cider.piggieback/cljs-repl " code "))")}
         #(ui.display-result $1 {})))))
 
-(defn- abbr-ns [ns]
- ns)
-
 (defn- clojure->vim-completion [{:candidate word
                                  :type kind
                                  : ns
                                  :doc info
                                  : arglists}]
   {:word word
-   :abbr (str.join
+   :menu (str.join
            " "
            (a.concat
-             [word]
+             [ns]
              (when arglists
                [(str.join " " arglists)])))
-   :menu (abbr-ns ns)
    :info info
    :kind (when (not (a.empty? kind))
            (string.upper
