@@ -213,6 +213,22 @@ do
   _0_0["aniseed/locals"]["def-str"] = v_23_0_
   def_str = v_23_0_
 end
+local omnifunc = nil
+do
+  local v_23_0_ = nil
+  do
+    local v_23_0_0 = nil
+    local function omnifunc0()
+      display({"; Omnicomplete"}, {["break?"] = true})
+      return not_implemented()
+    end
+    v_23_0_0 = omnifunc0
+    _0_0["omnifunc"] = v_23_0_0
+    v_23_0_ = v_23_0_0
+  end
+  _0_0["aniseed/locals"]["omnifunc"] = v_23_0_
+  omnifunc = v_23_0_
+end
 local eval_file = nil
 do
   local v_23_0_ = nil

@@ -1,5 +1,6 @@
 (module conjure.client.clojure.nrepl
   {require {nvim conjure.aniseed.nvim
+            a conjure.aniseed.core
             mapping conjure.mapping
             bridge conjure.bridge
             config conjure.client.clojure.nrepl.config
@@ -105,3 +106,8 @@
   (nvim.ex.augroup :END)
 
   (action.connect-port-file))
+
+(defn omnifunc [find-start? base]
+  (if find-start?
+    (a.second (nvim.win_get_cursor 0))
+    ["clojure"]))

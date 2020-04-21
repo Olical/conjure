@@ -76,6 +76,7 @@ do
       buf("v", config.mappings["eval-visual"], "conjure.eval", "selection")
       buf("n", config.mappings["doc-word"], "conjure.eval", "doc-word")
       buf("n", config.mappings["def-word"], "conjure.eval", "def-word")
+      nvim.ex.setlocal("omnifunc=ConjureOmnifunc")
       return client["optional-call"]("on-filetype")
     end
     v_23_0_0 = on_filetype0
@@ -154,6 +155,22 @@ do
   _0_0["aniseed/locals"]["config-command"] = v_23_0_
   config_command = v_23_0_
 end
+local omnifunc = nil
+do
+  local v_23_0_ = nil
+  do
+    local v_23_0_0 = nil
+    local function omnifunc0(find_start_3f, base)
+      return (client.call("omnifunc", find_start_3f, base) or -3)
+    end
+    v_23_0_0 = omnifunc0
+    _0_0["omnifunc"] = v_23_0_0
+    v_23_0_ = v_23_0_0
+  end
+  _0_0["aniseed/locals"]["omnifunc"] = v_23_0_
+  omnifunc = v_23_0_
+end
 nvim.ex.function_(str.join("\n", {"ConjureEvalMotion(kind)", "call luaeval(\"require('conjure.eval')['selection'](_A)\", a:kind)", "endfunction"}))
+nvim.ex.function_(str.join("\n", {"ConjureOmnifunc(findstart, base)", "return luaeval(\"require('conjure.mapping')['omnifunc'](_A[1] == 1, _A[2])\", [a:findstart, a:base])", "endfunction"}))
 nvim.ex.command_("-nargs=? -range ConjureEval", bridge["viml->lua"]("conjure.mapping", "eval-ranged-command", {args = "<line1>, <line2>, <q-args>"}))
 return nvim.ex.command_("-nargs=+ ConjureConfig", bridge["viml->lua"]("conjure.mapping", "config-command", {args = "<f-args>"}))

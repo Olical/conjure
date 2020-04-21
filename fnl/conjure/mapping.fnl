@@ -37,6 +37,8 @@
   (buf :n config.mappings.doc-word :conjure.eval :doc-word)
   (buf :n config.mappings.def-word :conjure.eval :def-word)
 
+  (nvim.ex.setlocal "omnifunc=ConjureOmnifunc")
+
   (client.optional-call :on-filetype))
 
 (defn init [filetypes]
@@ -73,9 +75,18 @@
           opts :val
           (fennel.eval val))))))
 
+(defn omnifunc [find-start? base]
+  (or (client.call :omnifunc find-start? base) -3))
+
 (nvim.ex.function_
   (->> ["ConjureEvalMotion(kind)"
         "call luaeval(\"require('conjure.eval')['selection'](_A)\", a:kind)"
+        "endfunction"]
+       (str.join "\n")))
+
+(nvim.ex.function_
+  (->> ["ConjureOmnifunc(findstart, base)"
+        "return luaeval(\"require('conjure.mapping')['omnifunc'](_A[1] == 1, _A[2])\", [a:findstart, a:base])"
         "endfunction"]
        (str.join "\n")))
 

@@ -15,15 +15,16 @@ do
   _0_0 = module_23_0_
 end
 local function _1_(...)
-  _0_0["aniseed/local-fns"] = {require = {action = "conjure.client.clojure.nrepl.action", bridge = "conjure.bridge", config = "conjure.client.clojure.nrepl.config", mapping = "conjure.mapping", nvim = "conjure.aniseed.nvim"}}
-  return {require("conjure.client.clojure.nrepl.action"), require("conjure.bridge"), require("conjure.client.clojure.nrepl.config"), require("conjure.mapping"), require("conjure.aniseed.nvim")}
+  _0_0["aniseed/local-fns"] = {require = {a = "conjure.aniseed.core", action = "conjure.client.clojure.nrepl.action", bridge = "conjure.bridge", config = "conjure.client.clojure.nrepl.config", mapping = "conjure.mapping", nvim = "conjure.aniseed.nvim"}}
+  return {require("conjure.aniseed.core"), require("conjure.client.clojure.nrepl.action"), require("conjure.bridge"), require("conjure.client.clojure.nrepl.config"), require("conjure.mapping"), require("conjure.aniseed.nvim")}
 end
 local _2_ = _1_(...)
-local action = _2_[1]
-local bridge = _2_[2]
-local config = _2_[3]
-local mapping = _2_[4]
-local nvim = _2_[5]
+local a = _2_[1]
+local action = _2_[2]
+local bridge = _2_[3]
+local config = _2_[4]
+local mapping = _2_[5]
+local nvim = _2_[6]
 do local _ = ({nil, _0_0, nil})[2] end
 local buf_suffix = nil
 do
@@ -188,5 +189,24 @@ do
   end
   _0_0["aniseed/locals"]["on-load"] = v_23_0_
   on_load = v_23_0_
+end
+local omnifunc = nil
+do
+  local v_23_0_ = nil
+  do
+    local v_23_0_0 = nil
+    local function omnifunc0(find_start_3f, base)
+      if find_start_3f then
+        return a.second(nvim.win_get_cursor(0))
+      else
+        return {"clojure"}
+      end
+    end
+    v_23_0_0 = omnifunc0
+    _0_0["omnifunc"] = v_23_0_0
+    v_23_0_ = v_23_0_0
+  end
+  _0_0["aniseed/locals"]["omnifunc"] = v_23_0_
+  omnifunc = v_23_0_
 end
 return nil

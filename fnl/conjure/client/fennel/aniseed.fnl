@@ -71,6 +71,10 @@
 (defn def-str [opts]
   (not-implemented))
 
+(defn omnifunc []
+  (display ["; Omnicomplete"] {:break? true})
+  (not-implemented))
+
 (defn eval-file [opts]
   (set opts.code (a.slurp opts.file-path))
   (when opts.code
