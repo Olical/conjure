@@ -5,16 +5,11 @@
 (deftest basics
   (let [p (promise.new)]
     (t.= false (promise.done? p) "starts incomplete")
-    (t.= :table (type (a.get promise.state p))
-         "exists in state at first")
     (promise.deliver p :foo)
     (t.= true (promise.done? p) "done after deliver")
     (t.= :foo (promise.close p) "returns the value on close")
-    (t.= :nil (type (a.get promise.state p)) "gone after close")
     (promise.deliver p :bar)
-    (t.= nil (promise.done? p) "nil if already closed")
-    (t.= :nil (type (a.get promise.state p))
-         "still nil after second deliver")))
+    (t.= nil (promise.done? p) "nil if already closed")))
 
 (deftest multiple-deliveries
   (let [p (promise.new)]
