@@ -6,6 +6,7 @@
             text conjure.text
             config conjure.config
             editor conjure.editor
+            uuid conjure.uuid
             log conjure.log}})
 
 (defn- preview [opts]
@@ -135,8 +136,32 @@
        :origin :selection})))
 
 (defn completions [prefix cb]
-  (client.call
-    :completions
-    (-> {:prefix prefix
-         :cb cb}
-        (assoc-context))))
+  (if (= :function (type (client.get :completions)))
+    (client.call
+      :completions
+      (-> {:prefix prefix
+           :cb cb}
+          (assoc-context)))
+    (cb [])))
+
+(defonce completion-tickets {})
+
+(defn completions-ticket [prefix]
+  (let [ticket (uuid.v4)]
+    (a.assoc completion-tickets
+             ticket
+             {:ticket ticket
+              :value nil
+              :done? false
+              :close
+              (fn []
+                (let [value (a.get-in completion-tickets
+                                      [ticket :value])]
+                  (a.assoc completion-tickets ticket nil)
+                  value))})
+    (completions
+      prefix
+      (fn [cmpls]
+        (a.assoc-in completion-tickets [ticket :value] cmpls)
+        (a.assoc-in completion-tickets [ticket :done?] true)))
+    ticket))

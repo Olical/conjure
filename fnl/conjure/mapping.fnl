@@ -83,15 +83,11 @@
          (a.count (nvim.fn.matchstr
                     (string.sub line 1 col)
                     "\\k\\+$"))))
-    (do
-      (var result nil)
-      (eval.completions
-        base
-        (fn [msg]
-          (set result msg)))
-      (while (a.nil? result)
-        (nvim.ex.sleep "1m"))
-      result)))
+    (let [ticket (eval.completions-ticket base)]
+      (nvim.fn.wait
+        10000
+        (.. "luaeval(\"require('conjure.eval')['completion-tickets']['" ticket "']['done?']\")"))
+      ((a.get-in eval [:completion-tickets ticket :close])))))
 
 (nvim.ex.function_
   (->> ["ConjureEvalMotion(kind)"

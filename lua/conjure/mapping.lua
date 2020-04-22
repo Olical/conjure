@@ -169,16 +169,9 @@ do
         local line = _4_[1]
         return (col - a.count(nvim.fn.matchstr(string.sub(line, 1, col), "\\k\\+$")))
       else
-        local result = nil
-        local function _3_(msg)
-          result = msg
-          return nil
-        end
-        eval.completions(base, _3_)
-        while a["nil?"](result) do
-          nvim.ex.sleep("1m")
-        end
-        return result
+        local ticket = eval["completions-ticket"](base)
+        nvim.fn.wait(10000, ("luaeval(\"require('conjure.eval')['completion-tickets']['" .. ticket .. "']['done?']\")"))
+        return a["get-in"](eval, {"completion-tickets", ticket, "close"})()
       end
     end
     v_23_0_0 = omnifunc0

@@ -15,8 +15,8 @@ do
   _0_0 = module_23_0_
 end
 local function _1_(...)
-  _0_0["aniseed/local-fns"] = {require = {a = "conjure.aniseed.core", client = "conjure.client", config = "conjure.config", editor = "conjure.editor", extract = "conjure.extract", log = "conjure.log", nvim = "conjure.aniseed.nvim", text = "conjure.text"}}
-  return {require("conjure.aniseed.core"), require("conjure.client"), require("conjure.config"), require("conjure.editor"), require("conjure.extract"), require("conjure.log"), require("conjure.aniseed.nvim"), require("conjure.text")}
+  _0_0["aniseed/local-fns"] = {require = {a = "conjure.aniseed.core", client = "conjure.client", config = "conjure.config", editor = "conjure.editor", extract = "conjure.extract", log = "conjure.log", nvim = "conjure.aniseed.nvim", text = "conjure.text", uuid = "conjure.uuid"}}
+  return {require("conjure.aniseed.core"), require("conjure.client"), require("conjure.config"), require("conjure.editor"), require("conjure.extract"), require("conjure.log"), require("conjure.aniseed.nvim"), require("conjure.text"), require("conjure.uuid")}
 end
 local _2_ = _1_(...)
 local a = _2_[1]
@@ -27,6 +27,7 @@ local extract = _2_[5]
 local log = _2_[6]
 local nvim = _2_[7]
 local text = _2_[8]
+local uuid = _2_[9]
 do local _ = ({nil, _0_0, nil})[2] end
 local preview = nil
 do
@@ -326,7 +327,11 @@ do
   do
     local v_23_0_0 = nil
     local function completions0(prefix, cb)
-      return client.call("completions", assoc_context({cb = cb, prefix = prefix}))
+      if ("function" == type(client.get("completions"))) then
+        return client.call("completions", assoc_context({cb = cb, prefix = prefix}))
+      else
+        return cb({})
+      end
     end
     v_23_0_0 = completions0
     _0_0["completions"] = v_23_0_0
@@ -334,5 +339,43 @@ do
   end
   _0_0["aniseed/locals"]["completions"] = v_23_0_
   completions = v_23_0_
+end
+local completion_tickets = nil
+do
+  local v_23_0_ = nil
+  do
+    local v_23_0_0 = (_0_0["completion-tickets"] or {})
+    _0_0["completion-tickets"] = v_23_0_0
+    v_23_0_ = v_23_0_0
+  end
+  _0_0["aniseed/locals"]["completion-tickets"] = v_23_0_
+  completion_tickets = v_23_0_
+end
+local completions_ticket = nil
+do
+  local v_23_0_ = nil
+  do
+    local v_23_0_0 = nil
+    local function completions_ticket0(prefix)
+      local ticket = uuid.v4()
+      local function _3_()
+        local value = a["get-in"](completion_tickets, {ticket, "value"})
+        a.assoc(completion_tickets, ticket, nil)
+        return value
+      end
+      a.assoc(completion_tickets, ticket, {["done?"] = false, close = _3_, ticket = ticket, value = nil})
+      local function _4_(cmpls)
+        a["assoc-in"](completion_tickets, {ticket, "value"}, cmpls)
+        return a["assoc-in"](completion_tickets, {ticket, "done?"}, true)
+      end
+      completions(prefix, _4_)
+      return ticket
+    end
+    v_23_0_0 = completions_ticket0
+    _0_0["completions-ticket"] = v_23_0_0
+    v_23_0_ = v_23_0_0
+  end
+  _0_0["aniseed/locals"]["completions-ticket"] = v_23_0_
+  completions_ticket = v_23_0_
 end
 return nil
