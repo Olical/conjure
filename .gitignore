@@ -9,3 +9,4 @@
 /.shadow-cljs/
 /node_modules/
 /dev/public/
+__pycache__/

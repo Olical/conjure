@@ -87,7 +87,8 @@
       (nvim.fn.wait
         10000
         (.. "luaeval(\"require('conjure.eval')['completion-tickets']['" ticket "']['done?']\")"))
-      ((a.get-in eval [:completion-tickets ticket :close])))))
+      (or ((a.get-in eval [:completion-tickets ticket :close]))
+          []))))
 
 (nvim.ex.function_
   (->> ["ConjureEvalMotion(kind)"

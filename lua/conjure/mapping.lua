@@ -171,7 +171,7 @@ do
       else
         local ticket = eval["completions-ticket"](base)
         nvim.fn.wait(10000, ("luaeval(\"require('conjure.eval')['completion-tickets']['" .. ticket .. "']['done?']\")"))
-        return a["get-in"](eval, {"completion-tickets", ticket, "close"})()
+        return (a["get-in"](eval, {"completion-tickets", ticket, "close"})() or {})
       end
     end
     v_23_0_0 = omnifunc0
