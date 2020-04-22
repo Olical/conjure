@@ -32,8 +32,11 @@
   (throw (Error. "ohno"))
   (do (Thread/sleep 5000)
       (println "FOO"))
-  (do (Thread/sleep 5000)
-      (println "BAR"))
+  (future
+    (do (Thread/sleep 5000)
+        (println "BAR")))
+
+  (tap> :foo)
 
   (read)
   (read-line)
