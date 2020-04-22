@@ -12,6 +12,6 @@ class Source(Base):
     self.rank = 500
 
   def gather_candidates(self, context):
-    ticket = self.vim.exec_lua("return require('conjure.eval')['completions-ticket'](...)", context["complete_str"])
-    self.vim.call("wait", 10000, "luaeval(\"require('conjure.eval')['completion-tickets']['" + ticket + "']['done?']\")")
-    return self.vim.exec_lua("return require('conjure.eval')['completion-tickets']['" + ticket + "'].close()") or []
+    p = self.vim.exec_lua("return require('conjure.eval')['completions-promise'](...)", context["complete_str"])
+    self.vim.exec_lua("require('conjure.promise').await(...)", p)
+    return self.vim.exec_lua("return require('conjure.promise').close(...)", p) or []

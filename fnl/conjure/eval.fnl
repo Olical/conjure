@@ -5,6 +5,7 @@
             client conjure.client
             text conjure.text
             config conjure.config
+            promise conjure.promise
             editor conjure.editor
             uuid conjure.uuid
             log conjure.log}})
@@ -144,24 +145,7 @@
           (assoc-context)))
     (cb [])))
 
-(defonce completion-tickets {})
-
-(defn completions-ticket [prefix]
-  (let [ticket (uuid.v4)]
-    (a.assoc completion-tickets
-             ticket
-             {:ticket ticket
-              :value nil
-              :done? false
-              :close
-              (fn []
-                (let [value (a.get-in completion-tickets
-                                      [ticket :value])]
-                  (a.assoc completion-tickets ticket nil)
-                  value))})
-    (completions
-      prefix
-      (fn [cmpls]
-        (a.assoc-in completion-tickets [ticket :value] cmpls)
-        (a.assoc-in completion-tickets [ticket :done?] true)))
-    ticket))
+(defn completions-promise [prefix]
+  (let [p (promise.new)]
+    (completions prefix (promise.deliver-fn p))
+    p))

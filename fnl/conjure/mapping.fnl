@@ -5,6 +5,7 @@
             config conjure.config
             extract conjure.extract
             client conjure.client
+            promise conjure.promise
             eval conjure.eval
             bridge conjure.bridge
             fennel conjure.aniseed.fennel}})
@@ -83,12 +84,9 @@
          (a.count (nvim.fn.matchstr
                     (string.sub line 1 col)
                     "\\k\\+$"))))
-    (let [ticket (eval.completions-ticket base)]
-      (nvim.fn.wait
-        10000
-        (.. "luaeval(\"require('conjure.eval')['completion-tickets']['" ticket "']['done?']\")"))
-      (or ((a.get-in eval [:completion-tickets ticket :close]))
-          []))))
+    (let [p (eval.completions-promise base)]
+      (promise.await p)
+      (or (promise.close p) []))))
 
 (nvim.ex.function_
   (->> ["ConjureEvalMotion(kind)"
