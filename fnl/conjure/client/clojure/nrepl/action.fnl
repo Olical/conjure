@@ -447,7 +447,8 @@
          :ns opts.context
          :symbol opts.prefix
          :context (extract-completion-context opts.prefix)
-         :extra-metadata [:arglists :doc]}
+         :extra-metadata [:arglists :doc]
+         :enhanced-cljs-completion? "t"}
         (server.with-all-msgs-fn
           (fn [msgs]
             (->> (a.get (a.last msgs) :completions)
