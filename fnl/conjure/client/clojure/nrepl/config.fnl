@@ -22,11 +22,12 @@
    :connect-port-file "cf"
 
    :interrupt "ei"
-   :last-exception "ex"
-   :result-1 "e1"
-   :result-2 "e2"
-   :result-3 "e3"
-   :view-source "es"
+
+   :last-exception "ve"
+   :result-1 "v1"
+   :result-2 "v2"
+   :result-3 "v3"
+   :view-source "vs"
 
    :session-clone "sc"
    :session-fresh "sf"
