@@ -36,12 +36,17 @@ do
   local v_23_0_ = nil
   do
     local v_23_0_0 = nil
-    local function with_conn_or_warn0(f)
+    local function with_conn_or_warn0(f, opts)
       local conn = a.get(state, "conn")
       if conn then
         return f(conn)
       else
-        return ui.display({"; No connection"})
+        if not a.get(opts, "silent?") then
+          ui.display({"; No connection"})
+        end
+        if a.get(opts, "else") then
+          return opts["else"]()
+        end
       end
     end
     v_23_0_0 = with_conn_or_warn0
@@ -372,15 +377,20 @@ do
   local v_23_0_ = nil
   do
     local v_23_0_0 = nil
-    local function with_conn_and_op_or_warn0(op, f)
+    local function with_conn_and_op_or_warn0(op, f, opts)
       local function _3_(conn)
         if a["get-in"](conn, {"describe", "ops", op}) then
           return f(conn)
         else
-          return ui.display({("; Unsupported operation: " .. op), "; Ensure the CIDER middleware is installed and up to date", "; https://docs.cider.mx/cider-nrepl/usage.html"})
+          if not a.get(opts, "silent?") then
+            ui.display({("; Unsupported operation: " .. op), "; Ensure the CIDER middleware is installed and up to date", "; https://docs.cider.mx/cider-nrepl/usage.html"})
+          end
+          if a.get(opts, "else") then
+            return opts["else"]()
+          end
         end
       end
-      return with_conn_or_warn(_3_)
+      return with_conn_or_warn(_3_, opts)
     end
     v_23_0_0 = with_conn_and_op_or_warn0
     _0_0["with-conn-and-op-or-warn"] = v_23_0_0

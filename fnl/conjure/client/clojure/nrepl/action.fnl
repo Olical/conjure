@@ -460,4 +460,6 @@
           (fn [msgs]
             (->> (a.get (a.last msgs) :completions)
                  (a.map clojure->vim-completion)
-                 (opts.cb))))))))
+                 (opts.cb))))))
+    {:silent? true
+     :else #(opts.cb [])}))

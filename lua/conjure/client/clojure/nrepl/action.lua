@@ -909,7 +909,10 @@ do
         end
         return server.send({["enhanced-cljs-completion?"] = "t", ["extra-metadata"] = {"arglists", "doc"}, context = extract_completion_context(opts.prefix), ns = opts.context, op = "complete", symbol = opts.prefix}, server["with-all-msgs-fn"](_4_))
       end
-      return server["with-conn-and-op-or-warn"]("complete", _3_)
+      local function _4_()
+        return opts.cb({})
+      end
+      return server["with-conn-and-op-or-warn"]("complete", _3_, {["else"] = _4_, ["silent?"] = true})
     end
     v_23_0_0 = completions0
     _0_0["completions"] = v_23_0_0

@@ -11,11 +11,15 @@
             config conjure.client.clojure.nrepl.config
             ui conjure.client.clojure.nrepl.ui}})
 
-(defn with-conn-or-warn [f]
+(defn with-conn-or-warn [f opts]
   (let [conn (a.get state :conn)]
     (if conn
       (f conn)
-      (ui.display ["; No connection"]))))
+      (do
+        (when (not (a.get opts :silent?))
+          (ui.display ["; No connection"]))
+        (when (a.get opts :else)
+          (opts.else))))))
 
 (defn- dbg [desc data]
   (when config.debug?
@@ -162,15 +166,20 @@
     (fn [msg]
       (a.assoc-in state [:conn :describe] msg))))
 
-(defn with-conn-and-op-or-warn [op f]
+(defn with-conn-and-op-or-warn [op f opts]
   (with-conn-or-warn
     (fn [conn]
       (if (a.get-in conn [:describe :ops op])
         (f conn)
-        (ui.display
-          [(.. "; Unsupported operation: " op)
-           "; Ensure the CIDER middleware is installed and up to date"
-           "; https://docs.cider.mx/cider-nrepl/usage.html"])))))
+        (do
+          (when (not (a.get opts :silent?))
+            (ui.display
+              [(.. "; Unsupported operation: " op)
+               "; Ensure the CIDER middleware is installed and up to date"
+               "; https://docs.cider.mx/cider-nrepl/usage.html"]))
+          (when (a.get opts :else)
+            (opts.else)))))
+    opts))
 
 (defn- handle-connect-fn []
   (vim.schedule_wrap
