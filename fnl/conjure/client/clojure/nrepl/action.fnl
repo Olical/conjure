@@ -166,25 +166,32 @@
       (let [msgs (->> (a.vals conn.msgs)
                       (a.filter
                         (fn [msg]
-                          (= :eval msg.msg.op))))]
+                          (= :eval msg.msg.op))))
+
+            order-66
+            (fn [{: id : session : code}]
+              (server.send
+                {:op :interrupt
+                 :interrupt-id id
+                 :session session})
+              (ui.display
+                [(.. "; Interrupted: "
+                     (if code
+                       (text.left-sample
+                         code
+                         (editor.percent-width
+                           config.interrupt.sample-limit))
+                       (.. "session (" session ")")))]
+                {:break? true}))]
+
         (if (a.empty? msgs)
-          (ui.display ["; Nothing to interrupt"] {:break? true})
+          (order-66 {:session conn.session})
           (do
             (table.sort
               msgs
               (fn [a b]
                 (< a.sent-at b.sent-at)))
-            (let [oldest (a.first msgs)]
-              (server.send {:op :interrupt
-                            :id oldest.msg.id
-                            :session oldest.msg.session})
-              (ui.display
-                [(.. "; Interrupted: "
-                     (text.left-sample
-                       oldest.msg.code
-                       (editor.percent-width
-                         config.interrupt.sample-limit)))]
-                {:break? true}))))))))
+            (order-66 (a.get (a.first msgs) :msg))))))))
 
 (defn- eval-str-fn [code]
   (fn []

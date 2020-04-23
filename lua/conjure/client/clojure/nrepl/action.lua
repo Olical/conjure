@@ -306,18 +306,31 @@ do
           return ("eval" == msg.msg.op)
         end
         msgs = a.filter(_4_, a.vals(conn.msgs))
+        local order_66 = nil
+        local function _5_(_6_0)
+          local _7_ = _6_0
+          local id = _7_["id"]
+          local code = _7_["code"]
+          local session = _7_["session"]
+          server.send({["interrupt-id"] = id, op = "interrupt", session = session})
+          local function _8_()
+            if code then
+              return text["left-sample"](code, editor["percent-width"](config.interrupt["sample-limit"]))
+            else
+              return ("session (" .. session .. ")")
+            end
+          end
+          return ui.display({("; Interrupted: " .. _8_())}, {["break?"] = true})
+        end
+        order_66 = _5_
         if a["empty?"](msgs) then
-          return ui.display({"; Nothing to interrupt"}, {["break?"] = true})
+          return order_66({session = conn.session})
         else
-          local function _5_(a0, b)
+          local function _7_(a0, b)
             return (a0["sent-at"] < b["sent-at"])
           end
-          table.sort(msgs, _5_)
-          do
-            local oldest = a.first(msgs)
-            server.send({id = oldest.msg.id, op = "interrupt", session = oldest.msg.session})
-            return ui.display({("; Interrupted: " .. text["left-sample"](oldest.msg.code, editor["percent-width"](config.interrupt["sample-limit"])))}, {["break?"] = true})
-          end
+          table.sort(msgs, _7_)
+          return order_66(a.get(a.first(msgs), "msg"))
         end
       end
       return server["with-conn-or-warn"](_3_)
