@@ -87,6 +87,74 @@ do
   _0_0["aniseed/locals"]["on-filetype"] = v_23_0_
   on_filetype = v_23_0_
 end
+local parse_config_target = nil
+do
+  local v_23_0_ = nil
+  local function parse_config_target0(target)
+    local client_path = str.split(target, "/")
+    local _3_
+    if (2 == a.count(client_path)) then
+      _3_ = a.first(client_path)
+    else
+    _3_ = nil
+    end
+    return {client = _3_, path = str.split(a.last(client_path), "%.")}
+  end
+  v_23_0_ = parse_config_target0
+  _0_0["aniseed/locals"]["parse-config-target"] = v_23_0_
+  parse_config_target = v_23_0_
+end
+local config_command = nil
+do
+  local v_23_0_ = nil
+  do
+    local v_23_0_0 = nil
+    local function config_command0(target, ...)
+      local opts = parse_config_target(target)
+      local current = config.get(opts)
+      local val = str.join({...})
+      if a["empty?"](val) then
+        return a.println(target, "=", a["pr-str"](current))
+      else
+        return config.assoc(a.assoc(opts, "val", fennel.eval(val)))
+      end
+    end
+    v_23_0_0 = config_command0
+    _0_0["config-command"] = v_23_0_0
+    v_23_0_ = v_23_0_0
+  end
+  _0_0["aniseed/locals"]["config-command"] = v_23_0_
+  config_command = v_23_0_
+end
+local assoc_initial_config = nil
+do
+  local v_23_0_ = nil
+  local function assoc_initial_config0()
+    if nvim.g.conjure_config then
+      local _3_0 = nvim.g.conjure_config
+      if _3_0 then
+        local _4_0 = nil
+        local function _5_(_6_0)
+          local _7_ = _6_0
+          local target = _7_[1]
+          local val = _7_[2]
+          return a.merge(parse_config_target(target), {val = val})
+        end
+        _4_0 = a["map-indexed"](_5_, _3_0)
+        if _4_0 then
+          return a["run!"](config.assoc, _4_0)
+        else
+          return _4_0
+        end
+      else
+        return _3_0
+      end
+    end
+  end
+  v_23_0_ = assoc_initial_config0
+  _0_0["aniseed/locals"]["assoc-initial-config"] = v_23_0_
+  assoc_initial_config = v_23_0_
+end
 local init = nil
 do
   local v_23_0_ = nil
@@ -98,7 +166,8 @@ do
       nvim.ex.autocmd("FileType", str.join(",", filetypes), bridge["viml->lua"]("conjure.mapping", "on-filetype", {}))
       nvim.ex.autocmd("CursorMoved", "*", bridge["viml->lua"]("conjure.log", "close-hud", {}))
       nvim.ex.autocmd("CursorMovedI", "*", bridge["viml->lua"]("conjure.log", "close-hud", {}))
-      return nvim.ex.augroup("END")
+      nvim.ex.augroup("END")
+      return assoc_initial_config()
     end
     v_23_0_0 = init0
     _0_0["init"] = v_23_0_0
@@ -125,36 +194,6 @@ do
   end
   _0_0["aniseed/locals"]["eval-ranged-command"] = v_23_0_
   eval_ranged_command = v_23_0_
-end
-local config_command = nil
-do
-  local v_23_0_ = nil
-  do
-    local v_23_0_0 = nil
-    local function config_command0(target, ...)
-      local client_path = str.split(target, "/")
-      local opts = nil
-      local _3_
-      if (2 == a.count(client_path)) then
-        _3_ = a.first(client_path)
-      else
-      _3_ = nil
-      end
-      opts = {client = _3_, path = str.split(a.last(client_path), "%.")}
-      local current = config.get(opts)
-      local val = str.join({...})
-      if a["empty?"](val) then
-        return a.println(target, "=", a["pr-str"](current))
-      else
-        return config.assoc(a.assoc(opts, "val", fennel.eval(val)))
-      end
-    end
-    v_23_0_0 = config_command0
-    _0_0["config-command"] = v_23_0_0
-    v_23_0_ = v_23_0_0
-  end
-  _0_0["aniseed/locals"]["config-command"] = v_23_0_
-  config_command = v_23_0_
 end
 local omnifunc = nil
 do

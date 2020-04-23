@@ -42,6 +42,34 @@
 
   (client.optional-call :on-filetype))
 
+(defn- parse-config-target [target]
+  (let [client-path (str.split target "/")]
+    {:client (when (= 2 (a.count client-path))
+               (a.first client-path))
+     :path (str.split (a.last client-path) "%.")}))
+
+(defn config-command [target ...]
+  (let [opts (parse-config-target target)
+        current (config.get opts)
+        val (str.join [...])]
+
+    (if (a.empty? val)
+      (a.println target "=" (a.pr-str current))
+      (config.assoc
+        (a.assoc
+          opts :val
+          (fennel.eval val))))))
+
+(defn- assoc-initial-config []
+  (when nvim.g.conjure_config
+    (-?>> nvim.g.conjure_config
+          (a.map-indexed
+            (fn [[target val]]
+              (a.merge
+                (parse-config-target target)
+                {:val val})))
+          (a.run! config.assoc))))
+
 (defn init [filetypes]
   (nvim.ex.augroup :conjure_init_filetypes)
   (nvim.ex.autocmd_)
@@ -54,27 +82,13 @@
   (nvim.ex.autocmd
     :CursorMovedI :*
     (bridge.viml->lua :conjure.log :close-hud {}))
-  (nvim.ex.augroup :END))
+  (nvim.ex.augroup :END)
+  (assoc-initial-config))
 
 (defn eval-ranged-command [start end code]
   (if (= "" code)
     (eval.range (a.dec start) end)
     (eval.command code)))
-
-(defn config-command [target ...]
-  (let [client-path (str.split target "/")
-        opts {:client (when (= 2 (a.count client-path))
-                        (a.first client-path))
-              :path (str.split (a.last client-path) "%.")}
-        current (config.get opts)
-        val (str.join [...])]
-
-    (if (a.empty? val)
-      (a.println target "=" (a.pr-str current))
-      (config.assoc
-        (a.assoc
-          opts :val
-          (fennel.eval val))))))
 
 (defn omnifunc [find-start? base]
   (if find-start?

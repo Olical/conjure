@@ -50,7 +50,9 @@ I've also included some commands since they're related to the mappings.
                          actual values, not strings. If you want to set
                          something to a string it must be "double quoted".
                          This is so that you can set booleans, lists and
-                         numbers where required.
+                         numbers where required. The value you're setting is
+                         actually parsed as Fennel code, this is almost
+                         identical to Clojure data structure syntax.
                           - `:ConjureConfig mappings.prefix`
                             Show the current mapping prefix.
                           - `:ConjureConfig mapping.prefix "<leader>"`
@@ -66,6 +68,9 @@ I've also included some commands since they're related to the mappings.
                             `conjure.client.clojure.nrepl`, if a module isn't
                             found within `conjure.client.*` though it'll look
                             further afield at 3rd party modules.
+                        If you're lazy loading Conjure you may want to define
+                        your configuration ahead of time with the
+                        `g:conjure_config` variable.
 
 <localleader>ls          Open the log buffer in a new horizontal split window.
 
@@ -135,6 +140,8 @@ the prefix simply wrap the string in a list.
     :ConjureConfig mappings.log-split ["ClS"]
 
 Now you can hit `ClS` without a prefix in any Conjure support filetype buffer.
+If you're lazy loading Conjure through your plugin manager you may want to use
+the `g:conjure_config` variable instead, as mention later in this section.
 
 `clients.[filetype]`
             Lua module path to use as a client for a filetype. This can be any
@@ -251,6 +258,17 @@ And finally some regular Neovim variables.
             Override the context name for a specific buffer, preventing
             Conjure from attempting to extract it from the first few lines
             defined by the `extract.context-header-lines` configuration value.
+            Default: `undefined`
+
+`g:conjure_config`
+            An optional dictionary of string key value pairs. It's read when
+            Conjure is first loaded and ends up setting the configuration keys
+            to the dictionaries values, the keys work exactly the same as the
+            first argument to `:ConjureConfig`. This would turn the HUD off.
+            `let g:conjure_config = {"log.hud.enabled?": v:false}`
+            It's intended to be used for when you're lazy loading Conjure
+            through your plugin manager. If Conjure is already loaded you can
+            just use `:ConjureConfig` directly.
             Default: `undefined`
 
 ==============================================================================
