@@ -55,20 +55,20 @@ I've also included some commands since they're related to the mappings.
                          actually parsed as Fennel code, this is almost
                          identical to Clojure data structure syntax.
                           - `:ConjureConfig mappings.prefix`
-                            Show the current mapping prefix.
+                              Show the current mapping prefix.
                           - `:ConjureConfig mappings.prefix "<leader>"`
-                            Set the mapping prefix.
+                              Set the mapping prefix.
                           - `:ConjureConfig clojure.nrepl/mappings.interrupt`
-                            Show a language specific configuration value.
+                              Show a language specific configuration value.
                           - `:ConjureConfig clojure.nrepl/debug? true`
-                            Set a language specific configuration value.
+                              Set a language specific configuration value.
                           - `:ConjureConfig some.other.module/magic? true`
-                            Set a 3rd party language specific configuration
-                            value. The previous example's `clojure.nrepl` is
-                            actually expanded to
-                            `conjure.client.clojure.nrepl`, if a module isn't
-                            found within `conjure.client.*` though it'll look
-                            further afield at 3rd party modules.
+                              Set a 3rd party language specific configuration
+                              value. The previous example's `clojure.nrepl` is
+                              actually expanded to
+                              `conjure.client.clojure.nrepl`, if a module
+                              isn't found within `conjure.client.*` though
+                              it'll look further afield at 3rd party modules.
                         If you're lazy loading Conjure you may want to define
                         your configuration ahead of time with the
                         `g:conjure_config` variable.
@@ -347,6 +347,127 @@ values and functions at the top level of your module. You can split your
 client up into separate modules and just build this API into your init module.
 See the `conjure.client.clojure.nrepl` module for an example of this.
 
-TODO
+For full examples, have a look inside the `fnl/conjure/client` directory.
+
+`buf-suffix`
+            String
+            Last part of the log buffer name which helps with setting the
+            filetype among other things depending on what plugins a user may
+            have installed. For example, Fennel's is `".fnl"` and Clojure's is
+            `".cljc"`. Whatever suits your language, it's up to you!
+
+`context-pattern`
+            String
+            Lua pattern to identify the module or namespace name from the
+            first few lines of the buffer. Used to set the context for each
+            user evaluation. Clojure's is `%(%s*ns%s*(.-)[%s){]`, alter as you
+            see fit for your language. The value in the capture group is
+            passed into later functions as `opts.context`.
+
+`comment-prefix`
+            String
+            Proceeds lines that describe what kind of evaluation has taken
+            place (among other things), you don't want those to be highlighted
+            as code so they're turned into comments by placing this string
+            before them. For Lisps you probably want to use `"; "`, notice the
+            trailing space!
+
+`config`
+            Table
+            Default configuration values that can be set using the techniques
+            mentioned in |conjure-configuration|.  You can nest your
+            configuration within tables to keep related keys close together.
+
+`eval-str`
+            Function(opts)
+            Takes a single argument table `opts` which contains the following:
+             - `opts.code`
+                 String to be embedded in your evaluation. You can wrap it
+                 with whatever padding code you require. This is what the user
+                 selected for evaluation.
+             - `opts.context`
+                 String extracted using `context-pattern` or `nil` if nothing
+                 could be found. At that point you should default it to
+                 something sensible or not set the context of your evaluation
+                 at all.
+             - `opts.action`
+                 Always `"eval"` in this case.
+             - `opts.file-path`
+                 Path to the buffer the user is evaluating from.
+             - `opts.origin`
+                 What the evaluation originated from such as `"current-form"`.
+             - `opts.preview`
+                 A comment that's appended to the log for you describing what
+                 action the user just took for future reference. It lends
+                 context to your follow up log entries with results.
+             - `opts.range`
+                 Contains `start` and `end` tuples that mark the starting and
+                 ending row and column for the code that was extracted from
+                 the buffer.
+
+`doc-str`
+            Function(opts)
+            Almost identical to `eval-str` even down to taking the same
+            arguments. Instead of just evaluating `opts.code` though it should
+            wrap it in whatever code necessary to produce documentation output
+            for the given code. `opts.code` will probably be a single keyword.
+            In the case of Clojure it's wrapped in `(doc ...)`, if your
+            language doesn't implement documentation lookup you can skip this
+            function or have it print a warning. The Clojure implementation
+            actually leans on it's own `eval-str`.
+
+`def-str`
+            Function(opts)
+            Similar to `doc-str` but it should jump the user to the definition
+            of the value in `opts.code` using the `conjure.editor/go-to`
+            function (or similar, it's up to you how you implement it).
+            If your language doesn't support looking up definitions you can
+            leave the function out or print a warning.
+
+`completions`
+            Function(opts)
+            Called with a single argument table called `opts`, containing the
+            following values.
+             - `opts.prefix`
+                 The string you should be completing for the user.
+             - `opts.cb`
+                 A callback function to be invoked with the results.
+                 Completion results should conform to what
+                 |complete-functions| return in a normal |omnifunc|.
+             - `opts.context`
+                 Same as the context in `eval-str`, can be used to calculate
+                 completions based on the file the user is working on.
+            If you don't provide this function all completion attempts will
+            work, they'll just default to returning no results, it shouldn't
+            produce errors or warnings.
+            Asynchronous completion plugins that have Conjure support will
+            call this function, so you'll get automatic completions as you
+            type right away.
+
+`eval-file`
+            Function(opts)
+            Again, similar to `eval-str`, you should just perform an
+            appropriate evaluation (maybe using your own `eval-str`) to load
+            `opts.file-path` from disk, however that should be done in your
+            language.
+
+`on-filetype`
+            Function()
+            Called when the filetype your client is associated with is opened.
+            This is the time for you to set up your own mappings and buffer
+            local commands using the `conjure.mapping` module where required.
+            You can create your own mappings based on your own configuration,
+            just like the Fennel + Aniseed module. It's called every time a
+            file associated with your client is opened.
+
+`on-load`
+            Function()
+            Much like `on-filetype` but it's only called as the client is
+            loaded for the first time. You can use this to register
+            autocommands or perform one off actions the first time a user
+            opens a file of a relevant filetype. In the case of Clojure, this
+            is when it attempts to connect to a `.nrepl-port` file and hooks
+            up an autocommand to clean up any existing nREPL connection before
+            Neovim exits.
 
 vim:tw=78:sw=2:ts=2:ft=help:norl:et:listchars=

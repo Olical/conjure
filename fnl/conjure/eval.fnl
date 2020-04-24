@@ -89,8 +89,6 @@
          :range range
          :origin :word}))))
 
-(+ 10 20 30)
-
 (defn doc-word []
   (let [{: content : range} (extract.word)]
     (when (not (a.empty? content))

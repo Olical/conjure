@@ -10,7 +10,7 @@
             extract conjure.extract}})
 
 (def buf-suffix ".fnl")
-(def context-pattern "[(]%s*module%s*(.-)[%s){]")
+(def context-pattern "%(%s*module%s*(.-)[%s){]")
 (def comment-prefix "; ")
 
 (def config

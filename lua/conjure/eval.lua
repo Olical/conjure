@@ -212,7 +212,6 @@ do
   _0_0["aniseed/locals"]["word"] = v_23_0_
   word = v_23_0_
 end
-do local _ = (10 + 20 + 30) end
 local doc_word = nil
 do
   local v_23_0_ = nil
