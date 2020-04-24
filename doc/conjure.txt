@@ -55,7 +55,7 @@ I've also included some commands since they're related to the mappings.
                          identical to Clojure data structure syntax.
                           - `:ConjureConfig mappings.prefix`
                             Show the current mapping prefix.
-                          - `:ConjureConfig mapping.prefix "<leader>"`
+                          - `:ConjureConfig mappings.prefix "<leader>"`
                             Set the mapping prefix.
                           - `:ConjureConfig clojure.nrepl/mappings.interrupt`
                             Show a language specific configuration value.
