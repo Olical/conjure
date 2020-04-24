@@ -448,7 +448,6 @@
   (server.with-conn-and-op-or-warn
     :complete
     (fn [conn]
-      (a.println (extract-completion-context opts.prefix))
       (server.send
         {:op :complete
          :ns opts.context

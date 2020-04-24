@@ -903,7 +903,6 @@ do
     local v_23_0_0 = nil
     local function completions0(opts)
       local function _3_(conn)
-        a.println(extract_completion_context(opts.prefix))
         local function _4_(msgs)
           return opts.cb(a.map(clojure__3evim_completion, a.get(a.last(msgs), "completions")))
         end
