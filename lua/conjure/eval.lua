@@ -357,4 +357,21 @@ do
   _0_0["aniseed/locals"]["completions-promise"] = v_23_0_
   completions_promise = v_23_0_
 end
+local completions_sync = nil
+do
+  local v_23_0_ = nil
+  do
+    local v_23_0_0 = nil
+    local function completions_sync0(prefix)
+      local p = completions_promise(prefix)
+      promise.await(p)
+      return promise.close(p)
+    end
+    v_23_0_0 = completions_sync0
+    _0_0["completions-sync"] = v_23_0_0
+    v_23_0_ = v_23_0_0
+  end
+  _0_0["aniseed/locals"]["completions-sync"] = v_23_0_
+  completions_sync = v_23_0_
+end
 return nil

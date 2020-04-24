@@ -147,3 +147,8 @@
   (let [p (promise.new)]
     (completions prefix (promise.deliver-fn p))
     p))
+
+(defn completions-sync [prefix]
+  (let [p (completions-promise prefix)]
+    (promise.await p)
+    (promise.close p)))
