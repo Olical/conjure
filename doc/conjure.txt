@@ -1,4 +1,4 @@
-                                                                      *conjure*
+                                                                     *conjure*
                     ______              _               ~
                    / ____/___  ____    (_)_  __________ ~
                   / /   / __ \/ __ \  / / / / / ___/ _ \~
@@ -11,16 +11,17 @@ CONTENTS                                                    *conjure-contents*
 
     1. Introduction ............................. |conjure-introduction|
     2. Mappings ..................................... |conjure-mappings|
-    3. Configuration ........................... |conjure-configuration|
-    4. Log ............................................... |conjure-log|
-    5. Clients ....................................... |conjure-clients|
+    3. Completion ................................. |conjure-completion|
+    4. Configuration ........................... |conjure-configuration|
+    5. Log ............................................... |conjure-log|
+    6. Clients ....................................... |conjure-clients|
 
 ==============================================================================
 INTRODUCTION                                            *conjure-introduction*
 
-Conjure allows you to evaluate code and perform actions in a few different
-languages. The results of your actions are stored in a log buffer that you can
-access at any time.
+Conjure allows you to evaluate code and perform actions in various languages.
+The results of your actions are stored in a log buffer that you can view and
+edit at any time.
 
 If you don't have the log buffer open the results will be shown temporarily in
 the heads up display (HUD), a floating window that vanishes after you move
@@ -29,7 +30,7 @@ results in your own time.
 
 This documentation will show you which mappings are available by default and
 how to configure them to suit you. You'll also learn about the extra features
-and mappings that are provided by each language client.
+and mappings that are provided by each language specific client module.
 
 ==============================================================================
 MAPPINGS                                                    *conjure-mappings*
@@ -122,12 +123,34 @@ Language clients will provide their own extra mappings on top of these, you
 can find links to their help in |conjure-clients|.
 
 ==============================================================================
+COMPLETION                                                *conjure-completion*
+
+Conjure sets the |omnifunc| for all supported languages, the language clients
+must implement completion for it to actually provide results. For example,
+Fennel has no completion support but Clojure does (assuming your nREPL server
+has completion support).
+
+You can get completions through the normal mapping of `<C-x><C-o>`, nothing
+else needs to be configured for this to work.
+
+Automatic completion as you type is provided by external plugins. Deoplete
+support is built into the Conjure plugin, so if you have that installed it
+should be working already.
+
+Conquerer of Completion support is provided by the `coc-conjure` plugin which
+needs to be installed separately.
+
+ * https://github.com/Shougo/deoplete.nvim
+ * https://github.com/neoclide/coc.nvim
+ * https://github.com/jlesquembre/coc-conjure
+
+==============================================================================
 CONFIGURATION                                          *conjure-configuration*
 
 As mentioned in |conjure-mappings|, you can use `:ConjureConfig` to display or
 set the different configuration values within Conjure. Here's the full list of
-configuration available in the core plugin. Each language client will also
-have it's own set of mappings and configuration you can tweak.
+configuration available in the core plugin. Each language client also has it's
+own set of mappings and configuration you can tweak.
 
 As an example, we can change the default prefix from `<localleader>` to `,c`
 with the following command:
@@ -139,7 +162,7 @@ the prefix simply wrap the string in a list.
 >
     :ConjureConfig mappings.log-split ["ClS"]
 
-Now you can hit `ClS` without a prefix in any Conjure support filetype buffer.
+Now you can hit `ClS` without a prefix in any buffer Conjure has a client for.
 If you're lazy loading Conjure through your plugin manager you may want to use
 the `g:conjure_config` variable instead, as mention later in this section.
 
@@ -222,7 +245,7 @@ the `g:conjure_config` variable instead, as mention later in this section.
 
 `log.break-length`
             Length of the break comment (`; ---------...`) between log results
-            in characters.
+            in characters. Used in trimming to avoid cutting forms in half.
             Default: `80`
 
 `log.trim.at`
@@ -236,7 +259,7 @@ the `g:conjure_config` variable instead, as mention later in this section.
 `extract.context-header-lines`
             How many lines of the file should be checked for a context
             (namespace name) such as `(module foo.bar)` or `(ns foo.bar)`
-            which is used for setting the right context of evaluations.
+            which is used for setting the right context for evaluations.
             If you have buffers with huge comment headers you may want to set
             this higher.
             If a specific buffer isn't extracting the context correctly, you
@@ -263,12 +286,13 @@ And finally some regular Neovim variables.
 `g:conjure_config`
             An optional dictionary of string key value pairs. It's read when
             Conjure is first loaded and ends up setting the configuration keys
-            to the dictionaries values, the keys work exactly the same as the
-            first argument to `:ConjureConfig`. This would turn the HUD off.
+            to the dictionary's values, the keys work exactly the same as the
+            first argument to `:ConjureConfig`.
+            This would turn the HUD off:
             `let g:conjure_config = {"log.hud.enabled?": v:false}`
-            It's intended to be used for when you're lazy loading Conjure
-            through your plugin manager. If Conjure is already loaded you can
-            just use `:ConjureConfig` directly.
+            It's intended to be used when you're lazy loading Conjure through
+            your plugin manager. If Conjure is already loaded you can just use
+            `:ConjureConfig` directly.
             Default: `undefined`
 
 ==============================================================================
@@ -284,7 +308,7 @@ the last line, like a terminal following along with new output.
 If you'd like to stop it scrolling and just see a specific result for a while
 you can move your cursor to it. Conjure will then leave that cursor where it
 is, it'll only follow along if left on the last line of the buffer. To
-continue following new output you can just press `G` to go to the bottom.
+continue following new output you can press `G` to go to the bottom.
 
 If a result is appended to the end of the log and you don't currently have a
 log on your screen with the cursor following along, the HUD will
@@ -294,8 +318,8 @@ log.
 
 The HUD is a floating window that shows you the current tail of the log. It
 tries to show you the top of extremely large results since the top of a data
-structure tends to be more interesting than all the bottom. It'll vanish when
-you move the cursor and can be turned off entirely through configuration.
+structure tends to be more interesting than the bottom. It'll vanish when you
+move the cursor and can be turned off entirely through configuration.
 
 The log will be automatically trimmed when it gets too long, this can be
 tweaked with configuration. It will attempt to trim to a known good break
@@ -306,15 +330,14 @@ broken highlighting in the rest of the log buffer.
 CLIENTS                                                      *conjure-clients*
 
 Language clients are simply Lua modules (which can be compiled from Fennel
-using something like Aniseed) that have a few essential properties and
-functions in them.
+using Aniseed) that have a few essential properties and functions in them.
 
 The module doesn't have to be within Conjure's source tree, it can be inside a
 3rd party plugin repository, you just connect a filetype to it with the
 `clients.[filetype]` configuration option.
 
-Conjure comes bundles with a set of built in clients, you can access their
-specific helpfiles with this list.
+Conjure comes bundled with a set of built in clients, you can access their
+individual documentation below or through `:help conjure-client-*` directly.
 
  - |conjure-client-fennel-aniseed|
  - |conjure-client-clojure-nrepl|
