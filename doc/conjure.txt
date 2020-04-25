@@ -30,7 +30,7 @@ results in your own time.
 
 This documentation will show you which mappings are available by default and
 how to configure them to suit you. You'll also learn about the extra features
-and mappings that are provided by each language specific client module.
+and mappings that are provided by each language specific client.
 
 ==============================================================================
 MAPPINGS                                                    *conjure-mappings*
@@ -46,7 +46,7 @@ I've also included some commands since they're related to the mappings.
                          `:%ConjureEval` would evaluate the entire buffer,
                          this also works with visual selections.
 
-:ConjureConfig [args]    Looks up or sets a configuration value with an
+:ConjureConfig [args]    Displays or sets a configuration value with an
                          optional language client prefix. The values are
                          actual values, not strings. If you want to set
                          something to a string it must be "double quoted".
@@ -71,11 +71,13 @@ I've also included some commands since they're related to the mappings.
                               it'll look further afield at 3rd party modules.
                         If you're lazy loading Conjure you may want to define
                         your configuration ahead of time with the
-                        `g:conjure_config` variable.
+                        `g:conjure_config` variable (|conjure-configuration|).
 
 <localleader>ls          Open the log buffer in a new horizontal split window.
+                         The direction can be controlled with |splitbelow|.
 
 <localleader>lv          Open the log buffer in a new vertical split window.
+                         The direction can be controlled with |splitright|.
 
 <localleader>lt          Open the log buffer in a new tab. Great for viewing
                          large output. Just close the window to close the tab
@@ -137,12 +139,17 @@ Automatic completion as you type is provided by external plugins. Deoplete
 support is built into the Conjure plugin, so if you have that installed it
 should be working already.
 
-Conquerer of Completion support is provided by the `coc-conjure` plugin which
-needs to be installed separately.
-
  * https://github.com/Shougo/deoplete.nvim
+
+Conquerer of Completion support is provided by coc-conjure.
+
  * https://github.com/neoclide/coc.nvim
  * https://github.com/jlesquembre/coc-conjure
+
+asyncomplete.vim support is provided by asyncomplete-conjure.vim.
+
+ * https://github.com/prabirshrestha/asyncomplete.vim
+ * https://github.com/thecontinium/asyncomplete-conjure.vim
 
 ==============================================================================
 CONFIGURATION                                          *conjure-configuration*
@@ -150,7 +157,7 @@ CONFIGURATION                                          *conjure-configuration*
 As mentioned in |conjure-mappings|, you can use `:ConjureConfig` to display or
 set the different configuration values within Conjure. Here's the full list of
 configuration available in the core plugin. Each language client also has it's
-own set of mappings and configuration you can tweak.
+own set of mappings and configuration you can alter.
 
 As an example, we can change the default prefix from `<localleader>` to `,c`
 with the following command:
@@ -163,6 +170,7 @@ the prefix simply wrap the string in a list.
     :ConjureConfig mappings.log-split ["ClS"]
 
 Now you can hit `ClS` without a prefix in any buffer Conjure has a client for.
+
 If you're lazy loading Conjure through your plugin manager you may want to use
 the `g:conjure_config` variable instead, as mention later in this section.
 
@@ -329,6 +337,14 @@ broken highlighting in the rest of the log buffer.
 ==============================================================================
 CLIENTS                                                      *conjure-clients*
 
+Conjure comes bundled with a set of built in clients, you can access their
+documentation below or through the `:help conjure-client-*` command. You can
+install more clients through 3rd party plugins or simply write your own within
+your dotfiles.
+
+ - |conjure-client-fennel-aniseed|
+ - |conjure-client-clojure-nrepl|
+
 Language clients are simply Lua modules (which can be compiled from Fennel
 using Aniseed) that have a few essential properties and functions in them.
 
@@ -336,18 +352,10 @@ The module doesn't have to be within Conjure's source tree, it can be inside a
 3rd party plugin repository, you just connect a filetype to it with the
 `clients.[filetype]` configuration option.
 
-Conjure comes bundled with a set of built in clients, you can access their
-individual documentation below or through `:help conjure-client-*` directly.
-
- - |conjure-client-fennel-aniseed|
- - |conjure-client-clojure-nrepl|
-
 When implementing a new language client you'll need to provide the following
 values and functions at the top level of your module. You can split your
 client up into separate modules and just build this API into your init module.
-See the `conjure.client.clojure.nrepl` module for an example of this.
-
-For full examples, have a look inside the `fnl/conjure/client` directory.
+See `fnl/conjure/client/clojure/nrepl/init.fnl` for an example of this.
 
 `buf-suffix`
             String
@@ -361,7 +369,7 @@ For full examples, have a look inside the `fnl/conjure/client` directory.
             Lua pattern to identify the module or namespace name from the
             first few lines of the buffer. Used to set the context for each
             user evaluation. Clojure's is `%(%s*ns%s*(.-)[%s){]`, alter as you
-            see fit for your language. The value in the capture group is
+            see fit for your language. The value in the first capture group is
             passed into later functions as `opts.context`.
 
 `comment-prefix`
