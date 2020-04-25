@@ -24,10 +24,38 @@ open a Clojure file and start evaluating forms using |conjure-mappings|.
 MAPPINGS                               *conjure-client-clojure-nrepl-mappings*
 
 These mappings are just the defaults, you can change them as described in
-|conjure-mappings| and |conjure-configuration|.
+|conjure-mappings| and |conjure-configuration|. You'll also find a few
+commands in here, feel free to set up your own project specific mappings that
+call out to them.
 
 See |conjure-client-clojure-nrepl-configuration| for specific configuration
 options relevant to these mappings.
+
+:ConjureConnect [host] [port]
+                         Connect to the given host and port. The host is
+                         optional, it'll use
+                         `clojure.nrepl/connection.default-host` if you only
+                         provide a port number.
+                         `:ConjureConnect 5678`
+                         `:ConjureConnect staging.my-app.com 5678`
+
+:ConjureShadowSelect [build]
+                         Select a shadow-cljs build for further evaluation
+                         within this session. Calls through to the
+                         `shadow.cljs.devtools.api/nrepl-select` function.
+                         `:ConjureShadowSelect my-app`
+                         https://github.com/thheller/shadow-cljs
+
+:ConjurePiggieback [code]
+                         Piggieback your current session on top of a
+                         ClojureScript evaluation environment. You must
+                         provide some code to evaluate that returns a REPL
+                         environment. This can be used to connect to
+                         figwheel-main or nodejs etc.
+                         `:ConjurePiggieback (cljs.repl.node/repl-env)`
+                         `:ConjurePiggieback (figwheel.main.api/repl-env "dev")`
+                         Calls through to `cider.piggieback/cljs-repl`.
+                         https://github.com/nrepl/piggieback
 
 <localleader>cd          Disconnect from the current nREPL server.
 
@@ -86,5 +114,16 @@ options relevant to these mappings.
 
 ==============================================================================
 CONFIGURATION                     *conjure-client-clojure-nrepl-configuration*
+
+All configuration can be set as described in |conjure-configuration|.
+
+`clojure.nrepl/connection.default-host`
+            When connecting to `.nrepl-port` files or via `:ConjureConnect`
+            this is the default host to use use.
+            Default: `"localhost"`
+
+`clojure.nrepl/eval.pretty-print?`
+            Should results be pretty printed by the nREPL server.
+            Default: `true`
 
 vim:tw=78:sw=2:ts=2:ft=help:norl:et:listchars=
