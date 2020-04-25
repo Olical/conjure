@@ -1,4 +1,4 @@
-                                           *conjure-client-fennel-aniseed.txt*
+                                               *conjure-client-fennel-aniseed*
 
 TODO
 

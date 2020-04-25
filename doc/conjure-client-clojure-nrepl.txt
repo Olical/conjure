@@ -1,5 +1,90 @@
-                                            *conjure-client-clojure-nrepl.txt*
+                                                *conjure-client-clojure-nrepl*
 
-TODO
+==============================================================================
+CONTENTS                               *conjure-client-clojure-nrepl-contents*
+
+    1. Introduction ........ |conjure-client-clojure-nrepl-introduction|
+    2. Mappings ................ |conjure-client-clojure-nrepl-mappings|
+    3. Configuration ...... |conjure-client-clojure-nrepl-configuration|
+
+==============================================================================
+INTRODUCTION                       *conjure-client-clojure-nrepl-introduction*
+
+Conjure supports Clojure evaluation over an nREPL connection with optional
+CIDER middleware for additional advanced features.
+
+ * https://nrepl.org
+ * https://docs.cider.mx/cider-nrepl/
+
+To get started quickly you can start an nREPL server and ensure the port was
+written to the `.nrepl-port` file. Once it's running all you need to do is
+open a Clojure file and start evaluating forms using |conjure-mappings|.
+
+==============================================================================
+MAPPINGS                               *conjure-client-clojure-nrepl-mappings*
+
+These mappings are just the defaults, you can change them as described in
+|conjure-mappings| and |conjure-configuration|.
+
+See |conjure-client-clojure-nrepl-configuration| for specific configuration
+options relevant to these mappings.
+
+<localleader>cd          Disconnect from the current nREPL server.
+
+<localleader>cf          Connect to a local server using the port found in
+                         `.nrepl-port` or `.shadow-cljs/nrepl.port`.
+
+<localleader>ei          Interrupt the oldest evaluation you have running.
+
+<localleader>ve          View the last exception as data.
+
+<localleader>v1          View the most recent evaluation result.
+
+<localleader>v2          View the 2nd most recent evaluation result.
+
+<localleader>v3          View the 3rd most recent evaluation result.
+
+<localleader>vs          View the source of the symbol under the cursor.
+
+<localleader>sc          Clone the current nREPL session.
+
+<localleader>sf          Create a fresh session from scratch.
+
+<localleader>sq          Close the current session.
+
+<localleader>sQ          Close all sessions.
+
+<localleader>sl          List all sessions.
+
+<localleader>sn          Assume the next session in the list.
+
+<localleader>sp          Assume the previous session in the list.
+
+<localleader>ss          Prompt to select any session in the list.
+
+<localleader>st          Display the current session type.
+                         Clojure, ClojureScript or Clojure CLR.
+
+<localleader>ta          Run all currently loaded tests.
+
+<localleader>tn          Run all tests within this namespace.
+
+<localleader>tN          Run all tests within the alternate namespace to this
+                         one. So if you're in `foo.bar` that would be
+                         `foo.bar-test` and if you're in `foo.bar-test` it
+                         would be `foo.bar`.
+
+<localleader>tc          Run the specific test under the cursor. You can
+                         execute this from anywhere in the form much like
+                         evaluating the root form under the cursor.
+
+<localleader>rr          Refresh all changed namespaces.
+
+<localleader>rr          Refresh all namespaces, even unchanged.
+
+<localleader>rc          Clear the namespace refresh cache.
+
+==============================================================================
+CONFIGURATION                     *conjure-client-clojure-nrepl-configuration*
 
 vim:tw=78:sw=2:ts=2:ft=help:norl:et:listchars=
