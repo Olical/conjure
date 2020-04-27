@@ -1,5 +1,101 @@
                                                *conjure-client-fennel-aniseed*
 
-TODO
+==============================================================================
+CONTENTS                              *conjure-client-fennel-aniseed-contents*
+
+    1. Introduction ....... |conjure-client-fennel-aniseed-introduction|
+    2. Mappings ............... |conjure-client-fennel-aniseed-mappings|
+    3. Configuration ..... |conjure-client-fennel-aniseed-configuration|
+
+==============================================================================
+INTRODUCTION                      *conjure-client-fennel-aniseed-introduction*
+
+Conjure is written in Fennel, a Lisp that compiles to Lua. It relies on
+Aniseed to provide a module syntax akin to Clojure and interactive evaluation
+within Neovim's own process (since it contains LuaJIT).
+
+You can use Conjure to evaluate Fennel as soon as you have support for the
+syntax (`bakpakin/fennel.vim`). Open up a `.fnl` file and start evaluating
+things with the generic |conjure-mappings|.
+
+You don't need to have Aniseed installed, Conjure will rely on it's own
+internal copy by default (`conjure.aniseed.*`), you can use your globally
+installed Aniseed version by setting the following:
+>
+    " Replaces the default "conjure.aniseed." value.
+    :ConjureConfig fennel.aniseed/aniseed-module-prefix "aniseed."
+<
+ * https://github.com/bakpakin/Fennel
+ * https://github.com/bakpakin/fennel.vim
+ * https://github.com/Olical/aniseed
+ * https://github.com/Olical/nvim-local-fennel
+
+Conjure's Fennel support relies on Aniseed's module macro system, so you can't
+rely on the vanilla way of defining functions in Fennel. Without this,
+interactive evaluation like Clojure's wouldn't be possible.
+
+Instead of using `(local foo :bar)` you should use `(def foo :bar)`, and
+instead of exporting a table at the bottom of the file as you would with Lua
+you should define your module at the top of the file. Here's an example of the
+syntax Aniseed introduces.
+>
+    ;; fnl/my/fennel/module.fnl
+    (module my.fennel.module
+      {require {a aniseed.core}})
+
+    (def- prefix "Hello:")
+
+    (defn say-hi [msg]
+      (a.println prefix msg))
+
+`def` with an optional trailing `-` for privacy replaces `local` and `defn`
+(again with an optional trailing `-`) replaces `fn`. The module will be
+automatically exported for you and can be accessed by any other Lua module
+within Neovim.
+
+You can look into Aniseed for more information on how to compile your Fennel
+to Lua ahead of time, Conjure is about evaluating things at run time, not
+compiling for distribution.
+
+==============================================================================
+MAPPINGS                              *conjure-client-fennel-aniseed-mappings*
+
+These mappings are the defaults, you can change them as described in
+|conjure-mappings| and |conjure-configuration|.
+
+See |conjure-client-fennel-aniseed-configuration| for specific configuration
+options relevant to these mappings.
+
+<localleader>tt          Run all tests within your current module.
+
+<localleader>ta          Run all loaded tests.
+
+==============================================================================
+CONFIGURATION                    *conjure-client-fennel-aniseed-configuration*
+
+All configuration can be set as described in |conjure-configuration|.
+
+`fennel.aniseed/aniseed-module-prefix`
+            Prefix to put in front of all Aniseed modules Conjure relies on.
+            This is set to use Conjure's internal copy of Aniseed by default
+            but you can set it to `"aniseed."` to use your globally installed
+            copy or even your own plugin specific prefix if you've embedded it
+            within your project.
+            Default: `"conjure.aniseed."`
+
+`fennel.aniseed/use-metadata?`
+            Enables metadata during evaluation which can provide some
+            documentation lookup with Conjure's documentation mapping.
+            Will incur a slight performance cost, but that's okay since
+            Conjure is intended to be used during development.
+            Default: `true`
+
+`fennel.aniseed/mappings.run-buf-tests`
+            Run all tests within your current module.
+            Default: `"tt"`
+
+`fennel.aniseed/mappings.run-all-tests`
+            Run all loaded tests.
+            Default: `"ta"`
 
 vim:tw=78:sw=2:ts=2:ft=help:norl:et:listchars=
