@@ -108,7 +108,7 @@ options relevant to these mappings.
 
 <localleader>rr          Refresh all changed namespaces.
 
-<localleader>rr          Refresh all namespaces, even unchanged.
+<localleader>ra          Refresh all namespaces, even unchanged.
 
 <localleader>rc          Clear the namespace refresh cache.
 
