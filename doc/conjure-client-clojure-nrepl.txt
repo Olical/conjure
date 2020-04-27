@@ -11,19 +11,19 @@ CONTENTS                               *conjure-client-clojure-nrepl-contents*
 INTRODUCTION                       *conjure-client-clojure-nrepl-introduction*
 
 Conjure supports Clojure evaluation over an nREPL connection with optional
-CIDER middleware for additional advanced features.
+CIDER middleware for additional features.
 
  * https://nrepl.org
  * https://docs.cider.mx/cider-nrepl/
 
-To get started quickly you can start an nREPL server and ensure the port was
-written to the `.nrepl-port` file. Once it's running all you need to do is
-open a Clojure file and start evaluating forms using |conjure-mappings|.
+To get started you can boot an nREPL server and ensure the port was written to
+the `.nrepl-port` file. Once it's running all you need to do is open a Clojure
+file and start evaluating forms using the generic |conjure-mappings|.
 
 ==============================================================================
 MAPPINGS                               *conjure-client-clojure-nrepl-mappings*
 
-These mappings are just the defaults, you can change them as described in
+These mappings are the defaults, you can change them as described in
 |conjure-mappings| and |conjure-configuration|. You'll also find a few
 commands in here, feel free to set up your own project specific mappings that
 call out to them.
@@ -40,8 +40,8 @@ options relevant to these mappings.
                          `:ConjureConnect staging.my-app.com 5678`
 
 :ConjureShadowSelect [build]
-                         Select a shadow-cljs build for further evaluation
-                         within this session. Calls through to the
+                         Select a shadow-cljs build for evaluation within this
+                         session. Calls through to the
                          `shadow.cljs.devtools.api/nrepl-select` function.
                          `:ConjureShadowSelect my-app`
                          https://github.com/thheller/shadow-cljs
@@ -119,11 +119,136 @@ All configuration can be set as described in |conjure-configuration|.
 
 `clojure.nrepl/connection.default-host`
             When connecting to `.nrepl-port` files or via `:ConjureConnect`
-            this is the default host to use use.
+            this is the default host to use.
             Default: `"localhost"`
 
 `clojure.nrepl/eval.pretty-print?`
             Should results be pretty printed by the nREPL server.
+            Relies on `clojure.pprint/write`.
             Default: `true`
+
+`clojure.nrepl/debug?`
+            Should the underlying nREPL messages sent and received by Conjure
+            be shown in the log buffer.
+            Default: `false`
+
+`clojure.nrepl/interrupt.sample-limit`
+            How many characters to show of the code you just interrupted as a
+            preview in the log. The value is based on a percentage of the
+            width of the full editor.
+            Default: `0.3`
+
+`clojure.nrepl/refresh.after`
+            The namespace-qualified name of a zero-arity function to call
+            after reloading.
+            Default: `nil`
+
+`clojure.nrepl/refresh.before`
+            The namespace-qualified name of a zero-arity function to call
+            before reloading.
+            Default: `nil`
+
+`clojure.nrepl/refresh.dirs`
+            List of directories to scan. If no directories given, defaults to
+            all directories on the classpath.
+            Default: `nil`
+
+`clojure.nrepl/mappings.disconnect`
+            Disconnect from the current nREPL server.
+            Default: `cd`
+
+`clojure.nrepl/mappings.connect-port-file`
+            Connect to a local server via a port file.
+            Default: `cf`
+
+`clojure.nrepl/mappings.interrupt`
+            Interrupt an evaluation.
+            Default: `ei`
+
+`clojure.nrepl/mappings.last-exception`
+            View the last exception.
+            Default: `ve`
+
+`clojure.nrepl/mappings.result-1`
+            View the most recent result.
+            Default: `v1`
+
+`clojure.nrepl/mappings.result-2`
+            View the 2nd most recent result.
+            Default: `v2`
+
+`clojure.nrepl/mappings.result-3`
+            View the 3rd most recent result.
+            Default: `v3`
+
+`clojure.nrepl/mappings.view-source`
+            View the source of the symbol under the cursor.
+            Default: `vs`
+
+`clojure.nrepl/mappings.session-clone`
+            Clone the current session.
+            Default: `sc`
+
+`clojure.nrepl/mappings.session-fresh`
+            Create a fresh session.
+            Default: `sf`
+
+`clojure.nrepl/mappings.session-close`
+            Close the current session.
+            Default: `sq`
+
+`clojure.nrepl/mappings.session-close-all`
+            Close all sessions.
+            Default: `sQ`
+
+`clojure.nrepl/mappings.session-list`
+            List all current sessions.
+            Default: `sl`
+
+`clojure.nrepl/mappings.session-next`
+            Assume the next session in the list.
+            Default: `sn`
+
+`clojure.nrepl/mappings.session-prev`
+            Assume the previous session in the list.
+            Default: `sp`
+
+`clojure.nrepl/mappings.session-select`
+            Select a session from the list with an interactive prompt.
+            Default: `ss`
+
+`clojure.nrepl/mappings.session-type`
+            Print the current session language into the log.
+            Default: `st`
+
+`clojure.nrepl/mappings.run-all-tests`
+            Run all loaded tests.
+            Default: `ta`
+
+`clojure.nrepl/mappings.run-current-ns-tests`
+            Run all tests within the current namespace.
+            Default: `tn`
+
+`clojure.nrepl/mappings.run-alternate-ns-tests`
+            Run all tests within the alternate namespace. Executing in
+            `foo.bar` would test `foo.bar-test` and the other way around.
+            Default: `tN`
+
+`clojure.nrepl/mappings.run-current-test`
+            Run the test under the cursor, can be used from anywhere within
+            the form.
+            Default: `tc`
+
+`clojure.nrepl/mappings.refresh-changed`
+            Refresh changed namespaces.
+            Default: `rr`
+
+`clojure.nrepl/mappings.refresh-all`
+            Refresh all namespaces.
+            Default: `ra`
+
+`clojure.nrepl/mappings.refresh-clear`
+            Clear the namespace refresh cache.
+            Default: `rc`
 
 vim:tw=78:sw=2:ts=2:ft=help:norl:et:listchars=
