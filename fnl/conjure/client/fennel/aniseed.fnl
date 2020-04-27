@@ -19,13 +19,18 @@
    :aniseed-module-prefix :conjure.aniseed.
    :use-metadata? true})
 
-(def- ani
-  (let [req #(require (.. config.aniseed-module-prefix $1))]
-    {:core (req :core)
-     :nu (req :nvim.util)
-     :eval (req :eval)
-     :test (req :test)
-     :fennel (req :fennel)}))
+(def- ani-aliases
+  {:nu :nvim.util})
+
+(defn- ani [mod-name f-name]
+  (let [mod-name (a.get ani-aliases mod-name mod-name)
+        mod (require (.. config.aniseed-module-prefix mod-name))]
+    (if f-name
+      (a.get mod f-name)
+      mod)))
+
+(defn- anic [mod f-name ...]
+  ((ani mod f-name) ...))
 
 (defn- display [lines opts]
   (client.with-filetype :fennel log.append lines opts))
@@ -46,17 +51,17 @@
 (defn eval-str [opts]
   (let [code (.. (.. "(module " (or opts.context "aniseed.user") ") ")
                  opts.code "\n")
-        out (ani.nu.with-out-str
-              (fn []
-                (when config.use-metadata?
-                  (set package.loaded.fennel ani.fennel))
+        out (anic :nu :with-out-str
+                  (fn []
+                    (when config.use-metadata?
+                      (set package.loaded.fennel (ani :fennel)))
 
-                (let [[ok? & results]
-                      [(ani.eval.str code
-                                     {:filename opts.file-path
-                                      :useMetadata config.use-metadata?})]]
-                  (set opts.ok? ok?)
-                  (set opts.results results))))]
+                    (let [[ok? & results]
+                          [(anic :eval :str code
+                                 {:filename opts.file-path
+                                  :useMetadata config.use-metadata?})]]
+                      (set opts.ok? ok?)
+                      (set opts.results results))))]
     (when (not (a.empty? out))
       (display (text.prefixed-lines out "; (out) ")))
     (display-result opts)))
@@ -72,7 +77,7 @@
 
 (defn- wrapped-test [req-lines f]
   (display req-lines {:break? true})
-  (let [res (ani.nu.with-out-str f)]
+  (let [res (anic :nu :with-out-str f)]
     (display
       (-> (if (= "" res)
             "No results."
@@ -84,10 +89,10 @@
     (when c
       (wrapped-test
         [(.. "; run-buf-tests (" c ")")]
-        #(ani.test.run c)))))
+        #(anic :test :run c)))))
 
 (defn run-all-tests []
-  (wrapped-test ["; run-all-tests"] ani.test.run-all))
+  (wrapped-test ["; run-all-tests"] (ani :test :run-all)))
 
 (defn on-filetype []
   (mapping.buf :n config.mappings.run-buf-tests

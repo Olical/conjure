@@ -73,19 +73,37 @@ do
   _0_0["aniseed/locals"]["config"] = v_23_0_
   config = v_23_0_
 end
+local ani_aliases = nil
+do
+  local v_23_0_ = {nu = "nvim.util"}
+  _0_0["aniseed/locals"]["ani-aliases"] = v_23_0_
+  ani_aliases = v_23_0_
+end
 local ani = nil
 do
   local v_23_0_ = nil
-  do
-    local req = nil
-    local function _3_(_241)
-      return require((config["aniseed-module-prefix"] .. _241))
+  local function ani0(mod_name, f_name)
+    local mod_name0 = a.get(ani_aliases, mod_name, mod_name)
+    local mod = require((config["aniseed-module-prefix"] .. mod_name0))
+    if f_name then
+      return a.get(mod, f_name)
+    else
+      return mod
     end
-    req = _3_
-    v_23_0_ = {core = req("core"), eval = req("eval"), fennel = req("fennel"), nu = req("nvim.util"), test = req("test")}
   end
+  v_23_0_ = ani0
   _0_0["aniseed/locals"]["ani"] = v_23_0_
   ani = v_23_0_
+end
+local anic = nil
+do
+  local v_23_0_ = nil
+  local function anic0(mod, f_name, ...)
+    return ani(mod, f_name)(...)
+  end
+  v_23_0_ = anic0
+  _0_0["aniseed/locals"]["anic"] = v_23_0_
+  anic = v_23_0_
 end
 local display = nil
 do
@@ -148,10 +166,10 @@ do
       local out = nil
       local function _3_()
         if config["use-metadata?"] then
-          package.loaded.fennel = ani.fennel
+          package.loaded.fennel = ani("fennel")
         end
         do
-          local _5_ = {ani.eval.str(code, {filename = opts["file-path"], useMetadata = config["use-metadata?"]})}
+          local _5_ = {anic("eval", "str", code, {filename = opts["file-path"], useMetadata = config["use-metadata?"]})}
           local ok_3f = _5_[1]
           local results = {(table.unpack or unpack)(_5_, 2)}
           opts["ok?"] = ok_3f
@@ -159,7 +177,7 @@ do
           return nil
         end
       end
-      out = ani.nu["with-out-str"](_3_)
+      out = anic("nu", "with-out-str", _3_)
       if not a["empty?"](out) then
         display(text["prefixed-lines"](out, "; (out) "))
       end
@@ -212,7 +230,7 @@ do
   local function wrapped_test0(req_lines, f)
     display(req_lines, {["break?"] = true})
     do
-      local res = ani.nu["with-out-str"](f)
+      local res = anic("nu", "with-out-str", f)
       local _3_
       if ("" == res) then
         _3_ = "No results."
@@ -235,7 +253,7 @@ do
       local c = extract.context()
       if c then
         local function _3_()
-          return ani.test.run(c)
+          return anic("test", "run", c)
         end
         return wrapped_test({("; run-buf-tests (" .. c .. ")")}, _3_)
       end
@@ -253,7 +271,7 @@ do
   do
     local v_23_0_0 = nil
     local function run_all_tests0()
-      return wrapped_test({"; run-all-tests"}, ani.test["run-all"])
+      return wrapped_test({"; run-all-tests"}, ani("test", "run-all"))
     end
     v_23_0_0 = run_all_tests0
     _0_0["run-all-tests"] = v_23_0_0
