@@ -48,6 +48,8 @@
            '[cljs.repl.node :as node-repl])
   (piggieback/cljs-repl (node-repl/repl-env))
 
+  (clojure.string/split-lines (slurp "/home/oliver/Downloads/cities.csv"))
+
   ;; Shadow.
   ; :ConjureShadowSelect app
   (shadow.cljs.devtools.api/nrepl-select :app)
