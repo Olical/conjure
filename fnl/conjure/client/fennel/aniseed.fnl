@@ -63,7 +63,7 @@
                       (set opts.ok? ok?)
                       (set opts.results results))))]
     (when (not (a.empty? out))
-      (display (text.prefixed-lines out "; (out) ")))
+      (display (text.prefixed-lines (text.trim-last-newline out) "; (out) ")))
     (display-result opts)))
 
 (defn doc-str [opts]

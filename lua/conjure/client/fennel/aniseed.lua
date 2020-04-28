@@ -179,7 +179,7 @@ do
       end
       out = anic("nu", "with-out-str", _3_)
       if not a["empty?"](out) then
-        display(text["prefixed-lines"](out, "; (out) "))
+        display(text["prefixed-lines"](text["trim-last-newline"](out), "; (out) "))
       end
       return display_result(opts)
     end

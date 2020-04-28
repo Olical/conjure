@@ -37,6 +37,25 @@ do
   _0_0["aniseed/locals"]["trim"] = v_23_0_
   trim = v_23_0_
 end
+local trim_last_newline = nil
+do
+  local v_23_0_ = nil
+  do
+    local v_23_0_0 = nil
+    local function trim_last_newline0(s)
+      if ("\n" == string.sub(s, -1)) then
+        return string.sub(s, 1, -2)
+      else
+        return s
+      end
+    end
+    v_23_0_0 = trim_last_newline0
+    _0_0["trim-last-newline"] = v_23_0_0
+    v_23_0_ = v_23_0_0
+  end
+  _0_0["aniseed/locals"]["trim-last-newline"] = v_23_0_
+  trim_last_newline = v_23_0_
+end
 local left_sample = nil
 do
   local v_23_0_ = nil
@@ -78,7 +97,7 @@ do
   do
     local v_23_0_0 = nil
     local function split_lines0(s)
-      return str.split(trim(s), "\n")
+      return str.split(s, "\n")
     end
     v_23_0_0 = split_lines0
     _0_0["split-lines"] = v_23_0_0

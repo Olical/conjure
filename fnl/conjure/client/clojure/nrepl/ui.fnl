@@ -14,14 +14,16 @@
     (if
       resp.out
       (text.prefixed-lines
-        resp.out
+        (text.trim-last-newline resp.out)
         (if
           opts.simple-out? "; "
           opts.raw-out? ""
           "; (out) "))
 
       resp.err
-      (text.prefixed-lines resp.err "; (err) ")
+      (text.prefixed-lines
+        (text.trim-last-newline resp.err)
+        "; (err) ")
 
       resp.value
       (when (not (and opts.ignore-nil? (= "nil" resp.value)))

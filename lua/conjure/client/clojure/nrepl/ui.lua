@@ -58,9 +58,9 @@ do
               return "; (out) "
             end
           end
-          return text["prefixed-lines"](resp.out, _3_())
+          return text["prefixed-lines"](text["trim-last-newline"](resp.out), _3_())
         elseif resp.err then
-          return text["prefixed-lines"](resp.err, "; (err) ")
+          return text["prefixed-lines"](text["trim-last-newline"](resp.err), "; (err) ")
         elseif resp.value then
           if not (opts0["ignore-nil?"] and ("nil" == resp.value)) then
             return text["split-lines"](resp.value)

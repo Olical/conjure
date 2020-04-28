@@ -5,6 +5,11 @@
 (defn trim [s]
   (string.gsub s "^%s*(.-)%s*$" "%1"))
 
+(defn trim-last-newline [s]
+  (if (= "\n" (string.sub s -1))
+    (string.sub s 1 -2)
+    s))
+
 (defn left-sample [s limit]
   (let [flat (-> (string.gsub s "\n" " ")
                  (string.gsub "%s+" " ")
@@ -17,7 +22,7 @@
   (string.reverse (left-sample (string.reverse s) limit)))
 
 (defn split-lines [s]
-  (str.split (trim s) "\n"))
+  (str.split s "\n"))
 
 (defn prefixed-lines [s prefix]
   (->> (split-lines s)
