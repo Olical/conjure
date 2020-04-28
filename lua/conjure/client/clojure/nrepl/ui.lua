@@ -78,6 +78,64 @@ do
   _0_0["aniseed/locals"]["display-result"] = v_23_0_
   display_result = v_23_0_
 end
+local display_result_fn = nil
+do
+  local v_23_0_ = nil
+  do
+    local v_23_0_0 = nil
+    local function display_result_fn0(opts)
+      local state0 = {err = "", out = ""}
+      local function _3_(resp)
+        local k = nil
+        if resp.out then
+          k = "out"
+        elseif resp.err then
+          k = "err"
+        else
+        k = nil
+        end
+        if k then
+          local s = a.get(resp, k)
+          local current = a.get(state0, k)
+          local start, _end = string.find(string.reverse(s), "\n")
+          if start then
+            if (1 == start) then
+              a.assoc(state0, k, "")
+              a.assoc(resp, k, (current .. s))
+              return display_result(resp, opts)
+            else
+              local before = string.sub(s, 1, ( - start))
+              local after = string.sub(s, ( - _end))
+              a.assoc(state0, k, after)
+              a.assoc(resp, k, (current .. before))
+              return display_result(resp, opts)
+            end
+          else
+            a.assoc(state0, k, (current .. s))
+            return nil
+          end
+        else
+          if resp.value then
+            local function _5_(k0)
+              local s = a.get(state0, k0)
+              if not a["empty?"](s) then
+                return display_result({[k0] = s})
+              end
+            end
+            a["run!"](_5_, {"out", "err"})
+          end
+          return display_result(resp, opts)
+        end
+      end
+      return _3_
+    end
+    v_23_0_0 = display_result_fn0
+    _0_0["display-result-fn"] = v_23_0_0
+    v_23_0_ = v_23_0_0
+  end
+  _0_0["aniseed/locals"]["display-result-fn"] = v_23_0_
+  display_result_fn = v_23_0_
+end
 local display_given_sessions = nil
 do
   local v_23_0_ = nil

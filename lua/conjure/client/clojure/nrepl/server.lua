@@ -131,24 +131,6 @@ do
   _0_0["aniseed/locals"]["disconnect"] = v_23_0_
   disconnect = v_23_0_
 end
-local status_3d = nil
-do
-  local v_23_0_ = nil
-  do
-    local v_23_0_0 = nil
-    local function status_3d0(msg, state0)
-      local function _3_(_241)
-        return (state0 == _241)
-      end
-      return (msg and msg.status and a.some(_3_, msg.status))
-    end
-    v_23_0_0 = status_3d0
-    _0_0["status="] = v_23_0_0
-    v_23_0_ = v_23_0_0
-  end
-  _0_0["aniseed/locals"]["status="] = v_23_0_
-  status_3d = v_23_0_
-end
 local with_all_msgs_fn = nil
 do
   local v_23_0_ = nil
@@ -158,7 +140,7 @@ do
       local acc = {}
       local function _3_(msg)
         table.insert(acc, msg)
-        if status_3d(msg, "done") then
+        if msg.status.done then
           return cb(acc)
         end
       end
@@ -269,6 +251,23 @@ do
   _0_0["aniseed/locals"]["assume-or-create-session"] = v_23_0_
   assume_or_create_session = v_23_0_
 end
+local enrich_status = nil
+do
+  local v_23_0_ = nil
+  local function enrich_status0(msg)
+    local ks = a.get(msg, "status")
+    local status = {}
+    local function _3_(k)
+      return a.assoc(status, k, true)
+    end
+    a["run!"](_3_, ks)
+    a.assoc(msg, "status", status)
+    return msg
+  end
+  v_23_0_ = enrich_status0
+  _0_0["aniseed/locals"]["enrich-status"] = v_23_0_
+  enrich_status = v_23_0_
+end
 local handle_read_fn = nil
 do
   local v_23_0_ = nil
@@ -282,7 +281,8 @@ do
       else
         local function _4_(msg)
           dbg("receive", msg)
-          if status_3d(msg, "need-input") then
+          enrich_status(msg)
+          if msg.status["need-input"] then
             local function _5_()
               return send({op = "stdin", session = conn.session, stdin = ((extract.prompt("Input required: ") or "") .. "\n")})
             end
@@ -298,11 +298,11 @@ do
             if not ok_3f then
               ui.display({("; conjure.client.clojure.nrepl error: " .. err0)})
             end
-            if status_3d(msg, "unknown-session") then
+            if msg.status["unknown-session"] then
               ui.display({"; Unknown session, correcting"})
               assume_or_create_session()
             end
-            if status_3d(msg, "done") then
+            if msg.status.done then
               return a["assoc-in"](conn, {"msgs", msg.id}, nil)
             end
           end

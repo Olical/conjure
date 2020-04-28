@@ -8,6 +8,15 @@
   [a b]
   (+ a b))
 
+(do
+  (print "foo ")
+  (print "bar ")
+  (println "baz")
+  (print "new line")
+  (print " same!\n")
+  (println "     some indentation")
+  (println "last on own"))
+
 ; :ConjureConfig clojure.nrepl/refresh.after "dev.sandbox/after-refresh"
 (defn after-refresh []
   (println "All done!"))

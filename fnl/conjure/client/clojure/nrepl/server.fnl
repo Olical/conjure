@@ -58,14 +58,11 @@
       (display-conn-status :disconnected)
       (a.assoc state :conn nil))))
 
-(defn status= [msg state]
-  (and msg msg.status (a.some #(= state $1) msg.status)))
-
 (defn with-all-msgs-fn [cb]
   (let [acc []]
     (fn [msg]
       (table.insert acc msg)
-      (when (status= msg :done)
+      (when msg.status.done
         (cb acc)))))
 
 (defn close-session [session cb]
@@ -104,6 +101,16 @@
         (clone-session)
         (assume-session (a.first sessions))))))
 
+(defn- enrich-status [msg]
+  (let [ks (a.get msg :status)
+        status {}]
+    (a.run!
+      (fn [k]
+        (a.assoc status k true))
+      ks)
+    (a.assoc msg :status status)
+    msg))
+
 (defn- handle-read-fn []
   (vim.schedule_wrap
     (fn [err chunk]
@@ -115,8 +122,9 @@
                (a.run!
                  (fn [msg]
                    (dbg "receive" msg)
+                   (enrich-status msg)
 
-                   (when (status= msg :need-input)
+                   (when msg.status.need-input
                      (vim.schedule
                        (fn []
                          (send {:op :stdin
@@ -129,10 +137,10 @@
                          (ok? err) (pcall cb msg)]
                      (when (not ok?)
                        (ui.display [(.. "; conjure.client.clojure.nrepl error: " err)]))
-                     (when (status= msg :unknown-session)
+                     (when msg.status.unknown-session
                        (ui.display ["; Unknown session, correcting"])
                        (assume-or-create-session))
-                     (when (status= msg :done)
+                     (when msg.status.done
                        (a.assoc-in conn [:msgs msg.id] nil)))))))))))
 
 (defn eval [opts cb]
