@@ -5,7 +5,6 @@
             config conjure.config
             extract conjure.extract
             client conjure.client
-            promise conjure.promise
             eval conjure.eval
             bridge conjure.bridge
             fennel conjure.aniseed.fennel}})
@@ -98,9 +97,7 @@
          (a.count (nvim.fn.matchstr
                     (string.sub line 1 col)
                     "\\k\\+$"))))
-    (let [p (eval.completions-promise base)]
-      (promise.await p)
-      (or (promise.close p) []))))
+    (eval.completions-sync base)))
 
 (nvim.ex.function_
   (->> ["ConjureEvalMotion(kind)"

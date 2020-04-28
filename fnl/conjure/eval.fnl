@@ -141,7 +141,7 @@
       (-> {:prefix prefix
            :cb cb}
           (assoc-context)))
-    (cb [])))
+    (cb nil)))
 
 (defn completions-promise [prefix]
   (let [p (promise.new)]

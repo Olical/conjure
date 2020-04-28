@@ -15,8 +15,8 @@ do
   _0_0 = module_23_0_
 end
 local function _1_(...)
-  _0_0["aniseed/local-fns"] = {require = {a = "conjure.aniseed.core", bridge = "conjure.bridge", client = "conjure.client", config = "conjure.config", eval = "conjure.eval", extract = "conjure.extract", fennel = "conjure.aniseed.fennel", nvim = "conjure.aniseed.nvim", promise = "conjure.promise", str = "conjure.aniseed.string"}}
-  return {require("conjure.aniseed.core"), require("conjure.bridge"), require("conjure.client"), require("conjure.config"), require("conjure.eval"), require("conjure.extract"), require("conjure.aniseed.fennel"), require("conjure.aniseed.nvim"), require("conjure.promise"), require("conjure.aniseed.string")}
+  _0_0["aniseed/local-fns"] = {require = {a = "conjure.aniseed.core", bridge = "conjure.bridge", client = "conjure.client", config = "conjure.config", eval = "conjure.eval", extract = "conjure.extract", fennel = "conjure.aniseed.fennel", nvim = "conjure.aniseed.nvim", str = "conjure.aniseed.string"}}
+  return {require("conjure.aniseed.core"), require("conjure.bridge"), require("conjure.client"), require("conjure.config"), require("conjure.eval"), require("conjure.extract"), require("conjure.aniseed.fennel"), require("conjure.aniseed.nvim"), require("conjure.aniseed.string")}
 end
 local _2_ = _1_(...)
 local a = _2_[1]
@@ -27,8 +27,7 @@ local eval = _2_[5]
 local extract = _2_[6]
 local fennel = _2_[7]
 local nvim = _2_[8]
-local promise = _2_[9]
-local str = _2_[10]
+local str = _2_[9]
 do local _ = ({nil, _0_0, nil})[2] end
 local buf = nil
 do
@@ -209,9 +208,7 @@ do
         local line = _4_[1]
         return (col - a.count(nvim.fn.matchstr(string.sub(line, 1, col), "\\k\\+$")))
       else
-        local p = eval["completions-promise"](base)
-        promise.await(p)
-        return (promise.close(p) or {})
+        return eval["completions-sync"](base)
       end
     end
     v_23_0_0 = omnifunc0

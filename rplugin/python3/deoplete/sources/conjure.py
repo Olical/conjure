@@ -12,4 +12,4 @@ class Source(Base):
     self.rank = 500
 
   def gather_candidates(self, context):
-    return self.vim.exec_lua("return require('conjure.eval')['completions-sync'](...)", context["complete_str"]) or []
+    return self.vim.exec_lua("return require('conjure.eval')['completions-sync'](...)", context["complete_str"])

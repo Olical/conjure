@@ -330,7 +330,7 @@ do
       if ("function" == type(client.get("completions"))) then
         return client.call("completions", assoc_context({cb = cb, prefix = prefix}))
       else
-        return cb({})
+        return cb(nil)
       end
     end
     v_23_0_0 = completions0
