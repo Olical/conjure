@@ -133,6 +133,9 @@
 
       (trim buf))))
 
+(defn last-line []
+  (a.first (nvim.buf_get_lines (upsert-buf) -2 -1 false)))
+
 (defn- create-win [split-fn]
   (let [buf (upsert-buf)
         win (split-fn (log-buf-name))]

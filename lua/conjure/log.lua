@@ -242,6 +242,21 @@ do
   _0_0["aniseed/locals"]["append"] = v_23_0_
   append = v_23_0_
 end
+local last_line = nil
+do
+  local v_23_0_ = nil
+  do
+    local v_23_0_0 = nil
+    local function last_line0()
+      return a.first(nvim.buf_get_lines(upsert_buf(), -2, -1, false))
+    end
+    v_23_0_0 = last_line0
+    _0_0["last-line"] = v_23_0_0
+    v_23_0_ = v_23_0_0
+  end
+  _0_0["aniseed/locals"]["last-line"] = v_23_0_
+  last_line = v_23_0_
+end
 local create_win = nil
 do
   local v_23_0_ = nil
