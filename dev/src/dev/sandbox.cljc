@@ -50,6 +50,13 @@
 
   (tap> :foo)
 
+  (run!
+    (fn [_]
+      (print "=")
+      (flush)
+      (Thread/sleep 50))
+    (range 50))
+
   (read)
   (read-line)
 
