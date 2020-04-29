@@ -53,7 +53,7 @@
         (fn []))
       (server.eval opts
                    (or opts.cb
-                       (ui.display-result-fn opts))))))
+                       #(ui.display-result $1 opts))))))
 
 (defn- with-info [opts f]
   (server.with-conn-and-op-or-warn
@@ -106,8 +106,9 @@
                       ["; Unknown result, it may still be helpful"]
                       (text.prefixed-lines (view.serialise info) "; ")))))))
           (a.run!
-            (ui.display-result-fn
-              {:simple-out? true :ignore-nil? true})
+            #(ui.display-result
+               $1
+               {:simple-out? true :ignore-nil? true})
             msgs))))))
 
 (defn- nrepl->nvim-path [path]
@@ -158,7 +159,7 @@
 (defn eval-file [opts]
   (server.eval
     (a.assoc opts :code (.. "(clojure.core/load-file \"" opts.file-path "\")"))
-    (ui.display-result-fn opts)))
+    #(ui.display-result $1 opts)))
 
 (defn interrupt []
   (server.with-conn-or-warn
@@ -210,9 +211,10 @@
         {:code (.. "(require 'clojure.repl)"
                    "(clojure.repl/source " word ")")
          :context (extract.context)
-         :cb (ui.display-result-fn
-               {:raw-out? true
-                :ignore-nil? true})}))))
+         :cb #(ui.display-result
+                $1
+                {:raw-out? true
+                 :ignore-nil? true})}))))
 
 (defn clone-current-session []
   (server.with-conn-or-warn
@@ -290,9 +292,10 @@
   (ui.display ["; run-all-tests"] {:break? true})
   (server.eval
     {:code "(require 'clojure.test) (clojure.test/run-all-tests)"}
-    (ui.display-result-fn
-      {:simple-out? true
-       :ignore-nil? true})))
+    #(ui.display-result
+       $1
+       {:simple-out? true
+        :ignore-nil? true})))
 
 (defn- run-ns-tests [ns]
   (when ns
@@ -301,9 +304,10 @@
     (server.eval
       {:code (.. "(require 'clojure.test)"
                  "(clojure.test/run-tests '" ns ")")}
-      (ui.display-result-fn
-        {:simple-out? true
-         :ignore-nil? true}))))
+      #(ui.display-result
+         $1
+         {:simple-out? true
+          :ignore-nil? true}))))
 
 (defn run-current-ns-tests []
   (run-ns-tests (extract.context)))
@@ -332,9 +336,10 @@
                 (if (and (= 2 (a.count msgs))
                          (= "nil" (a.get (a.first msgs) :value)))
                   (ui.display ["; Success!"])
-                  (a.run! (ui.display-result-fn
-                            {:simple-out? true
-                             :ignore-nil? true})
+                  (a.run! #(ui.display-result
+                             $1
+                             {:simple-out? true
+                              :ignore-nil? true})
                           msgs))))))))))
 
 (defn- refresh-impl [op]
@@ -346,23 +351,22 @@
           {:op op
            :session conn.session}
           (a.get config :refresh))
-        (let [display-result (ui.display-result-fn)]
-          (fn [msg]
-            (if
-              msg.reloading
-              (ui.display msg.reloading)
+        (fn [msg]
+          (if
+            msg.reloading
+            (ui.display msg.reloading)
 
-              msg.error
-              (ui.display [(.. "; Error while reloading "
-                               msg.error-ns)])
+            msg.error
+            (ui.display [(.. "; Error while reloading "
+                             msg.error-ns)])
 
-              msg.status.ok
-              (ui.display ["; Refresh complete"])
+            msg.status.ok
+            (ui.display ["; Refresh complete"])
 
-              msg.status.done
-              nil
+            msg.status.done
+            nil
 
-              (display-result msg))))))))
+            (ui.display-result msg)))))))
 
 (defn refresh-changed []
   (ui.display ["; Refreshing changed namespaces"] {:break? true})
@@ -390,7 +394,7 @@
       (ui.display [(.. "; shadow-cljs (select): " build)] {:break? true})
       (server.eval
         {:code (.. "(shadow.cljs.devtools.api/nrepl-select :" build ")")}
-        (ui.display-result-fn)))))
+        ui.display-result))))
 
 (defn piggieback [code]
   (server.with-conn-or-warn
@@ -399,7 +403,7 @@
       (server.eval
         {:code (.. "(do (require 'cider.piggieback)"
                    "(cider.piggieback/cljs-repl " code "))")}
-        (ui.display-result-fn)))))
+        ui.display-result))))
 
 (defn- clojure->vim-completion [{:candidate word
                                  :type kind

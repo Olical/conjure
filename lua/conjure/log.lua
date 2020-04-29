@@ -199,9 +199,12 @@ do
         local visible_scrolling_log_3f = false
         do
           local buf = upsert_buf()
+          local join_first_3f = a.get(opts, "join-first?")
           local lines0 = nil
           if a.get(opts, "break?") then
             lines0 = a.concat({_break()}, lines)
+          elseif join_first_3f then
+            lines0 = a.concat({(__fnl_global__last_2dline() .. a.first(lines))}, a.rest(lines))
           else
             lines0 = lines
           end
@@ -209,6 +212,8 @@ do
           local _4_
           if buffer["empty?"](buf) then
             _4_ = 0
+          elseif join_first_3f then
+            _4_ = -2
           else
             _4_ = -1
           end

@@ -40,6 +40,39 @@ do
   _0_0["aniseed/locals"]["display"] = v_23_0_
   display = v_23_0_
 end
+local state0 = nil
+do
+  local v_23_0_ = (_0_0["aniseed/locals"].state or {["join-next-key"] = nil})
+  _0_0["aniseed/locals"]["state"] = v_23_0_
+  state0 = v_23_0_
+end
+local handle_join_line = nil
+do
+  local v_23_0_ = nil
+  local function handle_join_line0(resp)
+    local next_k = nil
+    if resp.out then
+      next_k = "out"
+    elseif resp.err then
+      next_k = "err"
+    else
+    next_k = nil
+    end
+    local current_k = a.get(state0, "join-next-key")
+    if (next_k or resp.value) then
+      local function _4_()
+        if (next_k and not text["trailing-newline?"](a.get(resp, next_k))) then
+          return next_k
+        end
+      end
+      a.assoc(state0, "join-next-key", _4_())
+    end
+    return (next_k and (current_k == next_k))
+  end
+  v_23_0_ = handle_join_line0
+  _0_0["aniseed/locals"]["handle-join-line"] = v_23_0_
+  handle_join_line = v_23_0_
+end
 local display_result = nil
 do
   local v_23_0_ = nil
@@ -47,29 +80,32 @@ do
     local v_23_0_0 = nil
     local function display_result0(resp, opts)
       local opts0 = (opts or {})
-      local function _3_()
+      do
+        local joined_3f = handle_join_line(resp)
+        local _3_
         if resp.out then
-          local function _3_()
-            if opts0["simple-out?"] then
-              return "; "
-            elseif opts0["raw-out?"] then
-              return ""
-            else
-              return "; (out) "
-            end
+          local _4_
+          if opts0["simple-out?"] then
+            _4_ = "; "
+          elseif opts0["raw-out?"] then
+            _4_ = ""
+          else
+            _4_ = "; (out) "
           end
-          return text["prefixed-lines"](text["trim-last-newline"](resp.out), _3_())
+          _3_ = text["prefixed-lines"](text["trim-last-newline"](resp.out), _4_, {["skip-first?"] = joined_3f})
         elseif resp.err then
-          return text["prefixed-lines"](text["trim-last-newline"](resp.err), "; (err) ")
+          _3_ = text["prefixed-lines"](text["trim-last-newline"](resp.err), "; (err) ", {["skip-first?"] = joined_3f})
         elseif resp.value then
           if not (opts0["ignore-nil?"] and ("nil" == resp.value)) then
-            return text["split-lines"](resp.value)
+            _3_ = text["split-lines"](resp.value)
+          else
+          _3_ = nil
           end
         else
-          return nil
+          _3_ = nil
         end
+        return display(_3_, {["join-first?"] = joined_3f})
       end
-      return display(_3_())
     end
     v_23_0_0 = display_result0
     _0_0["display-result"] = v_23_0_0
@@ -78,71 +114,13 @@ do
   _0_0["aniseed/locals"]["display-result"] = v_23_0_
   display_result = v_23_0_
 end
-local display_result_fn = nil
-do
-  local v_23_0_ = nil
-  do
-    local v_23_0_0 = nil
-    local function display_result_fn0(opts)
-      local state0 = {err = "", out = ""}
-      local function _3_(resp)
-        local k = nil
-        if resp.out then
-          k = "out"
-        elseif resp.err then
-          k = "err"
-        else
-        k = nil
-        end
-        if k then
-          local s = a.get(resp, k)
-          local current = a.get(state0, k)
-          local start, _end = string.find(string.reverse(s), "\n")
-          if start then
-            if (1 == start) then
-              a.assoc(state0, k, "")
-              a.assoc(resp, k, (current .. s))
-              return display_result(resp, opts)
-            else
-              local before = string.sub(s, 1, ( - start))
-              local after = string.sub(s, ( - _end))
-              a.assoc(state0, k, after)
-              a.assoc(resp, k, (current .. before))
-              return display_result(resp, opts)
-            end
-          else
-            a.assoc(state0, k, (current .. s))
-            return nil
-          end
-        else
-          if resp.value then
-            local function _5_(k0)
-              local s = a.get(state0, k0)
-              if not a["empty?"](s) then
-                return display_result({[k0] = s})
-              end
-            end
-            a["run!"](_5_, {"out", "err"})
-          end
-          return display_result(resp, opts)
-        end
-      end
-      return _3_
-    end
-    v_23_0_0 = display_result_fn0
-    _0_0["display-result-fn"] = v_23_0_0
-    v_23_0_ = v_23_0_0
-  end
-  _0_0["aniseed/locals"]["display-result-fn"] = v_23_0_
-  display_result_fn = v_23_0_
-end
 local display_given_sessions = nil
 do
   local v_23_0_ = nil
   do
     local v_23_0_0 = nil
     local function display_given_sessions0(sessions, cb)
-      local current = a["get-in"](state, {"conn", "session"})
+      local current = a["get-in"](state0, {"conn", "session"})
       local function _3_(_4_0)
         local _5_ = _4_0
         local idx = _5_[1]

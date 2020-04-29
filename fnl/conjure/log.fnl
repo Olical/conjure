@@ -108,14 +108,25 @@
     (var visible-scrolling-log? false)
 
     (let [buf (upsert-buf)
-          lines (if (a.get opts :break?)
+          join-first? (a.get opts :join-first?)
+          lines (if
+                  (a.get opts :break?)
                   (a.concat [(break)] lines)
+
+                  join-first?
+                  (a.concat
+                    [(.. (last-line) (a.first lines))]
+                    (a.rest lines))
+
                   lines)
           old-lines (nvim.buf_line_count buf)]
 
       (nvim.buf_set_lines
         buf
-        (if (buffer.empty? buf) 0 -1)
+        (if
+          (buffer.empty? buf) 0
+          join-first? -2
+          -1)
         -1 false lines)
 
       (let [new-lines (nvim.buf_line_count buf)]

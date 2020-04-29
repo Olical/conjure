@@ -37,13 +37,28 @@ do
   _0_0["aniseed/locals"]["trim"] = v_23_0_
   trim = v_23_0_
 end
+local trailing_newline_3f = nil
+do
+  local v_23_0_ = nil
+  do
+    local v_23_0_0 = nil
+    local function trailing_newline_3f0(s)
+      return ("\n" == string.sub(s, -1))
+    end
+    v_23_0_0 = trailing_newline_3f0
+    _0_0["trailing-newline?"] = v_23_0_0
+    v_23_0_ = v_23_0_0
+  end
+  _0_0["aniseed/locals"]["trailing-newline?"] = v_23_0_
+  trailing_newline_3f = v_23_0_
+end
 local trim_last_newline = nil
 do
   local v_23_0_ = nil
   do
     local v_23_0_0 = nil
     local function trim_last_newline0(s)
-      if ("\n" == string.sub(s, -1)) then
+      if trailing_newline_3f(s) then
         return string.sub(s, 1, -2)
       else
         return s
@@ -111,11 +126,18 @@ do
   local v_23_0_ = nil
   do
     local v_23_0_0 = nil
-    local function prefixed_lines0(s, prefix)
-      local function _3_(line)
-        return (prefix .. line)
+    local function prefixed_lines0(s, prefix, opts)
+      local function _3_(_4_0)
+        local _5_ = _4_0
+        local n = _5_[1]
+        local line = _5_[2]
+        if ((1 == n) and a.get(opts, "skip-first?")) then
+          return line
+        else
+          return (prefix .. line)
+        end
       end
-      return a.map(_3_, split_lines(s))
+      return a["map-indexed"](_3_, split_lines(s))
     end
     v_23_0_0 = prefixed_lines0
     _0_0["prefixed-lines"] = v_23_0_0

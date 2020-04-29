@@ -39,10 +39,13 @@
 
 (comment
   (throw (Error. "ohno"))
-  (do (Thread/sleep 5000)
+  (do (print "start ")
+      (Thread/sleep 5000)
       (println "FOO"))
   (future
-    (do (Thread/sleep 5000)
+    (do (print "start ")
+        (flush)
+        (Thread/sleep 500)
         (println "BAR")))
 
   (tap> :foo)

@@ -5,8 +5,11 @@
 (defn trim [s]
   (string.gsub s "^%s*(.-)%s*$" "%1"))
 
+(defn trailing-newline? [s]
+  (= "\n" (string.sub s -1)))
+
 (defn trim-last-newline [s]
-  (if (= "\n" (string.sub s -1))
+  (if (trailing-newline? s)
     (string.sub s 1 -2)
     s))
 
@@ -24,10 +27,14 @@
 (defn split-lines [s]
   (str.split s "\n"))
 
-(defn prefixed-lines [s prefix]
+(defn prefixed-lines [s prefix opts]
   (->> (split-lines s)
-       (a.map (fn [line]
-                (.. prefix line)))))
+       (a.map-indexed
+         (fn [[n line]]
+           (if (and (= 1 n)
+                    (a.get opts :skip-first?))
+             line
+             (.. prefix line))))))
 
 (defn starts-with [str start]
   (= (string.sub str 1 (a.count start)) start))

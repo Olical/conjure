@@ -8,66 +8,46 @@
 (defn display [lines opts]
   (client.with-filetype :clojure log.append lines opts))
 
+(defonce- state
+  {:join-next-key nil})
+
+(defn- handle-join-line [resp]
+  (let [next-k (if resp.out :out resp.err :err)
+        current-k (a.get state :join-next-key)]
+    (when (or next-k resp.value)
+      (a.assoc state :join-next-key
+               (when (and next-k
+                          (not (text.trailing-newline?
+                                 (a.get resp next-k))))
+                 next-k)))
+    (and next-k (= current-k next-k))))
+
 (defn display-result [resp opts]
   (local opts (or opts {}))
-  (display
-    (if
-      resp.out
-      (text.prefixed-lines
-        (text.trim-last-newline resp.out)
-        (if
-          opts.simple-out? "; "
-          opts.raw-out? ""
-          "; (out) "))
+  (let [joined? (handle-join-line resp)]
+    (display
+      (if
+        resp.out
+        (text.prefixed-lines
+          (text.trim-last-newline resp.out)
+          (if
+            opts.simple-out? "; "
+            opts.raw-out? ""
+            "; (out) ")
+          {:skip-first? joined?})
 
-      resp.err
-      (text.prefixed-lines
-        (text.trim-last-newline resp.err)
-        "; (err) ")
+        resp.err
+        (text.prefixed-lines
+          (text.trim-last-newline resp.err)
+          "; (err) "
+          {:skip-first? joined?})
 
-      resp.value
-      (when (not (and opts.ignore-nil? (= "nil" resp.value)))
-        (text.split-lines resp.value))
+        resp.value
+        (when (not (and opts.ignore-nil? (= "nil" resp.value)))
+          (text.split-lines resp.value))
 
-      nil)))
-
-(defn display-result-fn [opts]
-  "Sateful version of display-result that batches out/err text up until a
-  newline or final nREPL message."
-  (let [state {:out "" :err ""}]
-    (fn [resp]
-      (let [k (if resp.out :out resp.err :err)]
-        (if k
-          (let [s (a.get resp k)
-                current (a.get state k)
-                (start end) (string.find (string.reverse s) "\n")]
-            (if start
-              (if (= 1 start)
-                ;; Not sure if this edge case is required.
-                ;; Removing the need for trim might fix this?
-                (do
-                  (a.assoc state k "")
-                  (a.assoc resp k (.. current s))
-                  (display-result resp opts))
-                (let [before (string.sub s 1 (- start))
-                      after (string.sub s (- end))]
-                  (a.assoc state k after)
-                  (a.assoc resp k (.. current before))
-                  (display-result resp opts)))
-              (do
-                (a.assoc
-                  state k
-                  (.. current s))
-                nil)))
-          (do
-            (when resp.value
-              (a.run!
-                (fn [k]
-                  (let [s (a.get state k)]
-                    (when (not (a.empty? s))
-                      (display-result {k s}))))
-                [:out :err]))
-            (display-result resp opts)))))))
+        nil)
+      {:join-first? joined?})))
 
 (defn display-given-sessions [sessions cb]
   (let [current (a.get-in state [:conn :session])]
