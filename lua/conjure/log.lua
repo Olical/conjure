@@ -166,22 +166,26 @@ do
     local line_count = nvim.buf_line_count(buf)
     if (line_count > config.log.trim.at) then
       local target_line_count = (line_count - config.log.trim.to)
-      local last_break_line = nil
-      local function _3_(_241)
-        return (_241 <= target_line_count)
-      end
-      last_break_line = a.last(a.filter(_3_, break_lines(buf)))
-      nvim.buf_set_lines(buf, 0, (last_break_line or target_line_count), false, {})
-      do
-        local line_count0 = nvim.buf_line_count(buf)
-        local function _4_(win)
-          local _5_ = nvim.win_get_cursor(win)
-          local row = _5_[1]
-          local col = _5_[2]
-          nvim.win_set_cursor(win, {1, 0})
-          return nvim.win_set_cursor(win, {row, col})
+      local break_line = nil
+      local function _3_(line)
+        if (line >= target_line_count) then
+          return line
         end
-        return with_buf_wins(buf, _4_)
+      end
+      break_line = a.some(_3_, break_lines(buf))
+      if break_line then
+        nvim.buf_set_lines(buf, 0, break_line, false, {})
+        do
+          local line_count0 = nvim.buf_line_count(buf)
+          local function _4_(win)
+            local _5_ = nvim.win_get_cursor(win)
+            local row = _5_[1]
+            local col = _5_[2]
+            nvim.win_set_cursor(win, {1, 0})
+            return nvim.win_set_cursor(win, {row, col})
+          end
+          return with_buf_wins(buf, _4_)
+        end
       end
     end
   end

@@ -84,24 +84,28 @@
   (let [line-count (nvim.buf_line_count buf)]
     (when (> line-count config.log.trim.at)
       (let [target-line-count (- line-count config.log.trim.to)
-            last-break-line
-            (->> (break-lines buf)
-                 (a.filter #(<= $1 target-line-count))
-                 (a.last))]
-        (nvim.buf_set_lines
-          buf 0
-          (or last-break-line target-line-count)
-          false [])
+            break-line
+            (a.some
+              (fn [line]
+                (when (>= line target-line-count)
+                  line))
+              (break-lines buf))]
 
-        ;; This hack keeps all log window view ports correct after trim.
-        ;; Without it the text moves off screen in the HUD.
-        (let [line-count (nvim.buf_line_count buf)]
-          (with-buf-wins
-            buf
-            (fn [win]
-              (let [[row col] (nvim.win_get_cursor win)]
-                (nvim.win_set_cursor win [1 0])
-                (nvim.win_set_cursor win [row col])))))))))
+        (when break-line
+          (nvim.buf_set_lines
+            buf 0
+            break-line
+            false [])
+
+          ;; This hack keeps all log window view ports correct after trim.
+          ;; Without it the text moves off screen in the HUD.
+          (let [line-count (nvim.buf_line_count buf)]
+            (with-buf-wins
+              buf
+              (fn [win]
+                (let [[row col] (nvim.win_get_cursor win)]
+                  (nvim.win_set_cursor win [1 0])
+                  (nvim.win_set_cursor win [row col]))))))))))
 
 (defn last-line []
   (a.first (nvim.buf_get_lines (upsert-buf) -2 -1 false)))
