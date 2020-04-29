@@ -103,6 +103,9 @@
                 (nvim.win_set_cursor win [1 0])
                 (nvim.win_set_cursor win [row col])))))))))
 
+(defn last-line []
+  (a.first (nvim.buf_get_lines (upsert-buf) -2 -1 false)))
+
 (defn append [lines opts]
   (when (not (a.empty? lines))
     (var visible-scrolling-log? false)
@@ -143,9 +146,6 @@
         (display-hud))
 
       (trim buf))))
-
-(defn last-line []
-  (a.first (nvim.buf_get_lines (upsert-buf) -2 -1 false)))
 
 (defn- create-win [split-fn]
   (let [buf (upsert-buf)
