@@ -12,7 +12,7 @@
 
   :cljs
   {:extra-deps
-   {org.clojure/clojurescript {:mvn/version "1.10.597"}}}
+   {org.clojure/clojurescript {:mvn/version "1.10.748"}}}
 
   :piggieback
   {:extra-deps
