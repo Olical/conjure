@@ -32,9 +32,11 @@ You'll need to be on the latest stable Neovim for all of the features (such as f
 
 All further documentation is found within link:doc/conjure.txt[`:help conjure`]. Please do get in touch via http://clojurians.net/[Slack] (`#conjure`), https://gitter.im/Olical/conjure[Gitter] or Twitter (https://twitter.com/OliverCaldwell[@OliverCaldwell]) if you have any questions or issues.
 
+Broader documentation can be found in the https://github.com/Olical/conjure/wiki[Conjure wiki], there you'll find blog posts and guides that will help you get common workflows up and running. Contributions are encouraged!
+
 == Behind the curtain
 
-Conjure is written entirely in Lua (no VimL or external processes!) which is compiled from https://fennel-lang.org/[Fennel] by https://github.com/Olical/aniseed[Aniseed] ahead of time. Check out `CONTRIBUTING.adoc` for more on how to work on Conjure using itself, contributions are more than welcome!
+Conjure is written entirely in Lua (no VimL or external processes!) which is compiled from https://fennel-lang.org/[Fennel] by https://github.com/Olical/aniseed[Aniseed] ahead of time. Check out `CONTRIBUTING.adoc` for more on how to work on Conjure using itself.
 
 Historically, Conjure was Clojure specific with an entirely different implementation, you can still find that version on the https://github.com/Olical/conjure/tree/legacy-jvm[legacy-jvm branch].
 
