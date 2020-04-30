@@ -1,4 +1,4 @@
-= Conjure https://gitter.im/Olical/conjure?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge[image:https://badges.gitter.im/Olical/conjure.svg[Gitter]] http://clojurians.net[image:https://img.shields.io/badge/chat-%23conjure-green.svg?style=flat[Slack]]
+= Conjure https://gitter.im/Olical/conjure?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge[image:https://badges.gitter.im/Olical/conjure.svg[Gitter]] http://clojurians.net[image:https://img.shields.io/badge/chat-clojurians.net%20%23conjure-green[Slack]]
 
 == Conversational software development for https://neovim.io[Neovim]
 
