@@ -1,10 +1,10 @@
-= Conjure http://clojurians.net[image::https://img.shields.io/badge/chat-%23conjure-green.svg?style=flat[Slack]]
+= Conjure http://clojurians.net[image:https://img.shields.io/badge/chat-%23conjure-green.svg?style=flat[Slack]]
 
 == Conversational software development for https://neovim.io[Neovim]
 
 Conjure is an interactive environment for evaluating code and inspecting your program.
 
-https://asciinema.org/a/325517[image::https://asciinema.org/a/325517.svg[asciicast]]
+https://asciinema.org/a/325517[image:https://asciinema.org/a/325517.svg[asciicast]]
 
 The core features of Conjure are language agnostic (although it's targeted at Lisps for now), with each language client providing their own extra tools. Here's the language support so far, unchecked items are planned for the future.
 
