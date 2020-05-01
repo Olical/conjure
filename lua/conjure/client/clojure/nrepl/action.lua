@@ -15,8 +15,8 @@ do
   _0_0 = module_23_0_
 end
 local function _1_(...)
-  _0_0["aniseed/local-fns"] = {require = {a = "conjure.aniseed.core", client = "conjure.client", config = "conjure.client.clojure.nrepl.config", editor = "conjure.editor", eval = "conjure.aniseed.eval", extract = "conjure.extract", ll = "conjure.linked-list", nvim = "conjure.aniseed.nvim", server = "conjure.client.clojure.nrepl.server", state = "conjure.client.clojure.nrepl.state", str = "conjure.aniseed.string", text = "conjure.text", ui = "conjure.client.clojure.nrepl.ui", view = "conjure.aniseed.view"}}
-  return {require("conjure.aniseed.core"), require("conjure.client"), require("conjure.client.clojure.nrepl.config"), require("conjure.editor"), require("conjure.aniseed.eval"), require("conjure.extract"), require("conjure.linked-list"), require("conjure.aniseed.nvim"), require("conjure.client.clojure.nrepl.server"), require("conjure.client.clojure.nrepl.state"), require("conjure.aniseed.string"), require("conjure.text"), require("conjure.client.clojure.nrepl.ui"), require("conjure.aniseed.view")}
+  _0_0["aniseed/local-fns"] = {require = {a = "conjure.aniseed.core", client = "conjure.client", config = "conjure.client.clojure.nrepl.config", editor = "conjure.editor", eval = "conjure.aniseed.eval", extract = "conjure.extract", ll = "conjure.linked-list", log = "conjure.log", nvim = "conjure.aniseed.nvim", server = "conjure.client.clojure.nrepl.server", state = "conjure.client.clojure.nrepl.state", str = "conjure.aniseed.string", text = "conjure.text", ui = "conjure.client.clojure.nrepl.ui", view = "conjure.aniseed.view"}}
+  return {require("conjure.aniseed.core"), require("conjure.client"), require("conjure.client.clojure.nrepl.config"), require("conjure.editor"), require("conjure.aniseed.eval"), require("conjure.extract"), require("conjure.linked-list"), require("conjure.log"), require("conjure.aniseed.nvim"), require("conjure.client.clojure.nrepl.server"), require("conjure.client.clojure.nrepl.state"), require("conjure.aniseed.string"), require("conjure.text"), require("conjure.client.clojure.nrepl.ui"), require("conjure.aniseed.view")}
 end
 local _2_ = _1_(...)
 local a = _2_[1]
@@ -26,13 +26,14 @@ local editor = _2_[4]
 local eval = _2_[5]
 local extract = _2_[6]
 local ll = _2_[7]
-local nvim = _2_[8]
-local server = _2_[9]
-local state = _2_[10]
-local str = _2_[11]
-local text = _2_[12]
-local ui = _2_[13]
-local view = _2_[14]
+local log = _2_[8]
+local nvim = _2_[9]
+local server = _2_[10]
+local state = _2_[11]
+local str = _2_[12]
+local text = _2_[13]
+local ui = _2_[14]
+local view = _2_[15]
 do local _ = ({nil, _0_0, nil})[2] end
 local display_session_type = nil
 do
@@ -241,6 +242,7 @@ do
   do
     local v_23_0_0 = nil
     local function def_str0(opts)
+      log["close-hud"]()
       local function _3_(info)
         if a["nil?"](info) then
           return ui.display({"; No definition information found"})

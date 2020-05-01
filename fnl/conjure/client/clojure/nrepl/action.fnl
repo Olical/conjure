@@ -4,6 +4,7 @@
             extract conjure.extract
             editor conjure.editor
             ll conjure.linked-list
+            log conjure.log
             eval conjure.aniseed.eval
             str conjure.aniseed.string
             nvim conjure.aniseed.nvim
@@ -126,6 +127,7 @@
     path))
 
 (defn def-str [opts]
+  (log.close-hud)
   (with-info
     opts
     (fn [info]
