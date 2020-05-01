@@ -69,10 +69,7 @@ do
     local v_23_0_0 = nil
     local function close_hud0()
       if state.hud.id then
-        local function _3_()
-          return nvim.win_close(state.hud.id, true)
-        end
-        pcall(_3_)
+        nvim.win_close(state.hud.id, true)
         state.hud.id = nil
         return nil
       end
