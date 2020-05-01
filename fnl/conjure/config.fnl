@@ -11,6 +11,7 @@
    :log-split "ls"
    :log-vsplit "lv"
    :log-tab "lt"
+   :log-close-visible "lq"
    :eval-current-form "ee"
    :eval-root-form "er"
    :eval-marked-form "em"

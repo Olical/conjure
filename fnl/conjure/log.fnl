@@ -168,3 +168,12 @@
 
 (defn tab []
   (create-win nvim.ex.tabnew))
+
+(defn close-visible []
+  (let [buf (upsert-buf)]
+    (close-hud)
+    (->> (nvim.tabpage_list_wins 0)
+         (a.filter
+           (fn [win]
+             (= buf (nvim.win_get_buf win))))
+         (a.run! #(nvim.win_close $1 true)))))

@@ -83,6 +83,9 @@ I've also included some commands since they're related to the mappings.
                          large output. Just close the window to close the tab
                          when you're done and return to your previous layout.
 
+<localleader>lq          Close all visible log windows in your current tab.
+                         Other tabs will remain unaffected.
+
 <localleader>E           When in visual mode, evaluate the current selection.
 
 <localleader>E[motion]   Evaluate any given motion following this mapping such
@@ -196,6 +199,10 @@ the `g:conjure_config` variable instead, as mention later in this section.
 `mappings.log-tab`
             Opens the log in a new tab.
             Default: `"lt"`
+
+`mappings.log-close-visible`
+            Close all visible log windows.
+            Default: `"lq"`
 
 `mappings.eval-current-form`
             Evaluates the form under the cursor.

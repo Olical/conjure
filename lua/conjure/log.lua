@@ -322,4 +322,27 @@ do
   _0_0["aniseed/locals"]["tab"] = v_23_0_
   tab = v_23_0_
 end
+local close_visible = nil
+do
+  local v_23_0_ = nil
+  do
+    local v_23_0_0 = nil
+    local function close_visible0()
+      local buf = upsert_buf()
+      close_hud()
+      local function _3_(_241)
+        return nvim.win_close(_241, true)
+      end
+      local function _4_(win)
+        return (buf == nvim.win_get_buf(win))
+      end
+      return a["run!"](_3_, a.filter(_4_, nvim.tabpage_list_wins(0)))
+    end
+    v_23_0_0 = close_visible0
+    _0_0["close-visible"] = v_23_0_0
+    v_23_0_ = v_23_0_0
+  end
+  _0_0["aniseed/locals"]["close-visible"] = v_23_0_
+  close_visible = v_23_0_
+end
 return nil
