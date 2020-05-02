@@ -1,7 +1,8 @@
 (module conjure.client.clojure.nrepl.config)
 
 (def connection
-  {:default-host "localhost"})
+  {:default-host "localhost"
+   :port-files [".nrepl-port" ".shadow-cljs/nrepl.port"]})
 
 (def eval
   {:pretty-print? true})

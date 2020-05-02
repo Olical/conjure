@@ -31,7 +31,8 @@
                     {:break? true})))))
 
 (defn connect-port-file []
-  (let [port (-?> (a.some a.slurp [".nrepl-port" ".shadow-cljs/nrepl.port"]) (tonumber))]
+  (let [port (-?> (a.some a.slurp config.connection.port-files)
+                  (tonumber))]
     (if port
       (server.connect
         {:host config.connection.default-host

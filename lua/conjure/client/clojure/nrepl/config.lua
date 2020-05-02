@@ -24,7 +24,7 @@ local connection = nil
 do
   local v_23_0_ = nil
   do
-    local v_23_0_0 = {["default-host"] = "localhost"}
+    local v_23_0_0 = {["default-host"] = "localhost", ["port-files"] = {".nrepl-port", ".shadow-cljs/nrepl.port"}}
     _0_0["connection"] = v_23_0_0
     v_23_0_ = v_23_0_0
   end

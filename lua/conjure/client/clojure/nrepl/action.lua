@@ -61,7 +61,7 @@ do
     local function connect_port_file0()
       local port = nil
       do
-        local _3_0 = a.some(a.slurp, {".nrepl-port", ".shadow-cljs/nrepl.port"})
+        local _3_0 = a.some(a.slurp, config.connection["port-files"])
         if _3_0 then
           port = tonumber(_3_0)
         else

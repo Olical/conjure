@@ -59,8 +59,9 @@ options relevant to these mappings.
 
 <localleader>cd          Disconnect from the current nREPL server.
 
-<localleader>cf          Connect to a local server using the port found in
-                         `.nrepl-port` or `.shadow-cljs/nrepl.port`.
+<localleader>cf          Connect to a server using the port found in any of
+                         the files specified by
+                         `clojure.nrepl/connection.port-files`.
 
 <localleader>ei          Interrupt the oldest evaluation you have running.
 
@@ -118,9 +119,17 @@ CONFIGURATION                     *conjure-client-clojure-nrepl-configuration*
 All configuration can be set as described in |conjure-configuration|.
 
 `clojure.nrepl/connection.default-host`
-            When connecting to `.nrepl-port` files or via `:ConjureConnect`
-            this is the default host to use.
+            When connecting to port files or via `:ConjureConnect` this is the
+            default host to use.
             Default: `"localhost"`
+
+`clojure.nrepl/connection.port-files`
+            List of file paths to check when starting up or hitting
+            `<localleader>cf` (by default). They're checked in order, the
+            first file to exist has it's contents parsed as a number.
+            Conjure will then connect to that port at the host specified by
+            `connection.default-host`.
+            Default: `[".nrepl-port" ".shadow-cljs/nrepl.port"]`
 
 `clojure.nrepl/eval.pretty-print?`
             Should results be pretty printed by the nREPL server.
