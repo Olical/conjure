@@ -5,6 +5,7 @@
             editor conjure.editor
             ll conjure.linked-list
             log conjure.log
+            fs conjure.fs
             eval conjure.aniseed.eval
             str conjure.aniseed.string
             nvim conjure.aniseed.nvim
@@ -31,8 +32,10 @@
                     {:break? true})))))
 
 (defn connect-port-file []
-  (let [port (-?> (a.some a.slurp config.connection.port-files)
-                  (tonumber))]
+  (let [port (-?>> config.connection.port-files
+                   (a.map fs.resolve-in-parent-dirs)
+                   (a.some a.slurp)
+                   (tonumber))]
     (if port
       (server.connect
         {:host config.connection.default-host
