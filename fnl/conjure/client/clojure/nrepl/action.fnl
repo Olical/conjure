@@ -50,7 +50,10 @@
   (server.with-conn-or-warn
     (fn [_]
       (server.eval
-        {:code (.. "(in-ns '" (or opts.context "user") ")")}
+        {:code (.. "(ns "
+                   (or opts.context
+                       "#?(:cljs cljs.user, :default user)")
+                   ")")}
         (fn []))
       (server.eval opts
                    (or opts.cb
