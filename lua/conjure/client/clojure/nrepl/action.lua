@@ -274,7 +274,7 @@ do
           local column = (info.column or 1)
           local path = nrepl__3envim_path(info.file)
           editor["go-to"](path, info.line, column)
-          return ui.display({("; " .. path .. " [" .. info.line .. " " .. column .. "]")})
+          return ui.display({("; " .. path .. " [" .. info.line .. " " .. column .. "]")}, {["suppress-hud?"] = true})
         else
           return ui.display({"; Unsupported target", ("; " .. a["pr-str"](info))})
         end

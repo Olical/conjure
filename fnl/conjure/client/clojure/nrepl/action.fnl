@@ -158,7 +158,8 @@
         (let [column (or info.column 1)
               path (nrepl->nvim-path info.file)]
           (editor.go-to path info.line column)
-          (ui.display [(.. "; " path " [" info.line " " column "]") ]))
+          (ui.display [(.. "; " path " [" info.line " " column "]") ]
+                      {:suppress-hud? true}))
 
         (ui.display ["; Unsupported target"
                      (.. "; " (a.pr-str info))])))))
