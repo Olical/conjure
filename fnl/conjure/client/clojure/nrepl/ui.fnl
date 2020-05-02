@@ -9,18 +9,18 @@
   (client.with-filetype :clojure log.append lines opts))
 
 (defonce- state
-  {:join-next-key nil})
+  {:join-next {:key nil}})
 
 (defn- handle-join-line [resp]
-  (let [next-k (if resp.out :out resp.err :err)
-        current-k (a.get state :join-next-key)]
-    (when (or next-k resp.value)
-      (a.assoc state :join-next-key
-               (when (and next-k
+  (let [next-key (if resp.out :out resp.err :err)
+        {: key} (a.get-in state :join-next {})]
+    (when (or next-key resp.value)
+      (a.assoc state :join-next
+               (when (and next-key
                           (not (text.trailing-newline?
-                                 (a.get resp next-k))))
-                 next-k)))
-    (and next-k (= current-k next-k))))
+                                 (a.get resp next-key))))
+                 {:key next-key})))
+    (and next-key (= key next-key))))
 
 (defn display-result [resp opts]
   (local opts (or opts {}))

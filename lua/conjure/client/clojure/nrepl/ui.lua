@@ -42,7 +42,7 @@ do
 end
 local state0 = nil
 do
-  local v_23_0_ = (_0_0["aniseed/locals"].state or {["join-next-key"] = nil})
+  local v_23_0_ = (_0_0["aniseed/locals"].state or {["join-next"] = {key = nil}})
   _0_0["aniseed/locals"]["state"] = v_23_0_
   state0 = v_23_0_
 end
@@ -50,24 +50,25 @@ local handle_join_line = nil
 do
   local v_23_0_ = nil
   local function handle_join_line0(resp)
-    local next_k = nil
+    local next_key = nil
     if resp.out then
-      next_k = "out"
+      next_key = "out"
     elseif resp.err then
-      next_k = "err"
+      next_key = "err"
     else
-    next_k = nil
+    next_key = nil
     end
-    local current_k = a.get(state0, "join-next-key")
-    if (next_k or resp.value) then
-      local function _4_()
-        if (next_k and not text["trailing-newline?"](a.get(resp, next_k))) then
-          return next_k
+    local _4_ = a["get-in"](state0, "join-next", {})
+    local key = _4_["key"]
+    if (next_key or resp.value) then
+      local function _5_()
+        if (next_key and not text["trailing-newline?"](a.get(resp, next_key))) then
+          return {key = next_key}
         end
       end
-      a.assoc(state0, "join-next-key", _4_())
+      a.assoc(state0, "join-next", _5_())
     end
-    return (next_k and (current_k == next_k))
+    return (next_key and (key == next_key))
   end
   v_23_0_ = handle_join_line0
   _0_0["aniseed/locals"]["handle-join-line"] = v_23_0_
