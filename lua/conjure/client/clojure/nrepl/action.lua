@@ -112,7 +112,7 @@ do
       local function _3_(_)
         local function _4_()
         end
-        server.eval({code = ("(ns " .. (opts.context or "#?(:cljs cljs.user, :default user)") .. ")")}, _4_)
+        server.eval({code = ("(in-ns '" .. (opts.context or "#?(:cljs cljs.user, :default user)") .. ")")}, _4_)
         local function _5_(_241)
           return ui["display-result"](_241, opts)
         end
