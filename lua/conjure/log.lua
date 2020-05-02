@@ -249,7 +249,7 @@ do
             end
             with_buf_wins(buf, _6_)
           end
-          if not visible_scrolling_log_3f then
+          if (not a.get(opts, "suppress-hud?") and not visible_scrolling_log_3f) then
             display_hud()
           end
           return trim(buf)

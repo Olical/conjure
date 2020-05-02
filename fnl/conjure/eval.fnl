@@ -20,7 +20,9 @@
           (text.left-sample opts.code sample-limit)))))
 
 (defn- display-request [opts]
-  (log.append [opts.preview] {:break? true}))
+  (log.append
+    [opts.preview]
+    (a.merge opts {:break? true})))
 
 (defn file []
   (let [opts {:file-path (extract.file-path)
@@ -36,18 +38,19 @@
            (extract.context)))
   opts)
 
-(defn- client-exec-fn [action f-name]
+(defn- client-exec-fn [action f-name base-opts]
   (fn [opts]
-    (set opts.action action)
-    (assoc-context opts)
-    (set opts.file-path (extract.file-path))
-    (set opts.preview (preview opts))
-    (display-request opts)
-    (client.call f-name opts)))
+    (let [opts (a.merge opts base-opts
+                        {:action action
+                         :file-path (extract.file-path)})]
+      (assoc-context opts)
+      (set opts.preview (preview opts))
+      (display-request opts)
+      (client.call f-name opts))))
 
 (def- eval-str (client-exec-fn :eval :eval-str))
 (def- doc-str (client-exec-fn :doc :doc-str))
-(def- def-str (client-exec-fn :def :def-str))
+(def- def-str (client-exec-fn :def :def-str {:suppress-hud? true}))
 
 (defn current-form [extra-opts]
   (let [form (extract.form {})]

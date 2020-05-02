@@ -52,7 +52,7 @@ local display_request = nil
 do
   local v_23_0_ = nil
   local function display_request0(opts)
-    return log.append({opts.preview}, {["break?"] = true})
+    return log.append({opts.preview}, a.merge(opts, {["break?"] = true}))
   end
   v_23_0_ = display_request0
   _0_0["aniseed/locals"]["display-request"] = v_23_0_
@@ -90,14 +90,13 @@ end
 local client_exec_fn = nil
 do
   local v_23_0_ = nil
-  local function client_exec_fn0(action, f_name)
+  local function client_exec_fn0(action, f_name, base_opts)
     local function _3_(opts)
-      opts.action = action
-      assoc_context(opts)
-      opts["file-path"] = extract["file-path"]()
-      opts.preview = preview(opts)
-      display_request(opts)
-      return client.call(f_name, opts)
+      local opts0 = a.merge(opts, base_opts, {["file-path"] = extract["file-path"](), action = action})
+      assoc_context(opts0)
+      opts0.preview = preview(opts0)
+      display_request(opts0)
+      return client.call(f_name, opts0)
     end
     return _3_
   end
@@ -119,7 +118,7 @@ do
 end
 local def_str = nil
 do
-  local v_23_0_ = client_exec_fn("def", "def-str")
+  local v_23_0_ = client_exec_fn("def", "def-str", {["suppress-hud?"] = true})
   _0_0["aniseed/locals"]["def-str"] = v_23_0_
   def_str = v_23_0_
 end

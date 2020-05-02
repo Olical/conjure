@@ -146,7 +146,8 @@
                   (set visible-scrolling-log? true))
                 (nvim.win_set_cursor win [new-lines 0]))))))
 
-      (when (not visible-scrolling-log?)
+      (when (and (not (a.get opts :suppress-hud?))
+                 (not visible-scrolling-log?))
         (display-hud))
 
       (trim buf))))

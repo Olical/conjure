@@ -253,7 +253,6 @@ do
   do
     local v_23_0_0 = nil
     local function def_str0(opts)
-      log["close-hud"]()
       local function _3_(info)
         if a["nil?"](info) then
           return ui.display({"; No definition information found"})

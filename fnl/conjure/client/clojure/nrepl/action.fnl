@@ -133,7 +133,6 @@
     path))
 
 (defn def-str [opts]
-  (log.close-hud)
   (with-info
     opts
     (fn [info]
