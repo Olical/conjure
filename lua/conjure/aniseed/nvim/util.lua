@@ -75,36 +75,6 @@ do
   _0_0["aniseed/locals"]["fn-bridge"] = v_23_0_
   fn_bridge = v_23_0_
 end
-local ft_map = nil
-do
-  local v_23_0_ = nil
-  do
-    local v_23_0_0 = nil
-    local function ft_map0(ft, mode, from, to)
-      return nvim.ex.autocmd("FileType", ft, (mode .. "map"), "<buffer>", ("<localleader>" .. from), to)
-    end
-    v_23_0_0 = ft_map0
-    _0_0["ft-map"] = v_23_0_0
-    v_23_0_ = v_23_0_0
-  end
-  _0_0["aniseed/locals"]["ft-map"] = v_23_0_
-  ft_map = v_23_0_
-end
-local plug = nil
-do
-  local v_23_0_ = nil
-  do
-    local v_23_0_0 = nil
-    local function plug0(cmd)
-      return ("<Plug>(" .. cmd .. ")")
-    end
-    v_23_0_0 = plug0
-    _0_0["plug"] = v_23_0_0
-    v_23_0_ = v_23_0_0
-  end
-  _0_0["aniseed/locals"]["plug"] = v_23_0_
-  plug = v_23_0_
-end
 local with_out_str = nil
 do
   local v_23_0_ = nil

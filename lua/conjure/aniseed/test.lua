@@ -30,8 +30,8 @@ do
     local v_23_0_0 = nil
     local function ok_3f0(_3_0)
       local _4_ = _3_0
-      local tests_passed = _4_["tests-passed"]
       local tests = _4_["tests"]
+      local tests_passed = _4_["tests-passed"]
       return (tests == tests_passed)
     end
     v_23_0_0 = ok_3f0
@@ -50,9 +50,9 @@ do
       do
         local _3_ = results
         local tests_passed = _3_["tests-passed"]
+        local assertions_passed = _3_["assertions-passed"]
         local tests = _3_["tests"]
         local assertions = _3_["assertions"]
-        local assertions_passed = _3_["assertions-passed"]
         local function _4_()
           if ok_3f(results) then
             return "OK"

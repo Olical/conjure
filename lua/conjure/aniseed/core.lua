@@ -262,22 +262,6 @@ do
   _0_0["aniseed/locals"]["kv-pairs"] = v_23_0_
   kv_pairs = v_23_0_
 end
-local update = nil
-do
-  local v_23_0_ = nil
-  do
-    local v_23_0_0 = nil
-    local function update0(tbl, k, f)
-      tbl[k] = f(tbl[k])
-      return tbl
-    end
-    v_23_0_0 = update0
-    _0_0["update"] = v_23_0_0
-    v_23_0_ = v_23_0_0
-  end
-  _0_0["aniseed/locals"]["update"] = v_23_0_
-  update = v_23_0_
-end
 local run_21 = nil
 do
   local v_23_0_ = nil
@@ -782,5 +766,35 @@ do
   end
   _0_0["aniseed/locals"]["assoc-in"] = v_23_0_
   assoc_in = v_23_0_
+end
+local update = nil
+do
+  local v_23_0_ = nil
+  do
+    local v_23_0_0 = nil
+    local function update0(t, k, f)
+      return assoc(t, k, f(get(t, k)))
+    end
+    v_23_0_0 = update0
+    _0_0["update"] = v_23_0_0
+    v_23_0_ = v_23_0_0
+  end
+  _0_0["aniseed/locals"]["update"] = v_23_0_
+  update = v_23_0_
+end
+local update_in = nil
+do
+  local v_23_0_ = nil
+  do
+    local v_23_0_0 = nil
+    local function update_in0(t, ks, f)
+      return assoc_in(t, ks, f(get_in(t, ks)))
+    end
+    v_23_0_0 = update_in0
+    _0_0["update-in"] = v_23_0_0
+    v_23_0_ = v_23_0_0
+  end
+  _0_0["aniseed/locals"]["update-in"] = v_23_0_
+  update_in = v_23_0_
 end
 return nil
