@@ -1,0 +1,51 @@
+= Conjure https://gitter.im/Olical/conjure?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge[image:https://badges.gitter.im/Olical/conjure.svg[Gitter]] http://clojurians.net[image:https://img.shields.io/badge/chat-clojurians.net%20%23conjure-green[Slack]]
+
+== Conversational software development for https://neovim.io[Neovim]
+
+Conjure is an interactive environment for evaluating code and inspecting your program.
+
+https://asciinema.org/a/325517[image:https://asciinema.org/a/325517.svg[asciicast]]
+
+The core features of Conjure are language agnostic (although it's targeted at Lisps for now), with each language client providing their own extra tools. Here's the language support so far, unchecked items are planned for the future.
+
+ * [x] https://fennel-lang.org/[Fennel] inside Neovim via Lua and https://github.com/Olical/aniseed[Aniseed] (which Conjure is written in)
+ * [x] https://clojure.org/[Clojure] over https://nrepl.org/[nREPL]
+ * [ ] https://clojure.org/[Clojure] over https://oli.me.uk/clojure-socket-prepl-cookbook/[prepl]
+ * [ ] https://janet-lang.org/[Janet]
+ * [ ] https://racket-lang.org/[Racket]
+ * [ ] http://lfe.io/[Lisp Flavoured Erlang]
+ * [ ] Scheme (Chicken, Chez or Guile? All?)
+ * [ ] Non-Lisp languages and beyond! (when Neovim has tree-sitter)
+
+== Installation
+
+Use your favourite plugin manager, mine is https://github.com/junegunn/vim-plug[vim-plug] but any will do. Be sure to pin it to a tag and subscribe to releases through GitHub to avoid any surprises in the future.
+
+[source,viml]
+----
+Plug 'Olical/conjure', {'tag': 'v3.0.0'}
+----
+
+You'll need to be on the latest stable Neovim for all of the features (such as floating windows) to work. If you see errors, please check your Neovim version before raising an issue.
+
+== Getting started
+
+All further documentation is found within link:doc/conjure.txt[`:help conjure`]. Please do get in touch via http://clojurians.net/[Slack] (`#conjure`), https://gitter.im/Olical/conjure[Gitter] or Twitter (https://twitter.com/OliverCaldwell[@OliverCaldwell]) if you have any questions or issues.
+
+Broader documentation can be found in the https://github.com/Olical/conjure/wiki[Conjure wiki], there you'll find blog posts and guides that will help you get common workflows up and running. Contributions are encouraged!
+
+== Behind the curtain
+
+Conjure is written entirely in Lua (no VimL or external processes!) which is compiled from https://fennel-lang.org/[Fennel] by https://github.com/Olical/aniseed[Aniseed] ahead of time. Check out link:CONTRIBUTING.adoc[`CONTRIBUTING.adoc`] for more on how to work on Conjure using itself.
+
+Historically, Conjure was Clojure specific with an entirely different implementation, you can still find that version on the https://github.com/Olical/conjure/tree/legacy-jvm[legacy-jvm branch].
+
+== Unlicenced
+
+Find the full http://unlicense.org/[unlicense] in the `UNLICENSE` file, but here's a snippet.
+
+____
+This is free and unencumbered software released into the public domain.
+
+Anyone is free to copy, modify, publish, use, compile, sell, or distribute this software, either in source code form or as a compiled binary, for any purpose, commercial or non-commercial, and by any means.
+____

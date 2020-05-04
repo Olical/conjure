@@ -1,0 +1,488 @@
+                                                                     *conjure*
+                    ______              _               ~
+                   / ____/___  ____    (_)_  __________ ~
+                  / /   / __ \/ __ \  / / / / / ___/ _ \~
+                 / /___/ /_/ / / / / / / /_/ / /  /  __/~
+                 \____/\____/_/ /_/_/ /\__,_/_/   \___/ ~
+                                 /___/                  ~
+
+==============================================================================
+CONTENTS                                                    *conjure-contents*
+
+    1. Introduction ............................. |conjure-introduction|
+    2. Mappings ..................................... |conjure-mappings|
+    3. Completion ................................. |conjure-completion|
+    4. Configuration ........................... |conjure-configuration|
+    5. Log ............................................... |conjure-log|
+    6. Clients ....................................... |conjure-clients|
+
+==============================================================================
+INTRODUCTION                                            *conjure-introduction*
+
+Conjure allows you to evaluate code and perform actions in various languages.
+The results of your actions are stored in a log buffer that you can view and
+edit at any time.
+
+If you don't have the log buffer open the results will be shown temporarily in
+the heads up display (HUD), a floating window that vanishes after you move
+your cursor. The HUD can be turned off entirely if you would rather check for
+results in your own time.
+
+This documentation will show you which mappings are available by default and
+how to configure them to suit you. You'll also learn about the extra features
+and mappings that are provided by each language specific client.
+
+==============================================================================
+MAPPINGS                                                    *conjure-mappings*
+
+These are the default mappings, |conjure-configuration| will show you how to
+remap them to keys that suit you if required. The default prefix key for
+almost all of the mappings is `<localleader>` (|maplocalleader|).
+
+I've also included some commands since they're related to the mappings.
+
+:ConjureEval [code]      Evaluates the given code in the current buffer's
+                         language and context. Accepts a range so
+                         `:%ConjureEval` would evaluate the entire buffer,
+                         this also works with visual selections.
+
+:ConjureConfig [args]    Displays or sets a configuration value with an
+                         optional language client prefix. The values are
+                         actual values, not strings. If you want to set
+                         something to a string it must be "double quoted".
+                         This is so that you can set booleans, lists and
+                         numbers where required. The value you're setting is
+                         actually parsed as Fennel code, this is almost
+                         identical to Clojure data structure syntax.
+                          - `:ConjureConfig mappings.prefix`
+                              Show the current mapping prefix.
+                          - `:ConjureConfig mappings.prefix "<leader>"`
+                              Set the mapping prefix.
+                          - `:ConjureConfig clojure.nrepl/mappings.interrupt`
+                              Show a language specific configuration value.
+                          - `:ConjureConfig clojure.nrepl/debug? true`
+                              Set a language specific configuration value.
+                          - `:ConjureConfig some.other.module/magic? true`
+                              Set a 3rd party language specific configuration
+                              value. The previous example's `clojure.nrepl` is
+                              actually expanded to
+                              `conjure.client.clojure.nrepl`, if a module
+                              isn't found within `conjure.client.*` though
+                              it'll look further afield at 3rd party modules.
+                        If you're lazy loading Conjure you may want to define
+                        your configuration ahead of time with the
+                        `g:conjure_config` variable (|conjure-configuration|).
+
+<localleader>ls          Open the log buffer in a new horizontal split window.
+                         The direction can be controlled with |splitbelow|.
+
+<localleader>lv          Open the log buffer in a new vertical split window.
+                         The direction can be controlled with |splitright|.
+
+<localleader>lt          Open the log buffer in a new tab. Great for viewing
+                         large output. Just close the window to close the tab
+                         when you're done and return to your previous layout.
+
+<localleader>lq          Close all visible log windows in your current tab.
+                         Other tabs will remain unaffected.
+
+<localleader>E           When in visual mode, evaluate the current selection.
+
+<localleader>E[motion]   Evaluate any given motion following this mapping such
+                         as <localleader>`E2j` to evaluate this line and the
+                         two below it.
+
+<localleader>ee          Evaluate the current form under the cursor. This is
+                         the innermost pair of parenthesis (ignoring those in
+                         comments or strings).
+
+<localleader>er          Evaluate the root form under the cursor. This is the
+                         outermost pair of parenthesis. Great for evaluating a
+                         function you're editing if your cursor is within a
+                         few nested forms.
+
+<localleader>em[mark]    Evaluate the form under the cursor at the given
+                         |mark|. Set a regular Neovim mark on a form using
+                         `mF` for example in any file, then jump to another
+                         file. You can evaluate that form at any time with
+                         `<localleader>emF`.
+
+<localleader>ew          Evaluate the word under the cursor, good for peeking
+                         inside vars defined in your file.
+
+<localleader>ef          Evaluate the current file from disk. This may be
+                         different to what's currently in your buffer if you
+                         haven't saved!
+
+<localleader>eb          Evaluate the current buffer contents. This may be
+                         different to what's on disk if you've edited it
+                         without saving.
+
+K                        Look up documentation for the word under the cursor.
+                         Support for this may vary between languages.
+
+gd                       Go to the definition of the word under the cursor.
+                         Support for this may vary between languages.
+
+Language clients will provide their own extra mappings on top of these, you
+can find links to their help in |conjure-clients|.
+
+==============================================================================
+COMPLETION                                                *conjure-completion*
+
+Conjure sets the |omnifunc| for all supported languages, the language clients
+must implement completion for it to actually provide results. For example,
+Fennel has no completion support but Clojure does (assuming your nREPL server
+has completion support).
+
+You can get completions through the normal mapping of `<C-x><C-o>`, nothing
+else needs to be configured for this to work.
+
+Automatic completion as you type is provided by external plugins. Deoplete
+support is built into the Conjure plugin, so if you have Deoplete installed it
+should be working already.
+
+ * https://github.com/Shougo/deoplete.nvim
+
+Conquerer of Completion support is provided by coc-conjure.
+
+ * https://github.com/neoclide/coc.nvim
+ * https://github.com/jlesquembre/coc-conjure
+
+asyncomplete.vim support is provided by asyncomplete-conjure.vim.
+
+ * https://github.com/prabirshrestha/asyncomplete.vim
+ * https://github.com/thecontinium/asyncomplete-conjure.vim
+
+==============================================================================
+CONFIGURATION                                          *conjure-configuration*
+
+As mentioned in |conjure-mappings|, you can use `:ConjureConfig` to display or
+set the different configuration values within Conjure. Here's the full list of
+configuration available in the core plugin. Each language client also has it's
+own set of mappings and configuration you can alter.
+
+As an example, we can change the default prefix from `<localleader>` to `,c`
+with the following command:
+>
+    :ConjureConfig mappings.prefix ",c"
+
+All mappings are prefixed by this by default. To have a mapping work without
+the prefix simply wrap the string in a list.
+>
+    :ConjureConfig mappings.log-split ["ClS"]
+
+Now you can hit `ClS` without a prefix in any buffer Conjure has a client for.
+
+If you're lazy loading Conjure through your plugin manager you may want to use
+the `g:conjure_config` variable instead, as mention later in this section.
+
+`clients.[filetype]`
+            Lua module path to use as a client for a filetype. This can be any
+            module that adheres to the |conjure-clients| interface.
+            Defaults:
+             - `clients.fennel = "conjure.client.fennel.aniseed"`
+             - `clients.clojure = "conjure.client.clojure.nrepl"`
+
+`mappings.prefix`
+            The key that proceeds most mappings.
+            Default: `"<localleader>"`
+
+`mappings.log-split`
+            Opens the log in a horizontal split.
+            Default: `"ls"`
+
+`mappings.log-vsplit`
+            Opens the log in a vertical split.
+            Default: `"lv"`
+
+`mappings.log-tab`
+            Opens the log in a new tab.
+            Default: `"lt"`
+
+`mappings.log-close-visible`
+            Close all visible log windows.
+            Default: `"lq"`
+
+`mappings.eval-current-form`
+            Evaluates the form under the cursor.
+            Default: `"ee"`
+
+`mappings.eval-root-form`
+            Evaluates the root form under the cursor.
+            Default: `"er"`
+
+`mappings.eval-marked-form`
+            Evaluates the form at the marks location.
+            Default: `"em"`
+
+`mappings.eval-word`
+            Evaluates the word under the cursor.
+            Default: `"ew"`
+
+`mappings.eval-file`
+            Evaluates the file from disk.
+            Default: `"ef"`
+
+`mappings.eval-buf`
+            Evaluates the buffer from memory.
+            Default: `"eb"`
+
+`mappings.eval-visual`
+            Evaluates the visual selection.
+            Default: `"E"`
+
+`mappings.eval-motion`
+            Evaluates the following motion.
+            Default: `"E"`
+
+`mappings.doc-word`
+            Looks up documentation for the word under the cursor.
+            Default: `["K"]`
+
+`mappings.def-word`
+            Goes to the definition of the word under the cursor.
+            Default: `["gd"]`
+
+`log.hud.width`
+            Width of the HUD as a percentage of the editor width.
+            A float between 0.0 and 1.0.
+            Default: `0.42`
+
+`log.hud.height`
+            Height of the HUD as a percentage of the editor height.
+            A float between 0.0 and 1.0.
+            Default: `0.3`
+
+`log.hud.enabled?`
+            Should the HUD be displayed at all.
+            Default: `true`
+
+`log.break-length`
+            Length of the break comment (`; ---------...`) between log results
+            in characters. Used in trimming to avoid cutting forms in half.
+            Default: `80`
+
+`log.trim.at`
+            Trim the log once the line count passes the value.
+            Default: `10000`
+
+`log.trim.to`
+            Trim the log down to this many lines when it gets too long.
+            Default: `7000`
+
+`extract.context-header-lines`
+            How many lines of the file should be checked for a context
+            (namespace name) such as `(module foo.bar)` or `(ns foo.bar)`
+            which is used for setting the right context for evaluations.
+            If you have buffers with huge comment headers you may want to set
+            this higher.
+            If a specific buffer isn't extracting the context correctly, you
+            can override it by setting `b:conjure_context`.
+            Default: `24`
+
+`preview.sample-limit`
+            Most evaluation actions create a line in the log buffer with a
+            preview of the code that was evaluated as a reminder. This setting
+            controls how long that preview should be before it trails off into
+            ellipsis. It is a percentage value based on the width of the
+            editor. This is so you can align it with the width of your HUD.
+            A float between 0.0 and 1.0.
+            Default: `0.3`
+
+And finally some regular Neovim variables.
+
+`b:conjure_context`
+            Override the context name for a specific buffer, preventing
+            Conjure from attempting to extract it from the first few lines
+            defined by the `extract.context-header-lines` configuration value.
+            Default: `undefined`
+
+`g:conjure_config`
+            An optional dictionary of string key value pairs. It's read when
+            Conjure is first loaded and ends up setting the configuration keys
+            to the dictionary's values, the keys work exactly the same as the
+            first argument to `:ConjureConfig`.
+            This would turn the HUD off:
+            `let g:conjure_config = {"log.hud.enabled?": v:false}`
+            It's intended to be used when you're lazy loading Conjure through
+            your plugin manager. If Conjure is already loaded you can just use
+            `:ConjureConfig` directly.
+            Default: `undefined`
+
+==============================================================================
+LOG                                                              *conjure-log*
+
+The log buffer is a regular buffer that you can edit and interact with as you
+normally would. You can even insert new code and evaluate it, seeing the
+results at the bottom of the buffer, kind of like a regular REPL.
+
+The log buffer will scroll along with new results if you leave your cursor on
+the last line, like a terminal following along with new output.
+
+If you'd like to stop it scrolling and just see a specific result for a while
+you can move your cursor to it. Conjure will then leave that cursor where it
+is, it'll only follow along if left on the last line of the buffer. To
+continue following new output you can press `G` to go to the bottom.
+
+If a result is appended to the end of the log and you don't currently have a
+log on your screen with the cursor following along, the HUD will
+appear (unless you've disabled it through config). This is to ensure you
+always see new entries, even if you're looking at something further up in the
+log.
+
+The HUD is a floating window that shows you the current tail of the log. It
+tries to show you the top of extremely large results since the top of a data
+structure tends to be more interesting than the bottom. It'll vanish when you
+move the cursor and can be turned off entirely through configuration.
+
+The log will be automatically trimmed when it gets too long, this can be
+tweaked with configuration. It will attempt to trim to a known good break
+point so as to not cut a large data structure or string in half resulting in
+broken highlighting in the rest of the log buffer.
+
+==============================================================================
+CLIENTS                                                      *conjure-clients*
+
+Conjure comes bundled with a set of built in clients, you can access their
+documentation below or through the `:help conjure-client-*` command. You can
+install more clients through 3rd party plugins or simply write your own within
+your dotfiles.
+
+ - |conjure-client-fennel-aniseed|
+ - |conjure-client-clojure-nrepl|
+
+Language clients are simply Lua modules (which can be compiled from Fennel
+using Aniseed) that have a few essential properties and functions in them.
+
+The module doesn't have to be within Conjure's source tree, it can be inside a
+3rd party plugin repository, you just connect a filetype to it with the
+`clients.[filetype]` configuration option.
+
+When implementing a new language client you'll need to provide the following
+values and functions at the top level of your module. You can split your
+client up into separate modules and just build this API into your init module.
+See `fnl/conjure/client/clojure/nrepl/init.fnl` for an example of this.
+
+`buf-suffix`
+            String
+            Last part of the log buffer name which helps with setting the
+            filetype among other things depending on what plugins a user may
+            have installed. For example, Fennel's is `".fnl"` and Clojure's is
+            `".cljc"`. Whatever suits your language, it's up to you!
+
+`context-pattern`
+            String
+            Lua pattern to identify the module or namespace name from the
+            first few lines of the buffer. Used to set the context for each
+            user evaluation. Clojure's is `%(%s*ns%s*(.-)[%s){]`, alter as you
+            see fit for your language. The value in the first capture group is
+            passed into later functions as `opts.context`.
+
+`comment-prefix`
+            String
+            Proceeds lines that describe what kind of evaluation has taken
+            place (among other things), you don't want those to be highlighted
+            as code so they're turned into comments by placing this string
+            before them. For Lisps you probably want to use `"; "`, notice the
+            trailing space!
+
+`config`
+            Table
+            Default configuration values that can be set using the techniques
+            mentioned in |conjure-configuration|.  You can nest your
+            configuration within tables to keep related keys close together.
+
+`eval-str`
+            Function(opts)
+            Takes a single argument table `opts` which contains the following:
+             - `opts.code`
+                 String to be embedded in your evaluation. You can wrap it
+                 with whatever padding code you require. This is what the user
+                 selected for evaluation.
+             - `opts.context`
+                 String extracted using `context-pattern` or `nil` if nothing
+                 could be found. At that point you should default it to
+                 something sensible or not set the context of your evaluation
+                 at all.
+             - `opts.action`
+                 Always `"eval"` in this case.
+             - `opts.file-path`
+                 Path to the buffer the user is evaluating from.
+             - `opts.origin`
+                 What the evaluation originated from such as `"current-form"`.
+             - `opts.preview`
+                 A comment that's appended to the log for you describing what
+                 action the user just took for future reference. It lends
+                 context to your follow up log entries with results.
+             - `opts.range`
+                 Contains `start` and `end` tuples that mark the starting and
+                 ending row and column for the code that was extracted from
+                 the buffer.
+
+`doc-str`
+            Function(opts)
+            Almost identical to `eval-str` even down to taking the same
+            arguments. Instead of just evaluating `opts.code` though it should
+            wrap it in whatever code necessary to produce documentation output
+            for the given code. `opts.code` will probably be a single keyword.
+            In the case of Clojure it's wrapped in `(doc ...)`, if your
+            language doesn't implement documentation lookup you can skip this
+            function or have it print a warning. The Clojure implementation
+            actually leans on it's own `eval-str`.
+
+`def-str`
+            Function(opts)
+            Similar to `doc-str` but it should jump the user to the definition
+            of the value in `opts.code` using the `conjure.editor/go-to`
+            function (or similar, it's up to you how you implement it).
+            If your language doesn't support looking up definitions you can
+            leave the function out or print a warning.
+
+`completions`
+            Function(opts)
+            Called with a single argument table called `opts`, containing the
+            following values.
+             - `opts.prefix`
+                 The string you should be completing for the user.
+             - `opts.cb`
+                 A callback function to be invoked with the results.
+                 Completion results should conform to what
+                 |complete-functions| return in a normal |omnifunc|.
+             - `opts.context`
+                 Same as the context in `eval-str`, can be used to calculate
+                 completions based on the file the user is working on.
+            If you don't provide this function all completion attempts will
+            work, they'll just default to returning no results, it shouldn't
+            produce errors or warnings.
+            Asynchronous completion plugins that have Conjure support will
+            call this function, so you'll get automatic completions as you
+            type right away.
+
+`eval-file`
+            Function(opts)
+            Again, similar to `eval-str`, you should just perform an
+            appropriate evaluation (maybe using your own `eval-str`) to load
+            `opts.file-path` from disk, however that should be done in your
+            language.
+
+`on-filetype`
+            Function()
+            Called when the filetype your client is associated with is opened.
+            This is the time for you to set up your own mappings and buffer
+            local commands using the `conjure.mapping` module where required.
+            You can create your own mappings based on your own configuration,
+            just like the Fennel + Aniseed module. It's called every time a
+            file associated with your client is opened.
+
+`on-load`
+            Function()
+            Much like `on-filetype` but it's only called as the client is
+            loaded for the first time. You can use this to register
+            autocommands or perform one off actions the first time a user
+            opens a file of a relevant filetype. In the case of Clojure, this
+            is when it attempts to connect to a `.nrepl-port` file and hooks
+            up an autocommand to clean up any existing nREPL connection before
+            Neovim exits.
+
+vim:tw=78:sw=2:ts=2:ft=help:norl:et:listchars=

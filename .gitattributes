@@ -1,0 +1,3 @@
+lua/* linguist-generated
+lua/conjure/aniseed linguist-vendored
+lua/conjure/bencode.lua linguist-vendored

@@ -1,0 +1,14 @@
+;; shadow-cljs configuration
+{:source-paths
+ ["dev/src"]
+
+ :dependencies
+ [[cider/cider-nrepl "0.24.0"]]
+
+ :dev-http {8080 "dev/public"}
+
+ :builds
+ {:app {:target :browser
+        :output-dir "dev/public/js"
+        :asset-path "/js"
+        :modules {:main {:entries [dev.sandbox]}}}}}

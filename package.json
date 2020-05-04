@@ -1,0 +1,27 @@
+{
+  "name": "conjure",
+  "version": "1.0.0",
+  "description": "= Conjure",
+  "main": "index.js",
+  "directories": {
+    "doc": "doc",
+    "test": "test"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "shadow-cljs": "^2.8.97"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Olical/conjure.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Olical/conjure/issues"
+  },
+  "homepage": "https://github.com/Olical/conjure#readme"
+}
