@@ -8,6 +8,8 @@
   [a b]
   (+ a b))
 
+(add 10 20)
+
 (do
   (print "foo ")
   (print "bar ")
@@ -16,6 +18,10 @@
   (print " same!\n")
   (println "     some indentation")
   (println "last on own"))
+
+(comment
+  (+ 5 1) (+ 10 20) :foo
+  (+ 1 2))
 
 ; :ConjureConfig clojure.nrepl/refresh.after "dev.sandbox/after-refresh"
 (defn after-refresh []

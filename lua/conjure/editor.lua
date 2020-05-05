@@ -122,9 +122,17 @@ do
   local v_23_0_ = nil
   do
     local v_23_0_0 = nil
-    local function go_to0(path, line, column)
-      nvim.ex.edit(path)
-      return nvim.win_set_cursor(0, {line, a.dec(column)})
+    local function go_to0(path_or_win, line, column)
+      if a["string?"](path_or_win) then
+        nvim.ex.edit(path_or_win)
+      end
+      local _4_
+      if ("number" == type(path_or_win)) then
+        _4_ = path_or_win
+      else
+        _4_ = 0
+      end
+      return nvim.win_set_cursor(_4_, {line, a.dec(column)})
     end
     v_23_0_0 = go_to0
     _0_0["go-to"] = v_23_0_0

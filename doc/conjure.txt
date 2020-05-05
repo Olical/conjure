@@ -101,6 +101,10 @@ I've also included some commands since they're related to the mappings.
                          function you're editing if your cursor is within a
                          few nested forms.
 
+<localleader>e!          Evaluate the form under the cursor and replace it
+                         with the result of the evaluation. Using this on the
+                         form `(+ 10 20)` would replace the form with `30`.
+
 <localleader>em[mark]    Evaluate the form under the cursor at the given
                          |mark|. Set a regular Neovim mark on a form using
                          `mF` for example in any file, then jump to another
@@ -211,6 +215,10 @@ the `g:conjure_config` variable instead, as mention later in this section.
 `mappings.eval-root-form`
             Evaluates the root form under the cursor.
             Default: `"er"`
+
+`mappings.eval-replace-form`
+            Evaluates the form under the cursor and replace with the result.
+            Default: `"e!"`
 
 `mappings.eval-marked-form`
             Evaluates the form at the marks location.
@@ -419,6 +427,12 @@ See `fnl/conjure/client/clojure/nrepl/init.fnl` for an example of this.
                  Contains `start` and `end` tuples that mark the starting and
                  ending row and column for the code that was extracted from
                  the buffer.
+             - `opts.on-result`
+                 An optional function, when it's present you should call it
+                 with the result of the evaluation as a string. This is used
+                 when evaluating code and replacing it in the buffer it came
+                 from. Such as evaluating `(+ 10 20)` and replacing the
+                 original form with `30`.
 
 `doc-str`
             Function(opts)

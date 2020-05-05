@@ -146,7 +146,10 @@ do
             return a.map(_5_, result_lines)
           end
         end
-        return display(_5_())
+        display(_5_())
+        if opts["on-result"] then
+          return opts["on-result"](result_str)
+        end
       end
     end
     v_23_0_0 = display_result0

@@ -21,9 +21,15 @@
 (defn cursor-top []
   (nvim.fn.screenrow))
 
-(defn go-to [path line column]
-  (nvim.ex.edit path)
-  (nvim.win_set_cursor 0 [line (a.dec column)]))
+(defn go-to [path-or-win line column]
+  (when (a.string? path-or-win)
+    (nvim.ex.edit path-or-win))
+
+  (nvim.win_set_cursor
+    (if (= :number (type path-or-win))
+      path-or-win
+      0)
+    [line (a.dec column)]))
 
 (defn go-to-mark [m]
   (nvim.ex.normal_ (.. "`" m)))

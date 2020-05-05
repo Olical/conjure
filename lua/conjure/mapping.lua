@@ -70,6 +70,7 @@ do
       buf("n", config.mappings["log-close-visible"], "conjure.log", "close-visible")
       buf("n", config.mappings["eval-current-form"], "conjure.eval", "current-form")
       buf("n", config.mappings["eval-root-form"], "conjure.eval", "root-form")
+      buf("n", config.mappings["eval-replace-form"], "conjure.eval", "replace-form")
       buf("n", config.mappings["eval-marked-form"], "conjure.eval", "marked-form")
       buf("n", config.mappings["eval-word"], "conjure.eval", "word")
       buf("n", config.mappings["eval-file"], "conjure.eval", "file")

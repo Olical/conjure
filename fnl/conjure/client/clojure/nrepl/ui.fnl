@@ -47,7 +47,10 @@
           (text.split-lines resp.value))
 
         nil)
-      {:join-first? joined?})))
+      {:join-first? joined?}))
+
+  (when (and opts.on-result resp.value)
+    (opts.on-result resp.value)))
 
 (defn display-given-sessions [sessions cb]
   (let [current (a.get-in state [:conn :session])]

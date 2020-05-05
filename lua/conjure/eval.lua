@@ -15,20 +15,21 @@ do
   _0_0 = module_23_0_
 end
 local function _1_(...)
-  _0_0["aniseed/local-fns"] = {require = {a = "conjure.aniseed.core", client = "conjure.client", config = "conjure.config", editor = "conjure.editor", extract = "conjure.extract", log = "conjure.log", nvim = "conjure.aniseed.nvim", promise = "conjure.promise", text = "conjure.text", uuid = "conjure.uuid"}}
-  return {require("conjure.aniseed.core"), require("conjure.client"), require("conjure.config"), require("conjure.editor"), require("conjure.extract"), require("conjure.log"), require("conjure.aniseed.nvim"), require("conjure.promise"), require("conjure.text"), require("conjure.uuid")}
+  _0_0["aniseed/local-fns"] = {require = {a = "conjure.aniseed.core", buffer = "conjure.buffer", client = "conjure.client", config = "conjure.config", editor = "conjure.editor", extract = "conjure.extract", log = "conjure.log", nvim = "conjure.aniseed.nvim", promise = "conjure.promise", text = "conjure.text", uuid = "conjure.uuid"}}
+  return {require("conjure.aniseed.core"), require("conjure.buffer"), require("conjure.client"), require("conjure.config"), require("conjure.editor"), require("conjure.extract"), require("conjure.log"), require("conjure.aniseed.nvim"), require("conjure.promise"), require("conjure.text"), require("conjure.uuid")}
 end
 local _2_ = _1_(...)
 local a = _2_[1]
-local client = _2_[2]
-local config = _2_[3]
-local editor = _2_[4]
-local extract = _2_[5]
-local log = _2_[6]
-local nvim = _2_[7]
-local promise = _2_[8]
-local text = _2_[9]
-local uuid = _2_[10]
+local buffer = _2_[2]
+local client = _2_[3]
+local config = _2_[4]
+local editor = _2_[5]
+local extract = _2_[6]
+local log = _2_[7]
+local nvim = _2_[8]
+local promise = _2_[9]
+local text = _2_[10]
+local uuid = _2_[11]
 do local _ = ({nil, _0_0, nil})[2] end
 local preview = nil
 do
@@ -127,13 +128,23 @@ do
   local v_23_0_ = nil
   do
     local v_23_0_0 = nil
-    local function current_form0(extra_opts)
+    local function current_form0(extra_opts, cb)
       local form = extract.form({})
       if form then
         local _3_ = form
         local range = _3_["range"]
         local content = _3_["content"]
-        return eval_str(a.merge({code = content, origin = "current-form", range = range}, extra_opts))
+        local _4_
+        if cb then
+          local function _5_(result)
+            return cb(form, result)
+          end
+          _4_ = _5_
+        else
+        _4_ = nil
+        end
+        eval_str(a.merge({["on-result"] = _4_, code = content, origin = "current-form", range = range}, extra_opts))
+        return form
       end
     end
     v_23_0_0 = current_form0
@@ -142,6 +153,29 @@ do
   end
   _0_0["aniseed/locals"]["current-form"] = v_23_0_
   current_form = v_23_0_
+end
+local replace_form = nil
+do
+  local v_23_0_ = nil
+  do
+    local v_23_0_0 = nil
+    local function replace_form0()
+      local buf = nvim.win_get_buf(0)
+      local win = nvim.tabpage_get_win(0)
+      local function _3_(_4_0, result)
+        local _5_ = _4_0
+        local range = _5_["range"]
+        buffer["replace-range"](buf, range, result)
+        return editor["go-to"](win, a["get-in"](range, {"start", 1}), a.inc(a["get-in"](range, {"start", 2})))
+      end
+      return current_form({["suppress-hud?"] = true, origin = "replace-form"}, _3_)
+    end
+    v_23_0_0 = replace_form0
+    _0_0["replace-form"] = v_23_0_0
+    v_23_0_ = v_23_0_0
+  end
+  _0_0["aniseed/locals"]["replace-form"] = v_23_0_
+  replace_form = v_23_0_
 end
 local root_form = nil
 do

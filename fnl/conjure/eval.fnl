@@ -7,6 +7,7 @@
             config conjure.config
             promise conjure.promise
             editor conjure.editor
+            buffer conjure.buffer
             uuid conjure.uuid
             log conjure.log}})
 
@@ -52,7 +53,7 @@
 (def- doc-str (client-exec-fn :doc :doc-str))
 (def- def-str (client-exec-fn :def :def-str {:suppress-hud? true}))
 
-(defn current-form [extra-opts]
+(defn current-form [extra-opts cb]
   (let [form (extract.form {})]
     (when form
       (let [{: content : range} form]
@@ -60,8 +61,29 @@
           (a.merge
             {:code content
              :range range
-             :origin :current-form}
-            extra-opts))))))
+             :origin :current-form
+
+             :on-result
+             (when cb
+               (fn [result]
+                 (cb form result)))}
+            extra-opts))
+        form))))
+
+(defn replace-form []
+  (let [buf (nvim.win_get_buf 0)
+        win (nvim.tabpage_get_win 0)]
+    (current-form
+      {:origin :replace-form
+       :suppress-hud? true}
+      (fn [{: range} result]
+        (buffer.replace-range
+          buf
+          range result)
+        (editor.go-to
+          win
+          (a.get-in range [:start 1])
+          (a.inc (a.get-in range [:start 2])))))))
 
 (defn root-form []
   (let [form (extract.form {:root? true})]

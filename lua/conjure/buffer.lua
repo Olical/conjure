@@ -15,12 +15,13 @@ do
   _0_0 = module_23_0_
 end
 local function _1_(...)
-  _0_0["aniseed/local-fns"] = {require = {a = "conjure.aniseed.core", nvim = "conjure.aniseed.nvim"}}
-  return {require("conjure.aniseed.core"), require("conjure.aniseed.nvim")}
+  _0_0["aniseed/local-fns"] = {require = {a = "conjure.aniseed.core", nvim = "conjure.aniseed.nvim", text = "conjure.text"}}
+  return {require("conjure.aniseed.core"), require("conjure.aniseed.nvim"), require("conjure.text")}
 end
 local _2_ = _1_(...)
 local a = _2_[1]
 local nvim = _2_[2]
+local text = _2_[3]
 do local _ = ({nil, _0_0, nil})[2] end
 local unlist = nil
 do
@@ -76,5 +77,36 @@ do
   end
   _0_0["aniseed/locals"]["empty?"] = v_23_0_
   empty_3f = v_23_0_
+end
+local replace_range = nil
+do
+  local v_23_0_ = nil
+  do
+    local v_23_0_0 = nil
+    local function replace_range0(buf, range, s)
+      local start_line = a.dec(a["get-in"](range, {"start", 1}))
+      local end_line = a["get-in"](range, {"end", 1})
+      local start_char = a["get-in"](range, {"start", 2})
+      local end_char = a["get-in"](range, {"end", 2})
+      local new_lines = text["split-lines"](s)
+      local old_lines = nvim.buf_get_lines(buf, start_line, end_line, false)
+      local head = string.sub(a.first(old_lines), 1, start_char)
+      local tail = string.sub(a.last(old_lines), (end_char + 2))
+      local function _3_(l)
+        return (head .. l)
+      end
+      a.update(new_lines, 1, _3_)
+      local function _4_(l)
+        return (l .. tail)
+      end
+      a.update(new_lines, a.count(new_lines), _4_)
+      return nvim.buf_set_lines(buf, start_line, end_line, false, new_lines)
+    end
+    v_23_0_0 = replace_range0
+    _0_0["replace-range"] = v_23_0_0
+    v_23_0_ = v_23_0_0
+  end
+  _0_0["aniseed/locals"]["replace-range"] = v_23_0_
+  replace_range = v_23_0_
 end
 return nil

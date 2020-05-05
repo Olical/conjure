@@ -46,7 +46,9 @@
           result-lines (str.split result-str "\n")] 
       (display (if ok?
                  result-lines
-                 (a.map #(.. "; " $1) result-lines))))))
+                 (a.map #(.. "; " $1) result-lines)))
+      (when opts.on-result
+        (opts.on-result result-str)))))
 
 (defn eval-str [opts]
   (let [code (.. (.. "(module " (or opts.context "aniseed.user") ") ")

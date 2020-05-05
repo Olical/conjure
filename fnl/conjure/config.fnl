@@ -14,6 +14,7 @@
    :log-close-visible "lq"
    :eval-current-form "ee"
    :eval-root-form "er"
+   :eval-replace-form "e!"
    :eval-marked-form "em"
    :eval-word "ew"
    :eval-file "ef"
