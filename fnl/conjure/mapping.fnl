@@ -36,6 +36,10 @@
   (buf :n config.mappings.eval-file :conjure.eval :file)
   (buf :n config.mappings.eval-buf :conjure.eval :buf)
   (buf :v config.mappings.eval-visual :conjure.eval :selection)
+  (buf :n config.mappings.append-prefix :conjure.eval :append-register)
+  (buf :n config.mappings.insert-prefix :conjure.eval :insert-register)
+  (buf :v config.mappings.append-prefix :conjure.eval :replace-register)
+  (buf :v config.mappings.insert-prefix :conjure.eval :replace-register)
   (buf :n config.mappings.doc-word :conjure.eval :doc-word)
   (buf :n config.mappings.def-word :conjure.eval :def-word)
 

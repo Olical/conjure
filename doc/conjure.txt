@@ -127,6 +127,15 @@ I've also included some commands since they're related to the mappings.
                          different to what's on disk if you've edited it
                          without saving.
 
+<localleader>p[reg]      Paste the contents of the Conjure register `reg`
+                         after the cursor. The only register that exists so
+                         far is `r` which contains your last evaluation
+                         result. So you can hit `<localleader>pr` to paste the
+                         last result into your buffer.
+
+<localleader>P[reg]      The same as `<localleader>p` but it inserts before
+                         your cursor instead of after.
+
 K                        Look up documentation for the word under the cursor.
                          Support for this may vary between languages.
 
@@ -240,6 +249,15 @@ the `g:conjure_config` variable instead, as mention later in this section.
 `mappings.eval-buf`
             Evaluates the buffer from memory.
             Default: `"eb"`
+
+`mappings.append-prefix`
+            Prompts for a register key (such as `r` for the last evaluation
+            result) and then appends it after the cursor.
+            Default: `"p"`
+
+`mappings.insert-prefix`
+            Like `append-prefix` but inserts it before the cursor.
+            Default: `"P"`
 
 `mappings.eval-visual`
             Evaluates the visual selection.

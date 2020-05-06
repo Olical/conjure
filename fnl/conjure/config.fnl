@@ -21,6 +21,8 @@
    :eval-buf "eb"
    :eval-visual "E"
    :eval-motion "E"
+   :append-prefix "p"
+   :insert-prefix "P"
    :doc-word ["K"]
    :def-word ["gd"]})
 

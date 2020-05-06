@@ -25,13 +25,26 @@
     [opts.preview]
     (a.merge opts {:break? true})))
 
+(defonce- state
+  {:registers {}})
+
+(defn- with-last-result-hook [opts]
+  (a.update
+    opts :on-result
+    (fn [f]
+      (fn [result]
+        (a.assoc-in state [:registers :r] result)
+        (when f (f result))))))
+
 (defn file []
   (let [opts {:file-path (extract.file-path)
               :origin :file
               :action :eval}]
     (set opts.preview (preview opts))
     (display-request opts)
-    (client.call :eval-file opts)))
+    (client.call
+      :eval-file
+      (with-last-result-hook opts))))
 
 (defn- assoc-context [opts]
   (set opts.context
@@ -49,7 +62,10 @@
       (display-request opts)
       (client.call f-name opts))))
 
-(def- eval-str (client-exec-fn :eval :eval-str))
+(defn- eval-str [opts]
+  ((client-exec-fn :eval :eval-str)
+   (with-last-result-hook opts)))
+
 (def- doc-str (client-exec-fn :doc :doc-str))
 (def- def-str (client-exec-fn :def :def-str {:suppress-hud? true}))
 
@@ -179,3 +195,21 @@
   (let [p (completions-promise prefix)]
     (promise.await p)
     (promise.close p)))
+
+(defn- feedkeys-reg-prompt [prefix]
+  (let [reg (extract.prompt-char)
+        val (a.get-in state [:registers reg])]
+    (if val
+      (nvim.feedkeys
+        (.. prefix val)
+        "nx" false)
+      (a.println (.. "Conjure: Nothing to paste for register '" (or reg "") "'")))))
+
+(defn insert-register []
+  (feedkeys-reg-prompt :i))
+
+(defn append-register []
+  (feedkeys-reg-prompt :a))
+
+(defn replace-register []
+  (feedkeys-reg-prompt :gvc))
