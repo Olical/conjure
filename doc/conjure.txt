@@ -39,6 +39,11 @@ These are the default mappings, |conjure-configuration| will show you how to
 remap them to keys that suit you if required. The default prefix key for
 almost all of the mappings is `<localleader>` (|maplocalleader|).
 
+If you already have a buffer open and you change a mapping's configuration it
+won't update right away. Mappings are defined as you open a buffer, so be sure
+to set up your mappings in your Neovim configuration or at least before you
+open a buffer.
+
 I've also included some commands since they're related to the mappings.
 
 :ConjureEval [code]      Evaluates the given code in the current buffer's
