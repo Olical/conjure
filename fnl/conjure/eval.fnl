@@ -53,7 +53,7 @@
 (def- doc-str (client-exec-fn :doc :doc-str))
 (def- def-str (client-exec-fn :def :def-str {:suppress-hud? true}))
 
-(defn current-form [extra-opts cb]
+(defn current-form [extra-opts]
   (let [form (extract.form {})]
     (when form
       (let [{: content : range} form]
@@ -61,29 +61,31 @@
           (a.merge
             {:code content
              :range range
-             :origin :current-form
-
-             :on-result
-             (when cb
-               (fn [result]
-                 (cb form result)))}
+             :origin :current-form}
             extra-opts))
         form))))
 
 (defn replace-form []
   (let [buf (nvim.win_get_buf 0)
-        win (nvim.tabpage_get_win 0)]
-    (current-form
-      {:origin :replace-form
-       :suppress-hud? true}
-      (fn [{: range} result]
-        (buffer.replace-range
-          buf
-          range result)
-        (editor.go-to
-          win
-          (a.get-in range [:start 1])
-          (a.inc (a.get-in range [:start 2])))))))
+        win (nvim.tabpage_get_win 0)
+        form (extract.form {})]
+    (when form
+      (let [{: content : range} form]
+        (eval-str
+          {:code content
+           :range range
+           :origin :replace-form
+           :suppress-hud? true
+           :on-result
+           (fn [result]
+             (buffer.replace-range
+               buf
+               range result)
+             (editor.go-to
+               win
+               (a.get-in range [:start 1])
+               (a.inc (a.get-in range [:start 2]))))})
+        form))))
 
 (defn root-form []
   (let [form (extract.form {:root? true})]
@@ -99,7 +101,7 @@
         comment-prefix (client.get :comment-prefix)
         (ok? err) (pcall #(editor.go-to-mark mark))]
     (if ok?
-      (do 
+      (do
         (current-form {:origin (..  "marked-form [" mark "]")})
         (editor.go-back))
       (log.append [(.. comment-prefix "Couldn't eval form at mark: " mark)

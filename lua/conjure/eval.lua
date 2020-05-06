@@ -128,22 +128,13 @@ do
   local v_23_0_ = nil
   do
     local v_23_0_0 = nil
-    local function current_form0(extra_opts, cb)
+    local function current_form0(extra_opts)
       local form = extract.form({})
       if form then
         local _3_ = form
         local range = _3_["range"]
         local content = _3_["content"]
-        local _4_
-        if cb then
-          local function _5_(result)
-            return cb(form, result)
-          end
-          _4_ = _5_
-        else
-        _4_ = nil
-        end
-        eval_str(a.merge({["on-result"] = _4_, code = content, origin = "current-form", range = range}, extra_opts))
+        eval_str(a.merge({code = content, origin = "current-form", range = range}, extra_opts))
         return form
       end
     end
@@ -162,13 +153,18 @@ do
     local function replace_form0()
       local buf = nvim.win_get_buf(0)
       local win = nvim.tabpage_get_win(0)
-      local function _3_(_4_0, result)
-        local _5_ = _4_0
-        local range = _5_["range"]
-        buffer["replace-range"](buf, range, result)
-        return editor["go-to"](win, a["get-in"](range, {"start", 1}), a.inc(a["get-in"](range, {"start", 2})))
+      local form = extract.form({})
+      if form then
+        local _3_ = form
+        local range = _3_["range"]
+        local content = _3_["content"]
+        local function _4_(result)
+          buffer["replace-range"](buf, range, result)
+          return editor["go-to"](win, a["get-in"](range, {"start", 1}), a.inc(a["get-in"](range, {"start", 2})))
+        end
+        eval_str({["on-result"] = _4_, ["suppress-hud?"] = true, code = content, origin = "replace-form", range = range})
+        return form
       end
-      return current_form({["suppress-hud?"] = true, origin = "replace-form"}, _3_)
     end
     v_23_0_0 = replace_form0
     _0_0["replace-form"] = v_23_0_0
