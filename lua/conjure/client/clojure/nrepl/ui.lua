@@ -105,10 +105,7 @@ do
         else
           _3_ = nil
         end
-        display(_3_, {["join-first?"] = joined_3f})
-      end
-      if (opts0["on-result"] and resp.value) then
-        return opts0["on-result"](resp.value)
+        return display(_3_, {["join-first?"] = joined_3f})
       end
     end
     v_23_0_0 = display_result0

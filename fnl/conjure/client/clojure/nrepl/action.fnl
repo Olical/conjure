@@ -50,6 +50,17 @@
                (a.first args))
        :port (tonumber (a.last args))})))
 
+(defn- eval-cb-fn [opts]
+  (fn [resp]
+    (when (and (a.get opts :on-result)
+               (a.get resp :value))
+      (opts.on-result resp.value))
+
+    (let [cb (a.get opts :cb)]
+      (if cb
+        (cb resp)
+        (ui.display-result resp opts)))))
+
 (defn eval-str [opts]
   (server.with-conn-or-warn
     (fn [_]
@@ -58,9 +69,7 @@
                    (or opts.context "#?(:cljs cljs.user, :default user)")
                    ")")}
         (fn []))
-      (server.eval opts
-                   (or opts.cb
-                       #(ui.display-result $1 opts))))))
+      (server.eval opts (eval-cb-fn opts)))))
 
 (defn- with-info [opts f]
   (server.with-conn-and-op-or-warn
@@ -167,7 +176,7 @@
 (defn eval-file [opts]
   (server.eval
     (a.assoc opts :code (.. "(clojure.core/load-file \"" opts.file-path "\")"))
-    #(ui.display-result $1 opts)))
+    (eval-cb-fn opts)))
 
 (defn interrupt []
   (server.with-conn-or-warn

@@ -199,7 +199,7 @@ the `g:conjure_config` variable instead, as mention later in this section.
             evaluate a form, you can then hit `"cp` to paste the result into
             your buffer or `<C-r>c` in insert mode. Some suggestions of other
             registers you can set this to:
-             * `"\""` the default register for easy access.
+             * `"\""` or `"*"` the default register for easy access.
              * `"C"` if you want to keep your lower case registers clear.
              * `"_"` the black hole when you don't want this at all.
             Default: `"c"`

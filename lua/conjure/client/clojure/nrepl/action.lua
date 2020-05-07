@@ -114,6 +114,29 @@ do
   _0_0["aniseed/locals"]["connect-host-port"] = v_23_0_
   connect_host_port = v_23_0_
 end
+local eval_cb_fn = nil
+do
+  local v_23_0_ = nil
+  local function eval_cb_fn0(opts)
+    local function _3_(resp)
+      if (a.get(opts, "on-result") and a.get(resp, "value")) then
+        opts["on-result"](resp.value)
+      end
+      do
+        local cb = a.get(opts, "cb")
+        if cb then
+          return cb(resp)
+        else
+          return ui["display-result"](resp, opts)
+        end
+      end
+    end
+    return _3_
+  end
+  v_23_0_ = eval_cb_fn0
+  _0_0["aniseed/locals"]["eval-cb-fn"] = v_23_0_
+  eval_cb_fn = v_23_0_
+end
 local eval_str = nil
 do
   local v_23_0_ = nil
@@ -124,10 +147,7 @@ do
         local function _4_()
         end
         server.eval({code = ("(in-ns '" .. (opts.context or "#?(:cljs cljs.user, :default user)") .. ")")}, _4_)
-        local function _5_(_241)
-          return ui["display-result"](_241, opts)
-        end
-        return server.eval(opts, (opts.cb or _5_))
+        return server.eval(opts, eval_cb_fn(opts))
       end
       return server["with-conn-or-warn"](_3_)
     end
@@ -294,10 +314,7 @@ do
   do
     local v_23_0_0 = nil
     local function eval_file0(opts)
-      local function _3_(_241)
-        return ui["display-result"](_241, opts)
-      end
-      return server.eval(a.assoc(opts, "code", ("(clojure.core/load-file \"" .. opts["file-path"] .. "\")")), _3_)
+      return server.eval(a.assoc(opts, "code", ("(clojure.core/load-file \"" .. opts["file-path"] .. "\")")), eval_cb_fn(opts))
     end
     v_23_0_0 = eval_file0
     _0_0["eval-file"] = v_23_0_0
