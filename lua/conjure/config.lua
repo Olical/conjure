@@ -33,11 +33,22 @@ do
   _0_0["aniseed/locals"]["clients"] = v_23_0_
   clients = v_23_0_
 end
+local eval = nil
+do
+  local v_23_0_ = nil
+  do
+    local v_23_0_0 = {["result-register"] = "c"}
+    _0_0["eval"] = v_23_0_0
+    v_23_0_ = v_23_0_0
+  end
+  _0_0["aniseed/locals"]["eval"] = v_23_0_
+  eval = v_23_0_
+end
 local mappings = nil
 do
   local v_23_0_ = nil
   do
-    local v_23_0_0 = {["append-prefix"] = "p", ["def-word"] = {"gd"}, ["doc-word"] = {"K"}, ["eval-buf"] = "eb", ["eval-current-form"] = "ee", ["eval-file"] = "ef", ["eval-marked-form"] = "em", ["eval-motion"] = "E", ["eval-replace-form"] = "e!", ["eval-root-form"] = "er", ["eval-visual"] = "E", ["eval-word"] = "ew", ["insert-prefix"] = "P", ["log-close-visible"] = "lq", ["log-split"] = "ls", ["log-tab"] = "lt", ["log-vsplit"] = "lv", prefix = "<localleader>"}
+    local v_23_0_0 = {["def-word"] = {"gd"}, ["doc-word"] = {"K"}, ["eval-buf"] = "eb", ["eval-current-form"] = "ee", ["eval-file"] = "ef", ["eval-marked-form"] = "em", ["eval-motion"] = "E", ["eval-replace-form"] = "e!", ["eval-root-form"] = "er", ["eval-visual"] = "E", ["eval-word"] = "ew", ["log-close-visible"] = "lq", ["log-split"] = "ls", ["log-tab"] = "lt", ["log-vsplit"] = "lv", prefix = "<localleader>"}
     _0_0["mappings"] = v_23_0_0
     v_23_0_ = v_23_0_0
   end

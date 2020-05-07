@@ -59,19 +59,13 @@ do
   _0_0["aniseed/locals"]["display-request"] = v_23_0_
   display_request = v_23_0_
 end
-local state = nil
-do
-  local v_23_0_ = (_0_0["aniseed/locals"].state or {registers = {}})
-  _0_0["aniseed/locals"]["state"] = v_23_0_
-  state = v_23_0_
-end
 local with_last_result_hook = nil
 do
   local v_23_0_ = nil
   local function with_last_result_hook0(opts)
     local function _3_(f)
       local function _4_(result)
-        a["assoc-in"](state, {"registers", "r"}, result)
+        nvim.fn.setreg(config.eval["result-register"], result)
         if f then
           return f(result)
         end
@@ -431,66 +425,5 @@ do
   end
   _0_0["aniseed/locals"]["completions-sync"] = v_23_0_
   completions_sync = v_23_0_
-end
-local feedkeys_reg_prompt = nil
-do
-  local v_23_0_ = nil
-  local function feedkeys_reg_prompt0(prefix)
-    local reg = extract["prompt-char"]()
-    local val = a["get-in"](state, {"registers", reg})
-    if val then
-      return nvim.feedkeys((prefix .. val), "nx", false)
-    else
-      return a.println(("Conjure: Nothing to paste for register '" .. (reg or "") .. "'"))
-    end
-  end
-  v_23_0_ = feedkeys_reg_prompt0
-  _0_0["aniseed/locals"]["feedkeys-reg-prompt"] = v_23_0_
-  feedkeys_reg_prompt = v_23_0_
-end
-local insert_register = nil
-do
-  local v_23_0_ = nil
-  do
-    local v_23_0_0 = nil
-    local function insert_register0()
-      return feedkeys_reg_prompt("i")
-    end
-    v_23_0_0 = insert_register0
-    _0_0["insert-register"] = v_23_0_0
-    v_23_0_ = v_23_0_0
-  end
-  _0_0["aniseed/locals"]["insert-register"] = v_23_0_
-  insert_register = v_23_0_
-end
-local append_register = nil
-do
-  local v_23_0_ = nil
-  do
-    local v_23_0_0 = nil
-    local function append_register0()
-      return feedkeys_reg_prompt("a")
-    end
-    v_23_0_0 = append_register0
-    _0_0["append-register"] = v_23_0_0
-    v_23_0_ = v_23_0_0
-  end
-  _0_0["aniseed/locals"]["append-register"] = v_23_0_
-  append_register = v_23_0_
-end
-local replace_register = nil
-do
-  local v_23_0_ = nil
-  do
-    local v_23_0_0 = nil
-    local function replace_register0()
-      return feedkeys_reg_prompt("gvc")
-    end
-    v_23_0_0 = replace_register0
-    _0_0["replace-register"] = v_23_0_0
-    v_23_0_ = v_23_0_0
-  end
-  _0_0["aniseed/locals"]["replace-register"] = v_23_0_
-  replace_register = v_23_0_
 end
 return nil

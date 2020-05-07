@@ -6,6 +6,9 @@
   {:fennel :conjure.client.fennel.aniseed
    :clojure :conjure.client.clojure.nrepl})
 
+(def eval
+  {:result-register "c"})
+
 (def mappings
   {:prefix "<localleader>"
    :log-split "ls"
@@ -21,8 +24,6 @@
    :eval-buf "eb"
    :eval-visual "E"
    :eval-motion "E"
-   :append-prefix "p"
-   :insert-prefix "P"
    :doc-word ["K"]
    :def-word ["gd"]})
 
