@@ -156,6 +156,16 @@ do
   _0_0["aniseed/locals"]["with-buf-wins"] = v_23_0_
   with_buf_wins = v_23_0_
 end
+local win_botline = nil
+do
+  local v_23_0_ = nil
+  local function win_botline0(win)
+    return a.get(a.first(nvim.fn.getwininfo(win)), "botline")
+  end
+  v_23_0_ = win_botline0
+  _0_0["aniseed/locals"]["win-botline"] = v_23_0_
+  win_botline = v_23_0_
+end
 local trim = nil
 do
   local v_23_0_ = nil
@@ -240,10 +250,10 @@ do
               local _7_ = nvim.win_get_cursor(win)
               local row = _7_[1]
               local col = _7_[2]
-              if (old_lines == row) then
-                if ((win ~= state.hud.id) and win_visible_3f(win)) then
-                  visible_scrolling_log_3f = true
-                end
+              if ((win ~= state.hud.id) and win_visible_3f(win) and (win_botline(win) >= old_lines)) then
+                visible_scrolling_log_3f = true
+              end
+              if (row == old_lines) then
                 return nvim.win_set_cursor(win, {new_lines, 0})
               end
             end
@@ -251,6 +261,8 @@ do
           end
           if (not a.get(opts, "suppress-hud?") and not visible_scrolling_log_3f) then
             display_hud()
+          else
+            close_hud()
           end
           return trim(buf)
         end

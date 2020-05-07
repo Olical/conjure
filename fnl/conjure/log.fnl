@@ -80,6 +80,12 @@
         (f win)))
     (nvim.list_wins)))
 
+(defn- win-botline [win]
+  (-> win
+      (nvim.fn.getwininfo)
+      (a.first)
+      (a.get :botline)))
+
 (defn- trim [buf]
   (let [line-count (nvim.buf_line_count buf)]
     (when (> line-count config.log.trim.at)
@@ -141,14 +147,18 @@
           buf
           (fn [win]
             (let [[row col] (nvim.win_get_cursor win)]
-              (when (= old-lines row)
-                (when (and (not= win state.hud.id) (win-visible? win))
-                  (set visible-scrolling-log? true))
+              (when (and (not= win state.hud.id)
+                         (win-visible? win)
+                         (>= (win-botline win) old-lines))
+                (set visible-scrolling-log? true))
+
+              (when (= row old-lines)
                 (nvim.win_set_cursor win [new-lines 0]))))))
 
-      (when (and (not (a.get opts :suppress-hud?))
-                 (not visible-scrolling-log?))
-        (display-hud))
+      (if (and (not (a.get opts :suppress-hud?))
+               (not visible-scrolling-log?))
+        (display-hud)
+        (close-hud))
 
       (trim buf))))
 
