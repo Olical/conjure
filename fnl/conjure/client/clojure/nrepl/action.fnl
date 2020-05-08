@@ -103,8 +103,15 @@
                  "(clojure.repl/doc " opts.code "))")})
     (server.with-all-msgs-fn
       (fn [msgs]
-        (if (and (= 2 (a.count msgs))
-                 (= "nil" (a.get (a.first msgs) :value)))
+        (if (a.some (fn [msg]
+                      (or (a.get msg :out)
+                          (a.get msg :err)))
+                    msgs) 
+          (a.run!
+            #(ui.display-result
+               $1
+               {:simple-out? true :ignore-nil? true})
+            msgs)
           (do
             (ui.display ["; No results, checking CIDER's info op"])
             (with-info
@@ -120,12 +127,7 @@
                   (ui.display
                     (a.concat
                       ["; Unknown result, it may still be helpful"]
-                      (text.prefixed-lines (view.serialise info) "; ")))))))
-          (a.run!
-            #(ui.display-result
-               $1
-               {:simple-out? true :ignore-nil? true})
-            msgs))))))
+                      (text.prefixed-lines (view.serialise info) "; "))))))))))))
 
 (defn- nrepl->nvim-path [path]
   (if

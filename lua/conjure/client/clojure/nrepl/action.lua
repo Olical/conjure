@@ -217,9 +217,17 @@ do
     local v_23_0_0 = nil
     local function doc_str0(opts)
       local function _3_(msgs)
-        if ((2 == a.count(msgs)) and ("nil" == a.get(a.first(msgs), "value"))) then
+        local function _4_(msg)
+          return (a.get(msg, "out") or a.get(msg, "err"))
+        end
+        if a.some(_4_, msgs) then
+          local function _5_(_241)
+            return ui["display-result"](_241, {["ignore-nil?"] = true, ["simple-out?"] = true})
+          end
+          return a["run!"](_5_, msgs)
+        else
           ui.display({"; No results, checking CIDER's info op"})
-          local function _4_(info)
+          local function _5_(info)
             if a["nil?"](info) then
               return ui.display({"; Nothing found via CIDER's info either"})
             elseif info.javadoc then
@@ -228,12 +236,7 @@ do
               return ui.display(a.concat({"; Unknown result, it may still be helpful"}, text["prefixed-lines"](view.serialise(info), "; ")))
             end
           end
-          return with_info(opts, _4_)
-        else
-          local function _4_(_241)
-            return ui["display-result"](_241, {["ignore-nil?"] = true, ["simple-out?"] = true})
-          end
-          return a["run!"](_4_, msgs)
+          return with_info(opts, _5_)
         end
       end
       return server.eval(a.merge({}, opts, {code = ("(do (require 'clojure.repl)" .. "(clojure.repl/doc " .. opts.code .. "))")}), server["with-all-msgs-fn"](_3_))
