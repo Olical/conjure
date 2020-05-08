@@ -171,4 +171,22 @@ do
   _0_0["aniseed/locals"]["go-back"] = v_23_0_
   go_back = v_23_0_
 end
+local has_filetype_3f = nil
+do
+  local v_23_0_ = nil
+  do
+    local v_23_0_0 = nil
+    local function has_filetype_3f0(ft)
+      local function _3_(_241)
+        return (ft == _241)
+      end
+      return a.some(_3_, nvim.fn.getcompletion(ft, "filetype"))
+    end
+    v_23_0_0 = has_filetype_3f0
+    _0_0["has-filetype?"] = v_23_0_0
+    v_23_0_ = v_23_0_0
+  end
+  _0_0["aniseed/locals"]["has-filetype?"] = v_23_0_
+  has_filetype_3f = v_23_0_
+end
 return nil

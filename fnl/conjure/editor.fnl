@@ -36,3 +36,6 @@
 
 (defn go-back []
   (nvim.ex.normal_ (nvim.replace_termcodes "<c-o>" true false true)))
+
+(defn has-filetype? [ft]
+  (a.some #(= ft $1) (nvim.fn.getcompletion ft :filetype)))

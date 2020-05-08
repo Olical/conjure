@@ -124,3 +124,7 @@
   (bridge.viml->lua
     :conjure.mapping :config-command
     {:args "<f-args>"}))
+
+(nvim.ex.command_
+  "ConjureSchool"
+  (bridge.viml->lua :conjure.school :start {}))
