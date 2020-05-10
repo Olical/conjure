@@ -482,3 +482,17 @@
                  (opts.cb))))))
     {:silent? true
      :else #(opts.cb [])}))
+
+(defn out-subscribe []
+  (ui.display ["; Subscribing to out"] {:break? true})
+  (server.with-conn-and-op-or-warn
+    :out-subscribe
+    (fn [conn]
+      (server.send {:op :out-subscribe}))))
+
+(defn out-unsubscribe []
+  (ui.display ["; Unsubscribing from out"] {:break? true})
+  (server.with-conn-and-op-or-warn
+    :out-unsubscribe
+    (fn [conn]
+      (server.send {:op :out-unsubscribe}))))

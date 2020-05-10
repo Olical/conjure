@@ -57,6 +57,12 @@ options relevant to these mappings.
                          Calls through to `cider.piggieback/cljs-repl`.
                          https://github.com/nrepl/piggieback
 
+:ConjureOutSubscribe     Change `#'*out*` so that it also prints to active
+                         sessions, even outside an eval scope.
+
+:ConjureOutUnsubscribe   Change `#'*out*` so that it no longer prints to
+                         active sessions outside an eval scope.
+
 <localleader>cd          Disconnect from the current nREPL server.
 
 <localleader>cf          Connect to a server using the port found in any of

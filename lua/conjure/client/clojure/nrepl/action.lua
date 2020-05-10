@@ -946,4 +946,42 @@ do
   _0_0["aniseed/locals"]["completions"] = v_23_0_
   completions = v_23_0_
 end
+local out_subscribe = nil
+do
+  local v_23_0_ = nil
+  do
+    local v_23_0_0 = nil
+    local function out_subscribe0()
+      ui.display({"; Subscribing to out"}, {["break?"] = true})
+      local function _3_(conn)
+        return server.send({op = "out-subscribe"})
+      end
+      return server["with-conn-and-op-or-warn"]("out-subscribe", _3_)
+    end
+    v_23_0_0 = out_subscribe0
+    _0_0["out-subscribe"] = v_23_0_0
+    v_23_0_ = v_23_0_0
+  end
+  _0_0["aniseed/locals"]["out-subscribe"] = v_23_0_
+  out_subscribe = v_23_0_
+end
+local out_unsubscribe = nil
+do
+  local v_23_0_ = nil
+  do
+    local v_23_0_0 = nil
+    local function out_unsubscribe0()
+      ui.display({"; Unsubscribing from out"}, {["break?"] = true})
+      local function _3_(conn)
+        return server.send({op = "out-unsubscribe"})
+      end
+      return server["with-conn-and-op-or-warn"]("out-unsubscribe", _3_)
+    end
+    v_23_0_0 = out_unsubscribe0
+    _0_0["out-unsubscribe"] = v_23_0_0
+    v_23_0_ = v_23_0_0
+  end
+  _0_0["aniseed/locals"]["out-unsubscribe"] = v_23_0_
+  out_unsubscribe = v_23_0_
+end
 return nil

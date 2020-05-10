@@ -99,7 +99,15 @@
     "-nargs=1 -buffer ConjurePiggieback"
     (bridge.viml->lua
       :conjure.client.clojure.nrepl.action :piggieback
-      {:args "<f-args>"})))
+      {:args "<f-args>"}))
+
+  (nvim.ex.command_
+    "-nargs=0 -buffer ConjureOutSubscribe"
+    (bridge.viml->lua :conjure.client.clojure.nrepl.action :out-subscribe {}))
+
+  (nvim.ex.command_
+    "-nargs=0 -buffer ConjureOutUnsubscribe"
+    (bridge.viml->lua :conjure.client.clojure.nrepl.action :out-unsubscribe {})))
 
 (defn on-load []
   (nvim.ex.augroup :conjure_clojure_nrepl_cleanup)
