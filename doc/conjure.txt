@@ -32,6 +32,9 @@ This documentation will show you which mappings are available by default and
 how to configure them to suit you. You'll also learn about the extra features
 and mappings that are provided by each language specific client.
 
+You can execute `:ConjureSchool` to begin the interactive tutorial which will
+introduce you to Conjure's workflow and mappings.
+
 ==============================================================================
 MAPPINGS                                                    *conjure-mappings*
 
@@ -45,6 +48,9 @@ to set up your mappings in your Neovim configuration or at least before you
 open a buffer.
 
 I've also included some commands since they're related to the mappings.
+
+:ConjureSchool           Start the interactive tutorial which will walk you
+                         through the workflow and mappings Conjure provides.
 
 :ConjureEval [code]      Evaluates the given code in the current buffer's
                          language and context. Accepts a range so
