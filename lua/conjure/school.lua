@@ -95,7 +95,13 @@ do
         local buf = upsert_buf()
         nvim.ex.edit(buf_name)
         nvim.buf_set_lines(buf, 0, -1, false, {})
-        return append({";; WARNING: This is under active development and isn't finished.", "", "(module user.conjure-school", "  {require {school conjure.school}})", "", ";; Welcome to Conjure school, I hope you enjoy your time here!", ";; This language is Fennel, it's quite similar to Clojure.", ";; Let's learn how to evaluate it using Conjure's assortment of mappings.", ";; You can learn how to change these mappings with :help conjure-mappings", "", (";; Let's begin by evaluating the whole buffer using " .. map_str("eval-buf")), "(school.lesson-1)"})
+        local _4_
+        if ("<localleader>" == config.mappings.prefix) then
+          _4_ = {(";; Your <localleader> is currently mapped to " .. nvim.g.maplocalleader)}
+        else
+        _4_ = nil
+        end
+        return append(a.concat({";; Warning: This is under active development and isn't finished.", "", "(module user.conjure-school", "  {require {school conjure.school}})", "", ";; Welcome to Conjure school, I hope you enjoy your time here!", ";; This language is Fennel, it's quite similar to Clojure.", ";; Let's learn how to evaluate it using Conjure's assortment of mappings.", ";; You can learn how to change these mappings with :help conjure-mappings", "", (";; Let's begin by evaluating the whole buffer using " .. map_str("eval-buf"))}, _4_, {"(school.lesson-1)"}))
       end
     end
     v_23_0_0 = start0

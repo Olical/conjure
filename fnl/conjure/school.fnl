@@ -37,18 +37,21 @@
     (nvim.ex.edit buf-name)
     (nvim.buf_set_lines buf 0 -1 false [])
     (append
-      [";; WARNING: This is under active development and isn't finished."
-       ""
-       "(module user.conjure-school"
-       "  {require {school conjure.school}})"
-       ""
-       ";; Welcome to Conjure school, I hope you enjoy your time here!"
-       ";; This language is Fennel, it's quite similar to Clojure."
-       ";; Let's learn how to evaluate it using Conjure's assortment of mappings."
-       ";; You can learn how to change these mappings with :help conjure-mappings"
-       ""
-       (.. ";; Let's begin by evaluating the whole buffer using " (map-str :eval-buf))
-       "(school.lesson-1)"])))
+      (a.concat
+        [";; Warning: This is under active development and isn't finished."
+         ""
+         "(module user.conjure-school"
+         "  {require {school conjure.school}})"
+         ""
+         ";; Welcome to Conjure school, I hope you enjoy your time here!"
+         ";; This language is Fennel, it's quite similar to Clojure."
+         ";; Let's learn how to evaluate it using Conjure's assortment of mappings."
+         ";; You can learn how to change these mappings with :help conjure-mappings"
+         ""
+         (.. ";; Let's begin by evaluating the whole buffer using " (map-str :eval-buf))]
+        (when (= "<localleader>" config.mappings.prefix)
+          [(.. ";; Your <localleader> is currently mapped to " nvim.g.maplocalleader)])
+        ["(school.lesson-1)"]))))
 
 (defn lesson-1 []
   (append
