@@ -11,7 +11,6 @@ else
   echo "$PREFIX already exists, no need to download."
 fi
 
-nvim --cmd "set rtp+=$PREFIX/conjure-develop" +ConjureSchool
-
-echo "I hope you had a great time! Cleaning up $PREFIX and exiting."
-rm -rf $PREFIX
+nvim --cmd "set rtp+=$PREFIX/conjure-develop" +ConjureSchool \
+  && echo "I hope you had a great time! Cleaning up $PREFIX and exiting." \
+  && rm -rf $PREFIX
