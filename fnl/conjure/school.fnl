@@ -43,15 +43,18 @@
          "            nvim conjure.aniseed.nvim}})"
          ""
          ";; Welcome to Conjure school!"
-         ";; Grab yourself a nice beverage and get evaluating. I hope you enjoy!"
+         ";; Grab yourself a nice beverage and let's get evaluating. I hope you enjoy!"
          ""
          ";; This language is Fennel, it's quite similar to Clojure."
+         ";; Conjure is written in Fennel, it's compiled to Lua and executed inside Neovim itself."
+         ";; This means we can work with a Lisp without installing or running anything else."
+         ""
          ";; Let's learn how to evaluate it using Conjure's assortment of mappings."
          ";; You can learn how to change these mappings with :help conjure-mappings"
          ""
          (.. ";; Let's begin by evaluating the whole buffer using " (map-str :eval-buf))]
         (when (= "<localleader>" config.mappings.prefix)
-          [(.. ";; Your <localleader> is currently mapped to " nvim.g.maplocalleader)])
+          [(.. ";; Your <localleader> is currently mapped to \"" nvim.g.maplocalleader "\"")])
         ["(school.lesson-1)"]))))
 
 (defn lesson-1 []
@@ -59,14 +62,14 @@
     [""
      ";; Good job!"
      ";; You'll notice the heads up display (HUD) appeared showing the result of the evaluation."
-     ";; All results are appended to the log buffer, when you don't have the log open the HUD will appear."
+     ";; All results are appended to a log buffer. If that log is not open, the HUD will appear."
      ";; The HUD closes automatically when you move your cursor."
      ""
      (.. ";; You can open the log buffer horizontally (" (map-str :log-split) "), vertically (" (map-str :log-vsplit) ") or in a tab (" (map-str :log-tab) ").")
      (.. ";; All visible log windows (including the HUD) can be closed with " (map-str :log-close-visible))
-     ";; Try opening and closing the log window to get the hang of it now."
+     ";; Try opening and closing the log window to get the hang of those key mappings."
      ";; It's a regular window and buffer, so you can edit and close it however you want."
-     ";; Feel free to leave it open in a split for the next lesson to see how it behaves."
+     ";; Feel free to leave the log open in a split for the next lesson to see how it behaves."
      ""
      ";; Next, we have a form inside a comment. We want to evaluate that inner form, not the comment."
      (.. ";; Place your cursor on the inner form (the one inside the comment) and use " (map-str :eval-current-form) " to evaluate it.")
@@ -77,7 +80,7 @@
 (defn lesson-2 []
   (append
     [""
-     ";; Awesome! You evaluated the form under your cursor."
+     ";; Awesome! You evaluated the inner form under your cursor."
      (.. ";; If we want to evaluate the outermost form under our cursor, we can use " (map-str :eval-root-form) " instead.")
      ";; Try that below to print some output and advance to the next lesson."
      ";; You can place your cursor anywhere inside the (do ...) form or it's children."
@@ -89,12 +92,12 @@
 (defn lesson-3 []
   (append
     [""
-     ";; You evaluated the root form! Nice!"
+     ";; You evaluated the outermost form! Nice!"
      ";; Notice that the print output was captured and displayed in the log too."
      ";; The result of every evaluation is stored in a Neovim register as well as the log."
      (.. ";; Try pressing \"" config.eval.result-register "p to paste the contents of the register into your buffer.")
      (.. ";; We can also evaluate a form and replace it with the result of the evaluation with " (map-str :eval-replace-form))
-     ";; Try that in the next lesson below."
+     (.. ";; We'll try that in the next lesson, place your cursor inside the form below and press " (map-str :eval-replace-form))
      "(school.lesson-4)"])
   (progress 3))
 
@@ -104,7 +107,7 @@
      ";; Well done! Notice how the resulting string in the log also replaced the form in the buffer!"
      ";; Next let's try evaluating a form at a mark."
      ";; Place your cursor on the next lesson form below and use mf to set the f mark at that location."
-     (.. ";; Now move your cursor elsewhere in the buffer and use " (map-str :eval-marked-form) " to evaluate it.")
+     (.. ";; Now move your cursor elsewhere in the buffer and use " (map-str :eval-marked-form) "f to evaluate it.")
      ";; If you use a capital letter like mF you can even open a different file and evaluate that marked form without changing buffers!"
      "(school.lesson-5)"])
   (progress 4))
@@ -150,7 +153,7 @@
      ";; To learn more about configuring Conjure check out :help conjure"
      ";; You can learn about specific languages with :help conjure-client- and then tab completion."
      ";; For example, conjure-client-fennel-aniseed or conjure-client-clojure-nrepl."
-     ";; Evaluate the form below to open Conjure's help."
+     (.. ";; Evaluate the form below to open Conjure's help with " (map-str :eval-current-form))
      "(nvim.ex.help :conjure)"
      ""
      ";; I hope you have a wonderful time in Conjure!"])
