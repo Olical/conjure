@@ -64,7 +64,7 @@ do
       do
         local _3_0 = config.connection["port-files"]
         if _3_0 then
-          local _4_0 = a.map(fs["resolve-in-parent-dirs"], _3_0)
+          local _4_0 = a.map(fs.resolve, _3_0)
           if _4_0 then
             local _5_0 = a.some(a.slurp, _4_0)
             if _5_0 then

@@ -33,7 +33,7 @@
 
 (defn connect-port-file []
   (let [port (-?>> config.connection.port-files
-                   (a.map fs.resolve-in-parent-dirs)
+                   (a.map fs.resolve)
                    (a.some a.slurp)
                    (tonumber))]
     (if port

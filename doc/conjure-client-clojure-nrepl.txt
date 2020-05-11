@@ -135,6 +135,9 @@ All configuration can be set as described in |conjure-configuration|.
             first file to exist has it's contents parsed as a number.
             Conjure will then connect to that port at the host specified by
             `connection.default-host`.
+            Conjure checks every directory above your current one as well as
+            `~/.config/conjure`, so you can place a default `.nrepl-port`
+            file in there to always have a default port to attempt.
             Default: `[".nrepl-port" ".shadow-cljs/nrepl.port"]`
 
 `clojure.nrepl/eval.pretty-print?`

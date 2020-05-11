@@ -2,7 +2,24 @@
   {require {nvim conjure.aniseed.nvim
             a conjure.aniseed.core}})
 
-(defn resolve-in-parent-dirs [path]
-  (let [resolved (nvim.fn.findfile path ".;")]
-    (when (not (a.empty? resolved))
-      resolved)))
+(defn config-dir []
+  "Return $XDG_CONFIG_HOME/conjure.
+  Defaulting the config directory to $HOME/config."
+  (..  (or (nvim.fn.getenv "XDG_CONFIG_HOME")
+           (.. (nvim.fn.getenv "HOME")
+               "/.config"))
+      "/conjure"))
+
+(defn findfile [name path]
+  "Wrapper around Neovim's findfile() that returns nil
+  instead of an empty string."
+  (let [res (nvim.fn.findfile name path)]
+    (when (not (a.empty? res))
+      res)))
+
+(defn resolve [name]
+  "Resolve a file name to it's full path by looking in the current
+  directory upwards followed by $XDG_CONFIG_HOME/conjure"
+  (or
+    (findfile name ".;")
+    (findfile name (.. (config-dir) ";"))))
