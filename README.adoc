@@ -45,6 +45,17 @@ Conjure allows you to send the right part of your code off for evaluation, see t
 
 The goal is to give you a tool that lets you effortlessly run whatever you need to while keeping out of your way (but there with context and more information if you need it).
 
+== Try before you buy
+
+You can trial run Conjure with the interactive `:ConjureSchool` tutorial without actually installing it! The only perquisites are `curl` and an up to date `nvim`.
+
+[source,bash]
+----
+bash <(curl -fLo https://raw.githubusercontent.com/Olical/conjure/develop/scripts/school.sh)
+----
+
+This will temporarily download the plugin, launch Neovim with `:ConjureSchool` running and then clean up after itself. You get to try out what Conjure has to offer without having to edit your Neovim configuration.
+
 == Installation
 
 Use your favourite plugin manager, mine is https://github.com/junegunn/vim-plug[vim-plug] but any will do. Be sure to pin it to a tag and subscribe to releases through GitHub to avoid any surprises in the future.
