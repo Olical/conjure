@@ -12,3 +12,6 @@ else
 fi
 
 nvim --cmd "set rtp+=$PREFIX/conjure-develop" +ConjureSchool
+
+echo "I hope you had a great time! Cleaning up $PREFIX and exiting."
+rm -rf $PREFIX
