@@ -31,15 +31,28 @@
         (ui.display [(.. "; Session type: " (a.get (a.first msgs) :value))]
                     {:break? true})))))
 
+(defn passive-ns-require []
+  (when config.eval.auto-require?
+    (server.with-conn-or-warn
+      (fn [conn]
+        (let [ns (extract.context)]
+          (when ns
+            (server.eval
+              {:code (.. "(clojure.core/require '" ns ")")}
+              (fn [])))))
+      {:silent? true})))
+
 (defn connect-port-file []
   (let [port (-?>> config.connection.port-files
                    (a.map fs.resolve)
                    (a.some a.slurp)
                    (tonumber))]
     (if port
-      (server.connect
-        {:host config.connection.default-host
-         :port port})
+      (do
+        (server.connect
+          {:host config.connection.default-host
+           :port port})
+        (passive-ns-require))
       (ui.display ["; No nREPL port file found"] {:break? true}))))
 
 (defn connect-host-port [...]
@@ -48,7 +61,8 @@
       {:host (if (= 1 (a.count args))
                config.connection.default-host
                (a.first args))
-       :port (tonumber (a.last args))})))
+       :port (tonumber (a.last args))})
+    (passive-ns-require)))
 
 (defn- eval-cb-fn [opts]
   (fn [resp]

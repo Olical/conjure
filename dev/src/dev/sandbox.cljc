@@ -1,9 +1,9 @@
 (ns dev.sandbox
   "This is a namespace."
   (:require [clojure.test :as t]
-            [clojure.tools.logging :as log]))
+            #?(:clj [clojure.tools.logging :as log])))
 
-(log/info "Logging!")
+#?(:clj (log/info "Logging!"))
 
 (defn add
   "Hello, World!

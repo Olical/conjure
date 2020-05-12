@@ -148,6 +148,13 @@ All configuration can be set as described in |conjure-configuration|.
             Relies on `clojure.pprint/write`.
             Default: `true`
 
+`clojure.nrepl/eval.auto-require?`
+            Automatically require the namespace of any new buffer you open, or
+            your current buffer after connection. This ensures buffers you're
+            editing are loaded. Can cause side effects you weren't expecting
+            if you have side effects at the top level of your namespace.
+            Default: `true`
+
 `clojure.nrepl/debug?`
             Should the underlying nREPL messages sent and received by Conjure
             be shown in the log buffer.

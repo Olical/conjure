@@ -5,7 +5,8 @@
    :port-files [".nrepl-port" ".shadow-cljs/nrepl.port"]})
 
 (def eval
-  {:pretty-print? true})
+  {:pretty-print? true
+   :auto-require? true})
 
 (def debug?
   false)

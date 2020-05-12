@@ -54,6 +54,31 @@ do
   _0_0["aniseed/locals"]["display-session-type"] = v_23_0_
   display_session_type = v_23_0_
 end
+local passive_ns_require = nil
+do
+  local v_23_0_ = nil
+  do
+    local v_23_0_0 = nil
+    local function passive_ns_require0()
+      if config.eval["auto-require?"] then
+        local function _3_(conn)
+          local ns = extract.context()
+          if ns then
+            local function _4_()
+            end
+            return server.eval({code = ("(clojure.core/require '" .. ns .. ")")}, _4_)
+          end
+        end
+        return server["with-conn-or-warn"](_3_, {["silent?"] = true})
+      end
+    end
+    v_23_0_0 = passive_ns_require0
+    _0_0["passive-ns-require"] = v_23_0_0
+    v_23_0_ = v_23_0_0
+  end
+  _0_0["aniseed/locals"]["passive-ns-require"] = v_23_0_
+  passive_ns_require = v_23_0_
+end
 local connect_port_file = nil
 do
   local v_23_0_ = nil
@@ -80,7 +105,8 @@ do
         end
       end
       if port then
-        return server.connect({host = config.connection["default-host"], port = port})
+        server.connect({host = config.connection["default-host"], port = port})
+        return passive_ns_require()
       else
         return ui.display({"; No nREPL port file found"}, {["break?"] = true})
       end
@@ -105,7 +131,8 @@ do
       else
         _3_ = a.first(args)
       end
-      return server.connect({host = _3_, port = tonumber(a.last(args))})
+      server.connect({host = _3_, port = tonumber(a.last(args))})
+      return passive_ns_require()
     end
     v_23_0_0 = connect_host_port0
     _0_0["connect-host-port"] = v_23_0_0

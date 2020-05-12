@@ -107,7 +107,9 @@
 
   (nvim.ex.command_
     "-nargs=0 -buffer ConjureOutUnsubscribe"
-    (bridge.viml->lua :conjure.client.clojure.nrepl.action :out-unsubscribe {})))
+    (bridge.viml->lua :conjure.client.clojure.nrepl.action :out-unsubscribe {}))
+
+  (action.passive-ns-require))
 
 (defn on-load []
   (nvim.ex.augroup :conjure_clojure_nrepl_cleanup)

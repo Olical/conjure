@@ -35,7 +35,7 @@ local eval = nil
 do
   local v_23_0_ = nil
   do
-    local v_23_0_0 = {["pretty-print?"] = true}
+    local v_23_0_0 = {["auto-require?"] = true, ["pretty-print?"] = true}
     _0_0["eval"] = v_23_0_0
     v_23_0_ = v_23_0_0
   end
