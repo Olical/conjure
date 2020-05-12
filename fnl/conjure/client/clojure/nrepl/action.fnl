@@ -61,14 +61,17 @@
         (cb resp)
         (ui.display-result resp opts)))))
 
+(defn- in-ns [ns]
+  (server.eval
+    {:code (.. "(in-ns '"
+               (or ns "#?(:cljs cljs.user, :default user)")
+               ")")}
+    (fn [])))
+
 (defn eval-str [opts]
   (server.with-conn-or-warn
     (fn [_]
-      (server.eval
-        {:code (.. "(in-ns '"
-                   (or opts.context "#?(:cljs cljs.user, :default user)")
-                   ")")}
-        (fn []))
+      (in-ns opts.context)
       (server.eval opts (eval-cb-fn opts)))))
 
 (defn- with-info [opts f]
@@ -96,6 +99,7 @@
       [(.. "; " javadoc)])))
 
 (defn doc-str [opts]
+  (in-ns opts.context)
   (server.eval
     (a.merge
       {} opts

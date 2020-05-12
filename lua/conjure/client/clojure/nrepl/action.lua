@@ -137,6 +137,18 @@ do
   _0_0["aniseed/locals"]["eval-cb-fn"] = v_23_0_
   eval_cb_fn = v_23_0_
 end
+local in_ns = nil
+do
+  local v_23_0_ = nil
+  local function in_ns0(ns)
+    local function _3_()
+    end
+    return server.eval({code = ("(in-ns '" .. (ns or "#?(:cljs cljs.user, :default user)") .. ")")}, _3_)
+  end
+  v_23_0_ = in_ns0
+  _0_0["aniseed/locals"]["in-ns"] = v_23_0_
+  in_ns = v_23_0_
+end
 local eval_str = nil
 do
   local v_23_0_ = nil
@@ -144,9 +156,7 @@ do
     local v_23_0_0 = nil
     local function eval_str0(opts)
       local function _3_(_)
-        local function _4_()
-        end
-        server.eval({code = ("(in-ns '" .. (opts.context or "#?(:cljs cljs.user, :default user)") .. ")")}, _4_)
+        in_ns(opts.context)
         return server.eval(opts, eval_cb_fn(opts))
       end
       return server["with-conn-or-warn"](_3_)
@@ -216,6 +226,7 @@ do
   do
     local v_23_0_0 = nil
     local function doc_str0(opts)
+      in_ns(opts.context)
       local function _3_(msgs)
         local function _4_(msg)
           return (a.get(msg, "out") or a.get(msg, "err"))
