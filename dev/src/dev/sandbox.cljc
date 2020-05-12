@@ -13,6 +13,12 @@
 
 (add 10 20)
 
+(println (apply str (take 2000 (repeat \x))))
+
+(do
+  (print (apply str (take 500 (repeat \x))))
+  (println (apply str (take 300 (repeat \x)))))
+
 (do
   (print "foo ")
   (print "bar ")

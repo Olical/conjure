@@ -13,7 +13,7 @@
 
 (defn- handle-join-line [resp]
   (let [next-key (if resp.out :out resp.err :err)
-        {: key} (a.get-in state :join-next {})]
+        {: key} (a.get state :join-next {})]
     (when (or next-key resp.value)
       (a.assoc state :join-next
                (when (and next-key

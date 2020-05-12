@@ -43,4 +43,15 @@ do
   _0_0["aniseed/locals"]["bs"] = v_23_0_
   bs = v_23_0_
 end
+local message_queue = nil
+do
+  local v_23_0_ = nil
+  do
+    local v_23_0_0 = (_0_0["message-queue"] or {})
+    _0_0["message-queue"] = v_23_0_0
+    v_23_0_ = v_23_0_0
+  end
+  _0_0["aniseed/locals"]["message-queue"] = v_23_0_
+  message_queue = v_23_0_
+end
 return nil

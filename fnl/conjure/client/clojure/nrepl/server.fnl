@@ -111,37 +111,53 @@
     (a.assoc msg :status status)
     msg))
 
-(defn- handle-read-fn []
-  (vim.schedule_wrap
-    (fn [err chunk]
-      (let [conn (a.get state :conn)]
-        (if
-          err (display-conn-status err)
-          (not chunk) (disconnect)
-          (->> (bencode-stream.decode-all state.bs chunk)
-               (a.run!
-                 (fn [msg]
-                   (dbg "receive" msg)
-                   (enrich-status msg)
+(defn- process-message [err chunk]
+  (let [conn (a.get state :conn)]
+    (if
+      err (display-conn-status err)
+      (not chunk) (disconnect)
+      (->> (bencode-stream.decode-all state.bs chunk)
+           (a.run!
+             (fn [msg]
+               (dbg "receive" msg)
+               (enrich-status msg)
 
-                   (when msg.status.need-input
-                     (vim.schedule
-                       (fn []
-                         (send {:op :stdin
-                                :stdin (.. (or (extract.prompt "Input required: ")
-                                               "")
-                                           "\n")
-                                :session conn.session}))))
+               (when msg.status.need-input
+                 (vim.schedule
+                   (fn []
+                     (send {:op :stdin
+                            :stdin (.. (or (extract.prompt "Input required: ")
+                                           "")
+                                       "\n")
+                            :session conn.session}))))
 
-                   (let [cb (a.get-in conn [:msgs msg.id :cb] #(ui.display-result $1))
-                         (ok? err) (pcall cb msg)]
-                     (when (not ok?)
-                       (ui.display [(.. "; conjure.client.clojure.nrepl error: " err)]))
-                     (when msg.status.unknown-session
-                       (ui.display ["; Unknown session, correcting"])
-                       (assume-or-create-session))
-                     (when msg.status.done
-                       (a.assoc-in conn [:msgs msg.id] nil)))))))))))
+               (let [cb (a.get-in conn [:msgs msg.id :cb] #(ui.display-result $1))
+                     (ok? err) (pcall cb msg)]
+                 (when (not ok?)
+                   (ui.display [(.. "; conjure.client.clojure.nrepl error: " err)]))
+                 (when msg.status.unknown-session
+                   (ui.display ["; Unknown session, correcting"])
+                   (assume-or-create-session))
+                 (when msg.status.done
+                   (a.assoc-in conn [:msgs msg.id] nil)))))))))
+
+(defonce- awaiting-process? false)
+
+(defn- process-message-queue []
+  (set awaiting-process? false)
+  (when (not (a.empty? state.message-queue))
+    (let [msgs state.message-queue]
+      (set state.message-queue [])
+      (a.run!
+        (fn [args]
+          (process-message (unpack args)))
+        msgs))))
+
+(defn- enqueue-message [...]
+  (table.insert state.message-queue [...])
+  (when (not awaiting-process?)
+    (vim.schedule process-message-queue)
+    (set awaiting-process? true)))
 
 (defn eval [opts cb]
   (with-conn-or-warn
@@ -199,7 +215,7 @@
             (disconnect))
 
           (do
-            (conn.sock:read_start (handle-read-fn))
+            (conn.sock:read_start enqueue-message)
             (display-conn-status :connected)
             (capture-describe)
             (inject-pprint-wrapper)

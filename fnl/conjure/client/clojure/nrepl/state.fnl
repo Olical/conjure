@@ -3,3 +3,4 @@
 
 (defonce conn nil)
 (defonce bs (bencode-stream.new))
+(defonce message-queue [])

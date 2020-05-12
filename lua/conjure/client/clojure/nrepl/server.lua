@@ -268,53 +268,89 @@ do
   _0_0["aniseed/locals"]["enrich-status"] = v_23_0_
   enrich_status = v_23_0_
 end
-local handle_read_fn = nil
+local process_message = nil
 do
   local v_23_0_ = nil
-  local function handle_read_fn0()
-    local function _3_(err, chunk)
-      local conn = a.get(state, "conn")
-      if err then
-        return display_conn_status(err)
-      elseif not chunk then
-        return disconnect()
-      else
-        local function _4_(msg)
-          dbg("receive", msg)
-          enrich_status(msg)
-          if msg.status["need-input"] then
-            local function _5_()
-              return send({op = "stdin", session = conn.session, stdin = ((extract.prompt("Input required: ") or "") .. "\n")})
-            end
-            vim.schedule(_5_)
+  local function process_message0(err, chunk)
+    local conn = a.get(state, "conn")
+    if err then
+      return display_conn_status(err)
+    elseif not chunk then
+      return disconnect()
+    else
+      local function _3_(msg)
+        dbg("receive", msg)
+        enrich_status(msg)
+        if msg.status["need-input"] then
+          local function _4_()
+            return send({op = "stdin", session = conn.session, stdin = ((extract.prompt("Input required: ") or "") .. "\n")})
           end
-          do
-            local cb = nil
-            local function _6_(_241)
-              return ui["display-result"](_241)
-            end
-            cb = a["get-in"](conn, {"msgs", msg.id, "cb"}, _6_)
-            local ok_3f, err0 = pcall(cb, msg)
-            if not ok_3f then
-              ui.display({("; conjure.client.clojure.nrepl error: " .. err0)})
-            end
-            if msg.status["unknown-session"] then
-              ui.display({"; Unknown session, correcting"})
-              assume_or_create_session()
-            end
-            if msg.status.done then
-              return a["assoc-in"](conn, {"msgs", msg.id}, nil)
-            end
+          vim.schedule(_4_)
+        end
+        do
+          local cb = nil
+          local function _5_(_241)
+            return ui["display-result"](_241)
+          end
+          cb = a["get-in"](conn, {"msgs", msg.id, "cb"}, _5_)
+          local ok_3f, err0 = pcall(cb, msg)
+          if not ok_3f then
+            ui.display({("; conjure.client.clojure.nrepl error: " .. err0)})
+          end
+          if msg.status["unknown-session"] then
+            ui.display({"; Unknown session, correcting"})
+            assume_or_create_session()
+          end
+          if msg.status.done then
+            return a["assoc-in"](conn, {"msgs", msg.id}, nil)
           end
         end
-        return a["run!"](_4_, bencode_stream["decode-all"](state.bs, chunk))
       end
+      return a["run!"](_3_, bencode_stream["decode-all"](state.bs, chunk))
     end
-    return vim.schedule_wrap(_3_)
   end
-  v_23_0_ = handle_read_fn0
-  _0_0["aniseed/locals"]["handle-read-fn"] = v_23_0_
-  handle_read_fn = v_23_0_
+  v_23_0_ = process_message0
+  _0_0["aniseed/locals"]["process-message"] = v_23_0_
+  process_message = v_23_0_
+end
+local awaiting_process_3f = nil
+do
+  local v_23_0_ = (_0_0["aniseed/locals"]["awaiting-process?"] or false)
+  _0_0["aniseed/locals"]["awaiting-process?"] = v_23_0_
+  awaiting_process_3f = v_23_0_
+end
+local process_message_queue = nil
+do
+  local v_23_0_ = nil
+  local function process_message_queue0()
+    awaiting_process_3f = false
+    if not a["empty?"](state["message-queue"]) then
+      local msgs = state["message-queue"]
+      state["message-queue"] = {}
+      local function _3_(args)
+        return process_message(unpack(args))
+      end
+      return a["run!"](_3_, msgs)
+    end
+  end
+  v_23_0_ = process_message_queue0
+  _0_0["aniseed/locals"]["process-message-queue"] = v_23_0_
+  process_message_queue = v_23_0_
+end
+local enqueue_message = nil
+do
+  local v_23_0_ = nil
+  local function enqueue_message0(...)
+    table.insert(state["message-queue"], {...})
+    if not awaiting_process_3f then
+      vim.schedule(process_message_queue)
+      awaiting_process_3f = true
+      return nil
+    end
+  end
+  v_23_0_ = enqueue_message0
+  _0_0["aniseed/locals"]["enqueue-message"] = v_23_0_
+  enqueue_message = v_23_0_
 end
 local eval = nil
 do
@@ -409,7 +445,7 @@ do
         display_conn_status(err)
         return disconnect()
       else
-        do end (conn.sock):read_start(handle_read_fn())
+        do end (conn.sock):read_start(enqueue_message)
         display_conn_status("connected")
         capture_describe()
         inject_pprint_wrapper()

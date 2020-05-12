@@ -58,7 +58,7 @@ do
     else
     next_key = nil
     end
-    local _4_ = a["get-in"](state0, "join-next", {})
+    local _4_ = a.get(state0, "join-next", {})
     local key = _4_["key"]
     if (next_key or resp.value) then
       local function _5_()
