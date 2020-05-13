@@ -97,7 +97,11 @@ do
         nvim.buf_set_lines(buf, 0, -1, false, {})
         local _4_
         if ("<localleader>" == config.mappings.prefix) then
-          _4_ = {(";; Your <localleader> is currently mapped to \"" .. nvim.g.maplocalleader .. "\"")}
+          if a["empty?"](nvim.g.maplocalleader) then
+            _4_ = {";; Your <localleader> isn't set, see :help localleader for more information."}
+          else
+            _4_ = {(";; Your <localleader> is currently mapped to \"" .. nvim.g.maplocalleader .. "\"")}
+          end
         else
         _4_ = nil
         end

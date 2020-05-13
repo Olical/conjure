@@ -54,7 +54,9 @@
          ""
          (.. ";; Let's begin by evaluating the whole buffer using " (map-str :eval-buf))]
         (when (= "<localleader>" config.mappings.prefix)
-          [(.. ";; Your <localleader> is currently mapped to \"" nvim.g.maplocalleader "\"")])
+          (if (a.empty? nvim.g.maplocalleader)
+            [";; Your <localleader> isn't set, see :help localleader for more information."]
+            [(.. ";; Your <localleader> is currently mapped to \"" nvim.g.maplocalleader "\"")]))
         ["(school.lesson-1)"]))))
 
 (defn lesson-1 []
