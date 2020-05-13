@@ -127,8 +127,6 @@
     (when javadoc
       [(.. "; " javadoc)])))
 
-;; If stdout fails, fall through to info and print if we can.
-;; Good for cljs which outputs to the wrong ID / session.
 (defn doc-str [opts]
   (in-ns opts.context)
   (server.eval
@@ -158,6 +156,13 @@
 
                   info.javadoc
                   (ui.display (java-info->lines info))
+
+                  info.doc
+                  (ui.display
+                    (a.concat
+                      [(.. "; " info.ns "/" info.name)
+                       (.. "; (" info.arglists-str ")")]
+                      (text.prefixed-lines info.doc "; ")))
 
                   (ui.display
                     (a.concat

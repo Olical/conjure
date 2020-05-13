@@ -295,6 +295,8 @@ do
               return ui.display({"; Nothing found via CIDER's info either"})
             elseif info.javadoc then
               return ui.display(java_info__3elines(info))
+            elseif info.doc then
+              return ui.display(a.concat({("; " .. info.ns .. "/" .. info.name), ("; (" .. info["arglists-str"] .. ")")}, text["prefixed-lines"](info.doc, "; ")))
             else
               return ui.display(a.concat({"; Unknown result, it may still be helpful"}, text["prefixed-lines"](view.serialise(info), "; ")))
             end
