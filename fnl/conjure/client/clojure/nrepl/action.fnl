@@ -217,8 +217,8 @@
 
 (defn eval-file [opts]
   (server.eval
-    (a.assoc opts :code (.. "(#?(:cljs 'cljs.core/load-file"
-                            " :default 'clojure.core/load-file)"
+    (a.assoc opts :code (.. "(#?(:cljs cljs.core/load-file"
+                            " :default clojure.core/load-file)"
                             " \"" opts.file-path "\")"))
     (eval-cb-fn opts)))
 

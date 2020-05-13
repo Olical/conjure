@@ -382,7 +382,7 @@ do
   do
     local v_23_0_0 = nil
     local function eval_file0(opts)
-      return server.eval(a.assoc(opts, "code", ("(#?(:cljs 'cljs.core/load-file" .. " :default 'clojure.core/load-file)" .. " \"" .. opts["file-path"] .. "\")")), eval_cb_fn(opts))
+      return server.eval(a.assoc(opts, "code", ("(#?(:cljs cljs.core/load-file" .. " :default clojure.core/load-file)" .. " \"" .. opts["file-path"] .. "\")")), eval_cb_fn(opts))
     end
     v_23_0_0 = eval_file0
     _0_0["eval-file"] = v_23_0_0
