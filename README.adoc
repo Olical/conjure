@@ -47,7 +47,7 @@ The goal is to give you a tool that lets you effortlessly run whatever you need 
 
 == Try before you buy
 
-You can trial run Conjure with the interactive `:ConjureSchool` tutorial without actually installing it! The only perquisites are `curl` and an up to date `nvim`.
+You can trial run Conjure with the interactive `:ConjureSchool` tutorial without actually installing it! The only prerequisites are `curl` and an up to date `nvim`.
 
 [source,bash]
 ----
