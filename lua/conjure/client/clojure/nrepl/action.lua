@@ -43,7 +43,7 @@ do
     local v_23_0_0 = nil
     local function display_session_type0()
       local function _3_(msgs)
-        return ui.display({("; Session type: " .. a.get(a.first(msgs), "value"))}, {["break?"] = true})
+        return ui.display(text["prefixed-lines"](("Session type: " .. a.get(a.first(msgs), "value")), "; "), {["break?"] = true})
       end
       return server.eval({code = ("#?(" .. str.join(" ", {":clj 'Clojure", ":cljs 'ClojureScript", ":cljr 'ClojureCLR", ":default 'Unknown"}) .. ")")}, server["with-all-msgs-fn"](_3_))
     end

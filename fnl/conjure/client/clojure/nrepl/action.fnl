@@ -28,7 +28,9 @@
                ")")}
     (server.with-all-msgs-fn
       (fn [msgs]
-        (ui.display [(.. "; Session type: " (a.get (a.first msgs) :value))]
+        (ui.display (text.prefixed-lines
+                      (.. "Session type: " (a.get (a.first msgs) :value))
+                      "; ")
                     {:break? true})))))
 
 (defn passive-ns-require []
