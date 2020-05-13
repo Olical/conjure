@@ -91,7 +91,7 @@ do
           if ns then
             local function _4_()
             end
-            return server.eval({code = ("(clojure.core/require '" .. ns .. ")")}, _4_)
+            return server.eval({code = ("(require '" .. ns .. ")")}, _4_)
           end
         end
         return server["with-conn-or-warn"](_3_, {["silent?"] = true})
@@ -304,7 +304,7 @@ do
           return with_info(opts, _5_)
         end
       end
-      return server.eval(a.merge({}, opts, {code = ("(do (clojure.core/require 'clojure.repl)" .. "(clojure.repl/doc " .. opts.code .. "))")}), server["with-all-msgs-fn"](_3_))
+      return server.eval(a.merge({}, opts, {code = ("(do (require 'clojure.repl)" .. "(clojure.repl/doc " .. opts.code .. "))")}), server["with-all-msgs-fn"](_3_))
     end
     v_23_0_0 = doc_str0
     _0_0["doc-str"] = v_23_0_0
@@ -508,7 +508,7 @@ do
         local function _3_(_241)
           return ui["display-result"](_241, {["ignore-nil?"] = true, ["raw-out?"] = true})
         end
-        return eval_str({cb = _3_, code = ("(clojure.core/require 'clojure.repl)" .. "(clojure.repl/source " .. word .. ")"), context = extract.context()})
+        return eval_str({cb = _3_, code = ("(require 'clojure.repl)" .. "(clojure.repl/source " .. word .. ")"), context = extract.context()})
       end
     end
     v_23_0_0 = view_source0
@@ -717,7 +717,7 @@ do
       local function _3_(_241)
         return ui["display-result"](_241, {["ignore-nil?"] = true, ["simple-out?"] = true})
       end
-      return server.eval({code = "(clojure.core/require 'clojure.test) (clojure.test/run-all-tests)"}, _3_)
+      return server.eval({code = "(require 'clojure.test) (clojure.test/run-all-tests)"}, _3_)
     end
     v_23_0_0 = run_all_tests0
     _0_0["run-all-tests"] = v_23_0_0
@@ -735,7 +735,7 @@ do
       local function _3_(_241)
         return ui["display-result"](_241, {["ignore-nil?"] = true, ["simple-out?"] = true})
       end
-      return server.eval({code = ("(clojure.core/require 'clojure.test)" .. "(clojure.test/run-tests '" .. ns .. ")")}, _3_)
+      return server.eval({code = ("(require 'clojure.test)" .. "(clojure.test/run-tests '" .. ns .. ")")}, _3_)
     end
   end
   v_23_0_ = run_ns_tests0
@@ -801,7 +801,7 @@ do
               return a["run!"](_4_, msgs)
             end
           end
-          return server.eval({code = ("(do (clojure.core/require 'clojure.test)" .. "    (clojure.test/test-var" .. "      (resolve '" .. test_name .. ")))")}, server["with-all-msgs-fn"](_3_))
+          return server.eval({code = ("(do (require 'clojure.test)" .. "    (clojure.test/test-var" .. "      (resolve '" .. test_name .. ")))")}, server["with-all-msgs-fn"](_3_))
         end
       end
     end
@@ -919,7 +919,7 @@ do
     local function piggieback0(code)
       local function _3_(conn)
         ui.display({("; piggieback: " .. code)}, {["break?"] = true})
-        return server.eval({code = ("(do (clojure.core/require 'cider.piggieback)" .. "(cider.piggieback/cljs-repl " .. code .. "))")}, ui["display-result"])
+        return server.eval({code = ("(do (require 'cider.piggieback)" .. "(cider.piggieback/cljs-repl " .. code .. "))")}, ui["display-result"])
       end
       return server["with-conn-or-warn"](_3_)
     end

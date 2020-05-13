@@ -53,7 +53,7 @@
         (let [ns (extract.context)]
           (when ns
             (server.eval
-              {:code (.. "(clojure.core/require '" ns ")")}
+              {:code (.. "(require '" ns ")")}
               (fn [])))))
       {:silent? true})))
 
@@ -132,7 +132,7 @@
   (server.eval
     (a.merge
       {} opts
-      {:code (.. "(do (clojure.core/require 'clojure.repl)"
+      {:code (.. "(do (require 'clojure.repl)"
                  "(clojure.repl/doc " opts.code "))")})
     (server.with-all-msgs-fn
       (fn [msgs]
@@ -269,7 +269,7 @@
     (when (not (a.empty? word))
       (ui.display [(.. "; source (word): " word)] {:break? true})
       (eval-str
-        {:code (.. "(clojure.core/require 'clojure.repl)"
+        {:code (.. "(require 'clojure.repl)"
                    "(clojure.repl/source " word ")")
          :context (extract.context)
          :cb #(ui.display-result
@@ -352,7 +352,7 @@
 (defn run-all-tests []
   (ui.display ["; run-all-tests"] {:break? true})
   (server.eval
-    {:code "(clojure.core/require 'clojure.test) (clojure.test/run-all-tests)"}
+    {:code "(require 'clojure.test) (clojure.test/run-all-tests)"}
     #(ui.display-result
        $1
        {:simple-out? true
@@ -363,7 +363,7 @@
     (ui.display [(.. "; run-ns-tests: " ns)]
                 {:break? true})
     (server.eval
-      {:code (.. "(clojure.core/require 'clojure.test)"
+      {:code (.. "(require 'clojure.test)"
                  "(clojure.test/run-tests '" ns ")")}
       #(ui.display-result
          $1
@@ -389,7 +389,7 @@
           (ui.display [(.. "; run-current-test: " test-name)]
                       {:break? true})
           (server.eval
-            {:code (.. "(do (clojure.core/require 'clojure.test)"
+            {:code (.. "(do (require 'clojure.test)"
                        "    (clojure.test/test-var"
                        "      (resolve '" test-name ")))")}
             (server.with-all-msgs-fn
@@ -462,7 +462,7 @@
     (fn [conn]
       (ui.display [(.. "; piggieback: " code)] {:break? true})
       (server.eval
-        {:code (.. "(do (clojure.core/require 'cider.piggieback)"
+        {:code (.. "(do (require 'cider.piggieback)"
                    "(cider.piggieback/cljs-repl " code "))")}
         ui.display-result))))
 
