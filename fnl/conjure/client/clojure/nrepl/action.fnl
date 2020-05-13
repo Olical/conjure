@@ -16,6 +16,15 @@
             ui conjure.client.clojure.nrepl.ui
             a conjure.aniseed.core}})
 
+(defn- session-type? [st]
+  (when (a.string? st)
+    (a.some
+      #(= st $1)
+      [:Clojure
+       :ClojureScript
+       :ClojureCLR
+       :Unknown])))
+
 (defn display-session-type []
   (server.eval
     {:code (.. "#?("
@@ -28,10 +37,14 @@
                ")")}
     (server.with-all-msgs-fn
       (fn [msgs]
-        (ui.display (text.prefixed-lines
-                      (.. "Session type: " (a.get (a.first msgs) :value))
-                      "; ")
-                    {:break? true})))))
+        (let [session-type (a.some #(a.get $1 :value) msgs)]
+          (if (session-type? session-type)
+            (ui.display [(.. "; Session type: " session-type)]
+                        {:break? true})
+            (do
+              (ui.display ["; Couldn't determine session type."]
+                          {:break? true})
+              (a.run! ui.display-result msgs))))))))
 
 (defn passive-ns-require []
   (when config.eval.auto-require?
@@ -114,12 +127,14 @@
     (when javadoc
       [(.. "; " javadoc)])))
 
+;; If stdout fails, fall through to info and print if we can.
+;; Good for cljs which outputs to the wrong ID / session.
 (defn doc-str [opts]
   (in-ns opts.context)
   (server.eval
     (a.merge
       {} opts
-      {:code (.. "(do (require 'clojure.repl)"
+      {:code (.. "(do (clojure.core/require 'clojure.repl)"
                  "(clojure.repl/doc " opts.code "))")})
     (server.with-all-msgs-fn
       (fn [msgs]
@@ -197,7 +212,9 @@
 
 (defn eval-file [opts]
   (server.eval
-    (a.assoc opts :code (.. "(clojure.core/load-file \"" opts.file-path "\")"))
+    (a.assoc opts :code (.. "(#?(:cljs 'cljs.core/load-file"
+                            " :default 'clojure.core/load-file)"
+                            " \"" opts.file-path "\")"))
     (eval-cb-fn opts)))
 
 (defn interrupt []
@@ -247,7 +264,7 @@
     (when (not (a.empty? word))
       (ui.display [(.. "; source (word): " word)] {:break? true})
       (eval-str
-        {:code (.. "(require 'clojure.repl)"
+        {:code (.. "(clojure.core/require 'clojure.repl)"
                    "(clojure.repl/source " word ")")
          :context (extract.context)
          :cb #(ui.display-result
@@ -330,7 +347,7 @@
 (defn run-all-tests []
   (ui.display ["; run-all-tests"] {:break? true})
   (server.eval
-    {:code "(require 'clojure.test) (clojure.test/run-all-tests)"}
+    {:code "(clojure.core/require 'clojure.test) (clojure.test/run-all-tests)"}
     #(ui.display-result
        $1
        {:simple-out? true
@@ -341,7 +358,7 @@
     (ui.display [(.. "; run-ns-tests: " ns)]
                 {:break? true})
     (server.eval
-      {:code (.. "(require 'clojure.test)"
+      {:code (.. "(clojure.core/require 'clojure.test)"
                  "(clojure.test/run-tests '" ns ")")}
       #(ui.display-result
          $1
@@ -367,7 +384,7 @@
           (ui.display [(.. "; run-current-test: " test-name)]
                       {:break? true})
           (server.eval
-            {:code (.. "(do (require 'clojure.test)"
+            {:code (.. "(do (clojure.core/require 'clojure.test)"
                        "    (clojure.test/test-var"
                        "      (resolve '" test-name ")))")}
             (server.with-all-msgs-fn
@@ -440,7 +457,7 @@
     (fn [conn]
       (ui.display [(.. "; piggieback: " code)] {:break? true})
       (server.eval
-        {:code (.. "(do (require 'cider.piggieback)"
+        {:code (.. "(do (clojure.core/require 'cider.piggieback)"
                    "(cider.piggieback/cljs-repl " code "))")}
         ui.display-result))))
 
@@ -490,6 +507,7 @@
     (fn [conn]
       (server.send
         {:op :complete
+         :session conn.session
          :ns opts.context
          :symbol opts.prefix
          :context (extract-completion-context opts.prefix)

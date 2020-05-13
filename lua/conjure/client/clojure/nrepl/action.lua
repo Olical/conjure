@@ -36,6 +36,21 @@ local text = _2_[14]
 local ui = _2_[15]
 local view = _2_[16]
 do local _ = ({nil, _0_0, nil})[2] end
+local session_type_3f = nil
+do
+  local v_23_0_ = nil
+  local function session_type_3f0(st)
+    if a["string?"](st) then
+      local function _3_(_241)
+        return (st == _241)
+      end
+      return a.some(_3_, {"Clojure", "ClojureScript", "ClojureCLR", "Unknown"})
+    end
+  end
+  v_23_0_ = session_type_3f0
+  _0_0["aniseed/locals"]["session-type?"] = v_23_0_
+  session_type_3f = v_23_0_
+end
 local display_session_type = nil
 do
   local v_23_0_ = nil
@@ -43,7 +58,17 @@ do
     local v_23_0_0 = nil
     local function display_session_type0()
       local function _3_(msgs)
-        return ui.display(text["prefixed-lines"](("Session type: " .. a.get(a.first(msgs), "value")), "; "), {["break?"] = true})
+        local session_type = nil
+        local function _4_(_241)
+          return a.get(_241, "value")
+        end
+        session_type = a.some(_4_, msgs)
+        if session_type_3f(session_type) then
+          return ui.display({("; Session type: " .. session_type)}, {["break?"] = true})
+        else
+          ui.display({"; Couldn't determine session type."}, {["break?"] = true})
+          return a["run!"](ui["display-result"], msgs)
+        end
       end
       return server.eval({code = ("#?(" .. str.join(" ", {":clj 'Clojure", ":cljs 'ClojureScript", ":cljr 'ClojureCLR", ":default 'Unknown"}) .. ")")}, server["with-all-msgs-fn"](_3_))
     end
@@ -277,7 +302,7 @@ do
           return with_info(opts, _5_)
         end
       end
-      return server.eval(a.merge({}, opts, {code = ("(do (require 'clojure.repl)" .. "(clojure.repl/doc " .. opts.code .. "))")}), server["with-all-msgs-fn"](_3_))
+      return server.eval(a.merge({}, opts, {code = ("(do (clojure.core/require 'clojure.repl)" .. "(clojure.repl/doc " .. opts.code .. "))")}), server["with-all-msgs-fn"](_3_))
     end
     v_23_0_0 = doc_str0
     _0_0["doc-str"] = v_23_0_0
@@ -355,7 +380,7 @@ do
   do
     local v_23_0_0 = nil
     local function eval_file0(opts)
-      return server.eval(a.assoc(opts, "code", ("(clojure.core/load-file \"" .. opts["file-path"] .. "\")")), eval_cb_fn(opts))
+      return server.eval(a.assoc(opts, "code", ("(#?(:cljs 'cljs.core/load-file" .. " :default 'clojure.core/load-file)" .. " \"" .. opts["file-path"] .. "\")")), eval_cb_fn(opts))
     end
     v_23_0_0 = eval_file0
     _0_0["eval-file"] = v_23_0_0
@@ -481,7 +506,7 @@ do
         local function _3_(_241)
           return ui["display-result"](_241, {["ignore-nil?"] = true, ["raw-out?"] = true})
         end
-        return eval_str({cb = _3_, code = ("(require 'clojure.repl)" .. "(clojure.repl/source " .. word .. ")"), context = extract.context()})
+        return eval_str({cb = _3_, code = ("(clojure.core/require 'clojure.repl)" .. "(clojure.repl/source " .. word .. ")"), context = extract.context()})
       end
     end
     v_23_0_0 = view_source0
@@ -690,7 +715,7 @@ do
       local function _3_(_241)
         return ui["display-result"](_241, {["ignore-nil?"] = true, ["simple-out?"] = true})
       end
-      return server.eval({code = "(require 'clojure.test) (clojure.test/run-all-tests)"}, _3_)
+      return server.eval({code = "(clojure.core/require 'clojure.test) (clojure.test/run-all-tests)"}, _3_)
     end
     v_23_0_0 = run_all_tests0
     _0_0["run-all-tests"] = v_23_0_0
@@ -708,7 +733,7 @@ do
       local function _3_(_241)
         return ui["display-result"](_241, {["ignore-nil?"] = true, ["simple-out?"] = true})
       end
-      return server.eval({code = ("(require 'clojure.test)" .. "(clojure.test/run-tests '" .. ns .. ")")}, _3_)
+      return server.eval({code = ("(clojure.core/require 'clojure.test)" .. "(clojure.test/run-tests '" .. ns .. ")")}, _3_)
     end
   end
   v_23_0_ = run_ns_tests0
@@ -774,7 +799,7 @@ do
               return a["run!"](_4_, msgs)
             end
           end
-          return server.eval({code = ("(do (require 'clojure.test)" .. "    (clojure.test/test-var" .. "      (resolve '" .. test_name .. ")))")}, server["with-all-msgs-fn"](_3_))
+          return server.eval({code = ("(do (clojure.core/require 'clojure.test)" .. "    (clojure.test/test-var" .. "      (resolve '" .. test_name .. ")))")}, server["with-all-msgs-fn"](_3_))
         end
       end
     end
@@ -892,7 +917,7 @@ do
     local function piggieback0(code)
       local function _3_(conn)
         ui.display({("; piggieback: " .. code)}, {["break?"] = true})
-        return server.eval({code = ("(do (require 'cider.piggieback)" .. "(cider.piggieback/cljs-repl " .. code .. "))")}, ui["display-result"])
+        return server.eval({code = ("(do (clojure.core/require 'cider.piggieback)" .. "(cider.piggieback/cljs-repl " .. code .. "))")}, ui["display-result"])
       end
       return server["with-conn-or-warn"](_3_)
     end
@@ -970,7 +995,7 @@ do
         local function _4_(msgs)
           return opts.cb(a.map(clojure__3evim_completion, a.get(a.last(msgs), "completions")))
         end
-        return server.send({["enhanced-cljs-completion?"] = "t", ["extra-metadata"] = {"arglists", "doc"}, context = extract_completion_context(opts.prefix), ns = opts.context, op = "complete", symbol = opts.prefix}, server["with-all-msgs-fn"](_4_))
+        return server.send({["enhanced-cljs-completion?"] = "t", ["extra-metadata"] = {"arglists", "doc"}, context = extract_completion_context(opts.prefix), ns = opts.context, op = "complete", session = conn.session, symbol = opts.prefix}, server["with-all-msgs-fn"](_4_))
       end
       local function _4_()
         return opts.cb({})
