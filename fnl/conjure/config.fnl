@@ -1,5 +1,6 @@
 (module conjure.config
-  {require {a conjure.aniseed.core
+  {require {nvim conjure.aniseed.nvim
+            a conjure.aniseed.core
             str conjure.aniseed.string}})
 
 (def clients
@@ -73,3 +74,8 @@
       (require :conjure.config))
     path
     val))
+
+(defn env [k]
+  (let [v (nvim.fn.getenv k)]
+    (when (and (a.string? v) (not (a.empty? v)))
+      v)))

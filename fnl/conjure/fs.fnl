@@ -1,13 +1,13 @@
 (module conjure.fs
   {require {nvim conjure.aniseed.nvim
-            a conjure.aniseed.core}})
+            a conjure.aniseed.core
+            config conjure.config}})
 
 (defn config-dir []
   "Return $XDG_CONFIG_HOME/conjure.
   Defaulting the config directory to $HOME/config."
-  (..  (or (nvim.fn.getenv "XDG_CONFIG_HOME")
-           (.. (nvim.fn.getenv "HOME")
-               "/.config"))
+  (..  (or (config.env "XDG_CONFIG_HOME")
+           (.. (config.env "HOME") "/.config"))
       "/conjure"))
 
 (defn findfile [name path]

@@ -15,12 +15,13 @@ do
   _0_0 = module_23_0_
 end
 local function _1_(...)
-  _0_0["aniseed/local-fns"] = {require = {a = "conjure.aniseed.core", nvim = "conjure.aniseed.nvim"}}
-  return {require("conjure.aniseed.core"), require("conjure.aniseed.nvim")}
+  _0_0["aniseed/local-fns"] = {require = {a = "conjure.aniseed.core", config = "conjure.config", nvim = "conjure.aniseed.nvim"}}
+  return {require("conjure.aniseed.core"), require("conjure.config"), require("conjure.aniseed.nvim")}
 end
 local _2_ = _1_(...)
 local a = _2_[1]
-local nvim = _2_[2]
+local config = _2_[2]
+local nvim = _2_[3]
 do local _ = ({nil, _0_0, nil})[2] end
 local config_dir = nil
 do
@@ -28,7 +29,7 @@ do
   do
     local v_23_0_0 = nil
     local function config_dir0()
-      return ((nvim.fn.getenv("XDG_CONFIG_HOME") or (nvim.fn.getenv("HOME") .. "/.config")) .. "/conjure")
+      return ((config.env("XDG_CONFIG_HOME") or (config.env("HOME") .. "/.config")) .. "/conjure")
     end
     v_23_0_0 = config_dir0
     _0_0["config-dir"] = v_23_0_0
