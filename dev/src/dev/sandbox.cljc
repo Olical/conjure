@@ -87,6 +87,7 @@
   ;; Shadow.
   ; :ConjureShadowSelect app
   (shadow.cljs.devtools.api/nrepl-select :app)
+  (shadow.cljs.devtools.api/node-repl)
 
   (enable-console-print!)
   (throw (js/Error. "ohno"))
