@@ -1,7 +1,7 @@
 .PHONY: deps compile test
 
 deps:
-	scripts/dep.sh Olical aniseed v3.3.0
+	scripts/dep.sh Olical aniseed origin/develop
 	scripts/dep.sh Olical bencode origin/master
 
 compile:

@@ -81,32 +81,30 @@ do
     local v_23_0_0 = nil
     local function display_result0(resp, opts)
       local opts0 = (opts or {})
-      do
-        local joined_3f = handle_join_line(resp)
-        local _3_
-        if resp.out then
-          local _4_
-          if opts0["simple-out?"] then
-            _4_ = "; "
-          elseif opts0["raw-out?"] then
-            _4_ = ""
-          else
-            _4_ = "; (out) "
-          end
-          _3_ = text["prefixed-lines"](text["trim-last-newline"](resp.out), _4_, {["skip-first?"] = joined_3f})
-        elseif resp.err then
-          _3_ = text["prefixed-lines"](text["trim-last-newline"](resp.err), "; (err) ", {["skip-first?"] = joined_3f})
-        elseif resp.value then
-          if not (opts0["ignore-nil?"] and ("nil" == resp.value)) then
-            _3_ = text["split-lines"](resp.value)
-          else
-          _3_ = nil
-          end
+      local joined_3f = handle_join_line(resp)
+      local _3_
+      if resp.out then
+        local _4_
+        if opts0["simple-out?"] then
+          _4_ = "; "
+        elseif opts0["raw-out?"] then
+          _4_ = ""
         else
-          _3_ = nil
+          _4_ = "; (out) "
         end
-        return display(_3_, {["join-first?"] = joined_3f})
+        _3_ = text["prefixed-lines"](text["trim-last-newline"](resp.out), _4_, {["skip-first?"] = joined_3f})
+      elseif resp.err then
+        _3_ = text["prefixed-lines"](text["trim-last-newline"](resp.err), "; (err) ", {["skip-first?"] = joined_3f})
+      elseif resp.value then
+        if not (opts0["ignore-nil?"] and ("nil" == resp.value)) then
+          _3_ = text["split-lines"](resp.value)
+        else
+        _3_ = nil
+        end
+      else
+        _3_ = nil
       end
+      return display(_3_, {["join-first?"] = joined_3f})
     end
     v_23_0_0 = display_result0
     _0_0["display-result"] = v_23_0_0

@@ -123,8 +123,8 @@ do
     local function display_result0(opts)
       if opts then
         local _3_ = opts
-        local results = _3_["results"]
         local ok_3f = _3_["ok?"]
+        local results = _3_["results"]
         local result_str = nil
         if ok_3f then
           if a["empty?"](results) then
@@ -171,14 +171,12 @@ do
         if config["use-metadata?"] then
           package.loaded.fennel = ani("fennel")
         end
-        do
-          local _5_ = {anic("eval", "str", code, {filename = opts["file-path"], useMetadata = config["use-metadata?"]})}
-          local ok_3f = _5_[1]
-          local results = {(table.unpack or unpack)(_5_, 2)}
-          opts["ok?"] = ok_3f
-          opts.results = results
-          return nil
-        end
+        local _5_ = {anic("eval", "str", code, {filename = opts["file-path"], useMetadata = config["use-metadata?"]})}
+        local ok_3f = _5_[1]
+        local results = {(table.unpack or unpack)(_5_, 2)}
+        opts["ok?"] = ok_3f
+        opts.results = results
+        return nil
       end
       out = anic("nu", "with-out-str", _3_)
       if not a["empty?"](out) then
@@ -232,16 +230,14 @@ do
   local v_23_0_ = nil
   local function wrapped_test0(req_lines, f)
     display(req_lines, {["break?"] = true})
-    do
-      local res = anic("nu", "with-out-str", f)
-      local _3_
-      if ("" == res) then
-        _3_ = "No results."
-      else
-        _3_ = res
-      end
-      return display(text["prefixed-lines"](_3_, "; "))
+    local res = anic("nu", "with-out-str", f)
+    local _3_
+    if ("" == res) then
+      _3_ = "No results."
+    else
+      _3_ = res
     end
+    return display(text["prefixed-lines"](_3_, "; "))
   end
   v_23_0_ = wrapped_test0
   _0_0["aniseed/locals"]["wrapped-test"] = v_23_0_

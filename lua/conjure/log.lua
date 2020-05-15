@@ -182,17 +182,15 @@ do
       break_line = a.some(_3_, break_lines(buf))
       if break_line then
         nvim.buf_set_lines(buf, 0, break_line, false, {})
-        do
-          local line_count0 = nvim.buf_line_count(buf)
-          local function _4_(win)
-            local _5_ = nvim.win_get_cursor(win)
-            local row = _5_[1]
-            local col = _5_[2]
-            nvim.win_set_cursor(win, {1, 0})
-            return nvim.win_set_cursor(win, {row, col})
-          end
-          return with_buf_wins(buf, _4_)
+        local line_count0 = nvim.buf_line_count(buf)
+        local function _4_(win)
+          local _5_ = nvim.win_get_cursor(win)
+          local row = _5_[1]
+          local col = _5_[2]
+          nvim.win_set_cursor(win, {1, 0})
+          return nvim.win_set_cursor(win, {row, col})
         end
+        return with_buf_wins(buf, _4_)
       end
     end
   end
@@ -223,49 +221,47 @@ do
     local function append0(lines, opts)
       if not a["empty?"](lines) then
         local visible_scrolling_log_3f = false
-        do
-          local buf = upsert_buf()
-          local join_first_3f = a.get(opts, "join-first?")
-          local lines0 = nil
-          if a.get(opts, "break?") then
-            lines0 = a.concat({_break()}, lines)
-          elseif join_first_3f then
-            lines0 = a.concat({(last_line(buf) .. a.first(lines))}, a.rest(lines))
-          else
-            lines0 = lines
-          end
-          local old_lines = nvim.buf_line_count(buf)
-          local _4_
-          if buffer["empty?"](buf) then
-            _4_ = 0
-          elseif join_first_3f then
-            _4_ = -2
-          else
-            _4_ = -1
-          end
-          nvim.buf_set_lines(buf, _4_, -1, false, lines0)
-          do
-            local new_lines = nvim.buf_line_count(buf)
-            local function _6_(win)
-              local _7_ = nvim.win_get_cursor(win)
-              local row = _7_[1]
-              local col = _7_[2]
-              if ((win ~= state.hud.id) and win_visible_3f(win) and (win_botline(win) >= old_lines)) then
-                visible_scrolling_log_3f = true
-              end
-              if (row == old_lines) then
-                return nvim.win_set_cursor(win, {new_lines, 0})
-              end
-            end
-            with_buf_wins(buf, _6_)
-          end
-          if (not a.get(opts, "suppress-hud?") and not visible_scrolling_log_3f) then
-            display_hud()
-          else
-            close_hud()
-          end
-          return trim(buf)
+        local buf = upsert_buf()
+        local join_first_3f = a.get(opts, "join-first?")
+        local lines0 = nil
+        if a.get(opts, "break?") then
+          lines0 = a.concat({_break()}, lines)
+        elseif join_first_3f then
+          lines0 = a.concat({(last_line(buf) .. a.first(lines))}, a.rest(lines))
+        else
+          lines0 = lines
         end
+        local old_lines = nvim.buf_line_count(buf)
+        local _4_
+        if buffer["empty?"](buf) then
+          _4_ = 0
+        elseif join_first_3f then
+          _4_ = -2
+        else
+          _4_ = -1
+        end
+        nvim.buf_set_lines(buf, _4_, -1, false, lines0)
+        do
+          local new_lines = nvim.buf_line_count(buf)
+          local function _6_(win)
+            local _7_ = nvim.win_get_cursor(win)
+            local row = _7_[1]
+            local col = _7_[2]
+            if ((win ~= state.hud.id) and win_visible_3f(win) and (win_botline(win) >= old_lines)) then
+              visible_scrolling_log_3f = true
+            end
+            if (row == old_lines) then
+              return nvim.win_set_cursor(win, {new_lines, 0})
+            end
+          end
+          with_buf_wins(buf, _6_)
+        end
+        if (not a.get(opts, "suppress-hud?") and not visible_scrolling_log_3f) then
+          display_hud()
+        else
+          close_hud()
+        end
+        return trim(buf)
       end
     end
     v_23_0_0 = append0

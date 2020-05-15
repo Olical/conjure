@@ -49,10 +49,10 @@ do
     local function display_results0(results, prefix)
       do
         local _3_ = results
-        local tests_passed = _3_["tests-passed"]
+        local assertions = _3_["assertions"]
         local assertions_passed = _3_["assertions-passed"]
         local tests = _3_["tests"]
-        local assertions = _3_["assertions"]
+        local tests_passed = _3_["tests-passed"]
         local function _4_()
           if ok_3f(results) then
             return "OK"
@@ -128,27 +128,23 @@ do
             end
             local function _8_(e, r, desc)
               begin()
-              do
-                local se = a["pr-str"](e)
-                local sr = a["pr-str"](r)
-                if (se == sr) then
-                  return pass()
-                else
-                  return fail(desc, "Expected (with pr) '", se, "' but received '", sr, "'")
-                end
+              local se = a["pr-str"](e)
+              local sr = a["pr-str"](r)
+              if (se == sr) then
+                return pass()
+              else
+                return fail(desc, "Expected (with pr) '", se, "' but received '", sr, "'")
               end
             end
             t = {["="] = _6_, ["ok?"] = _7_, ["pr="] = _8_}
-            do
-              local _9_0, _10_0 = nil, nil
-              local function _11_()
-                return f(t)
-              end
-              _9_0, _10_0 = pcall(_11_)
-              if ((_9_0 == false) and (nil ~= _10_0)) then
-                local err = _10_0
-                fail("Exception: ", err)
-              end
+            local _9_0, _10_0 = nil, nil
+            local function _11_()
+              return f(t)
+            end
+            _9_0, _10_0 = pcall(_11_)
+            if ((_9_0 == false) and (nil ~= _10_0)) then
+              local err = _10_0
+              fail("Exception: ", err)
             end
           end
           if not test_failed then
@@ -197,13 +193,11 @@ do
         return require(string.gsub(string.match(path, "^test/fnl/(.-).fnl$"), "/", "."))
       end
       a["run!"](_3_, nvim.fn.globpath("test/fnl", "**/*-test.fnl", false, true))
-      do
-        local results = run_all()
-        if ok_3f(results) then
-          return nvim.ex.q()
-        else
-          return nvim.ex.cq()
-        end
+      local results = run_all()
+      if ok_3f(results) then
+        return nvim.ex.q()
+      else
+        return nvim.ex.cq()
       end
     end
     v_23_0_0 = suite0

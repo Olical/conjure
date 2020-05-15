@@ -103,11 +103,14 @@ local function put_sequential_table(self, t, len)
   puts(self, "[")
   self.level = (self.level + 1)
   for i = 1, len do
-    puts(self, " ")
+    local _0_ = (1 + len)
+    if ((1 < i) and (i < _0_)) then
+      puts(self, " ")
+    end
     put_value(self, t[i])
   end
   self.level = (self.level - 1)
-  return puts(self, " ]")
+  return puts(self, "]")
 end
 local function put_key(self, k)
   if ((type(k) == "string") and k:find("^[-%w?\\^_!$%&*+./@:|<=>]+$")) then
@@ -136,10 +139,27 @@ local function put_kv_table(self, t, ordered_keys)
   return puts(self, "}")
 end
 local function put_table(self, t)
+  local metamethod = nil
+  local function _1_()
+    local _0_0 = t
+    if _0_0 then
+      local _2_0 = getmetatable(_0_0)
+      if _2_0 then
+        return _2_0.__fennelview
+      else
+        return _2_0
+      end
+    else
+      return _0_0
+    end
+  end
+  metamethod = (self["metamethod?"] and _1_())
   if (already_visited_3f(self, t) and self["detect-cycles?"]) then
     return puts(self, "#<table ", get_id(self, t), ">")
   elseif (self.level >= self.depth) then
     return puts(self, "{...}")
+  elseif metamethod then
+    return puts(self, metamethod(t, self.fennelview))
   elseif "else" then
     local non_seq_keys, len = get_nonsequential_keys(t)
     local id = get_id(self, t)
@@ -174,22 +194,23 @@ end
 local function fennelview(x, options)
   local options0 = (options or {})
   local inspector = nil
-  local function _1_()
+  local function _1_(_241)
+    return fennelview(_241, options0)
+  end
+  local function _2_()
     if options0["one-line"] then
       return ""
     else
       return "  "
     end
   end
-  inspector = {["detect-cycles?"] = not (false == options0["detect-cycles?"]), ["max-ids"] = {}, appearances = count_table_appearances(x, {}), buffer = {}, depth = (options0.depth or 128), ids = {}, indent = (options0.indent or _1_()), level = 0}
+  inspector = {["detect-cycles?"] = not (false == options0["detect-cycles?"]), ["max-ids"] = {}, ["metamethod?"] = not (false == options0["metamethod?"]), appearances = count_table_appearances(x, {}), buffer = {}, depth = (options0.depth or 128), fennelview = _1_, ids = {}, indent = (options0.indent or _2_()), level = 0}
   put_value(inspector, x)
-  do
-    local str = table.concat(inspector.buffer)
-    if options0["one-line"] then
-      return one_line(str)
-    else
-      return str
-    end
+  local str = table.concat(inspector.buffer)
+  if options0["one-line"] then
+    return one_line(str)
+  else
+    return str
   end
 end
 return fennelview

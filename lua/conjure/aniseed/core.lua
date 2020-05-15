@@ -577,11 +577,9 @@ do
         return nil
       elseif (nil ~= _3_0) then
         local f = _3_0
-        do
-          local content = f:read("*all")
-          f:close()
-          return content
-        end
+        local content = f:read("*all")
+        f:close()
+        return content
       end
     end
     v_23_0_0 = slurp0
@@ -603,11 +601,9 @@ do
         return error(("Could not open file: " .. msg))
       elseif (nil ~= _3_0) then
         local f = _3_0
-        do
-          f:write(content)
-          f:close()
-          return nil
-        end
+        f:write(content)
+        f:close()
+        return nil
       end
     end
     v_23_0_0 = spit0

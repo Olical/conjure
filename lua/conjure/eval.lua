@@ -20,6 +20,8 @@ local function _1_(...)
 end
 local _2_ = _1_(...)
 local a = _2_[1]
+local text = _2_[10]
+local uuid = _2_[11]
 local buffer = _2_[2]
 local client = _2_[3]
 local config = _2_[4]
@@ -28,8 +30,6 @@ local extract = _2_[6]
 local log = _2_[7]
 local nvim = _2_[8]
 local promise = _2_[9]
-local text = _2_[10]
-local uuid = _2_[11]
 do local _ = ({nil, _0_0, nil})[2] end
 local preview = nil
 do
@@ -155,8 +155,8 @@ do
       local form = extract.form({})
       if form then
         local _3_ = form
-        local range = _3_["range"]
         local content = _3_["content"]
+        local range = _3_["range"]
         eval_str(a.merge({code = content, origin = "current-form", range = range}, extra_opts))
         return form
       end
@@ -179,8 +179,8 @@ do
       local form = extract.form({})
       if form then
         local _3_ = form
-        local range = _3_["range"]
         local content = _3_["content"]
+        local range = _3_["range"]
         local function _4_(result)
           buffer["replace-range"](buf, range, result)
           return editor["go-to"](win, a["get-in"](range, {"start", 1}), a.inc(a["get-in"](range, {"start", 2})))
@@ -205,8 +205,8 @@ do
       local form = extract.form({["root?"] = true})
       if form then
         local _3_ = form
-        local range = _3_["range"]
         local content = _3_["content"]
+        local range = _3_["range"]
         return eval_str({code = content, origin = "root-form", range = range})
       end
     end
@@ -251,8 +251,8 @@ do
     local v_23_0_0 = nil
     local function word0()
       local _3_ = extract.word()
-      local range = _3_["range"]
       local content = _3_["content"]
+      local range = _3_["range"]
       if not a["empty?"](content) then
         return eval_str({code = content, origin = "word", range = range})
       end
@@ -271,8 +271,8 @@ do
     local v_23_0_0 = nil
     local function doc_word0()
       local _3_ = extract.word()
-      local range = _3_["range"]
       local content = _3_["content"]
+      local range = _3_["range"]
       if not a["empty?"](content) then
         return doc_str({code = content, origin = "word", range = range})
       end
@@ -291,8 +291,8 @@ do
     local v_23_0_0 = nil
     local function def_word0()
       local _3_ = extract.word()
-      local range = _3_["range"]
       local content = _3_["content"]
+      local range = _3_["range"]
       if not a["empty?"](content) then
         return def_str({code = content, origin = "word", range = range})
       end
@@ -311,8 +311,8 @@ do
     local v_23_0_0 = nil
     local function buf0()
       local _3_ = extract.buf()
-      local range = _3_["range"]
       local content = _3_["content"]
+      local range = _3_["range"]
       return eval_str({code = content, origin = "buf", range = range})
     end
     v_23_0_0 = buf0
@@ -344,8 +344,8 @@ do
     local v_23_0_0 = nil
     local function range0(start, _end)
       local _3_ = extract.range(start, _end)
-      local range1 = _3_["range"]
       local content = _3_["content"]
+      local range1 = _3_["range"]
       return eval_str({code = content, origin = "range", range = range1})
     end
     v_23_0_0 = range0
@@ -362,8 +362,8 @@ do
     local v_23_0_0 = nil
     local function selection0(kind)
       local _3_ = extract.selection({["visual?"] = not kind, kind = (kind or nvim.fn.visualmode())})
-      local range0 = _3_["range"]
       local content = _3_["content"]
+      local range0 = _3_["range"]
       return eval_str({code = content, origin = "selection", range = range0})
     end
     v_23_0_0 = selection0

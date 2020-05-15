@@ -20,6 +20,13 @@ local function _1_(...)
 end
 local _2_ = _1_(...)
 local a = _2_[1]
+local nvim = _2_[10]
+local server = _2_[11]
+local state = _2_[12]
+local str = _2_[13]
+local text = _2_[14]
+local ui = _2_[15]
+local view = _2_[16]
 local client = _2_[2]
 local config = _2_[3]
 local editor = _2_[4]
@@ -28,13 +35,6 @@ local extract = _2_[6]
 local fs = _2_[7]
 local ll = _2_[8]
 local log = _2_[9]
-local nvim = _2_[10]
-local server = _2_[11]
-local state = _2_[12]
-local str = _2_[13]
-local text = _2_[14]
-local ui = _2_[15]
-local view = _2_[16]
 do local _ = ({nil, _0_0, nil})[2] end
 local session_type_3f = nil
 do
@@ -174,13 +174,11 @@ do
       if (a.get(opts, "on-result") and a.get(resp, "value")) then
         opts["on-result"](resp.value)
       end
-      do
-        local cb = a.get(opts, "cb")
-        if cb then
-          return cb(resp)
-        else
-          return ui["display-result"](resp, opts)
-        end
+      local cb = a.get(opts, "cb")
+      if cb then
+        return cb(resp)
+      else
+        return ui["display-result"](resp, opts)
       end
     end
     return _3_
@@ -248,8 +246,8 @@ do
     local _4_ = _3_0
     local arglists_str = _4_["arglists-str"]
     local class = _4_["class"]
-    local member = _4_["member"]
     local javadoc = _4_["javadoc"]
+    local member = _4_["member"]
     local function _5_()
       if member then
         return {"/", member}
@@ -406,8 +404,8 @@ do
         local order_66 = nil
         local function _5_(_6_0)
           local _7_ = _6_0
-          local id = _7_["id"]
           local code = _7_["code"]
+          local id = _7_["id"]
           local session = _7_["session"]
           server.send({["interrupt-id"] = id, op = "interrupt", session = session})
           local function _8_()
@@ -685,14 +683,12 @@ do
         else
           local function _4_()
             nvim.ex.redraw_()
-            do
-              local n = nvim.fn.str2nr(extract.prompt("Session number: "))
-              local _5_ = a.count(sessions)
-              if ((1 <= n) and (n <= _5_)) then
-                return server["assume-session"](a.get(sessions, n))
-              else
-                return ui.display({"; Invalid session number."})
-              end
+            local n = nvim.fn.str2nr(extract.prompt("Session number: "))
+            local _5_ = a.count(sessions)
+            if ((1 <= n) and (n <= _5_)) then
+              return server["assume-session"](a.get(sessions, n))
+            else
+              return ui.display({"; Invalid session number."})
             end
           end
           return ui["display-given-sessions"](sessions, _4_)
@@ -935,11 +931,11 @@ do
   local v_23_0_ = nil
   local function clojure__3evim_completion0(_3_0)
     local _4_ = _3_0
-    local word = _4_["candidate"]
-    local kind = _4_["type"]
-    local ns = _4_["ns"]
     local arglists = _4_["arglists"]
+    local word = _4_["candidate"]
     local info = _4_["doc"]
+    local ns = _4_["ns"]
+    local kind = _4_["type"]
     local _5_
     if not a["empty?"](kind) then
       _5_ = string.upper(string.sub(kind, 1, 1))
@@ -964,8 +960,8 @@ do
     local root_form = extract.form({["root?"] = true})
     if root_form then
       local _3_ = root_form
-      local range = _3_["range"]
       local content = _3_["content"]
+      local range = _3_["range"]
       local lines = text["split-lines"](content)
       local _4_ = nvim.win_get_cursor(0)
       local row = _4_[1]

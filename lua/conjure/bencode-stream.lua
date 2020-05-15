@@ -45,21 +45,19 @@ do
     local function decode_all0(bs, part)
       local progress = 1
       local end_3f = false
-      do
-        local s = (bs.data .. part)
-        local acc = {}
-        while ((progress < a.count(s)) and not end_3f) do
-          local msg, consumed = bencode.decode(s, progress)
-          if a["nil?"](msg) then
-            end_3f = true
-          else
-            table.insert(acc, msg)
-            progress = consumed
-          end
+      local s = (bs.data .. part)
+      local acc = {}
+      while ((progress < a.count(s)) and not end_3f) do
+        local msg, consumed = bencode.decode(s, progress)
+        if a["nil?"](msg) then
+          end_3f = true
+        else
+          table.insert(acc, msg)
+          progress = consumed
         end
-        a.assoc(bs, "data", string.sub(s, progress))
-        return acc
       end
+      a.assoc(bs, "data", string.sub(s, progress))
+      return acc
     end
     v_23_0_0 = decode_all0
     _0_0["decode-all"] = v_23_0_0

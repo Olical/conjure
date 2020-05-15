@@ -91,22 +91,20 @@ do
         nvim.ex.autocmd("BufNewFile,BufRead *.fnl set filetype=fennel | set syntax=clojure")
         nvim.ex.augroup("END")
       end
-      do
-        local buf = upsert_buf()
-        nvim.ex.edit(buf_name)
-        nvim.buf_set_lines(buf, 0, -1, false, {})
-        local _4_
-        if ("<localleader>" == config.mappings.prefix) then
-          if a["empty?"](nvim.g.maplocalleader) then
-            _4_ = {";; Your <localleader> isn't set, see :help localleader for more information."}
-          else
-            _4_ = {(";; Your <localleader> is currently mapped to \"" .. nvim.g.maplocalleader .. "\"")}
-          end
+      local buf = upsert_buf()
+      nvim.ex.edit(buf_name)
+      nvim.buf_set_lines(buf, 0, -1, false, {})
+      local _4_
+      if ("<localleader>" == config.mappings.prefix) then
+        if a["empty?"](nvim.g.maplocalleader) then
+          _4_ = {";; Your <localleader> isn't set, see :help localleader for more information."}
         else
-        _4_ = nil
+          _4_ = {(";; Your <localleader> is currently mapped to \"" .. nvim.g.maplocalleader .. "\"")}
         end
-        return append(a.concat({"(module user.conjure-school", "  {require {school conjure.school", "            nvim conjure.aniseed.nvim}})", "", ";; Welcome to Conjure school!", ";; Grab yourself a nice beverage and let's get evaluating. I hope you enjoy!", "", ";; This language is Fennel, it's quite similar to Clojure.", ";; Conjure is written in Fennel, it's compiled to Lua and executed inside Neovim itself.", ";; This means we can work with a Lisp without installing or running anything else.", "", ";; Let's learn how to evaluate it using Conjure's assortment of mappings.", ";; You can learn how to change these mappings with :help conjure-mappings", "", (";; Let's begin by evaluating the whole buffer using " .. map_str("eval-buf"))}, _4_, {"(school.lesson-1)"}))
+      else
+      _4_ = nil
       end
+      return append(a.concat({"(module user.conjure-school", "  {require {school conjure.school", "            nvim conjure.aniseed.nvim}})", "", ";; Welcome to Conjure school!", ";; Grab yourself a nice beverage and let's get evaluating. I hope you enjoy!", "", ";; This language is Fennel, it's quite similar to Clojure.", ";; Conjure is written in Fennel, it's compiled to Lua and executed inside Neovim itself.", ";; This means we can work with a Lisp without installing or running anything else.", "", ";; Let's learn how to evaluate it using Conjure's assortment of mappings.", ";; You can learn how to change these mappings with :help conjure-mappings", "", (";; Let's begin by evaluating the whole buffer using " .. map_str("eval-buf"))}, _4_, {"(school.lesson-1)"}))
     end
     v_23_0_0 = start0
     _0_0["start"] = v_23_0_0

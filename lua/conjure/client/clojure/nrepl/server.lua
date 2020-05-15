@@ -20,6 +20,8 @@ local function _1_(...)
 end
 local _2_ = _1_(...)
 local a = _2_[1]
+local uuid = _2_[10]
+local view = _2_[11]
 local bencode = _2_[2]
 local bencode_stream = _2_[3]
 local config = _2_[4]
@@ -28,8 +30,6 @@ local net = _2_[6]
 local state = _2_[7]
 local text = _2_[8]
 local ui = _2_[9]
-local uuid = _2_[10]
-local view = _2_[11]
 do local _ = ({nil, _0_0, nil})[2] end
 local with_conn_or_warn = nil
 do
@@ -287,23 +287,21 @@ do
           end
           vim.schedule(_4_)
         end
-        do
-          local cb = nil
-          local function _5_(_241)
-            return ui["display-result"](_241)
-          end
-          cb = a["get-in"](conn, {"msgs", msg.id, "cb"}, _5_)
-          local ok_3f, err0 = pcall(cb, msg)
-          if not ok_3f then
-            ui.display({("; conjure.client.clojure.nrepl error: " .. err0)})
-          end
-          if msg.status["unknown-session"] then
-            ui.display({"; Unknown session, correcting"})
-            assume_or_create_session()
-          end
-          if msg.status.done then
-            return a["assoc-in"](conn, {"msgs", msg.id}, nil)
-          end
+        local cb = nil
+        local function _5_(_241)
+          return ui["display-result"](_241)
+        end
+        cb = a["get-in"](conn, {"msgs", msg.id, "cb"}, _5_)
+        local ok_3f, err0 = pcall(cb, msg)
+        if not ok_3f then
+          ui.display({("; conjure.client.clojure.nrepl error: " .. err0)})
+        end
+        if msg.status["unknown-session"] then
+          ui.display({"; Unknown session, correcting"})
+          assume_or_create_session()
+        end
+        if msg.status.done then
+          return a["assoc-in"](conn, {"msgs", msg.id}, nil)
         end
       end
       return a["run!"](_3_, bencode_stream["decode-all"](state.bs, chunk))
@@ -467,15 +465,13 @@ do
       local _4_ = _3_0
       local host = _4_["host"]
       local port = _4_["port"]
-      do
-        local resolved_host = net.resolve(host)
-        local conn = {["raw-host"] = host, host = resolved_host, msgs = {}, port = port, session = nil, sock = vim.loop.new_tcp()}
-        if a.get(state, "conn") then
-          disconnect()
-        end
-        a.assoc(state, "conn", conn)
-        return (conn.sock):connect(resolved_host, port, handle_connect_fn())
+      local resolved_host = net.resolve(host)
+      local conn = {["raw-host"] = host, host = resolved_host, msgs = {}, port = port, session = nil, sock = vim.loop.new_tcp()}
+      if a.get(state, "conn") then
+        disconnect()
       end
+      a.assoc(state, "conn", conn)
+      return (conn.sock):connect(resolved_host, port, handle_connect_fn())
     end
     v_23_0_0 = connect0
     _0_0["connect"] = v_23_0_0

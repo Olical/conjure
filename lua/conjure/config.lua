@@ -171,8 +171,8 @@ do
     local v_23_0_0 = nil
     local function assoc0(_3_0)
       local _4_ = _3_0
-      local path = _4_["path"]
       local client = _4_["client"]
+      local path = _4_["path"]
       local val = _4_["val"]
       local _5_
       if client then

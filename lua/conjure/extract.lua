@@ -36,16 +36,14 @@ do
     local _5_ = _4_0
     local erow = _5_[1]
     local ecol = _5_[2]
-    do
-      local lines = nvim.buf_get_lines(0, (srow - 1), erow, false)
-      local function _6_(s)
-        return string.sub(s, 0, ecol)
-      end
-      local function _7_(s)
-        return string.sub(s, scol)
-      end
-      return str.join("\n", a.update(a.update(lines, #lines, _6_), 1, _7_))
+    local lines = nvim.buf_get_lines(0, (srow - 1), erow, false)
+    local function _6_(s)
+      return string.sub(s, 0, ecol)
     end
+    local function _7_(s)
+      return string.sub(s, scol)
+    end
+    return str.join("\n", a.update(a.update(lines, #lines, _6_), 1, _7_))
   end
   v_23_0_ = read_range0
   _0_0["aniseed/locals"]["read-range"] = v_23_0_
@@ -113,39 +111,37 @@ do
     local function form0(_3_0)
       local _4_ = _3_0
       local root_3f = _4_["root?"]
-      do
-        local flags = nil
-        local function _5_()
-          if root_3f then
-            return "r"
-          else
-            return ""
-          end
+      local flags = nil
+      local function _5_()
+        if root_3f then
+          return "r"
+        else
+          return ""
         end
-        flags = ("Wnz" .. _5_())
-        local cursor_char = current_char()
-        local skip_match_3f_viml = "luaeval(\"require('conjure.extract')['skip-match?']()\")"
-        local start = nil
-        local function _6_()
-          if (cursor_char == "(") then
-            return "c"
-          else
-            return ""
-          end
+      end
+      flags = ("Wnz" .. _5_())
+      local cursor_char = current_char()
+      local skip_match_3f_viml = "luaeval(\"require('conjure.extract')['skip-match?']()\")"
+      local start = nil
+      local function _6_()
+        if (cursor_char == "(") then
+          return "c"
+        else
+          return ""
         end
-        start = nvim.fn.searchpairpos("(", "", ")", (flags .. "b" .. _6_()), skip_match_3f_viml)
-        local _end = nil
-        local function _7_()
-          if (cursor_char == ")") then
-            return "c"
-          else
-            return ""
-          end
+      end
+      start = nvim.fn.searchpairpos("(", "", ")", (flags .. "b" .. _6_()), skip_match_3f_viml)
+      local _end = nil
+      local function _7_()
+        if (cursor_char == ")") then
+          return "c"
+        else
+          return ""
         end
-        _end = nvim.fn.searchpairpos("(", "", ")", (flags .. _7_()), skip_match_3f_viml)
-        if (not nil_pos_3f(start) and not nil_pos_3f(_end)) then
-          return {content = read_range(start, _end), range = {["end"] = a.update(_end, 2, a.dec), start = a.update(start, 2, a.dec)}}
-        end
+      end
+      _end = nvim.fn.searchpairpos("(", "", ")", (flags .. _7_()), skip_match_3f_viml)
+      if (not nil_pos_3f(start) and not nil_pos_3f(_end)) then
+        return {content = read_range(start, _end), range = {["end"] = a.update(_end, 2, a.dec), start = a.update(start, 2, a.dec)}}
       end
     end
     v_23_0_0 = form0
@@ -247,28 +243,24 @@ do
     local v_23_0_0 = nil
     local function selection0(_3_0)
       local _4_ = _3_0
-      local visual_3f = _4_["visual?"]
       local kind = _4_["kind"]
-      do
-        local sel_backup = nvim.o.selection
-        nvim.ex.let("g:conjure_selection_reg_backup = @@")
-        nvim.o.selection = "inclusive"
-        if visual_3f then
-          nu.normal(("`<" .. kind .. "`>y"))
-        elseif (kind == "line") then
-          nu.normal("'[V']y")
-        elseif (kind == "block") then
-          nu.normal("`[\22`]y")
-        else
-          nu.normal("`[v`]y")
-        end
-        do
-          local content = nvim.eval("@@")
-          nvim.o.selection = sel_backup
-          nvim.ex.let("@@ = g:conjure_selection_reg_backup")
-          return {content = content, range = {["end"] = getpos("'>"), start = getpos("'<")}}
-        end
+      local visual_3f = _4_["visual?"]
+      local sel_backup = nvim.o.selection
+      nvim.ex.let("g:conjure_selection_reg_backup = @@")
+      nvim.o.selection = "inclusive"
+      if visual_3f then
+        nu.normal(("`<" .. kind .. "`>y"))
+      elseif (kind == "line") then
+        nu.normal("'[V']y")
+      elseif (kind == "block") then
+        nu.normal("`[\22`]y")
+      else
+        nu.normal("`[v`]y")
       end
+      local content = nvim.eval("@@")
+      nvim.o.selection = sel_backup
+      nvim.ex.let("@@ = g:conjure_selection_reg_backup")
+      return {content = content, range = {["end"] = getpos("'>"), start = getpos("'<")}}
     end
     v_23_0_0 = selection0
     _0_0["selection"] = v_23_0_0
