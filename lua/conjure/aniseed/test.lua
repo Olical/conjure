@@ -194,6 +194,7 @@ do
       end
       a["run!"](_3_, nvim.fn.globpath("test/fnl", "**/*-test.fnl", false, true))
       local results = run_all()
+      nvim.ex.redir("END")
       if ok_3f(results) then
         return nvim.ex.q()
       else
