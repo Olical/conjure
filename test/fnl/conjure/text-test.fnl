@@ -1,10 +1,6 @@
 (module conjure.text-test
   {require {text conjure.text}})
 
-(deftest trim
-  (t.= "foo" (text.trim " \n foo \n \n    ") "basic")
-  (t.= "" (text.trim "           ") "just whitespace"))
-
 (deftest left-sample
   (t.= "" (text.left-sample "" 0) "handles empty strings")
   (t.= "f" (text.left-sample "f" 1) "handles single characters")

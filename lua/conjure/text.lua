@@ -22,21 +22,6 @@ local _2_ = _1_(...)
 local a = _2_[1]
 local str = _2_[2]
 do local _ = ({nil, _0_0, nil})[2] end
-local trim = nil
-do
-  local v_23_0_ = nil
-  do
-    local v_23_0_0 = nil
-    local function trim0(s)
-      return string.gsub(s, "^%s*(.-)%s*$", "%1")
-    end
-    v_23_0_0 = trim0
-    _0_0["trim"] = v_23_0_0
-    v_23_0_ = v_23_0_0
-  end
-  _0_0["aniseed/locals"]["trim"] = v_23_0_
-  trim = v_23_0_
-end
 local trailing_newline_3f = nil
 do
   local v_23_0_ = nil
@@ -77,7 +62,7 @@ do
   do
     local v_23_0_0 = nil
     local function left_sample0(s, limit)
-      local flat = trim(string.gsub(string.gsub(s, "\n", " "), "%s+", " "))
+      local flat = str.trim(string.gsub(string.gsub(s, "\n", " "), "%s+", " "))
       if (limit >= a.count(flat)) then
         return flat
       else

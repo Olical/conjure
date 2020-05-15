@@ -2,9 +2,6 @@
   {:require {a conjure.aniseed.core
              str conjure.aniseed.string}})
 
-(defn trim [s]
-  (string.gsub s "^%s*(.-)%s*$" "%1"))
-
 (defn trailing-newline? [s]
   (= "\n" (string.sub s -1)))
 
@@ -16,7 +13,7 @@
 (defn left-sample [s limit]
   (let [flat (-> (string.gsub s "\n" " ")
                  (string.gsub "%s+" " ")
-                 (trim))]
+                 (str.trim))]
     (if (>= limit (a.count flat))
       flat
       (.. (string.sub flat 0 (a.dec limit)) "..."))))

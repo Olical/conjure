@@ -99,4 +99,64 @@ do
   _0_0["aniseed/locals"]["split"] = v_23_0_
   split = v_23_0_
 end
+local blank_3f = nil
+do
+  local v_23_0_ = nil
+  do
+    local v_23_0_0 = nil
+    local function blank_3f0(s)
+      return (a["empty?"](s) or not string.find(s, "[^%s]"))
+    end
+    v_23_0_0 = blank_3f0
+    _0_0["blank?"] = v_23_0_0
+    v_23_0_ = v_23_0_0
+  end
+  _0_0["aniseed/locals"]["blank?"] = v_23_0_
+  blank_3f = v_23_0_
+end
+local triml = nil
+do
+  local v_23_0_ = nil
+  do
+    local v_23_0_0 = nil
+    local function triml0(s)
+      return string.gsub(s, "^%s*(.-)", "%1")
+    end
+    v_23_0_0 = triml0
+    _0_0["triml"] = v_23_0_0
+    v_23_0_ = v_23_0_0
+  end
+  _0_0["aniseed/locals"]["triml"] = v_23_0_
+  triml = v_23_0_
+end
+local trimr = nil
+do
+  local v_23_0_ = nil
+  do
+    local v_23_0_0 = nil
+    local function trimr0(s)
+      return string.gsub(s, "(.-)%s*$", "%1")
+    end
+    v_23_0_0 = trimr0
+    _0_0["trimr"] = v_23_0_0
+    v_23_0_ = v_23_0_0
+  end
+  _0_0["aniseed/locals"]["trimr"] = v_23_0_
+  trimr = v_23_0_
+end
+local trim = nil
+do
+  local v_23_0_ = nil
+  do
+    local v_23_0_0 = nil
+    local function trim0(s)
+      return string.gsub(s, "^%s*(.-)%s*$", "%1")
+    end
+    v_23_0_0 = trim0
+    _0_0["trim"] = v_23_0_0
+    v_23_0_ = v_23_0_0
+  end
+  _0_0["aniseed/locals"]["trim"] = v_23_0_
+  trim = v_23_0_
+end
 return nil
