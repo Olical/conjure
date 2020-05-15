@@ -506,7 +506,7 @@ do
         local function _3_(_241)
           return ui["display-result"](_241, {["ignore-nil?"] = true, ["raw-out?"] = true})
         end
-        return eval_str({cb = _3_, code = ("(require 'clojure.repl)" .. "(clojure.repl/source " .. word .. ")"), context = extract.context()})
+        return eval_str({cb = _3_, code = ("(do (require 'clojure.repl)" .. "(clojure.repl/source " .. word .. "))"), context = extract.context()})
       end
     end
     v_23_0_0 = view_source0

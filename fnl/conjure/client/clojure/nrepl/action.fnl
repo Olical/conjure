@@ -269,8 +269,8 @@
     (when (not (a.empty? word))
       (ui.display [(.. "; source (word): " word)] {:break? true})
       (eval-str
-        {:code (.. "(require 'clojure.repl)"
-                   "(clojure.repl/source " word ")")
+        {:code (.. "(do (require 'clojure.repl)"
+                   "(clojure.repl/source " word "))")
          :context (extract.context)
          :cb #(ui.display-result
                 $1
