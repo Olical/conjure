@@ -3,6 +3,9 @@
   (:require [clojure.test :as t]
             #?(:clj [clojure.tools.logging :as log])))
 
+#_(require 'dev.foo) ; cljs
+#_(require 'dev.bar) ; clj
+
 #?(:clj (log/info "Logging!"))
 
 (defn add

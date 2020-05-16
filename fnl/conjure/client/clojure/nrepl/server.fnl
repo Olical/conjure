@@ -5,6 +5,7 @@
             net conjure.net
             view conjure.aniseed.view
             extract conjure.extract
+            str conjure.aniseed.string
             bencode conjure.bencode
             bencode-stream conjure.bencode-stream
             state conjure.client.clojure.nrepl.state
@@ -138,6 +139,8 @@
                  (when msg.status.unknown-session
                    (ui.display ["; Unknown session, correcting"])
                    (assume-or-create-session))
+                 (when msg.status.namespace-not-found
+                   (ui.display [(.. "; Namespace not found: " msg.ns)]))
                  (when msg.status.done
                    (a.assoc-in conn [:msgs msg.id] nil)))))))))
 
@@ -164,6 +167,7 @@
     (fn [_]
       (send
         {:op :eval
+         :ns (or opts.context "conjure.user")
          :code opts.code
          :file opts.file-path
          :line (a.get-in opts [:range :start 1])
@@ -172,17 +176,34 @@
 
          :nrepl.middleware.print/print
          (when config.eval.pretty-print?
-           :conjure.nrepl.pprint/pprint)}
+           :conjure.internal/pprint)}
         cb))))
 
-(defn- inject-pprint-wrapper []
+(defn session-type [cb]
+  (eval
+    {:code (.. "#?("
+               (str.join
+                 " "
+                 [":clj 'clj"
+                  ":cljs 'cljs"
+                  ":cljr 'cljr"
+                  ":default 'unknown"])
+               ")")}
+    (with-all-msgs-fn
+      (fn [msgs]
+        (cb (a.get-in msgs [1 :value]))))))
+
+(defn- eval-preamble [cb]
   (send
     {:op :eval
-     :code (.. "(ns conjure.nrepl.pprint"
+     :code (.. "(ns conjure.user)"
+               "(ns conjure.internal"
                "  (:require [clojure.pprint :as pp]))"
                "(defn pprint [val w opts]"
                "  (apply pp/write val"
-               "    (mapcat identity (assoc opts :stream w))))")}))
+               "    (mapcat identity (assoc opts :stream w))))")}
+    (when cb
+      (with-all-msgs-fn cb))))
 
 (defn- capture-describe []
   (send
@@ -205,7 +226,7 @@
             (opts.else)))))
     opts))
 
-(defn- handle-connect-fn []
+(defn- handle-connect-fn [cb]
   (vim.schedule_wrap
     (fn [err]
       (let [conn (a.get state :conn)]
@@ -218,10 +239,10 @@
             (conn.sock:read_start enqueue-message)
             (display-conn-status :connected)
             (capture-describe)
-            (inject-pprint-wrapper)
-            (assume-or-create-session)))))))
+            (assume-or-create-session)
+            (eval-preamble cb)))))))
 
-(defn connect [{: host : port}]
+(defn connect [{: host : port : cb}]
   (let [resolved-host (net.resolve host)
         conn {:sock (vim.loop.new_tcp)
               :host resolved-host
@@ -234,4 +255,4 @@
       (disconnect))
 
     (a.assoc state :conn conn)
-    (conn.sock:connect resolved-host port (handle-connect-fn))))
+    (conn.sock:connect resolved-host port (handle-connect-fn cb))))

@@ -15,21 +15,22 @@ do
   _0_0 = module_23_0_
 end
 local function _1_(...)
-  _0_0["aniseed/local-fns"] = {require = {["bencode-stream"] = "conjure.bencode-stream", a = "conjure.aniseed.core", bencode = "conjure.bencode", config = "conjure.client.clojure.nrepl.config", extract = "conjure.extract", net = "conjure.net", state = "conjure.client.clojure.nrepl.state", text = "conjure.text", ui = "conjure.client.clojure.nrepl.ui", uuid = "conjure.uuid", view = "conjure.aniseed.view"}}
-  return {require("conjure.aniseed.core"), require("conjure.bencode"), require("conjure.bencode-stream"), require("conjure.client.clojure.nrepl.config"), require("conjure.extract"), require("conjure.net"), require("conjure.client.clojure.nrepl.state"), require("conjure.text"), require("conjure.client.clojure.nrepl.ui"), require("conjure.uuid"), require("conjure.aniseed.view")}
+  _0_0["aniseed/local-fns"] = {require = {["bencode-stream"] = "conjure.bencode-stream", a = "conjure.aniseed.core", bencode = "conjure.bencode", config = "conjure.client.clojure.nrepl.config", extract = "conjure.extract", net = "conjure.net", state = "conjure.client.clojure.nrepl.state", str = "conjure.aniseed.string", text = "conjure.text", ui = "conjure.client.clojure.nrepl.ui", uuid = "conjure.uuid", view = "conjure.aniseed.view"}}
+  return {require("conjure.aniseed.core"), require("conjure.bencode"), require("conjure.bencode-stream"), require("conjure.client.clojure.nrepl.config"), require("conjure.extract"), require("conjure.net"), require("conjure.client.clojure.nrepl.state"), require("conjure.aniseed.string"), require("conjure.text"), require("conjure.client.clojure.nrepl.ui"), require("conjure.uuid"), require("conjure.aniseed.view")}
 end
 local _2_ = _1_(...)
 local a = _2_[1]
-local uuid = _2_[10]
-local view = _2_[11]
+local ui = _2_[10]
+local uuid = _2_[11]
+local view = _2_[12]
 local bencode = _2_[2]
 local bencode_stream = _2_[3]
 local config = _2_[4]
 local extract = _2_[5]
 local net = _2_[6]
 local state = _2_[7]
-local text = _2_[8]
-local ui = _2_[9]
+local str = _2_[8]
+local text = _2_[9]
 do local _ = ({nil, _0_0, nil})[2] end
 local with_conn_or_warn = nil
 do
@@ -300,6 +301,9 @@ do
           ui.display({"; Unknown session, correcting"})
           assume_or_create_session()
         end
+        if msg.status["namespace-not-found"] then
+          ui.display({("; Namespace not found: " .. msg.ns)})
+        end
         if msg.status.done then
           return a["assoc-in"](conn, {"msgs", msg.id}, nil)
         end
@@ -359,7 +363,7 @@ do
       local function _3_(_)
         local _4_
         if config.eval["pretty-print?"] then
-          _4_ = "conjure.nrepl.pprint/pprint"
+          _4_ = "conjure.internal/pprint"
         else
         _4_ = nil
         end
@@ -372,7 +376,7 @@ do
             _7_ = _6_0
           end
         end
-        return send({["nrepl.middleware.print/print"] = _4_, code = opts.code, column = _7_, file = opts["file-path"], line = a["get-in"](opts, {"range", "start", 1}), op = "eval", session = a["get-in"](state, {"conn", "session"})}, cb)
+        return send({["nrepl.middleware.print/print"] = _4_, code = opts.code, column = _7_, file = opts["file-path"], line = a["get-in"](opts, {"range", "start", 1}), ns = (opts.context or "conjure.user"), op = "eval", session = a["get-in"](state, {"conn", "session"})}, cb)
       end
       return with_conn_or_warn(_3_)
     end
@@ -383,15 +387,38 @@ do
   _0_0["aniseed/locals"]["eval"] = v_23_0_
   eval = v_23_0_
 end
-local inject_pprint_wrapper = nil
+local session_type = nil
 do
   local v_23_0_ = nil
-  local function inject_pprint_wrapper0()
-    return send({code = ("(ns conjure.nrepl.pprint" .. "  (:require [clojure.pprint :as pp]))" .. "(defn pprint [val w opts]" .. "  (apply pp/write val" .. "    (mapcat identity (assoc opts :stream w))))"), op = "eval"})
+  do
+    local v_23_0_0 = nil
+    local function session_type0(cb)
+      local function _3_(msgs)
+        return cb(a["get-in"](msgs, {1, "value"}))
+      end
+      return eval({code = ("#?(" .. str.join(" ", {":clj 'clj", ":cljs 'cljs", ":cljr 'cljr", ":default 'unknown"}) .. ")")}, with_all_msgs_fn(_3_))
+    end
+    v_23_0_0 = session_type0
+    _0_0["session-type"] = v_23_0_0
+    v_23_0_ = v_23_0_0
   end
-  v_23_0_ = inject_pprint_wrapper0
-  _0_0["aniseed/locals"]["inject-pprint-wrapper"] = v_23_0_
-  inject_pprint_wrapper = v_23_0_
+  _0_0["aniseed/locals"]["session-type"] = v_23_0_
+  session_type = v_23_0_
+end
+local eval_preamble = nil
+do
+  local v_23_0_ = nil
+  local function eval_preamble0(cb)
+    local function _3_()
+      if cb then
+        return with_all_msgs_fn(cb)
+      end
+    end
+    return send({code = ("(ns conjure.user)" .. "(ns conjure.internal" .. "  (:require [clojure.pprint :as pp]))" .. "(defn pprint [val w opts]" .. "  (apply pp/write val" .. "    (mapcat identity (assoc opts :stream w))))"), op = "eval"}, _3_())
+  end
+  v_23_0_ = eval_preamble0
+  _0_0["aniseed/locals"]["eval-preamble"] = v_23_0_
+  eval_preamble = v_23_0_
 end
 local capture_describe = nil
 do
@@ -436,7 +463,7 @@ end
 local handle_connect_fn = nil
 do
   local v_23_0_ = nil
-  local function handle_connect_fn0()
+  local function handle_connect_fn0(cb)
     local function _3_(err)
       local conn = a.get(state, "conn")
       if err then
@@ -446,8 +473,8 @@ do
         do end (conn.sock):read_start(enqueue_message)
         display_conn_status("connected")
         capture_describe()
-        inject_pprint_wrapper()
-        return assume_or_create_session()
+        assume_or_create_session()
+        return eval_preamble(cb)
       end
     end
     return vim.schedule_wrap(_3_)
@@ -463,6 +490,7 @@ do
     local v_23_0_0 = nil
     local function connect0(_3_0)
       local _4_ = _3_0
+      local cb = _4_["cb"]
       local host = _4_["host"]
       local port = _4_["port"]
       local resolved_host = net.resolve(host)
@@ -471,7 +499,7 @@ do
         disconnect()
       end
       a.assoc(state, "conn", conn)
-      return (conn.sock):connect(resolved_host, port, handle_connect_fn())
+      return (conn.sock):connect(resolved_host, port, handle_connect_fn(cb))
     end
     v_23_0_0 = connect0
     _0_0["connect"] = v_23_0_0

@@ -36,20 +36,15 @@ local fs = _2_[7]
 local ll = _2_[8]
 local log = _2_[9]
 do local _ = ({nil, _0_0, nil})[2] end
-local session_type_3f = nil
+local pretty_session_type = nil
 do
   local v_23_0_ = nil
-  local function session_type_3f0(st)
-    if a["string?"](st) then
-      local function _3_(_241)
-        return (st == _241)
-      end
-      return a.some(_3_, {"Clojure", "ClojureScript", "ClojureCLR", "Unknown"})
-    end
+  local function pretty_session_type0(st)
+    return a.get({clj = "Clojure", cljr = "ClojureCLR", cljs = "ClojureScript", unknown = "Unknown"}, st)
   end
-  v_23_0_ = session_type_3f0
-  _0_0["aniseed/locals"]["session-type?"] = v_23_0_
-  session_type_3f = v_23_0_
+  v_23_0_ = pretty_session_type0
+  _0_0["aniseed/locals"]["pretty-session-type"] = v_23_0_
+  pretty_session_type = v_23_0_
 end
 local display_session_type = nil
 do
@@ -57,20 +52,21 @@ do
   do
     local v_23_0_0 = nil
     local function display_session_type0()
-      local function _3_(msgs)
-        local session_type = nil
-        local function _4_(_241)
-          return a.get(_241, "value")
-        end
-        session_type = a.some(_4_, msgs)
-        if session_type_3f(session_type) then
-          return ui.display({("; Session type: " .. session_type)}, {["break?"] = true})
+      local function _3_(st)
+        local pst = pretty_session_type(st)
+        if pst then
+          local _4_
+          if pst then
+            _4_ = {("; Session type: " .. pst)}
+          else
+            _4_ = a.concat({"; Couldn't determine session type."}, text["prefixed-lines"](st, "; "))
+          end
+          return ui.display(_4_, {["break?"] = true})
         else
-          ui.display({"; Couldn't determine session type."}, {["break?"] = true})
-          return a["run!"](ui["display-result"], msgs)
+          return ui.display({["break?"] = true})
         end
       end
-      return server.eval({code = ("#?(" .. str.join(" ", {":clj 'Clojure", ":cljs 'ClojureScript", ":cljr 'ClojureCLR", ":default 'Unknown"}) .. ")")}, server["with-all-msgs-fn"](_3_))
+      return server["session-type"](_3_)
     end
     v_23_0_0 = display_session_type0
     _0_0["display-session-type"] = v_23_0_0
@@ -86,12 +82,12 @@ do
     local v_23_0_0 = nil
     local function passive_ns_require0()
       if config.eval["auto-require?"] then
-        local function _3_(conn)
-          local ns = extract.context()
+        local ns = extract.context()
+        local function _3_(_)
           if ns then
             local function _4_()
             end
-            return server.eval({code = ("(require '" .. ns .. ")")}, _4_)
+            return server.eval({code = ("(ns conjure.user) (require '" .. ns .. ")")}, _4_)
           end
         end
         return server["with-conn-or-warn"](_3_, {["silent?"] = true})
@@ -130,8 +126,7 @@ do
         end
       end
       if port then
-        server.connect({host = config.connection["default-host"], port = port})
-        return passive_ns_require()
+        return server.connect({cb = passive_ns_require, host = config.connection["default-host"], port = port})
       else
         return ui.display({"; No nREPL port file found"}, {["break?"] = true})
       end
@@ -156,8 +151,7 @@ do
       else
         _3_ = a.first(args)
       end
-      server.connect({host = _3_, port = tonumber(a.last(args))})
-      return passive_ns_require()
+      return server.connect({cb = passive_ns_require, host = _3_, port = tonumber(a.last(args))})
     end
     v_23_0_0 = connect_host_port0
     _0_0["connect-host-port"] = v_23_0_0
@@ -187,18 +181,6 @@ do
   _0_0["aniseed/locals"]["eval-cb-fn"] = v_23_0_
   eval_cb_fn = v_23_0_
 end
-local in_ns = nil
-do
-  local v_23_0_ = nil
-  local function in_ns0(ns)
-    local function _3_()
-    end
-    return server.eval({code = ("(in-ns '" .. (ns or "#?(:cljs cljs.user, :default user)") .. ")")}, _3_)
-  end
-  v_23_0_ = in_ns0
-  _0_0["aniseed/locals"]["in-ns"] = v_23_0_
-  in_ns = v_23_0_
-end
 local eval_str = nil
 do
   local v_23_0_ = nil
@@ -206,7 +188,6 @@ do
     local v_23_0_0 = nil
     local function eval_str0(opts)
       local function _3_(_)
-        in_ns(opts.context)
         return server.eval(opts, eval_cb_fn(opts))
       end
       return server["with-conn-or-warn"](_3_)
@@ -270,13 +251,22 @@ do
   _0_0["aniseed/locals"]["java-info->lines"] = v_23_0_
   java_info__3elines = v_23_0_
 end
+local wrap_require = nil
+do
+  local v_23_0_ = nil
+  local function wrap_require0(ns, code)
+    return ("(do (require '" .. ns .. ") " .. code .. ")")
+  end
+  v_23_0_ = wrap_require0
+  _0_0["aniseed/locals"]["wrap-require"] = v_23_0_
+  wrap_require = v_23_0_
+end
 local doc_str = nil
 do
   local v_23_0_ = nil
   do
     local v_23_0_0 = nil
     local function doc_str0(opts)
-      in_ns(opts.context)
       local function _3_(msgs)
         local function _4_(msg)
           return (a.get(msg, "out") or a.get(msg, "err"))
@@ -302,7 +292,7 @@ do
           return with_info(opts, _5_)
         end
       end
-      return server.eval(a.merge({}, opts, {code = ("(do (require 'clojure.repl)" .. "(clojure.repl/doc " .. opts.code .. "))")}), server["with-all-msgs-fn"](_3_))
+      return server.eval(a.merge({}, opts, {code = wrap_require("clojure.repl", ("(clojure.repl/doc " .. opts.code .. ")"))}), server["with-all-msgs-fn"](_3_))
     end
     v_23_0_0 = doc_str0
     _0_0["doc-str"] = v_23_0_0
@@ -506,7 +496,7 @@ do
         local function _3_(_241)
           return ui["display-result"](_241, {["ignore-nil?"] = true, ["raw-out?"] = true})
         end
-        return eval_str({cb = _3_, code = ("(do (require 'clojure.repl)" .. "(clojure.repl/source " .. word .. "))"), context = extract.context()})
+        return eval_str({cb = _3_, code = wrap_require("clojure.repl", ("(clojure.repl/source " .. word .. ")")), context = extract.context()})
       end
     end
     v_23_0_0 = view_source0
@@ -562,7 +552,10 @@ do
         local session = a.get(conn, "session")
         a.assoc(conn, "session", nil)
         ui.display({("; Closed current session: " .. session)}, {["break?"] = true})
-        return server["close-session"](session, server["assume-or-create-session"])
+        local function _4_()
+          return server["assume-or-create-session"]()
+        end
+        return server["close-session"](session, _4_)
       end
       return server["with-conn-or-warn"](_3_)
     end
@@ -713,7 +706,7 @@ do
       local function _3_(_241)
         return ui["display-result"](_241, {["ignore-nil?"] = true, ["simple-out?"] = true})
       end
-      return server.eval({code = "(require 'clojure.test) (clojure.test/run-all-tests)"}, _3_)
+      return server.eval({code = wrap_require("clojure.test", "(clojure.test/run-all-tests)")}, _3_)
     end
     v_23_0_0 = run_all_tests0
     _0_0["run-all-tests"] = v_23_0_0
@@ -731,7 +724,7 @@ do
       local function _3_(_241)
         return ui["display-result"](_241, {["ignore-nil?"] = true, ["simple-out?"] = true})
       end
-      return server.eval({code = ("(require 'clojure.test)" .. "(clojure.test/run-tests '" .. ns .. ")")}, _3_)
+      return server.eval({code = wrap_require("clojure.test", ("(clojure.test/run-tests '" .. ns .. ")"))}, _3_)
     end
   end
   v_23_0_ = run_ns_tests0
@@ -797,7 +790,7 @@ do
               return a["run!"](_4_, msgs)
             end
           end
-          return server.eval({code = ("(do (require 'clojure.test)" .. "    (clojure.test/test-var" .. "      (resolve '" .. test_name .. ")))")}, server["with-all-msgs-fn"](_3_))
+          return server.eval({code = wrap_require("clojure.test", ("(clojure.test/test-var (resolve '" .. test_name .. "))"))}, server["with-all-msgs-fn"](_3_))
         end
       end
     end
@@ -896,7 +889,8 @@ do
     local function shadow_select0(build)
       local function _3_(conn)
         ui.display({("; shadow-cljs (select): " .. build)}, {["break?"] = true})
-        return server.eval({code = ("(shadow.cljs.devtools.api/nrepl-select :" .. build .. ")")}, ui["display-result"])
+        server.eval({code = ("(shadow.cljs.devtools.api/nrepl-select :" .. build .. ")")}, ui["display-result"])
+        return passive_ns_require()
       end
       return server["with-conn-or-warn"](_3_)
     end
@@ -915,7 +909,8 @@ do
     local function piggieback0(code)
       local function _3_(conn)
         ui.display({("; piggieback: " .. code)}, {["break?"] = true})
-        return server.eval({code = ("(do (require 'cider.piggieback)" .. "(cider.piggieback/cljs-repl " .. code .. "))")}, ui["display-result"])
+        server.eval({code = wrap_require("cider.piggieback", ("(cider.piggieback/cljs-repl " .. code .. ")"))}, ui["display-result"])
+        return passive_ns_require()
       end
       return server["with-conn-or-warn"](_3_)
     end

@@ -16,46 +16,39 @@
             ui conjure.client.clojure.nrepl.ui
             a conjure.aniseed.core}})
 
-(defn- session-type? [st]
-  (when (a.string? st)
-    (a.some
-      #(= st $1)
-      [:Clojure
-       :ClojureScript
-       :ClojureCLR
-       :Unknown])))
+(defn- pretty-session-type [st]
+  (a.get
+    {:clj :Clojure
+     :cljs :ClojureScript
+     :cljr :ClojureCLR
+     :unknown :Unknown}
+    st))
 
 (defn display-session-type []
-  (server.eval
-    {:code (.. "#?("
-               (str.join
-                 " "
-                 [":clj 'Clojure"
-                  ":cljs 'ClojureScript"
-                  ":cljr 'ClojureCLR"
-                  ":default 'Unknown"])
-               ")")}
-    (server.with-all-msgs-fn
-      (fn [msgs]
-        (let [session-type (a.some #(a.get $1 :value) msgs)]
-          (if (session-type? session-type)
-            (ui.display [(.. "; Session type: " session-type)]
-                        {:break? true})
-            (do
-              (ui.display ["; Couldn't determine session type."]
-                          {:break? true})
-              (a.run! ui.display-result msgs))))))))
+  (server.session-type
+    (fn [st]
+      (let [pst (pretty-session-type st)]
+        (if pst
+          (ui.display
+            (if pst
+              [(.. "; Session type: " pst)]
+              (a.concat
+                ["; Couldn't determine session type."]
+                (text.prefixed-lines st "; ")))
+            {:break? true})
+          (ui.display
+            {:break? true}))))))
 
 (defn passive-ns-require []
   (when config.eval.auto-require?
-    (server.with-conn-or-warn
-      (fn [conn]
-        (let [ns (extract.context)]
+    (let [ns (extract.context)]
+      (server.with-conn-or-warn
+        (fn [_]
           (when ns
             (server.eval
-              {:code (.. "(require '" ns ")")}
-              (fn [])))))
-      {:silent? true})))
+              {:code (.. "(ns conjure.user) (require '" ns ")")}
+              (fn []))))
+        {:silent? true}))))
 
 (defn connect-port-file []
   (let [port (-?>> config.connection.port-files
@@ -63,11 +56,10 @@
                    (a.some a.slurp)
                    (tonumber))]
     (if port
-      (do
-        (server.connect
-          {:host config.connection.default-host
-           :port port})
-        (passive-ns-require))
+      (server.connect
+        {:host config.connection.default-host
+         :port port
+         :cb passive-ns-require})
       (ui.display ["; No nREPL port file found"] {:break? true}))))
 
 (defn connect-host-port [...]
@@ -76,8 +68,8 @@
       {:host (if (= 1 (a.count args))
                config.connection.default-host
                (a.first args))
-       :port (tonumber (a.last args))})
-    (passive-ns-require)))
+       :port (tonumber (a.last args))
+       :cb passive-ns-require})))
 
 (defn- eval-cb-fn [opts]
   (fn [resp]
@@ -90,17 +82,9 @@
         (cb resp)
         (ui.display-result resp opts)))))
 
-(defn- in-ns [ns]
-  (server.eval
-    {:code (.. "(in-ns '"
-               (or ns "#?(:cljs cljs.user, :default user)")
-               ")")}
-    (fn [])))
-
 (defn eval-str [opts]
   (server.with-conn-or-warn
     (fn [_]
-      (in-ns opts.context)
       (server.eval opts (eval-cb-fn opts)))))
 
 (defn- with-info [opts f]
@@ -127,19 +111,22 @@
     (when javadoc
       [(.. "; " javadoc)])))
 
+(defn- wrap-require [ns code]
+  (.. "(do (require '" ns ") " code ")"))
+
 (defn doc-str [opts]
-  (in-ns opts.context)
   (server.eval
     (a.merge
       {} opts
-      {:code (.. "(do (require 'clojure.repl)"
-                 "(clojure.repl/doc " opts.code "))")})
+      {:code (wrap-require
+               "clojure.repl"
+               (.. "(clojure.repl/doc " opts.code ")"))})
     (server.with-all-msgs-fn
       (fn [msgs]
         (if (a.some (fn [msg]
                       (or (a.get msg :out)
                           (a.get msg :err)))
-                    msgs) 
+                    msgs)
           (a.run!
             #(ui.display-result
                $1
@@ -269,8 +256,9 @@
     (when (not (a.empty? word))
       (ui.display [(.. "; source (word): " word)] {:break? true})
       (eval-str
-        {:code (.. "(do (require 'clojure.repl)"
-                   "(clojure.repl/source " word "))")
+        {:code (wrap-require
+                 "clojure.repl"
+                 (.. "(clojure.repl/source " word ")"))
          :context (extract.context)
          :cb #(ui.display-result
                 $1
@@ -295,7 +283,7 @@
         (ui.display [(.. "; Closed current session: " session)]
                     {:break? true})
         (server.close-session
-          session server.assume-or-create-session)))))
+          session #(server.assume-or-create-session))))))
 
 (defn display-sessions [cb]
   (server.with-sessions
@@ -352,7 +340,9 @@
 (defn run-all-tests []
   (ui.display ["; run-all-tests"] {:break? true})
   (server.eval
-    {:code "(require 'clojure.test) (clojure.test/run-all-tests)"}
+    {:code (wrap-require
+             "clojure.test"
+             "(clojure.test/run-all-tests)")}
     #(ui.display-result
        $1
        {:simple-out? true
@@ -363,8 +353,9 @@
     (ui.display [(.. "; run-ns-tests: " ns)]
                 {:break? true})
     (server.eval
-      {:code (.. "(require 'clojure.test)"
-                 "(clojure.test/run-tests '" ns ")")}
+      {:code (wrap-require
+               "clojure.test"
+               (.. "(clojure.test/run-tests '" ns ")"))}
       #(ui.display-result
          $1
          {:simple-out? true
@@ -389,9 +380,9 @@
           (ui.display [(.. "; run-current-test: " test-name)]
                       {:break? true})
           (server.eval
-            {:code (.. "(do (require 'clojure.test)"
-                       "    (clojure.test/test-var"
-                       "      (resolve '" test-name ")))")}
+            {:code (wrap-require
+                     "clojure.test"
+                     (.. "(clojure.test/test-var (resolve '" test-name "))"))}
             (server.with-all-msgs-fn
               (fn [msgs]
                 (if (and (= 2 (a.count msgs))
@@ -455,16 +446,19 @@
       (ui.display [(.. "; shadow-cljs (select): " build)] {:break? true})
       (server.eval
         {:code (.. "(shadow.cljs.devtools.api/nrepl-select :" build ")")}
-        ui.display-result))))
+        ui.display-result)
+      (passive-ns-require))))
 
 (defn piggieback [code]
   (server.with-conn-or-warn
     (fn [conn]
       (ui.display [(.. "; piggieback: " code)] {:break? true})
       (server.eval
-        {:code (.. "(do (require 'cider.piggieback)"
-                   "(cider.piggieback/cljs-repl " code "))")}
-        ui.display-result))))
+        {:code (wrap-require
+                 "cider.piggieback"
+                 (.. "(cider.piggieback/cljs-repl " code ")"))}
+        ui.display-result)
+      (passive-ns-require))))
 
 (defn- clojure->vim-completion [{:candidate word
                                  :type kind
