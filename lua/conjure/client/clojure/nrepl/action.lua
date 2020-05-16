@@ -75,6 +75,32 @@ do
   _0_0["aniseed/locals"]["display-session-type"] = v_23_0_
   display_session_type = v_23_0_
 end
+local ensure_user_ns = nil
+do
+  local v_23_0_ = nil
+  local function ensure_user_ns0()
+    local function _3_()
+    end
+    return server.eval({code = "(ns conjure.user)"}, _3_)
+  end
+  v_23_0_ = ensure_user_ns0
+  _0_0["aniseed/locals"]["ensure-user-ns"] = v_23_0_
+  ensure_user_ns = v_23_0_
+end
+local require_ns = nil
+do
+  local v_23_0_ = nil
+  local function require_ns0(ns)
+    if ns then
+      local function _3_()
+      end
+      return server.eval({code = ("(ns conjure.user) (require '" .. ns .. ")")}, _3_)
+    end
+  end
+  v_23_0_ = require_ns0
+  _0_0["aniseed/locals"]["require-ns"] = v_23_0_
+  require_ns = v_23_0_
+end
 local passive_ns_require = nil
 do
   local v_23_0_ = nil
@@ -82,13 +108,8 @@ do
     local v_23_0_0 = nil
     local function passive_ns_require0()
       if config.eval["auto-require?"] then
-        local ns = extract.context()
         local function _3_(_)
-          if ns then
-            local function _4_()
-            end
-            return server.eval({code = ("(ns conjure.user) (require '" .. ns .. ")")}, _4_)
-          end
+          return require_ns(extract.context())
         end
         return server["with-conn-or-warn"](_3_, {["silent?"] = true})
       end
@@ -251,22 +272,13 @@ do
   _0_0["aniseed/locals"]["java-info->lines"] = v_23_0_
   java_info__3elines = v_23_0_
 end
-local wrap_require = nil
-do
-  local v_23_0_ = nil
-  local function wrap_require0(ns, code)
-    return ("(do (require '" .. ns .. ") " .. code .. ")")
-  end
-  v_23_0_ = wrap_require0
-  _0_0["aniseed/locals"]["wrap-require"] = v_23_0_
-  wrap_require = v_23_0_
-end
 local doc_str = nil
 do
   local v_23_0_ = nil
   do
     local v_23_0_0 = nil
     local function doc_str0(opts)
+      require_ns("clojure.repl")
       local function _3_(msgs)
         local function _4_(msg)
           return (a.get(msg, "out") or a.get(msg, "err"))
@@ -292,7 +304,7 @@ do
           return with_info(opts, _5_)
         end
       end
-      return server.eval(a.merge({}, opts, {code = wrap_require("clojure.repl", ("(clojure.repl/doc " .. opts.code .. ")"))}), server["with-all-msgs-fn"](_3_))
+      return server.eval(a.merge({}, opts, {code = ("(clojure.repl/doc " .. opts.code .. ")")}), server["with-all-msgs-fn"](_3_))
     end
     v_23_0_0 = doc_str0
     _0_0["doc-str"] = v_23_0_0
@@ -493,10 +505,11 @@ do
       local word = a.get(extract.word(), "content")
       if not a["empty?"](word) then
         ui.display({("; source (word): " .. word)}, {["break?"] = true})
+        require_ns("clojure.repl")
         local function _3_(_241)
           return ui["display-result"](_241, {["ignore-nil?"] = true, ["raw-out?"] = true})
         end
-        return eval_str({cb = _3_, code = wrap_require("clojure.repl", ("(clojure.repl/source " .. word .. ")")), context = extract.context()})
+        return eval_str({cb = _3_, code = ("(clojure.repl/source " .. word .. ")"), context = extract.context()})
       end
     end
     v_23_0_0 = view_source0
@@ -703,10 +716,11 @@ do
     local v_23_0_0 = nil
     local function run_all_tests0()
       ui.display({"; run-all-tests"}, {["break?"] = true})
+      require_ns("clojure.test")
       local function _3_(_241)
         return ui["display-result"](_241, {["ignore-nil?"] = true, ["simple-out?"] = true})
       end
-      return server.eval({code = wrap_require("clojure.test", "(clojure.test/run-all-tests)")}, _3_)
+      return server.eval({code = "(clojure.test/run-all-tests)"}, _3_)
     end
     v_23_0_0 = run_all_tests0
     _0_0["run-all-tests"] = v_23_0_0
@@ -721,10 +735,11 @@ do
   local function run_ns_tests0(ns)
     if ns then
       ui.display({("; run-ns-tests: " .. ns)}, {["break?"] = true})
+      require_ns("clojure.test")
       local function _3_(_241)
         return ui["display-result"](_241, {["ignore-nil?"] = true, ["simple-out?"] = true})
       end
-      return server.eval({code = wrap_require("clojure.test", ("(clojure.test/run-tests '" .. ns .. ")"))}, _3_)
+      return server.eval({code = ("(clojure.test/run-tests '" .. ns .. ")")}, _3_)
     end
   end
   v_23_0_ = run_ns_tests0
@@ -780,6 +795,7 @@ do
         local test_name, sub_count = string.gsub(form.content, ".*deftest%s+(.-)%s+.*", "%1")
         if (not a["empty?"](test_name) and (1 == sub_count)) then
           ui.display({("; run-current-test: " .. test_name)}, {["break?"] = true})
+          require_ns("clojure.test")
           local function _3_(msgs)
             if ((2 == a.count(msgs)) and ("nil" == a.get(a.first(msgs), "value"))) then
               return ui.display({"; Success!"})
@@ -790,7 +806,7 @@ do
               return a["run!"](_4_, msgs)
             end
           end
-          return server.eval({code = wrap_require("clojure.test", ("(clojure.test/test-var (resolve '" .. test_name .. "))"))}, server["with-all-msgs-fn"](_3_))
+          return server.eval({code = ("(clojure.test/test-var (resolve '" .. test_name .. "))")}, server["with-all-msgs-fn"](_3_))
         end
       end
     end
@@ -890,6 +906,7 @@ do
       local function _3_(conn)
         ui.display({("; shadow-cljs (select): " .. build)}, {["break?"] = true})
         server.eval({code = ("(shadow.cljs.devtools.api/nrepl-select :" .. build .. ")")}, ui["display-result"])
+        ensure_user_ns()
         return passive_ns_require()
       end
       return server["with-conn-or-warn"](_3_)
@@ -909,7 +926,9 @@ do
     local function piggieback0(code)
       local function _3_(conn)
         ui.display({("; piggieback: " .. code)}, {["break?"] = true})
-        server.eval({code = wrap_require("cider.piggieback", ("(cider.piggieback/cljs-repl " .. code .. ")"))}, ui["display-result"])
+        require_ns("cider.piggieback")
+        server.eval({code = ("(cider.piggieback/cljs-repl " .. code .. ")")}, ui["display-result"])
+        ensure_user_ns()
         return passive_ns_require()
       end
       return server["with-conn-or-warn"](_3_)

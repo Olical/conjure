@@ -36,19 +36,26 @@
                 ["; Couldn't determine session type."]
                 (text.prefixed-lines st "; ")))
             {:break? true})
-          (ui.display
+          (ui.display 
             {:break? true}))))))
+
+(defn- ensure-user-ns []
+  (server.eval
+    {:code (.. "(ns conjure.user)")}
+    (fn [])))
+
+(defn- require-ns [ns]
+  (when ns
+    (server.eval
+      {:code (.. "(ns conjure.user) (require '" ns ")")}
+      (fn []))))
 
 (defn passive-ns-require []
   (when config.eval.auto-require?
-    (let [ns (extract.context)]
-      (server.with-conn-or-warn
-        (fn [_]
-          (when ns
-            (server.eval
-              {:code (.. "(ns conjure.user) (require '" ns ")")}
-              (fn []))))
-        {:silent? true}))))
+    (server.with-conn-or-warn
+      (fn [_]
+        (require-ns (extract.context)))
+      {:silent? true})))
 
 (defn connect-port-file []
   (let [port (-?>> config.connection.port-files
@@ -111,22 +118,18 @@
     (when javadoc
       [(.. "; " javadoc)])))
 
-(defn- wrap-require [ns code]
-  (.. "(do (require '" ns ") " code ")"))
-
 (defn doc-str [opts]
+  (require-ns "clojure.repl")
   (server.eval
     (a.merge
       {} opts
-      {:code (wrap-require
-               "clojure.repl"
-               (.. "(clojure.repl/doc " opts.code ")"))})
+      {:code (.. "(clojure.repl/doc " opts.code ")")})
     (server.with-all-msgs-fn
       (fn [msgs]
         (if (a.some (fn [msg]
                       (or (a.get msg :out)
                           (a.get msg :err)))
-                    msgs)
+                    msgs) 
           (a.run!
             #(ui.display-result
                $1
@@ -255,10 +258,9 @@
   (let [word (a.get (extract.word) :content)]
     (when (not (a.empty? word))
       (ui.display [(.. "; source (word): " word)] {:break? true})
+      (require-ns "clojure.repl")
       (eval-str
-        {:code (wrap-require
-                 "clojure.repl"
-                 (.. "(clojure.repl/source " word ")"))
+        {:code (.. "(clojure.repl/source " word ")")
          :context (extract.context)
          :cb #(ui.display-result
                 $1
@@ -339,10 +341,9 @@
 
 (defn run-all-tests []
   (ui.display ["; run-all-tests"] {:break? true})
+  (require-ns "clojure.test")
   (server.eval
-    {:code (wrap-require
-             "clojure.test"
-             "(clojure.test/run-all-tests)")}
+    {:code "(clojure.test/run-all-tests)"}
     #(ui.display-result
        $1
        {:simple-out? true
@@ -352,10 +353,9 @@
   (when ns
     (ui.display [(.. "; run-ns-tests: " ns)]
                 {:break? true})
+    (require-ns "clojure.test")
     (server.eval
-      {:code (wrap-require
-               "clojure.test"
-               (.. "(clojure.test/run-tests '" ns ")"))}
+      {:code (.. "(clojure.test/run-tests '" ns ")")}
       #(ui.display-result
          $1
          {:simple-out? true
@@ -379,10 +379,9 @@
         (when (and (not (a.empty? test-name)) (= 1 sub-count))
           (ui.display [(.. "; run-current-test: " test-name)]
                       {:break? true})
+          (require-ns "clojure.test")
           (server.eval
-            {:code (wrap-require
-                     "clojure.test"
-                     (.. "(clojure.test/test-var (resolve '" test-name "))"))}
+            {:code (.. "(clojure.test/test-var (resolve '" test-name "))")}
             (server.with-all-msgs-fn
               (fn [msgs]
                 (if (and (= 2 (a.count msgs))
@@ -447,17 +446,18 @@
       (server.eval
         {:code (.. "(shadow.cljs.devtools.api/nrepl-select :" build ")")}
         ui.display-result)
+      (ensure-user-ns)
       (passive-ns-require))))
 
 (defn piggieback [code]
   (server.with-conn-or-warn
     (fn [conn]
       (ui.display [(.. "; piggieback: " code)] {:break? true})
+      (require-ns "cider.piggieback")
       (server.eval
-        {:code (wrap-require
-                 "cider.piggieback"
-                 (.. "(cider.piggieback/cljs-repl " code ")"))}
+        {:code (.. "(cider.piggieback/cljs-repl " code ")")}
         ui.display-result)
+      (ensure-user-ns)
       (passive-ns-require))))
 
 (defn- clojure->vim-completion [{:candidate word
