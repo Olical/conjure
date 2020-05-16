@@ -21,8 +21,10 @@
 
 (defn close-hud []
   (when state.hud.id
-    (nvim.win_close state.hud.id true)
-    (set state.hud.id nil)))
+    (pcall
+      (fn []
+        (nvim.win_close state.hud.id true)
+        (set state.hud.id nil)))))
 
 (defn- break-lines [buf]
   (let [break-str (break)]
