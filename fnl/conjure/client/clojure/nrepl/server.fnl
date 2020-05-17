@@ -67,22 +67,33 @@
         (cb acc)))))
 
 (defn close-session [session cb]
-  (send {:op :close :session session} cb))
+  (send
+    {:op :close :session (a.get session :id)}
+    cb))
 
 (defn assume-session [session]
-  (a.assoc-in state [:conn :session] session)
-  (ui.display [(.. "; Assumed session: " session)]
+  (a.assoc-in state [:conn :session] (a.get session :id))
+  (ui.display [(.. "; Assumed session: " (session.str))]
               {:break? true}))
 
-(defn clone-session [session]
-  (send
-    {:op :clone
-     :session session}
-    (with-all-msgs-fn
-      (fn [msgs]
-        (assume-session (a.get (a.last msgs) :new-session))))))
+(defn eval [opts cb]
+  (with-conn-or-warn
+    (fn [_]
+      (send
+        {:op :eval
+         :ns (or opts.context "conjure.user")
+         :code opts.code
+         :file opts.file-path
+         :line (a.get-in opts [:range :start 1])
+         :column (-?> (a.get-in opts [:range :start 2]) (a.inc))
+         :session (or opts.session (a.get-in state [:conn :session]))
 
-(defn with-sessions [cb]
+         :nrepl.middleware.print/print
+         (when config.eval.pretty-print?
+           :conjure.internal/pprint)}
+        cb))))
+
+(defn- with-session-ids [cb]
   (with-conn-or-warn
     (fn [_]
       (send
@@ -94,6 +105,65 @@
                                   (not= msg.session session))))]
             (table.sort sessions)
             (cb sessions)))))))
+
+(defn pretty-session-type [st]
+  (a.get
+    {:clj :Clojure
+     :cljs :ClojureScript
+     :cljr :ClojureCLR
+     :unknown :Unknown}
+    st))
+
+(defn session-type [id cb]
+  (eval
+    {:code (.. "#?("
+               (str.join
+                 " "
+                 [":clj 'clj"
+                  ":cljs 'cljs"
+                  ":cljr 'cljr"
+                  ":default 'unknown"])
+               ")")
+     :session id}
+    (with-all-msgs-fn
+      (fn [msgs]
+        (cb (a.some #(a.get $1 :value) msgs))))))
+
+(defn enrich-session-id [id cb]
+  (session-type
+    id
+    (fn [st]
+      (let [t {:id id
+               :type st
+               :pretty-type (pretty-session-type st)
+               :name "TODO"}]
+        (a.assoc t :str #(.. t.id " (" t.pretty-type ")"))
+        (cb t)))))
+
+(defn with-sessions [cb]
+  (with-session-ids
+    (fn [sess-ids]
+      (let [rich []
+            total (a.count sess-ids)]
+        (a.run!
+          (fn [id]
+            (enrich-session-id
+              id
+              (fn [t]
+                (table.insert rich t)
+                (when (= total (a.count rich))
+                  (cb rich)))))
+          sess-ids)))))
+
+(defn clone-session [session]
+  (send
+    {:op :clone
+     :session (a.get session :id)}
+    (with-all-msgs-fn
+      (fn [msgs]
+        (enrich-session-id
+          (a.some #(a.get $1 :new-session) msgs)
+          assume-session)))))
 
 (defn assume-or-create-session []
   (with-sessions
@@ -161,67 +231,6 @@
   (when (not awaiting-process?)
     (vim.schedule process-message-queue)
     (set awaiting-process? true)))
-
-(defn eval [opts cb]
-  (with-conn-or-warn
-    (fn [_]
-      (send
-        {:op :eval
-         :ns (or opts.context "conjure.user")
-         :code opts.code
-         :file opts.file-path
-         :line (a.get-in opts [:range :start 1])
-         :column (-?> (a.get-in opts [:range :start 2]) (a.inc))
-         :session (or opts.session (a.get-in state [:conn :session]))
-
-         :nrepl.middleware.print/print
-         (when config.eval.pretty-print?
-           :conjure.internal/pprint)}
-        cb))))
-
-(defn pretty-session-type [st]
-  (a.get
-    {:clj :Clojure
-     :cljs :ClojureScript
-     :cljr :ClojureCLR
-     :unknown :Unknown}
-    st))
-
-(defn session-type [session cb]
-  (eval
-    {:code (.. "#?("
-               (str.join
-                 " "
-                 [":clj 'clj"
-                  ":cljs 'cljs"
-                  ":cljr 'cljr"
-                  ":default 'unknown"])
-               ")")
-     :session session}
-    (with-all-msgs-fn
-      (fn [msgs]
-        (cb (a.some #(a.get $1 :value) msgs))))))
-
-(defn with-rich-sessions [cb]
-  (with-sessions
-    (fn [sessions]
-      (let [rich []
-            total (a.count sessions)]
-        (a.run!
-          (fn [sess]
-            (session-type
-              sess
-              (fn [st]
-                (table.insert
-                  rich
-                  {:id sess
-                   :type st
-                   :pretty-type (pretty-session-type st)
-                   :name "TODO"})
-
-                (when (= total (a.count rich))
-                  (cb rich)))))
-          sessions)))))
 
 (defn- eval-preamble [cb]
   (send

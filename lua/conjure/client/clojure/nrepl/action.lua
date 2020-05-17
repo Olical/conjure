@@ -371,14 +371,17 @@ do
           local id = _7_["id"]
           local session = _7_["session"]
           server.send({["interrupt-id"] = id, op = "interrupt", session = session})
-          local function _8_()
-            if code then
-              return text["left-sample"](code, editor["percent-width"](config.interrupt["sample-limit"]))
-            else
-              return ("session (" .. session .. ")")
+          local function _8_(sess)
+            local function _9_()
+              if code then
+                return text["left-sample"](code, editor["percent-width"](config.interrupt["sample-limit"]))
+              else
+                return ("session: " .. sess.str() .. "")
+              end
             end
+            return ui.display({("; Interrupted: " .. _9_())}, {["break?"] = true})
           end
-          return ui.display({("; Interrupted: " .. _8_())}, {["break?"] = true})
+          return server["enrich-session-id"](session, _8_)
         end
         order_66 = _5_
         if a["empty?"](msgs) then
@@ -487,7 +490,7 @@ do
     local v_23_0_0 = nil
     local function clone_current_session0()
       local function _3_(conn)
-        return server["clone-session"](a.get(conn, "session"))
+        return server["clone-session"]({id = a.get(conn, "session")})
       end
       return server["with-conn-or-warn"](_3_)
     end
@@ -529,7 +532,7 @@ do
         local function _4_()
           return server["assume-or-create-session"]()
         end
-        return server["close-session"](session, _4_)
+        return server["close-session"]({id = session}, _4_)
       end
       return server["with-conn-or-warn"](_3_)
     end
@@ -549,7 +552,7 @@ do
       local function _3_(sessions)
         return ui["display-sessions"](sessions, cb)
       end
-      return server["with-rich-sessions"](_3_)
+      return server["with-sessions"](_3_)
     end
     v_23_0_0 = display_sessions0
     _0_0["display-sessions"] = v_23_0_0
@@ -609,7 +612,7 @@ do
     local v_23_0_0 = nil
     local function next_session0()
       local function _3_(current, node)
-        return (current == ll.val(ll.prev(node)))
+        return (current == a.get(ll.val(ll.prev(node)), "id"))
       end
       return cycle_session(_3_)
     end
@@ -627,7 +630,7 @@ do
     local v_23_0_0 = nil
     local function prev_session0()
       local function _3_(current, node)
-        return (current == ll.val(ll.next(node)))
+        return (current == a.get(ll.val(ll.next(node)), "id"))
       end
       return cycle_session(_3_)
     end
@@ -653,7 +656,7 @@ do
             local n = nvim.fn.str2nr(extract.prompt("Session number: "))
             local _5_ = a.count(sessions)
             if ((1 <= n) and (n <= _5_)) then
-              return server["assume-session"](a["get-in"](sessions, {n, "id"}))
+              return server["assume-session"](a.get(sessions, n))
             else
               return ui.display({"; Invalid session number."})
             end
@@ -661,7 +664,7 @@ do
           return ui["display-sessions"](sessions, _4_)
         end
       end
-      return server["with-rich-sessions"](_3_)
+      return server["with-sessions"](_3_)
     end
     v_23_0_0 = select_session_interactive0
     _0_0["select-session-interactive"] = v_23_0_0

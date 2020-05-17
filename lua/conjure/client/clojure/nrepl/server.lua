@@ -160,7 +160,7 @@ do
   do
     local v_23_0_0 = nil
     local function close_session0(session, cb)
-      return send({op = "close", session = session}, cb)
+      return send({op = "close", session = a.get(session, "id")}, cb)
     end
     v_23_0_0 = close_session0
     _0_0["close-session"] = v_23_0_0
@@ -175,8 +175,8 @@ do
   do
     local v_23_0_0 = nil
     local function assume_session0(session)
-      a["assoc-in"](state, {"conn", "session"}, session)
-      return ui.display({("; Assumed session: " .. session)}, {["break?"] = true})
+      a["assoc-in"](state, {"conn", "session"}, a.get(session, "id"))
+      return ui.display({("; Assumed session: " .. session.str())}, {["break?"] = true})
     end
     v_23_0_0 = assume_session0
     _0_0["assume-session"] = v_23_0_0
@@ -185,23 +185,119 @@ do
   _0_0["aniseed/locals"]["assume-session"] = v_23_0_
   assume_session = v_23_0_
 end
-local clone_session = nil
+local eval = nil
 do
   local v_23_0_ = nil
   do
     local v_23_0_0 = nil
-    local function clone_session0(session)
-      local function _3_(msgs)
-        return assume_session(a.get(a.last(msgs), "new-session"))
+    local function eval0(opts, cb)
+      local function _3_(_)
+        local _4_
+        if config.eval["pretty-print?"] then
+          _4_ = "conjure.internal/pprint"
+        else
+        _4_ = nil
+        end
+        local _7_
+        do
+          local _6_0 = a["get-in"](opts, {"range", "start", 2})
+          if _6_0 then
+            _7_ = a.inc(_6_0)
+          else
+            _7_ = _6_0
+          end
+        end
+        return send({["nrepl.middleware.print/print"] = _4_, code = opts.code, column = _7_, file = opts["file-path"], line = a["get-in"](opts, {"range", "start", 1}), ns = (opts.context or "conjure.user"), op = "eval", session = (opts.session or a["get-in"](state, {"conn", "session"}))}, cb)
       end
-      return send({op = "clone", session = session}, with_all_msgs_fn(_3_))
+      return with_conn_or_warn(_3_)
     end
-    v_23_0_0 = clone_session0
-    _0_0["clone-session"] = v_23_0_0
+    v_23_0_0 = eval0
+    _0_0["eval"] = v_23_0_0
     v_23_0_ = v_23_0_0
   end
-  _0_0["aniseed/locals"]["clone-session"] = v_23_0_
-  clone_session = v_23_0_
+  _0_0["aniseed/locals"]["eval"] = v_23_0_
+  eval = v_23_0_
+end
+local with_session_ids = nil
+do
+  local v_23_0_ = nil
+  local function with_session_ids0(cb)
+    local function _3_(_)
+      local function _4_(msg)
+        local sessions = nil
+        local function _5_(session)
+          return (msg.session ~= session)
+        end
+        sessions = a.filter(_5_, a.get(msg, "sessions"))
+        table.sort(sessions)
+        return cb(sessions)
+      end
+      return send({op = "ls-sessions"}, _4_)
+    end
+    return with_conn_or_warn(_3_)
+  end
+  v_23_0_ = with_session_ids0
+  _0_0["aniseed/locals"]["with-session-ids"] = v_23_0_
+  with_session_ids = v_23_0_
+end
+local pretty_session_type = nil
+do
+  local v_23_0_ = nil
+  do
+    local v_23_0_0 = nil
+    local function pretty_session_type0(st)
+      return a.get({clj = "Clojure", cljr = "ClojureCLR", cljs = "ClojureScript", unknown = "Unknown"}, st)
+    end
+    v_23_0_0 = pretty_session_type0
+    _0_0["pretty-session-type"] = v_23_0_0
+    v_23_0_ = v_23_0_0
+  end
+  _0_0["aniseed/locals"]["pretty-session-type"] = v_23_0_
+  pretty_session_type = v_23_0_
+end
+local session_type = nil
+do
+  local v_23_0_ = nil
+  do
+    local v_23_0_0 = nil
+    local function session_type0(id, cb)
+      local function _3_(msgs)
+        local function _4_(_241)
+          return a.get(_241, "value")
+        end
+        return cb(a.some(_4_, msgs))
+      end
+      return eval({code = ("#?(" .. str.join(" ", {":clj 'clj", ":cljs 'cljs", ":cljr 'cljr", ":default 'unknown"}) .. ")"), session = id}, with_all_msgs_fn(_3_))
+    end
+    v_23_0_0 = session_type0
+    _0_0["session-type"] = v_23_0_0
+    v_23_0_ = v_23_0_0
+  end
+  _0_0["aniseed/locals"]["session-type"] = v_23_0_
+  session_type = v_23_0_
+end
+local enrich_session_id = nil
+do
+  local v_23_0_ = nil
+  do
+    local v_23_0_0 = nil
+    local function enrich_session_id0(id, cb)
+      local function _3_(st)
+        local t = {["pretty-type"] = pretty_session_type(st), id = id, name = "TODO", type = st}
+        local function _4_()
+          return (t.id .. " (" .. t["pretty-type"] .. ")")
+        end
+        a.assoc(t, "str", _4_)
+        return cb(t)
+      end
+      return session_type(id, _3_)
+    end
+    v_23_0_0 = enrich_session_id0
+    _0_0["enrich-session-id"] = v_23_0_0
+    v_23_0_ = v_23_0_0
+  end
+  _0_0["aniseed/locals"]["enrich-session-id"] = v_23_0_
+  enrich_session_id = v_23_0_
 end
 local with_sessions = nil
 do
@@ -209,19 +305,21 @@ do
   do
     local v_23_0_0 = nil
     local function with_sessions0(cb)
-      local function _3_(_)
-        local function _4_(msg)
-          local sessions = nil
-          local function _5_(session)
-            return (msg.session ~= session)
+      local function _3_(sess_ids)
+        local rich = {}
+        local total = a.count(sess_ids)
+        local function _4_(id)
+          local function _5_(t)
+            table.insert(rich, t)
+            if (total == a.count(rich)) then
+              return cb(rich)
+            end
           end
-          sessions = a.filter(_5_, a.get(msg, "sessions"))
-          table.sort(sessions)
-          return cb(sessions)
+          return enrich_session_id(id, _5_)
         end
-        return send({op = "ls-sessions"}, _4_)
+        return a["run!"](_4_, sess_ids)
       end
-      return with_conn_or_warn(_3_)
+      return with_session_ids(_3_)
     end
     v_23_0_0 = with_sessions0
     _0_0["with-sessions"] = v_23_0_0
@@ -229,6 +327,27 @@ do
   end
   _0_0["aniseed/locals"]["with-sessions"] = v_23_0_
   with_sessions = v_23_0_
+end
+local clone_session = nil
+do
+  local v_23_0_ = nil
+  do
+    local v_23_0_0 = nil
+    local function clone_session0(session)
+      local function _3_(msgs)
+        local function _4_(_241)
+          return a.get(_241, "new-session")
+        end
+        return enrich_session_id(a.some(_4_, msgs), assume_session)
+      end
+      return send({op = "clone", session = a.get(session, "id")}, with_all_msgs_fn(_3_))
+    end
+    v_23_0_0 = clone_session0
+    _0_0["clone-session"] = v_23_0_0
+    v_23_0_ = v_23_0_0
+  end
+  _0_0["aniseed/locals"]["clone-session"] = v_23_0_
+  clone_session = v_23_0_
 end
 local assume_or_create_session = nil
 do
@@ -353,104 +472,6 @@ do
   v_23_0_ = enqueue_message0
   _0_0["aniseed/locals"]["enqueue-message"] = v_23_0_
   enqueue_message = v_23_0_
-end
-local eval = nil
-do
-  local v_23_0_ = nil
-  do
-    local v_23_0_0 = nil
-    local function eval0(opts, cb)
-      local function _3_(_)
-        local _4_
-        if config.eval["pretty-print?"] then
-          _4_ = "conjure.internal/pprint"
-        else
-        _4_ = nil
-        end
-        local _7_
-        do
-          local _6_0 = a["get-in"](opts, {"range", "start", 2})
-          if _6_0 then
-            _7_ = a.inc(_6_0)
-          else
-            _7_ = _6_0
-          end
-        end
-        return send({["nrepl.middleware.print/print"] = _4_, code = opts.code, column = _7_, file = opts["file-path"], line = a["get-in"](opts, {"range", "start", 1}), ns = (opts.context or "conjure.user"), op = "eval", session = (opts.session or a["get-in"](state, {"conn", "session"}))}, cb)
-      end
-      return with_conn_or_warn(_3_)
-    end
-    v_23_0_0 = eval0
-    _0_0["eval"] = v_23_0_0
-    v_23_0_ = v_23_0_0
-  end
-  _0_0["aniseed/locals"]["eval"] = v_23_0_
-  eval = v_23_0_
-end
-local pretty_session_type = nil
-do
-  local v_23_0_ = nil
-  do
-    local v_23_0_0 = nil
-    local function pretty_session_type0(st)
-      return a.get({clj = "Clojure", cljr = "ClojureCLR", cljs = "ClojureScript", unknown = "Unknown"}, st)
-    end
-    v_23_0_0 = pretty_session_type0
-    _0_0["pretty-session-type"] = v_23_0_0
-    v_23_0_ = v_23_0_0
-  end
-  _0_0["aniseed/locals"]["pretty-session-type"] = v_23_0_
-  pretty_session_type = v_23_0_
-end
-local session_type = nil
-do
-  local v_23_0_ = nil
-  do
-    local v_23_0_0 = nil
-    local function session_type0(session, cb)
-      local function _3_(msgs)
-        local function _4_(_241)
-          return a.get(_241, "value")
-        end
-        return cb(a.some(_4_, msgs))
-      end
-      return eval({code = ("#?(" .. str.join(" ", {":clj 'clj", ":cljs 'cljs", ":cljr 'cljr", ":default 'unknown"}) .. ")"), session = session}, with_all_msgs_fn(_3_))
-    end
-    v_23_0_0 = session_type0
-    _0_0["session-type"] = v_23_0_0
-    v_23_0_ = v_23_0_0
-  end
-  _0_0["aniseed/locals"]["session-type"] = v_23_0_
-  session_type = v_23_0_
-end
-local with_rich_sessions = nil
-do
-  local v_23_0_ = nil
-  do
-    local v_23_0_0 = nil
-    local function with_rich_sessions0(cb)
-      local function _3_(sessions)
-        local rich = {}
-        local total = a.count(sessions)
-        local function _4_(sess)
-          local function _5_(st)
-            table.insert(rich, {["pretty-type"] = pretty_session_type(st), id = sess, name = "TODO", type = st})
-            if (total == a.count(rich)) then
-              return cb(rich)
-            end
-          end
-          return session_type(sess, _5_)
-        end
-        return a["run!"](_4_, sessions)
-      end
-      return with_sessions(_3_)
-    end
-    v_23_0_0 = with_rich_sessions0
-    _0_0["with-rich-sessions"] = v_23_0_0
-    v_23_0_ = v_23_0_0
-  end
-  _0_0["aniseed/locals"]["with-rich-sessions"] = v_23_0_
-  with_rich_sessions = v_23_0_
 end
 local eval_preamble = nil
 do

@@ -203,15 +203,18 @@
                 {:op :interrupt
                  :interrupt-id id
                  :session session})
-              (ui.display
-                [(.. "; Interrupted: "
-                     (if code
-                       (text.left-sample
-                         code
-                         (editor.percent-width
-                           config.interrupt.sample-limit))
-                       (.. "session (" session ")")))]
-                {:break? true}))]
+              (server.enrich-session-id
+                session
+                (fn [sess]
+                  (ui.display
+                    [(.. "; Interrupted: "
+                         (if code
+                           (text.left-sample
+                             code
+                             (editor.percent-width
+                               config.interrupt.sample-limit))
+                           (.. "session: " (sess.str) "")))]
+                    {:break? true}))))]
 
         (if (a.empty? msgs)
           (order-66 {:session conn.session})
@@ -247,7 +250,7 @@
 (defn clone-current-session []
   (server.with-conn-or-warn
     (fn [conn]
-      (server.clone-session (a.get conn :session)))))
+      (server.clone-session {:id (a.get conn :session)}))))
 
 (defn clone-fresh-session []
   (server.with-conn-or-warn
@@ -262,10 +265,11 @@
         (ui.display [(.. "; Closed current session: " session)]
                     {:break? true})
         (server.close-session
-          session #(server.assume-or-create-session))))))
+          {:id session}
+          #(server.assume-or-create-session))))))
 
 (defn display-sessions [cb]
-  (server.with-rich-sessions
+  (server.with-sessions
     (fn [sessions]
       (ui.display-sessions sessions cb))))
 
@@ -295,15 +299,15 @@
 (defn next-session []
   (cycle-session
     (fn [current node]
-      (= current (->> node (ll.prev) (ll.val))))))
+      (= current (a.get (->> node (ll.prev) (ll.val)) :id)))))
 
 (defn prev-session []
   (cycle-session
     (fn [current node]
-      (= current (->> node (ll.next) (ll.val))))))
+      (= current (a.get (->> node (ll.next) (ll.val)) :id)))))
 
 (defn select-session-interactive []
-  (server.with-rich-sessions
+  (server.with-sessions
     (fn [sessions]
       (if (= 1 (a.count sessions))
         (ui.display ["; No other sessions"] {:break? true})
@@ -313,7 +317,7 @@
             (nvim.ex.redraw_)
             (let [n (nvim.fn.str2nr (extract.prompt "Session number: "))]
               (if (<= 1 n (a.count sessions))
-                (server.assume-session (a.get-in sessions [n :id]))
+                (server.assume-session (a.get sessions n))
                 (ui.display ["; Invalid session number."])))))))))
 
 (defn run-all-tests []
