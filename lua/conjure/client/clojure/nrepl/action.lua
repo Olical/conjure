@@ -586,7 +586,7 @@ do
     local v_23_0_0 = nil
     local function display_sessions0(cb)
       local function _3_(sessions)
-        return ui["display-given-sessions"](sessions, cb)
+        return ui["display-sessions"](sessions, cb)
       end
       return server["with-sessions"](_3_)
     end
@@ -697,7 +697,7 @@ do
               return ui.display({"; Invalid session number."})
             end
           end
-          return ui["display-given-sessions"](sessions, _4_)
+          return ui["display-sessions"](sessions, _4_)
         end
       end
       return server["with-sessions"](_3_)

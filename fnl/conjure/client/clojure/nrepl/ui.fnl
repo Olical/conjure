@@ -49,7 +49,7 @@
         nil)
       {:join-first? joined?})))
 
-(defn display-given-sessions [sessions cb]
+(defn display-sessions [sessions cb]
   (let [current (a.get-in state [:conn :session])]
     (display (a.concat [(.. "; Sessions (" (a.count sessions) "):")]
                        (a.map-indexed (fn [[idx session]]

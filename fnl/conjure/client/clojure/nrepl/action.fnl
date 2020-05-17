@@ -290,7 +290,7 @@
 (defn display-sessions [cb]
   (server.with-sessions
     (fn [sessions]
-      (ui.display-given-sessions sessions cb))))
+      (ui.display-sessions sessions cb))))
 
 (defn close-all-sessions []
   (server.with-sessions
@@ -330,7 +330,7 @@
     (fn [sessions]
       (if (= 1 (a.count sessions))
         (ui.display ["; No other sessions"] {:break? true})
-        (ui.display-given-sessions
+        (ui.display-sessions
           sessions
           (fn []
             (nvim.ex.redraw_)

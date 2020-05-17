@@ -113,12 +113,12 @@ do
   _0_0["aniseed/locals"]["display-result"] = v_23_0_
   display_result = v_23_0_
 end
-local display_given_sessions = nil
+local display_sessions = nil
 do
   local v_23_0_ = nil
   do
     local v_23_0_0 = nil
-    local function display_given_sessions0(sessions, cb)
+    local function display_sessions0(sessions, cb)
       local current = a["get-in"](state0, {"conn", "session"})
       local function _3_(_4_0)
         local _5_ = _4_0
@@ -138,11 +138,11 @@ do
         return cb(sessions)
       end
     end
-    v_23_0_0 = display_given_sessions0
-    _0_0["display-given-sessions"] = v_23_0_0
+    v_23_0_0 = display_sessions0
+    _0_0["display-sessions"] = v_23_0_0
     v_23_0_ = v_23_0_0
   end
-  _0_0["aniseed/locals"]["display-given-sessions"] = v_23_0_
-  display_given_sessions = v_23_0_
+  _0_0["aniseed/locals"]["display-sessions"] = v_23_0_
+  display_sessions = v_23_0_
 end
 return nil
