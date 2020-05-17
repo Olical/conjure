@@ -35,20 +35,22 @@ do
   do
     local v_23_0_0 = nil
     local function buf0(mode, keys, ...)
-      local args = {...}
-      local _3_
-      if a["string?"](keys) then
-        _3_ = (config.mappings.prefix .. keys)
-      else
-        _3_ = a.first(keys)
+      if keys then
+        local args = {...}
+        local _3_
+        if a["string?"](keys) then
+          _3_ = (config.mappings.prefix .. keys)
+        else
+          _3_ = a.first(keys)
+        end
+        local _5_
+        if (2 == a.count(args)) then
+          _5_ = (":" .. bridge["viml->lua"](unpack(args)) .. "<cr>")
+        else
+          _5_ = unpack(args)
+        end
+        return nvim.buf_set_keymap(0, mode, _3_, _5_, {noremap = true, silent = true})
       end
-      local _5_
-      if (2 == a.count(args)) then
-        _5_ = (":" .. bridge["viml->lua"](unpack(args)) .. "<cr>")
-      else
-        _5_ = unpack(args)
-      end
-      return nvim.buf_set_keymap(0, mode, _3_, _5_, {noremap = true, silent = true})
     end
     v_23_0_0 = buf0
     _0_0["buf"] = v_23_0_0

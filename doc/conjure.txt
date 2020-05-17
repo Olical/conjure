@@ -47,6 +47,9 @@ won't update right away. Mappings are defined as you open a buffer, so be sure
 to set up your mappings in your Neovim configuration or at least before you
 open a buffer.
 
+If one of Conjure's mappings is annoying or conflicting with something else,
+feel free to disable it by setting it to `nil`.
+
 I've also included some commands since they're related to the mappings.
 
 :ConjureSchool           Start the interactive tutorial which will walk you

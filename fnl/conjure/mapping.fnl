@@ -10,17 +10,18 @@
             fennel conjure.aniseed.fennel}})
 
 (defn buf [mode keys ...]
-  (let [args [...]]
-    (nvim.buf_set_keymap
-      0 mode
-      (if (a.string? keys)
-        (.. config.mappings.prefix keys)
-        (a.first keys))
-      (if (= 2 (a.count args))
-        (.. ":" (bridge.viml->lua (unpack args)) "<cr>")
-        (unpack args))
-      {:silent true
-       :noremap true})))
+  (when keys
+    (let [args [...]]
+      (nvim.buf_set_keymap
+        0 mode
+        (if (a.string? keys)
+          (.. config.mappings.prefix keys)
+          (a.first keys))
+        (if (= 2 (a.count args))
+          (.. ":" (bridge.viml->lua (unpack args)) "<cr>")
+          (unpack args))
+        {:silent true
+         :noremap true}))))
 
 (defn on-filetype []
   (buf :n config.mappings.eval-motion ":set opfunc=ConjureEvalMotion<cr>g@")
