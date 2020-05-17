@@ -394,7 +394,10 @@ do
     local v_23_0_0 = nil
     local function session_type0(cb)
       local function _3_(msgs)
-        return cb(a["get-in"](msgs, {1, "value"}))
+        local function _4_(_241)
+          return a.get(_241, "value")
+        end
+        return cb(a.some(_4_, msgs))
       end
       return eval({code = ("#?(" .. str.join(" ", {":clj 'clj", ":cljs 'cljs", ":cljr 'cljr", ":default 'unknown"}) .. ")")}, with_all_msgs_fn(_3_))
     end

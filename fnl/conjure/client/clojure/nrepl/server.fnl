@@ -191,7 +191,7 @@
                ")")}
     (with-all-msgs-fn
       (fn [msgs]
-        (cb (a.get-in msgs [1 :value]))))))
+        (cb (a.some #(a.get $1 :value) msgs))))))
 
 (defn- eval-preamble [cb]
   (send
