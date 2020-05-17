@@ -39,7 +39,6 @@
    :session-next "sn"
    :session-prev "sp"
    :session-select "ss"
-   :session-type "st"
 
    :run-all-tests "ta"
    :run-current-ns-tests "tn"

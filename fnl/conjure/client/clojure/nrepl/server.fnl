@@ -172,14 +172,22 @@
          :file opts.file-path
          :line (a.get-in opts [:range :start 1])
          :column (-?> (a.get-in opts [:range :start 2]) (a.inc))
-         :session (a.get-in state [:conn :session])
+         :session (or opts.session (a.get-in state [:conn :session]))
 
          :nrepl.middleware.print/print
          (when config.eval.pretty-print?
            :conjure.internal/pprint)}
         cb))))
 
-(defn session-type [cb]
+(defn pretty-session-type [st]
+  (a.get
+    {:clj :Clojure
+     :cljs :ClojureScript
+     :cljr :ClojureCLR
+     :unknown :Unknown}
+    st))
+
+(defn session-type [session cb]
   (eval
     {:code (.. "#?("
                (str.join
@@ -188,10 +196,32 @@
                   ":cljs 'cljs"
                   ":cljr 'cljr"
                   ":default 'unknown"])
-               ")")}
+               ")")
+     :session session}
     (with-all-msgs-fn
       (fn [msgs]
         (cb (a.some #(a.get $1 :value) msgs))))))
+
+(defn with-rich-sessions [cb]
+  (with-sessions
+    (fn [sessions]
+      (let [rich []
+            total (a.count sessions)]
+        (a.run!
+          (fn [sess]
+            (session-type
+              sess
+              (fn [st]
+                (table.insert
+                  rich
+                  {:id sess
+                   :type st
+                   :pretty-type (pretty-session-type st)
+                   :name "TODO"})
+
+                (when (= total (a.count rich))
+                  (cb rich)))))
+          sessions)))))
 
 (defn- eval-preamble [cb]
   (send

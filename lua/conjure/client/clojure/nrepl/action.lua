@@ -36,45 +36,6 @@ local fs = _2_[7]
 local ll = _2_[8]
 local log = _2_[9]
 do local _ = ({nil, _0_0, nil})[2] end
-local pretty_session_type = nil
-do
-  local v_23_0_ = nil
-  local function pretty_session_type0(st)
-    return a.get({clj = "Clojure", cljr = "ClojureCLR", cljs = "ClojureScript", unknown = "Unknown"}, st)
-  end
-  v_23_0_ = pretty_session_type0
-  _0_0["aniseed/locals"]["pretty-session-type"] = v_23_0_
-  pretty_session_type = v_23_0_
-end
-local display_session_type = nil
-do
-  local v_23_0_ = nil
-  do
-    local v_23_0_0 = nil
-    local function display_session_type0()
-      local function _3_(st)
-        local pst = pretty_session_type(st)
-        if pst then
-          local _4_
-          if pst then
-            _4_ = {("; Session type: " .. pst)}
-          else
-            _4_ = a.concat({"; Couldn't determine session type."}, text["prefixed-lines"](st, "; "))
-          end
-          return ui.display(_4_, {["break?"] = true})
-        else
-          return ui.display({["break?"] = true})
-        end
-      end
-      return server["session-type"](_3_)
-    end
-    v_23_0_0 = display_session_type0
-    _0_0["display-session-type"] = v_23_0_0
-    v_23_0_ = v_23_0_0
-  end
-  _0_0["aniseed/locals"]["display-session-type"] = v_23_0_
-  display_session_type = v_23_0_
-end
 local ensure_user_ns = nil
 do
   local v_23_0_ = nil
@@ -588,7 +549,7 @@ do
       local function _3_(sessions)
         return ui["display-sessions"](sessions, cb)
       end
-      return server["with-sessions"](_3_)
+      return server["with-rich-sessions"](_3_)
     end
     v_23_0_0 = display_sessions0
     _0_0["display-sessions"] = v_23_0_0
@@ -692,7 +653,7 @@ do
             local n = nvim.fn.str2nr(extract.prompt("Session number: "))
             local _5_ = a.count(sessions)
             if ((1 <= n) and (n <= _5_)) then
-              return server["assume-session"](a.get(sessions, n))
+              return server["assume-session"](a["get-in"](sessions, {n, "id"}))
             else
               return ui.display({"; Invalid session number."})
             end
@@ -700,7 +661,7 @@ do
           return ui["display-sessions"](sessions, _4_)
         end
       end
-      return server["with-sessions"](_3_)
+      return server["with-rich-sessions"](_3_)
     end
     v_23_0_0 = select_session_interactive0
     _0_0["select-session-interactive"] = v_23_0_0

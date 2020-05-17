@@ -100,9 +100,6 @@ options relevant to these mappings.
 
 <localleader>ss          Prompt to select any session in the list.
 
-<localleader>st          Display the current session type.
-                         Clojure, ClojureScript or Clojure CLR.
-
 <localleader>ta          Run all currently loaded tests.
 
 <localleader>tn          Run all tests within this namespace.
@@ -244,10 +241,6 @@ All configuration can be set as described in |conjure-configuration|.
 `clojure.nrepl/mappings.session-select`
             Select a session from the list with an interactive prompt.
             Default: `ss`
-
-`clojure.nrepl/mappings.session-type`
-            Print the current session language into the log.
-            Default: `st`
 
 `clojure.nrepl/mappings.run-all-tests`
             Run all loaded tests.

@@ -16,29 +16,6 @@
             ui conjure.client.clojure.nrepl.ui
             a conjure.aniseed.core}})
 
-(defn- pretty-session-type [st]
-  (a.get
-    {:clj :Clojure
-     :cljs :ClojureScript
-     :cljr :ClojureCLR
-     :unknown :Unknown}
-    st))
-
-(defn display-session-type []
-  (server.session-type
-    (fn [st]
-      (let [pst (pretty-session-type st)]
-        (if pst
-          (ui.display
-            (if pst
-              [(.. "; Session type: " pst)]
-              (a.concat
-                ["; Couldn't determine session type."]
-                (text.prefixed-lines st "; ")))
-            {:break? true})
-          (ui.display 
-            {:break? true}))))))
-
 (defn- ensure-user-ns []
   (server.eval
     {:code (.. "(ns conjure.user)")}
@@ -288,7 +265,7 @@
           session #(server.assume-or-create-session))))))
 
 (defn display-sessions [cb]
-  (server.with-sessions
+  (server.with-rich-sessions
     (fn [sessions]
       (ui.display-sessions sessions cb))))
 
@@ -326,7 +303,7 @@
       (= current (->> node (ll.next) (ll.val))))))
 
 (defn select-session-interactive []
-  (server.with-sessions
+  (server.with-rich-sessions
     (fn [sessions]
       (if (= 1 (a.count sessions))
         (ui.display ["; No other sessions"] {:break? true})
@@ -336,7 +313,7 @@
             (nvim.ex.redraw_)
             (let [n (nvim.fn.str2nr (extract.prompt "Session number: "))]
               (if (<= 1 n (a.count sessions))
-                (server.assume-session (a.get sessions n))
+                (server.assume-session (a.get-in sessions [n :id]))
                 (ui.display ["; Invalid session number."])))))))))
 
 (defn run-all-tests []

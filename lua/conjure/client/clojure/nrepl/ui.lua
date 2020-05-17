@@ -15,15 +15,16 @@ do
   _0_0 = module_23_0_
 end
 local function _1_(...)
-  _0_0["aniseed/local-fns"] = {require = {a = "conjure.aniseed.core", client = "conjure.client", log = "conjure.log", state = "conjure.client.clojure.nrepl.state", text = "conjure.text"}}
-  return {require("conjure.aniseed.core"), require("conjure.client"), require("conjure.log"), require("conjure.client.clojure.nrepl.state"), require("conjure.text")}
+  _0_0["aniseed/local-fns"] = {require = {["nrepl-state"] = "conjure.client.clojure.nrepl.state", a = "conjure.aniseed.core", client = "conjure.client", log = "conjure.log", str = "conjure.aniseed.string", text = "conjure.text"}}
+  return {require("conjure.aniseed.core"), require("conjure.client"), require("conjure.log"), require("conjure.client.clojure.nrepl.state"), require("conjure.aniseed.string"), require("conjure.text")}
 end
 local _2_ = _1_(...)
 local a = _2_[1]
 local client = _2_[2]
 local log = _2_[3]
-local state = _2_[4]
-local text = _2_[5]
+local nrepl_state = _2_[4]
+local str = _2_[5]
+local text = _2_[6]
 do local _ = ({nil, _0_0, nil})[2] end
 local display = nil
 do
@@ -40,11 +41,11 @@ do
   _0_0["aniseed/locals"]["display"] = v_23_0_
   display = v_23_0_
 end
-local state0 = nil
+local state = nil
 do
   local v_23_0_ = (_0_0["aniseed/locals"].state or {["join-next"] = {key = nil}})
   _0_0["aniseed/locals"]["state"] = v_23_0_
-  state0 = v_23_0_
+  state = v_23_0_
 end
 local handle_join_line = nil
 do
@@ -58,7 +59,7 @@ do
     else
     next_key = nil
     end
-    local _4_ = a.get(state0, "join-next", {})
+    local _4_ = a.get(state, "join-next", {})
     local key = _4_["key"]
     if (next_key or resp.value) then
       local function _5_()
@@ -66,7 +67,7 @@ do
           return {key = next_key}
         end
       end
-      a.assoc(state0, "join-next", _5_())
+      a.assoc(state, "join-next", _5_())
     end
     return (next_key and (key == next_key))
   end
@@ -119,23 +120,22 @@ do
   do
     local v_23_0_0 = nil
     local function display_sessions0(sessions, cb)
-      local current = a["get-in"](state0, {"conn", "session"})
+      local current = a["get-in"](nrepl_state, {"conn", "session"})
       local function _3_(_4_0)
         local _5_ = _4_0
         local idx = _5_[1]
         local session = _5_[2]
-        local function _6_()
-          if (current == session) then
-            return " (current)"
-          else
-            return ""
-          end
+        local _6_
+        if (current == session.id) then
+          _6_ = ">"
+        else
+          _6_ = " "
         end
-        return (";  " .. idx .. " - " .. session .. _6_())
+        return str.join({"; ", _6_, idx, " - ", session.id, " (", session["pretty-type"], ")"})
       end
       display(a.concat({("; Sessions (" .. a.count(sessions) .. "):")}, a["map-indexed"](_3_, sessions)), {["break?"] = true})
       if cb then
-        return cb(sessions)
+        return cb()
       end
     end
     v_23_0_0 = display_sessions0
