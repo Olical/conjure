@@ -8,5 +8,5 @@
 /doc/tags
 /.shadow-cljs/
 /node_modules/
-/dev/public/
+/dev/clojure/public/
 __pycache__/
