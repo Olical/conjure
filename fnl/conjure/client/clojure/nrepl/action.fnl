@@ -250,7 +250,9 @@
 (defn clone-current-session []
   (server.with-conn-or-warn
     (fn [conn]
-      (server.clone-session {:id (a.get conn :session)}))))
+      (server.enrich-session-id
+        (a.get conn :session)
+        server.clone-session))))
 
 (defn clone-fresh-session []
   (server.with-conn-or-warn
@@ -260,13 +262,13 @@
 (defn close-current-session []
   (server.with-conn-or-warn
     (fn [conn]
-      (let [session (a.get conn :session)]
-        (a.assoc conn :session nil)
-        (ui.display [(.. "; Closed current session: " session)]
-                    {:break? true})
-        (server.close-session
-          {:id session}
-          #(server.assume-or-create-session))))))
+      (server.enrich-session-id
+        (a.get conn :session)
+        (fn [sess]
+          (a.assoc conn :session nil)
+          (ui.display [(.. "; Closed current session: " (sess.str))]
+                      {:break? true})
+          (server.close-session sess #(server.assume-or-create-session)))))))
 
 (defn display-sessions [cb]
   (server.with-sessions

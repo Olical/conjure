@@ -490,7 +490,7 @@ do
     local v_23_0_0 = nil
     local function clone_current_session0()
       local function _3_(conn)
-        return server["clone-session"]({id = a.get(conn, "session")})
+        return server["enrich-session-id"](a.get(conn, "session"), server["clone-session"])
       end
       return server["with-conn-or-warn"](_3_)
     end
@@ -526,13 +526,15 @@ do
     local v_23_0_0 = nil
     local function close_current_session0()
       local function _3_(conn)
-        local session = a.get(conn, "session")
-        a.assoc(conn, "session", nil)
-        ui.display({("; Closed current session: " .. session)}, {["break?"] = true})
-        local function _4_()
-          return server["assume-or-create-session"]()
+        local function _4_(sess)
+          a.assoc(conn, "session", nil)
+          ui.display({("; Closed current session: " .. sess.str())}, {["break?"] = true})
+          local function _5_()
+            return server["assume-or-create-session"]()
+          end
+          return server["close-session"](sess, _5_)
         end
-        return server["close-session"]({id = session}, _4_)
+        return server["enrich-session-id"](a.get(conn, "session"), _4_)
       end
       return server["with-conn-or-warn"](_3_)
     end
