@@ -27,7 +27,7 @@ local clients = nil
 do
   local v_23_0_ = nil
   do
-    local v_23_0_0 = {clojure = "conjure.client.clojure.nrepl", fennel = "conjure.client.fennel.aniseed"}
+    local v_23_0_0 = {clojure = "conjure.client.clojure.nrepl", fennel = "conjure.client.fennel.aniseed", janet = "conjure.client.janet.netrepl"}
     _0_0["clients"] = v_23_0_0
     v_23_0_ = v_23_0_0
   end

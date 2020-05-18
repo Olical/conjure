@@ -161,4 +161,19 @@ do
   _0_0["aniseed/locals"]["ends-with"] = v_23_0_
   ends_with = v_23_0_
 end
+local strip_ansi_codes = nil
+do
+  local v_23_0_ = nil
+  do
+    local v_23_0_0 = nil
+    local function strip_ansi_codes0(s)
+      return string.gsub(string.gsub(string.gsub(string.gsub(string.gsub(s, "\27%[%d+;%d+;%d+;%d+;%d+m", ""), "\27%[%d+;%d+;%d+;%d+m", ""), "\27%[%d+;%d+;%d+m", ""), "\27%[%d+;%d+m", ""), "\27%[%d+m", "")
+    end
+    v_23_0_0 = strip_ansi_codes0
+    _0_0["strip-ansi-codes"] = v_23_0_0
+    v_23_0_ = v_23_0_0
+  end
+  _0_0["aniseed/locals"]["strip-ansi-codes"] = v_23_0_
+  strip_ansi_codes = v_23_0_
+end
 return nil

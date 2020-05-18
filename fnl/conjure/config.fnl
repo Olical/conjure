@@ -5,7 +5,8 @@
 
 (def clients
   {:fennel :conjure.client.fennel.aniseed
-   :clojure :conjure.client.clojure.nrepl})
+   :clojure :conjure.client.clojure.nrepl
+   :janet :conjure.client.janet.netrepl})
 
 (def eval
   {:result-register "c"})
