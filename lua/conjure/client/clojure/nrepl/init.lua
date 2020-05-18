@@ -168,6 +168,7 @@ do
       mapping.buf("n", config0.mappings["session-next"], "conjure.client.clojure.nrepl.action", "next-session")
       mapping.buf("n", config0.mappings["session-prev"], "conjure.client.clojure.nrepl.action", "prev-session")
       mapping.buf("n", config0.mappings["session-select"], "conjure.client.clojure.nrepl.action", "select-session-interactive")
+      mapping.buf("n", config0.mappings["session-type"], "conjure.client.clojure.nrepl.action", "display-session-type")
       mapping.buf("n", config0.mappings["run-all-tests"], "conjure.client.clojure.nrepl.action", "run-all-tests")
       mapping.buf("n", config0.mappings["run-current-ns-tests"], "conjure.client.clojure.nrepl.action", "run-current-ns-tests")
       mapping.buf("n", config0.mappings["run-alternate-ns-tests"], "conjure.client.clojure.nrepl.action", "run-alternate-ns-tests")

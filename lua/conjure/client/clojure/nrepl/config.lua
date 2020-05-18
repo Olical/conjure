@@ -79,7 +79,7 @@ local mappings = nil
 do
   local v_23_0_ = nil
   do
-    local v_23_0_0 = {["connect-port-file"] = "cf", ["last-exception"] = "ve", ["refresh-all"] = "ra", ["refresh-changed"] = "rr", ["refresh-clear"] = "rc", ["result-1"] = "v1", ["result-2"] = "v2", ["result-3"] = "v3", ["run-all-tests"] = "ta", ["run-alternate-ns-tests"] = "tN", ["run-current-ns-tests"] = "tn", ["run-current-test"] = "tc", ["session-clone"] = "sc", ["session-close"] = "sq", ["session-close-all"] = "sQ", ["session-fresh"] = "sf", ["session-list"] = "sl", ["session-next"] = "sn", ["session-prev"] = "sp", ["session-select"] = "ss", ["view-source"] = "vs", disconnect = "cd", interrupt = "ei"}
+    local v_23_0_0 = {["connect-port-file"] = "cf", ["last-exception"] = "ve", ["refresh-all"] = "ra", ["refresh-changed"] = "rr", ["refresh-clear"] = "rc", ["result-1"] = "v1", ["result-2"] = "v2", ["result-3"] = "v3", ["run-all-tests"] = "ta", ["run-alternate-ns-tests"] = "tN", ["run-current-ns-tests"] = "tn", ["run-current-test"] = "tc", ["session-clone"] = "sc", ["session-close"] = "sq", ["session-close-all"] = "sQ", ["session-fresh"] = "sf", ["session-list"] = "sl", ["session-next"] = "sn", ["session-prev"] = "sp", ["session-select"] = "ss", ["session-type"] = "st", ["view-source"] = "vs", disconnect = "cd", interrupt = "ei"}
     _0_0["mappings"] = v_23_0_0
     v_23_0_ = v_23_0_0
   end

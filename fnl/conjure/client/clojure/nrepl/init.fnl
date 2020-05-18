@@ -62,6 +62,8 @@
                :conjure.client.clojure.nrepl.action :prev-session)
   (mapping.buf :n config.mappings.session-select
                :conjure.client.clojure.nrepl.action :select-session-interactive)
+  (mapping.buf :n config.mappings.session-type
+               :conjure.client.clojure.nrepl.action :display-session-type)
 
   (mapping.buf :n config.mappings.run-all-tests
                :conjure.client.clojure.nrepl.action :run-all-tests)

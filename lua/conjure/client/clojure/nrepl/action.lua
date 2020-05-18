@@ -1023,4 +1023,19 @@ do
   _0_0["aniseed/locals"]["out-unsubscribe"] = v_23_0_
   out_unsubscribe = v_23_0_
 end
+local display_session_type = nil
+do
+  local v_23_0_ = nil
+  do
+    local v_23_0_0 = nil
+    local function display_session_type0()
+      return ui.display({"; This mapping has been deprecated.", "; Session type information can now be found in the session list.", ("; Use " .. a["get-in"](require("conjure.config"), {"mappings", "prefix"}) .. config.mappings["session-list"] .. " instead.")}, {["break?"] = true})
+    end
+    v_23_0_0 = display_session_type0
+    _0_0["display-session-type"] = v_23_0_0
+    v_23_0_ = v_23_0_0
+  end
+  _0_0["aniseed/locals"]["display-session-type"] = v_23_0_
+  display_session_type = v_23_0_
+end
 return nil

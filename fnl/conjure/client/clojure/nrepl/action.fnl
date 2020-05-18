@@ -514,3 +514,12 @@
     :out-unsubscribe
     (fn [conn]
       (server.send {:op :out-unsubscribe}))))
+
+;; TODO Remove soon.
+(defn display-session-type []
+  (ui.display
+    ["; This mapping has been deprecated."
+     "; Session type information can now be found in the session list."
+     (.. "; Use " (a.get-in (require :conjure.config) [:mappings :prefix])
+         config.mappings.session-list " instead.")]
+    {:break? true}))
