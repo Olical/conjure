@@ -131,7 +131,7 @@ do
         else
           _6_ = " "
         end
-        return str.join({"; ", _6_, idx, " - ", session.id, " (", session["pretty-type"], ")"})
+        return str.join({"; ", _6_, idx, " - ", session.str()})
       end
       display(a.concat({("; Sessions (" .. a.count(sessions) .. "):")}, a["map-indexed"](_3_, sessions)), {["break?"] = true})
       if cb then

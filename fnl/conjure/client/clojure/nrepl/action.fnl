@@ -16,15 +16,10 @@
             ui conjure.client.clojure.nrepl.ui
             a conjure.aniseed.core}})
 
-(defn- ensure-user-ns []
-  (server.eval
-    {:code (.. "(ns conjure.user)")}
-    (fn [])))
-
 (defn- require-ns [ns]
   (when ns
     (server.eval
-      {:code (.. "(ns conjure.user) (require '" ns ")")}
+      {:code (.. "(require '" ns ")")}
       (fn []))))
 
 (defn passive-ns-require []
@@ -429,7 +424,6 @@
       (server.eval
         {:code (.. "(shadow.cljs.devtools.api/nrepl-select :" build ")")}
         ui.display-result)
-      (ensure-user-ns)
       (passive-ns-require))))
 
 (defn piggieback [code]
@@ -440,7 +434,6 @@
       (server.eval
         {:code (.. "(cider.piggieback/cljs-repl " code ")")}
         ui.display-result)
-      (ensure-user-ns)
       (passive-ns-require))))
 
 (defn- clojure->vim-completion [{:candidate word

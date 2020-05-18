@@ -207,7 +207,7 @@ do
             _7_ = _6_0
           end
         end
-        return send({["nrepl.middleware.print/print"] = _4_, code = opts.code, column = _7_, file = opts["file-path"], line = a["get-in"](opts, {"range", "start", 1}), ns = (opts.context or "conjure.user"), op = "eval", session = (opts.session or a["get-in"](state, {"conn", "session"}))}, cb)
+        return send({["nrepl.middleware.print/print"] = _4_, code = opts.code, column = _7_, file = opts["file-path"], line = a["get-in"](opts, {"range", "start", 1}), ns = opts.context, op = "eval", session = (opts.session or a["get-in"](state, {"conn", "session"}))}, cb)
       end
       return with_conn_or_warn(_3_)
     end
@@ -269,12 +269,19 @@ do
     local v_23_0_0 = nil
     local function session_type0(id, cb)
       local function _3_(msgs)
+        local st = nil
         local function _4_(_241)
           return a.get(_241, "value")
         end
-        return cb(str.trim(a.some(_4_, msgs)))
+        st = a.some(_4_, msgs)
+        local function _5_()
+          if st then
+            return str.trim(st)
+          end
+        end
+        return cb(_5_())
       end
-      return eval({code = ("#?(" .. str.join(" ", {":clj 'clj", ":cljs 'cljs", ":cljr 'cljr", ":default 'unknown"}) .. ")"), session = id}, with_all_msgs_fn(_3_))
+      return send({code = ("#?(" .. str.join(" ", {":clj 'clj", ":cljs 'cljs", ":cljr 'cljr", ":default 'unknown"}) .. ")"), op = "eval", session = id}, with_all_msgs_fn(_3_))
     end
     v_23_0_0 = session_type0
     _0_0["session-type"] = v_23_0_0
@@ -290,9 +297,9 @@ do
     local v_23_0_0 = nil
     local function enrich_session_id0(id, cb)
       local function _3_(st)
-        local t = {["pretty-type"] = pretty_session_type(st), id = id, name = "TODO", type = st}
+        local t = {["pretty-type"] = pretty_session_type(st), id = id, name = uuid.pretty(id), type = st}
         local function _4_()
-          return (t.id .. " (" .. t["pretty-type"] .. ")")
+          return (t.name .. " (" .. t["pretty-type"] .. ")")
         end
         a.assoc(t, "str", _4_)
         return cb(t)
@@ -315,16 +322,24 @@ do
       local function _3_(sess_ids)
         local rich = {}
         local total = a.count(sess_ids)
-        local function _4_(id)
-          local function _5_(t)
-            table.insert(rich, t)
-            if (total == a.count(rich)) then
-              return cb(rich)
+        if (0 == total) then
+          return cb({})
+        else
+          local function _4_(id)
+            local function _5_(t)
+              table.insert(rich, t)
+              if (total == a.count(rich)) then
+                local function _6_(_241, _242)
+                  return (a.get(_241, "name") < a.get(_242, "name"))
+                end
+                table.sort(rich, _6_)
+                return cb(rich)
+              end
             end
+            return enrich_session_id(id, _5_)
           end
-          return enrich_session_id(id, _5_)
+          return a["run!"](_4_, sess_ids)
         end
-        return a["run!"](_4_, sess_ids)
       end
       return with_session_ids(_3_)
     end
@@ -489,7 +504,7 @@ do
         return with_all_msgs_fn(cb)
       end
     end
-    return send({code = ("(ns conjure.user)" .. "(ns conjure.internal" .. "  (:require [clojure.pprint :as pp]))" .. "(defn pprint [val w opts]" .. "  (apply pp/write val" .. "    (mapcat identity (assoc opts :stream w))))"), op = "eval"}, _3_())
+    return send({code = ("(ns conjure.internal" .. "  (:require [clojure.pprint :as pp]))" .. "(defn pprint [val w opts]" .. "  (apply pp/write val" .. "    (mapcat identity (assoc opts :stream w))))"), op = "eval"}, _3_())
   end
   v_23_0_ = eval_preamble0
   _0_0["aniseed/locals"]["eval-preamble"] = v_23_0_

@@ -36,18 +36,6 @@ local fs = _2_[7]
 local ll = _2_[8]
 local log = _2_[9]
 do local _ = ({nil, _0_0, nil})[2] end
-local ensure_user_ns = nil
-do
-  local v_23_0_ = nil
-  local function ensure_user_ns0()
-    local function _3_()
-    end
-    return server.eval({code = "(ns conjure.user)"}, _3_)
-  end
-  v_23_0_ = ensure_user_ns0
-  _0_0["aniseed/locals"]["ensure-user-ns"] = v_23_0_
-  ensure_user_ns = v_23_0_
-end
 local require_ns = nil
 do
   local v_23_0_ = nil
@@ -55,7 +43,7 @@ do
     if ns then
       local function _3_()
       end
-      return server.eval({code = ("(ns conjure.user) (require '" .. ns .. ")")}, _3_)
+      return server.eval({code = ("(require '" .. ns .. ")")}, _3_)
     end
   end
   v_23_0_ = require_ns0
@@ -872,7 +860,6 @@ do
       local function _3_(conn)
         ui.display({("; shadow-cljs (select): " .. build)}, {["break?"] = true})
         server.eval({code = ("(shadow.cljs.devtools.api/nrepl-select :" .. build .. ")")}, ui["display-result"])
-        ensure_user_ns()
         return passive_ns_require()
       end
       return server["with-conn-or-warn"](_3_)
@@ -894,7 +881,6 @@ do
         ui.display({("; piggieback: " .. code)}, {["break?"] = true})
         require_ns("cider.piggieback")
         server.eval({code = ("(cider.piggieback/cljs-repl " .. code .. ")")}, ui["display-result"])
-        ensure_user_ns()
         return passive_ns_require()
       end
       return server["with-conn-or-warn"](_3_)

@@ -81,7 +81,7 @@
     (fn [_]
       (send
         {:op :eval
-         :ns (or opts.context "conjure.user")
+         :ns opts.context
          :code opts.code
          :file opts.file-path
          :line (a.get-in opts [:range :start 1])
@@ -118,8 +118,9 @@
       "???")))
 
 (defn session-type [id cb]
-  (eval
-    {:code (.. "#?("
+  (send
+    {:op :eval
+     :code (.. "#?("
                (str.join
                  " "
                  [":clj 'clj"
@@ -130,9 +131,8 @@
      :session id}
     (with-all-msgs-fn
       (fn [msgs]
-        (-> (a.some #(a.get $1 :value) msgs)
-            (str.trim)
-            (cb))))))
+        (let [st (a.some #(a.get $1 :value) msgs)]
+          (cb (when st (str.trim st))))))))
 
 (defn enrich-session-id [id cb]
   (session-type
@@ -141,8 +141,8 @@
       (let [t {:id id
                :type st
                :pretty-type (pretty-session-type st)
-               :name "TODO"}]
-        (a.assoc t :str #(.. t.id " (" t.pretty-type ")"))
+               :name (uuid.pretty id)}]
+        (a.assoc t :str #(.. t.name " (" t.pretty-type ")"))
         (cb t)))))
 
 (defn with-sessions [cb]
@@ -150,15 +150,21 @@
     (fn [sess-ids]
       (let [rich []
             total (a.count sess-ids)]
-        (a.run!
-          (fn [id]
-            (enrich-session-id
-              id
-              (fn [t]
-                (table.insert rich t)
-                (when (= total (a.count rich))
-                  (cb rich)))))
-          sess-ids)))))
+        (if (= 0 total)
+          (cb [])
+          (a.run!
+            (fn [id]
+              (enrich-session-id
+                id
+                (fn [t]
+                  (table.insert rich t)
+                  (when (= total (a.count rich))
+                    (table.sort
+                      rich
+                      #(< (a.get $1 :name)
+                          (a.get $2 :name)))
+                    (cb rich)))))
+            sess-ids))))))
 
 (defn clone-session [session]
   (send
@@ -240,8 +246,7 @@
 (defn- eval-preamble [cb]
   (send
     {:op :eval
-     :code (.. "(ns conjure.user)"
-               "(ns conjure.internal"
+     :code (.. "(ns conjure.internal"
                "  (:require [clojure.pprint :as pp]))"
                "(defn pprint [val w opts]"
                "  (apply pp/write val"

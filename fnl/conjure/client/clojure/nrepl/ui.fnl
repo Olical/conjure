@@ -57,9 +57,7 @@
                          (fn [[idx session]]
                            (str.join
                              ["; " (if (= current session.id) ">" " ")
-                              idx " - "
-                              session.id
-                              " (" session.pretty-type ")"]))
+                              idx " - " (session.str)]))
                          sessions))
              {:break? true})
     (when cb
