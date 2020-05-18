@@ -112,7 +112,10 @@
      :cljs :ClojureScript
      :cljr :ClojureCLR
      :unknown :Unknown}
-    st))
+    st
+    (if (a.string? st)
+      (.. st "?")
+      "???")))
 
 (defn session-type [id cb]
   (eval
@@ -127,7 +130,9 @@
      :session id}
     (with-all-msgs-fn
       (fn [msgs]
-        (cb (a.some #(a.get $1 :value) msgs))))))
+        (-> (a.some #(a.get $1 :value) msgs)
+            (str.trim)
+            (cb))))))
 
 (defn enrich-session-id [id cb]
   (session-type

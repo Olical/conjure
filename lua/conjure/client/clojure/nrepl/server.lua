@@ -246,7 +246,14 @@ do
   do
     local v_23_0_0 = nil
     local function pretty_session_type0(st)
-      return a.get({clj = "Clojure", cljr = "ClojureCLR", cljs = "ClojureScript", unknown = "Unknown"}, st)
+      local function _3_()
+        if a["string?"](st) then
+          return (st .. "?")
+        else
+          return "???"
+        end
+      end
+      return a.get({clj = "Clojure", cljr = "ClojureCLR", cljs = "ClojureScript", unknown = "Unknown"}, st, _3_())
     end
     v_23_0_0 = pretty_session_type0
     _0_0["pretty-session-type"] = v_23_0_0
@@ -265,7 +272,7 @@ do
         local function _4_(_241)
           return a.get(_241, "value")
         end
-        return cb(a.some(_4_, msgs))
+        return cb(str.trim(a.some(_4_, msgs)))
       end
       return eval({code = ("#?(" .. str.join(" ", {":clj 'clj", ":cljs 'cljs", ":cljr 'cljr", ":default 'unknown"}) .. ")"), session = id}, with_all_msgs_fn(_3_))
     end
