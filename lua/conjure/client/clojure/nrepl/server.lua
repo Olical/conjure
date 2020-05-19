@@ -564,7 +564,7 @@ do
       local host = _4_["host"]
       local port = _4_["port"]
       local resolved_host = net.resolve(host)
-      local conn = {["raw-host"] = host, host = resolved_host, msgs = {}, port = port, session = nil, sock = vim.loop.new_tcp()}
+      local conn = {["raw-host"] = host, ["seen-ns"] = {}, host = resolved_host, msgs = {}, port = port, session = nil, sock = vim.loop.new_tcp()}
       if a.get(state, "conn") then
         disconnect()
       end

@@ -287,6 +287,7 @@
               :raw-host host
               :port port
               :msgs {}
+              :seen-ns {}
               :session nil}]
 
     (when (a.get state :conn)

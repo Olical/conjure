@@ -63,7 +63,14 @@
 
 (defn eval-str [opts]
   (server.with-conn-or-warn
-    (fn [_]
+    (fn [conn]
+      (when (and opts.context
+                 (not (a.get-in conn [:seen-ns opts.context])))
+        (server.eval
+          {:code (.. "(ns " opts.context ")")}
+          (fn []))
+        (a.assoc-in conn [:seen-ns opts.context] true))
+
       (server.eval opts (eval-cb-fn opts)))))
 
 (defn- with-info [opts f]

@@ -157,7 +157,13 @@ do
   do
     local v_23_0_0 = nil
     local function eval_str0(opts)
-      local function _3_(_)
+      local function _3_(conn)
+        if (opts.context and not a["get-in"](conn, {"seen-ns", opts.context})) then
+          local function _4_()
+          end
+          server.eval({code = ("(ns " .. opts.context .. ")")}, _4_)
+          a["assoc-in"](conn, {"seen-ns", opts.context}, true)
+        end
         return server.eval(opts, eval_cb_fn(opts))
       end
       return server["with-conn-or-warn"](_3_)
