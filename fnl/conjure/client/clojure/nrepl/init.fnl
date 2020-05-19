@@ -8,7 +8,7 @@
             action conjure.client.clojure.nrepl.action}})
 
 (def buf-suffix ".cljc")
-(def context-pattern "%(%s*ns%s*(.-)[%s){]")
+(def context-pattern "%(%s*ns%s+(.-)[%s){]")
 (def comment-prefix "; ")
 (def config config)
 
