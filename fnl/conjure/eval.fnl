@@ -61,7 +61,8 @@
 
 (defn- eval-str [opts]
   ((client-exec-fn :eval :eval-str)
-   (with-last-result-hook opts)))
+   (with-last-result-hook opts))
+  nil)
 
 (def- doc-str (client-exec-fn :doc :doc-str))
 (def- def-str (client-exec-fn :def :def-str {:suppress-hud? true}))

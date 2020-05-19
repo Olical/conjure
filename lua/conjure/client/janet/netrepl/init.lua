@@ -68,10 +68,13 @@ do
     local v_23_0_0 = nil
     local function eval_str0(opts)
       local function _3_(msg)
-        opts["on-result"](msg)
-        return ui.display(text["split-lines"](msg))
+        local clean = text["trim-last-newline"](text["strip-ansi-codes"](msg))
+        if opts["on-result"] then
+          opts["on-result"](clean)
+        end
+        return ui.display(text["split-lines"](clean))
       end
-      return server.send(opts.code, _3_)
+      return server.send((opts.code .. "\n"), _3_)
     end
     v_23_0_0 = eval_str0
     _0_0["eval-str"] = v_23_0_0
@@ -86,7 +89,10 @@ do
   do
     local v_23_0_0 = nil
     local function doc_str0(opts)
-      return ui.display({"# Not implemented yet."})
+      local function _3_(_241)
+        return ("(doc " .. _241 .. ")")
+      end
+      return eval_str(a.update(opts, "code", _3_))
     end
     v_23_0_0 = doc_str0
     _0_0["doc-str"] = v_23_0_0

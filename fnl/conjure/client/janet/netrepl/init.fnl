@@ -15,13 +15,15 @@
 
 (defn eval-str [opts]
   (server.send
-    opts.code
+    (.. opts.code "\n")
     (fn [msg]
-      (opts.on-result msg)
-      (ui.display (text.split-lines msg)))))
+      (let [clean (text.trim-last-newline (text.strip-ansi-codes msg))]
+        (when opts.on-result
+          (opts.on-result clean))
+        (ui.display (text.split-lines clean))))))
 
 (defn doc-str [opts]
-  (ui.display ["# Not implemented yet."]))
+  (eval-str (a.update opts :code #(.. "(doc " $1 ")"))))
 
 (defn eval-file [opts]
   (ui.display ["# Not implemented yet."]))

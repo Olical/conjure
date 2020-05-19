@@ -128,7 +128,8 @@ local eval_str = nil
 do
   local v_23_0_ = nil
   local function eval_str0(opts)
-    return client_exec_fn("eval", "eval-str")(with_last_result_hook(opts))
+    client_exec_fn("eval", "eval-str")(with_last_result_hook(opts))
+    return nil
   end
   v_23_0_ = eval_str0
   _0_0["aniseed/locals"]["eval-str"] = v_23_0_
