@@ -3,6 +3,8 @@
             a conjure.aniseed.core
             str conjure.aniseed.string}})
 
+(def debug? false)
+
 (def clients
   {:fennel :conjure.client.fennel.aniseed
    :clojure :conjure.client.clojure.nrepl

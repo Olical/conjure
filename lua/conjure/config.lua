@@ -23,6 +23,17 @@ local a = _2_[1]
 local nvim = _2_[2]
 local str = _2_[3]
 do local _ = ({nil, _0_0, nil})[2] end
+local debug_3f = nil
+do
+  local v_23_0_ = nil
+  do
+    local v_23_0_0 = false
+    _0_0["debug?"] = v_23_0_0
+    v_23_0_ = v_23_0_0
+  end
+  _0_0["aniseed/locals"]["debug?"] = v_23_0_
+  debug_3f = v_23_0_
+end
 local clients = nil
 do
   local v_23_0_ = nil

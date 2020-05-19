@@ -323,6 +323,10 @@ the `g:conjure_config` variable instead, as mention later in this section.
             A float between 0.0 and 1.0.
             Default: `0.3`
 
+`debug?`
+            Display debug information in any client you're using.
+            Default: `false`
+
 And finally some regular Neovim variables.
 
 `b:conjure_context`
@@ -384,6 +388,7 @@ your dotfiles.
 
  - |conjure-client-fennel-aniseed|
  - |conjure-client-clojure-nrepl|
+ - |conjure-client-janet-netrepl|
 
 Language clients are simply Lua modules (which can be compiled from Fennel
 using Aniseed) that have a few essential properties and functions in them.

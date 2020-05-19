@@ -1,0 +1,79 @@
+                                                *conjure-client-janet-netrepl*
+
+==============================================================================
+CONTENTS                               *conjure-client-janet-netrepl-contents*
+
+    1. Introduction ........ |conjure-client-janet-netrepl-introduction|
+    2. Mappings ................ |conjure-client-janet-netrepl-mappings|
+    3. Configuration ...... |conjure-client-janet-netrepl-configuration|
+
+==============================================================================
+INTRODUCTION                       *conjure-client-janet-netrepl-introduction*
+
+>
+  Janet is a functional and imperative programming language. It runs on
+  Windows, Linux, macOS, BSDs, and should run on other systems with some
+  porting. The entire language (core library, interpreter, compiler,
+  assembler, PEG) is less than 1MB. You can also add Janet scripting to an
+  application by embedding a single C file and two headers. 
+
+We can use Janet with Conjure by starting a netrepl server and then opening a
+Janet file. Make sure you've installed Janet and the `spork` module then
+execute the following:
+>
+  janet -e "(import spork/netrepl) (netrepl/server)"
+
+You should now be able to evaluate Janet code as you would any other language.
+Beware that Janet doesn't have namespaces, this means that the buffers you
+evaluate will all stack up on each other, switching buffers doesn't switch
+contexts like in Clojure or Fennel.
+
+ * https://janet-lang.org/
+ * https://github.com/janet-lang/spork/#networked-repl
+
+==============================================================================
+MAPPINGS                               *conjure-client-janet-netrepl-mappings*
+
+These mappings are the defaults, you can change them as described in
+|conjure-mappings| and |conjure-configuration|.
+
+See |conjure-client-janet-netrepl-configuration| for specific configuration
+options relevant to these mappings.
+
+:ConjureConnect [host] [port]
+                         Connect to the given host and port.
+                         `:ConjureConnect staging.my-app.com 5678`
+
+<localleader>cc          Connect to a running netrepl using the default host
+                         and port.
+
+<localleader>cd          Disconnect from the current netrepl.
+
+==============================================================================
+CONFIGURATION                     *conjure-client-janet-netrepl-configuration*
+
+All configuration can be set as described in |conjure-configuration|.
+
+`janet.netrepl/connection.default-host`
+            Host to use when connecting by default. Same as the default
+            `spork/netrepl` uses.
+            Default: `"127.0.0.1"`
+
+`janet.netrepl/connection.default-port`
+            Port to use when connecting by default. Same as the default
+            `spork/netrepl` uses.
+            Default: `"9365"`
+
+`janet.netrepl/mappings.connect`
+            Connect to a running netrepl using the default host and port.
+            Default: `"cc"`
+
+`janet.netrepl/mappings.disconnect`
+            Disconnect from the current netrepl.
+            Default: `"cd"`
+
+`janet.netrepl/debug?`
+            Display all sent and received netrepl messages.
+            Default: `false`
+
+vim:tw=78:sw=2:ts=2:ft=help:norl:et:listchars=
