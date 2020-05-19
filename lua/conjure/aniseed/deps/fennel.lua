@@ -116,7 +116,7 @@ local function loadCode(code, environment, filename)
 end
 
 -- Safely load an environment variable
-local getenv = os and os.getenv or function() end
+local getenv = os and os.getenv or function() return nil end
 
 local function debugOn(flag)
     local level = getenv("FENNEL_DEBUG") or ""
@@ -1069,6 +1069,7 @@ end
 local macroCurrentScope = GLOBAL_SCOPE
 
 local function macroexpand(ast, scope, once)
+    if not isList(ast) then return ast end -- bail early if not a list form
     local multiSymParts = isMultiSym(ast[1])
     local macro = isSym(ast[1]) and scope.macros[deref(ast[1])]
     if not macro and multiSymParts then
@@ -1087,8 +1088,8 @@ local function macroexpand(ast, scope, once)
     local ok, transformed = pcall(macro, unpack(ast, 2))
     macroCurrentScope = oldScope
     assertCompile(ok, transformed, ast)
-    if once then return transformed end -- macroexpand-1
-    if transformed then return macroexpand(transformed, scope) end
+    if once or not transformed then return transformed end -- macroexpand-1
+    return macroexpand(transformed, scope)
 end
 
 -- Compile an AST expression in the scope into parent, a tree
@@ -1122,22 +1123,16 @@ end
 local function compile1(ast, scope, parent, opts)
     opts = opts or {}
     local exprs = {}
-
+    -- expand any top-level macros before parsing and emitting Lua
+    ast = macroexpand(ast, scope)
     -- Compile the form
-    if isList(ast) then
-        -- Function call or special form
+    if isList(ast) then -- Function call or special form
         assertCompile(#ast > 0, "expected a function, macro, or special to call", ast)
-        ast = macroexpand(ast, scope)
-        local len = ast and #ast or 0
         -- Test for special form
-        local first = type(ast) == "table" and ast[1]
-        if isSym(first) then -- Resolve symbol
-            first = first[1]
-        end
+        local len, first = #ast, ast[1]
         local multiSymParts = isMultiSym(first)
-        local special = scope.specials[first]
-        if special and isSym(ast[1]) then
-            -- Special form
+        local special = isSym(first) and scope.specials[deref(first)]
+        if special then -- Special form
             exprs = special(ast, scope, parent, opts) or expr('nil', 'literal')
             -- Be very accepting of strings or expression
             -- as well as lists or expressions
@@ -1164,8 +1159,7 @@ local function compile1(ast, scope, parent, opts)
             end
             local compiled = compile1(newAST, scope, parent, opts)
             exprs = compiled
-        elseif(type(ast) == "table") then
-            -- Function call
+        else -- Function call
             local fargs = {}
             local fcallee = compile1(ast[1], scope, parent, {
                 nval = 1
@@ -2736,7 +2730,7 @@ SPECIALS['include'] = function(ast, scope, parent, opts)
     local mod = loadCode(code)()
 
     -- Check cache
-    if scope.includes[mod] then return scope.includes[mod] end
+    if rootScope.includes[mod] then return rootScope.includes[mod] end
 
     -- Find path to source
     local path = searchModule(mod)

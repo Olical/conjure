@@ -1,10 +1,9 @@
 (module conjure.client.clojure.nrepl.server
   {require {a conjure.aniseed.core
             uuid conjure.uuid
-            text conjure.text
             net conjure.net
-            view conjure.aniseed.view
             extract conjure.extract
+            log conjure.log
             str conjure.aniseed.string
             bencode conjure.bencode
             bencode-stream conjure.bencode-stream
@@ -22,20 +21,12 @@
         (when (a.get opts :else)
           (opts.else))))))
 
-(defn- dbg [desc data]
-  (when config.debug?
-    (ui.display
-      (a.concat
-        [(.. "; debug: " desc)]
-        (text.split-lines (view.serialise data)))))
-  data)
-
 (defn send [msg cb]
   (let [conn (a.get state :conn)]
     (when conn
       (let [msg-id (uuid.v4)]
         (a.assoc msg :id msg-id)
-        (dbg "send" msg)
+        (log.dbg "send" msg)
         (a.assoc-in conn [:msgs msg-id]
                     {:msg msg
                      :cb (or cb (fn []))
@@ -201,7 +192,7 @@
       (->> (bencode-stream.decode-all state.bs chunk)
            (a.run!
              (fn [msg]
-               (dbg "receive" msg)
+               (log.dbg "receive" msg)
                (enrich-status msg)
 
                (when msg.status.need-input
@@ -225,10 +216,8 @@
                  (when msg.status.done
                    (a.assoc-in conn [:msgs msg.id] nil)))))))))
 
-(defonce- awaiting-process? false)
-
 (defn- process-message-queue []
-  (set awaiting-process? false)
+  (set state.awaiting-process? false)
   (when (not (a.empty? state.message-queue))
     (let [msgs state.message-queue]
       (set state.message-queue [])
@@ -239,9 +228,9 @@
 
 (defn- enqueue-message [...]
   (table.insert state.message-queue [...])
-  (when (not awaiting-process?)
+  (when (not state.awaiting-process?)
     (vim.schedule process-message-queue)
-    (set awaiting-process? true)))
+    (set state.awaiting-process? true)))
 
 (defn- eval-preamble [cb]
   (send

@@ -69,14 +69,14 @@
                  (table.insert vals `(-> ,module-sym (. :aniseed/locals) (. ,alias))))
                locals))
 
-           `(var ,aliases
+           `(local ,aliases
               (do
                 (tset ,module-sym :aniseed/local-fns ,local-fns)
                 ,vals)))]
        (. 2)))
 
 (fn def- [name value]
-  `(var ,name
+  `(local ,name
      (let [v# ,value]
        (tset (. ,module-sym :aniseed/locals) ,(tostring name) v#)
        v#)))

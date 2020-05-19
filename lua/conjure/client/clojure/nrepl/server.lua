@@ -15,22 +15,21 @@ do
   _0_0 = module_23_0_
 end
 local function _1_(...)
-  _0_0["aniseed/local-fns"] = {require = {["bencode-stream"] = "conjure.bencode-stream", a = "conjure.aniseed.core", bencode = "conjure.bencode", config = "conjure.client.clojure.nrepl.config", extract = "conjure.extract", net = "conjure.net", state = "conjure.client.clojure.nrepl.state", str = "conjure.aniseed.string", text = "conjure.text", ui = "conjure.client.clojure.nrepl.ui", uuid = "conjure.uuid", view = "conjure.aniseed.view"}}
-  return {require("conjure.aniseed.core"), require("conjure.bencode"), require("conjure.bencode-stream"), require("conjure.client.clojure.nrepl.config"), require("conjure.extract"), require("conjure.net"), require("conjure.client.clojure.nrepl.state"), require("conjure.aniseed.string"), require("conjure.text"), require("conjure.client.clojure.nrepl.ui"), require("conjure.uuid"), require("conjure.aniseed.view")}
+  _0_0["aniseed/local-fns"] = {require = {["bencode-stream"] = "conjure.bencode-stream", a = "conjure.aniseed.core", bencode = "conjure.bencode", config = "conjure.client.clojure.nrepl.config", extract = "conjure.extract", log = "conjure.log", net = "conjure.net", state = "conjure.client.clojure.nrepl.state", str = "conjure.aniseed.string", ui = "conjure.client.clojure.nrepl.ui", uuid = "conjure.uuid"}}
+  return {require("conjure.aniseed.core"), require("conjure.bencode"), require("conjure.bencode-stream"), require("conjure.client.clojure.nrepl.config"), require("conjure.extract"), require("conjure.log"), require("conjure.net"), require("conjure.client.clojure.nrepl.state"), require("conjure.aniseed.string"), require("conjure.client.clojure.nrepl.ui"), require("conjure.uuid")}
 end
 local _2_ = _1_(...)
 local a = _2_[1]
 local ui = _2_[10]
 local uuid = _2_[11]
-local view = _2_[12]
 local bencode = _2_[2]
 local bencode_stream = _2_[3]
 local config = _2_[4]
 local extract = _2_[5]
-local net = _2_[6]
-local state = _2_[7]
-local str = _2_[8]
-local text = _2_[9]
+local log = _2_[6]
+local net = _2_[7]
+local state = _2_[8]
+local str = _2_[9]
 do local _ = ({nil, _0_0, nil})[2] end
 local with_conn_or_warn = nil
 do
@@ -57,19 +56,6 @@ do
   _0_0["aniseed/locals"]["with-conn-or-warn"] = v_23_0_
   with_conn_or_warn = v_23_0_
 end
-local dbg = nil
-do
-  local v_23_0_ = nil
-  local function dbg0(desc, data)
-    if config["debug?"] then
-      ui.display(a.concat({("; debug: " .. desc)}, text["split-lines"](view.serialise(data))))
-    end
-    return data
-  end
-  v_23_0_ = dbg0
-  _0_0["aniseed/locals"]["dbg"] = v_23_0_
-  dbg = v_23_0_
-end
 local send = nil
 do
   local v_23_0_ = nil
@@ -80,7 +66,7 @@ do
       if conn then
         local msg_id = uuid.v4()
         a.assoc(msg, "id", msg_id)
-        dbg("send", msg)
+        log.dbg("send", msg)
         local function _3_()
         end
         a["assoc-in"](conn, {"msgs", msg_id}, {["sent-at"] = os.time(), cb = (cb or _3_), msg = msg})
@@ -421,7 +407,7 @@ do
       return disconnect()
     else
       local function _3_(msg)
-        dbg("receive", msg)
+        log.dbg("receive", msg)
         enrich_status(msg)
         if msg.status["need-input"] then
           local function _4_()
@@ -456,17 +442,11 @@ do
   _0_0["aniseed/locals"]["process-message"] = v_23_0_
   process_message = v_23_0_
 end
-local awaiting_process_3f = nil
-do
-  local v_23_0_ = (_0_0["aniseed/locals"]["awaiting-process?"] or false)
-  _0_0["aniseed/locals"]["awaiting-process?"] = v_23_0_
-  awaiting_process_3f = v_23_0_
-end
 local process_message_queue = nil
 do
   local v_23_0_ = nil
   local function process_message_queue0()
-    awaiting_process_3f = false
+    state["awaiting-process?"] = false
     if not a["empty?"](state["message-queue"]) then
       local msgs = state["message-queue"]
       state["message-queue"] = {}
@@ -485,9 +465,9 @@ do
   local v_23_0_ = nil
   local function enqueue_message0(...)
     table.insert(state["message-queue"], {...})
-    if not awaiting_process_3f then
+    if not state["awaiting-process?"] then
       vim.schedule(process_message_queue)
-      awaiting_process_3f = true
+      state["awaiting-process?"] = true
       return nil
     end
   end

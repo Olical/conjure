@@ -54,4 +54,15 @@ do
   _0_0["aniseed/locals"]["message-queue"] = v_23_0_
   message_queue = v_23_0_
 end
+local awaiting_process_3f = nil
+do
+  local v_23_0_ = nil
+  do
+    local v_23_0_0 = (_0_0["awaiting-process?"] or false)
+    _0_0["awaiting-process?"] = v_23_0_0
+    v_23_0_ = v_23_0_0
+  end
+  _0_0["aniseed/locals"]["awaiting-process?"] = v_23_0_
+  awaiting_process_3f = v_23_0_
+end
 return nil

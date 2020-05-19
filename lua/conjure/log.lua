@@ -15,8 +15,8 @@ do
   _0_0 = module_23_0_
 end
 local function _1_(...)
-  _0_0["aniseed/local-fns"] = {require = {a = "conjure.aniseed.core", buffer = "conjure.buffer", client = "conjure.client", config = "conjure.config", editor = "conjure.editor", nvim = "conjure.aniseed.nvim"}}
-  return {require("conjure.aniseed.core"), require("conjure.buffer"), require("conjure.client"), require("conjure.config"), require("conjure.editor"), require("conjure.aniseed.nvim")}
+  _0_0["aniseed/local-fns"] = {require = {a = "conjure.aniseed.core", buffer = "conjure.buffer", client = "conjure.client", config = "conjure.config", editor = "conjure.editor", nvim = "conjure.aniseed.nvim", text = "conjure.text", view = "conjure.aniseed.view"}}
+  return {require("conjure.aniseed.core"), require("conjure.buffer"), require("conjure.client"), require("conjure.config"), require("conjure.editor"), require("conjure.aniseed.nvim"), require("conjure.text"), require("conjure.aniseed.view")}
 end
 local _2_ = _1_(...)
 local a = _2_[1]
@@ -25,6 +25,8 @@ local client = _2_[3]
 local config = _2_[4]
 local editor = _2_[5]
 local nvim = _2_[6]
+local text = _2_[7]
+local view = _2_[8]
 do local _ = ({nil, _0_0, nil})[2] end
 local state = nil
 do
@@ -355,5 +357,23 @@ do
   end
   _0_0["aniseed/locals"]["close-visible"] = v_23_0_
   close_visible = v_23_0_
+end
+local dbg = nil
+do
+  local v_23_0_ = nil
+  do
+    local v_23_0_0 = nil
+    local function dbg0(desc, data)
+      if (config["debug?"] or client.get("config", "debug?")) then
+        append(a.concat({(client.get("comment-prefix") .. "debug: " .. desc)}, text["split-lines"](view.serialise(data))))
+      end
+      return data
+    end
+    v_23_0_0 = dbg0
+    _0_0["dbg"] = v_23_0_0
+    v_23_0_ = v_23_0_0
+  end
+  _0_0["aniseed/locals"]["dbg"] = v_23_0_
+  dbg = v_23_0_
 end
 return nil

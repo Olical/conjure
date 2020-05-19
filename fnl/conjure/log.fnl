@@ -4,6 +4,8 @@
             buffer conjure.buffer
             client conjure.client
             config conjure.config
+            view conjure.aniseed.view
+            text conjure.text
             editor conjure.editor}})
 
 (defonce- state
@@ -193,3 +195,11 @@
            (fn [win]
              (= buf (nvim.win_get_buf win))))
          (a.run! #(nvim.win_close $1 true)))))
+
+(defn dbg [desc data]
+  (when (or config.debug? (client.get :config :debug?))
+    (append
+      (a.concat
+        [(.. (client.get :comment-prefix) "debug: " desc)]
+        (text.split-lines (view.serialise data)))))
+  data)
