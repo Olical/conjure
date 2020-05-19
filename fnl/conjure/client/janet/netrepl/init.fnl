@@ -26,7 +26,10 @@
   (eval-str (a.update opts :code #(.. "(doc " $1 ")"))))
 
 (defn eval-file [opts]
-  (ui.display ["# Not implemented yet."]))
+  (eval-str
+    (a.assoc opts :code
+             (.. "(import " (nvim.fn.fnamemodify opts.file-path ":r")
+                 " :fresh true :prefix \"\")"))))
 
 (defn on-filetype []
   (mapping.buf :n config.mappings.disconnect

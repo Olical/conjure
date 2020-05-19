@@ -107,7 +107,7 @@ do
   do
     local v_23_0_0 = nil
     local function eval_file0(opts)
-      return ui.display({"# Not implemented yet."})
+      return eval_str(a.assoc(opts, "code", ("(import " .. nvim.fn.fnamemodify(opts["file-path"], ":r") .. " :fresh true :prefix \"\")")))
     end
     v_23_0_0 = eval_file0
     _0_0["eval-file"] = v_23_0_0
