@@ -416,6 +416,15 @@ See `fnl/conjure/client/clojure/nrepl/init.fnl` for an example of this.
             user evaluation. Clojure's is `%(%s*ns%s*(.-)[%s){]`, alter as you
             see fit for your language. The value in the first capture group is
             passed into later functions as `opts.context`.
+            If this doesn't suit your needs, leave it `nil` and define a
+            `context` function instead.
+
+`context`
+            Function
+            Called instead of `context-pattern` if it's not defined. Is passed
+            the first few lines of the buffer as it's only argument. You can
+            parse out the context string in any way you see fit.
+            The return value is passed into later functions as `opts.context`.
 
 `comment-prefix`
             String
