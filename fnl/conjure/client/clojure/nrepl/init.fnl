@@ -4,13 +4,21 @@
             mapping conjure.mapping
             bridge conjure.bridge
             eval conjure.eval
+            str conjure.aniseed.string
             config conjure.client.clojure.nrepl.config
             action conjure.client.clojure.nrepl.action}})
 
 (def buf-suffix ".cljc")
-(def context-pattern "%(%s*ns%s+(.-)[%s){]")
 (def comment-prefix "; ")
 (def config config)
+
+(defn context [header]
+  (-?> header
+       (string.match "%(%s*ns%s+(.-)%)")
+       (string.gsub "%^:.-%s+" "")
+       (string.gsub "%^%b{}%s+" "")
+       (str.split "%s+")
+       (a.first)))
 
 (defn eval-file [opts]
   (action.eval-file opts))

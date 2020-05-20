@@ -276,9 +276,17 @@ do
     local v_23_0_0 = nil
     local function context0()
       local pat = client.get("context-pattern")
+      local f = nil
       if pat then
-        local header = str.join("\n", nvim.buf_get_lines(0, 0, config.extract["context-header-lines"], false))
-        return string.match(header, pat)
+        local function _3_(_241)
+          return string.match(_241, pat)
+        end
+        f = _3_
+      else
+        f = client.get("context")
+      end
+      if f then
+        return f(str.join("\n", nvim.buf_get_lines(0, 0, config.extract["context-header-lines"], false)))
       end
     end
     v_23_0_0 = context0

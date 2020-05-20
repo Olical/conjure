@@ -115,12 +115,15 @@
                :end (getpos "'>")}})))
 
 (defn context []
-  (let [pat (client.get :context-pattern)]
-    (when pat
-      (let [header (->> (nvim.buf_get_lines
-                          0 0 config.extract.context-header-lines false)
-                        (str.join "\n"))]
-        (string.match header pat)))))
+  (let [pat (client.get :context-pattern)
+        f (if pat
+            #(string.match $1 pat)
+            (client.get :context))]
+    (when f
+      (->> (nvim.buf_get_lines
+             0 0 config.extract.context-header-lines false)
+           (str.join "\n")
+           (f)))))
 
 (defn prompt [prefix]
   (let [(ok? val) (pcall #(nvim.fn.input (or prefix "")))]

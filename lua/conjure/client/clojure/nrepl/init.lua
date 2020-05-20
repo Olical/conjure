@@ -15,8 +15,8 @@ do
   _0_0 = module_23_0_
 end
 local function _1_(...)
-  _0_0["aniseed/local-fns"] = {require = {a = "conjure.aniseed.core", action = "conjure.client.clojure.nrepl.action", bridge = "conjure.bridge", config = "conjure.client.clojure.nrepl.config", eval = "conjure.eval", mapping = "conjure.mapping", nvim = "conjure.aniseed.nvim"}}
-  return {require("conjure.aniseed.core"), require("conjure.client.clojure.nrepl.action"), require("conjure.bridge"), require("conjure.client.clojure.nrepl.config"), require("conjure.eval"), require("conjure.mapping"), require("conjure.aniseed.nvim")}
+  _0_0["aniseed/local-fns"] = {require = {a = "conjure.aniseed.core", action = "conjure.client.clojure.nrepl.action", bridge = "conjure.bridge", config = "conjure.client.clojure.nrepl.config", eval = "conjure.eval", mapping = "conjure.mapping", nvim = "conjure.aniseed.nvim", str = "conjure.aniseed.string"}}
+  return {require("conjure.aniseed.core"), require("conjure.client.clojure.nrepl.action"), require("conjure.bridge"), require("conjure.client.clojure.nrepl.config"), require("conjure.eval"), require("conjure.mapping"), require("conjure.aniseed.nvim"), require("conjure.aniseed.string")}
 end
 local _2_ = _1_(...)
 local a = _2_[1]
@@ -26,6 +26,7 @@ local config = _2_[4]
 local eval = _2_[5]
 local mapping = _2_[6]
 local nvim = _2_[7]
+local str = _2_[8]
 do local _ = ({nil, _0_0, nil})[2] end
 local buf_suffix = nil
 do
@@ -37,17 +38,6 @@ do
   end
   _0_0["aniseed/locals"]["buf-suffix"] = v_23_0_
   buf_suffix = v_23_0_
-end
-local context_pattern = nil
-do
-  local v_23_0_ = nil
-  do
-    local v_23_0_0 = "%(%s*ns%s+(.-)[%s){]"
-    _0_0["context-pattern"] = v_23_0_0
-    v_23_0_ = v_23_0_0
-  end
-  _0_0["aniseed/locals"]["context-pattern"] = v_23_0_
-  context_pattern = v_23_0_
 end
 local comment_prefix = nil
 do
@@ -70,6 +60,46 @@ do
   end
   _0_0["aniseed/locals"]["config"] = v_23_0_
   config0 = v_23_0_
+end
+local context = nil
+do
+  local v_23_0_ = nil
+  do
+    local v_23_0_0 = nil
+    local function context0(header)
+      local _3_0 = header
+      if _3_0 then
+        local _4_0 = string.match(_3_0, "%(%s*ns%s+(.-)%)")
+        if _4_0 then
+          local _5_0 = string.gsub(_4_0, "%^:.-%s+", "")
+          if _5_0 then
+            local _6_0 = string.gsub(_5_0, "%^%b{}%s+", "")
+            if _6_0 then
+              local _7_0 = str.split(_6_0, "%s+")
+              if _7_0 then
+                return a.first(_7_0)
+              else
+                return _7_0
+              end
+            else
+              return _6_0
+            end
+          else
+            return _5_0
+          end
+        else
+          return _4_0
+        end
+      else
+        return _3_0
+      end
+    end
+    v_23_0_0 = context0
+    _0_0["context"] = v_23_0_0
+    v_23_0_ = v_23_0_0
+  end
+  _0_0["aniseed/locals"]["context"] = v_23_0_
+  context = v_23_0_
 end
 local eval_file = nil
 do
