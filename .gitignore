@@ -10,3 +10,5 @@
 /node_modules/
 /dev/clojure/public/
 __pycache__/
+/target/
+/.lein-repl-history
