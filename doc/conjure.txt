@@ -107,13 +107,15 @@ I've also included some commands since they're related to the mappings.
                          two below it.
 
 <localleader>ee          Evaluate the current form under the cursor. This is
-                         the innermost pair of parenthesis (ignoring those in
-                         comments or strings).
+                         the innermost pair (ignoring those in comments or
+                         strings). `extract.form-pairs` controls the character
+                         pairs.
 
 <localleader>er          Evaluate the root form under the cursor. This is the
-                         outermost pair of parenthesis. Great for evaluating a
-                         function you're editing if your cursor is within a
-                         few nested forms.
+                         outermost pair. Great for evaluating a function
+                         you're editing if your cursor is within a few nested
+                         forms. `extract.form-pairs` controls the character
+                         pairs.
 
 <localleader>e!          Evaluate the form under the cursor and replace it
                          with the result of the evaluation. Using this on the
@@ -313,6 +315,12 @@ the `g:conjure_config` variable instead, as mention later in this section.
             If a specific buffer isn't extracting the context correctly, you
             can override it by setting `b:conjure_context`.
             Default: `24`
+
+`extract.form-pairs`
+            Character pairs to search for when evaluating forms. The closest
+            matching pair is used when evaluating the current form but the
+            furthest matching pair is used for root forms.
+            Default: ``
 
 `preview.sample-limit`
             Most evaluation actions create a line in the log buffer with a

@@ -44,7 +44,7 @@
       1
       0)))
 
-(defn form [{: root?}]
+(defn- form* [[start-char end-char] {: root?}]
   (let [;; 'W' don't Wrap around the end of the file
         ;; 'n' do Not move the cursor
         ;; 'z' start searching at the cursor column instead of Zero
@@ -56,13 +56,23 @@
 
         skip-match?-viml "luaeval(\"require('conjure.extract')['skip-match?']()\")"
 
+        safe-start-char
+        (if (= start-char "[")
+          (.. "\\" start-char)
+          start-char)
+
+        safe-end-char
+        (if (= end-char "]")
+          (.. "\\" end-char)
+          end-char)
+
         start (nvim.fn.searchpairpos
-                "(" "" ")"
-                (.. flags "b" (if (= cursor-char "(") "c" ""))
+                safe-start-char "" safe-end-char
+                (.. flags "b" (if (= cursor-char start-char) "c" ""))
                 skip-match?-viml)
         end (nvim.fn.searchpairpos
-              "(" "" ")"
-              (.. flags (if (= cursor-char ")") "c" ""))
+              safe-start-char "" safe-end-char
+              (.. flags (if (= cursor-char end-char) "c" ""))
               skip-match?-viml)]
 
     (when (and (not (nil-pos? start))
@@ -70,6 +80,31 @@
       {:range {:start (a.update start 2 a.dec)
                :end (a.update end 2 a.dec)}
        :content (read-range start end)})))
+
+(defn- range-distance [range]
+  (let [[sl sc] range.start
+        [el ec] range.end]
+    [(- sl el) (- sc ec)]))
+
+(defn- distance-gt [[al ac] [bl bc]]
+  (or (> al bl)
+      (and (= al bl) (> ac bc))))
+
+(defn form [opts]
+  (local forms
+    (->> config.extract.form-pairs
+         (a.map #(form* $1 opts))
+         (a.filter a.table?)))
+
+  (table.sort
+    forms
+    #(distance-gt
+       (range-distance $1.range)
+       (range-distance $2.range)))
+
+  (if opts.root?
+    (a.last forms)
+    (a.first forms)))
 
 (defn word []
   {:content (nvim.fn.expand "<cword>")

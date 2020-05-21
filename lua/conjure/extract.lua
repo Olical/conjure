@@ -103,45 +103,115 @@ do
   _0_0["aniseed/locals"]["skip-match?"] = v_23_0_
   skip_match_3f = v_23_0_
 end
+local form_2a = nil
+do
+  local v_23_0_ = nil
+  local function form_2a0(_3_0, _4_0)
+    local _4_ = _3_0
+    local start_char = _4_[1]
+    local end_char = _4_[2]
+    local _5_ = _4_0
+    local root_3f = _5_["root?"]
+    local flags = nil
+    local function _6_()
+      if root_3f then
+        return "r"
+      else
+        return ""
+      end
+    end
+    flags = ("Wnz" .. _6_())
+    local cursor_char = current_char()
+    local skip_match_3f_viml = "luaeval(\"require('conjure.extract')['skip-match?']()\")"
+    local safe_start_char = nil
+    if (start_char == "[") then
+      safe_start_char = ("\\" .. start_char)
+    else
+      safe_start_char = start_char
+    end
+    local safe_end_char = nil
+    if (end_char == "]") then
+      safe_end_char = ("\\" .. end_char)
+    else
+      safe_end_char = end_char
+    end
+    local start = nil
+    local function _9_()
+      if (cursor_char == start_char) then
+        return "c"
+      else
+        return ""
+      end
+    end
+    start = nvim.fn.searchpairpos(safe_start_char, "", safe_end_char, (flags .. "b" .. _9_()), skip_match_3f_viml)
+    local _end = nil
+    local function _10_()
+      if (cursor_char == end_char) then
+        return "c"
+      else
+        return ""
+      end
+    end
+    _end = nvim.fn.searchpairpos(safe_start_char, "", safe_end_char, (flags .. _10_()), skip_match_3f_viml)
+    if (not nil_pos_3f(start) and not nil_pos_3f(_end)) then
+      return {content = read_range(start, _end), range = {["end"] = a.update(_end, 2, a.dec), start = a.update(start, 2, a.dec)}}
+    end
+  end
+  v_23_0_ = form_2a0
+  _0_0["aniseed/locals"]["form*"] = v_23_0_
+  form_2a = v_23_0_
+end
+local range_distance = nil
+do
+  local v_23_0_ = nil
+  local function range_distance0(range)
+    local _3_ = range.start
+    local sl = _3_[1]
+    local sc = _3_[2]
+    local _4_ = range["end"]
+    local el = _4_[1]
+    local ec = _4_[2]
+    return {(sl - el), (sc - ec)}
+  end
+  v_23_0_ = range_distance0
+  _0_0["aniseed/locals"]["range-distance"] = v_23_0_
+  range_distance = v_23_0_
+end
+local distance_gt = nil
+do
+  local v_23_0_ = nil
+  local function distance_gt0(_3_0, _4_0)
+    local _4_ = _3_0
+    local al = _4_[1]
+    local ac = _4_[2]
+    local _5_ = _4_0
+    local bl = _5_[1]
+    local bc = _5_[2]
+    return ((al > bl) or ((al == bl) and (ac > bc)))
+  end
+  v_23_0_ = distance_gt0
+  _0_0["aniseed/locals"]["distance-gt"] = v_23_0_
+  distance_gt = v_23_0_
+end
 local form = nil
 do
   local v_23_0_ = nil
   do
     local v_23_0_0 = nil
-    local function form0(_3_0)
-      local _4_ = _3_0
-      local root_3f = _4_["root?"]
-      local flags = nil
-      local function _5_()
-        if root_3f then
-          return "r"
-        else
-          return ""
-        end
+    local function form0(opts)
+      local forms = nil
+      local function _3_(_241)
+        return form_2a(_241, opts)
       end
-      flags = ("Wnz" .. _5_())
-      local cursor_char = current_char()
-      local skip_match_3f_viml = "luaeval(\"require('conjure.extract')['skip-match?']()\")"
-      local start = nil
-      local function _6_()
-        if (cursor_char == "(") then
-          return "c"
-        else
-          return ""
-        end
+      forms = a.filter(a["table?"], a.map(_3_, config.extract["form-pairs"]))
+      local function _4_(_241, _242)
+        return distance_gt(range_distance(_241.range), range_distance(_242.range))
       end
-      start = nvim.fn.searchpairpos("(", "", ")", (flags .. "b" .. _6_()), skip_match_3f_viml)
-      local _end = nil
-      local function _7_()
-        if (cursor_char == ")") then
-          return "c"
-        else
-          return ""
-        end
-      end
-      _end = nvim.fn.searchpairpos("(", "", ")", (flags .. _7_()), skip_match_3f_viml)
-      if (not nil_pos_3f(start) and not nil_pos_3f(_end)) then
-        return {content = read_range(start, _end), range = {["end"] = a.update(_end, 2, a.dec), start = a.update(start, 2, a.dec)}}
+      table.sort(forms, _4_)
+      if opts["root?"] then
+        return a.last(forms)
+      else
+        return a.first(forms)
       end
     end
     v_23_0_0 = form0

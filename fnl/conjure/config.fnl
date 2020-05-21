@@ -40,7 +40,10 @@
           :to 6000}})
 
 (def extract
-  {:context-header-lines 24})
+  {:context-header-lines 24
+   :form-pairs [["(" ")"]
+                ["{" "}"]
+                ["[" "]"]]})
 
 (def preview
   {:sample-limit 0.3})
