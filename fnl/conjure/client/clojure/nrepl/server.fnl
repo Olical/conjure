@@ -106,7 +106,7 @@
     st
     (if (a.string? st)
       (.. st "?")
-      "???")))
+      "no env")))
 
 (defn session-type [id cb]
   (send

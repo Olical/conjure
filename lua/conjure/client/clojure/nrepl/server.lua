@@ -236,7 +236,7 @@ do
         if a["string?"](st) then
           return (st .. "?")
         else
-          return "???"
+          return "no env"
         end
       end
       return a.get({clj = "Clojure", cljr = "ClojureCLR", cljs = "ClojureScript", unknown = "Unknown"}, st, _3_())
