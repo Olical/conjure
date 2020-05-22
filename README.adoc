@@ -6,9 +6,9 @@ Conjure is an interactive environment for evaluating code and inspecting your pr
 
 The core features of Conjure are language agnostic (although it's targeted at Lisps for now), with each language client providing their own extra tools. Here's the language support so far, unchecked items are planned for the future.
 
- * [x] https://clojure.org/[Clojure] over https://nrepl.org/[nREPL]
- * [x] https://fennel-lang.org/[Fennel] inside Neovim via Lua and https://github.com/Olical/aniseed[Aniseed] (which Conjure is written in)
- * [x] https://janet-lang.org/[Janet] over https://github.com/janet-lang/spork/#networked-repl[spork/netrepl]
+ * [x] https://clojure.org/[Clojure] over https://nrepl.org/[nREPL] (https://github.com/Olical/conjure/wiki/Quick-start:-Clojure[quickstart])
+ * [x] https://fennel-lang.org/[Fennel] inside Neovim via Lua and https://github.com/Olical/aniseed[Aniseed] (https://github.com/Olical/conjure/wiki/Quick-start:-Fennel-(Aniseed)[quickstart])
+ * [x] https://janet-lang.org/[Janet] over https://github.com/janet-lang/spork/#networked-repl[spork/netrepl] (https://github.com/Olical/conjure/wiki/Quick-start:-Janet-(netrepl)[quickstart])
  * [ ] https://clojure.org/[Clojure] over https://oli.me.uk/clojure-socket-prepl-cookbook/[prepl]
  * [ ] https://racket-lang.org/[Racket]
  * [ ] http://lfe.io/[Lisp Flavoured Erlang]
