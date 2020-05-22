@@ -45,7 +45,7 @@ Conjure allows you to send the right part of your code off for evaluation, see t
 
 The goal is to give you a tool that lets you effortlessly run whatever you need to while keeping out of your way (but there with context and more information if you need it).
 
-== Try before you buy
+== Try without installing
 
 You can trial run Conjure with the interactive `:ConjureSchool` tutorial without actually installing it! The only prerequisites are `curl` and an up to date `nvim`.
 
@@ -68,6 +68,13 @@ Plug 'Olical/conjure', {'tag': 'v3.3.0'}
 You'll need to be on the latest stable Neovim for all of the features (such as floating windows) to work. If you see errors, please check your Neovim version before raising an issue.
 
 == Getting started
+
+ * https://github.com/Olical/conjure/wiki/Frequently-asked-questions[Frequently asked questions]
+ * https://github.com/Olical/conjure/wiki/Quick-start:-Clojure[Clojure (JVM)]
+ * https://github.com/Olical/conjure/wiki/Quick-start:-Clojure-(babashka)[Clojure (babashka)]
+ * https://github.com/Olical/conjure/wiki/Quick-start:-ClojureScript-(shadow-cljs)[ClojureScript (shadow-cljs)]
+ * https://github.com/Olical/conjure/wiki/Quick-start:-Janet-(netrepl)[Janet (netrepl)]
+ * https://github.com/Olical/conjure/wiki/Quick-start:-Fennel-(Aniseed)[Fennel (Aniseed)]
 
 All further documentation is found within link:doc/conjure.txt[`:help conjure`]. You can also use `:ConjureSchool` to get an interactive introduction to the workflow and mappings Conjure provides.
 
