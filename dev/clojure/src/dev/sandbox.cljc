@@ -14,7 +14,9 @@
   [a b]
   (+ a b))
 
-(add 10 20)
+{:xyz
+ [(add 10 20)
+  (add 1 2)]}
 
 (println (apply str (take 2000 (repeat \x))))
 

@@ -43,7 +43,7 @@
   {:context-header-lines 24
    :form-pairs [["(" ")"]
                 ["{" "}"]
-                ["[" "]"]]})
+                ["[" "]" true]]})
 
 (def preview
   {:sample-limit 0.3})

@@ -320,7 +320,10 @@ the `g:conjure_config` variable instead, as mention later in this section.
             Character pairs to search for when evaluating forms. The closest
             matching pair is used when evaluating the current form but the
             furthest matching pair is used for root forms.
-            Default: ``
+            The structure of each item is `[start end escape?]` where the
+            first two are characters and the third is an optional boolean to
+            enable escaping for use in |searchpairpos()|.
+            Default: `[["(" ")"] ["{" "}"] ["[" "]" true]]`
 
 `preview.sample-limit`
             Most evaluation actions create a line in the log buffer with a

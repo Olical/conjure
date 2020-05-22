@@ -44,7 +44,7 @@
       1
       0)))
 
-(defn- form* [[start-char end-char] {: root?}]
+(defn- form* [[start-char end-char escape?] {: root?}]
   (let [;; 'W' don't Wrap around the end of the file
         ;; 'n' do Not move the cursor
         ;; 'z' start searching at the cursor column instead of Zero
@@ -57,12 +57,12 @@
         skip-match?-viml "luaeval(\"require('conjure.extract')['skip-match?']()\")"
 
         safe-start-char
-        (if (= start-char "[")
+        (if escape?
           (.. "\\" start-char)
           start-char)
 
         safe-end-char
-        (if (= end-char "]")
+        (if escape?
           (.. "\\" end-char)
           end-char)
 

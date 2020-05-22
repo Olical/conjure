@@ -82,7 +82,7 @@ local extract = nil
 do
   local v_23_0_ = nil
   do
-    local v_23_0_0 = {["context-header-lines"] = 24, ["form-pairs"] = {{"(", ")"}, {"{", "}"}, {"[", "]"}}}
+    local v_23_0_0 = {["context-header-lines"] = 24, ["form-pairs"] = {{"(", ")"}, {"{", "}"}, {"[", "]", true}}}
     _0_0["extract"] = v_23_0_0
     v_23_0_ = v_23_0_0
   end

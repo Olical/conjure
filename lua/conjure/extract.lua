@@ -110,6 +110,7 @@ do
     local _4_ = _3_0
     local start_char = _4_[1]
     local end_char = _4_[2]
+    local escape_3f = _4_[3]
     local _5_ = _4_0
     local root_3f = _5_["root?"]
     local flags = nil
@@ -124,13 +125,13 @@ do
     local cursor_char = current_char()
     local skip_match_3f_viml = "luaeval(\"require('conjure.extract')['skip-match?']()\")"
     local safe_start_char = nil
-    if (start_char == "[") then
+    if escape_3f then
       safe_start_char = ("\\" .. start_char)
     else
       safe_start_char = start_char
     end
     local safe_end_char = nil
-    if (end_char == "]") then
+    if escape_3f then
       safe_end_char = ("\\" .. end_char)
     else
       safe_end_char = end_char
