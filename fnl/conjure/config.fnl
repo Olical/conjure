@@ -35,6 +35,7 @@
   {:hud {:width 0.42
          :height 0.3
          :enabled? true}
+   :botright? false
    :break-length 80
    :trim {:at 10000
           :to 6000}})

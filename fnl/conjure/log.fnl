@@ -169,23 +169,26 @@
 
       (trim buf))))
 
-(defn- create-win [split-fn]
-  (let [buf (upsert-buf)
-        win (split-fn (log-buf-name))]
-    (nvim.win_set_cursor
-      win
-      [(nvim.buf_line_count buf) 0])
-    (nvim.win_set_option win :wrap false)
+(defn- create-win [cmd]
+  (let [buf (upsert-buf)]
+    (nvim.command
+      (.. (if (a.get-in config [:log :botright?])
+            "botright "
+            "")
+          cmd " "
+          (log-buf-name)))
+    (nvim.win_set_cursor 0 [(nvim.buf_line_count buf) 0])
+    (nvim.win_set_option 0 :wrap false)
     (buffer.unlist buf)))
 
 (defn split []
-  (create-win nvim.ex.split))
+  (create-win :split))
 
 (defn vsplit []
-  (create-win nvim.ex.vsplit))
+  (create-win :vsplit))
 
 (defn tab []
-  (create-win nvim.ex.tabnew))
+  (create-win :tabnew))
 
 (defn close-visible []
   (let [buf (upsert-buf)]

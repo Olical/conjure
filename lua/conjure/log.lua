@@ -279,11 +279,18 @@ end
 local create_win = nil
 do
   local v_23_0_ = nil
-  local function create_win0(split_fn)
+  local function create_win0(cmd)
     local buf = upsert_buf()
-    local win = split_fn(log_buf_name())
-    nvim.win_set_cursor(win, {nvim.buf_line_count(buf), 0})
-    nvim.win_set_option(win, "wrap", false)
+    local function _3_()
+      if a["get-in"](config, {"log", "botright?"}) then
+        return "botright "
+      else
+        return ""
+      end
+    end
+    nvim.command((_3_() .. cmd .. " " .. log_buf_name()))
+    nvim.win_set_cursor(0, {nvim.buf_line_count(buf), 0})
+    nvim.win_set_option(0, "wrap", false)
     return buffer.unlist(buf)
   end
   v_23_0_ = create_win0
@@ -296,7 +303,7 @@ do
   do
     local v_23_0_0 = nil
     local function split0()
-      return create_win(nvim.ex.split)
+      return create_win("split")
     end
     v_23_0_0 = split0
     _0_0["split"] = v_23_0_0
@@ -311,7 +318,7 @@ do
   do
     local v_23_0_0 = nil
     local function vsplit0()
-      return create_win(nvim.ex.vsplit)
+      return create_win("vsplit")
     end
     v_23_0_0 = vsplit0
     _0_0["vsplit"] = v_23_0_0
@@ -326,7 +333,7 @@ do
   do
     local v_23_0_0 = nil
     local function tab0()
-      return create_win(nvim.ex.tabnew)
+      return create_win("tabnew")
     end
     v_23_0_0 = tab0
     _0_0["tab"] = v_23_0_0
