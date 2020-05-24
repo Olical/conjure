@@ -15,11 +15,12 @@ do
   _0_0 = module_23_0_
 end
 local function _1_(...)
-  _0_0["aniseed/local-fns"] = {require = {a = "conjure.aniseed.core", bridge = "conjure.bridge", client = "conjure.client", config = "conjure.config", eval = "conjure.eval", extract = "conjure.extract", fennel = "conjure.aniseed.fennel", nvim = "conjure.aniseed.nvim", str = "conjure.aniseed.string"}}
-  return {require("conjure.aniseed.core"), require("conjure.bridge"), require("conjure.client"), require("conjure.config"), require("conjure.eval"), require("conjure.extract"), require("conjure.aniseed.fennel"), require("conjure.aniseed.nvim"), require("conjure.aniseed.string")}
+  _0_0["aniseed/local-fns"] = {require = {a = "conjure.aniseed.core", bridge = "conjure.bridge", client = "conjure.client", config = "conjure.config", eval = "conjure.eval", extract = "conjure.extract", fennel = "conjure.aniseed.fennel", nvim = "conjure.aniseed.nvim", str = "conjure.aniseed.string", text = "conjure.text"}}
+  return {require("conjure.aniseed.core"), require("conjure.bridge"), require("conjure.client"), require("conjure.config"), require("conjure.eval"), require("conjure.extract"), require("conjure.aniseed.fennel"), require("conjure.aniseed.nvim"), require("conjure.aniseed.string"), require("conjure.text")}
 end
 local _2_ = _1_(...)
 local a = _2_[1]
+local text = _2_[10]
 local bridge = _2_[2]
 local client = _2_[3]
 local config = _2_[4]
@@ -29,6 +30,30 @@ local fennel = _2_[7]
 local nvim = _2_[8]
 local str = _2_[9]
 do local _ = ({nil, _0_0, nil})[2] end
+local desc = nil
+do
+  local v_23_0_ = nil
+  do
+    local v_23_0_0 = nil
+    local function desc0(buf_res, group_name, val)
+      local wk_var = a["get-in"](config, {"which-key", "var"})
+      if (buf_res and not buf_res["raw?"] and wk_var) then
+        local orig = nvim.get_var(wk_var)
+        local keys = text.chars(buf_res.unprefixed)
+        a["assoc-in"](orig, keys, val)
+        if (a.count(keys) > 1) then
+          a["assoc-in"](orig, {a.first(keys), "name"}, ("+" .. group_name))
+        end
+        return nvim.set_var(wk_var, orig)
+      end
+    end
+    v_23_0_0 = desc0
+    _0_0["desc"] = v_23_0_0
+    v_23_0_ = v_23_0_0
+  end
+  _0_0["aniseed/locals"]["desc"] = v_23_0_
+  desc = v_23_0_
+end
 local buf = nil
 do
   local v_23_0_ = nil
@@ -37,11 +62,18 @@ do
     local function buf0(mode, keys, ...)
       if keys then
         local args = {...}
-        local _3_
-        if a["string?"](keys) then
-          _3_ = (config.mappings.prefix .. keys)
+        local raw_3f = a["table?"](keys)
+        local unprefixed = nil
+        if raw_3f then
+          unprefixed = a.first(keys)
         else
-          _3_ = a.first(keys)
+          unprefixed = keys
+        end
+        local prefixed = nil
+        if raw_3f then
+          prefixed = unprefixed
+        else
+          prefixed = (config.mappings.prefix .. unprefixed)
         end
         local _5_
         if (2 == a.count(args)) then
@@ -49,7 +81,8 @@ do
         else
           _5_ = unpack(args)
         end
-        return nvim.buf_set_keymap(0, mode, _3_, _5_, {noremap = true, silent = true})
+        nvim.buf_set_keymap(0, mode, prefixed, _5_, {noremap = true, silent = true})
+        return {["raw?"] = raw_3f, prefixed = prefixed, unprefixed = unprefixed}
       end
     end
     v_23_0_0 = buf0
@@ -59,27 +92,43 @@ do
   _0_0["aniseed/locals"]["buf"] = v_23_0_
   buf = v_23_0_
 end
+local map_fn = nil
+do
+  local v_23_0_ = nil
+  do
+    local v_23_0_0 = nil
+    local function map_fn0(mappings)
+      local function _3_(mode, group, cfg__3eargs)
+        local function _4_(_5_0)
+          local _6_ = _5_0
+          local cfg = _6_[1]
+          local args = _6_[2]
+          return desc(buf(mode, a.get(mappings, cfg), unpack(args)), group, cfg)
+        end
+        return a["run!"](_4_, a["kv-pairs"](cfg__3eargs))
+      end
+      return _3_
+    end
+    v_23_0_0 = map_fn0
+    _0_0["map-fn"] = v_23_0_0
+    v_23_0_ = v_23_0_0
+  end
+  _0_0["aniseed/locals"]["map-fn"] = v_23_0_
+  map_fn = v_23_0_
+end
 local on_filetype = nil
 do
   local v_23_0_ = nil
   do
     local v_23_0_0 = nil
     local function on_filetype0()
-      buf("n", config.mappings["eval-motion"], ":set opfunc=ConjureEvalMotion<cr>g@")
-      buf("n", config.mappings["log-split"], "conjure.log", "split")
-      buf("n", config.mappings["log-vsplit"], "conjure.log", "vsplit")
-      buf("n", config.mappings["log-tab"], "conjure.log", "tab")
-      buf("n", config.mappings["log-close-visible"], "conjure.log", "close-visible")
-      buf("n", config.mappings["eval-current-form"], "conjure.eval", "current-form")
-      buf("n", config.mappings["eval-root-form"], "conjure.eval", "root-form")
-      buf("n", config.mappings["eval-replace-form"], "conjure.eval", "replace-form")
-      buf("n", config.mappings["eval-marked-form"], "conjure.eval", "marked-form")
-      buf("n", config.mappings["eval-word"], "conjure.eval", "word")
-      buf("n", config.mappings["eval-file"], "conjure.eval", "file")
-      buf("n", config.mappings["eval-buf"], "conjure.eval", "buf")
-      buf("v", config.mappings["eval-visual"], "conjure.eval", "selection")
-      buf("n", config.mappings["doc-word"], "conjure.eval", "doc-word")
-      buf("n", config.mappings["def-word"], "conjure.eval", "def-word")
+      do
+        local map = map_fn(config.mappings)
+        map("n", "eval", {["eval-buf"] = {"conjure.eval", "buf"}, ["eval-current-form"] = {"conjure.eval", "current-form"}, ["eval-file"] = {"conjure.eval", "file"}, ["eval-marked-form"] = {"conjure.eval", "marked-form"}, ["eval-motion"] = {":set opfunc=ConjureEvalMotion<cr>g@"}, ["eval-replace-form"] = {"conjure.eval", "replace-form"}, ["eval-root-form"] = {"conjure.eval", "root-form"}, ["eval-word"] = {"conjure.eval", "word"}})
+        map("n", "util", {["def-word"] = {"conjure.eval", "def-word"}, ["doc-word"] = {"conjure.eval", "doc-word"}})
+        map("v", "eval", {["eval-visual"] = {"conjure.eval", "selection"}})
+        map("n", "log", {["log-close-visible"] = {"conjure.log", "close-visible"}, ["log-split"] = {"conjure.log", "split"}, ["log-tab"] = {"conjure.log", "tab"}, ["log-vsplit"] = {"conjure.log", "vsplit"}})
+      end
       nvim.ex.setlocal("omnifunc=ConjureOmnifunc")
       return client["optional-call"]("on-filetype")
     end

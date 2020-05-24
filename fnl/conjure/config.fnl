@@ -31,6 +31,9 @@
    :doc-word ["K"]
    :def-word ["gd"]})
 
+(def which-key
+  {:var nil})
+
 (def log
   {:hud {:width 0.42
          :height 0.3
