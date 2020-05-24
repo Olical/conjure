@@ -46,3 +46,10 @@
       (string.gsub "\x1b%[%d+;%d+;%d+m" "")
       (string.gsub "\x1b%[%d+;%d+m" "")
       (string.gsub "\x1b%[%d+m" "")))
+
+(defn chars [s]
+  (local res [])
+  (when s
+    (each [c (string.gmatch s ".")]
+      (table.insert res c)))
+  res)

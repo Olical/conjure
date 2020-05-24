@@ -176,4 +176,25 @@ do
   _0_0["aniseed/locals"]["strip-ansi-codes"] = v_23_0_
   strip_ansi_codes = v_23_0_
 end
+local chars = nil
+do
+  local v_23_0_ = nil
+  do
+    local v_23_0_0 = nil
+    local function chars0(s)
+      local res = {}
+      if s then
+        for c in string.gmatch(s, ".") do
+          table.insert(res, c)
+        end
+      end
+      return res
+    end
+    v_23_0_0 = chars0
+    _0_0["chars"] = v_23_0_0
+    v_23_0_ = v_23_0_0
+  end
+  _0_0["aniseed/locals"]["chars"] = v_23_0_
+  chars = v_23_0_
+end
 return nil

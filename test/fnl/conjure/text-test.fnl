@@ -31,3 +31,8 @@
   (t.= true (text.ends-with "foobar" "bar"))
   (t.= true (text.ends-with "foobar" "obar"))
   (t.= false (text.ends-with "foobar" "xbar")))
+
+(deftest chars
+  (t.pr= [] (text.chars))
+  (t.pr= [] (text.chars ""))
+  (t.pr= [:a :b :c] (text.chars "abc")))
