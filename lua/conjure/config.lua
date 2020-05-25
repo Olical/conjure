@@ -67,17 +67,6 @@ do
   _0_0["aniseed/locals"]["mappings"] = v_23_0_
   mappings = v_23_0_
 end
-local which_key = nil
-do
-  local v_23_0_ = nil
-  do
-    local v_23_0_0 = {var = nil}
-    _0_0["which-key"] = v_23_0_0
-    v_23_0_ = v_23_0_0
-  end
-  _0_0["aniseed/locals"]["which-key"] = v_23_0_
-  which_key = v_23_0_
-end
 local log = nil
 do
   local v_23_0_ = nil

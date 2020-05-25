@@ -279,14 +279,6 @@ the `g:conjure_config` variable instead, as mention later in this section.
             Goes to the definition of the word under the cursor.
             Default: `["gd"]`
 
-`which-key.var`
-            Name of the var Conjure should add to for vim-which-key
-            integration. Depending on how you set up the plugin this could be
-            something like `"which_key_maplocal"`. Conjure will then insert
-            named hints for each mapping.
-            https://github.com/liuchengxu/vim-which-key
-            Default: `nil`
-
 `log.hud.width`
             Width of the HUD as a percentage of the editor width.
             A float between 0.0 and 1.0.

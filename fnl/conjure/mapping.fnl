@@ -2,7 +2,6 @@
   {require {nvim conjure.aniseed.nvim
             a conjure.aniseed.core
             str conjure.aniseed.string
-            text conjure.text
             config conjure.config
             extract conjure.extract
             client conjure.client
@@ -10,73 +9,36 @@
             bridge conjure.bridge
             fennel conjure.aniseed.fennel}})
 
-(defn desc [buf-res group-name val]
-  (let [wk-var (a.get-in config [:which-key :var])]
-    (when (and buf-res (not buf-res.raw?) wk-var)
-      (let [orig (nvim.get_var wk-var)
-            keys (text.chars buf-res.unprefixed)]
-        (a.assoc-in orig keys val)
-        (when (> (a.count keys) 1)
-          (a.assoc-in orig [(a.first keys) :name]
-                      (.. "+" group-name)))
-        (nvim.set_var wk-var orig)))))
-
 (defn buf [mode keys ...]
   (when keys
-    (let [args [...]
-          raw? (a.table? keys)
-          unprefixed (if raw?
-                       (a.first keys)
-                       keys)
-          prefixed (if raw?
-                     unprefixed
-                     (.. config.mappings.prefix unprefixed))]
+    (let [args [...]]
       (nvim.buf_set_keymap
         0 mode
-        prefixed
+        (if (a.string? keys)
+          (.. config.mappings.prefix keys)
+          (a.first keys))
         (if (= 2 (a.count args))
           (.. ":" (bridge.viml->lua (unpack args)) "<cr>")
           (unpack args))
         {:silent true
-         :noremap true})
-
-      {:unprefixed unprefixed
-       :prefixed prefixed
-       :raw? raw?})))
-
-(defn map-fn [mappings]
-  (fn [mode group cfg->args]
-    (a.run!
-      (fn [[cfg args]]
-        (desc
-          (buf mode (a.get mappings cfg) (unpack args))
-          group cfg))
-      (a.kv-pairs cfg->args))))
+         :noremap true}))))
 
 (defn on-filetype []
-  (let [map (map-fn config.mappings)]
-    (map :n :eval
-         {:eval-motion [":set opfunc=ConjureEvalMotion<cr>g@"]
-          :eval-current-form [:conjure.eval :current-form]
-          :eval-root-form [:conjure.eval :root-form]
-          :eval-replace-form [:conjure.eval :replace-form]
-          :eval-marked-form [:conjure.eval :marked-form]
-          :eval-word [:conjure.eval :word]
-          :eval-file [:conjure.eval :file]
-          :eval-buf [:conjure.eval :buf]})
-
-    (map :n :util
-         {:doc-word [:conjure.eval :doc-word]
-          :def-word [:conjure.eval :def-word]})
-
-    (map :v :eval
-         {:eval-visual [:conjure.eval :selection]})
-
-    (map :n :log
-         {:log-split [:conjure.log :split]
-          :log-vsplit [:conjure.log :vsplit]
-          :log-tab [:conjure.log :tab]
-          :log-close-visible [:conjure.log :close-visible]}))
+  (buf :n config.mappings.eval-motion ":set opfunc=ConjureEvalMotion<cr>g@")
+  (buf :n config.mappings.log-split :conjure.log :split)
+  (buf :n config.mappings.log-vsplit :conjure.log :vsplit)
+  (buf :n config.mappings.log-tab :conjure.log :tab)
+  (buf :n config.mappings.log-close-visible :conjure.log :close-visible)
+  (buf :n config.mappings.eval-current-form :conjure.eval :current-form)
+  (buf :n config.mappings.eval-root-form :conjure.eval :root-form)
+  (buf :n config.mappings.eval-replace-form :conjure.eval :replace-form)
+  (buf :n config.mappings.eval-marked-form :conjure.eval :marked-form)
+  (buf :n config.mappings.eval-word :conjure.eval :word)
+  (buf :n config.mappings.eval-file :conjure.eval :file)
+  (buf :n config.mappings.eval-buf :conjure.eval :buf)
+  (buf :v config.mappings.eval-visual :conjure.eval :selection)
+  (buf :n config.mappings.doc-word :conjure.eval :doc-word)
+  (buf :n config.mappings.def-word :conjure.eval :def-word)
 
   (nvim.ex.setlocal "omnifunc=ConjureOmnifunc")
 
