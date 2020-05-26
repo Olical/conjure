@@ -179,8 +179,8 @@ CONFIGURATION                                          *conjure-configuration*
 
 As mentioned in |conjure-mappings|, you can use `:ConjureConfig` to display or
 set the different configuration values within Conjure. Here's the full list of
-configuration available in the core plugin. Each language client also has it's
-own set of mappings and configuration you can alter.
+options available in the core plugin. Each language client also has its own
+set of mappings and settings you can alter.
 
 As an example, we can change the default prefix from `<localleader>` to `,c`
 with the following command:
