@@ -167,8 +167,8 @@ do
       nvim.ex.augroup("conjure_init_filetypes")
       nvim.ex.autocmd_()
       nvim.ex.autocmd("FileType", str.join(",", filetypes), bridge["viml->lua"]("conjure.mapping", "on-filetype", {}))
-      nvim.ex.autocmd("CursorMoved", "*", bridge["viml->lua"]("conjure.log", "close-hud", {}))
-      nvim.ex.autocmd("CursorMovedI", "*", bridge["viml->lua"]("conjure.log", "close-hud", {}))
+      nvim.ex.autocmd("CursorMoved", "*", bridge["viml->lua"]("conjure.log", "defer-close-hud", {}))
+      nvim.ex.autocmd("CursorMovedI", "*", bridge["viml->lua"]("conjure.log", "defer-close-hud", {}))
       nvim.ex.augroup("END")
       return assoc_initial_config()
     end

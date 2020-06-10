@@ -28,6 +28,7 @@ local nvim = _2_[6]
 local text = _2_[7]
 local view = _2_[8]
 do local _ = ({nil, _0_0, nil})[2] end
+local current_timer_id = 0
 local state = nil
 do
   local v_23_0_ = (_0_0["aniseed/locals"].state or {hud = {id = nil}})
@@ -86,6 +87,29 @@ do
   _0_0["aniseed/locals"]["close-hud"] = v_23_0_
   close_hud = v_23_0_
 end
+local defer_close_hud = nil
+do
+  local v_23_0_ = nil
+  do
+    local v_23_0_0 = nil
+    local function defer_close_hud0()
+      local my_id = current_timer_id
+      if state.hud.id then
+        local function _3_()
+          if (my_id == current_timer_id) then
+            return close_hud()
+          end
+        end
+        return vim.defer_fn(_3_, 1000)
+      end
+    end
+    v_23_0_0 = defer_close_hud0
+    _0_0["defer-close-hud"] = v_23_0_0
+    v_23_0_ = v_23_0_0
+  end
+  _0_0["aniseed/locals"]["defer-close-hud"] = v_23_0_
+  defer_close_hud = v_23_0_
+end
 local break_lines = nil
 do
   local v_23_0_ = nil
@@ -108,6 +132,7 @@ do
   local v_23_0_ = nil
   local function display_hud0()
     if config.log.hud["enabled?"] then
+      current_timer_id = (current_timer_id + 1)
       local buf = upsert_buf()
       local cursor_top_right_3f = ((editor["cursor-left"]() > editor["percent-width"](0.5)) and (editor["cursor-top"]() < editor["percent-height"](0.5)))
       local last_break = a.last(break_lines(buf))

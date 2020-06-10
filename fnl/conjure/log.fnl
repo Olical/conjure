@@ -8,6 +8,8 @@
             text conjure.text
             editor conjure.editor}})
 
+(var current-timer-id 0)
+
 (defonce- state
   {:hud {:id nil}})
 
@@ -28,6 +30,14 @@
         (nvim.win_close state.hud.id true)
         (set state.hud.id nil)))))
 
+(defn defer-close-hud []
+  (let [my-id current-timer-id]
+    (when state.hud.id
+      (vim.defer_fn (fn []
+                      (when (= my-id current-timer-id)
+                        (close-hud)))
+                    1000))))
+
 (defn- break-lines [buf]
   (let [break-str (break)]
     (->> (nvim.buf_get_lines buf 0 -1 false)
@@ -39,6 +49,7 @@
 
 (defn- display-hud []
   (when config.log.hud.enabled?
+    (set current-timer-id (+ current-timer-id 1))
     (let [buf (upsert-buf)
           cursor-top-right? (and (> (editor.cursor-left) (editor.percent-width 0.5))
                                  (< (editor.cursor-top) (editor.percent-height 0.5)))
