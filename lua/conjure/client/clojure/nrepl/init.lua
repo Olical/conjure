@@ -69,7 +69,7 @@ do
     local function context0(header)
       local _3_0 = header
       if _3_0 then
-        local _4_0 = string.match(_3_0, "%(%s*ns%s+(.-)%)")
+        local _4_0 = string.match(_3_0, "%(%s*ns%s+([^)]*)")
         if _4_0 then
           local _5_0 = string.gsub(_4_0, "%^:.-%s+", "")
           if _5_0 then

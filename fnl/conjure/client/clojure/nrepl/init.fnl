@@ -14,7 +14,7 @@
 
 (defn context [header]
   (-?> header
-       (string.match "%(%s*ns%s+(.-)%)")
+       (string.match "%(%s*ns%s+([^)]*)")
        (string.gsub "%^:.-%s+" "")
        (string.gsub "%^%b{}%s+" "")
        (str.split "%s+")
