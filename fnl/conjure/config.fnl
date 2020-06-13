@@ -34,7 +34,8 @@
 (def log
   {:hud {:width 0.42
          :height 0.3
-         :enabled? true}
+         :enabled? true
+         :passive-close-delay 0}
    :botright? false
    :break-length 80
    :trim {:at 10000

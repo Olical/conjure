@@ -15,8 +15,8 @@ do
   _0_0 = module_23_0_
 end
 local function _1_(...)
-  _0_0["aniseed/local-fns"] = {require = {a = "conjure.aniseed.core", buffer = "conjure.buffer", client = "conjure.client", config = "conjure.config", editor = "conjure.editor", nvim = "conjure.aniseed.nvim", text = "conjure.text", view = "conjure.aniseed.view"}}
-  return {require("conjure.aniseed.core"), require("conjure.buffer"), require("conjure.client"), require("conjure.config"), require("conjure.editor"), require("conjure.aniseed.nvim"), require("conjure.text"), require("conjure.aniseed.view")}
+  _0_0["aniseed/local-fns"] = {require = {a = "conjure.aniseed.core", buffer = "conjure.buffer", client = "conjure.client", config = "conjure.config", editor = "conjure.editor", nvim = "conjure.aniseed.nvim", text = "conjure.text", timer = "conjure.timer", view = "conjure.aniseed.view"}}
+  return {require("conjure.aniseed.core"), require("conjure.buffer"), require("conjure.client"), require("conjure.config"), require("conjure.editor"), require("conjure.aniseed.nvim"), require("conjure.text"), require("conjure.timer"), require("conjure.aniseed.view")}
 end
 local _2_ = _1_(...)
 local a = _2_[1]
@@ -26,11 +26,12 @@ local config = _2_[4]
 local editor = _2_[5]
 local nvim = _2_[6]
 local text = _2_[7]
-local view = _2_[8]
+local timer = _2_[8]
+local view = _2_[9]
 do local _ = ({nil, _0_0, {{}, nil}})[2] end
 local state = nil
 do
-  local v_23_0_ = (_0_0["aniseed/locals"].state or {hud = {id = nil}})
+  local v_23_0_ = (_0_0["aniseed/locals"].state or {hud = {id = nil, timer = nil}})
   _0_0["aniseed/locals"]["state"] = v_23_0_
   state = v_23_0_
 end
@@ -86,6 +87,35 @@ do
   _0_0["aniseed/locals"]["close-hud"] = v_23_0_
   close_hud = v_23_0_
 end
+local close_hud_passive = nil
+do
+  local v_23_0_ = nil
+  do
+    local v_23_0_0 = nil
+    local function close_hud_passive0()
+      if state.hud.id then
+        local original_timer_id = state.hud["timer-id"]
+        local delay = config.log.hud["passive-close-delay"]
+        if (0 == delay) then
+          return close_hud()
+        else
+          if not a["get-in"](state, {"hud", "timer"}) then
+            local function _3_(t)
+              timer.stop(t)
+              return timer.defer(close_hud, delay)
+            end
+            return a["update-in"](state, {"hud", "timer"}, _3_)
+          end
+        end
+      end
+    end
+    v_23_0_0 = close_hud_passive0
+    _0_0["close-hud-passive"] = v_23_0_0
+    v_23_0_ = v_23_0_0
+  end
+  _0_0["aniseed/locals"]["close-hud-passive"] = v_23_0_
+  close_hud_passive = v_23_0_
+end
 local break_lines = nil
 do
   local v_23_0_ = nil
@@ -108,6 +138,7 @@ do
   local v_23_0_ = nil
   local function display_hud0()
     if config.log.hud["enabled?"] then
+      a["update-in"](state, {"hud", "timer"}, timer.stop)
       local buf = upsert_buf()
       local cursor_top_right_3f = ((editor["cursor-left"]() > editor["percent-width"](0.5)) and (editor["cursor-top"]() < editor["percent-height"](0.5)))
       local last_break = a.last(break_lines(buf))

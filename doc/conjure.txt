@@ -293,6 +293,12 @@ the `g:conjure_config` variable instead, as mention later in this section.
             Should the HUD be displayed at all.
             Default: `true`
 
+`log.hud.passive-close-delay`
+            Delay to introduce (in milliseconds) when closing the HUD
+            passively such as after you move the cursor. Set it to `0` to
+            disable the mechanic entirely and close instantly.
+            Default: `0`
+
 `log.botright?`
             Force the log to always open at the bottom or far right of the
             editor, taking up the full width or height respectively.

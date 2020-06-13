@@ -80,10 +80,10 @@
     (bridge.viml->lua :conjure.mapping :on-filetype {}))
   (nvim.ex.autocmd
     :CursorMoved :*
-    (bridge.viml->lua :conjure.log :defer-close-hud {}))
+    (bridge.viml->lua :conjure.log :close-hud-passive {}))
   (nvim.ex.autocmd
     :CursorMovedI :*
-    (bridge.viml->lua :conjure.log :defer-close-hud {}))
+    (bridge.viml->lua :conjure.log :close-hud-passive {}))
   (nvim.ex.augroup :END)
   (assoc-initial-config))
 

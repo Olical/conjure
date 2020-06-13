@@ -71,7 +71,7 @@ local log = nil
 do
   local v_23_0_ = nil
   do
-    local v_23_0_0 = {["botright?"] = false, ["break-length"] = 80, hud = {["enabled?"] = true, height = 0.29999999999999999, width = 0.41999999999999998}, trim = {at = 10000, to = 6000}}
+    local v_23_0_0 = {["botright?"] = false, ["break-length"] = 80, hud = {["enabled?"] = true, ["passive-close-delay"] = 0, height = 0.29999999999999999, width = 0.41999999999999998}, trim = {at = 10000, to = 6000}}
     _0_0["log"] = v_23_0_0
     v_23_0_ = v_23_0_0
   end

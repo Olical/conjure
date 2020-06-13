@@ -6,12 +6,12 @@
             config conjure.config
             view conjure.aniseed.view
             text conjure.text
-            editor conjure.editor}})
-
-(var current-timer-id 0)
+            editor conjure.editor
+            timer conjure.timer}})
 
 (defonce- state
-  {:hud {:id nil}})
+  {:hud {:id nil
+         :timer nil}})
 
 (defn- break []
   (.. (client.get :comment-prefix)
@@ -30,13 +30,18 @@
         (nvim.win_close state.hud.id true)
         (set state.hud.id nil)))))
 
-(defn defer-close-hud []
-  (let [my-id current-timer-id]
-    (when state.hud.id
-      (vim.defer_fn (fn []
-                      (when (= my-id current-timer-id)
-                        (close-hud)))
-                    1000))))
+(defn close-hud-passive []
+  (when state.hud.id
+    (let [original-timer-id state.hud.timer-id
+          delay config.log.hud.passive-close-delay]
+      (if (= 0 delay)
+        (close-hud)
+        (when (not (a.get-in state [:hud :timer]))
+          (a.update-in
+            state [:hud :timer]
+            (fn [t]
+              (timer.stop t)
+              (timer.defer close-hud delay))))))))
 
 (defn- break-lines [buf]
   (let [break-str (break)]
@@ -49,7 +54,7 @@
 
 (defn- display-hud []
   (when config.log.hud.enabled?
-    (set current-timer-id (+ current-timer-id 1))
+    (a.update-in state [:hud :timer] timer.stop)
     (let [buf (upsert-buf)
           cursor-top-right? (and (> (editor.cursor-left) (editor.percent-width 0.5))
                                  (< (editor.cursor-top) (editor.percent-height 0.5)))
