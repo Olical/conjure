@@ -25,7 +25,7 @@ local config = _2_[3]
 local nu = _2_[4]
 local nvim = _2_[5]
 local str = _2_[6]
-do local _ = ({nil, _0_0, nil})[2] end
+do local _ = ({nil, _0_0, {{}, nil}})[2] end
 local read_range = nil
 do
   local v_23_0_ = nil

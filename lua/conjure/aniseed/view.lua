@@ -20,7 +20,7 @@ local function _1_(...)
 end
 local _2_ = _1_(...)
 local view = _2_[1]
-do local _ = ({nil, _0_0, nil})[2] end
+do local _ = ({nil, _0_0, {{}, nil}})[2] end
 local serialise = nil
 do
   local v_23_0_ = nil

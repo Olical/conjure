@@ -28,7 +28,7 @@ local nvim = _2_[6]
 local str = _2_[7]
 local text = _2_[8]
 local view = _2_[9]
-do local _ = ({nil, _0_0, nil})[2] end
+do local _ = ({nil, _0_0, {{}, nil}})[2] end
 local buf_suffix = nil
 do
   local v_23_0_ = nil

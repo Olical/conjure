@@ -35,7 +35,7 @@ local extract = _2_[6]
 local fs = _2_[7]
 local ll = _2_[8]
 local log = _2_[9]
-do local _ = ({nil, _0_0, nil})[2] end
+do local _ = ({nil, _0_0, {{}, nil}})[2] end
 local require_ns = nil
 do
   local v_23_0_ = nil

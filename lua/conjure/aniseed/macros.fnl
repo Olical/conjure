@@ -3,10 +3,6 @@
 
 ;; Automatically loaded through require-macros for all Aniseed based evaluations.
 
-;; TODO Support requiring of more macros.
-;; TODO Let the publicly defined values over the top of private.
-;; This should fix an issue where some top level defs getting set are being lost.
-
 (local module-sym (gensym))
 
 (fn sorted-each [f x]
@@ -37,6 +33,7 @@
 
         ,(let [aliases []
                vals []
+               effects []
                locals (-?> package.loaded
                            (. (tostring name))
                            (. :aniseed/locals))
@@ -51,14 +48,24 @@
                      current (or (. local-fns action-str) {})]
                  (tset local-fns action-str current)
                  (each [alias module (pairs binds)]
-                   (tset current (tostring alias) (tostring module))))))
+                   (if (= :number (type alias))
+                     (tset current (tostring module) true)
+                     (tset current (tostring alias) (tostring module)))))))
 
            (sorted-each
              (fn [action binds]
                (sorted-each
-                 (fn [alias module]
-                   (table.insert aliases (sym alias))
-                   (table.insert vals `(,(sym action) ,module)))
+                 (fn [alias-or-val val]
+                   (if (= true val)
+
+                     ;; {require-macros [bar]}
+                     (table.insert effects `(,(sym action) ,alias-or-val))
+
+                     ;; {require {foo bar}}
+                     (do
+                       (table.insert aliases (sym alias-or-val))
+                       (table.insert vals `(,(sym action) ,val)))))
+
                  binds))
              local-fns)
 
@@ -69,10 +76,11 @@
                  (table.insert vals `(-> ,module-sym (. :aniseed/locals) (. ,alias))))
                locals))
 
-           `(local ,aliases
-              (do
-                (tset ,module-sym :aniseed/local-fns ,local-fns)
-                ,vals)))]
+           `[,effects
+             (local ,aliases
+               (do
+                 (tset ,module-sym :aniseed/local-fns ,local-fns)
+                 ,vals))])]
        (. 2)))
 
 (fn def- [name value]

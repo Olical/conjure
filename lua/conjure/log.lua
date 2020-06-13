@@ -27,7 +27,7 @@ local editor = _2_[5]
 local nvim = _2_[6]
 local text = _2_[7]
 local view = _2_[8]
-do local _ = ({nil, _0_0, nil})[2] end
+do local _ = ({nil, _0_0, {{}, nil}})[2] end
 local state = nil
 do
   local v_23_0_ = (_0_0["aniseed/locals"].state or {hud = {id = nil}})

@@ -27,7 +27,7 @@ local nvim = _2_[5]
 local server = _2_[6]
 local text = _2_[7]
 local ui = _2_[8]
-do local _ = ({nil, _0_0, nil})[2] end
+do local _ = ({nil, _0_0, {{}, nil}})[2] end
 local buf_suffix = nil
 do
   local v_23_0_ = nil

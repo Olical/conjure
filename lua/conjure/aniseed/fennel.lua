@@ -21,7 +21,7 @@ end
 local _2_ = _1_(...)
 local fennel = _2_[1]
 local nvim = _2_[2]
-do local _ = ({nil, _0_0, nil})[2] end
+do local _ = ({nil, _0_0, {{}, nil}})[2] end
 nvim.ex.let("&runtimepath = &runtimepath")
 fennel["path"] = string.gsub(string.gsub(string.gsub(package.path, "/lua/", "/fnl/"), ".lua;", ".fnl;"), ".lua$", ".fnl")
 return nil

@@ -25,7 +25,7 @@ local log = _2_[3]
 local net = _2_[4]
 local trn = _2_[5]
 local ui = _2_[6]
-do local _ = ({nil, _0_0, nil})[2] end
+do local _ = ({nil, _0_0, {{}, nil}})[2] end
 local state = nil
 do
   local v_23_0_ = (_0_0["aniseed/locals"].state or {conn = nil})

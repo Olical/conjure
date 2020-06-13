@@ -23,7 +23,7 @@ local compile = _2_[1]
 local fennel = _2_[2]
 local fs = _2_[3]
 local nvim = _2_[4]
-do local _ = ({nil, _0_0, nil})[2] end
+do local _ = ({nil, _0_0, {{}, nil}})[2] end
 local str = nil
 do
   local v_23_0_ = nil

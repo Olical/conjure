@@ -19,7 +19,7 @@ local function _1_(...)
   return {}
 end
 local _2_ = _1_(...)
-do local _ = ({nil, _0_0, nil})[2] end
+do local _ = ({nil, _0_0, {{}, nil}})[2] end
 local connection = nil
 do
   local v_23_0_ = nil

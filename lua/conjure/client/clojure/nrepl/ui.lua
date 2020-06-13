@@ -25,7 +25,7 @@ local log = _2_[3]
 local nrepl_state = _2_[4]
 local str = _2_[5]
 local text = _2_[6]
-do local _ = ({nil, _0_0, nil})[2] end
+do local _ = ({nil, _0_0, {{}, nil}})[2] end
 local display = nil
 do
   local v_23_0_ = nil

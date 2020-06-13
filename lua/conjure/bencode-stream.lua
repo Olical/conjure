@@ -21,7 +21,7 @@ end
 local _2_ = _1_(...)
 local a = _2_[1]
 local bencode = _2_[2]
-do local _ = ({nil, _0_0, nil})[2] end
+do local _ = ({nil, _0_0, {{}, nil}})[2] end
 local new = nil
 do
   local v_23_0_ = nil

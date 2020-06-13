@@ -24,7 +24,7 @@ local buffer = _2_[2]
 local config = _2_[3]
 local editor = _2_[4]
 local nvim = _2_[5]
-do local _ = ({nil, _0_0, nil})[2] end
+do local _ = ({nil, _0_0, {{}, nil}})[2] end
 local buf_name = nil
 do
   local v_23_0_ = "conjure-school.fnl"

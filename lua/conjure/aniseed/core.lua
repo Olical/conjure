@@ -20,7 +20,7 @@ local function _1_(...)
 end
 local _2_ = _1_(...)
 local view = _2_[1]
-do local _ = ({nil, _0_0, nil})[2] end
+do local _ = ({nil, _0_0, {{}, nil}})[2] end
 math.randomseed(os.time())
 local rand = nil
 do
@@ -198,6 +198,36 @@ do
   end
   _0_0["aniseed/locals"]["dec"] = v_23_0_
   dec = v_23_0_
+end
+local even_3f = nil
+do
+  local v_23_0_ = nil
+  do
+    local v_23_0_0 = nil
+    local function even_3f0(n)
+      return ((n % 2) == 0)
+    end
+    v_23_0_0 = even_3f0
+    _0_0["even?"] = v_23_0_0
+    v_23_0_ = v_23_0_0
+  end
+  _0_0["aniseed/locals"]["even?"] = v_23_0_
+  even_3f = v_23_0_
+end
+local odd_3f = nil
+do
+  local v_23_0_ = nil
+  do
+    local v_23_0_0 = nil
+    local function odd_3f0(n)
+      return not even_3f(n)
+    end
+    v_23_0_0 = odd_3f0
+    _0_0["odd?"] = v_23_0_0
+    v_23_0_ = v_23_0_0
+  end
+  _0_0["aniseed/locals"]["odd?"] = v_23_0_
+  odd_3f = v_23_0_
 end
 local keys = nil
 do
@@ -722,10 +752,21 @@ do
   local v_23_0_ = nil
   do
     local v_23_0_0 = nil
-    local function assoc0(t, k, v)
+    local function assoc0(t, ...)
+      local _3_ = {...}
+      local k = _3_[1]
+      local v = _3_[2]
+      local xs = {(table.unpack or unpack)(_3_, 3)}
+      local rem = count(xs)
       local t0 = (t or {})
+      if odd_3f(rem) then
+        error("assoc expects even number of arguments after table, found odd number")
+      end
       if not nil_3f(k) then
         t0[k] = v
+      end
+      if (rem > 0) then
+        assoc0(t0, unpack(xs))
       end
       return t0
     end

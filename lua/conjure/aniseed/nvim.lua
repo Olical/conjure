@@ -19,4 +19,4 @@ local function _1_(...)
   return {}
 end
 local _2_ = _1_(...)
-return ({nil, _0_0, nil})[2]
+return ({nil, _0_0, {{}, nil}})[2]

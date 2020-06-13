@@ -21,7 +21,7 @@ end
 local _2_ = _1_(...)
 local compile = _2_[1]
 local nvim = _2_[2]
-do local _ = ({nil, _0_0, nil})[2] end
+do local _ = ({nil, _0_0, {{}, nil}})[2] end
 local config_dir = nil
 do
   local v_23_0_ = nvim.fn.stdpath("config")

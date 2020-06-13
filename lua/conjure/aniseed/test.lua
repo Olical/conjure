@@ -22,7 +22,7 @@ local _2_ = _1_(...)
 local a = _2_[1]
 local nvim = _2_[2]
 local str = _2_[3]
-do local _ = ({nil, _0_0, nil})[2] end
+do local _ = ({nil, _0_0, {{}, nil}})[2] end
 local ok_3f = nil
 do
   local v_23_0_ = nil

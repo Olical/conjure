@@ -30,7 +30,7 @@ local log = _2_[6]
 local net = _2_[7]
 local state = _2_[8]
 local str = _2_[9]
-do local _ = ({nil, _0_0, nil})[2] end
+do local _ = ({nil, _0_0, {{}, nil}})[2] end
 local with_conn_or_warn = nil
 do
   local v_23_0_ = nil
