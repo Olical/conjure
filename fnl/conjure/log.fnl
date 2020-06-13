@@ -23,7 +23,11 @@
 (defn- upsert-buf []
   (buffer.upsert-hidden (log-buf-name)))
 
+(defn clear-close-hud-passive-timer []
+  (a.update-in state [:hud :timer] timer.destroy))
+
 (defn close-hud []
+  (clear-close-hud-passive-timer)
   (when state.hud.id
     (pcall
       (fn []
@@ -37,11 +41,9 @@
       (if (= 0 delay)
         (close-hud)
         (when (not (a.get-in state [:hud :timer]))
-          (a.update-in
+          (a.assoc-in
             state [:hud :timer]
-            (fn [t]
-              (timer.stop t)
-              (timer.defer close-hud delay))))))))
+            (timer.defer close-hud delay)))))))
 
 (defn- break-lines [buf]
   (let [break-str (break)]
@@ -54,7 +56,7 @@
 
 (defn- display-hud []
   (when config.log.hud.enabled?
-    (a.update-in state [:hud :timer] timer.stop)
+    (clear-close-hud-passive-timer)
     (let [buf (upsert-buf)
           cursor-top-right? (and (> (editor.cursor-left) (editor.percent-width 0.5))
                                  (< (editor.cursor-top) (editor.percent-height 0.5)))

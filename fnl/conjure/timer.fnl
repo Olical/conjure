@@ -7,7 +7,8 @@
     (t:start ms 0 (vim.schedule_wrap f))
     t))
 
-(defn stop [t]
+(defn destroy [t]
   (when t
-    (t:stop))
+    (t:stop)
+    (t:close))
   nil)

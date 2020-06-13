@@ -65,12 +65,28 @@ do
   _0_0["aniseed/locals"]["upsert-buf"] = v_23_0_
   upsert_buf = v_23_0_
 end
+local clear_close_hud_passive_timer = nil
+do
+  local v_23_0_ = nil
+  do
+    local v_23_0_0 = nil
+    local function clear_close_hud_passive_timer0()
+      return a["update-in"](state, {"hud", "timer"}, timer.destroy)
+    end
+    v_23_0_0 = clear_close_hud_passive_timer0
+    _0_0["clear-close-hud-passive-timer"] = v_23_0_0
+    v_23_0_ = v_23_0_0
+  end
+  _0_0["aniseed/locals"]["clear-close-hud-passive-timer"] = v_23_0_
+  clear_close_hud_passive_timer = v_23_0_
+end
 local close_hud = nil
 do
   local v_23_0_ = nil
   do
     local v_23_0_0 = nil
     local function close_hud0()
+      clear_close_hud_passive_timer()
       if state.hud.id then
         local function _3_()
           nvim.win_close(state.hud.id, true)
@@ -100,11 +116,7 @@ do
           return close_hud()
         else
           if not a["get-in"](state, {"hud", "timer"}) then
-            local function _3_(t)
-              timer.stop(t)
-              return timer.defer(close_hud, delay)
-            end
-            return a["update-in"](state, {"hud", "timer"}, _3_)
+            return a["assoc-in"](state, {"hud", "timer"}, timer.defer(close_hud, delay))
           end
         end
       end
@@ -138,7 +150,7 @@ do
   local v_23_0_ = nil
   local function display_hud0()
     if config.log.hud["enabled?"] then
-      a["update-in"](state, {"hud", "timer"}, timer.stop)
+      clear_close_hud_passive_timer()
       local buf = upsert_buf()
       local cursor_top_right_3f = ((editor["cursor-left"]() > editor["percent-width"](0.5)) and (editor["cursor-top"]() < editor["percent-height"](0.5)))
       local last_break = a.last(break_lines(buf))

@@ -39,22 +39,23 @@ do
   _0_0["aniseed/locals"]["defer"] = v_23_0_
   defer = v_23_0_
 end
-local stop = nil
+local destroy = nil
 do
   local v_23_0_ = nil
   do
     local v_23_0_0 = nil
-    local function stop0(t)
+    local function destroy0(t)
       if t then
         t:stop()
+        t:close()
       end
       return nil
     end
-    v_23_0_0 = stop0
-    _0_0["stop"] = v_23_0_0
+    v_23_0_0 = destroy0
+    _0_0["destroy"] = v_23_0_0
     v_23_0_ = v_23_0_0
   end
-  _0_0["aniseed/locals"]["stop"] = v_23_0_
-  stop = v_23_0_
+  _0_0["aniseed/locals"]["destroy"] = v_23_0_
+  destroy = v_23_0_
 end
 return nil
