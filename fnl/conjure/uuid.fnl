@@ -22,7 +22,16 @@
            (math.random 8 0xb)))))
 
 (def- pretty-strs
-  ["Blue Lacy" "Queensland Heeler" "Rhod Ridgeback" "Retriever" "Chinese Sharpei" "Black Mouth Cur" "Catahoula" "Staffordshire" "Affenpinscher"
+  ["David Harrigan (@dharrigan)"
+   "Michael Camilleri (@pyrmont)"
+   "Ryan Campbell (@campbellr)"
+   "Chris Badahdah (@djblue)"
+   "Martin Klepsch (@martinklepsch)"
+   "Anthony Khong (@anthony-khong)"
+   "Ryan McCuaig (@rgm)"
+   "Alberto Brealey-Guzman (@mamapitufo)"
+
+   "Blue Lacy" "Queensland Heeler" "Rhod Ridgeback" "Retriever" "Chinese Sharpei" "Black Mouth Cur" "Catahoula" "Staffordshire" "Affenpinscher"
    "Afghan Hound" "Airedale Terrier" "Akita" "Australian Kelpie" "Alaskan Malamute" "English Bulldog" "American Bulldog" "American English Coonhound"
    "American Eskimo Dog (Miniature)" "American Eskimo Dog (Standard)" "American Eskimo Dog (Toy)" "American Foxhound" "American Hairless Terrier"
    "American Staffordshire Terrier" "American Water Spaniel" "Anatolian Shepherd Dog" "Australian Cattle Dog" "Australian Shepherd" "Australian Terrier"
