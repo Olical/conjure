@@ -17,7 +17,7 @@
   (server.send
     (.. opts.code "\n")
     (fn [msg]
-      (let [clean (text.trim-last-newline (text.strip-ansi-codes msg))]
+      (let [clean (text.trim-last-newline msg)]
         (when opts.on-result
           (opts.on-result clean))
         (ui.display (text.split-lines clean))))))

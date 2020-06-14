@@ -39,7 +39,7 @@
 (defn ends-with [str end]
   (or (= end "") (= end (string.sub str (- (a.count end))))))
 
-(defn strip-ansi-codes [s]
+(defn strip-ansi-escape-sequences [s]
   (-> s
       (string.gsub "\x1b%[%d+;%d+;%d+;%d+;%d+m" "")
       (string.gsub "\x1b%[%d+;%d+;%d+;%d+m" "")

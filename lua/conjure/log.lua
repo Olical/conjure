@@ -15,19 +15,20 @@ do
   _0_0 = module_23_0_
 end
 local function _1_(...)
-  _0_0["aniseed/local-fns"] = {require = {a = "conjure.aniseed.core", buffer = "conjure.buffer", client = "conjure.client", config = "conjure.config", editor = "conjure.editor", nvim = "conjure.aniseed.nvim", text = "conjure.text", timer = "conjure.timer", view = "conjure.aniseed.view"}}
-  return {require("conjure.aniseed.core"), require("conjure.buffer"), require("conjure.client"), require("conjure.config"), require("conjure.editor"), require("conjure.aniseed.nvim"), require("conjure.text"), require("conjure.timer"), require("conjure.aniseed.view")}
+  _0_0["aniseed/local-fns"] = {require = {a = "conjure.aniseed.core", buffer = "conjure.buffer", client = "conjure.client", config = "conjure.config", editor = "conjure.editor", nvim = "conjure.aniseed.nvim", str = "conjure.aniseed.string", text = "conjure.text", timer = "conjure.timer", view = "conjure.aniseed.view"}}
+  return {require("conjure.aniseed.core"), require("conjure.buffer"), require("conjure.client"), require("conjure.config"), require("conjure.editor"), require("conjure.aniseed.nvim"), require("conjure.aniseed.string"), require("conjure.text"), require("conjure.timer"), require("conjure.aniseed.view")}
 end
 local _2_ = _1_(...)
 local a = _2_[1]
+local view = _2_[10]
 local buffer = _2_[2]
 local client = _2_[3]
 local config = _2_[4]
 local editor = _2_[5]
 local nvim = _2_[6]
-local text = _2_[7]
-local timer = _2_[8]
-local view = _2_[9]
+local str = _2_[7]
+local text = _2_[8]
+local timer = _2_[9]
 do local _ = ({nil, _0_0, {{}, nil}})[2] end
 local state = nil
 do
@@ -267,34 +268,41 @@ do
   do
     local v_23_0_0 = nil
     local function append0(lines, opts)
-      if not a["empty?"](lines) then
+      local line_count = a.count(lines)
+      if (line_count > 0) then
         local visible_scrolling_log_3f = false
         local buf = upsert_buf()
         local join_first_3f = a.get(opts, "join-first?")
         local lines0 = nil
-        if a.get(opts, "break?") then
-          lines0 = a.concat({_break()}, lines)
-        elseif join_first_3f then
-          lines0 = a.concat({(last_line(buf) .. a.first(lines))}, a.rest(lines))
+        if (line_count <= config.log["strip-ansi-escape-sequences-line-limit"]) then
+          lines0 = a.map(text["strip-ansi-escape-sequences"], lines)
         else
           lines0 = lines
         end
-        local old_lines = nvim.buf_line_count(buf)
-        local _4_
-        if buffer["empty?"](buf) then
-          _4_ = 0
+        local lines1 = nil
+        if a.get(opts, "break?") then
+          lines1 = a.concat({_break()}, lines0)
         elseif join_first_3f then
-          _4_ = -2
+          lines1 = a.concat({(last_line(buf) .. a.first(lines0))}, a.rest(lines0))
         else
-          _4_ = -1
+          lines1 = lines0
         end
-        nvim.buf_set_lines(buf, _4_, -1, false, lines0)
+        local old_lines = nvim.buf_line_count(buf)
+        local _5_
+        if buffer["empty?"](buf) then
+          _5_ = 0
+        elseif join_first_3f then
+          _5_ = -2
+        else
+          _5_ = -1
+        end
+        nvim.buf_set_lines(buf, _5_, -1, false, lines1)
         do
           local new_lines = nvim.buf_line_count(buf)
-          local function _6_(win)
-            local _7_ = nvim.win_get_cursor(win)
-            local row = _7_[1]
-            local col = _7_[2]
+          local function _7_(win)
+            local _8_ = nvim.win_get_cursor(win)
+            local row = _8_[1]
+            local col = _8_[2]
             if ((win ~= state.hud.id) and win_visible_3f(win) and (win_botline(win) >= old_lines)) then
               visible_scrolling_log_3f = true
             end
@@ -302,7 +310,7 @@ do
               return nvim.win_set_cursor(win, {new_lines, 0})
             end
           end
-          with_buf_wins(buf, _6_)
+          with_buf_wins(buf, _7_)
         end
         if (not a.get(opts, "suppress-hud?") and not visible_scrolling_log_3f) then
           display_hud()

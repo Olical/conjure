@@ -1,6 +1,7 @@
 (module conjure.log
   {require {a conjure.aniseed.core
             nvim conjure.aniseed.nvim
+            str conjure.aniseed.string
             buffer conjure.buffer
             client conjure.client
             config conjure.config
@@ -142,50 +143,55 @@
       -2 -1 false)))
 
 (defn append [lines opts]
-  (when (not (a.empty? lines))
-    (var visible-scrolling-log? false)
+  (let [line-count (a.count lines)]
+    (when (> line-count 0)
+      (var visible-scrolling-log? false)
 
-    (let [buf (upsert-buf)
-          join-first? (a.get opts :join-first?)
-          lines (if
-                  (a.get opts :break?)
-                  (a.concat [(break)] lines)
+      (let [buf (upsert-buf)
+            join-first? (a.get opts :join-first?)
+            lines (if (<= line-count
+                          config.log.strip-ansi-escape-sequences-line-limit)
+                    (a.map text.strip-ansi-escape-sequences lines)
+                    lines)
+            lines (if
+                    (a.get opts :break?)
+                    (a.concat [(break)] lines)
 
-                  join-first?
-                  (a.concat
-                    [(.. (last-line buf) (a.first lines))]
-                    (a.rest lines))
+                    join-first?
+                    (a.concat
+                      [(.. (last-line buf) (a.first lines))]
+                      (a.rest lines))
 
-                  lines)
-          old-lines (nvim.buf_line_count buf)]
+                    lines)
+            old-lines (nvim.buf_line_count buf)]
 
-      (nvim.buf_set_lines
-        buf
-        (if
-          (buffer.empty? buf) 0
-          join-first? -2
-          -1)
-        -1 false lines)
-
-      (let [new-lines (nvim.buf_line_count buf)]
-        (with-buf-wins
+        (nvim.buf_set_lines
           buf
-          (fn [win]
-            (let [[row col] (nvim.win_get_cursor win)]
-              (when (and (not= win state.hud.id)
-                         (win-visible? win)
-                         (>= (win-botline win) old-lines))
-                (set visible-scrolling-log? true))
+          (if
+            (buffer.empty? buf) 0
+            join-first? -2
+            -1)
+          -1 false lines)
 
-              (when (= row old-lines)
-                (nvim.win_set_cursor win [new-lines 0]))))))
+        (let [new-lines (nvim.buf_line_count buf)]
+          (with-buf-wins
+            buf
+            (fn [win]
+              (let [[row col] (nvim.win_get_cursor win)]
+                (when (and (not= win state.hud.id)
+                           (win-visible? win)
+                           (>= (win-botline win) old-lines))
+                  (set visible-scrolling-log? true))
 
-      (if (and (not (a.get opts :suppress-hud?))
-               (not visible-scrolling-log?))
-        (display-hud)
-        (close-hud))
+                (when (= row old-lines)
+                  (nvim.win_set_cursor win [new-lines 0]))))))
 
-      (trim buf))))
+        (if (and (not (a.get opts :suppress-hud?))
+                 (not visible-scrolling-log?))
+          (display-hud)
+          (close-hud))
+
+        (trim buf)))))
 
 (defn- create-win [cmd]
   (let [buf (upsert-buf)]

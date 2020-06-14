@@ -39,7 +39,8 @@
    :botright? false
    :break-length 80
    :trim {:at 10000
-          :to 6000}})
+          :to 6000}
+   :strip-ansi-escape-sequences-line-limit 100})
 
 (def extract
   {:context-header-lines 24

@@ -317,6 +317,16 @@ the `g:conjure_config` variable instead, as mention later in this section.
             Trim the log down to this many lines when it gets too long.
             Default: `7000`
 
+`log.strip-ansi-escape-sequences-line-limit`
+            If the chunk of text being appended to the log is less than this
+            many lines in length, strip all ANSI escape sequences from it. If
+            you set this to `0` it'll never apply, you can then use an ANSI
+            escape sequence highlight plugin to display the colours in the
+            buffer.
+            A line limit is used to prevent massive output (which probably
+            doesn't contain escape sequences) from slowing down your log.
+            Default: `100`
+
 `extract.context-header-lines`
             How many lines of the file should be checked for a context
             (namespace name) such as `(module foo.bar)` or `(ns foo.bar)`

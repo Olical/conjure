@@ -68,7 +68,7 @@ do
     local v_23_0_0 = nil
     local function eval_str0(opts)
       local function _3_(msg)
-        local clean = text["trim-last-newline"](text["strip-ansi-codes"](msg))
+        local clean = text["trim-last-newline"](msg)
         if opts["on-result"] then
           opts["on-result"](clean)
         end

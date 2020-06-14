@@ -14,6 +14,8 @@
   [a b]
   (+ a b))
 
+(println "\033[0;31mHello, World!\033[0m")
+
 {:xyz
  [(add 10 20)
   (add 1 2)]}
