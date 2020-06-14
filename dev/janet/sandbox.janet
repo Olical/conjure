@@ -6,6 +6,7 @@
   (+ a b))
 
 (print "Hello, World!")
+(print "\e[32mHello, World!\e[0m")
 (eprint "ohno")
 
 (do
