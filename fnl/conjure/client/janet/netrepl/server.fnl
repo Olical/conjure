@@ -3,6 +3,7 @@
             a conjure.aniseed.core
             net conjure.net
             log conjure.log
+            client conjure.client
             trn conjure.client.janet.netrepl.transport
             config conjure.client.janet.netrepl.config}})
 
@@ -32,6 +33,9 @@
       (display-conn-status :disconnected)
       (a.assoc state :conn nil))))
 
+(defn- dbg [...]
+  (client.with-filetype :janet log.dbg ...))
+
 (defn- handle-message [err chunk]
   (let [conn (a.get state :conn)]
     (if
@@ -40,13 +44,13 @@
       (->> (conn.decode chunk)
            (a.run!
              (fn [msg]
-               (log.dbg "receive" msg)
+               (dbg "receive" msg)
                (let [cb (table.remove (a.get-in state [:conn :queue]))]
                  (when cb
                    (cb msg)))))))))
 
 (defn send [msg cb]
-  (log.dbg "send" msg)
+  (dbg "send" msg)
   (with-conn-or-warn
     (fn [conn]
       (table.insert (a.get-in state [:conn :queue]) 1 (or cb false))

@@ -15,16 +15,17 @@ do
   _0_0 = module_23_0_
 end
 local function _1_(...)
-  _0_0["aniseed/local-fns"] = {require = {a = "conjure.aniseed.core", config = "conjure.client.janet.netrepl.config", log = "conjure.log", net = "conjure.net", trn = "conjure.client.janet.netrepl.transport", ui = "conjure.client.janet.netrepl.ui"}}
-  return {require("conjure.aniseed.core"), require("conjure.client.janet.netrepl.config"), require("conjure.log"), require("conjure.net"), require("conjure.client.janet.netrepl.transport"), require("conjure.client.janet.netrepl.ui")}
+  _0_0["aniseed/local-fns"] = {require = {a = "conjure.aniseed.core", client = "conjure.client", config = "conjure.client.janet.netrepl.config", log = "conjure.log", net = "conjure.net", trn = "conjure.client.janet.netrepl.transport", ui = "conjure.client.janet.netrepl.ui"}}
+  return {require("conjure.aniseed.core"), require("conjure.client"), require("conjure.client.janet.netrepl.config"), require("conjure.log"), require("conjure.net"), require("conjure.client.janet.netrepl.transport"), require("conjure.client.janet.netrepl.ui")}
 end
 local _2_ = _1_(...)
 local a = _2_[1]
-local config = _2_[2]
-local log = _2_[3]
-local net = _2_[4]
-local trn = _2_[5]
-local ui = _2_[6]
+local client = _2_[2]
+local config = _2_[3]
+local log = _2_[4]
+local net = _2_[5]
+local trn = _2_[6]
+local ui = _2_[7]
 do local _ = ({nil, _0_0, {{}, nil}})[2] end
 local state = nil
 do
@@ -89,6 +90,16 @@ do
   _0_0["aniseed/locals"]["disconnect"] = v_23_0_
   disconnect = v_23_0_
 end
+local dbg = nil
+do
+  local v_23_0_ = nil
+  local function dbg0(...)
+    return client["with-filetype"]("janet", log.dbg, ...)
+  end
+  v_23_0_ = dbg0
+  _0_0["aniseed/locals"]["dbg"] = v_23_0_
+  dbg = v_23_0_
+end
 local handle_message = nil
 do
   local v_23_0_ = nil
@@ -100,7 +111,7 @@ do
       return disconnect()
     else
       local function _3_(msg)
-        log.dbg("receive", msg)
+        dbg("receive", msg)
         local cb = table.remove(a["get-in"](state, {"conn", "queue"}))
         if cb then
           return cb(msg)
@@ -119,7 +130,7 @@ do
   do
     local v_23_0_0 = nil
     local function send0(msg, cb)
-      log.dbg("send", msg)
+      dbg("send", msg)
       local function _3_(conn)
         table.insert(a["get-in"](state, {"conn", "queue"}), 1, (cb or false))
         return (conn.sock):write(trn.encode(msg))
