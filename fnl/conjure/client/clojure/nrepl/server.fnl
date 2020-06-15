@@ -4,6 +4,7 @@
             net conjure.net
             extract conjure.extract
             log conjure.log
+            client conjure.client
             str conjure.aniseed.string
             bencode conjure.bencode
             bencode-stream conjure.bencode-stream
@@ -21,12 +22,15 @@
         (when (a.get opts :else)
           (opts.else))))))
 
+(defn- dbg [...]
+  (client.with-filetype :clojure log.dbg ...))
+
 (defn send [msg cb]
   (let [conn (a.get state :conn)]
     (when conn
       (let [msg-id (uuid.v4)]
         (a.assoc msg :id msg-id)
-        (log.dbg "send" msg)
+        (dbg "send" msg)
         (a.assoc-in conn [:msgs msg-id]
                     {:msg msg
                      :cb (or cb (fn []))
@@ -192,7 +196,7 @@
       (->> (bencode-stream.decode-all state.bs chunk)
            (a.run!
              (fn [msg]
-               (log.dbg "receive" msg)
+               (dbg "receive" msg)
                (enrich-status msg)
 
                (when msg.status.need-input

@@ -15,21 +15,22 @@ do
   _0_0 = module_23_0_
 end
 local function _1_(...)
-  _0_0["aniseed/local-fns"] = {require = {["bencode-stream"] = "conjure.bencode-stream", a = "conjure.aniseed.core", bencode = "conjure.bencode", config = "conjure.client.clojure.nrepl.config", extract = "conjure.extract", log = "conjure.log", net = "conjure.net", state = "conjure.client.clojure.nrepl.state", str = "conjure.aniseed.string", ui = "conjure.client.clojure.nrepl.ui", uuid = "conjure.uuid"}}
-  return {require("conjure.aniseed.core"), require("conjure.bencode"), require("conjure.bencode-stream"), require("conjure.client.clojure.nrepl.config"), require("conjure.extract"), require("conjure.log"), require("conjure.net"), require("conjure.client.clojure.nrepl.state"), require("conjure.aniseed.string"), require("conjure.client.clojure.nrepl.ui"), require("conjure.uuid")}
+  _0_0["aniseed/local-fns"] = {require = {["bencode-stream"] = "conjure.bencode-stream", a = "conjure.aniseed.core", bencode = "conjure.bencode", client = "conjure.client", config = "conjure.client.clojure.nrepl.config", extract = "conjure.extract", log = "conjure.log", net = "conjure.net", state = "conjure.client.clojure.nrepl.state", str = "conjure.aniseed.string", ui = "conjure.client.clojure.nrepl.ui", uuid = "conjure.uuid"}}
+  return {require("conjure.aniseed.core"), require("conjure.bencode"), require("conjure.bencode-stream"), require("conjure.client"), require("conjure.client.clojure.nrepl.config"), require("conjure.extract"), require("conjure.log"), require("conjure.net"), require("conjure.client.clojure.nrepl.state"), require("conjure.aniseed.string"), require("conjure.client.clojure.nrepl.ui"), require("conjure.uuid")}
 end
 local _2_ = _1_(...)
 local a = _2_[1]
-local ui = _2_[10]
-local uuid = _2_[11]
+local str = _2_[10]
+local ui = _2_[11]
+local uuid = _2_[12]
 local bencode = _2_[2]
 local bencode_stream = _2_[3]
-local config = _2_[4]
-local extract = _2_[5]
-local log = _2_[6]
-local net = _2_[7]
-local state = _2_[8]
-local str = _2_[9]
+local client = _2_[4]
+local config = _2_[5]
+local extract = _2_[6]
+local log = _2_[7]
+local net = _2_[8]
+local state = _2_[9]
 do local _ = ({nil, _0_0, {{}, nil}})[2] end
 local with_conn_or_warn = nil
 do
@@ -56,6 +57,16 @@ do
   _0_0["aniseed/locals"]["with-conn-or-warn"] = v_23_0_
   with_conn_or_warn = v_23_0_
 end
+local dbg = nil
+do
+  local v_23_0_ = nil
+  local function dbg0(...)
+    return client["with-filetype"]("clojure", log.dbg, ...)
+  end
+  v_23_0_ = dbg0
+  _0_0["aniseed/locals"]["dbg"] = v_23_0_
+  dbg = v_23_0_
+end
 local send = nil
 do
   local v_23_0_ = nil
@@ -66,7 +77,7 @@ do
       if conn then
         local msg_id = uuid.v4()
         a.assoc(msg, "id", msg_id)
-        log.dbg("send", msg)
+        dbg("send", msg)
         local function _3_()
         end
         a["assoc-in"](conn, {"msgs", msg_id}, {["sent-at"] = os.time(), cb = (cb or _3_), msg = msg})
@@ -407,7 +418,7 @@ do
       return disconnect()
     else
       local function _3_(msg)
-        log.dbg("receive", msg)
+        dbg("receive", msg)
         enrich_status(msg)
         if msg.status["need-input"] then
           local function _4_()
