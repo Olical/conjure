@@ -13,6 +13,7 @@ The core features of Conjure are language agnostic (although it's targeted at Li
  * [ ] https://racket-lang.org/[Racket]
  * [ ] http://lfe.io/[Lisp Flavoured Erlang]
  * [ ] Scheme (Chicken, Chez or Guile? All?)
+ * [ ] Common Lisp
  * [ ] Non-Lisp languages and beyond! (when Neovim has tree-sitter)
 
 == User experience
