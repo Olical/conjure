@@ -142,7 +142,9 @@ do
       if cb then
         return cb(resp)
       else
-        return ui["display-result"](resp, opts)
+        if not opts["passive?"] then
+          return ui["display-result"](resp, opts)
+        end
       end
     end
     return _3_

@@ -44,9 +44,10 @@
                          (str.join "\n" (a.map view.serialise results)))
                        (a.first results))
           result-lines (str.split result-str "\n")] 
-      (display (if ok?
-                 result-lines
-                 (a.map #(.. "; " $1) result-lines)))
+      (when (not opts.passive?)
+        (display (if ok?
+                   result-lines
+                   (a.map #(.. "; " $1) result-lines))))
       (when opts.on-result
         (opts.on-result result-str)))))
 

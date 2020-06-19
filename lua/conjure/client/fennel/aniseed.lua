@@ -136,17 +136,19 @@ do
           result_str = a.first(results)
         end
         local result_lines = str.split(result_str, "\n")
-        local function _5_()
-          if ok_3f then
-            return result_lines
-          else
-            local function _5_(_241)
-              return ("; " .. _241)
+        if not opts["passive?"] then
+          local function _5_()
+            if ok_3f then
+              return result_lines
+            else
+              local function _5_(_241)
+                return ("; " .. _241)
+              end
+              return a.map(_5_, result_lines)
             end
-            return a.map(_5_, result_lines)
           end
+          display(_5_())
         end
-        display(_5_())
         if opts["on-result"] then
           return opts["on-result"](result_str)
         end

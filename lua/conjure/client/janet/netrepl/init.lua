@@ -72,7 +72,9 @@ do
         if opts["on-result"] then
           opts["on-result"](clean)
         end
-        return ui.display(text["split-lines"](clean))
+        if not opts["passive?"] then
+          return ui.display(text["split-lines"](clean))
+        end
       end
       return server.send((opts.code .. "\n"), _3_)
     end

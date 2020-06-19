@@ -20,7 +20,8 @@
       (let [clean (text.trim-last-newline msg)]
         (when opts.on-result
           (opts.on-result clean))
-        (ui.display (text.split-lines clean))))))
+        (when (not opts.passive?)
+          (ui.display (text.split-lines clean)))))))
 
 (defn doc-str [opts]
   (eval-str (a.update opts :code #(.. "(doc " $1 ")"))))

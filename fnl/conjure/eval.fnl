@@ -56,12 +56,15 @@
                          :file-path (extract.file-path)})]
       (assoc-context opts)
       (set opts.preview (preview opts))
-      (display-request opts)
+      (when (not opts.passive?)
+        (display-request opts))
       (client.call f-name opts))))
 
-(defn- eval-str [opts]
+(defn eval-str [opts]
   ((client-exec-fn :eval :eval-str)
-   (with-last-result-hook opts))
+   (if opts.passive?
+     opts
+     (with-last-result-hook opts)))
   nil)
 
 (def- doc-str (client-exec-fn :doc :doc-str))

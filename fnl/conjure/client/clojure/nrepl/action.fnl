@@ -59,7 +59,8 @@
     (let [cb (a.get opts :cb)]
       (if cb
         (cb resp)
-        (ui.display-result resp opts)))))
+        (when (not opts.passive?)
+          (ui.display-result resp opts))))))
 
 (defn eval-str [opts]
   (server.with-conn-or-warn

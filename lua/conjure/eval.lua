@@ -115,7 +115,9 @@ do
       local opts0 = a.merge(opts, base_opts, {["file-path"] = extract["file-path"](), action = action})
       assoc_context(opts0)
       opts0.preview = preview(opts0)
-      display_request(opts0)
+      if not opts0["passive?"] then
+        display_request(opts0)
+      end
       return client.call(f_name, opts0)
     end
     return _3_
@@ -127,11 +129,23 @@ end
 local eval_str = nil
 do
   local v_23_0_ = nil
-  local function eval_str0(opts)
-    client_exec_fn("eval", "eval-str")(with_last_result_hook(opts))
-    return nil
+  do
+    local v_23_0_0 = nil
+    local function eval_str0(opts)
+      local function _3_()
+        if opts["passive?"] then
+          return opts
+        else
+          return with_last_result_hook(opts)
+        end
+      end
+      client_exec_fn("eval", "eval-str")(_3_())
+      return nil
+    end
+    v_23_0_0 = eval_str0
+    _0_0["eval-str"] = v_23_0_0
+    v_23_0_ = v_23_0_0
   end
-  v_23_0_ = eval_str0
   _0_0["aniseed/locals"]["eval-str"] = v_23_0_
   eval_str = v_23_0_
 end
