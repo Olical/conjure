@@ -23,13 +23,26 @@ local a = _2_[1]
 local config = _2_[2]
 local nvim = _2_[3]
 do local _ = ({nil, _0_0, {{}, nil}})[2] end
+local env = nil
+do
+  local v_23_0_ = nil
+  local function env0(k)
+    local v = nvim.fn.getenv(k)
+    if (a["string?"](v) and not a["empty?"](v)) then
+      return v
+    end
+  end
+  v_23_0_ = env0
+  _0_0["aniseed/locals"]["env"] = v_23_0_
+  env = v_23_0_
+end
 local config_dir = nil
 do
   local v_23_0_ = nil
   do
     local v_23_0_0 = nil
     local function config_dir0()
-      return ((config.env("XDG_CONFIG_HOME") or (config.env("HOME") .. "/.config")) .. "/conjure")
+      return ((env("XDG_CONFIG_HOME") or (env("HOME") .. "/.config")) .. "/conjure")
     end
     v_23_0_0 = config_dir0
     _0_0["config-dir"] = v_23_0_0

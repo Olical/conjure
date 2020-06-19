@@ -54,6 +54,7 @@
 (defn filetypes []
   (a.keys clients))
 
+;; TODO Just move into conjure.client with a config.get-in
 (defn filetype->module-name [filetype]
   (. clients filetype))
 
@@ -83,8 +84,3 @@
       (require :conjure.config))
     path
     val))
-
-(defn env [k]
-  (let [v (nvim.fn.getenv k)]
-    (when (and (a.string? v) (not (a.empty? v)))
-      v)))

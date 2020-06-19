@@ -62,6 +62,7 @@
           opts :val
           (fennel.eval val))))))
 
+;; TODO Kill this.
 (defn- assoc-initial-config []
   (when nvim.g.conjure_config
     (-?>> nvim.g.conjure_config
@@ -123,6 +124,7 @@
     :conjure.mapping :eval-ranged-command
     {:args "<line1>, <line2>, <q-args>"}))
 
+;; TODO Add deprecation warning, map to the new system.
 (nvim.ex.command_
   "-nargs=+ ConjureConfig"
   (bridge.viml->lua

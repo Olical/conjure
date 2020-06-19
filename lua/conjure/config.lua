@@ -200,22 +200,4 @@ do
   _0_0["aniseed/locals"]["assoc"] = v_23_0_
   assoc = v_23_0_
 end
-local env = nil
-do
-  local v_23_0_ = nil
-  do
-    local v_23_0_0 = nil
-    local function env0(k)
-      local v = nvim.fn.getenv(k)
-      if (a["string?"](v) and not a["empty?"](v)) then
-        return v
-      end
-    end
-    v_23_0_0 = env0
-    _0_0["env"] = v_23_0_0
-    v_23_0_ = v_23_0_0
-  end
-  _0_0["aniseed/locals"]["env"] = v_23_0_
-  env = v_23_0_
-end
 return nil
