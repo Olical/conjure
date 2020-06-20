@@ -7,7 +7,7 @@
 ;; TODO Transition clients to client and mappings to mapping.
 
 (defn ks->var [ks]
-  (.. "conjure_" (str.join "_" ks)))
+  (.. "conjure#" (str.join "#" ks)))
 
 (defn get-in [ks]
   (let [v (a.get nvim.g (ks->var ks))]
@@ -53,42 +53,42 @@
     {:debug false
 
      :eval
-     {:result-register "c"}
+     {:result_register "c"}
 
      :mapping
      {:prefix "<localleader>"
-      :log-split "ls"
-      :log-vsplit "lv"
-      :log-tab "lt"
-      :log-close-visible "lq"
-      :eval-current-form "ee"
-      :eval-root-form "er"
-      :eval-replace-form "e!"
-      :eval-marked-form "em"
-      :eval-word "ew"
-      :eval-file "ef"
-      :eval-buf "eb"
-      :eval-visual "E"
-      :eval-motion "E"
-      :doc-word ["K"]
-      :def-word ["gd"]}
+      :log_split "ls"
+      :log_vsplit "lv"
+      :log_tab "lt"
+      :log_close_visible "lq"
+      :eval_current_form "ee"
+      :eval_root_form "er"
+      :eval_replace_form "e!"
+      :eval_marked_form "em"
+      :eval_word "ew"
+      :eval_file "ef"
+      :eval_buf "eb"
+      :eval_visual "E"
+      :eval_motion "E"
+      :doc_word ["K"]
+      :def_word ["gd"]}
 
      :log
      {:hud {:width 0.42
             :height 0.3
             :enabled true
-            :passive-close-delay 0}
+            :passive_close_delay 0}
       :botright false
-      :break-length 80
+      :break_length 80
       :trim {:at 10000
              :to 6000}
-      :strip-ansi-escape-sequences-line-limit 100}
+      :strip_ansi_escape_sequences_line_limit 100}
 
      :extract
-     {:context-header-lines 24
-      :form-pairs [["(" ")"]
+     {:context_header_lines 24
+      :form_pairs [["(" ")"]
                    ["{" "}"]
                    ["[" "]" true]]}
 
      :preview
-     {:sample-limit 0.3}}))
+     {:sample_limit 0.3}}))

@@ -29,7 +29,7 @@ do
   do
     local v_23_0_0 = nil
     local function ks__3evar0(ks)
-      return ("conjure_" .. str.join("_", ks))
+      return ("conjure#" .. str.join("#", ks))
     end
     v_23_0_0 = ks__3evar0
     _0_0["ks->var"] = v_23_0_0
@@ -113,7 +113,7 @@ do
     local v_23_0_0 = nil
     local function init0()
       assoc_in({"client"}, {clojure = "conjure.client.clojure.nrepl", fennel = "conjure.client.fennel.aniseed", janet = "conjure.client.janet.netrepl"})
-      return merge({debug = false, eval = {["result-register"] = "c"}, extract = {["context-header-lines"] = 24, ["form-pairs"] = {{"(", ")"}, {"{", "}"}, {"[", "]", true}}}, log = {["break-length"] = 80, ["strip-ansi-escape-sequences-line-limit"] = 100, botright = false, hud = {["passive-close-delay"] = 0, enabled = true, height = 0.29999999999999999, width = 0.41999999999999998}, trim = {at = 10000, to = 6000}}, mapping = {["def-word"] = {"gd"}, ["doc-word"] = {"K"}, ["eval-buf"] = "eb", ["eval-current-form"] = "ee", ["eval-file"] = "ef", ["eval-marked-form"] = "em", ["eval-motion"] = "E", ["eval-replace-form"] = "e!", ["eval-root-form"] = "er", ["eval-visual"] = "E", ["eval-word"] = "ew", ["log-close-visible"] = "lq", ["log-split"] = "ls", ["log-tab"] = "lt", ["log-vsplit"] = "lv", prefix = "<localleader>"}, preview = {["sample-limit"] = 0.29999999999999999}})
+      return merge({debug = false, eval = {result_register = "c"}, extract = {context_header_lines = 24, form_pairs = {{"(", ")"}, {"{", "}"}, {"[", "]", true}}}, log = {botright = false, break_length = 80, hud = {enabled = true, height = 0.29999999999999999, passive_close_delay = 0, width = 0.41999999999999998}, strip_ansi_escape_sequences_line_limit = 100, trim = {at = 10000, to = 6000}}, mapping = {def_word = {"gd"}, doc_word = {"K"}, eval_buf = "eb", eval_current_form = "ee", eval_file = "ef", eval_marked_form = "em", eval_motion = "E", eval_replace_form = "e!", eval_root_form = "er", eval_visual = "E", eval_word = "ew", log_close_visible = "lq", log_split = "ls", log_tab = "lt", log_vsplit = "lv", prefix = "<localleader>"}, preview = {sample_limit = 0.29999999999999999}})
     end
     v_23_0_0 = init0
     _0_0["init"] = v_23_0_0
