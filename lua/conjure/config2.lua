@@ -26,15 +26,10 @@ do local _ = ({nil, _0_0, {{}, nil}})[2] end
 local ks__3evar = nil
 do
   local v_23_0_ = nil
-  do
-    local v_23_0_0 = nil
-    local function ks__3evar0(ks)
-      return ("conjure#" .. str.join("#", ks))
-    end
-    v_23_0_0 = ks__3evar0
-    _0_0["ks->var"] = v_23_0_0
-    v_23_0_ = v_23_0_0
+  local function ks__3evar0(ks)
+    return ("conjure#" .. str.join("#", ks))
   end
+  v_23_0_ = ks__3evar0
   _0_0["aniseed/locals"]["ks->var"] = v_23_0_
   ks__3evar = v_23_0_
 end
@@ -57,6 +52,21 @@ do
   end
   _0_0["aniseed/locals"]["get-in"] = v_23_0_
   get_in = v_23_0_
+end
+local filetypes = nil
+do
+  local v_23_0_ = nil
+  do
+    local v_23_0_0 = nil
+    local function filetypes0()
+      return a.keys(get_in({"filetype_client"}))
+    end
+    v_23_0_0 = filetypes0
+    _0_0["filetypes"] = v_23_0_0
+    v_23_0_ = v_23_0_0
+  end
+  _0_0["aniseed/locals"]["filetypes"] = v_23_0_
+  filetypes = v_23_0_
 end
 local get_in_fn = nil
 do

@@ -57,6 +57,7 @@
 
 ;; TODO Delete.
 (defn config-command [target ...]
+  (print "DEPRECATED: ConjureConfig has been replaced by `let g:conjure#...` - this method will stop working soon.")
   (let [opts (parse-config-target target)
         current (old-config.get opts)
         val (str.join [...])]

@@ -124,6 +124,7 @@ do
   do
     local v_23_0_0 = nil
     local function config_command0(target, ...)
+      print("DEPRECATED: ConjureConfig has been replaced by `let g:conjure#...` - this method will stop working soon.")
       local opts = parse_config_target(target)
       local current = old_config.get(opts)
       local val = str.join({...})

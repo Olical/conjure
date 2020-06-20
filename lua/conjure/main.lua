@@ -15,13 +15,12 @@ do
   _0_0 = module_23_0_
 end
 local function _1_(...)
-  _0_0["aniseed/local-fns"] = {require = {config = "conjure.config", config2 = "conjure.config2", mapping = "conjure.mapping"}}
-  return {require("conjure.config"), require("conjure.config2"), require("conjure.mapping")}
+  _0_0["aniseed/local-fns"] = {require = {config = "conjure.config2", mapping = "conjure.mapping"}}
+  return {require("conjure.config2"), require("conjure.mapping")}
 end
 local _2_ = _1_(...)
 local config = _2_[1]
-local config2 = _2_[2]
-local mapping = _2_[3]
+local mapping = _2_[2]
 do local _ = ({nil, _0_0, {{}, nil}})[2] end
 local main = nil
 do

@@ -1,86 +1,30 @@
 (module conjure.config
   {require {nvim conjure.aniseed.nvim
             a conjure.aniseed.core
-            str conjure.aniseed.string}})
+            str conjure.aniseed.string
+            config conjure.config2}})
 
-(def debug? false)
+;; TODO Delete this module since it's just a shim.
 
-(def clients
-  {:fennel :conjure.client.fennel.aniseed
-   :clojure :conjure.client.clojure.nrepl
-   :janet :conjure.client.janet.netrepl})
+(defn- old->new-key [k]
+  (-> k
+      (string.gsub "^mappings$" "mapping")
+      (string.gsub "^clients" "filetype_client")
+      (string.gsub "%?$" "")
+      (string.gsub "-" "_")))
 
-(def eval
-  {:result-register "c"})
-
-(def mappings
-  {:prefix "<localleader>"
-   :log-split "ls"
-   :log-vsplit "lv"
-   :log-tab "lt"
-   :log-close-visible "lq"
-   :eval-current-form "ee"
-   :eval-root-form "er"
-   :eval-replace-form "e!"
-   :eval-marked-form "em"
-   :eval-word "ew"
-   :eval-file "ef"
-   :eval-buf "eb"
-   :eval-visual "E"
-   :eval-motion "E"
-   :doc-word ["K"]
-   :def-word ["gd"]})
-
-(def log
-  {:hud {:width 0.42
-         :height 0.3
-         :enabled? true
-         :passive-close-delay 0}
-   :botright? false
-   :break-length 80
-   :trim {:at 10000
-          :to 6000}
-   :strip-ansi-escape-sequences-line-limit 100})
-
-(def extract
-  {:context-header-lines 24
-   :form-pairs [["(" ")"]
-                ["{" "}"]
-                ["[" "]" true]]})
-
-(def preview
-  {:sample-limit 0.3})
-
-(defn filetypes []
-  (a.keys clients))
-
-;; TODO Just move into conjure.client with a config.get-in
-(defn filetype->module-name [filetype]
-  (. clients filetype))
-
-(defn- require-client [suffix]
-  "Requires a client module, will try with a 'conjure.client.' prefix first
-  then unprefixed. This allows internal and external modules to work."
-  (let [attempts [(.. "conjure.client." suffix) suffix]]
-    (or (a.some
-          (fn [name]
-            (let [(ok? mod-or-err) (pcall #(require name))]
-              (when ok?
-                mod-or-err)))
-          attempts)
-        (error (.. "No Conjure client found, attempted: " (str.join ", " attempts))))))
+(defn- old->new-client-ks [client]
+  (when client
+    (a.concat [:client] (str.split client "%."))))
 
 (defn get [{: client : path}]
-  (a.get-in
-    (if client
-      (a.get (require-client client) :config)
-      (require :conjure.config))
-    path))
+  (print "DEPRECATED: Get config through g:conjure#..., this approach will stop working soon.")
+  (let [client-ks (old->new-client-ks client)
+        ks (a.map old->new-key path)]
+    (config.get-in (a.concat client-ks ks))))
 
 (defn assoc [{: client : path : val}]
-  (a.assoc-in
-    (if client
-      (a.get (require-client client) :config)
-      (require :conjure.config))
-    path
-    val))
+  (print "DEPRECATED: Set config through g:conjure#..., this approach will stop working soon.")
+  (let [client-ks (old->new-client-ks client)
+        ks (a.map old->new-key path)]
+    (config.assoc-in (a.concat client-ks ks) val)))

@@ -3,10 +3,7 @@
             a conjure.aniseed.core
             str conjure.aniseed.string}})
 
-;; TODO Create shim + warning for g:conjure_config and :ConjureConfig.
-;; TODO Transition clients to client and mappings to mapping.
-
-(defn ks->var [ks]
+(defn- ks->var [ks]
   (.. "conjure#" (str.join "#" ks)))
 
 (defn get-in [ks]
@@ -16,6 +13,9 @@
              (a.get v vim.val_idx))
       (a.get v vim.val_idx)
       v)))
+
+(defn filetypes []
+  (a.keys (get-in [:filetype_client])))
 
 (defn get-in-fn [prefix-ks]
   (fn [ks]
