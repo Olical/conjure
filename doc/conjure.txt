@@ -410,6 +410,12 @@ tweaked with configuration. It will attempt to trim to a known good break
 point so as to not cut a large data structure or string in half resulting in
 broken highlighting in the rest of the log buffer.
 
+Note: The HUD may be unreadable if your theme defines odd colours for the
+`Pmenu` highlight group. You can set a different background colour by theming
+`NormalFloat` or `Pmenu` with something like the following.
+>
+  :highlight NormalFloat ctermbg=black guibg=black
+
 ==============================================================================
 CLIENTS                                                      *conjure-clients*
 
