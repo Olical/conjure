@@ -23,7 +23,7 @@ internal copy by default (`conjure.aniseed.*`), you can use your globally
 installed Aniseed version by setting the following:
 >
     " Replaces the default "conjure.aniseed." value.
-    :ConjureConfig fennel.aniseed/aniseed-module-prefix "aniseed."
+    :let g:conjure#client#fennel#aniseed#aniseed_module_prefix = "aniseed."
 <
  * https://github.com/bakpakin/Fennel
  * https://github.com/bakpakin/fennel.vim
@@ -75,7 +75,7 @@ CONFIGURATION                    *conjure-client-fennel-aniseed-configuration*
 
 All configuration can be set as described in |conjure-configuration|.
 
-`fennel.aniseed/aniseed-module-prefix`
+`g:conjure#client#fennel#aniseed#aniseed_module_prefix`
             Prefix to put in front of all Aniseed modules Conjure relies on.
             This is set to use Conjure's internal copy of Aniseed by default
             but you can set it to `"aniseed."` to use your globally installed
@@ -83,18 +83,18 @@ All configuration can be set as described in |conjure-configuration|.
             within your project.
             Default: `"conjure.aniseed."`
 
-`fennel.aniseed/use-metadata?`
+`g:conjure#client#fennel#aniseed#use_metadata`
             Enables metadata during evaluation which can provide some
             documentation lookup with Conjure's documentation mapping.
             Will incur a slight performance cost, but that's okay since
             Conjure is intended to be used during development.
             Default: `true`
 
-`fennel.aniseed/mappings.run-buf-tests`
+`g:conjure#client#fennel#aniseed#mapping#run_buf_tests`
             Run all tests within your current module.
             Default: `"tt"`
 
-`fennel.aniseed/mappings.run-all-tests`
+`g:conjure#client#fennel#aniseed#mapping#run_all_tests`
             Run all loaded tests.
             Default: `"ta"`
 

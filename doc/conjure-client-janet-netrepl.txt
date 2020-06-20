@@ -54,25 +54,25 @@ CONFIGURATION                     *conjure-client-janet-netrepl-configuration*
 
 All configuration can be set as described in |conjure-configuration|.
 
-`janet.netrepl/connection.default-host`
+`g:conjure#client#janet#netrepl#connection#default_host`
             Host to use when connecting by default. Same as the default
             `spork/netrepl` uses.
             Default: `"127.0.0.1"`
 
-`janet.netrepl/connection.default-port`
+`g:conjure#client#janet#netrepl#connection#default_port`
             Port to use when connecting by default. Same as the default
             `spork/netrepl` uses.
             Default: `"9365"`
 
-`janet.netrepl/mappings.connect`
+`g:conjure#client#janet#netrepl#mapping#connect`
             Connect to a running netrepl using the default host and port.
             Default: `"cc"`
 
-`janet.netrepl/mappings.disconnect`
+`g:conjure#client#janet#netrepl#mapping#disconnect`
             Disconnect from the current netrepl.
             Default: `"cd"`
 
-`janet.netrepl/debug?`
+`g:conjure#client#janet#netrepl#debug`
             Display all sent and received netrepl messages.
             Default: `false`
 

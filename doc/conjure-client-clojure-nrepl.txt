@@ -124,12 +124,12 @@ CONFIGURATION                     *conjure-client-clojure-nrepl-configuration*
 
 All configuration can be set as described in |conjure-configuration|.
 
-`clojure.nrepl/connection.default-host`
+`g:conjure#client#clojure#nrepl#connection#default_host`
             When connecting to port files or via `:ConjureConnect` this is the
             default host to use.
             Default: `"localhost"`
 
-`clojure.nrepl/connection.port-files`
+`g:conjure#client#clojure#nrepl#connection#port_files`
             List of file paths to check when starting up or hitting
             `<localleader>cf` (by default). They're checked in order, the
             first file to exist has it's contents parsed as a number.
@@ -140,135 +140,135 @@ All configuration can be set as described in |conjure-configuration|.
             file in there to always have a default port to attempt.
             Default: `[".nrepl-port" ".shadow-cljs/nrepl.port"]`
 
-`clojure.nrepl/eval.pretty-print?`
+`g:conjure#client#clojure#nrepl#eval#pretty_print`
             Should results be pretty printed by the nREPL server.
             Relies on `clojure.pprint/write`.
             Default: `true`
 
-`clojure.nrepl/eval.auto-require?`
+`g:conjure#client#clojure#nrepl#eval#auto_require`
             Automatically require the namespace of any new buffer you open, or
             your current buffer after connection. This ensures buffers you're
             editing are loaded. Can cause side effects you weren't expecting
             if you have side effects at the top level of your namespace.
             Default: `true`
 
-`clojure.nrepl/debug?`
+`g:conjure#client#clojure#nrepl#debug`
             Should the underlying nREPL messages sent and received by Conjure
             be shown in the log buffer.
             Default: `false`
 
-`clojure.nrepl/interrupt.sample-limit`
+`g:conjure#client#clojure#nrepl#interrupt#sample_limit`
             How many characters to show of the code you just interrupted as a
             preview in the log. The value is based on a percentage of the
             width of the full editor.
             Default: `0.3`
 
-`clojure.nrepl/refresh.after`
+`g:conjure#client#clojure#nrepl#refresh#after`
             The namespace-qualified name of a zero-arity function to call
             after reloading.
             Default: `nil`
 
-`clojure.nrepl/refresh.before`
+`g:conjure#client#clojure#nrepl#refresh#before`
             The namespace-qualified name of a zero-arity function to call
             before reloading.
             Default: `nil`
 
-`clojure.nrepl/refresh.dirs`
+`g:conjure#client#clojure#nrepl#refresh#dirs`
             List of directories to scan. If no directories given, defaults to
             all directories on the classpath.
             Default: `nil`
 
-`clojure.nrepl/mappings.disconnect`
+`g:conjure#client#clojure#nrepl#mapping#disconnect`
             Disconnect from the current nREPL server.
             Default: `cd`
 
-`clojure.nrepl/mappings.connect-port-file`
+`g:conjure#client#clojure#nrepl#mapping#connect_port_file`
             Connect to a local server via a port file.
             Default: `cf`
 
-`clojure.nrepl/mappings.interrupt`
+`g:conjure#client#clojure#nrepl#mapping#interrupt`
             Interrupt an evaluation.
             Default: `ei`
 
-`clojure.nrepl/mappings.last-exception`
+`g:conjure#client#clojure#nrepl#mapping#last_exception`
             View the last exception.
             Default: `ve`
 
-`clojure.nrepl/mappings.result-1`
+`g:conjure#client#clojure#nrepl#mapping#result_1`
             View the most recent result.
             Default: `v1`
 
-`clojure.nrepl/mappings.result-2`
+`g:conjure#client#clojure#nrepl#mapping#result_2`
             View the 2nd most recent result.
             Default: `v2`
 
-`clojure.nrepl/mappings.result-3`
+`g:conjure#client#clojure#nrepl#mapping#result_3`
             View the 3rd most recent result.
             Default: `v3`
 
-`clojure.nrepl/mappings.view-source`
+`g:conjure#client#clojure#nrepl#mapping#view_source`
             View the source of the symbol under the cursor.
             Default: `vs`
 
-`clojure.nrepl/mappings.session-clone`
+`g:conjure#client#clojure#nrepl#mapping#session_clone`
             Clone the current session.
             Default: `sc`
 
-`clojure.nrepl/mappings.session-fresh`
+`g:conjure#client#clojure#nrepl#mapping#session_fresh`
             Create a fresh session.
             Default: `sf`
 
-`clojure.nrepl/mappings.session-close`
+`g:conjure#client#clojure#nrepl#mapping#session_close`
             Close the current session.
             Default: `sq`
 
-`clojure.nrepl/mappings.session-close-all`
+`g:conjure#client#clojure#nrepl#mapping#session_close_all`
             Close all sessions.
             Default: `sQ`
 
-`clojure.nrepl/mappings.session-list`
+`g:conjure#client#clojure#nrepl#mapping#session_list`
             List all current sessions.
             Default: `sl`
 
-`clojure.nrepl/mappings.session-next`
+`g:conjure#client#clojure#nrepl#mapping#session_next`
             Assume the next session in the list.
             Default: `sn`
 
-`clojure.nrepl/mappings.session-prev`
+`g:conjure#client#clojure#nrepl#mapping#session_prev`
             Assume the previous session in the list.
             Default: `sp`
 
-`clojure.nrepl/mappings.session-select`
+`g:conjure#client#clojure#nrepl#mapping#session_select`
             Select a session from the list with an interactive prompt.
             Default: `ss`
 
-`clojure.nrepl/mappings.run-all-tests`
+`g:conjure#client#clojure#nrepl#mapping#run_all_tests`
             Run all loaded tests.
             Default: `ta`
 
-`clojure.nrepl/mappings.run-current-ns-tests`
+`g:conjure#client#clojure#nrepl#mapping#run_current_ns_tests`
             Run all tests within the current namespace.
             Default: `tn`
 
-`clojure.nrepl/mappings.run-alternate-ns-tests`
+`g:conjure#client#clojure#nrepl#mapping#run_alternate_ns_tests`
             Run all tests within the alternate namespace. Executing in
             `foo.bar` would test `foo.bar-test` and the other way around.
             Default: `tN`
 
-`clojure.nrepl/mappings.run-current-test`
+`g:conjure#client#clojure#nrepl#mapping#run_current_test`
             Run the test under the cursor, can be used from anywhere within
             the form.
             Default: `tc`
 
-`clojure.nrepl/mappings.refresh-changed`
+`g:conjure#client#clojure#nrepl#mapping#refresh_changed`
             Refresh changed namespaces.
             Default: `rr`
 
-`clojure.nrepl/mappings.refresh-all`
+`g:conjure#client#clojure#nrepl#mapping#refresh_all`
             Refresh all namespaces.
             Default: `ra`
 
-`clojure.nrepl/mappings.refresh-clear`
+`g:conjure#client#clojure#nrepl#mapping#refresh_clear`
             Clear the namespace refresh cache.
             Default: `rc`
 

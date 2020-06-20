@@ -60,32 +60,6 @@ I've also included some commands since they're related to the mappings.
                          `:%ConjureEval` would evaluate the entire buffer,
                          this also works with visual selections.
 
-:ConjureConfig [args]    Displays or sets a configuration value with an
-                         optional language client prefix. The values are
-                         actual values, not strings. If you want to set
-                         something to a string it must be "double quoted".
-                         This is so that you can set booleans, lists and
-                         numbers where required. The value you're setting is
-                         actually parsed as Fennel code, this is almost
-                         identical to Clojure data structure syntax.
-                          - `:ConjureConfig mappings.prefix`
-                              Show the current mapping prefix.
-                          - `:ConjureConfig mappings.prefix "<leader>"`
-                              Set the mapping prefix.
-                          - `:ConjureConfig clojure.nrepl/mappings.interrupt`
-                              Show a language specific configuration value.
-                          - `:ConjureConfig clojure.nrepl/debug? true`
-                              Set a language specific configuration value.
-                          - `:ConjureConfig some.other.module/magic? true`
-                              Set a 3rd party language specific configuration
-                              value. The previous example's `clojure.nrepl` is
-                              actually expanded to
-                              `conjure.client.clojure.nrepl`, if a module
-                              isn't found within `conjure.client.*` though
-                              it'll look further afield at 3rd party modules.
-                        If you're lazy loading Conjure you may want to define
-                        your configuration ahead of time with the
-                        `g:conjure_config` variable (|conjure-configuration|).
 
 <localleader>ls          Open the log buffer in a new horizontal split window.
                          The direction can be controlled with |splitbelow|.
@@ -177,34 +151,32 @@ asyncomplete.vim support is provided by asyncomplete-conjure.vim.
 ==============================================================================
 CONFIGURATION                                          *conjure-configuration*
 
-As mentioned in |conjure-mappings|, you can use `:ConjureConfig` to display or
-set the different configuration values within Conjure. Here's the full list of
-options available in the core plugin. Each language client also has its own
-set of mappings and settings you can alter.
+Conjure is configured through global vars such as `g:conjure#debug`, you can
+set these with normal VimL `let` expressions. Here's the full list of options
+available in the core plugin. Each language client also has its own set of
+mappings and settings you can alter.
 
 As an example, we can change the default prefix from `<localleader>` to `,c`
 with the following command:
 >
-    :ConjureConfig mappings.prefix ",c"
+    :let g:conjure#mapping#prefix = ",c"
 
 All mappings are prefixed by this by default. To have a mapping work without
 the prefix simply wrap the string in a list.
 >
-    :ConjureConfig mappings.log-split ["ClS"]
+    :let g:conjure#mapping#log_split = ["ClS"]
 
 Now you can hit `ClS` without a prefix in any buffer Conjure has a client for.
 
-If you're lazy loading Conjure through your plugin manager you may want to use
-the `g:conjure_config` variable instead, as mention later in this section.
-
-`clients.[filetype]`
+`g:conjure#filetype_client.[filetype]`
             Lua module path to use as a client for a filetype. This can be any
             module that adheres to the |conjure-clients| interface.
             Defaults:
-             - `clients.fennel = "conjure.client.fennel.aniseed"`
-             - `clients.clojure = "conjure.client.clojure.nrepl"`
+             - `g:conjure#filetype_client.fennel = "conjure.client.fennel.aniseed"`
+             - `g:conjure#filetype_client.clojure = "conjure.client.clojure.nrepl"`
+             - `g:conjure#filetype_client.janet = "conjure.client.janet.netrepl"`
 
-`eval.result-register`
+`g:conjure#eval#result_register`
             Every evaluation captures the result and places it in a Neovim
             register for you to use however you want. By default, if you
             evaluate a form, you can then hit `"cp` to paste the result into
@@ -215,109 +187,109 @@ the `g:conjure_config` variable instead, as mention later in this section.
              * `"_"` the black hole when you don't want this at all.
             Default: `"c"`
 
-`mappings.prefix`
+`g:conjure#mapping#prefix`
             The key that proceeds most mappings.
             Default: `"<localleader>"`
 
-`mappings.log-split`
+`g:conjure#mapping#log_split`
             Opens the log in a horizontal split.
             Default: `"ls"`
 
-`mappings.log-vsplit`
+`g:conjure#mapping#log_vsplit`
             Opens the log in a vertical split.
             Default: `"lv"`
 
-`mappings.log-tab`
+`g:conjure#mapping#log_tab`
             Opens the log in a new tab.
             Default: `"lt"`
 
-`mappings.log-close-visible`
+`g:conjure#mapping#log_close_visible`
             Close all visible log windows.
             Default: `"lq"`
 
-`mappings.eval-current-form`
+`g:conjure#mapping#eval_current_form`
             Evaluates the form under the cursor.
             Default: `"ee"`
 
-`mappings.eval-root-form`
+`g:conjure#mapping#eval_root_form`
             Evaluates the root form under the cursor.
             Default: `"er"`
 
-`mappings.eval-replace-form`
+`g:conjure#mapping#eval_replace_form`
             Evaluates the form under the cursor and replace with the result.
             Default: `"e!"`
 
-`mappings.eval-marked-form`
+`g:conjure#mapping#eval_marked_form`
             Evaluates the form at the marks location.
             Default: `"em"`
 
-`mappings.eval-word`
+`g:conjure#mapping#eval_word`
             Evaluates the word under the cursor.
             Default: `"ew"`
 
-`mappings.eval-file`
+`g:conjure#mapping#eval_file`
             Evaluates the file from disk.
             Default: `"ef"`
 
-`mappings.eval-buf`
+`g:conjure#mapping#eval_buf`
             Evaluates the buffer from memory.
             Default: `"eb"`
 
-`mappings.eval-visual`
+`g:conjure#mapping#eval_visual`
             Evaluates the visual selection.
             Default: `"E"`
 
-`mappings.eval-motion`
+`g:conjure#mapping#eval_motion`
             Evaluates the following motion.
             Default: `"E"`
 
-`mappings.doc-word`
+`g:conjure#mapping#doc_word`
             Looks up documentation for the word under the cursor.
             Default: `["K"]`
 
-`mappings.def-word`
+`g:conjure#mapping#def_word`
             Goes to the definition of the word under the cursor.
             Default: `["gd"]`
 
-`log.hud.width`
+`g:conjure#log#hud#width`
             Width of the HUD as a percentage of the editor width.
             A float between 0.0 and 1.0.
             Default: `0.42`
 
-`log.hud.height`
+`g:conjure#log#hud#height`
             Height of the HUD as a percentage of the editor height.
             A float between 0.0 and 1.0.
             Default: `0.3`
 
-`log.hud.enabled?`
+`g:conjure#log#hud#enabled`
             Should the HUD be displayed at all.
             Default: `true`
 
-`log.hud.passive-close-delay`
+`g:conjure#log#hud#passive_close_delay`
             Delay to introduce (in milliseconds) when closing the HUD
             passively such as after you move the cursor. Set it to `0` to
             disable the mechanic entirely and close instantly.
             Default: `0`
 
-`log.botright?`
+`g:conjure#log#botright`
             Force the log to always open at the bottom or far right of the
             editor, taking up the full width or height respectively.
             Default: `false`
 
-`log.break-length`
+`g:conjure#log#break_length`
             Length of the break comment (`; ---------...`) between log results
             in characters. Used in trimming to avoid cutting forms in half.
             Default: `80`
 
-`log.trim.at`
+`g:conjure#log#trim#at`
             Trim the log once the line count passes the value.
             Default: `10000`
 
-`log.trim.to`
+`g:conjure#log#trim#to`
             Trim the log down to this many lines when it gets too long.
             Default: `7000`
 
-`log.strip-ansi-escape-sequences-line-limit`
+`g:conjure#log#strip_ansi_escape_sequences_line_limit`
             If the chunk of text being appended to the log is less than this
             many lines in length, strip all ANSI escape sequences from it. If
             you set this to `0` it'll never apply, you can then use an ANSI
@@ -327,7 +299,7 @@ the `g:conjure_config` variable instead, as mention later in this section.
             doesn't contain escape sequences) from slowing down your log.
             Default: `100`
 
-`extract.context-header-lines`
+`g:conjure#extract#context_header_lines`
             How many lines of the file should be checked for a context
             (namespace name) such as `(module foo.bar)` or `(ns foo.bar)`
             which is used for setting the right context for evaluations.
@@ -337,7 +309,7 @@ the `g:conjure_config` variable instead, as mention later in this section.
             can override it by setting `b:conjure_context`.
             Default: `24`
 
-`extract.form-pairs`
+`g:conjure#extract#form_pairs`
             Character pairs to search for when evaluating forms. The closest
             matching pair is used when evaluating the current form but the
             furthest matching pair is used for root forms.
@@ -346,7 +318,7 @@ the `g:conjure_config` variable instead, as mention later in this section.
             enable escaping for use in |searchpairpos()|.
             Default: `[["(" ")"] ["{" "}"] ["[" "]" true]]`
 
-`preview.sample-limit`
+`g:conjure#preview#sample_limit`
             Most evaluation actions create a line in the log buffer with a
             preview of the code that was evaluated as a reminder. This setting
             controls how long that preview should be before it trails off into
@@ -355,28 +327,15 @@ the `g:conjure_config` variable instead, as mention later in this section.
             A float between 0.0 and 1.0.
             Default: `0.3`
 
-`debug?`
+`g:conjure#debug`
             Display debug information in any client you're using.
             Default: `false`
-
-And finally some regular Neovim variables.
 
 `b:conjure_context`
             Override the context name for a specific buffer, preventing
             Conjure from attempting to extract it from the first few lines
-            defined by the `extract.context-header-lines` configuration value.
-            Default: `undefined`
-
-`g:conjure_config`
-            An optional dictionary of string key value pairs. It's read when
-            Conjure is first loaded and ends up setting the configuration keys
-            to the dictionary's values, the keys work exactly the same as the
-            first argument to `:ConjureConfig`.
-            This would turn the HUD off:
-            `let g:conjure_config = {"log.hud.enabled?": v:false}`
-            It's intended to be used when you're lazy loading Conjure through
-            your plugin manager. If Conjure is already loaded you can just use
-            `:ConjureConfig` directly.
+            defined by the `g:conjure#extract#context_header_lines`
+            configuration value.
             Default: `undefined`
 
 ==============================================================================
@@ -413,8 +372,6 @@ broken highlighting in the rest of the log buffer.
 Note: The HUD may be unreadable if your theme defines odd colours for the
 `Pmenu` highlight group. You can set a different background colour by theming
 `NormalFloat` or `Pmenu` with something like the following.
->
-  :highlight NormalFloat ctermbg=black guibg=black
 
 ==============================================================================
 CLIENTS                                                      *conjure-clients*
@@ -433,7 +390,7 @@ using Aniseed) that have a few essential properties and functions in them.
 
 The module doesn't have to be within Conjure's source tree, it can be inside a
 3rd party plugin repository, you just connect a filetype to it with the
-`clients.[filetype]` configuration option.
+`g:conjure#filetype_client.[filetype]` configuration option.
 
 When implementing a new language client you'll need to provide the following
 values and functions at the top level of your module. You can split your
@@ -471,12 +428,6 @@ See `fnl/conjure/client/clojure/nrepl/init.fnl` for an example of this.
             as code so they're turned into comments by placing this string
             before them. For Lisps you probably want to use `"; "`, notice the
             trailing space!
-
-`config`
-            Table
-            Default configuration values that can be set using the techniques
-            mentioned in |conjure-configuration|.  You can nest your
-            configuration within tables to keep related keys close together.
 
 `eval-str`
             Function(opts)

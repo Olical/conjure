@@ -39,7 +39,7 @@
   (+ 5 1) (+ 10 20) :foo
   (+ 1 2))
 
-; :ConjureConfig clojure.nrepl/refresh.after "dev.sandbox/after-refresh"
+; :let g:conjure#client#clojure#nrepl#refresh#after = "dev.sandbox/after-refresh"
 (defn after-refresh []
   (println "All done!"))
 
