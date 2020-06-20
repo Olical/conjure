@@ -15,13 +15,12 @@ do
   _0_0 = module_23_0_
 end
 local function _1_(...)
-  _0_0["aniseed/local-fns"] = {require = {a = "conjure.aniseed.core", config = "conjure.config", nvim = "conjure.aniseed.nvim"}}
-  return {require("conjure.aniseed.core"), require("conjure.config"), require("conjure.aniseed.nvim")}
+  _0_0["aniseed/local-fns"] = {require = {a = "conjure.aniseed.core", nvim = "conjure.aniseed.nvim"}}
+  return {require("conjure.aniseed.core"), require("conjure.aniseed.nvim")}
 end
 local _2_ = _1_(...)
 local a = _2_[1]
-local config = _2_[2]
-local nvim = _2_[3]
+local nvim = _2_[2]
 do local _ = ({nil, _0_0, {{}, nil}})[2] end
 local env = nil
 do

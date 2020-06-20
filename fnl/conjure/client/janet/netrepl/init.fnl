@@ -5,13 +5,22 @@
             mapping conjure.mapping
             text conjure.text
             ui conjure.client.janet.netrepl.ui
-            config conjure.client.janet.netrepl.config
+            config conjure.config2
             server conjure.client.janet.netrepl.server}})
 
 (def buf-suffix ".janet")
 (def comment-prefix "# ")
 
-(def config config)
+(config.merge
+  {:client
+   {:janet
+    {:netrepl
+     {:debug false
+
+      :connection {:default_host "127.0.0.1"
+                   :default-port "9365"}
+      :mapping {:connect "cc"
+                :disconnect "cd"}}}}})
 
 (defn eval-str [opts]
   (server.send
@@ -33,9 +42,9 @@
                  " :fresh true :prefix \"\")"))))
 
 (defn on-filetype []
-  (mapping.buf :n config.mappings.disconnect
+  (mapping.buf :n (config.get-in [:client :janet :netrepl :mapping :disconnect])
                :conjure.client.janet.netrepl.server :disconnect)
-  (mapping.buf :n config.mappings.connect
+  (mapping.buf :n (config.get-in [:client :janet :netrepl :mapping :connect])
                :conjure.client.janet.netrepl.server :connect)
 
   (nvim.ex.command_

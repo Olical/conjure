@@ -9,7 +9,7 @@
             bencode conjure.bencode
             bencode-stream conjure.bencode-stream
             state conjure.client.clojure.nrepl.state
-            config conjure.client.clojure.nrepl.config
+            config conjure.config2
             ui conjure.client.clojure.nrepl.ui}})
 
 (defn with-conn-or-warn [f opts]
@@ -84,7 +84,7 @@
          :session (or opts.session (a.get-in state [:conn :session]))
 
          :nrepl.middleware.print/print
-         (when config.eval.pretty-print?
+         (when (config.get-in [:client :clojure :nrepl :eval :pretty_print])
            :conjure.internal/pprint)}
         cb))))
 

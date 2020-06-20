@@ -4,7 +4,7 @@
             extract conjure.extract
             client conjure.client
             text conjure.text
-            config conjure.config
+            config conjure.config2
             promise conjure.promise
             editor conjure.editor
             buffer conjure.buffer
@@ -13,7 +13,7 @@
 
 (defn- preview [opts]
   (let [sample-limit (editor.percent-width
-                       config.preview.sample-limit)]
+                       (config.get-in [:preview :sample_limit]))]
     (.. (client.get :comment-prefix)
         opts.action " (" opts.origin "): "
         (if (or (= :file opts.origin) (= :buf opts.origin))
@@ -30,7 +30,7 @@
     opts :on-result
     (fn [f]
       (fn [result]
-        (nvim.fn.setreg config.eval.result-register result)
+        (nvim.fn.setreg (config.get-in [:eval :result_register]) result)
         (when f (f result))))))
 
 (defn file []

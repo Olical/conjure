@@ -10,7 +10,7 @@
             str conjure.aniseed.string
             nvim conjure.aniseed.nvim
             view conjure.aniseed.view
-            config conjure.client.clojure.nrepl.config
+            config conjure.config2
             state conjure.client.clojure.nrepl.state
             server conjure.client.clojure.nrepl.server
             ui conjure.client.clojure.nrepl.ui
@@ -22,21 +22,23 @@
       {:code (.. "(require '" ns ")")}
       (fn []))))
 
+(def- cfg (config.get-in-fn [:client :clojure :nrepl]))
+
 (defn passive-ns-require []
-  (when config.eval.auto-require?
+  (when (cfg [:eval :auto_require])
     (server.with-conn-or-warn
       (fn [_]
         (require-ns (extract.context)))
       {:silent? true})))
 
 (defn connect-port-file []
-  (let [port (-?>> config.connection.port-files
+  (let [port (-?>> (cfg [:connection :port_files])
                    (a.map fs.resolve)
                    (a.some a.slurp)
                    (tonumber))]
     (if port
       (server.connect
-        {:host config.connection.default-host
+        {:host (cfg [:connection :default_host])
          :port port
          :cb passive-ns-require})
       (ui.display ["; No nREPL port file found"] {:break? true}))))
@@ -45,7 +47,7 @@
   (let [args [...]]
     (server.connect
       {:host (if (= 1 (a.count args))
-               config.connection.default-host
+               (cfg [:connection :default_host])
                (a.first args))
        :port (tonumber (a.last args))
        :cb passive-ns-require})))
@@ -215,7 +217,7 @@
                            (text.left-sample
                              code
                              (editor.percent-width
-                               config.interrupt.sample-limit))
+                               (cfg [:interrupt :sample_limit])))
                            (.. "session: " (sess.str) "")))]
                     {:break? true}))))]
 
@@ -386,8 +388,10 @@
       (server.send
         (a.merge
           {:op op
-           :session conn.session}
-          (a.get config :refresh))
+           :session conn.session
+           :after (cfg [:refresh :after])
+           :before (cfg [:refresh :before])
+           :dirs (cfg [:refresh :dirs])})
         (fn [msg]
           (if
             msg.reloading
@@ -517,12 +521,3 @@
     :out-unsubscribe
     (fn [conn]
       (server.send {:op :out-unsubscribe}))))
-
-;; TODO Remove soon.
-(defn display-session-type []
-  (ui.display
-    ["; This mapping has been deprecated."
-     "; Session type information can now be found in the session list."
-     (.. "; Use " (a.get-in (require :conjure.config) [:mappings :prefix])
-         config.mappings.session-list " instead.")]
-    {:break? true}))

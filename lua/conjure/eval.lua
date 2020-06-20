@@ -15,8 +15,8 @@ do
   _0_0 = module_23_0_
 end
 local function _1_(...)
-  _0_0["aniseed/local-fns"] = {require = {a = "conjure.aniseed.core", buffer = "conjure.buffer", client = "conjure.client", config = "conjure.config", editor = "conjure.editor", extract = "conjure.extract", log = "conjure.log", nvim = "conjure.aniseed.nvim", promise = "conjure.promise", text = "conjure.text", uuid = "conjure.uuid"}}
-  return {require("conjure.aniseed.core"), require("conjure.buffer"), require("conjure.client"), require("conjure.config"), require("conjure.editor"), require("conjure.extract"), require("conjure.log"), require("conjure.aniseed.nvim"), require("conjure.promise"), require("conjure.text"), require("conjure.uuid")}
+  _0_0["aniseed/local-fns"] = {require = {a = "conjure.aniseed.core", buffer = "conjure.buffer", client = "conjure.client", config = "conjure.config2", editor = "conjure.editor", extract = "conjure.extract", log = "conjure.log", nvim = "conjure.aniseed.nvim", promise = "conjure.promise", text = "conjure.text", uuid = "conjure.uuid"}}
+  return {require("conjure.aniseed.core"), require("conjure.buffer"), require("conjure.client"), require("conjure.config2"), require("conjure.editor"), require("conjure.extract"), require("conjure.log"), require("conjure.aniseed.nvim"), require("conjure.promise"), require("conjure.text"), require("conjure.uuid")}
 end
 local _2_ = _1_(...)
 local a = _2_[1]
@@ -35,7 +35,7 @@ local preview = nil
 do
   local v_23_0_ = nil
   local function preview0(opts)
-    local sample_limit = editor["percent-width"](config.preview["sample-limit"])
+    local sample_limit = editor["percent-width"](config["get-in"]({"preview", "sample_limit"}))
     local function _3_()
       if (("file" == opts.origin) or ("buf" == opts.origin)) then
         return text["right-sample"](opts["file-path"], sample_limit)
@@ -65,7 +65,7 @@ do
   local function with_last_result_hook0(opts)
     local function _3_(f)
       local function _4_(result)
-        nvim.fn.setreg(config.eval["result-register"], result)
+        nvim.fn.setreg(config["get-in"]({"eval", "result_register"}), result)
         if f then
           return f(result)
         end

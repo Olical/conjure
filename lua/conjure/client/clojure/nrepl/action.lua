@@ -15,8 +15,8 @@ do
   _0_0 = module_23_0_
 end
 local function _1_(...)
-  _0_0["aniseed/local-fns"] = {require = {a = "conjure.aniseed.core", client = "conjure.client", config = "conjure.client.clojure.nrepl.config", editor = "conjure.editor", eval = "conjure.aniseed.eval", extract = "conjure.extract", fs = "conjure.fs", ll = "conjure.linked-list", log = "conjure.log", nvim = "conjure.aniseed.nvim", server = "conjure.client.clojure.nrepl.server", state = "conjure.client.clojure.nrepl.state", str = "conjure.aniseed.string", text = "conjure.text", ui = "conjure.client.clojure.nrepl.ui", view = "conjure.aniseed.view"}}
-  return {require("conjure.aniseed.core"), require("conjure.client"), require("conjure.client.clojure.nrepl.config"), require("conjure.editor"), require("conjure.aniseed.eval"), require("conjure.extract"), require("conjure.fs"), require("conjure.linked-list"), require("conjure.log"), require("conjure.aniseed.nvim"), require("conjure.client.clojure.nrepl.server"), require("conjure.client.clojure.nrepl.state"), require("conjure.aniseed.string"), require("conjure.text"), require("conjure.client.clojure.nrepl.ui"), require("conjure.aniseed.view")}
+  _0_0["aniseed/local-fns"] = {require = {a = "conjure.aniseed.core", client = "conjure.client", config = "conjure.config2", editor = "conjure.editor", eval = "conjure.aniseed.eval", extract = "conjure.extract", fs = "conjure.fs", ll = "conjure.linked-list", log = "conjure.log", nvim = "conjure.aniseed.nvim", server = "conjure.client.clojure.nrepl.server", state = "conjure.client.clojure.nrepl.state", str = "conjure.aniseed.string", text = "conjure.text", ui = "conjure.client.clojure.nrepl.ui", view = "conjure.aniseed.view"}}
+  return {require("conjure.aniseed.core"), require("conjure.client"), require("conjure.config2"), require("conjure.editor"), require("conjure.aniseed.eval"), require("conjure.extract"), require("conjure.fs"), require("conjure.linked-list"), require("conjure.log"), require("conjure.aniseed.nvim"), require("conjure.client.clojure.nrepl.server"), require("conjure.client.clojure.nrepl.state"), require("conjure.aniseed.string"), require("conjure.text"), require("conjure.client.clojure.nrepl.ui"), require("conjure.aniseed.view")}
 end
 local _2_ = _1_(...)
 local a = _2_[1]
@@ -50,13 +50,19 @@ do
   _0_0["aniseed/locals"]["require-ns"] = v_23_0_
   require_ns = v_23_0_
 end
+local cfg = nil
+do
+  local v_23_0_ = config["get-in-fn"]({"client", "clojure", "nrepl"})
+  _0_0["aniseed/locals"]["cfg"] = v_23_0_
+  cfg = v_23_0_
+end
 local passive_ns_require = nil
 do
   local v_23_0_ = nil
   do
     local v_23_0_0 = nil
     local function passive_ns_require0()
-      if config.eval["auto-require?"] then
+      if cfg({"eval", "auto_require"}) then
         local function _3_(_)
           return require_ns(extract.context())
         end
@@ -78,7 +84,7 @@ do
     local function connect_port_file0()
       local port = nil
       do
-        local _3_0 = config.connection["port-files"]
+        local _3_0 = cfg({"connection", "port_files"})
         if _3_0 then
           local _4_0 = a.map(fs.resolve, _3_0)
           if _4_0 then
@@ -96,7 +102,7 @@ do
         end
       end
       if port then
-        return server.connect({cb = passive_ns_require, host = config.connection["default-host"], port = port})
+        return server.connect({cb = passive_ns_require, host = cfg({"connection", "default_host"}), port = port})
       else
         return ui.display({"; No nREPL port file found"}, {["break?"] = true})
       end
@@ -117,7 +123,7 @@ do
       local args = {...}
       local _3_
       if (1 == a.count(args)) then
-        _3_ = config.connection["default-host"]
+        _3_ = cfg({"connection", "default_host"})
       else
         _3_ = a.first(args)
       end
@@ -370,7 +376,7 @@ do
           local function _8_(sess)
             local function _9_()
               if code then
-                return text["left-sample"](code, editor["percent-width"](config.interrupt["sample-limit"]))
+                return text["left-sample"](code, editor["percent-width"](cfg({"interrupt", "sample_limit"})))
               else
                 return ("session: " .. sess.str() .. "")
               end
@@ -797,7 +803,7 @@ do
           return ui["display-result"](msg)
         end
       end
-      return server.send(a.merge({op = op, session = conn.session}, a.get(config, "refresh")), _4_)
+      return server.send(a.merge({after = cfg({"refresh", "after"}), before = cfg({"refresh", "before"}), dirs = cfg({"refresh", "dirs"}), op = op, session = conn.session}), _4_)
     end
     return server["with-conn-and-op-or-warn"](op, _3_)
   end
@@ -1018,20 +1024,5 @@ do
   end
   _0_0["aniseed/locals"]["out-unsubscribe"] = v_23_0_
   out_unsubscribe = v_23_0_
-end
-local display_session_type = nil
-do
-  local v_23_0_ = nil
-  do
-    local v_23_0_0 = nil
-    local function display_session_type0()
-      return ui.display({"; This mapping has been deprecated.", "; Session type information can now be found in the session list.", ("; Use " .. a["get-in"](require("conjure.config"), {"mappings", "prefix"}) .. config.mappings["session-list"] .. " instead.")}, {["break?"] = true})
-    end
-    v_23_0_0 = display_session_type0
-    _0_0["display-session-type"] = v_23_0_0
-    v_23_0_ = v_23_0_0
-  end
-  _0_0["aniseed/locals"]["display-session-type"] = v_23_0_
-  display_session_type = v_23_0_
 end
 return nil

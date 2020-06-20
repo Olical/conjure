@@ -15,8 +15,8 @@ do
   _0_0 = module_23_0_
 end
 local function _1_(...)
-  _0_0["aniseed/local-fns"] = {require = {a = "conjure.aniseed.core", client = "conjure.client", config = "conjure.client.janet.netrepl.config", log = "conjure.log", net = "conjure.net", trn = "conjure.client.janet.netrepl.transport", ui = "conjure.client.janet.netrepl.ui"}}
-  return {require("conjure.aniseed.core"), require("conjure.client"), require("conjure.client.janet.netrepl.config"), require("conjure.log"), require("conjure.net"), require("conjure.client.janet.netrepl.transport"), require("conjure.client.janet.netrepl.ui")}
+  _0_0["aniseed/local-fns"] = {require = {a = "conjure.aniseed.core", client = "conjure.client", config = "conjure.config2", log = "conjure.log", net = "conjure.net", trn = "conjure.client.janet.netrepl.transport", ui = "conjure.client.janet.netrepl.ui"}}
+  return {require("conjure.aniseed.core"), require("conjure.client"), require("conjure.config2"), require("conjure.log"), require("conjure.net"), require("conjure.client.janet.netrepl.transport"), require("conjure.client.janet.netrepl.ui")}
 end
 local _2_ = _1_(...)
 local a = _2_[1]
@@ -171,8 +171,8 @@ do
   do
     local v_23_0_0 = nil
     local function connect0(host, port)
-      local host0 = (host or config.connection["default-host"])
-      local port0 = (port or config.connection["default-port"])
+      local host0 = (host or config["get-in"]({"client", "janet", "netrepl", "connection", "default_host"}))
+      local port0 = (port or config["get-in"]({"client", "janet", "netrepl", "connection", "default_port"}))
       local resolved_host = net.resolve(host0)
       local conn = {["raw-host"] = host0, decode = trn.decoder(), host = resolved_host, port = port0, queue = {}, sock = vim.loop.new_tcp()}
       if a.get(state, "conn") then

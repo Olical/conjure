@@ -15,8 +15,8 @@ do
   _0_0 = module_23_0_
 end
 local function _1_(...)
-  _0_0["aniseed/local-fns"] = {require = {a = "conjure.aniseed.core", bridge = "conjure.bridge", config = "conjure.client.janet.netrepl.config", mapping = "conjure.mapping", nvim = "conjure.aniseed.nvim", server = "conjure.client.janet.netrepl.server", text = "conjure.text", ui = "conjure.client.janet.netrepl.ui"}}
-  return {require("conjure.aniseed.core"), require("conjure.bridge"), require("conjure.client.janet.netrepl.config"), require("conjure.mapping"), require("conjure.aniseed.nvim"), require("conjure.client.janet.netrepl.server"), require("conjure.text"), require("conjure.client.janet.netrepl.ui")}
+  _0_0["aniseed/local-fns"] = {require = {a = "conjure.aniseed.core", bridge = "conjure.bridge", config = "conjure.config2", mapping = "conjure.mapping", nvim = "conjure.aniseed.nvim", server = "conjure.client.janet.netrepl.server", text = "conjure.text", ui = "conjure.client.janet.netrepl.ui"}}
+  return {require("conjure.aniseed.core"), require("conjure.bridge"), require("conjure.config2"), require("conjure.mapping"), require("conjure.aniseed.nvim"), require("conjure.client.janet.netrepl.server"), require("conjure.text"), require("conjure.client.janet.netrepl.ui")}
 end
 local _2_ = _1_(...)
 local a = _2_[1]
@@ -50,17 +50,7 @@ do
   _0_0["aniseed/locals"]["comment-prefix"] = v_23_0_
   comment_prefix = v_23_0_
 end
-local config0 = nil
-do
-  local v_23_0_ = nil
-  do
-    local v_23_0_0 = config
-    _0_0["config"] = v_23_0_0
-    v_23_0_ = v_23_0_0
-  end
-  _0_0["aniseed/locals"]["config"] = v_23_0_
-  config0 = v_23_0_
-end
+config.merge({client = {janet = {netrepl = {connection = {["default-port"] = "9365", default_host = "127.0.0.1"}, debug = false, mapping = {connect = "cc", disconnect = "cd"}}}}})
 local eval_str = nil
 do
   local v_23_0_ = nil
@@ -124,8 +114,8 @@ do
   do
     local v_23_0_0 = nil
     local function on_filetype0()
-      mapping.buf("n", config0.mappings.disconnect, "conjure.client.janet.netrepl.server", "disconnect")
-      mapping.buf("n", config0.mappings.connect, "conjure.client.janet.netrepl.server", "connect")
+      mapping.buf("n", config["get-in"]({"client", "janet", "netrepl", "mapping", "disconnect"}), "conjure.client.janet.netrepl.server", "disconnect")
+      mapping.buf("n", config["get-in"]({"client", "janet", "netrepl", "mapping", "connect"}), "conjure.client.janet.netrepl.server", "connect")
       return nvim.ex.command_("-nargs=+ -buffer ConjureConnect", bridge["viml->lua"]("conjure.client.janet.netrepl.server", "connect", {args = "<f-args>"}))
     end
     v_23_0_0 = on_filetype0

@@ -15,8 +15,8 @@ do
   _0_0 = module_23_0_
 end
 local function _1_(...)
-  _0_0["aniseed/local-fns"] = {require = {a = "conjure.aniseed.core", config = "conjure.config", fennel = "conjure.aniseed.fennel", nvim = "conjure.aniseed.nvim"}}
-  return {require("conjure.aniseed.core"), require("conjure.config"), require("conjure.aniseed.fennel"), require("conjure.aniseed.nvim")}
+  _0_0["aniseed/local-fns"] = {require = {a = "conjure.aniseed.core", config = "conjure.config2", fennel = "conjure.aniseed.fennel", nvim = "conjure.aniseed.nvim"}}
+  return {require("conjure.aniseed.core"), require("conjure.config2"), require("conjure.aniseed.fennel"), require("conjure.aniseed.nvim")}
 end
 local _2_ = _1_(...)
 local a = _2_[1]
@@ -97,7 +97,7 @@ local current_client_module_name = nil
 do
   local v_23_0_ = nil
   local function current_client_module_name0()
-    return config["filetype->module-name"](current_filetype())
+    return a.get(config["get-in"]({"filetype_client"}), current_filetype())
   end
   v_23_0_ = current_client_module_name0
   _0_0["aniseed/locals"]["current-client-module-name"] = v_23_0_

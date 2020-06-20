@@ -4,7 +4,7 @@
             str conjure.aniseed.string
             buffer conjure.buffer
             client conjure.client
-            config conjure.config
+            config conjure.config2
             view conjure.aniseed.view
             text conjure.text
             editor conjure.editor
@@ -16,7 +16,7 @@
 
 (defn- break []
   (.. (client.get :comment-prefix)
-      (string.rep "-" config.log.break-length)))
+      (string.rep "-" (config.get-in [:log :break_length]))))
 
 (defn- log-buf-name []
   (.. "conjure-log-" (nvim.fn.getpid) (client.get :buf-suffix)))
@@ -38,7 +38,7 @@
 (defn close-hud-passive []
   (when state.hud.id
     (let [original-timer-id state.hud.timer-id
-          delay config.log.hud.passive-close-delay]
+          delay (config.get-in [:log :hud :passive_close_delay])]
       (if (= 0 delay)
         (close-hud)
         (when (not (a.get-in state [:hud :timer]))
@@ -56,7 +56,7 @@
          (a.map a.first))))
 
 (defn- display-hud []
-  (when config.log.hud.enabled?
+  (when (config.get-in [:log :hud :enabled])
     (clear-close-hud-passive-timer)
     (let [buf (upsert-buf)
           cursor-top-right? (and (> (editor.cursor-left) (editor.percent-width 0.5))
@@ -71,8 +71,8 @@
            :col (editor.width)
            :anchor :SE
 
-           :width (editor.percent-width config.log.hud.width)
-           :height (editor.percent-height config.log.hud.height)
+           :width (editor.percent-width (config.get-in [:log :hud :width]))
+           :height (editor.percent-height (config.get-in [:log :hud :height]))
            :focusable false
            :style :minimal}]
 
@@ -111,8 +111,8 @@
 
 (defn- trim [buf]
   (let [line-count (nvim.buf_line_count buf)]
-    (when (> line-count config.log.trim.at)
-      (let [target-line-count (- line-count config.log.trim.to)
+    (when (> line-count (config.get-in [:log :trim :at]))
+      (let [target-line-count (- line-count (config.get-in [:log :trim :to]))
             break-line
             (a.some
               (fn [line]
@@ -150,7 +150,7 @@
       (let [buf (upsert-buf)
             join-first? (a.get opts :join-first?)
             lines (if (<= line-count
-                          config.log.strip-ansi-escape-sequences-line-limit)
+                          (config.get-in [:log :strip_ansi_escape_sequences_line_limit]))
                     (a.map text.strip-ansi-escape-sequences lines)
                     lines)
             lines (if
@@ -196,7 +196,7 @@
 (defn- create-win [cmd]
   (let [buf (upsert-buf)]
     (nvim.command
-      (.. (if (a.get-in config [:log :botright?])
+      (.. (if (config.get-in [:log :botright])
             "botright "
             "")
           cmd " "
@@ -224,7 +224,8 @@
          (a.run! #(nvim.win_close $1 true)))))
 
 (defn dbg [desc data]
-  (when (or config.debug? (client.get :config :debug?))
+  ;; TODO Check if client has debug enabled.
+  (when (config.get-in [:debug])
     (append
       (a.concat
         [(.. (client.get :comment-prefix) "debug: " desc)]

@@ -58,6 +58,24 @@ do
   _0_0["aniseed/locals"]["get-in"] = v_23_0_
   get_in = v_23_0_
 end
+local get_in_fn = nil
+do
+  local v_23_0_ = nil
+  do
+    local v_23_0_0 = nil
+    local function get_in_fn0(prefix_ks)
+      local function _3_(ks)
+        return get_in(a.concat(prefix_ks, ks))
+      end
+      return _3_
+    end
+    v_23_0_0 = get_in_fn0
+    _0_0["get-in-fn"] = v_23_0_0
+    v_23_0_ = v_23_0_0
+  end
+  _0_0["aniseed/locals"]["get-in-fn"] = v_23_0_
+  get_in_fn = v_23_0_
+end
 local assoc_in = nil
 do
   local v_23_0_ = nil
@@ -106,20 +124,5 @@ do
   _0_0["aniseed/locals"]["merge"] = v_23_0_
   merge = v_23_0_
 end
-local init = nil
-do
-  local v_23_0_ = nil
-  do
-    local v_23_0_0 = nil
-    local function init0()
-      assoc_in({"client"}, {clojure = "conjure.client.clojure.nrepl", fennel = "conjure.client.fennel.aniseed", janet = "conjure.client.janet.netrepl"})
-      return merge({debug = false, eval = {result_register = "c"}, extract = {context_header_lines = 24, form_pairs = {{"(", ")"}, {"{", "}"}, {"[", "]", true}}}, log = {botright = false, break_length = 80, hud = {enabled = true, height = 0.29999999999999999, passive_close_delay = 0, width = 0.41999999999999998}, strip_ansi_escape_sequences_line_limit = 100, trim = {at = 10000, to = 6000}}, mapping = {def_word = {"gd"}, doc_word = {"K"}, eval_buf = "eb", eval_current_form = "ee", eval_file = "ef", eval_marked_form = "em", eval_motion = "E", eval_replace_form = "e!", eval_root_form = "er", eval_visual = "E", eval_word = "ew", log_close_visible = "lq", log_split = "ls", log_tab = "lt", log_vsplit = "lv", prefix = "<localleader>"}, preview = {sample_limit = 0.29999999999999999}})
-    end
-    v_23_0_0 = init0
-    _0_0["init"] = v_23_0_0
-    v_23_0_ = v_23_0_0
-  end
-  _0_0["aniseed/locals"]["init"] = v_23_0_
-  init = v_23_0_
-end
-return nil
+assoc_in({"filetype_client"}, {clojure = "conjure.client.clojure.nrepl", fennel = "conjure.client.fennel.aniseed", janet = "conjure.client.janet.netrepl"})
+return merge({debug = false, eval = {result_register = "c"}, extract = {context_header_lines = 24, form_pairs = {{"(", ")"}, {"{", "}"}, {"[", "]", true}}}, log = {botright = false, break_length = 80, hud = {enabled = true, height = 0.29999999999999999, passive_close_delay = 0, width = 0.41999999999999998}, strip_ansi_escape_sequences_line_limit = 100, trim = {at = 10000, to = 6000}}, mapping = {def_word = {"gd"}, doc_word = {"K"}, eval_buf = "eb", eval_current_form = "ee", eval_file = "ef", eval_marked_form = "em", eval_motion = "E", eval_replace_form = "e!", eval_root_form = "er", eval_visual = "E", eval_word = "ew", log_close_visible = "lq", log_split = "ls", log_tab = "lt", log_vsplit = "lv", prefix = "<localleader>"}, preview = {sample_limit = 0.29999999999999999}})

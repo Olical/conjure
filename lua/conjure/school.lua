@@ -15,8 +15,8 @@ do
   _0_0 = module_23_0_
 end
 local function _1_(...)
-  _0_0["aniseed/local-fns"] = {require = {a = "conjure.aniseed.core", buffer = "conjure.buffer", config = "conjure.config", editor = "conjure.editor", nvim = "conjure.aniseed.nvim"}}
-  return {require("conjure.aniseed.core"), require("conjure.buffer"), require("conjure.config"), require("conjure.editor"), require("conjure.aniseed.nvim")}
+  _0_0["aniseed/local-fns"] = {require = {a = "conjure.aniseed.core", buffer = "conjure.buffer", config = "conjure.config2", editor = "conjure.editor", nvim = "conjure.aniseed.nvim"}}
+  return {require("conjure.aniseed.core"), require("conjure.buffer"), require("conjure.config2"), require("conjure.editor"), require("conjure.aniseed.nvim")}
 end
 local _2_ = _1_(...)
 local a = _2_[1]
@@ -62,7 +62,7 @@ local map_str = nil
 do
   local v_23_0_ = nil
   local function map_str0(m)
-    return (config.mappings.prefix .. a["get-in"](config, {"mappings", m}))
+    return (config["get-in"]({"mapping", "prefix"}) .. config["get-in"]({"mapping", m}))
   end
   v_23_0_ = map_str0
   _0_0["aniseed/locals"]["map-str"] = v_23_0_
@@ -95,7 +95,7 @@ do
       nvim.ex.edit(buf_name)
       nvim.buf_set_lines(buf, 0, -1, false, {})
       local _4_
-      if ("<localleader>" == config.mappings.prefix) then
+      if ("<localleader>" == config["get-in"]({"mapping", "prefix"})) then
         if a["empty?"](nvim.g.maplocalleader) then
           _4_ = {";; Your <localleader> isn't set, see :help localleader for more information."}
         else
@@ -151,7 +151,7 @@ do
   do
     local v_23_0_0 = nil
     local function lesson_30()
-      append({"", ";; You evaluated the outermost form! Nice!", ";; Notice that the print output was captured and displayed in the log too.", ";; The result of every evaluation is stored in a Neovim register as well as the log.", (";; Try pressing \"" .. config.eval["result-register"] .. "p to paste the contents of the register into your buffer."), (";; We can also evaluate a form and replace it with the result of the evaluation with " .. map_str("eval-replace-form")), (";; We'll try that in the next lesson, place your cursor inside the form below and press " .. map_str("eval-replace-form")), "(school.lesson-4)"})
+      append({"", ";; You evaluated the outermost form! Nice!", ";; Notice that the print output was captured and displayed in the log too.", ";; The result of every evaluation is stored in a Neovim register as well as the log.", (";; Try pressing \"" .. config["get-in"]({"eval", "result_register"}) .. "p to paste the contents of the register into your buffer."), (";; We can also evaluate a form and replace it with the result of the evaluation with " .. map_str("eval-replace-form")), (";; We'll try that in the next lesson, place your cursor inside the form below and press " .. map_str("eval-replace-form")), "(school.lesson-4)"})
       return progress(3)
     end
     v_23_0_0 = lesson_30

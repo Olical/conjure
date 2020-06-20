@@ -1,7 +1,7 @@
 (module conjure.school
   {require {nvim conjure.aniseed.nvim
             buffer conjure.buffer
-            config conjure.config
+            config conjure.config2
             editor conjure.editor
             a conjure.aniseed.core}})
 
@@ -18,7 +18,8 @@
       -1 false lines)))
 
 (defn- map-str [m]
-  (.. config.mappings.prefix (a.get-in config [:mappings m])))
+  (.. (config.get-in [:mapping :prefix])
+      (config.get-in [:mapping m])))
 
 (defn- progress [n]
   (.. "Lesson ["n "/7] complete!"))
@@ -53,7 +54,7 @@
          ";; You can learn how to change these mappings with :help conjure-mappings"
          ""
          (.. ";; Let's begin by evaluating the whole buffer using " (map-str :eval-buf))]
-        (when (= "<localleader>" config.mappings.prefix)
+        (when (= "<localleader>" (config.get-in [:mapping :prefix]))
           (if (a.empty? nvim.g.maplocalleader)
             [";; Your <localleader> isn't set, see :help localleader for more information."]
             [(.. ";; Your <localleader> is currently mapped to \"" nvim.g.maplocalleader "\"")]))
@@ -97,7 +98,7 @@
      ";; You evaluated the outermost form! Nice!"
      ";; Notice that the print output was captured and displayed in the log too."
      ";; The result of every evaluation is stored in a Neovim register as well as the log."
-     (.. ";; Try pressing \"" config.eval.result-register "p to paste the contents of the register into your buffer.")
+     (.. ";; Try pressing \"" (config.get-in [:eval :result_register]) "p to paste the contents of the register into your buffer.")
      (.. ";; We can also evaluate a form and replace it with the result of the evaluation with " (map-str :eval-replace-form))
      (.. ";; We'll try that in the next lesson, place your cursor inside the form below and press " (map-str :eval-replace-form))
      "(school.lesson-4)"])

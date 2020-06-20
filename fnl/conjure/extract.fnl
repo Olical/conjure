@@ -3,7 +3,7 @@
             nvim conjure.aniseed.nvim
             nu conjure.aniseed.nvim.util
             str conjure.aniseed.string
-            config conjure.config
+            config conjure.config2
             client conjure.client}})
 
 (defn- read-range [[srow scol] [erow ecol]]
@@ -92,7 +92,7 @@
 
 (defn form [opts]
   (local forms
-    (->> config.extract.form-pairs
+    (->> (config.get-in [:extract :form_pairs])
          (a.map #(form* $1 opts))
          (a.filter a.table?)))
 
@@ -156,7 +156,7 @@
             (client.get :context))]
     (when f
       (->> (nvim.buf_get_lines
-             0 0 config.extract.context-header-lines false)
+             0 0 (config.get-in [:extract :context_header_lines]) false)
            (str.join "\n")
            (f)))))
 

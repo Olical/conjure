@@ -29,7 +29,6 @@ do
   do
     local v_23_0_0 = nil
     local function main0()
-      config2.init()
       return mapping.init(config.filetypes())
     end
     v_23_0_0 = main0

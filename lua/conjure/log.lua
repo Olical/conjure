@@ -15,8 +15,8 @@ do
   _0_0 = module_23_0_
 end
 local function _1_(...)
-  _0_0["aniseed/local-fns"] = {require = {a = "conjure.aniseed.core", buffer = "conjure.buffer", client = "conjure.client", config = "conjure.config", editor = "conjure.editor", nvim = "conjure.aniseed.nvim", str = "conjure.aniseed.string", text = "conjure.text", timer = "conjure.timer", view = "conjure.aniseed.view"}}
-  return {require("conjure.aniseed.core"), require("conjure.buffer"), require("conjure.client"), require("conjure.config"), require("conjure.editor"), require("conjure.aniseed.nvim"), require("conjure.aniseed.string"), require("conjure.text"), require("conjure.timer"), require("conjure.aniseed.view")}
+  _0_0["aniseed/local-fns"] = {require = {a = "conjure.aniseed.core", buffer = "conjure.buffer", client = "conjure.client", config = "conjure.config2", editor = "conjure.editor", nvim = "conjure.aniseed.nvim", str = "conjure.aniseed.string", text = "conjure.text", timer = "conjure.timer", view = "conjure.aniseed.view"}}
+  return {require("conjure.aniseed.core"), require("conjure.buffer"), require("conjure.client"), require("conjure.config2"), require("conjure.editor"), require("conjure.aniseed.nvim"), require("conjure.aniseed.string"), require("conjure.text"), require("conjure.timer"), require("conjure.aniseed.view")}
 end
 local _2_ = _1_(...)
 local a = _2_[1]
@@ -40,7 +40,7 @@ local _break = nil
 do
   local v_23_0_ = nil
   local function _break0()
-    return (client.get("comment-prefix") .. string.rep("-", config.log["break-length"]))
+    return (client.get("comment-prefix") .. string.rep("-", config["get-in"]({"log", "break_length"})))
   end
   v_23_0_ = _break0
   _0_0["aniseed/locals"]["break"] = v_23_0_
@@ -112,7 +112,7 @@ do
     local function close_hud_passive0()
       if state.hud.id then
         local original_timer_id = state.hud["timer-id"]
-        local delay = config.log.hud["passive-close-delay"]
+        local delay = config["get-in"]({"log", "hud", "passive_close_delay"})
         if (0 == delay) then
           return close_hud()
         else
@@ -150,7 +150,7 @@ local display_hud = nil
 do
   local v_23_0_ = nil
   local function display_hud0()
-    if config.log.hud["enabled?"] then
+    if config["get-in"]({"log", "hud", "enabled"}) then
       clear_close_hud_passive_timer()
       local buf = upsert_buf()
       local cursor_top_right_3f = ((editor["cursor-left"]() > editor["percent-width"](0.5)) and (editor["cursor-top"]() < editor["percent-height"](0.5)))
@@ -163,7 +163,7 @@ do
       else
         _3_ = 0
       end
-      win_opts = {anchor = "SE", col = editor.width(), focusable = false, height = editor["percent-height"](config.log.hud.height), relative = "editor", row = _3_, style = "minimal", width = editor["percent-width"](config.log.hud.width)}
+      win_opts = {anchor = "SE", col = editor.width(), focusable = false, height = editor["percent-height"](config["get-in"]({"log", "hud", "height"})), relative = "editor", row = _3_, style = "minimal", width = editor["percent-width"](config["get-in"]({"log", "hud", "width"}))}
       if not state.hud.id then
         state.hud.id = nvim.open_win(buf, false, win_opts)
         nvim.win_set_option(state.hud.id, "wrap", false)
@@ -220,8 +220,8 @@ do
   local v_23_0_ = nil
   local function trim0(buf)
     local line_count = nvim.buf_line_count(buf)
-    if (line_count > config.log.trim.at) then
-      local target_line_count = (line_count - config.log.trim.to)
+    if (line_count > config["get-in"]({"log", "trim", "at"})) then
+      local target_line_count = (line_count - config["get-in"]({"log", "trim", "to"}))
       local break_line = nil
       local function _3_(line)
         if (line >= target_line_count) then
@@ -274,7 +274,7 @@ do
         local buf = upsert_buf()
         local join_first_3f = a.get(opts, "join-first?")
         local lines0 = nil
-        if (line_count <= config.log["strip-ansi-escape-sequences-line-limit"]) then
+        if (line_count <= config["get-in"]({"log", "strip_ansi_escape_sequences_line_limit"})) then
           lines0 = a.map(text["strip-ansi-escape-sequences"], lines)
         else
           lines0 = lines
@@ -333,7 +333,7 @@ do
   local function create_win0(cmd)
     local buf = upsert_buf()
     local function _3_()
-      if a["get-in"](config, {"log", "botright?"}) then
+      if config["get-in"]({"log", "botright"}) then
         return "botright "
       else
         return ""
@@ -422,7 +422,7 @@ do
   do
     local v_23_0_0 = nil
     local function dbg0(desc, data)
-      if (config["debug?"] or client.get("config", "debug?")) then
+      if config["get-in"]({"debug"}) then
         append(a.concat({(client.get("comment-prefix") .. "debug: " .. desc)}, text["split-lines"](view.serialise(data))))
       end
       return data

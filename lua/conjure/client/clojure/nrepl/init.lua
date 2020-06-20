@@ -15,8 +15,8 @@ do
   _0_0 = module_23_0_
 end
 local function _1_(...)
-  _0_0["aniseed/local-fns"] = {require = {a = "conjure.aniseed.core", action = "conjure.client.clojure.nrepl.action", bridge = "conjure.bridge", config = "conjure.client.clojure.nrepl.config", eval = "conjure.eval", mapping = "conjure.mapping", nvim = "conjure.aniseed.nvim", str = "conjure.aniseed.string"}}
-  return {require("conjure.aniseed.core"), require("conjure.client.clojure.nrepl.action"), require("conjure.bridge"), require("conjure.client.clojure.nrepl.config"), require("conjure.eval"), require("conjure.mapping"), require("conjure.aniseed.nvim"), require("conjure.aniseed.string")}
+  _0_0["aniseed/local-fns"] = {require = {a = "conjure.aniseed.core", action = "conjure.client.clojure.nrepl.action", bridge = "conjure.bridge", config = "conjure.config2", eval = "conjure.eval", mapping = "conjure.mapping", nvim = "conjure.aniseed.nvim", str = "conjure.aniseed.string"}}
+  return {require("conjure.aniseed.core"), require("conjure.client.clojure.nrepl.action"), require("conjure.bridge"), require("conjure.config2"), require("conjure.eval"), require("conjure.mapping"), require("conjure.aniseed.nvim"), require("conjure.aniseed.string")}
 end
 local _2_ = _1_(...)
 local a = _2_[1]
@@ -50,17 +50,13 @@ do
   _0_0["aniseed/locals"]["comment-prefix"] = v_23_0_
   comment_prefix = v_23_0_
 end
-local config0 = nil
+local cfg = nil
 do
-  local v_23_0_ = nil
-  do
-    local v_23_0_0 = config
-    _0_0["config"] = v_23_0_0
-    v_23_0_ = v_23_0_0
-  end
-  _0_0["aniseed/locals"]["config"] = v_23_0_
-  config0 = v_23_0_
+  local v_23_0_ = config["get-in-fn"]({"client", "clojure", "nrepl"})
+  _0_0["aniseed/locals"]["cfg"] = v_23_0_
+  cfg = v_23_0_
 end
+config.merge({client = {clojure = {nrepl = {connection = {default_host = "localhost", port_files = {".nrepl-port", ".shadow-cljs/nrepl.port"}}, debug = false, eval = {auto_require = true, pretty_print = true}, interrupt = {sample_limit = 0.29999999999999999}, mapping = {connect_port_file = "cf", disconnect = "cd", interrupt = "ei", last_exception = "ve", refresh_all = "ra", refresh_changed = "rr", refresh_clear = "rc", result_1 = "v1", result_2 = "v2", result_3 = "v3", run_all_tests = "ta", run_alternate_ns_tests = "tN", run_current_ns_tests = "tn", run_current_test = "tc", session_clone = "sc", session_close = "sq", session_close_all = "sQ", session_fresh = "sf", session_list = "sl", session_next = "sn", session_prev = "sp", session_select = "ss", session_type = "st", view_source = "vs"}, refresh = {after = nil, before = nil, dirs = nil}}}}})
 local context = nil
 do
   local v_23_0_ = nil
@@ -182,30 +178,30 @@ do
   do
     local v_23_0_0 = nil
     local function on_filetype0()
-      mapping.buf("n", config0.mappings.disconnect, "conjure.client.clojure.nrepl.server", "disconnect")
-      mapping.buf("n", config0.mappings["connect-port-file"], "conjure.client.clojure.nrepl.action", "connect-port-file")
-      mapping.buf("n", config0.mappings.interrupt, "conjure.client.clojure.nrepl.action", "interrupt")
-      mapping.buf("n", config0.mappings["last-exception"], "conjure.client.clojure.nrepl.action", "last-exception")
-      mapping.buf("n", config0.mappings["result-1"], "conjure.client.clojure.nrepl.action", "result-1")
-      mapping.buf("n", config0.mappings["result-2"], "conjure.client.clojure.nrepl.action", "result-2")
-      mapping.buf("n", config0.mappings["result-3"], "conjure.client.clojure.nrepl.action", "result-3")
-      mapping.buf("n", config0.mappings["view-source"], "conjure.client.clojure.nrepl.action", "view-source")
-      mapping.buf("n", config0.mappings["session-clone"], "conjure.client.clojure.nrepl.action", "clone-current-session")
-      mapping.buf("n", config0.mappings["session-fresh"], "conjure.client.clojure.nrepl.action", "clone-fresh-session")
-      mapping.buf("n", config0.mappings["session-close"], "conjure.client.clojure.nrepl.action", "close-current-session")
-      mapping.buf("n", config0.mappings["session-close-all"], "conjure.client.clojure.nrepl.action", "close-all-sessions")
-      mapping.buf("n", config0.mappings["session-list"], "conjure.client.clojure.nrepl.action", "display-sessions")
-      mapping.buf("n", config0.mappings["session-next"], "conjure.client.clojure.nrepl.action", "next-session")
-      mapping.buf("n", config0.mappings["session-prev"], "conjure.client.clojure.nrepl.action", "prev-session")
-      mapping.buf("n", config0.mappings["session-select"], "conjure.client.clojure.nrepl.action", "select-session-interactive")
-      mapping.buf("n", config0.mappings["session-type"], "conjure.client.clojure.nrepl.action", "display-session-type")
-      mapping.buf("n", config0.mappings["run-all-tests"], "conjure.client.clojure.nrepl.action", "run-all-tests")
-      mapping.buf("n", config0.mappings["run-current-ns-tests"], "conjure.client.clojure.nrepl.action", "run-current-ns-tests")
-      mapping.buf("n", config0.mappings["run-alternate-ns-tests"], "conjure.client.clojure.nrepl.action", "run-alternate-ns-tests")
-      mapping.buf("n", config0.mappings["run-current-test"], "conjure.client.clojure.nrepl.action", "run-current-test")
-      mapping.buf("n", config0.mappings["refresh-changed"], "conjure.client.clojure.nrepl.action", "refresh-changed")
-      mapping.buf("n", config0.mappings["refresh-all"], "conjure.client.clojure.nrepl.action", "refresh-all")
-      mapping.buf("n", config0.mappings["refresh-clear"], "conjure.client.clojure.nrepl.action", "refresh-clear")
+      mapping.buf("n", cfg({"mapping", "disconnect"}), "conjure.client.clojure.nrepl.server", "disconnect")
+      mapping.buf("n", cfg({"mapping", "connect_port_file"}), "conjure.client.clojure.nrepl.action", "connect-port-file")
+      mapping.buf("n", cfg({"mapping", "interrupt"}), "conjure.client.clojure.nrepl.action", "interrupt")
+      mapping.buf("n", cfg({"mapping", "last_exception"}), "conjure.client.clojure.nrepl.action", "last-exception")
+      mapping.buf("n", cfg({"mapping", "result_1"}), "conjure.client.clojure.nrepl.action", "result-1")
+      mapping.buf("n", cfg({"mapping", "result_2"}), "conjure.client.clojure.nrepl.action", "result-2")
+      mapping.buf("n", cfg({"mapping", "result_3"}), "conjure.client.clojure.nrepl.action", "result-3")
+      mapping.buf("n", cfg({"mapping", "view_source"}), "conjure.client.clojure.nrepl.action", "view-source")
+      mapping.buf("n", cfg({"mapping", "session_clone"}), "conjure.client.clojure.nrepl.action", "clone-current-session")
+      mapping.buf("n", cfg({"mapping", "session_fresh"}), "conjure.client.clojure.nrepl.action", "clone-fresh-session")
+      mapping.buf("n", cfg({"mapping", "session_close"}), "conjure.client.clojure.nrepl.action", "close-current-session")
+      mapping.buf("n", cfg({"mapping", "session_close_all"}), "conjure.client.clojure.nrepl.action", "close-all-sessions")
+      mapping.buf("n", cfg({"mapping", "session_list"}), "conjure.client.clojure.nrepl.action", "display-sessions")
+      mapping.buf("n", cfg({"mapping", "session_next"}), "conjure.client.clojure.nrepl.action", "next-session")
+      mapping.buf("n", cfg({"mapping", "session_prev"}), "conjure.client.clojure.nrepl.action", "prev-session")
+      mapping.buf("n", cfg({"mapping", "session_select"}), "conjure.client.clojure.nrepl.action", "select-session-interactive")
+      mapping.buf("n", cfg({"mapping", "session_type"}), "conjure.client.clojure.nrepl.action", "display-session-type")
+      mapping.buf("n", cfg({"mapping", "run_all_tests"}), "conjure.client.clojure.nrepl.action", "run-all-tests")
+      mapping.buf("n", cfg({"mapping", "run_current_ns_tests"}), "conjure.client.clojure.nrepl.action", "run-current-ns-tests")
+      mapping.buf("n", cfg({"mapping", "run_alternate_ns_tests"}), "conjure.client.clojure.nrepl.action", "run-alternate-ns-tests")
+      mapping.buf("n", cfg({"mapping", "run_current_test"}), "conjure.client.clojure.nrepl.action", "run-current-test")
+      mapping.buf("n", cfg({"mapping", "refresh_changed"}), "conjure.client.clojure.nrepl.action", "refresh-changed")
+      mapping.buf("n", cfg({"mapping", "refresh_all"}), "conjure.client.clojure.nrepl.action", "refresh-all")
+      mapping.buf("n", cfg({"mapping", "refresh_clear"}), "conjure.client.clojure.nrepl.action", "refresh-clear")
       nvim.ex.command_("-nargs=+ -buffer ConjureConnect", bridge["viml->lua"]("conjure.client.clojure.nrepl.action", "connect-host-port", {args = "<f-args>"}))
       nvim.ex.command_("-nargs=1 -buffer ConjureShadowSelect", bridge["viml->lua"]("conjure.client.clojure.nrepl.action", "shadow-select", {args = "<f-args>"}))
       nvim.ex.command_("-nargs=1 -buffer ConjurePiggieback", bridge["viml->lua"]("conjure.client.clojure.nrepl.action", "piggieback", {args = "<f-args>"}))

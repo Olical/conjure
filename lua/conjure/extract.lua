@@ -15,8 +15,8 @@ do
   _0_0 = module_23_0_
 end
 local function _1_(...)
-  _0_0["aniseed/local-fns"] = {require = {a = "conjure.aniseed.core", client = "conjure.client", config = "conjure.config", nu = "conjure.aniseed.nvim.util", nvim = "conjure.aniseed.nvim", str = "conjure.aniseed.string"}}
-  return {require("conjure.aniseed.core"), require("conjure.client"), require("conjure.config"), require("conjure.aniseed.nvim.util"), require("conjure.aniseed.nvim"), require("conjure.aniseed.string")}
+  _0_0["aniseed/local-fns"] = {require = {a = "conjure.aniseed.core", client = "conjure.client", config = "conjure.config2", nu = "conjure.aniseed.nvim.util", nvim = "conjure.aniseed.nvim", str = "conjure.aniseed.string"}}
+  return {require("conjure.aniseed.core"), require("conjure.client"), require("conjure.config2"), require("conjure.aniseed.nvim.util"), require("conjure.aniseed.nvim"), require("conjure.aniseed.string")}
 end
 local _2_ = _1_(...)
 local a = _2_[1]
@@ -204,7 +204,7 @@ do
       local function _3_(_241)
         return form_2a(_241, opts)
       end
-      forms = a.filter(a["table?"], a.map(_3_, config.extract["form-pairs"]))
+      forms = a.filter(a["table?"], a.map(_3_, config["get-in"]({"extract", "form_pairs"})))
       local function _4_(_241, _242)
         return distance_gt(range_distance(_241.range), range_distance(_242.range))
       end
@@ -357,7 +357,7 @@ do
         f = client.get("context")
       end
       if f then
-        return f(str.join("\n", nvim.buf_get_lines(0, 0, config.extract["context-header-lines"], false)))
+        return f(str.join("\n", nvim.buf_get_lines(0, 0, config["get-in"]({"extract", "context_header_lines"}), false)))
       end
     end
     v_23_0_0 = context0

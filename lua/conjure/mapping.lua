@@ -15,11 +15,12 @@ do
   _0_0 = module_23_0_
 end
 local function _1_(...)
-  _0_0["aniseed/local-fns"] = {require = {a = "conjure.aniseed.core", bridge = "conjure.bridge", client = "conjure.client", config = "conjure.config", eval = "conjure.eval", extract = "conjure.extract", fennel = "conjure.aniseed.fennel", nvim = "conjure.aniseed.nvim", str = "conjure.aniseed.string"}}
-  return {require("conjure.aniseed.core"), require("conjure.bridge"), require("conjure.client"), require("conjure.config"), require("conjure.eval"), require("conjure.extract"), require("conjure.aniseed.fennel"), require("conjure.aniseed.nvim"), require("conjure.aniseed.string")}
+  _0_0["aniseed/local-fns"] = {require = {["old-config"] = "conjure.config", a = "conjure.aniseed.core", bridge = "conjure.bridge", client = "conjure.client", config = "conjure.config2", eval = "conjure.eval", extract = "conjure.extract", fennel = "conjure.aniseed.fennel", nvim = "conjure.aniseed.nvim", str = "conjure.aniseed.string"}}
+  return {require("conjure.aniseed.core"), require("conjure.bridge"), require("conjure.client"), require("conjure.config2"), require("conjure.eval"), require("conjure.extract"), require("conjure.aniseed.fennel"), require("conjure.aniseed.nvim"), require("conjure.config"), require("conjure.aniseed.string")}
 end
 local _2_ = _1_(...)
 local a = _2_[1]
+local str = _2_[10]
 local bridge = _2_[2]
 local client = _2_[3]
 local config = _2_[4]
@@ -27,8 +28,18 @@ local eval = _2_[5]
 local extract = _2_[6]
 local fennel = _2_[7]
 local nvim = _2_[8]
-local str = _2_[9]
+local old_config = _2_[9]
 do local _ = ({nil, _0_0, {{}, nil}})[2] end
+local cfg = nil
+do
+  local v_23_0_ = nil
+  local function cfg0(k)
+    return config["get-in"]({"mapping", k})
+  end
+  v_23_0_ = cfg0
+  _0_0["aniseed/locals"]["cfg"] = v_23_0_
+  cfg = v_23_0_
+end
 local buf = nil
 do
   local v_23_0_ = nil
@@ -39,7 +50,7 @@ do
         local args = {...}
         local _3_
         if a["string?"](keys) then
-          _3_ = (config.mappings.prefix .. keys)
+          _3_ = (cfg("prefix") .. keys)
         else
           _3_ = a.first(keys)
         end
@@ -65,21 +76,21 @@ do
   do
     local v_23_0_0 = nil
     local function on_filetype0()
-      buf("n", config.mappings["eval-motion"], ":set opfunc=ConjureEvalMotion<cr>g@")
-      buf("n", config.mappings["log-split"], "conjure.log", "split")
-      buf("n", config.mappings["log-vsplit"], "conjure.log", "vsplit")
-      buf("n", config.mappings["log-tab"], "conjure.log", "tab")
-      buf("n", config.mappings["log-close-visible"], "conjure.log", "close-visible")
-      buf("n", config.mappings["eval-current-form"], "conjure.eval", "current-form")
-      buf("n", config.mappings["eval-root-form"], "conjure.eval", "root-form")
-      buf("n", config.mappings["eval-replace-form"], "conjure.eval", "replace-form")
-      buf("n", config.mappings["eval-marked-form"], "conjure.eval", "marked-form")
-      buf("n", config.mappings["eval-word"], "conjure.eval", "word")
-      buf("n", config.mappings["eval-file"], "conjure.eval", "file")
-      buf("n", config.mappings["eval-buf"], "conjure.eval", "buf")
-      buf("v", config.mappings["eval-visual"], "conjure.eval", "selection")
-      buf("n", config.mappings["doc-word"], "conjure.eval", "doc-word")
-      buf("n", config.mappings["def-word"], "conjure.eval", "def-word")
+      buf("n", cfg("eval_motion"), ":set opfunc=ConjureEvalMotion<cr>g@")
+      buf("n", cfg("log_split"), "conjure.log", "split")
+      buf("n", cfg("log_vsplit"), "conjure.log", "vsplit")
+      buf("n", cfg("log_tab"), "conjure.log", "tab")
+      buf("n", cfg("log_close_visible"), "conjure.log", "close-visible")
+      buf("n", cfg("eval_current_form"), "conjure.eval", "current-form")
+      buf("n", cfg("eval_root_form"), "conjure.eval", "root-form")
+      buf("n", cfg("eval_replace_form"), "conjure.eval", "replace-form")
+      buf("n", cfg("eval_marked_form"), "conjure.eval", "marked-form")
+      buf("n", cfg("eval_word"), "conjure.eval", "word")
+      buf("n", cfg("eval_file"), "conjure.eval", "file")
+      buf("n", cfg("eval_buf"), "conjure.eval", "buf")
+      buf("v", cfg("eval_visual"), "conjure.eval", "selection")
+      buf("n", cfg("doc_word"), "conjure.eval", "doc-word")
+      buf("n", cfg("def_word"), "conjure.eval", "def-word")
       nvim.ex.setlocal("omnifunc=ConjureOmnifunc")
       return client["optional-call"]("on-filetype")
     end
@@ -114,12 +125,12 @@ do
     local v_23_0_0 = nil
     local function config_command0(target, ...)
       local opts = parse_config_target(target)
-      local current = config.get(opts)
+      local current = old_config.get(opts)
       local val = str.join({...})
       if a["empty?"](val) then
         return a.println(target, "=", a["pr-str"](current))
       else
-        return config.assoc(a.assoc(opts, "val", fennel.eval(val)))
+        return old_config.assoc(a.assoc(opts, "val", fennel.eval(val)))
       end
     end
     v_23_0_0 = config_command0
@@ -145,7 +156,7 @@ do
         end
         _4_0 = a["map-indexed"](_5_, _3_0)
         if _4_0 then
-          return a["run!"](config.assoc, _4_0)
+          return a["run!"](old_config.assoc, _4_0)
         else
           return _4_0
         end

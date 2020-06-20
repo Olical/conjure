@@ -2,7 +2,7 @@
   {require {a conjure.aniseed.core
             nvim conjure.aniseed.nvim
             fennel conjure.aniseed.fennel
-            config conjure.config}})
+            config conjure.config2}})
 
 (defonce- loaded {})
 
@@ -35,7 +35,7 @@
   (or overrides.filetype nvim.bo.filetype))
 
 (defn- current-client-module-name []
-  (config.filetype->module-name (current-filetype)))
+  (a.get (config.get-in [:filetype_client]) (current-filetype)))
 
 (defn current []
   (let [ft (current-filetype)

@@ -17,6 +17,10 @@
       (a.get v vim.val_idx)
       v)))
 
+(defn get-in-fn [prefix-ks]
+  (fn [ks]
+    (get-in (a.concat prefix-ks ks))))
+
 (defn assoc-in [ks v]
   (a.assoc nvim.g (ks->var ks) v)
   v)
@@ -42,53 +46,52 @@
       (a.kv-pairs tbl))
     nil))
 
-(defn init []
-  (assoc-in
-    [:client]
-    {:fennel :conjure.client.fennel.aniseed
-     :clojure :conjure.client.clojure.nrepl
-     :janet :conjure.client.janet.netrepl})
+(assoc-in
+  [:filetype_client]
+  {:fennel :conjure.client.fennel.aniseed
+   :clojure :conjure.client.clojure.nrepl
+   :janet :conjure.client.janet.netrepl})
 
-  (merge
-    {:debug false
+(merge
+  {:debug false
 
-     :eval
-     {:result_register "c"}
+   :eval
+   {:result_register "c"}
 
-     :mapping
-     {:prefix "<localleader>"
-      :log_split "ls"
-      :log_vsplit "lv"
-      :log_tab "lt"
-      :log_close_visible "lq"
-      :eval_current_form "ee"
-      :eval_root_form "er"
-      :eval_replace_form "e!"
-      :eval_marked_form "em"
-      :eval_word "ew"
-      :eval_file "ef"
-      :eval_buf "eb"
-      :eval_visual "E"
-      :eval_motion "E"
-      :doc_word ["K"]
-      :def_word ["gd"]}
+   :mapping
+   {:prefix "<localleader>"
+    :log_split "ls"
+    :log_vsplit "lv"
+    :log_tab "lt"
+    :log_close_visible "lq"
+    :eval_current_form "ee"
+    :eval_root_form "er"
+    :eval_replace_form "e!"
+    :eval_marked_form "em"
+    :eval_word "ew"
+    :eval_file "ef"
+    :eval_buf "eb"
+    :eval_visual "E"
+    :eval_motion "E"
+    :doc_word ["K"]
+    :def_word ["gd"]}
 
-     :log
-     {:hud {:width 0.42
-            :height 0.3
-            :enabled true
-            :passive_close_delay 0}
-      :botright false
-      :break_length 80
-      :trim {:at 10000
-             :to 6000}
-      :strip_ansi_escape_sequences_line_limit 100}
+   :log
+   {:hud {:width 0.42
+          :height 0.3
+          :enabled true
+          :passive_close_delay 0}
+    :botright false
+    :break_length 80
+    :trim {:at 10000
+           :to 6000}
+    :strip_ansi_escape_sequences_line_limit 100}
 
-     :extract
-     {:context_header_lines 24
-      :form_pairs [["(" ")"]
-                   ["{" "}"]
-                   ["[" "]" true]]}
+   :extract
+   {:context_header_lines 24
+    :form_pairs [["(" ")"]
+                 ["{" "}"]
+                 ["[" "]" true]]}
 
-     :preview
-     {:sample_limit 0.3}}))
+   :preview
+   {:sample_limit 0.3}})

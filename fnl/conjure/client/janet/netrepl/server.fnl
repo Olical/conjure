@@ -4,8 +4,8 @@
             net conjure.net
             log conjure.log
             client conjure.client
-            trn conjure.client.janet.netrepl.transport
-            config conjure.client.janet.netrepl.config}})
+            config conjure.config2
+            trn conjure.client.janet.netrepl.transport}})
 
 (defonce- state
   {:conn nil})
@@ -71,8 +71,8 @@
             (display-conn-status :connected)))))))
 
 (defn connect [host port]
-  (let [host (or host config.connection.default-host)
-        port (or port config.connection.default-port)
+  (let [host (or host (config.get-in [:client :janet :netrepl :connection :default_host]))
+        port (or port (config.get-in [:client :janet :netrepl :connection :default_port]))
         resolved-host (net.resolve host)
         conn {:sock (vim.loop.new_tcp)
               :host resolved-host

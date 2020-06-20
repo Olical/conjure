@@ -15,19 +15,20 @@ do
   _0_0 = module_23_0_
 end
 local function _1_(...)
-  _0_0["aniseed/local-fns"] = {require = {a = "conjure.aniseed.core", client = "conjure.client", extract = "conjure.extract", log = "conjure.log", mapping = "conjure.mapping", nvim = "conjure.aniseed.nvim", str = "conjure.aniseed.string", text = "conjure.text", view = "conjure.aniseed.view"}}
-  return {require("conjure.aniseed.core"), require("conjure.client"), require("conjure.extract"), require("conjure.log"), require("conjure.mapping"), require("conjure.aniseed.nvim"), require("conjure.aniseed.string"), require("conjure.text"), require("conjure.aniseed.view")}
+  _0_0["aniseed/local-fns"] = {require = {a = "conjure.aniseed.core", client = "conjure.client", config = "conjure.config2", extract = "conjure.extract", log = "conjure.log", mapping = "conjure.mapping", nvim = "conjure.aniseed.nvim", str = "conjure.aniseed.string", text = "conjure.text", view = "conjure.aniseed.view"}}
+  return {require("conjure.aniseed.core"), require("conjure.client"), require("conjure.config2"), require("conjure.extract"), require("conjure.log"), require("conjure.mapping"), require("conjure.aniseed.nvim"), require("conjure.aniseed.string"), require("conjure.text"), require("conjure.aniseed.view")}
 end
 local _2_ = _1_(...)
 local a = _2_[1]
+local view = _2_[10]
 local client = _2_[2]
-local extract = _2_[3]
-local log = _2_[4]
-local mapping = _2_[5]
-local nvim = _2_[6]
-local str = _2_[7]
-local text = _2_[8]
-local view = _2_[9]
+local config = _2_[3]
+local extract = _2_[4]
+local log = _2_[5]
+local mapping = _2_[6]
+local nvim = _2_[7]
+local str = _2_[8]
+local text = _2_[9]
 do local _ = ({nil, _0_0, {{}, nil}})[2] end
 local buf_suffix = nil
 do
@@ -62,16 +63,12 @@ do
   _0_0["aniseed/locals"]["comment-prefix"] = v_23_0_
   comment_prefix = v_23_0_
 end
-local config = nil
+config.merge({client = {fennel = {aniseed = {aniseed_module_prefix = "conjure.aniseed.", mapping = {run_all_tests = "ta", run_buf_tests = "tt"}, use_metadata = true}}}})
+local cfg = nil
 do
-  local v_23_0_ = nil
-  do
-    local v_23_0_0 = {["aniseed-module-prefix"] = "conjure.aniseed.", ["use-metadata?"] = true, mappings = {["run-all-tests"] = "ta", ["run-buf-tests"] = "tt"}}
-    _0_0["config"] = v_23_0_0
-    v_23_0_ = v_23_0_0
-  end
-  _0_0["aniseed/locals"]["config"] = v_23_0_
-  config = v_23_0_
+  local v_23_0_ = config["get-in-fn"]({"client", "fennel", "aniseed"})
+  _0_0["aniseed/locals"]["cfg"] = v_23_0_
+  cfg = v_23_0_
 end
 local ani_aliases = nil
 do
@@ -84,7 +81,7 @@ do
   local v_23_0_ = nil
   local function ani0(mod_name, f_name)
     local mod_name0 = a.get(ani_aliases, mod_name, mod_name)
-    local mod = require((config["aniseed-module-prefix"] .. mod_name0))
+    local mod = require((cfg({"aniseed_module_prefix"}) .. mod_name0))
     if f_name then
       return a.get(mod, f_name)
     else
@@ -170,10 +167,10 @@ do
       local code = (("(module " .. (opts.context or "aniseed.user") .. ") ") .. opts.code .. "\n")
       local out = nil
       local function _3_()
-        if config["use-metadata?"] then
+        if cfg({"use_metadata"}) then
           package.loaded.fennel = ani("fennel")
         end
-        local _5_ = {anic("eval", "str", code, {filename = opts["file-path"], useMetadata = config["use-metadata?"]})}
+        local _5_ = {anic("eval", "str", code, {filename = opts["file-path"], useMetadata = cfg({"use_metadata"})})}
         local ok_3f = _5_[1]
         local results = {(table.unpack or unpack)(_5_, 2)}
         opts["ok?"] = ok_3f
@@ -287,8 +284,8 @@ do
   do
     local v_23_0_0 = nil
     local function on_filetype0()
-      mapping.buf("n", config.mappings["run-buf-tests"], "conjure.client.fennel.aniseed", "run-buf-tests")
-      return mapping.buf("n", config.mappings["run-all-tests"], "conjure.client.fennel.aniseed", "run-all-tests")
+      mapping.buf("n", cfg({"mapping", "run_buf_tests"}), "conjure.client.fennel.aniseed", "run-buf-tests")
+      return mapping.buf("n", cfg({"mapping", "run_all_tests"}), "conjure.client.fennel.aniseed", "run-all-tests")
     end
     v_23_0_0 = on_filetype0
     _0_0["on-filetype"] = v_23_0_0

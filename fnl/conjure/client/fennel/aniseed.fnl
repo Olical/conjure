@@ -7,24 +7,30 @@
             mapping conjure.mapping
             text conjure.text
             log conjure.log
+            config conjure.config2
             extract conjure.extract}})
 
 (def buf-suffix ".fnl")
 (def context-pattern "%(%s*module%s+(.-)[%s){]")
 (def comment-prefix "; ")
 
-(def config
-  {:mappings {:run-buf-tests "tt"
-              :run-all-tests "ta"}
-   :aniseed-module-prefix :conjure.aniseed.
-   :use-metadata? true})
+(config.merge
+  {:client
+   {:fennel
+    {:aniseed
+     {:mapping {:run_buf_tests "tt"
+                :run_all_tests "ta"}
+      :aniseed_module_prefix :conjure.aniseed.
+      :use_metadata true}}}})
+
+(def- cfg (config.get-in-fn [:client :fennel :aniseed]))
 
 (def- ani-aliases
   {:nu :nvim.util})
 
 (defn- ani [mod-name f-name]
   (let [mod-name (a.get ani-aliases mod-name mod-name)
-        mod (require (.. config.aniseed-module-prefix mod-name))]
+        mod (require (.. (cfg [:aniseed_module_prefix]) mod-name))]
     (if f-name
       (a.get mod f-name)
       mod)))
@@ -43,7 +49,7 @@
                          "nil"
                          (str.join "\n" (a.map view.serialise results)))
                        (a.first results))
-          result-lines (str.split result-str "\n")] 
+          result-lines (str.split result-str "\n")]
       (when (not opts.passive?)
         (display (if ok?
                    result-lines
@@ -56,13 +62,13 @@
                  opts.code "\n")
         out (anic :nu :with-out-str
                   (fn []
-                    (when config.use-metadata?
+                    (when (cfg [:use_metadata])
                       (set package.loaded.fennel (ani :fennel)))
 
                     (let [[ok? & results]
                           [(anic :eval :str code
                                  {:filename opts.file-path
-                                  :useMetadata config.use-metadata?})]]
+                                  :useMetadata (cfg [:use_metadata])})]]
                       (set opts.ok? ok?)
                       (set opts.results results))))]
     (when (not (a.empty? out))
@@ -98,7 +104,7 @@
   (wrapped-test ["; run-all-tests"] (ani :test :run-all)))
 
 (defn on-filetype []
-  (mapping.buf :n config.mappings.run-buf-tests
+  (mapping.buf :n (cfg [:mapping :run_buf_tests])
                :conjure.client.fennel.aniseed :run-buf-tests)
-  (mapping.buf :n config.mappings.run-all-tests
+  (mapping.buf :n (cfg [:mapping :run_all_tests])
                :conjure.client.fennel.aniseed :run-all-tests))
