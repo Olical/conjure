@@ -24,12 +24,11 @@
     opts.filetype
     log.append lines opts))
 
-(comment
-  (eval-str
-    {:code "(+ 10 20)"
-     :passive? true
-     :on-result (fn [r]
-                  (print "GOT A RESULT" r))})
+; (eval-str
+;   {:code "(+ 10 20)"
+;    :passive? true
+;    :on-result (fn [r]
+;                 (print "GOT A RESULT" r))})
 
-  (display [";; Hello, World!"]
-           {:filetype :fennel}))
+; (display [";; Hello, World!"]
+;          {:filetype :fennel})

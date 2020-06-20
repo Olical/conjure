@@ -57,5 +57,4 @@ do
   _0_0["aniseed/locals"]["display"] = v_23_0_
   display = v_23_0_
 end
-              -- (eval-str table: 0x4195a7e8) (display table: 0x40d5bee8 table: 0x40d5de28)
 return nil
