@@ -24,6 +24,21 @@ local client = _2_[2]
 local eval = _2_[3]
 local log = _2_[4]
 do local _ = ({nil, _0_0, {{}, nil}})[2] end
+local with_filetype = nil
+do
+  local v_23_0_ = nil
+  do
+    local v_23_0_0 = nil
+    local function with_filetype0(ft, f, ...)
+      return client["with-filetype"](ft, f, ...)
+    end
+    v_23_0_0 = with_filetype0
+    _0_0["with_filetype"] = v_23_0_0
+    v_23_0_ = v_23_0_0
+  end
+  _0_0["aniseed/locals"]["with_filetype"] = v_23_0_
+  with_filetype = v_23_0_
+end
 local eval_str = nil
 do
   local v_23_0_ = nil
@@ -33,10 +48,10 @@ do
       return eval["eval-str"](a.merge({origin = "api"}, opts))
     end
     v_23_0_0 = eval_str0
-    _0_0["eval-str"] = v_23_0_0
+    _0_0["eval_str"] = v_23_0_0
     v_23_0_ = v_23_0_0
   end
-  _0_0["aniseed/locals"]["eval-str"] = v_23_0_
+  _0_0["aniseed/locals"]["eval_str"] = v_23_0_
   eval_str = v_23_0_
 end
 local display = nil
@@ -45,10 +60,7 @@ do
   do
     local v_23_0_0 = nil
     local function display0(lines, opts)
-      if not a.get(opts, "filetype") then
-        error("opts.filetype must be set")
-      end
-      return client["with-filetype"](opts.filetype, log.append, lines, opts)
+      return log.append(lines, opts)
     end
     v_23_0_0 = display0
     _0_0["display"] = v_23_0_0

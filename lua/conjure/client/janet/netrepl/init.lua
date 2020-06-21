@@ -50,7 +50,7 @@ do
   _0_0["aniseed/locals"]["comment-prefix"] = v_23_0_
   comment_prefix = v_23_0_
 end
-config.merge({client = {janet = {netrepl = {connection = {["default-port"] = "9365", default_host = "127.0.0.1"}, debug = false, mapping = {connect = "cc", disconnect = "cd"}}}}})
+config.merge({client = {janet = {netrepl = {connection = {default_host = "127.0.0.1", default_port = "9365"}, debug = false, mapping = {connect = "cc", disconnect = "cd"}}}}})
 local eval_str = nil
 do
   local v_23_0_ = nil

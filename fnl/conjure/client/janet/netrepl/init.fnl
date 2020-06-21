@@ -18,7 +18,7 @@
      {:debug false
 
       :connection {:default_host "127.0.0.1"
-                   :default-port "9365"}
+                   :default_port "9365"}
       :mapping {:connect "cc"
                 :disconnect "cd"}}}}})
 
