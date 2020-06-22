@@ -45,7 +45,7 @@
 
 (defn- assoc-context [opts]
   (set opts.context
-       (or nvim.b.conjure_context
+       (or nvim.b.conjure#context
            (extract.context)))
   opts)
 

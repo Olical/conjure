@@ -306,7 +306,7 @@ Now you can hit `ClS` without a prefix in any buffer Conjure has a client for.
             If you have buffers with huge comment headers you may want to set
             this higher.
             If a specific buffer isn't extracting the context correctly, you
-            can override it by setting `b:conjure_context`.
+            can override it by setting `b:conjure#context`.
             Default: `24`
 
 `g:conjure#extract#form_pairs`
@@ -331,7 +331,7 @@ Now you can hit `ClS` without a prefix in any buffer Conjure has a client for.
             Display debug information in any client you're using.
             Default: `false`
 
-`b:conjure_context`
+`b:conjure#context`
             Override the context name for a specific buffer, preventing
             Conjure from attempting to extract it from the first few lines
             defined by the `g:conjure#extract#context_header_lines`
