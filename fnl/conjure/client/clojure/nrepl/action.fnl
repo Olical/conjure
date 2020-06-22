@@ -369,7 +369,8 @@
                       {:break? true})
           (require-ns "clojure.test")
           (server.eval
-            {:code (.. "(clojure.test/test-var (resolve '" test-name "))")}
+            {:code (.. "(clojure.test/test-var (resolve '" test-name "))")
+             :ns (extract.context)}
             (server.with-all-msgs-fn
               (fn [msgs]
                 (if (and (= 2 (a.count msgs))
