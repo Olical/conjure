@@ -774,7 +774,7 @@ do
               return a["run!"](_4_, msgs)
             end
           end
-          return server.eval({code = ("(clojure.test/test-var (resolve '" .. test_name .. "))")}, server["with-all-msgs-fn"](_3_))
+          return server.eval({code = ("(clojure.test/test-var" .. "  (doto (resolve '" .. test_name .. ")" .. "    (assert \"" .. test_name .. " is not a var\")))"), ns = extract.context()}, server["with-all-msgs-fn"](_3_))
         end
       end
     end
