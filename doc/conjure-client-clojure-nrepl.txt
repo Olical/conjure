@@ -11,10 +11,12 @@ CONTENTS                               *conjure-client-clojure-nrepl-contents*
 INTRODUCTION                       *conjure-client-clojure-nrepl-introduction*
 
 Conjure supports Clojure evaluation over an nREPL connection with optional
-CIDER middleware for additional features.
+CIDER middleware for additional features. The `vim-jack-in` plugin can make
+starting an nREPL server from within Neovim trivial, I highly recommend it.
 
  * https://nrepl.org
  * https://docs.cider.mx/cider-nrepl/
+ * https://github.com/clojure-vim/vim-jack-in
 
 To get started you can boot an nREPL server and ensure the port was written to
 the `.nrepl-port` file. Once it's running all you need to do is open a Clojure
