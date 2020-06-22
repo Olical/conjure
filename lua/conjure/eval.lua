@@ -100,7 +100,7 @@ local assoc_context = nil
 do
   local v_23_0_ = nil
   local function assoc_context0(opts)
-    opts.context = (nvim.b.conjure_context or extract.context())
+    opts.context = (nvim.b["conjure#context"] or extract.context())
     return opts
   end
   v_23_0_ = assoc_context0
