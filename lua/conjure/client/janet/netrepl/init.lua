@@ -60,7 +60,7 @@ do
       local function _3_(msg)
         local clean = text["trim-last-newline"](msg)
         if opts["on-result"] then
-          opts["on-result"](clean)
+          opts["on-result"](text["strip-ansi-escape-sequences"](clean))
         end
         if not opts["passive?"] then
           return ui.display(text["split-lines"](clean))

@@ -28,7 +28,9 @@
     (fn [msg]
       (let [clean (text.trim-last-newline msg)]
         (when opts.on-result
-          (opts.on-result clean))
+          ;; ANSI escape trimming happens here AND in log append (if enabled)
+          ;; so that "eval and replace form" won't end up inserting ANSI codes.
+          (opts.on-result (text.strip-ansi-escape-sequences clean)))
         (when (not opts.passive?)
           (ui.display (text.split-lines clean)))))))
 
