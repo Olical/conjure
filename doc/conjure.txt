@@ -82,14 +82,14 @@ I've also included some commands since they're related to the mappings.
 
 <localleader>ee          Evaluate the current form under the cursor. This is
                          the innermost pair (ignoring those in comments or
-                         strings). `extract.form-pairs` controls the character
-                         pairs.
+                         strings). `g:conjure#extract#form_pairs` controls the
+                         character pairs.
 
 <localleader>er          Evaluate the root form under the cursor. This is the
                          outermost pair. Great for evaluating a function
                          you're editing if your cursor is within a few nested
-                         forms. `extract.form-pairs` controls the character
-                         pairs.
+                         forms. `g:conjure#extract#form_pairs` controls the
+                         character pairs.
 
 <localleader>e!          Evaluate the form under the cursor and replace it
                          with the result of the evaluation. Using this on the
