@@ -9,7 +9,7 @@
 
 (defn config-dir []
   "Return $XDG_CONFIG_HOME/conjure.
-  Defaulting the config directory to $HOME/config."
+  Defaulting the config directory to $HOME/.config."
   (..  (or (env "XDG_CONFIG_HOME")
            (.. (env "HOME") "/.config"))
       "/conjure"))
