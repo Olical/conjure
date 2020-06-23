@@ -1,5 +1,7 @@
 ++++
-<img align="right" role="right" src="https://user-images.githubusercontent.com/315229/85461491-52638180-b59c-11ea-9bfc-e7a24a3f9b59.png"/>
+<div align="right" role="right">
+<img src="https://user-images.githubusercontent.com/315229/85461491-52638180-b59c-11ea-9bfc-e7a24a3f9b59.png"/>
+</div>
 ++++
 
 == https://oli.me.uk/conversational-software-development/[Conversational software development] for https://neovim.io[Neovim]
