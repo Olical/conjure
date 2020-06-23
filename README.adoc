@@ -1,5 +1,7 @@
 ++++
+<div>
 <img align="right" role="right" src="https://user-images.githubusercontent.com/315229/85461491-52638180-b59c-11ea-9bfc-e7a24a3f9b59.png"/>
+</div>
 ++++
 
 == https://oli.me.uk/conversational-software-development/[Conversational software development] for https://neovim.io[Neovim]
@@ -11,8 +13,6 @@ https://gitter.im/Olical/conjure?utm_source=badge&utm_medium=badge&utm_campaign=
 Conjure is an interactive environment for evaluating code and inspecting your program.
 
 The core features of Conjure are language agnostic (although it's targeted at Lisps for now), with each language client providing their own extra tools. Here's the language support so far, unchecked items are planned for the future.
-
-<<<
 
  * [x] https://clojure.org/[Clojure] over https://nrepl.org/[nREPL] (https://github.com/Olical/conjure/wiki/Quick-start:-Clojure[quickstart])
  * [x] https://fennel-lang.org/[Fennel] inside Neovim via Lua and https://github.com/Olical/aniseed[Aniseed] (https://github.com/Olical/conjure/wiki/Quick-start:-Fennel-(Aniseed)[quickstart])
