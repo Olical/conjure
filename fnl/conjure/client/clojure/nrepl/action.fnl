@@ -372,7 +372,7 @@
             {:code (.. "(clojure.test/test-var"
                        "  (doto (resolve '" test-name ")"
                        "    (assert \"" test-name " is not a var\")))")
-             :ns (extract.context)}
+             :context (extract.context)}
             (server.with-all-msgs-fn
               (fn [msgs]
                 (if (and (= 2 (a.count msgs))
