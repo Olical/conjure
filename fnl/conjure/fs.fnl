@@ -1,6 +1,7 @@
 (module conjure.fs
   {require {nvim conjure.aniseed.nvim
-            a conjure.aniseed.core}})
+            a conjure.aniseed.core
+            str conjure.aniseed.string}})
 
 (defn- env [k]
   (let [v (nvim.fn.getenv k)]
@@ -27,3 +28,27 @@
   (or
     (findfile name ".;")
     (findfile name (.. (config-dir) ";"))))
+
+(defn file-readable? [path]
+  (= 1 (nvim.fn.filereadable path)))
+
+(defn split-path [path]
+  (->> (str.split path "/")
+       (a.filter #(not (a.empty? $)))))
+
+(defn join-path [parts]
+  (str.join "/" (a.concat parts)))
+
+(defn resolve-relative [path]
+  "Successively remove parts of the path until we get to a relative path that
+  points to a file we can read. If we run out of parts default to the original
+  path."
+  (let [root (nvim.fn.getcwd)]
+    (fn loop [parts]
+      (if (a.empty? parts)
+        path
+        (if (file-readable? (join-path (a.concat [root] parts)))
+          (join-path parts)
+          (loop (a.rest parts)))))
+
+    (loop (split-path path))))
