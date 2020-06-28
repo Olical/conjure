@@ -4,11 +4,9 @@
 </p>
 ++++
 
-== https://oli.me.uk/conversational-software-development/[Conversational software development] for https://neovim.io[Neovim]
-
 https://gitter.im/Olical/conjure?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge[image:https://badges.gitter.im/Olical/conjure.svg[Gitter]] http://clojurians.net[image:https://img.shields.io/badge/chat-clojurians.net%20%23conjure-green[Slack]]
 
-'''
+== https://oli.me.uk/conversational-software-development/[Conversational software development] for https://neovim.io[Neovim]
 
 Conjure is an interactive environment for evaluating code within your running program.
 
