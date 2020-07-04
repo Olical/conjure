@@ -5,7 +5,7 @@
             bridge conjure.bridge
             eval conjure.eval
             str conjure.aniseed.string
-            config conjure.config2
+            config conjure.config
             action conjure.client.clojure.nrepl.action}})
 
 (def buf-suffix ".cljc")

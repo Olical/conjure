@@ -15,8 +15,8 @@ do
   _0_0 = module_23_0_
 end
 local function _1_(...)
-  _0_0["aniseed/local-fns"] = {require = {a = "conjure.aniseed.core", bridge = "conjure.bridge", config = "conjure.config2", mapping = "conjure.mapping", nvim = "conjure.aniseed.nvim", server = "conjure.client.janet.netrepl.server", text = "conjure.text", ui = "conjure.client.janet.netrepl.ui"}}
-  return {require("conjure.aniseed.core"), require("conjure.bridge"), require("conjure.config2"), require("conjure.mapping"), require("conjure.aniseed.nvim"), require("conjure.client.janet.netrepl.server"), require("conjure.text"), require("conjure.client.janet.netrepl.ui")}
+  _0_0["aniseed/local-fns"] = {require = {a = "conjure.aniseed.core", bridge = "conjure.bridge", config = "conjure.config", mapping = "conjure.mapping", nvim = "conjure.aniseed.nvim", server = "conjure.client.janet.netrepl.server", text = "conjure.text", ui = "conjure.client.janet.netrepl.ui"}}
+  return {require("conjure.aniseed.core"), require("conjure.bridge"), require("conjure.config"), require("conjure.mapping"), require("conjure.aniseed.nvim"), require("conjure.client.janet.netrepl.server"), require("conjure.text"), require("conjure.client.janet.netrepl.ui")}
 end
 local _2_ = _1_(...)
 local a = _2_[1]

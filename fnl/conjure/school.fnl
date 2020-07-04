@@ -1,7 +1,7 @@
 (module conjure.school
   {require {nvim conjure.aniseed.nvim
             buffer conjure.buffer
-            config conjure.config2
+            config conjure.config
             editor conjure.editor
             a conjure.aniseed.core}})
 

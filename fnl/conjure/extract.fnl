@@ -3,7 +3,7 @@
             nvim conjure.aniseed.nvim
             nu conjure.aniseed.nvim.util
             str conjure.aniseed.string
-            config conjure.config2
+            config conjure.config
             client conjure.client}})
 
 (defn- read-range [[srow scol] [erow ecol]]

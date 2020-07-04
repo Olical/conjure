@@ -2,7 +2,7 @@
   {require {a conjure.aniseed.core
             nvim conjure.aniseed.nvim
             fennel conjure.aniseed.fennel
-            config conjure.config2}})
+            config conjure.config}})
 
 (defonce- loaded {})
 

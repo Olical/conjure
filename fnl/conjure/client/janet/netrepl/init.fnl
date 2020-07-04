@@ -5,7 +5,7 @@
             mapping conjure.mapping
             text conjure.text
             ui conjure.client.janet.netrepl.ui
-            config conjure.config2
+            config conjure.config
             server conjure.client.janet.netrepl.server}})
 
 (def buf-suffix ".janet")

@@ -1,4 +1,4 @@
-(module conjure.config2
+(module conjure.config
   {require {nvim conjure.aniseed.nvim
             a conjure.aniseed.core
             str conjure.aniseed.string}})

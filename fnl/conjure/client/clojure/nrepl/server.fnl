@@ -9,7 +9,7 @@
             bencode conjure.bencode
             bencode-stream conjure.bencode-stream
             state conjure.client.clojure.nrepl.state
-            config conjure.config2
+            config conjure.config
             ui conjure.client.clojure.nrepl.ui}})
 
 (defn with-conn-or-warn [f opts]

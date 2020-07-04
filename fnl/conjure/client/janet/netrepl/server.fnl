@@ -4,7 +4,7 @@
             net conjure.net
             log conjure.log
             client conjure.client
-            config conjure.config2
+            config conjure.config
             trn conjure.client.janet.netrepl.transport}})
 
 (defonce- state

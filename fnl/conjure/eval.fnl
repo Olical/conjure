@@ -5,7 +5,7 @@
             client conjure.client
             text conjure.text
             fs conjure.fs
-            config conjure.config2
+            config conjure.config
             promise conjure.promise
             editor conjure.editor
             buffer conjure.buffer

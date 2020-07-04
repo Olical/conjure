@@ -1,6 +1,6 @@
 local _0_0 = nil
 do
-  local name_23_0_ = "conjure.config2"
+  local name_23_0_ = "conjure.config"
   local loaded_23_0_ = package.loaded[name_23_0_]
   local module_23_0_ = nil
   if ("table" == type(loaded_23_0_)) then

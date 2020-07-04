@@ -2,7 +2,7 @@
   {require {nvim conjure.aniseed.nvim
             a conjure.aniseed.core
             str conjure.aniseed.string
-            config conjure.config2
+            config conjure.config
             extract conjure.extract
             client conjure.client
             eval conjure.eval

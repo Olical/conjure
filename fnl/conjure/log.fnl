@@ -4,7 +4,7 @@
             str conjure.aniseed.string
             buffer conjure.buffer
             client conjure.client
-            config conjure.config2
+            config conjure.config
             view conjure.aniseed.view
             text conjure.text
             editor conjure.editor

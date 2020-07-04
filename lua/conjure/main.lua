@@ -15,8 +15,8 @@ do
   _0_0 = module_23_0_
 end
 local function _1_(...)
-  _0_0["aniseed/local-fns"] = {require = {config = "conjure.config2", mapping = "conjure.mapping"}}
-  return {require("conjure.config2"), require("conjure.mapping")}
+  _0_0["aniseed/local-fns"] = {require = {config = "conjure.config", mapping = "conjure.mapping"}}
+  return {require("conjure.config"), require("conjure.mapping")}
 end
 local _2_ = _1_(...)
 local config = _2_[1]

@@ -7,7 +7,7 @@
             mapping conjure.mapping
             text conjure.text
             log conjure.log
-            config conjure.config2
+            config conjure.config
             extract conjure.extract}})
 
 (def buf-suffix ".fnl")

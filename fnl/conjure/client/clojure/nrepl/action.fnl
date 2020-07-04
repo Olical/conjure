@@ -10,7 +10,7 @@
             str conjure.aniseed.string
             nvim conjure.aniseed.nvim
             view conjure.aniseed.view
-            config conjure.config2
+            config conjure.config
             state conjure.client.clojure.nrepl.state
             server conjure.client.clojure.nrepl.server
             ui conjure.client.clojure.nrepl.ui

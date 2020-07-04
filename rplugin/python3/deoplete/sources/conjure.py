@@ -9,7 +9,7 @@ class Source(Base):
     self.vim = vim
 
     self.name = "conjure"
-    self.filetypes = self.lua("conjure.config2", "filetypes")
+    self.filetypes = self.lua("conjure.config", "filetypes")
     self.rank = 500
 
   def lua(self, module, f, *args):
