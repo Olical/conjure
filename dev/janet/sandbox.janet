@@ -16,4 +16,6 @@
 (comment
   (explode))
 
+# TODO: How can I ,ef then access other/sub in here.
+# I need to be able to require this module _and_ the things it requires.
 (+ (add 10 20) (other/sub 10 5))
