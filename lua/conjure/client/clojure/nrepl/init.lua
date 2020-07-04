@@ -56,7 +56,7 @@ do
   _0_0["aniseed/locals"]["cfg"] = v_23_0_
   cfg = v_23_0_
 end
-config.merge({client = {clojure = {nrepl = {connection = {default_host = "localhost", port_files = {".nrepl-port", ".shadow-cljs/nrepl.port"}}, debug = false, eval = {auto_require = true, pretty_print = true}, interrupt = {sample_limit = 0.29999999999999999}, mapping = {connect_port_file = "cf", disconnect = "cd", interrupt = "ei", last_exception = "ve", refresh_all = "ra", refresh_changed = "rr", refresh_clear = "rc", result_1 = "v1", result_2 = "v2", result_3 = "v3", run_all_tests = "ta", run_alternate_ns_tests = "tN", run_current_ns_tests = "tn", run_current_test = "tc", session_clone = "sc", session_close = "sq", session_close_all = "sQ", session_fresh = "sf", session_list = "sl", session_next = "sn", session_prev = "sp", session_select = "ss", session_type = "st", view_source = "vs"}, refresh = {after = nil, before = nil, dirs = nil}}}}})
+config.merge({client = {clojure = {nrepl = {connection = {default_host = "localhost", port_files = {".nrepl-port", ".shadow-cljs/nrepl.port"}}, debug = false, eval = {auto_require = true, pretty_print = true}, interrupt = {sample_limit = 0.29999999999999999}, mapping = {connect_port_file = "cf", disconnect = "cd", interrupt = "ei", last_exception = "ve", refresh_all = "ra", refresh_changed = "rr", refresh_clear = "rc", result_1 = "v1", result_2 = "v2", result_3 = "v3", run_all_tests = "ta", run_alternate_ns_tests = "tN", run_current_ns_tests = "tn", run_current_test = "tc", session_clone = "sc", session_close = "sq", session_close_all = "sQ", session_fresh = "sf", session_list = "sl", session_next = "sn", session_prev = "sp", session_select = "ss", view_source = "vs"}, refresh = {after = nil, before = nil, dirs = nil}}}}})
 local context = nil
 do
   local v_23_0_ = nil
@@ -194,7 +194,6 @@ do
       mapping.buf("n", cfg({"mapping", "session_next"}), "conjure.client.clojure.nrepl.action", "next-session")
       mapping.buf("n", cfg({"mapping", "session_prev"}), "conjure.client.clojure.nrepl.action", "prev-session")
       mapping.buf("n", cfg({"mapping", "session_select"}), "conjure.client.clojure.nrepl.action", "select-session-interactive")
-      mapping.buf("n", cfg({"mapping", "session_type"}), "conjure.client.clojure.nrepl.action", "display-session-type")
       mapping.buf("n", cfg({"mapping", "run_all_tests"}), "conjure.client.clojure.nrepl.action", "run-all-tests")
       mapping.buf("n", cfg({"mapping", "run_current_ns_tests"}), "conjure.client.clojure.nrepl.action", "run-current-ns-tests")
       mapping.buf("n", cfg({"mapping", "run_alternate_ns_tests"}), "conjure.client.clojure.nrepl.action", "run-alternate-ns-tests")

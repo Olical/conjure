@@ -55,7 +55,6 @@
        :session_next "sn"
        :session_prev "sp"
        :session_select "ss"
-       :session_type "st"
 
        :run_all_tests "ta"
        :run_current_ns_tests "tn"
@@ -124,8 +123,6 @@
                :conjure.client.clojure.nrepl.action :prev-session)
   (mapping.buf :n (cfg [:mapping :session_select])
                :conjure.client.clojure.nrepl.action :select-session-interactive)
-  (mapping.buf :n (cfg [:mapping :session_type])
-               :conjure.client.clojure.nrepl.action :display-session-type)
 
   (mapping.buf :n (cfg [:mapping :run_all_tests])
                :conjure.client.clojure.nrepl.action :run-all-tests)
