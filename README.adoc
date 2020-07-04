@@ -15,19 +15,6 @@ The core features of Conjure are language agnostic (although it's targeted at Li
  * https://fennel-lang.org/[Fennel] inside Neovim via Lua and https://github.com/Olical/aniseed[Aniseed] (https://github.com/Olical/conjure/wiki/Quick-start:-Fennel-(Aniseed)[quickstart])
  * https://janet-lang.org/[Janet] over https://github.com/janet-lang/spork/#networked-repl[spork/netrepl] (https://github.com/Olical/conjure/wiki/Quick-start:-Janet-(netrepl)[quickstart])
 
-== Clients of tomorrow
-
-These are clients I intend to build eventually or encourage another community member to build and maintain on my behalf. Every language we add creates another bridge between communities, I would like Conjure to be common ground between all of our beloved esoteric REPL based languages.
-
- * https://clojure.org/[Clojure] over https://oli.me.uk/clojure-socket-prepl-cookbook/[prepl]
- * https://fennel-lang.org/[Fennel] over https://gitlab.com/technomancy/jeejah/-/tree/master[nREPL] without Aniseed (for Lua scripting outside of Neovim)
- * https://racket-lang.org/[Racket]
- * http://lfe.io/[Lisp Flavoured Erlang]
- * https://github.com/candid82/joker[Joker]
- * Scheme (https://www.call-cc.org/[Chicken], Chez or Guile? All?)
- * Common Lisp (https://github.com/Olical/conjure/issues/97[#97])
- * Non-Lisp languages and beyond! (when Neovim has tree-sitter)
-
 == User experience
 
 What does wielding Conjure actually look like? What can you do with it?
@@ -84,6 +71,19 @@ All further documentation is found within link:doc/conjure.txt[`:help conjure`].
 Please do get in touch via http://clojurians.net/[Slack] (`#conjure`), https://gitter.im/Olical/conjure[Gitter] or Twitter (https://twitter.com/OliverCaldwell[@OliverCaldwell]) if you have any questions or issues.
 
 Broader documentation can be found in the https://github.com/Olical/conjure/wiki[Conjure wiki], there you'll find blog posts and guides that will help you get common workflows up and running. Contributions are encouraged!
+
+== Clients of tomorrow
+
+These are clients I intend to build eventually or encourage another community member to build and maintain on my behalf. Every language we add creates another bridge between communities, I would like Conjure to be common ground between all of our beloved esoteric REPL based languages.
+
+ * https://clojure.org/[Clojure] over https://oli.me.uk/clojure-socket-prepl-cookbook/[prepl]
+ * https://fennel-lang.org/[Fennel] over https://gitlab.com/technomancy/jeejah/-/tree/master[nREPL] without Aniseed (for Lua scripting outside of Neovim)
+ * https://racket-lang.org/[Racket]
+ * http://lfe.io/[Lisp Flavoured Erlang]
+ * https://github.com/candid82/joker[Joker]
+ * Scheme (https://www.call-cc.org/[Chicken], Chez or Guile? All?)
+ * Common Lisp (https://github.com/Olical/conjure/issues/97[#97])
+ * Non-Lisp languages and beyond! (when Neovim has tree-sitter)
 
 == Behind the curtain
 
