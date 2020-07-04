@@ -70,8 +70,12 @@
             (send "Conjure")
             (display-conn-status :connected)))))))
 
-(defn connect [host port]
-  (let [host (or host (config.get-in [:client :janet :netrepl :connection :default_host]))
+(defn connect [host-or-port port]
+  (let [[host port] (if (and host-or-port (not port))
+                      [nil host-or-port]
+                      [host-or-port port])
+
+        host (or host (config.get-in [:client :janet :netrepl :connection :default_host]))
         port (or port (config.get-in [:client :janet :netrepl :connection :default_port]))
         resolved-host (net.resolve host)
         conn {:sock (vim.loop.new_tcp)

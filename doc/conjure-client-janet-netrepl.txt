@@ -41,8 +41,11 @@ See |conjure-client-janet-netrepl-configuration| for specific configuration
 options relevant to these mappings.
 
 :ConjureConnect [host] [port]
-                         Connect to the given host and port.
-                         `:ConjureConnect staging.my-app.com 5678`
+                         Connect to the given host and port. The host defaults
+                         to `127.0.0.1` and the port defaults to `5678`.
+                         `:ConjureConnect`
+                         `:ConjureConnect 5678`
+                         `:ConjureConnect staging.my-app.com 5555`
 
 <localleader>cc          Connect to a running netrepl using the default host
                          and port.
