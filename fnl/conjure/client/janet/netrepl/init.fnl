@@ -50,7 +50,7 @@
                :conjure.client.janet.netrepl.server :connect)
 
   (nvim.ex.command_
-    "-nargs=+ -buffer ConjureConnect"
+    "-nargs=* -buffer ConjureConnect"
     (bridge.viml->lua
       :conjure.client.janet.netrepl.server :connect
       {:args "<f-args>"})))

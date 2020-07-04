@@ -116,7 +116,7 @@ do
     local function on_filetype0()
       mapping.buf("n", config["get-in"]({"client", "janet", "netrepl", "mapping", "disconnect"}), "conjure.client.janet.netrepl.server", "disconnect")
       mapping.buf("n", config["get-in"]({"client", "janet", "netrepl", "mapping", "connect"}), "conjure.client.janet.netrepl.server", "connect")
-      return nvim.ex.command_("-nargs=+ -buffer ConjureConnect", bridge["viml->lua"]("conjure.client.janet.netrepl.server", "connect", {args = "<f-args>"}))
+      return nvim.ex.command_("-nargs=* -buffer ConjureConnect", bridge["viml->lua"]("conjure.client.janet.netrepl.server", "connect", {args = "<f-args>"}))
     end
     v_23_0_0 = on_filetype0
     _0_0["on-filetype"] = v_23_0_0
