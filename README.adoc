@@ -25,7 +25,6 @@ I'll break that asciinema down for you, just in case it was too quick or you cou
 
  * Once installed, open a file of a supported file type such as `clojure`, `fennel` or `janet`.
  * Some languages, such as Clojure, will automatically connect to a runtime environment or give you the commands and mappings to do so yourself.
- * Then write or navigate to whatever code you want, as you normally would.
  * Use Conjure's various evaluation tools to execute the code you're interested in such as: Form, file, buffer or even form at a Neovim mark.
  * Every result is kept in a log buffer that you can access at any time. You can open this in a window or get updates through the HUD.
  * You can look up documentation with `K` or go to definition with `gd`.
