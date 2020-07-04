@@ -9,7 +9,7 @@ https://gitter.im/Olical/conjure?utm_source=badge&utm_medium=badge&utm_campaign=
 
 Conjure is an interactive environment for evaluating code within your running program.
 
-The core features of Conjure are language agnostic (although it's targeted at Lisps _for now_), with each language client providing their own extra tools. Here's what languages are supported so far, contributions and 3rd party plugins that add clients are highly encouraged!
+The core features of Conjure are language agnostic (although it's targeted at Lisps _for now_), with each language client providing their own extra tools. Here's the currently supported languages, contributions and 3rd party plugins that add clients are highly encouraged!
 
  * https://clojure.org/[Clojure] over https://nrepl.org/[nREPL] (https://github.com/Olical/conjure/wiki/Quick-start:-Clojure[quickstart])
  * https://fennel-lang.org/[Fennel] inside Neovim via Lua and https://github.com/Olical/aniseed[Aniseed] (https://github.com/Olical/conjure/wiki/Quick-start:-Fennel-(Aniseed)[quickstart])
@@ -36,23 +36,13 @@ https://asciinema.org/a/325517[image:https://asciinema.org/a/325517.svg[asciicas
 
 I'll break that asciinema down for you, just in case it was too quick or you couldn't watch it.
 
- * Once installed, open a file of a supported file type such as `clojure` or `fennel`.
+ * Once installed, open a file of a supported file type such as `clojure`, `fennel` or `janet`.
  * Some languages, such as Clojure, will automatically connect to a runtime environment or give you the commands and mappings to do so yourself.
  * Then write or navigate to whatever code you want, as you normally would.
- * When you want to run any part of your file (or the whole thing!), invoke Conjure's various evaluation mappings, such as:
- ** Whole file
- ** Word or symbol under cursor
- ** Form under cursor (a form is just a block of code in matching parenthesis)
- ** Root form (similar, but the outermost pair of parenthesis)
- ** Form at mark (set a normal Neovim mark anywhere in your project, evaluate that form from anywhere)
- ** Visual selection
- ** Motion
- * Every result is kept in a log buffer that you can access at any time.
- ** The log is a regular buffer you can edit and add more runnable code to.
- ** When you don't have the log open in the foreground, results are briefly displayed in the heads up display (HUD).
+ * Use Conjure's various evaluation tools to execute the code you're interested in such as: Form, file, buffer or even form at a Neovim mark.
+ * Every result is kept in a log buffer that you can access at any time. You can open this in a window or get updates through the HUD.
  * You can look up documentation with `K` or go to definition with `gd`.
- * Support for multiple asynchronous autocompletion frameworks, with https://github.com/Shougo/deoplete.nvim/[deoplete] built in.
- ** Or use Neovim's native `<C-x><C-o>` which is hooked up out of the box.
+ * Support for multiple asynchronous autocompletion frameworks, with https://github.com/Shougo/deoplete.nvim/[deoplete] built in (`<C-x><C-o>` also works!).
 
 Conjure allows you to send the right part of your code off for evaluation, see the results, wrap the results in more code and evaluate that. It keeps a log of your actions and results so you don't have to remember them, that context is extremely helpful when you're down the rabbit hole of a bug hunt.
 
