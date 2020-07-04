@@ -15,21 +15,22 @@ do
   _0_0 = module_23_0_
 end
 local function _1_(...)
-  _0_0["aniseed/local-fns"] = {require = {a = "conjure.aniseed.core", buffer = "conjure.buffer", client = "conjure.client", config = "conjure.config2", editor = "conjure.editor", extract = "conjure.extract", log = "conjure.log", nvim = "conjure.aniseed.nvim", promise = "conjure.promise", text = "conjure.text", uuid = "conjure.uuid"}}
-  return {require("conjure.aniseed.core"), require("conjure.buffer"), require("conjure.client"), require("conjure.config2"), require("conjure.editor"), require("conjure.extract"), require("conjure.log"), require("conjure.aniseed.nvim"), require("conjure.promise"), require("conjure.text"), require("conjure.uuid")}
+  _0_0["aniseed/local-fns"] = {require = {a = "conjure.aniseed.core", buffer = "conjure.buffer", client = "conjure.client", config = "conjure.config2", editor = "conjure.editor", extract = "conjure.extract", fs = "conjure.fs", log = "conjure.log", nvim = "conjure.aniseed.nvim", promise = "conjure.promise", text = "conjure.text", uuid = "conjure.uuid"}}
+  return {require("conjure.aniseed.core"), require("conjure.buffer"), require("conjure.client"), require("conjure.config2"), require("conjure.editor"), require("conjure.extract"), require("conjure.fs"), require("conjure.log"), require("conjure.aniseed.nvim"), require("conjure.promise"), require("conjure.text"), require("conjure.uuid")}
 end
 local _2_ = _1_(...)
 local a = _2_[1]
-local text = _2_[10]
-local uuid = _2_[11]
+local promise = _2_[10]
+local text = _2_[11]
+local uuid = _2_[12]
 local buffer = _2_[2]
 local client = _2_[3]
 local config = _2_[4]
 local editor = _2_[5]
 local extract = _2_[6]
-local log = _2_[7]
-local nvim = _2_[8]
-local promise = _2_[9]
+local fs = _2_[7]
+local log = _2_[8]
+local nvim = _2_[9]
 do local _ = ({nil, _0_0, {{}, nil}})[2] end
 local preview = nil
 do
@@ -84,7 +85,8 @@ do
   do
     local v_23_0_0 = nil
     local function file0()
-      local opts = {["file-path"] = extract["file-path"](), action = "eval", origin = "file"}
+      local absolute_path = extract["file-path"]()
+      local opts = {["absolute-file-path"] = absolute_path, ["file-path"] = fs["resolve-relative"](absolute_path, nvim.fn.getcwd()), action = "eval", origin = "file"}
       opts.preview = preview(opts)
       display_request(opts)
       return client.call("eval-file", with_last_result_hook(opts))

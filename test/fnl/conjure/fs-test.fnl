@@ -30,9 +30,13 @@
 
 (deftest resolve-relative
   (t.= "fnl/conjure/fs.fnl"
-       (fs.resolve-relative (.. (nvim.fn.getcwd) "/fnl/conjure/fs.fnl"))
+       (fs.resolve-relative
+         (.. (nvim.fn.getcwd) "/fnl/conjure/fs.fnl")
+         (nvim.fn.getcwd))
        "cut down relative to the root")
 
   (t.= "/foo/bar/fnl/conjure/fs.fnl-nope"
-       (fs.resolve-relative "/foo/bar/fnl/conjure/fs.fnl-nope")
+       (fs.resolve-relative
+         "/foo/bar/fnl/conjure/fs.fnl-nope"
+         (nvim.fn.getcwd))
        "fall back to original"))

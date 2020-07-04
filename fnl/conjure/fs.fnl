@@ -39,16 +39,15 @@
 (defn join-path [parts]
   (str.join "/" (a.concat parts)))
 
-(defn resolve-relative [path]
+(defn resolve-relative [path root]
   "Successively remove parts of the path until we get to a relative path that
-  points to a file we can read. If we run out of parts default to the original
-  path."
-  (let [root (nvim.fn.getcwd)]
-    (fn loop [parts]
-      (if (a.empty? parts)
-        path
-        (if (file-readable? (join-path (a.concat [root] parts)))
-          (join-path parts)
-          (loop (a.rest parts)))))
+  points to a file we can read from the root. If we run out of parts default to
+  the original path."
+  (fn loop [parts]
+    (if (a.empty? parts)
+      path
+      (if (file-readable? (join-path (a.concat [root] parts)))
+        (join-path parts)
+        (loop (a.rest parts)))))
 
-    (loop (split-path path))))
+  (loop (split-path path)))

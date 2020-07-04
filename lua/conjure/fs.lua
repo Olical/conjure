@@ -137,8 +137,7 @@ do
   local v_23_0_ = nil
   do
     local v_23_0_0 = nil
-    local function resolve_relative0(path)
-      local root = nvim.fn.getcwd()
+    local function resolve_relative0(path, root)
       local function loop(parts)
         if a["empty?"](parts) then
           return path

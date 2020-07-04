@@ -4,6 +4,7 @@
             extract conjure.extract
             client conjure.client
             text conjure.text
+            fs conjure.fs
             config conjure.config2
             promise conjure.promise
             editor conjure.editor
@@ -34,7 +35,11 @@
         (when f (f result))))))
 
 (defn file []
-  (let [opts {:file-path (extract.file-path)
+  (let [absolute-path (extract.file-path)
+        opts {:file-path (fs.resolve-relative
+                           absolute-path
+                           (nvim.fn.getcwd))
+              :absolute-file-path absolute-path
               :origin :file
               :action :eval}]
     (set opts.preview (preview opts))
