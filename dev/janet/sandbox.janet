@@ -1,4 +1,4 @@
-(import ./dev/janet/other)
+(import ./other)
 
 (defn add
   "It adds things!"

@@ -86,7 +86,14 @@ do
     local v_23_0_0 = nil
     local function file0()
       local absolute_path = extract["file-path"]()
-      local opts = {["absolute-file-path"] = absolute_path, ["file-path"] = fs["resolve-relative"](absolute_path, nvim.fn.getcwd()), action = "eval", origin = "file"}
+      local opts = nil
+      local _3_
+      if config["get-in"]({"eval", "always_absolute_file"}) then
+        _3_ = absolute_path
+      else
+        _3_ = fs["resolve-relative"](absolute_path, (config["get-in"]({"eval", "relative_file_root"}) or nvim.fn.getcwd()))
+      end
+      opts = {["file-path"] = _3_, action = "eval", origin = "file"}
       opts.preview = preview(opts)
       display_request(opts)
       return client.call("eval-file", with_last_result_hook(opts))

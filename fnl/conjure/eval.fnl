@@ -36,10 +36,12 @@
 
 (defn file []
   (let [absolute-path (extract.file-path)
-        opts {:file-path (fs.resolve-relative
+        opts {:file-path (if (config.get-in [:eval :always_absolute_file])
                            absolute-path
-                           (nvim.fn.getcwd))
-              :absolute-file-path absolute-path
+                           (fs.resolve-relative
+                             absolute-path
+                             (or (config.get-in [:eval :relative_file_root])
+                                 (nvim.fn.getcwd))))
               :origin :file
               :action :eval}]
     (set opts.preview (preview opts))
