@@ -83,6 +83,16 @@
          :column (-?> (a.get-in opts [:range :start 2]) (a.inc))
          :session (or opts.session (a.get-in state [:conn :session]))
 
+         :nrepl.middleware.print/options
+         {:associative-table? 1
+          :level (or (config.get-in [:client :clojure :nrepl :eval :print_options :level])
+                     nil)
+          :length (or (config.get-in [:client :clojure :nrepl :eval :print_options :length])
+                      nil)}
+
+         :nrepl.middleware.print/quota
+         (config.get-in [:client :clojure :nrepl :eval :print_quota])
+
          :nrepl.middleware.print/print
          (when (config.get-in [:client :clojure :nrepl :eval :pretty_print])
            :conjure.internal/pprint)}

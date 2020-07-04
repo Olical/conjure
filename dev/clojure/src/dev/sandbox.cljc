@@ -43,6 +43,7 @@
 (defn after-refresh []
   (println "All done!"))
 
+{:foo {:bar {:baz {:quux [1 2 3]}}}}
 (range 30)
 
 (meta #'add)
@@ -60,6 +61,8 @@
     (t/is (= 10 10))))
 
 (comment
+  (set! *print-length* 5)
+
   (throw (Error. "ohno"))
   (do (print "start ")
       (Thread/sleep 5000)

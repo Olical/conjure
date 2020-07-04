@@ -154,6 +154,17 @@ All configuration can be set as described in |conjure-configuration|.
             if you have side effects at the top level of your namespace.
             Default: `true`
 
+`g:conjure#client#clojure#nrepl#eval#print_options#level`
+            Elide data in the output that surpasses this level of depth with
+            the pretty printer. Set it to `false` to disable this limit.
+            Default: `50`
+
+`g:conjure#client#clojure#nrepl#eval#print_options#length`
+            Elide data in the output that surpasses this many items, great for
+            preventing infinite lazy sequences from melting your CPU. Set it
+            to `false` to disable this limit.
+            Default: `500`
+
 `g:conjure#client#clojure#nrepl#debug`
             Should the underlying nREPL messages sent and received by Conjure
             be shown in the log buffer.

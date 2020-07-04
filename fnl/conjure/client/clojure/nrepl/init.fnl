@@ -22,10 +22,12 @@
 
       :eval
       {:pretty_print true
-       :auto_require true}
+       :auto_require true
+       :print_quota nil
+       :print_options {:length 500
+                       :level 50}}
 
-      :debug
-      false
+      :debug false
 
       :interrupt
       {:sample_limit 0.3}
