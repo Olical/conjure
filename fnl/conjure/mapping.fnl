@@ -3,7 +3,6 @@
             a conjure.aniseed.core
             str conjure.aniseed.string
             config conjure.config2
-            old-config conjure.config
             extract conjure.extract
             client conjure.client
             eval conjure.eval
@@ -48,38 +47,6 @@
 
   (client.optional-call :on-filetype))
 
-;; TODO Delete.
-(defn- parse-config-target [target]
-  (let [client-path (str.split target "/")]
-    {:client (when (= 2 (a.count client-path))
-               (a.first client-path))
-     :path (str.split (a.last client-path) "%.")}))
-
-;; TODO Delete.
-(defn config-command [target ...]
-  (print "DEPRECATED: ConjureConfig has been replaced by `let g:conjure#...` - this method will stop working soon.")
-  (let [opts (parse-config-target target)
-        current (old-config.get opts)
-        val (str.join [...])]
-
-    (if (a.empty? val)
-      (a.println target "=" (a.pr-str current))
-      (old-config.assoc
-        (a.assoc
-          opts :val
-          (fennel.eval val))))))
-
-;; TODO Delete.
-(defn- assoc-initial-config []
-  (when nvim.g.conjure_config
-    (-?>> nvim.g.conjure_config
-          (a.map-indexed
-            (fn [[target val]]
-              (a.merge
-                (parse-config-target target)
-                {:val val})))
-          (a.run! old-config.assoc))))
-
 (defn init [filetypes]
   (nvim.ex.augroup :conjure_init_filetypes)
   (nvim.ex.autocmd_)
@@ -95,8 +62,7 @@
   (nvim.ex.autocmd
     :VimLeavePre :*
     (bridge.viml->lua :conjure.log :clear-close-hud-passive-timer {}))
-  (nvim.ex.augroup :END)
-  (assoc-initial-config))
+  (nvim.ex.augroup :END))
 
 (defn eval-ranged-command [start end code]
   (if (= "" code)
@@ -130,13 +96,6 @@
   (bridge.viml->lua
     :conjure.mapping :eval-ranged-command
     {:args "<line1>, <line2>, <q-args>"}))
-
-;; TODO Add deprecation warning, map to the new system.
-(nvim.ex.command_
-  "-nargs=+ ConjureConfig"
-  (bridge.viml->lua
-    :conjure.mapping :config-command
-    {:args "<f-args>"}))
 
 (nvim.ex.command_
   "ConjureSchool"
