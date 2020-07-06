@@ -68,13 +68,13 @@
            :row (if cursor-top-right?
                   (- (editor.height) 2)
                   0)
-           :col (editor.width)
-           :anchor :SE
+           :col (editor.percent-width (config.get-in [:log :hud :col]))
+           :anchor (config.get-in [:log :hud :anchor])
 
            :width (editor.percent-width (config.get-in [:log :hud :width]))
            :height (editor.percent-height (config.get-in [:log :hud :height]))
            :focusable false
-           :style :minimal}]
+           :style (config.get-in [:log :hud :style])}]
 
       (when (not state.hud.id)
         (set state.hud.id (nvim.open_win buf false win-opts))

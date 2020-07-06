@@ -163,7 +163,7 @@ do
       else
         _3_ = 0
       end
-      win_opts = {anchor = "SE", col = editor.width(), focusable = false, height = editor["percent-height"](config["get-in"]({"log", "hud", "height"})), relative = "editor", row = _3_, style = "minimal", width = editor["percent-width"](config["get-in"]({"log", "hud", "width"}))}
+      win_opts = {anchor = config["get-in"]({"log", "hud", "anchor"}), col = editor["percent-width"](config["get-in"]({"log", "hud", "col"})), focusable = false, height = editor["percent-height"](config["get-in"]({"log", "hud", "height"})), relative = "editor", row = _3_, style = config["get-in"]({"log", "hud", "style"}), width = editor["percent-width"](config["get-in"]({"log", "hud", "width"}))}
       if not state.hud.id then
         state.hud.id = nvim.open_win(buf, false, win_opts)
         nvim.win_set_option(state.hud.id, "wrap", false)
