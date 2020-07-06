@@ -99,7 +99,7 @@ do
   do
     local v_23_0_0 = nil
     local function eval_file0(opts)
-      return eval_str(a.assoc(opts, "code", ("(import " .. nvim.fn.fnamemodify(opts["file-path"], ":r") .. " :fresh true :prefix \"\")")))
+      return eval_str(a.assoc(opts, "code", ("(do (dofile \"" .. opts["file-path"] .. "\" :env (fiber/getenv (fiber/current))) nil)")))
     end
     v_23_0_0 = eval_file0
     _0_0["eval-file"] = v_23_0_0

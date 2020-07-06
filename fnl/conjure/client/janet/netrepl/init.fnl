@@ -39,9 +39,8 @@
 
 (defn eval-file [opts]
   (eval-str
-    (a.assoc opts :code
-             (.. "(import " (nvim.fn.fnamemodify opts.file-path ":r")
-                 " :fresh true :prefix \"\")"))))
+    (a.assoc opts :code (.. "(do (dofile \"" opts.file-path
+                            "\" :env (fiber/getenv (fiber/current))) nil)"))))
 
 (defn on-filetype []
   (mapping.buf :n (config.get-in [:client :janet :netrepl :mapping :disconnect])
