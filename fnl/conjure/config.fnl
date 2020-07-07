@@ -81,10 +81,6 @@
    :log
    {:hud {:width 0.42
           :height 0.3
-          :row :auto
-          :col 1.0
-          :anchor :SE
-          :style :minimal
           :enabled true
           :passive_close_delay 0}
     :botright false
