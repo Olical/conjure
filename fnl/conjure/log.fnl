@@ -224,7 +224,6 @@
          (a.run! #(nvim.win_close $1 true)))))
 
 (defn dbg [desc data]
-  ;; TODO Check if client has debug enabled.
   (when (config.get-in [:debug])
     (append
       (a.concat

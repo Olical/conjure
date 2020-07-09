@@ -27,8 +27,6 @@
        :print_options {:length 500
                        :level 50}}
 
-      :debug false
-
       :interrupt
       {:sample_limit 0.3}
 

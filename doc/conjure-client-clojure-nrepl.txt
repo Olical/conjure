@@ -165,11 +165,6 @@ All configuration can be set as described in |conjure-configuration|.
             to `false` to disable this limit.
             Default: `500`
 
-`g:conjure#client#clojure#nrepl#debug`
-            Should the underlying nREPL messages sent and received by Conjure
-            be shown in the log buffer.
-            Default: `false`
-
 `g:conjure#client#clojure#nrepl#interrupt#sample_limit`
             How many characters to show of the code you just interrupted as a
             preview in the log. The value is based on a percentage of the

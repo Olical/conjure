@@ -15,9 +15,7 @@
   {:client
    {:janet
     {:netrepl
-     {:debug false
-
-      :connection {:default_host "127.0.0.1"
+     {:connection {:default_host "127.0.0.1"
                    :default_port "9365"}
       :mapping {:connect "cc"
                 :disconnect "cd"}}}}})
