@@ -1,18 +1,18 @@
 local _0_0 = nil
 do
-  local name_23_0_ = "conjure.aniseed.string"
-  local loaded_23_0_ = package.loaded[name_23_0_]
-  local module_23_0_ = nil
-  if ("table" == type(loaded_23_0_)) then
-    module_23_0_ = loaded_23_0_
+  local name_0_ = "conjure.aniseed.string"
+  local loaded_0_ = package.loaded[name_0_]
+  local module_0_ = nil
+  if ("table" == type(loaded_0_)) then
+    module_0_ = loaded_0_
   else
-    module_23_0_ = {}
+    module_0_ = {}
   end
-  module_23_0_["aniseed/module"] = name_23_0_
-  module_23_0_["aniseed/locals"] = (module_23_0_["aniseed/locals"] or {})
-  module_23_0_["aniseed/local-fns"] = (module_23_0_["aniseed/local-fns"] or {})
-  package.loaded[name_23_0_] = module_23_0_
-  _0_0 = module_23_0_
+  module_0_["aniseed/module"] = name_0_
+  module_0_["aniseed/locals"] = (module_0_["aniseed/locals"] or {})
+  module_0_["aniseed/local-fns"] = (module_0_["aniseed/local-fns"] or {})
+  package.loaded[name_0_] = module_0_
+  _0_0 = module_0_
 end
 local function _1_(...)
   _0_0["aniseed/local-fns"] = {require = {a = "conjure.aniseed.core"}}
@@ -23,9 +23,9 @@ local a = _2_[1]
 do local _ = ({nil, _0_0, {{}, nil}})[2] end
 local join = nil
 do
-  local v_23_0_ = nil
+  local v_0_ = nil
   do
-    local v_23_0_0 = nil
+    local v_0_0 = nil
     local function join0(...)
       local args = {...}
       local function _3_(...)
@@ -64,18 +64,18 @@ do
       end
       return result
     end
-    v_23_0_0 = join0
-    _0_0["join"] = v_23_0_0
-    v_23_0_ = v_23_0_0
+    v_0_0 = join0
+    _0_0["join"] = v_0_0
+    v_0_ = v_0_0
   end
-  _0_0["aniseed/locals"]["join"] = v_23_0_
-  join = v_23_0_
+  _0_0["aniseed/locals"]["join"] = v_0_
+  join = v_0_
 end
 local split = nil
 do
-  local v_23_0_ = nil
+  local v_0_ = nil
   do
-    local v_23_0_0 = nil
+    local v_0_0 = nil
     local function split0(s, pat)
       local done_3f = false
       local acc = {}
@@ -92,71 +92,71 @@ do
       end
       return acc
     end
-    v_23_0_0 = split0
-    _0_0["split"] = v_23_0_0
-    v_23_0_ = v_23_0_0
+    v_0_0 = split0
+    _0_0["split"] = v_0_0
+    v_0_ = v_0_0
   end
-  _0_0["aniseed/locals"]["split"] = v_23_0_
-  split = v_23_0_
+  _0_0["aniseed/locals"]["split"] = v_0_
+  split = v_0_
 end
 local blank_3f = nil
 do
-  local v_23_0_ = nil
+  local v_0_ = nil
   do
-    local v_23_0_0 = nil
+    local v_0_0 = nil
     local function blank_3f0(s)
       return (a["empty?"](s) or not string.find(s, "[^%s]"))
     end
-    v_23_0_0 = blank_3f0
-    _0_0["blank?"] = v_23_0_0
-    v_23_0_ = v_23_0_0
+    v_0_0 = blank_3f0
+    _0_0["blank?"] = v_0_0
+    v_0_ = v_0_0
   end
-  _0_0["aniseed/locals"]["blank?"] = v_23_0_
-  blank_3f = v_23_0_
+  _0_0["aniseed/locals"]["blank?"] = v_0_
+  blank_3f = v_0_
 end
 local triml = nil
 do
-  local v_23_0_ = nil
+  local v_0_ = nil
   do
-    local v_23_0_0 = nil
+    local v_0_0 = nil
     local function triml0(s)
       return string.gsub(s, "^%s*(.-)", "%1")
     end
-    v_23_0_0 = triml0
-    _0_0["triml"] = v_23_0_0
-    v_23_0_ = v_23_0_0
+    v_0_0 = triml0
+    _0_0["triml"] = v_0_0
+    v_0_ = v_0_0
   end
-  _0_0["aniseed/locals"]["triml"] = v_23_0_
-  triml = v_23_0_
+  _0_0["aniseed/locals"]["triml"] = v_0_
+  triml = v_0_
 end
 local trimr = nil
 do
-  local v_23_0_ = nil
+  local v_0_ = nil
   do
-    local v_23_0_0 = nil
+    local v_0_0 = nil
     local function trimr0(s)
       return string.gsub(s, "(.-)%s*$", "%1")
     end
-    v_23_0_0 = trimr0
-    _0_0["trimr"] = v_23_0_0
-    v_23_0_ = v_23_0_0
+    v_0_0 = trimr0
+    _0_0["trimr"] = v_0_0
+    v_0_ = v_0_0
   end
-  _0_0["aniseed/locals"]["trimr"] = v_23_0_
-  trimr = v_23_0_
+  _0_0["aniseed/locals"]["trimr"] = v_0_
+  trimr = v_0_
 end
 local trim = nil
 do
-  local v_23_0_ = nil
+  local v_0_ = nil
   do
-    local v_23_0_0 = nil
+    local v_0_0 = nil
     local function trim0(s)
       return string.gsub(s, "^%s*(.-)%s*$", "%1")
     end
-    v_23_0_0 = trim0
-    _0_0["trim"] = v_23_0_0
-    v_23_0_ = v_23_0_0
+    v_0_0 = trim0
+    _0_0["trim"] = v_0_0
+    v_0_ = v_0_0
   end
-  _0_0["aniseed/locals"]["trim"] = v_23_0_
-  trim = v_23_0_
+  _0_0["aniseed/locals"]["trim"] = v_0_
+  trim = v_0_
 end
 return nil

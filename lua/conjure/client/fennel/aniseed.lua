@@ -1,18 +1,18 @@
 local _0_0 = nil
 do
-  local name_23_0_ = "conjure.client.fennel.aniseed"
-  local loaded_23_0_ = package.loaded[name_23_0_]
-  local module_23_0_ = nil
-  if ("table" == type(loaded_23_0_)) then
-    module_23_0_ = loaded_23_0_
+  local name_0_ = "conjure.client.fennel.aniseed"
+  local loaded_0_ = package.loaded[name_0_]
+  local module_0_ = nil
+  if ("table" == type(loaded_0_)) then
+    module_0_ = loaded_0_
   else
-    module_23_0_ = {}
+    module_0_ = {}
   end
-  module_23_0_["aniseed/module"] = name_23_0_
-  module_23_0_["aniseed/locals"] = (module_23_0_["aniseed/locals"] or {})
-  module_23_0_["aniseed/local-fns"] = (module_23_0_["aniseed/local-fns"] or {})
-  package.loaded[name_23_0_] = module_23_0_
-  _0_0 = module_23_0_
+  module_0_["aniseed/module"] = name_0_
+  module_0_["aniseed/locals"] = (module_0_["aniseed/locals"] or {})
+  module_0_["aniseed/local-fns"] = (module_0_["aniseed/local-fns"] or {})
+  package.loaded[name_0_] = module_0_
+  _0_0 = module_0_
 end
 local function _1_(...)
   _0_0["aniseed/local-fns"] = {require = {a = "conjure.aniseed.core", client = "conjure.client", config = "conjure.config", extract = "conjure.extract", log = "conjure.log", mapping = "conjure.mapping", nvim = "conjure.aniseed.nvim", str = "conjure.aniseed.string", text = "conjure.text", view = "conjure.aniseed.view"}}
@@ -32,53 +32,53 @@ local text = _2_[9]
 do local _ = ({nil, _0_0, {{}, nil}})[2] end
 local buf_suffix = nil
 do
-  local v_23_0_ = nil
+  local v_0_ = nil
   do
-    local v_23_0_0 = ".fnl"
-    _0_0["buf-suffix"] = v_23_0_0
-    v_23_0_ = v_23_0_0
+    local v_0_0 = ".fnl"
+    _0_0["buf-suffix"] = v_0_0
+    v_0_ = v_0_0
   end
-  _0_0["aniseed/locals"]["buf-suffix"] = v_23_0_
-  buf_suffix = v_23_0_
+  _0_0["aniseed/locals"]["buf-suffix"] = v_0_
+  buf_suffix = v_0_
 end
 local context_pattern = nil
 do
-  local v_23_0_ = nil
+  local v_0_ = nil
   do
-    local v_23_0_0 = "%(%s*module%s+(.-)[%s){]"
-    _0_0["context-pattern"] = v_23_0_0
-    v_23_0_ = v_23_0_0
+    local v_0_0 = "%(%s*module%s+(.-)[%s){]"
+    _0_0["context-pattern"] = v_0_0
+    v_0_ = v_0_0
   end
-  _0_0["aniseed/locals"]["context-pattern"] = v_23_0_
-  context_pattern = v_23_0_
+  _0_0["aniseed/locals"]["context-pattern"] = v_0_
+  context_pattern = v_0_
 end
 local comment_prefix = nil
 do
-  local v_23_0_ = nil
+  local v_0_ = nil
   do
-    local v_23_0_0 = "; "
-    _0_0["comment-prefix"] = v_23_0_0
-    v_23_0_ = v_23_0_0
+    local v_0_0 = "; "
+    _0_0["comment-prefix"] = v_0_0
+    v_0_ = v_0_0
   end
-  _0_0["aniseed/locals"]["comment-prefix"] = v_23_0_
-  comment_prefix = v_23_0_
+  _0_0["aniseed/locals"]["comment-prefix"] = v_0_
+  comment_prefix = v_0_
 end
 config.merge({client = {fennel = {aniseed = {aniseed_module_prefix = "conjure.aniseed.", mapping = {run_all_tests = "ta", run_buf_tests = "tt"}, use_metadata = true}}}})
 local cfg = nil
 do
-  local v_23_0_ = config["get-in-fn"]({"client", "fennel", "aniseed"})
-  _0_0["aniseed/locals"]["cfg"] = v_23_0_
-  cfg = v_23_0_
+  local v_0_ = config["get-in-fn"]({"client", "fennel", "aniseed"})
+  _0_0["aniseed/locals"]["cfg"] = v_0_
+  cfg = v_0_
 end
 local ani_aliases = nil
 do
-  local v_23_0_ = {nu = "nvim.util"}
-  _0_0["aniseed/locals"]["ani-aliases"] = v_23_0_
-  ani_aliases = v_23_0_
+  local v_0_ = {nu = "nvim.util"}
+  _0_0["aniseed/locals"]["ani-aliases"] = v_0_
+  ani_aliases = v_0_
 end
 local ani = nil
 do
-  local v_23_0_ = nil
+  local v_0_ = nil
   local function ani0(mod_name, f_name)
     local mod_name0 = a.get(ani_aliases, mod_name, mod_name)
     local mod = require((cfg({"aniseed_module_prefix"}) .. mod_name0))
@@ -88,35 +88,35 @@ do
       return mod
     end
   end
-  v_23_0_ = ani0
-  _0_0["aniseed/locals"]["ani"] = v_23_0_
-  ani = v_23_0_
+  v_0_ = ani0
+  _0_0["aniseed/locals"]["ani"] = v_0_
+  ani = v_0_
 end
 local anic = nil
 do
-  local v_23_0_ = nil
+  local v_0_ = nil
   local function anic0(mod, f_name, ...)
     return ani(mod, f_name)(...)
   end
-  v_23_0_ = anic0
-  _0_0["aniseed/locals"]["anic"] = v_23_0_
-  anic = v_23_0_
+  v_0_ = anic0
+  _0_0["aniseed/locals"]["anic"] = v_0_
+  anic = v_0_
 end
 local display = nil
 do
-  local v_23_0_ = nil
+  local v_0_ = nil
   local function display0(lines, opts)
     return client["with-filetype"]("fennel", log.append, lines, opts)
   end
-  v_23_0_ = display0
-  _0_0["aniseed/locals"]["display"] = v_23_0_
-  display = v_23_0_
+  v_0_ = display0
+  _0_0["aniseed/locals"]["display"] = v_0_
+  display = v_0_
 end
 local display_result = nil
 do
-  local v_23_0_ = nil
+  local v_0_ = nil
   do
-    local v_23_0_0 = nil
+    local v_0_0 = nil
     local function display_result0(opts)
       if opts then
         local _3_ = opts
@@ -151,18 +151,18 @@ do
         end
       end
     end
-    v_23_0_0 = display_result0
-    _0_0["display-result"] = v_23_0_0
-    v_23_0_ = v_23_0_0
+    v_0_0 = display_result0
+    _0_0["display-result"] = v_0_0
+    v_0_ = v_0_0
   end
-  _0_0["aniseed/locals"]["display-result"] = v_23_0_
-  display_result = v_23_0_
+  _0_0["aniseed/locals"]["display-result"] = v_0_
+  display_result = v_0_
 end
 local eval_str = nil
 do
-  local v_23_0_ = nil
+  local v_0_ = nil
   do
-    local v_23_0_0 = nil
+    local v_0_0 = nil
     local function eval_str0(opts)
       local code = (("(module " .. (opts.context or "aniseed.user") .. ") ") .. opts.code .. "\n")
       local out = nil
@@ -183,50 +183,50 @@ do
       end
       return display_result(opts)
     end
-    v_23_0_0 = eval_str0
-    _0_0["eval-str"] = v_23_0_0
-    v_23_0_ = v_23_0_0
+    v_0_0 = eval_str0
+    _0_0["eval-str"] = v_0_0
+    v_0_ = v_0_0
   end
-  _0_0["aniseed/locals"]["eval-str"] = v_23_0_
-  eval_str = v_23_0_
+  _0_0["aniseed/locals"]["eval-str"] = v_0_
+  eval_str = v_0_
 end
 local doc_str = nil
 do
-  local v_23_0_ = nil
+  local v_0_ = nil
   do
-    local v_23_0_0 = nil
+    local v_0_0 = nil
     local function doc_str0(opts)
       a.assoc(opts, "code", ("(doc " .. opts.code .. ")"))
       return eval_str(opts)
     end
-    v_23_0_0 = doc_str0
-    _0_0["doc-str"] = v_23_0_0
-    v_23_0_ = v_23_0_0
+    v_0_0 = doc_str0
+    _0_0["doc-str"] = v_0_0
+    v_0_ = v_0_0
   end
-  _0_0["aniseed/locals"]["doc-str"] = v_23_0_
-  doc_str = v_23_0_
+  _0_0["aniseed/locals"]["doc-str"] = v_0_
+  doc_str = v_0_
 end
 local eval_file = nil
 do
-  local v_23_0_ = nil
+  local v_0_ = nil
   do
-    local v_23_0_0 = nil
+    local v_0_0 = nil
     local function eval_file0(opts)
       opts.code = a.slurp(opts["file-path"])
       if opts.code then
         return eval_str(opts)
       end
     end
-    v_23_0_0 = eval_file0
-    _0_0["eval-file"] = v_23_0_0
-    v_23_0_ = v_23_0_0
+    v_0_0 = eval_file0
+    _0_0["eval-file"] = v_0_0
+    v_0_ = v_0_0
   end
-  _0_0["aniseed/locals"]["eval-file"] = v_23_0_
-  eval_file = v_23_0_
+  _0_0["aniseed/locals"]["eval-file"] = v_0_
+  eval_file = v_0_
 end
 local wrapped_test = nil
 do
-  local v_23_0_ = nil
+  local v_0_ = nil
   local function wrapped_test0(req_lines, f)
     display(req_lines, {["break?"] = true})
     local res = anic("nu", "with-out-str", f)
@@ -238,15 +238,15 @@ do
     end
     return display(text["prefixed-lines"](_3_, "; "))
   end
-  v_23_0_ = wrapped_test0
-  _0_0["aniseed/locals"]["wrapped-test"] = v_23_0_
-  wrapped_test = v_23_0_
+  v_0_ = wrapped_test0
+  _0_0["aniseed/locals"]["wrapped-test"] = v_0_
+  wrapped_test = v_0_
 end
 local run_buf_tests = nil
 do
-  local v_23_0_ = nil
+  local v_0_ = nil
   do
-    local v_23_0_0 = nil
+    local v_0_0 = nil
     local function run_buf_tests0()
       local c = extract.context()
       if c then
@@ -256,42 +256,42 @@ do
         return wrapped_test({("; run-buf-tests (" .. c .. ")")}, _3_)
       end
     end
-    v_23_0_0 = run_buf_tests0
-    _0_0["run-buf-tests"] = v_23_0_0
-    v_23_0_ = v_23_0_0
+    v_0_0 = run_buf_tests0
+    _0_0["run-buf-tests"] = v_0_0
+    v_0_ = v_0_0
   end
-  _0_0["aniseed/locals"]["run-buf-tests"] = v_23_0_
-  run_buf_tests = v_23_0_
+  _0_0["aniseed/locals"]["run-buf-tests"] = v_0_
+  run_buf_tests = v_0_
 end
 local run_all_tests = nil
 do
-  local v_23_0_ = nil
+  local v_0_ = nil
   do
-    local v_23_0_0 = nil
+    local v_0_0 = nil
     local function run_all_tests0()
       return wrapped_test({"; run-all-tests"}, ani("test", "run-all"))
     end
-    v_23_0_0 = run_all_tests0
-    _0_0["run-all-tests"] = v_23_0_0
-    v_23_0_ = v_23_0_0
+    v_0_0 = run_all_tests0
+    _0_0["run-all-tests"] = v_0_0
+    v_0_ = v_0_0
   end
-  _0_0["aniseed/locals"]["run-all-tests"] = v_23_0_
-  run_all_tests = v_23_0_
+  _0_0["aniseed/locals"]["run-all-tests"] = v_0_
+  run_all_tests = v_0_
 end
 local on_filetype = nil
 do
-  local v_23_0_ = nil
+  local v_0_ = nil
   do
-    local v_23_0_0 = nil
+    local v_0_0 = nil
     local function on_filetype0()
       mapping.buf("n", cfg({"mapping", "run_buf_tests"}), "conjure.client.fennel.aniseed", "run-buf-tests")
       return mapping.buf("n", cfg({"mapping", "run_all_tests"}), "conjure.client.fennel.aniseed", "run-all-tests")
     end
-    v_23_0_0 = on_filetype0
-    _0_0["on-filetype"] = v_23_0_0
-    v_23_0_ = v_23_0_0
+    v_0_0 = on_filetype0
+    _0_0["on-filetype"] = v_0_0
+    v_0_ = v_0_0
   end
-  _0_0["aniseed/locals"]["on-filetype"] = v_23_0_
-  on_filetype = v_23_0_
+  _0_0["aniseed/locals"]["on-filetype"] = v_0_
+  on_filetype = v_0_
 end
 return nil

@@ -3,6 +3,7 @@
 "campbellr"
 "dharrigan"
 "djblue"
+"edderkoppen"
 "mamapitufo"
 "markwoodhall"
 "martinklepsch"

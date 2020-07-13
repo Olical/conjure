@@ -1,18 +1,18 @@
 local _0_0 = nil
 do
-  local name_23_0_ = "conjure.aniseed.test"
-  local loaded_23_0_ = package.loaded[name_23_0_]
-  local module_23_0_ = nil
-  if ("table" == type(loaded_23_0_)) then
-    module_23_0_ = loaded_23_0_
+  local name_0_ = "conjure.aniseed.test"
+  local loaded_0_ = package.loaded[name_0_]
+  local module_0_ = nil
+  if ("table" == type(loaded_0_)) then
+    module_0_ = loaded_0_
   else
-    module_23_0_ = {}
+    module_0_ = {}
   end
-  module_23_0_["aniseed/module"] = name_23_0_
-  module_23_0_["aniseed/locals"] = (module_23_0_["aniseed/locals"] or {})
-  module_23_0_["aniseed/local-fns"] = (module_23_0_["aniseed/local-fns"] or {})
-  package.loaded[name_23_0_] = module_23_0_
-  _0_0 = module_23_0_
+  module_0_["aniseed/module"] = name_0_
+  module_0_["aniseed/locals"] = (module_0_["aniseed/locals"] or {})
+  module_0_["aniseed/local-fns"] = (module_0_["aniseed/local-fns"] or {})
+  package.loaded[name_0_] = module_0_
+  _0_0 = module_0_
 end
 local function _1_(...)
   _0_0["aniseed/local-fns"] = {require = {a = "conjure.aniseed.core", nvim = "conjure.aniseed.nvim", str = "conjure.aniseed.string"}}
@@ -25,27 +25,27 @@ local str = _2_[3]
 do local _ = ({nil, _0_0, {{}, nil}})[2] end
 local ok_3f = nil
 do
-  local v_23_0_ = nil
+  local v_0_ = nil
   do
-    local v_23_0_0 = nil
+    local v_0_0 = nil
     local function ok_3f0(_3_0)
       local _4_ = _3_0
       local tests = _4_["tests"]
       local tests_passed = _4_["tests-passed"]
       return (tests == tests_passed)
     end
-    v_23_0_0 = ok_3f0
-    _0_0["ok?"] = v_23_0_0
-    v_23_0_ = v_23_0_0
+    v_0_0 = ok_3f0
+    _0_0["ok?"] = v_0_0
+    v_0_ = v_0_0
   end
-  _0_0["aniseed/locals"]["ok?"] = v_23_0_
-  ok_3f = v_23_0_
+  _0_0["aniseed/locals"]["ok?"] = v_0_
+  ok_3f = v_0_
 end
 local display_results = nil
 do
-  local v_23_0_ = nil
+  local v_0_ = nil
   do
-    local v_23_0_0 = nil
+    local v_0_0 = nil
     local function display_results0(results, prefix)
       do
         local _3_ = results
@@ -64,18 +64,18 @@ do
       end
       return results
     end
-    v_23_0_0 = display_results0
-    _0_0["display-results"] = v_23_0_0
-    v_23_0_ = v_23_0_0
+    v_0_0 = display_results0
+    _0_0["display-results"] = v_0_0
+    v_0_ = v_0_0
   end
-  _0_0["aniseed/locals"]["display-results"] = v_23_0_
-  display_results = v_23_0_
+  _0_0["aniseed/locals"]["display-results"] = v_0_
+  display_results = v_0_
 end
 local run = nil
 do
-  local v_23_0_ = nil
+  local v_0_ = nil
   do
-    local v_23_0_0 = nil
+    local v_0_0 = nil
     local function run0(mod_name)
       local mod = package.loaded[mod_name]
       local tests = (a["table?"](mod) and mod["aniseed/tests"])
@@ -154,18 +154,18 @@ do
         return display_results(results, ("[" .. mod_name .. "]"))
       end
     end
-    v_23_0_0 = run0
-    _0_0["run"] = v_23_0_0
-    v_23_0_ = v_23_0_0
+    v_0_0 = run0
+    _0_0["run"] = v_0_0
+    v_0_ = v_0_0
   end
-  _0_0["aniseed/locals"]["run"] = v_23_0_
-  run = v_23_0_
+  _0_0["aniseed/locals"]["run"] = v_0_
+  run = v_0_
 end
 local run_all = nil
 do
-  local v_23_0_ = nil
+  local v_0_ = nil
   do
-    local v_23_0_0 = nil
+    local v_0_0 = nil
     local function run_all0()
       local function _3_(totals, results)
         for k, v in pairs(results) do
@@ -175,18 +175,18 @@ do
       end
       return display_results(a.reduce(_3_, {["assertions-passed"] = 0, ["tests-passed"] = 0, assertions = 0, tests = 0}, a.filter(a["table?"], a.map(run, a.keys(package.loaded)))), "[total]")
     end
-    v_23_0_0 = run_all0
-    _0_0["run-all"] = v_23_0_0
-    v_23_0_ = v_23_0_0
+    v_0_0 = run_all0
+    _0_0["run-all"] = v_0_0
+    v_0_ = v_0_0
   end
-  _0_0["aniseed/locals"]["run-all"] = v_23_0_
-  run_all = v_23_0_
+  _0_0["aniseed/locals"]["run-all"] = v_0_
+  run_all = v_0_
 end
 local suite = nil
 do
-  local v_23_0_ = nil
+  local v_0_ = nil
   do
-    local v_23_0_0 = nil
+    local v_0_0 = nil
     local function suite0()
       nvim.ex.redir_("> test/results.txt")
       local function _3_(path)
@@ -201,11 +201,11 @@ do
         return nvim.ex.cq()
       end
     end
-    v_23_0_0 = suite0
-    _0_0["suite"] = v_23_0_0
-    v_23_0_ = v_23_0_0
+    v_0_0 = suite0
+    _0_0["suite"] = v_0_0
+    v_0_ = v_0_0
   end
-  _0_0["aniseed/locals"]["suite"] = v_23_0_
-  suite = v_23_0_
+  _0_0["aniseed/locals"]["suite"] = v_0_
+  suite = v_0_
 end
 return nil

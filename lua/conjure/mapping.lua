@@ -1,18 +1,18 @@
 local _0_0 = nil
 do
-  local name_23_0_ = "conjure.mapping"
-  local loaded_23_0_ = package.loaded[name_23_0_]
-  local module_23_0_ = nil
-  if ("table" == type(loaded_23_0_)) then
-    module_23_0_ = loaded_23_0_
+  local name_0_ = "conjure.mapping"
+  local loaded_0_ = package.loaded[name_0_]
+  local module_0_ = nil
+  if ("table" == type(loaded_0_)) then
+    module_0_ = loaded_0_
   else
-    module_23_0_ = {}
+    module_0_ = {}
   end
-  module_23_0_["aniseed/module"] = name_23_0_
-  module_23_0_["aniseed/locals"] = (module_23_0_["aniseed/locals"] or {})
-  module_23_0_["aniseed/local-fns"] = (module_23_0_["aniseed/local-fns"] or {})
-  package.loaded[name_23_0_] = module_23_0_
-  _0_0 = module_23_0_
+  module_0_["aniseed/module"] = name_0_
+  module_0_["aniseed/locals"] = (module_0_["aniseed/locals"] or {})
+  module_0_["aniseed/local-fns"] = (module_0_["aniseed/local-fns"] or {})
+  package.loaded[name_0_] = module_0_
+  _0_0 = module_0_
 end
 local function _1_(...)
   _0_0["aniseed/local-fns"] = {require = {a = "conjure.aniseed.core", bridge = "conjure.bridge", client = "conjure.client", config = "conjure.config", eval = "conjure.eval", extract = "conjure.extract", fennel = "conjure.aniseed.fennel", nvim = "conjure.aniseed.nvim", str = "conjure.aniseed.string"}}
@@ -31,19 +31,19 @@ local str = _2_[9]
 do local _ = ({nil, _0_0, {{}, nil}})[2] end
 local cfg = nil
 do
-  local v_23_0_ = nil
+  local v_0_ = nil
   local function cfg0(k)
     return config["get-in"]({"mapping", k})
   end
-  v_23_0_ = cfg0
-  _0_0["aniseed/locals"]["cfg"] = v_23_0_
-  cfg = v_23_0_
+  v_0_ = cfg0
+  _0_0["aniseed/locals"]["cfg"] = v_0_
+  cfg = v_0_
 end
 local buf = nil
 do
-  local v_23_0_ = nil
+  local v_0_ = nil
   do
-    local v_23_0_0 = nil
+    local v_0_0 = nil
     local function buf0(mode, keys, ...)
       if keys then
         local args = {...}
@@ -62,18 +62,18 @@ do
         return nvim.buf_set_keymap(0, mode, _3_, _5_, {noremap = true, silent = true})
       end
     end
-    v_23_0_0 = buf0
-    _0_0["buf"] = v_23_0_0
-    v_23_0_ = v_23_0_0
+    v_0_0 = buf0
+    _0_0["buf"] = v_0_0
+    v_0_ = v_0_0
   end
-  _0_0["aniseed/locals"]["buf"] = v_23_0_
-  buf = v_23_0_
+  _0_0["aniseed/locals"]["buf"] = v_0_
+  buf = v_0_
 end
 local on_filetype = nil
 do
-  local v_23_0_ = nil
+  local v_0_ = nil
   do
-    local v_23_0_0 = nil
+    local v_0_0 = nil
     local function on_filetype0()
       buf("n", cfg("eval_motion"), ":set opfunc=ConjureEvalMotion<cr>g@")
       buf("n", cfg("log_split"), "conjure.log", "split")
@@ -93,18 +93,18 @@ do
       nvim.ex.setlocal("omnifunc=ConjureOmnifunc")
       return client["optional-call"]("on-filetype")
     end
-    v_23_0_0 = on_filetype0
-    _0_0["on-filetype"] = v_23_0_0
-    v_23_0_ = v_23_0_0
+    v_0_0 = on_filetype0
+    _0_0["on-filetype"] = v_0_0
+    v_0_ = v_0_0
   end
-  _0_0["aniseed/locals"]["on-filetype"] = v_23_0_
-  on_filetype = v_23_0_
+  _0_0["aniseed/locals"]["on-filetype"] = v_0_
+  on_filetype = v_0_
 end
 local init = nil
 do
-  local v_23_0_ = nil
+  local v_0_ = nil
   do
-    local v_23_0_0 = nil
+    local v_0_0 = nil
     local function init0(filetypes)
       nvim.ex.augroup("conjure_init_filetypes")
       nvim.ex.autocmd_()
@@ -114,18 +114,18 @@ do
       nvim.ex.autocmd("VimLeavePre", "*", bridge["viml->lua"]("conjure.log", "clear-close-hud-passive-timer", {}))
       return nvim.ex.augroup("END")
     end
-    v_23_0_0 = init0
-    _0_0["init"] = v_23_0_0
-    v_23_0_ = v_23_0_0
+    v_0_0 = init0
+    _0_0["init"] = v_0_0
+    v_0_ = v_0_0
   end
-  _0_0["aniseed/locals"]["init"] = v_23_0_
-  init = v_23_0_
+  _0_0["aniseed/locals"]["init"] = v_0_
+  init = v_0_
 end
 local eval_ranged_command = nil
 do
-  local v_23_0_ = nil
+  local v_0_ = nil
   do
-    local v_23_0_0 = nil
+    local v_0_0 = nil
     local function eval_ranged_command0(start, _end, code)
       if ("" == code) then
         return eval.range(a.dec(start), _end)
@@ -133,18 +133,18 @@ do
         return eval.command(code)
       end
     end
-    v_23_0_0 = eval_ranged_command0
-    _0_0["eval-ranged-command"] = v_23_0_0
-    v_23_0_ = v_23_0_0
+    v_0_0 = eval_ranged_command0
+    _0_0["eval-ranged-command"] = v_0_0
+    v_0_ = v_0_0
   end
-  _0_0["aniseed/locals"]["eval-ranged-command"] = v_23_0_
-  eval_ranged_command = v_23_0_
+  _0_0["aniseed/locals"]["eval-ranged-command"] = v_0_
+  eval_ranged_command = v_0_
 end
 local omnifunc = nil
 do
-  local v_23_0_ = nil
+  local v_0_ = nil
   do
-    local v_23_0_0 = nil
+    local v_0_0 = nil
     local function omnifunc0(find_start_3f, base)
       if find_start_3f then
         local _3_ = nvim.win_get_cursor(0)
@@ -157,12 +157,12 @@ do
         return eval["completions-sync"](base)
       end
     end
-    v_23_0_0 = omnifunc0
-    _0_0["omnifunc"] = v_23_0_0
-    v_23_0_ = v_23_0_0
+    v_0_0 = omnifunc0
+    _0_0["omnifunc"] = v_0_0
+    v_0_ = v_0_0
   end
-  _0_0["aniseed/locals"]["omnifunc"] = v_23_0_
-  omnifunc = v_23_0_
+  _0_0["aniseed/locals"]["omnifunc"] = v_0_
+  omnifunc = v_0_
 end
 nvim.ex.function_(str.join("\n", {"ConjureEvalMotion(kind)", "call luaeval(\"require('conjure.eval')['selection'](_A)\", a:kind)", "endfunction"}))
 nvim.ex.function_(str.join("\n", {"ConjureOmnifunc(findstart, base)", "return luaeval(\"require('conjure.mapping')['omnifunc'](_A[1] == 1, _A[2])\", [a:findstart, a:base])", "endfunction"}))
