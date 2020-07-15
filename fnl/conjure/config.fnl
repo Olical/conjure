@@ -57,8 +57,7 @@
 
    :eval
    {:result_register "c"
-    :relative_file_root nil
-    :always_absolute_file false}
+    :relative_file_root nil}
 
    :mapping
    {:prefix "<localleader>"

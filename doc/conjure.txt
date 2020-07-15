@@ -192,22 +192,17 @@ defined as you enter a buffer and can't be altered after the fact.
             Default: `"c"`
 
 `g:conjure#eval#relative_file_root`
-            When evaluating the current file Conjure will attempt to resolve
-            the absolute file path to a relative path based on the current
-            working directory of Neovim by default. This means you can
-            evaluate files on other machines or inside Docker containers that
-            share a common file structure for the project but may be stored in
-            different parts of the overall file system.
-            You can set this option to handle a different Neovim working
-            directory to your connected runtime's working directory.
+            If set, Conjure will attempt to resolve absolute file paths to a
+            relative path based on this value. This means you can evaluate
+            files on other machines or inside Docker containers that share a
+            common file structure for the project but may be stored in
+            different parts of the overall file system. Here's how you could
+            resolve all file paths relative to a sub-directory under your
+            Neovim current working directory.
             `:let g:conjure#eval#relative_file_root = getcwd() . "/sub-proj"`
-            Default: `undefined` (current working directory)
-
-`g:conjure#eval#always_absolute_file`
-            When true, disable the relative resolving functionality controlled
-            by `g:conjure#eval#relative_file_root` entirely. Always use the
-            full absolute path when evaluating the current file.
-            Default: `false`
+            Now `/foo/bar/sub-proj/baz.clj` would be `baz.clj` if your Neovim
+            CWD was `/foo/bar`.
+            Default: `undefined`
 
 `g:conjure#mapping#prefix`
             The key that proceeds most mappings.

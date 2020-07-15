@@ -86,12 +86,13 @@ do
     local v_0_0 = nil
     local function file0()
       local absolute_path = extract["file-path"]()
+      local relative_file_root = config["get-in"]({"eval", "relative_file_root"})
       local opts = nil
       local _3_
-      if config["get-in"]({"eval", "always_absolute_file"}) then
-        _3_ = absolute_path
+      if relative_file_root then
+        _3_ = fs["resolve-relative"](absolute_path, relative_file_root)
       else
-        _3_ = fs["resolve-relative"](absolute_path, (config["get-in"]({"eval", "relative_file_root"}) or nvim.fn.getcwd()))
+        _3_ = absolute_path
       end
       opts = {["file-path"] = _3_, action = "eval", origin = "file"}
       opts.preview = preview(opts)
