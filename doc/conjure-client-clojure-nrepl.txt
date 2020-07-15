@@ -37,12 +37,13 @@ See |conjure-client-clojure-nrepl-configuration| for specific configuration
 options relevant to these mappings.
 
 :ConjureConnect [host] [port]
-                         Connect to the given host and port. The host is
-                         optional, it'll use
-                         `clojure.nrepl/connection.default-host` if you only
-                         provide a port number.
-                         `:ConjureConnect 5678`
+                         Connect to the given host and port. The host defaults
+                         to `clojure.nrepl/connection.default-host`. When no
+                         arguments are provided it'll attempt to connect to a
+                         port file.
                          `:ConjureConnect staging.my-app.com 5678`
+                         `:ConjureConnect 5678`
+                         `:ConjureConnect`
 
 :ConjureShadowSelect [build]
                          Select a shadow-cljs build for evaluation within this

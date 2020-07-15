@@ -69,6 +69,15 @@
     (eval.range (a.dec start) end)
     (eval.command code)))
 
+(defn connect-command [...]
+  (let [args [...]]
+    (client.call
+      :connect
+      (if (= 1 (a.count args))
+        {:port (a.first args)}
+        {:host (a.first args)
+         :port (a.second args)}))))
+
 (defn omnifunc [find-start? base]
   (if find-start?
     (let [[row col] (nvim.win_get_cursor 0)
@@ -96,6 +105,12 @@
   (bridge.viml->lua
     :conjure.mapping :eval-ranged-command
     {:args "<line1>, <line2>, <q-args>"}))
+
+(nvim.ex.command_
+  "-nargs=* -range ConjureConnect"
+  (bridge.viml->lua
+    :conjure.mapping :connect-command
+    {:args "<f-args>"}))
 
 (nvim.ex.command_
   "ConjureSchool"

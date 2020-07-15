@@ -172,6 +172,21 @@ do
   _0_0["aniseed/locals"]["completions"] = v_0_
   completions = v_0_
 end
+local connect = nil
+do
+  local v_0_ = nil
+  do
+    local v_0_0 = nil
+    local function connect0(opts)
+      return action["connect-host-port"](opts)
+    end
+    v_0_0 = connect0
+    _0_0["connect"] = v_0_0
+    v_0_ = v_0_0
+  end
+  _0_0["aniseed/locals"]["connect"] = v_0_
+  connect = v_0_
+end
 local on_filetype = nil
 do
   local v_0_ = nil
@@ -201,7 +216,6 @@ do
       mapping.buf("n", cfg({"mapping", "refresh_changed"}), "conjure.client.clojure.nrepl.action", "refresh-changed")
       mapping.buf("n", cfg({"mapping", "refresh_all"}), "conjure.client.clojure.nrepl.action", "refresh-all")
       mapping.buf("n", cfg({"mapping", "refresh_clear"}), "conjure.client.clojure.nrepl.action", "refresh-clear")
-      nvim.ex.command_("-nargs=+ -buffer ConjureConnect", bridge["viml->lua"]("conjure.client.clojure.nrepl.action", "connect-host-port", {args = "<f-args>"}))
       nvim.ex.command_("-nargs=1 -buffer ConjureShadowSelect", bridge["viml->lua"]("conjure.client.clojure.nrepl.action", "shadow-select", {args = "<f-args>"}))
       nvim.ex.command_("-nargs=1 -buffer ConjurePiggieback", bridge["viml->lua"]("conjure.client.clojure.nrepl.action", "piggieback", {args = "<f-args>"}))
       nvim.ex.command_("-nargs=0 -buffer ConjureOutSubscribe", bridge["viml->lua"]("conjure.client.clojure.nrepl.action", "out-subscribe", {}))

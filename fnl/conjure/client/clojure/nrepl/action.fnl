@@ -43,14 +43,18 @@
          :cb passive-ns-require})
       (ui.display ["; No nREPL port file found"] {:break? true}))))
 
-(defn connect-host-port [...]
-  (let [args [...]]
-    (server.connect
-      {:host (if (= 1 (a.count args))
-               (cfg [:connection :default_host])
-               (a.first args))
-       :port (tonumber (a.last args))
-       :cb passive-ns-require})))
+(defn connect-host-port [opts]
+  (if (and (not opts.host) (not opts.port))
+    (connect-port-file)
+    (let [parsed-port (when (= :string (type opts.port))
+                        (tonumber opts.port))]
+
+      (if parsed-port
+        (server.connect
+          {:host (or opts.host (cfg [:connection :default_host]))
+           :port parsed-port
+           :cb passive-ns-require})
+        (ui.display [(.. "; Could not parse '" opts.port "' as a port number")])))))
 
 (defn- eval-cb-fn [opts]
   (fn [resp]

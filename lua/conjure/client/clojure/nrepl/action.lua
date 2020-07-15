@@ -119,15 +119,22 @@ do
   local v_0_ = nil
   do
     local v_0_0 = nil
-    local function connect_host_port0(...)
-      local args = {...}
-      local _3_
-      if (1 == a.count(args)) then
-        _3_ = cfg({"connection", "default_host"})
+    local function connect_host_port0(opts)
+      if (not opts.host and not opts.port) then
+        return connect_port_file()
       else
-        _3_ = a.first(args)
+        local parsed_port = nil
+        if ("string" == type(opts.port)) then
+          parsed_port = tonumber(opts.port)
+        else
+        parsed_port = nil
+        end
+        if parsed_port then
+          return server.connect({cb = passive_ns_require, host = (opts.host or cfg({"connection", "default_host"})), port = parsed_port})
+        else
+          return ui.display({("; Could not parse '" .. opts.port .. "' as a port number")})
+        end
       end
-      return server.connect({cb = passive_ns_require, host = _3_, port = tonumber(a.last(args))})
     end
     v_0_0 = connect_host_port0
     _0_0["connect-host-port"] = v_0_0

@@ -57,6 +57,14 @@ I've also included some commands since they're related to the mappings.
                          `:%ConjureEval` would evaluate the entire buffer,
                          this also works with visual selections.
 
+:ConjureConnect [host] [port]
+                         Connect to the given host and port. Both arguments
+                         tend to be optional but this can vary depending on
+                         the client.
+                         `:ConjureConnect`
+                         `:ConjureConnect 5678`
+                         `:ConjureConnect staging.my-app.com 5678`
+
 
 <localleader>ls          Open the log buffer in a new horizontal split window.
                          The direction can be controlled with |splitbelow|.

@@ -88,6 +88,9 @@
 (defn completions [opts]
   (action.completions opts))
 
+(defn connect [opts]
+  (action.connect-host-port opts))
+
 (defn on-filetype []
   (mapping.buf :n (cfg [:mapping :disconnect])
                :conjure.client.clojure.nrepl.server :disconnect)
@@ -141,12 +144,6 @@
                :conjure.client.clojure.nrepl.action :refresh-all)
   (mapping.buf :n (cfg [:mapping :refresh_clear])
                :conjure.client.clojure.nrepl.action :refresh-clear)
-
-  (nvim.ex.command_
-    "-nargs=+ -buffer ConjureConnect"
-    (bridge.viml->lua
-      :conjure.client.clojure.nrepl.action :connect-host-port
-      {:args "<f-args>"}))
 
   (nvim.ex.command_
     "-nargs=1 -buffer ConjureShadowSelect"
