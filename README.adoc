@@ -21,13 +21,10 @@ What does wielding Conjure actually look like? What can you do with it?
 
 https://asciinema.org/a/325517[image:https://asciinema.org/a/325517.svg[asciicast]]
 
-I'll break that asciinema down for you, just in case it was too quick or you couldn't watch it.
-
- * Once installed, open a file of a supported file type such as `clojure`, `fennel` or `janet`.
- * Some languages, such as Clojure, will automatically connect to a runtime environment or give you the commands and mappings to do so yourself.
- * Use Conjure's various evaluation tools to execute the code you're interested in such as: Form, file, buffer or even form at a Neovim mark.
- * Every result is kept in a log buffer that you can access at any time. You can open this in a window or get updates through the HUD.
- * You can look up documentation with `K` or go to definition with `gd`.
+ * Open a file of a supported file type such as `clojure`, `fennel` or `janet`.
+ * Some languages, such as Clojure, will automatically connect to your REPL or give you the commands and mappings to do so yourself.
+ * Use various mappings to execute the code you're interested in such as the current form, file, buffer or even form at a Neovim mark.
+ * Every result is kept in a log buffer that you can access at any time.
  * Support for multiple asynchronous autocompletion frameworks, with https://github.com/Shougo/deoplete.nvim/[deoplete] built in (`<C-x><C-o>` also works!).
 
 Conjure allows you to send the right part of your code off for evaluation, see the results, wrap the results in more code and evaluate that. It keeps a log of your actions and results so you don't have to remember them, that context is extremely helpful when you're down the rabbit hole of a bug hunt.
