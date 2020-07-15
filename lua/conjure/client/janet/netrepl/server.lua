@@ -170,26 +170,16 @@ do
   local v_0_ = nil
   do
     local v_0_0 = nil
-    local function connect0(host_or_port, port)
-      local function _3_()
-        if (host_or_port and not port) then
-          return {nil, host_or_port}
-        else
-          return {host_or_port, port}
-        end
-      end
-      local _4_ = _3_()
-      local host = _4_[1]
-      local port0 = _4_[2]
-      local host0 = (host or config["get-in"]({"client", "janet", "netrepl", "connection", "default_host"}))
-      local port1 = (port0 or config["get-in"]({"client", "janet", "netrepl", "connection", "default_port"}))
-      local resolved_host = net.resolve(host0)
-      local conn = {["raw-host"] = host0, decode = trn.decoder(), host = resolved_host, port = port1, queue = {}, sock = vim.loop.new_tcp()}
+    local function connect0(opts)
+      local host = (opts.host or config["get-in"]({"client", "janet", "netrepl", "connection", "default_host"}))
+      local port = (opts.port or config["get-in"]({"client", "janet", "netrepl", "connection", "default_port"}))
+      local resolved_host = net.resolve(host)
+      local conn = {["raw-host"] = host, decode = trn.decoder(), host = resolved_host, port = port, queue = {}, sock = vim.loop.new_tcp()}
       if a.get(state, "conn") then
         disconnect()
       end
       a.assoc(state, "conn", conn)
-      return (conn.sock):connect(resolved_host, port1, handle_connect_fn())
+      return (conn.sock):connect(resolved_host, port, handle_connect_fn())
     end
     v_0_0 = connect0
     _0_0["connect"] = v_0_0

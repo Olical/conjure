@@ -40,17 +40,14 @@
     (a.assoc opts :code (.. "(do (dofile \"" opts.file-path
                             "\" :env (fiber/getenv (fiber/current))) nil)"))))
 
+(defn connect [opts]
+  (server.connect opts))
+
 (defn on-filetype []
   (mapping.buf :n (config.get-in [:client :janet :netrepl :mapping :disconnect])
                :conjure.client.janet.netrepl.server :disconnect)
   (mapping.buf :n (config.get-in [:client :janet :netrepl :mapping :connect])
-               :conjure.client.janet.netrepl.server :connect)
-
-  (nvim.ex.command_
-    "-nargs=* -buffer ConjureConnect"
-    (bridge.viml->lua
-      :conjure.client.janet.netrepl.server :connect
-      {:args "<f-args>"})))
+               :conjure.client.janet.netrepl.server :connect))
 
 (defn on-load []
   (nvim.ex.augroup :conjure_janet_netrepl_cleanup)
@@ -60,4 +57,4 @@
     (bridge.viml->lua :conjure.client.janet.netrepl.server :disconnect {}))
   (nvim.ex.augroup :END)
 
-  (server.connect))
+  (server.connect {}))

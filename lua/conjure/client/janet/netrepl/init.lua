@@ -108,6 +108,21 @@ do
   _0_0["aniseed/locals"]["eval-file"] = v_0_
   eval_file = v_0_
 end
+local connect = nil
+do
+  local v_0_ = nil
+  do
+    local v_0_0 = nil
+    local function connect0(opts)
+      return server.connect(opts)
+    end
+    v_0_0 = connect0
+    _0_0["connect"] = v_0_0
+    v_0_ = v_0_0
+  end
+  _0_0["aniseed/locals"]["connect"] = v_0_
+  connect = v_0_
+end
 local on_filetype = nil
 do
   local v_0_ = nil
@@ -115,8 +130,7 @@ do
     local v_0_0 = nil
     local function on_filetype0()
       mapping.buf("n", config["get-in"]({"client", "janet", "netrepl", "mapping", "disconnect"}), "conjure.client.janet.netrepl.server", "disconnect")
-      mapping.buf("n", config["get-in"]({"client", "janet", "netrepl", "mapping", "connect"}), "conjure.client.janet.netrepl.server", "connect")
-      return nvim.ex.command_("-nargs=* -buffer ConjureConnect", bridge["viml->lua"]("conjure.client.janet.netrepl.server", "connect", {args = "<f-args>"}))
+      return mapping.buf("n", config["get-in"]({"client", "janet", "netrepl", "mapping", "connect"}), "conjure.client.janet.netrepl.server", "connect")
     end
     v_0_0 = on_filetype0
     _0_0["on-filetype"] = v_0_0
@@ -135,7 +149,7 @@ do
       nvim.ex.autocmd_()
       nvim.ex.autocmd("VimLeavePre *", bridge["viml->lua"]("conjure.client.janet.netrepl.server", "disconnect", {}))
       nvim.ex.augroup("END")
-      return server.connect()
+      return server.connect({})
     end
     v_0_0 = on_load0
     _0_0["on-load"] = v_0_0
