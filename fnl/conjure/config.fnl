@@ -74,8 +74,8 @@
     :eval_buf "eb"
     :eval_visual "E"
     :eval_motion "E"
-    :doc_word ["K"]
-    :def_word ["gd"]}
+    :def_word "gd"
+    :doc_word ["K"]}
 
    :log
    {:hud {:width 0.42

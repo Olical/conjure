@@ -247,13 +247,13 @@ defined as you enter a buffer and can't be altered after the fact.
             Evaluates the following motion.
             Default: `"E"`
 
+`g:conjure#mapping#def_word`
+            Goes to the definition of the word under the cursor.
+            Default: `"gd"`
+
 `g:conjure#mapping#doc_word`
             Looks up documentation for the word under the cursor.
             Default: `["K"]`
-
-`g:conjure#mapping#def_word`
-            Goes to the definition of the word under the cursor.
-            Default: `["gd"]`
 
 `g:conjure#log#hud#width`
             Width of the HUD as a percentage of the editor width.
