@@ -111,7 +111,7 @@
         (if (a.some (fn [msg]
                       (or (a.get msg :out)
                           (a.get msg :err)))
-                    msgs) 
+                    msgs)
           (a.run!
             #(ui.display-result
                $1
