@@ -60,7 +60,8 @@ I've also included some commands since they're related to the mappings.
 :ConjureConnect [host] [port]
                          Connect to the given host and port. Both arguments
                          tend to be optional but this can vary depending on
-                         the client.
+                         the client. Only clients with network based REPL
+                         connections will provide implementations for this.
                          `:ConjureConnect`
                          `:ConjureConnect 5678`
                          `:ConjureConnect staging.my-app.com 5678`
@@ -551,5 +552,20 @@ See `fnl/conjure/client/clojure/nrepl/init.fnl` for an example of this.
             is when it attempts to connect to a `.nrepl-port` file and hooks
             up an autocommand to clean up any existing nREPL connection before
             Neovim exits.
+
+`connect`
+            Function(opts)
+            Called with an `opts` table that contains the following when the
+            user uses the `:ConjureConnect` command.
+             - `opts.host`
+                 First argument to `:ConjureConnect` or `nil` if there was
+                 only one argument.
+             - `opts.port`
+                 Second argument to `:ConjureConnect` or `nil` if there were
+                 zero arguments. In this case you can error or try to "do the
+                 right thing" for your given context.
+            You do not need to provide this if there are no connection steps
+            for your client such as a purely stdio based client running within
+            Neovim as a sub-process.
 
 vim:tw=78:sw=2:ts=2:ft=help:norl:et:listchars=
