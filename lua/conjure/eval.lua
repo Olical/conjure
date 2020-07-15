@@ -85,16 +85,7 @@ do
   do
     local v_0_0 = nil
     local function file0()
-      local absolute_path = extract["file-path"]()
-      local relative_file_root = config["get-in"]({"eval", "relative_file_root"})
-      local opts = nil
-      local _3_
-      if relative_file_root then
-        _3_ = fs["resolve-relative"](absolute_path, relative_file_root)
-      else
-        _3_ = absolute_path
-      end
-      opts = {["file-path"] = _3_, action = "eval", origin = "file"}
+      local opts = {["file-path"] = fs.resolve(extract["file-path"]()), action = "eval", origin = "file"}
       opts.preview = preview(opts)
       display_request(opts)
       return client.call("eval-file", with_last_result_hook(opts))

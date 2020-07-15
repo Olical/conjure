@@ -54,10 +54,10 @@
 
 (merge
   {:debug false
+   :relative_file_root nil
 
    :eval
-   {:result_register "c"
-    :relative_file_root nil}
+   {:result_register "c"}
 
    :mapping
    {:prefix "<localleader>"

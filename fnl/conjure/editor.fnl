@@ -1,6 +1,7 @@
 (module conjure.editor
   {require {a conjure.aniseed.core
-            nvim conjure.aniseed.nvim}})
+            nvim conjure.aniseed.nvim
+            fs conjure.fs}})
 
 (defn- percent-fn [total-fn]
   (fn [pc]
@@ -23,7 +24,7 @@
 
 (defn go-to [path-or-win line column]
   (when (a.string? path-or-win)
-    (nvim.ex.edit path-or-win))
+    (nvim.ex.edit (fs.resolve path-or-win)))
 
   (nvim.win_set_cursor
     (if (= :number (type path-or-win))

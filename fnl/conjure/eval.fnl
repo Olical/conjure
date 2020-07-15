@@ -35,11 +35,7 @@
         (when f (f result))))))
 
 (defn file []
-  (let [absolute-path (extract.file-path)
-        relative-file-root (config.get-in [:eval :relative_file_root])
-        opts {:file-path (if relative-file-root
-                           (fs.resolve-relative absolute-path relative-file-root)
-                           absolute-path)
+  (let [opts {:file-path (fs.resolve (extract.file-path))
               :origin :file
               :action :eval}]
     (set opts.preview (preview opts))

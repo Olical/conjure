@@ -191,19 +191,6 @@ defined as you enter a buffer and can't be altered after the fact.
              * `"_"` the black hole when you don't want this at all.
             Default: `"c"`
 
-`g:conjure#eval#relative_file_root`
-            If set, Conjure will attempt to resolve absolute file paths to a
-            relative path based on this value. This means you can evaluate
-            files on other machines or inside Docker containers that share a
-            common file structure for the project but may be stored in
-            different parts of the overall file system. Here's how you could
-            resolve all file paths relative to a sub-directory under your
-            Neovim current working directory.
-            `:let g:conjure#eval#relative_file_root = getcwd() . "/sub-proj"`
-            Now `/foo/bar/sub-proj/baz.clj` would be `baz.clj` if your Neovim
-            CWD was `/foo/bar`.
-            Default: `undefined`
-
 `g:conjure#mapping#prefix`
             The key that proceeds most mappings.
             Default: `"<localleader>"`
@@ -343,6 +330,19 @@ defined as you enter a buffer and can't be altered after the fact.
             editor. This is so you can align it with the width of your HUD.
             A float between 0.0 and 1.0.
             Default: `0.3`
+
+`g:conjure#relative_file_root`
+            If set, Conjure will attempt to resolve absolute file paths to a
+            relative path based on this value. This means you can evaluate
+            files on other machines or inside Docker containers that share a
+            common file structure for the project but may be stored in
+            different parts of the overall file system. Here's how you could
+            resolve all file paths relative to a sub-directory under your
+            Neovim current working directory.
+            `:let g:conjure#relative_file_root = getcwd() . "/sub-proj"`
+            Now `/foo/bar/sub-proj/baz.clj` would be `baz.clj` if your Neovim
+            CWD was `/foo/bar`.
+            Default: `undefined`
 
 `g:conjure#debug`
             Display debug information in any client you're using.

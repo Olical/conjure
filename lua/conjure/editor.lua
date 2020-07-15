@@ -15,12 +15,13 @@ do
   _0_0 = module_0_
 end
 local function _1_(...)
-  _0_0["aniseed/local-fns"] = {require = {a = "conjure.aniseed.core", nvim = "conjure.aniseed.nvim"}}
-  return {require("conjure.aniseed.core"), require("conjure.aniseed.nvim")}
+  _0_0["aniseed/local-fns"] = {require = {a = "conjure.aniseed.core", fs = "conjure.fs", nvim = "conjure.aniseed.nvim"}}
+  return {require("conjure.aniseed.core"), require("conjure.fs"), require("conjure.aniseed.nvim")}
 end
 local _2_ = _1_(...)
 local a = _2_[1]
-local nvim = _2_[2]
+local fs = _2_[2]
+local nvim = _2_[3]
 do local _ = ({nil, _0_0, {{}, nil}})[2] end
 local percent_fn = nil
 do
@@ -124,7 +125,7 @@ do
     local v_0_0 = nil
     local function go_to0(path_or_win, line, column)
       if a["string?"](path_or_win) then
-        nvim.ex.edit(path_or_win)
+        nvim.ex.edit(fs.resolve(path_or_win))
       end
       local _4_
       if ("number" == type(path_or_win)) then

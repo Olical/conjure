@@ -1,7 +1,8 @@
 (module conjure.fs
   {require {nvim conjure.aniseed.nvim
             a conjure.aniseed.core
-            str conjure.aniseed.string}})
+            str conjure.aniseed.string
+            config conjure.config}})
 
 (defn- env [k]
   (let [v (nvim.fn.getenv k)]
@@ -51,3 +52,11 @@
         (loop (a.rest parts)))))
 
   (loop (split-path path)))
+
+(defn resolve [path]
+  "If g:conjure#relative_file_root is set, will resolve the path relative to
+  that. Will return the original path immidiately if not."
+  (let [relative-file-root (config.get-in [:relative_file_root])]
+    (if relative-file-root
+      (resolve-relative path relative-file-root)
+      path)))

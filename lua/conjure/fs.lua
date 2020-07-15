@@ -15,13 +15,14 @@ do
   _0_0 = module_0_
 end
 local function _1_(...)
-  _0_0["aniseed/local-fns"] = {require = {a = "conjure.aniseed.core", nvim = "conjure.aniseed.nvim", str = "conjure.aniseed.string"}}
-  return {require("conjure.aniseed.core"), require("conjure.aniseed.nvim"), require("conjure.aniseed.string")}
+  _0_0["aniseed/local-fns"] = {require = {a = "conjure.aniseed.core", config = "conjure.config", nvim = "conjure.aniseed.nvim", str = "conjure.aniseed.string"}}
+  return {require("conjure.aniseed.core"), require("conjure.config"), require("conjure.aniseed.nvim"), require("conjure.aniseed.string")}
 end
 local _2_ = _1_(...)
 local a = _2_[1]
-local nvim = _2_[2]
-local str = _2_[3]
+local config = _2_[2]
+local nvim = _2_[3]
+local str = _2_[4]
 do local _ = ({nil, _0_0, {{}, nil}})[2] end
 local env = nil
 do
@@ -157,5 +158,25 @@ do
   end
   _0_0["aniseed/locals"]["resolve-relative"] = v_0_
   resolve_relative = v_0_
+end
+local resolve0 = nil
+do
+  local v_0_ = nil
+  do
+    local v_0_0 = nil
+    local function resolve1(path)
+      local relative_file_root = config["get-in"]({"relative_file_root"})
+      if relative_file_root then
+        return resolve_relative(path, relative_file_root)
+      else
+        return path
+      end
+    end
+    v_0_0 = resolve1
+    _0_0["resolve"] = v_0_0
+    v_0_ = v_0_0
+  end
+  _0_0["aniseed/locals"]["resolve"] = v_0_
+  resolve0 = v_0_
 end
 return nil
