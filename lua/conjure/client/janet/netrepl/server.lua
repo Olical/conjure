@@ -27,9 +27,15 @@ local net = _2_[5]
 local trn = _2_[6]
 local ui = _2_[7]
 do local _ = ({nil, _0_0, {{}, nil}})[2] end
+client["init-state"]({"janet", "netrepl"}, {conn = nil})
 local state = nil
 do
-  local v_0_ = (_0_0["aniseed/locals"].state or {conn = nil})
+  local v_0_ = nil
+  do
+    local v_0_0 = client["state-fn"]("janet", "netrepl")
+    _0_0["state"] = v_0_0
+    v_0_ = v_0_0
+  end
   _0_0["aniseed/locals"]["state"] = v_0_
   state = v_0_
 end
@@ -37,7 +43,7 @@ local with_conn_or_warn = nil
 do
   local v_0_ = nil
   local function with_conn_or_warn0(f, opts)
-    local conn = a.get(state, "conn")
+    local conn = state("conn")
     if conn then
       return f(conn)
     else
@@ -79,7 +85,7 @@ do
           do end (conn.sock):close()
         end
         display_conn_status("disconnected")
-        return a.assoc(state, "conn", nil)
+        return a.assoc(state(), "conn", nil)
       end
       return with_conn_or_warn(_3_)
     end
@@ -104,7 +110,7 @@ local handle_message = nil
 do
   local v_0_ = nil
   local function handle_message0(err, chunk)
-    local conn = a.get(state, "conn")
+    local conn = state("conn")
     if err then
       return display_conn_status(err)
     elseif not chunk then
@@ -112,7 +118,7 @@ do
     else
       local function _3_(msg)
         dbg("receive", msg)
-        local cb = table.remove(a["get-in"](state, {"conn", "queue"}))
+        local cb = table.remove(state("conn", "queue"))
         if cb then
           return cb(msg)
         end
@@ -132,7 +138,7 @@ do
     local function send0(msg, cb)
       dbg("send", msg)
       local function _3_(conn)
-        table.insert(a["get-in"](state, {"conn", "queue"}), 1, (cb or false))
+        table.insert(state("conn", "queue"), 1, (cb or false))
         return (conn.sock):write(trn.encode(msg))
       end
       return with_conn_or_warn(_3_)
@@ -149,7 +155,7 @@ do
   local v_0_ = nil
   local function handle_connect_fn0(cb)
     local function _3_(err)
-      local conn = a.get(state, "conn")
+      local conn = state("conn")
       if err then
         display_conn_status(err)
         return disconnect()
@@ -171,14 +177,15 @@ do
   do
     local v_0_0 = nil
     local function connect0(opts)
-      local host = (opts.host or config["get-in"]({"client", "janet", "netrepl", "connection", "default_host"}))
-      local port = (opts.port or config["get-in"]({"client", "janet", "netrepl", "connection", "default_port"}))
+      local opts0 = (opts or {})
+      local host = (opts0.host or config["get-in"]({"client", "janet", "netrepl", "connection", "default_host"}))
+      local port = (opts0.port or config["get-in"]({"client", "janet", "netrepl", "connection", "default_port"}))
       local resolved_host = net.resolve(host)
       local conn = {["raw-host"] = host, decode = trn.decoder(), host = resolved_host, port = port, queue = {}, sock = vim.loop.new_tcp()}
-      if a.get(state, "conn") then
+      if state("conn") then
         disconnect()
       end
-      a.assoc(state, "conn", conn)
+      a.assoc(state(), "conn", conn)
       return (conn.sock):connect(resolved_host, port, handle_connect_fn())
     end
     v_0_0 = connect0

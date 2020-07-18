@@ -27,7 +27,7 @@ local get = nil
 do
   local v_0_ = nil
   do
-    local v_0_0 = client["state-fn"]({"clojure", "nrepl"})
+    local v_0_0 = client["state-fn"]("clojure", "nrepl")
     _0_0["get"] = v_0_0
     v_0_ = v_0_0
   end

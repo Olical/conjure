@@ -7,11 +7,14 @@
             config conjure.config
             trn conjure.client.janet.netrepl.transport}})
 
-(defonce- state
+(client.init-state
+  [:janet :netrepl]
   {:conn nil})
 
+(def state (client.state-fn :janet :netrepl))
+
 (defn- with-conn-or-warn [f opts]
-  (let [conn (a.get state :conn)]
+  (let [conn (state :conn)]
     (if conn
       (f conn)
       (ui.display ["# No connection"]))))
@@ -31,13 +34,13 @@
         (conn.sock:shutdown)
         (conn.sock:close))
       (display-conn-status :disconnected)
-      (a.assoc state :conn nil))))
+      (a.assoc (state) :conn nil))))
 
 (defn- dbg [...]
   (client.with-filetype :janet log.dbg ...))
 
 (defn- handle-message [err chunk]
-  (let [conn (a.get state :conn)]
+  (let [conn (state :conn)]
     (if
       err (display-conn-status err)
       (not chunk) (disconnect)
@@ -45,7 +48,7 @@
            (a.run!
              (fn [msg]
                (dbg "receive" msg)
-               (let [cb (table.remove (a.get-in state [:conn :queue]))]
+               (let [cb (table.remove (state :conn :queue))]
                  (when cb
                    (cb msg)))))))))
 
@@ -53,13 +56,13 @@
   (dbg "send" msg)
   (with-conn-or-warn
     (fn [conn]
-      (table.insert (a.get-in state [:conn :queue]) 1 (or cb false))
+      (table.insert (state :conn :queue) 1 (or cb false))
       (conn.sock:write (trn.encode msg)))))
 
 (defn- handle-connect-fn [cb]
   (vim.schedule_wrap
     (fn [err]
-      (let [conn (a.get state :conn)]
+      (let [conn (state :conn)]
         (if err
           (do
             (display-conn-status err)
@@ -71,7 +74,8 @@
             (display-conn-status :connected)))))))
 
 (defn connect [opts]
-  (let [host (or opts.host (config.get-in [:client :janet :netrepl :connection :default_host]))
+  (let [opts (or opts {})
+        host (or opts.host (config.get-in [:client :janet :netrepl :connection :default_host]))
         port (or opts.port (config.get-in [:client :janet :netrepl :connection :default_port]))
         resolved-host (net.resolve host)
         conn {:sock (vim.loop.new_tcp)
@@ -81,8 +85,8 @@
               :decode (trn.decoder)
               :queue []}]
 
-    (when (a.get state :conn)
+    (when (state :conn)
       (disconnect))
 
-    (a.assoc state :conn conn)
+    (a.assoc (state) :conn conn)
     (conn.sock:connect resolved-host port (handle-connect-fn))))

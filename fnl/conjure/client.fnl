@@ -10,10 +10,11 @@
 (defn state [...]
   (a.get-in client-states [...]))
 
-(defn state-fn [prefix]
-  (fn [...]
-    (let [ks (a.concat prefix [...])]
-      (state (unpack ks)))))
+(defn state-fn [...]
+  (let [prefix [...]]
+    (fn [...]
+      (let [ks (a.concat prefix [...])]
+        (state (unpack ks))))))
 
 (defn init-state [ks default]
   (when (not (a.get-in client-states ks))

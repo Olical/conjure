@@ -10,4 +10,4 @@
    :awaiting-process? false
    :join-next {:key nil}})
 
-(def get (client.state-fn [:clojure :nrepl]))
+(def get (client.state-fn :clojure :nrepl))

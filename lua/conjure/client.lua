@@ -56,7 +56,8 @@ do
   local v_0_ = nil
   do
     local v_0_0 = nil
-    local function state_fn0(prefix)
+    local function state_fn0(...)
+      local prefix = {...}
       local function _3_(...)
         local ks = a.concat(prefix, {...})
         return state(unpack(ks))
