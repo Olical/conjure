@@ -41,12 +41,8 @@ do
   local v_0_ = nil
   do
     local v_0_0 = nil
-    local function state0(ks, default)
-      local st = a["get-in"](client_states, ks, default)
-      if default then
-        a["assoc-in"](client_states, ks, st)
-      end
-      return st
+    local function state0(...)
+      return a["get-in"](client_states, {...})
     end
     v_0_0 = state0
     _0_0["state"] = v_0_0
@@ -54,6 +50,42 @@ do
   end
   _0_0["aniseed/locals"]["state"] = v_0_
   state = v_0_
+end
+local state_fn = nil
+do
+  local v_0_ = nil
+  do
+    local v_0_0 = nil
+    local function state_fn0(prefix)
+      local function _3_(...)
+        local ks = a.concat(prefix, {...})
+        return state(unpack(ks))
+      end
+      return _3_
+    end
+    v_0_0 = state_fn0
+    _0_0["state-fn"] = v_0_0
+    v_0_ = v_0_0
+  end
+  _0_0["aniseed/locals"]["state-fn"] = v_0_
+  state_fn = v_0_
+end
+local init_state = nil
+do
+  local v_0_ = nil
+  do
+    local v_0_0 = nil
+    local function init_state0(ks, default)
+      if not a["get-in"](client_states, ks) then
+        return a["assoc-in"](client_states, ks, default)
+      end
+    end
+    v_0_0 = init_state0
+    _0_0["init-state"] = v_0_0
+    v_0_ = v_0_0
+  end
+  _0_0["aniseed/locals"]["init-state"] = v_0_
+  init_state = v_0_
 end
 local load_module = nil
 do

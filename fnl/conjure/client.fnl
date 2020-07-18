@@ -7,11 +7,17 @@
 (defonce- loaded {})
 (defonce- client-states {})
 
-(defn state [ks default]
-  (let [st (a.get-in client-states ks default)]
-    (when default
-      (a.assoc-in client-states ks st))
-    st))
+(defn state [...]
+  (a.get-in client-states [...]))
+
+(defn state-fn [prefix]
+  (fn [...]
+    (let [ks (a.concat prefix [...])]
+      (state (unpack ks)))))
+
+(defn init-state [ks default]
+  (when (not (a.get-in client-states ks))
+    (a.assoc-in client-states ks default)))
 
 (defn- load-module [name]
   (let [(ok? result) (xpcall
