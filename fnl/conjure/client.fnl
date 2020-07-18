@@ -5,6 +5,13 @@
             config conjure.config}})
 
 (defonce- loaded {})
+(defonce- client-states {})
+
+(defn state [ks default]
+  (let [st (a.get-in client-states ks default)]
+    (when default
+      (a.assoc-in client-states ks st))
+    st))
 
 (defn- load-module [name]
   (let [(ok? result) (xpcall

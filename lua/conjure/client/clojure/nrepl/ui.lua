@@ -15,14 +15,14 @@ do
   _0_0 = module_0_
 end
 local function _1_(...)
-  _0_0["aniseed/local-fns"] = {require = {["nrepl-state"] = "conjure.client.clojure.nrepl.state", a = "conjure.aniseed.core", client = "conjure.client", log = "conjure.log", str = "conjure.aniseed.string", text = "conjure.text"}}
+  _0_0["aniseed/local-fns"] = {require = {a = "conjure.aniseed.core", client = "conjure.client", log = "conjure.log", state = "conjure.client.clojure.nrepl.state", str = "conjure.aniseed.string", text = "conjure.text"}}
   return {require("conjure.aniseed.core"), require("conjure.client"), require("conjure.log"), require("conjure.client.clojure.nrepl.state"), require("conjure.aniseed.string"), require("conjure.text")}
 end
 local _2_ = _1_(...)
 local a = _2_[1]
 local client = _2_[2]
 local log = _2_[3]
-local nrepl_state = _2_[4]
+local state = _2_[4]
 local str = _2_[5]
 local text = _2_[6]
 do local _ = ({nil, _0_0, {{}, nil}})[2] end
@@ -41,12 +41,6 @@ do
   _0_0["aniseed/locals"]["display"] = v_0_
   display = v_0_
 end
-local state = nil
-do
-  local v_0_ = (_0_0["aniseed/locals"].state or {["join-next"] = {key = nil}})
-  _0_0["aniseed/locals"]["state"] = v_0_
-  state = v_0_
-end
 local handle_join_line = nil
 do
   local v_0_ = nil
@@ -59,15 +53,14 @@ do
     else
     next_key = nil
     end
-    local _4_ = a.get(state, "join-next", {})
-    local key = _4_["key"]
+    local key = state.get("join-next", "key")
     if (next_key or resp.value) then
-      local function _5_()
+      local function _4_()
         if (next_key and not text["trailing-newline?"](a.get(resp, next_key))) then
           return {key = next_key}
         end
       end
-      a.assoc(state, "join-next", _5_())
+      a.assoc(state.get(), "join-next", _4_())
     end
     return (next_key and (key == next_key))
   end
@@ -120,7 +113,7 @@ do
   do
     local v_0_0 = nil
     local function display_sessions0(sessions, cb)
-      local current = a["get-in"](nrepl_state, {"conn", "session"})
+      local current = state.get("conn", "session")
       local function _3_(_4_0)
         local _5_ = _4_0
         local idx = _5_[1]

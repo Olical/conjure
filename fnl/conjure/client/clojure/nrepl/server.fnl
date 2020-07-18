@@ -8,12 +8,12 @@
             str conjure.aniseed.string
             bencode conjure.bencode
             bencode-stream conjure.bencode-stream
-            state conjure.client.clojure.nrepl.state
             config conjure.config
-            ui conjure.client.clojure.nrepl.ui}})
+            ui conjure.client.clojure.nrepl.ui
+            state conjure.client.clojure.nrepl.state}})
 
 (defn with-conn-or-warn [f opts]
-  (let [conn (a.get state :conn)]
+  (let [conn (state.get :conn)]
     (if conn
       (f conn)
       (do
@@ -26,7 +26,7 @@
   (client.with-filetype :clojure log.dbg ...))
 
 (defn send [msg cb]
-  (let [conn (a.get state :conn)]
+  (let [conn (state.get :conn)]
     (when conn
       (let [msg-id (uuid.v4)]
         (a.assoc msg :id msg-id)
@@ -52,7 +52,7 @@
         (conn.sock:shutdown)
         (conn.sock:close))
       (display-conn-status :disconnected)
-      (a.assoc state :conn nil))))
+      (a.assoc (state.get) :conn nil))))
 
 (defn with-all-msgs-fn [cb]
   (let [acc []]
@@ -67,7 +67,7 @@
     cb))
 
 (defn assume-session [session]
-  (a.assoc-in state [:conn :session] (a.get session :id))
+  (a.assoc (state.get :conn) :session (a.get session :id))
   (ui.display [(.. "; Assumed session: " (session.str))]
               {:break? true}))
 
@@ -81,7 +81,7 @@
          :file opts.file-path
          :line (a.get-in opts [:range :start 1])
          :column (-?> (a.get-in opts [:range :start 2]) (a.inc))
-         :session (or opts.session (a.get-in state [:conn :session]))
+         :session (or opts.session (state.get :conn :session))
 
          :nrepl.middleware.print/options
          {:associative-table? 1
@@ -199,11 +199,11 @@
     msg))
 
 (defn- process-message [err chunk]
-  (let [conn (a.get state :conn)]
+  (let [conn (state.get :conn)]
     (if
       err (display-conn-status err)
       (not chunk) (disconnect)
-      (->> (bencode-stream.decode-all state.bs chunk)
+      (->> (bencode-stream.decode-all (state.get :bs) chunk)
            (a.run!
              (fn [msg]
                (dbg "receive" msg)
@@ -231,20 +231,20 @@
                    (a.assoc-in conn [:msgs msg.id] nil)))))))))
 
 (defn- process-message-queue []
-  (set state.awaiting-process? false)
-  (when (not (a.empty? state.message-queue))
-    (let [msgs state.message-queue]
-      (set state.message-queue [])
+  (a.assoc (state.get) :awaiting-process? false)
+  (when (not (a.empty? (state.get :message-queue)))
+    (let [msgs (state.get :message-queue)]
+      (a.assoc (state.get) :message-queue [])
       (a.run!
         (fn [args]
           (process-message (unpack args)))
         msgs))))
 
 (defn- enqueue-message [...]
-  (table.insert state.message-queue [...])
-  (when (not state.awaiting-process?)
-    (vim.schedule process-message-queue)
-    (set state.awaiting-process? true)))
+  (table.insert (state.get :message-queue) [...])
+  (when (not (state.get :awaiting-process?))
+    (a.assoc (state.get) :awaiting-process? true)
+    (vim.schedule process-message-queue)))
 
 (defn- eval-preamble [cb]
   (send
@@ -261,7 +261,7 @@
   (send
     {:op :describe}
     (fn [msg]
-      (a.assoc-in state [:conn :describe] msg))))
+      (a.assoc (state.get :conn) :describe msg))))
 
 (defn with-conn-and-op-or-warn [op f opts]
   (with-conn-or-warn
@@ -281,7 +281,7 @@
 (defn- handle-connect-fn [cb]
   (vim.schedule_wrap
     (fn [err]
-      (let [conn (a.get state :conn)]
+      (let [conn (state.get :conn)]
         (if err
           (do
             (display-conn-status err)
@@ -304,8 +304,8 @@
               :seen-ns {}
               :session nil}]
 
-    (when (a.get state :conn)
+    (when (state.get :conn)
       (disconnect))
 
-    (a.assoc state :conn conn)
+    (a.assoc (state.get) :conn conn)
     (conn.sock:connect resolved-host port (handle-connect-fn cb))))

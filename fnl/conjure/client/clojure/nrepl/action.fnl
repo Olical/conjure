@@ -11,7 +11,6 @@
             nvim conjure.aniseed.nvim
             view conjure.aniseed.view
             config conjure.config
-            state conjure.client.clojure.nrepl.state
             server conjure.client.clojure.nrepl.server
             ui conjure.client.clojure.nrepl.ui
             a conjure.aniseed.core}})
@@ -425,7 +424,7 @@
   (refresh-impl :refresh-all))
 
 (defn refresh-clear []
-  (ui.display ["; Clearing refresh state"] {:break? true})
+  (ui.display ["; Clearing refresh cache"] {:break? true})
   (server.with-conn-and-op-or-warn
     :refresh-clear
     (fn [conn]

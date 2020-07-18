@@ -15,54 +15,27 @@ do
   _0_0 = module_0_
 end
 local function _1_(...)
-  _0_0["aniseed/local-fns"] = {require = {["bencode-stream"] = "conjure.bencode-stream"}}
-  return {require("conjure.bencode-stream")}
+  _0_0["aniseed/local-fns"] = {require = {["bencode-stream"] = "conjure.bencode-stream", client = "conjure.client"}}
+  return {require("conjure.bencode-stream"), require("conjure.client")}
 end
 local _2_ = _1_(...)
 local bencode_stream = _2_[1]
+local client = _2_[2]
 do local _ = ({nil, _0_0, {{}, nil}})[2] end
-local conn = nil
+client.state({"clojure", "nrepl"}, {["awaiting-process?"] = false, ["join-next"] = {key = nil}, ["message-queue"] = {}, bs = bencode_stream.new(), conn = nil})
+local get = nil
 do
   local v_0_ = nil
   do
-    local v_0_0 = (_0_0.conn or nil)
-    _0_0["conn"] = v_0_0
+    local v_0_0 = nil
+    local function get0(...)
+      return client.state({"clojure", "nrepl", ...})
+    end
+    v_0_0 = get0
+    _0_0["get"] = v_0_0
     v_0_ = v_0_0
   end
-  _0_0["aniseed/locals"]["conn"] = v_0_
-  conn = v_0_
-end
-local bs = nil
-do
-  local v_0_ = nil
-  do
-    local v_0_0 = (_0_0.bs or bencode_stream.new())
-    _0_0["bs"] = v_0_0
-    v_0_ = v_0_0
-  end
-  _0_0["aniseed/locals"]["bs"] = v_0_
-  bs = v_0_
-end
-local message_queue = nil
-do
-  local v_0_ = nil
-  do
-    local v_0_0 = (_0_0["message-queue"] or {})
-    _0_0["message-queue"] = v_0_0
-    v_0_ = v_0_0
-  end
-  _0_0["aniseed/locals"]["message-queue"] = v_0_
-  message_queue = v_0_
-end
-local awaiting_process_3f = nil
-do
-  local v_0_ = nil
-  do
-    local v_0_0 = (_0_0["awaiting-process?"] or false)
-    _0_0["awaiting-process?"] = v_0_0
-    v_0_ = v_0_0
-  end
-  _0_0["aniseed/locals"]["awaiting-process?"] = v_0_
-  awaiting_process_3f = v_0_
+  _0_0["aniseed/locals"]["get"] = v_0_
+  get = v_0_
 end
 return nil

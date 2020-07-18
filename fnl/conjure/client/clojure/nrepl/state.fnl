@@ -1,7 +1,14 @@
 (module conjure.client.clojure.nrepl.state
-  {require {bencode-stream conjure.bencode-stream}})
+  {require {client conjure.client
+            bencode-stream conjure.bencode-stream}})
 
-(defonce conn nil)
-(defonce bs (bencode-stream.new))
-(defonce message-queue [])
-(defonce awaiting-process? false)
+(client.state
+  [:clojure :nrepl]
+  {:conn nil
+   :bs (bencode-stream.new)
+   :message-queue []
+   :awaiting-process? false
+   :join-next {:key nil}})
+
+(defn get [...]
+  (client.state [:clojure :nrepl ...]))

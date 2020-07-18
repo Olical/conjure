@@ -30,6 +30,31 @@ do
   _0_0["aniseed/locals"]["loaded"] = v_0_
   loaded = v_0_
 end
+local client_states = nil
+do
+  local v_0_ = (_0_0["aniseed/locals"]["client-states"] or {})
+  _0_0["aniseed/locals"]["client-states"] = v_0_
+  client_states = v_0_
+end
+local state = nil
+do
+  local v_0_ = nil
+  do
+    local v_0_0 = nil
+    local function state0(ks, default)
+      local st = a["get-in"](client_states, ks, default)
+      if default then
+        a["assoc-in"](client_states, ks, st)
+      end
+      return st
+    end
+    v_0_0 = state0
+    _0_0["state"] = v_0_0
+    v_0_ = v_0_0
+  end
+  _0_0["aniseed/locals"]["state"] = v_0_
+  state = v_0_
+end
 local load_module = nil
 do
   local v_0_ = nil
