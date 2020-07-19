@@ -15,17 +15,22 @@ do
   _0_0 = module_0_
 end
 local function _1_(...)
-  _0_0["aniseed/local-fns"] = {require = {a = "conjure.aniseed.core", client = "conjure.client", log = "conjure.log", state = "conjure.client.clojure.nrepl.state", str = "conjure.aniseed.string", text = "conjure.text"}}
-  return {require("conjure.aniseed.core"), require("conjure.client"), require("conjure.log"), require("conjure.client.clojure.nrepl.state"), require("conjure.aniseed.string"), require("conjure.text")}
+  _0_0["aniseed/local-fns"] = {require = {a = "conjure.aniseed.core", client = "conjure.client", log = "conjure.log", str = "conjure.aniseed.string", text = "conjure.text"}}
+  return {require("conjure.aniseed.core"), require("conjure.client"), require("conjure.log"), require("conjure.aniseed.string"), require("conjure.text")}
 end
 local _2_ = _1_(...)
 local a = _2_[1]
 local client = _2_[2]
 local log = _2_[3]
-local state = _2_[4]
-local str = _2_[5]
-local text = _2_[6]
+local str = _2_[4]
+local text = _2_[5]
 do local _ = ({nil, _0_0, {{}, nil}})[2] end
+local state = nil
+do
+  local v_0_ = client["state-fn"]("clojure", "nrepl")
+  _0_0["aniseed/locals"]["state"] = v_0_
+  state = v_0_
+end
 local display = nil
 do
   local v_0_ = nil
@@ -53,14 +58,14 @@ do
     else
     next_key = nil
     end
-    local key = state.get("join-next", "key")
+    local key = state("join-next", "key")
     if (next_key or resp.value) then
       local function _4_()
         if (next_key and not text["trailing-newline?"](a.get(resp, next_key))) then
           return {key = next_key}
         end
       end
-      a.assoc(state.get(), "join-next", _4_())
+      a.assoc(state(), "join-next", _4_())
     end
     return (next_key and (key == next_key))
   end
@@ -113,7 +118,7 @@ do
   do
     local v_0_0 = nil
     local function display_sessions0(sessions, cb)
-      local current = state.get("conn", "session")
+      local current = state("conn", "session")
       local function _3_(_4_0)
         local _5_ = _4_0
         local idx = _5_[1]

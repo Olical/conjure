@@ -11,7 +11,7 @@
   [:janet :netrepl]
   {:conn nil})
 
-(def state (client.state-fn :janet :netrepl))
+(def- state (client.state-fn :janet :netrepl))
 
 (defn- with-conn-or-warn [f opts]
   (let [conn (state :conn)]

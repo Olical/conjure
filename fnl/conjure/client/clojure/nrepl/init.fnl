@@ -6,11 +6,21 @@
             eval conjure.eval
             str conjure.aniseed.string
             config conjure.config
-            action conjure.client.clojure.nrepl.action}})
+            action conjure.client.clojure.nrepl.action
+            client conjure.client
+            bencode-stream conjure.bencode-stream}})
 
 (def buf-suffix ".cljc")
 (def comment-prefix "; ")
 (def- cfg (config.get-in-fn [:client :clojure :nrepl]))
+
+(client.init-state
+  [:clojure :nrepl]
+  {:conn nil
+   :bs (bencode-stream.new)
+   :message-queue []
+   :awaiting-process? false
+   :join-next {:key nil}})
 
 (config.merge
   {:client

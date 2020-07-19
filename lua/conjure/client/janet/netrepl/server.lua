@@ -30,12 +30,7 @@ do local _ = ({nil, _0_0, {{}, nil}})[2] end
 client["init-state"]({"janet", "netrepl"}, {conn = nil})
 local state = nil
 do
-  local v_0_ = nil
-  do
-    local v_0_0 = client["state-fn"]("janet", "netrepl")
-    _0_0["state"] = v_0_0
-    v_0_ = v_0_0
-  end
+  local v_0_ = client["state-fn"]("janet", "netrepl")
   _0_0["aniseed/locals"]["state"] = v_0_
   state = v_0_
 end

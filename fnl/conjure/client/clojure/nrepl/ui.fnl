@@ -3,17 +3,18 @@
             log conjure.log
             text conjure.text
             a conjure.aniseed.core
-            str conjure.aniseed.string
-            state conjure.client.clojure.nrepl.state}})
+            str conjure.aniseed.string}})
+
+(def- state (client.state-fn :clojure :nrepl))
 
 (defn display [lines opts]
   (client.with-filetype :clojure log.append lines opts))
 
 (defn- handle-join-line [resp]
   (let [next-key (if resp.out :out resp.err :err)
-        key (state.get :join-next :key)]
+        key (state :join-next :key)]
     (when (or next-key resp.value)
-      (a.assoc (state.get) :join-next
+      (a.assoc (state) :join-next
                (when (and next-key
                           (not (text.trailing-newline?
                                  (a.get resp next-key))))
@@ -48,7 +49,7 @@
       {:join-first? joined?})))
 
 (defn display-sessions [sessions cb]
-  (let [current (state.get :conn :session)]
+  (let [current (state :conn :session)]
     (display (a.concat [(.. "; Sessions (" (a.count sessions) "):")]
                        (a.map-indexed
                          (fn [[idx session]]

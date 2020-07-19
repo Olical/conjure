@@ -15,18 +15,20 @@ do
   _0_0 = module_0_
 end
 local function _1_(...)
-  _0_0["aniseed/local-fns"] = {require = {a = "conjure.aniseed.core", action = "conjure.client.clojure.nrepl.action", bridge = "conjure.bridge", config = "conjure.config", eval = "conjure.eval", mapping = "conjure.mapping", nvim = "conjure.aniseed.nvim", str = "conjure.aniseed.string"}}
-  return {require("conjure.aniseed.core"), require("conjure.client.clojure.nrepl.action"), require("conjure.bridge"), require("conjure.config"), require("conjure.eval"), require("conjure.mapping"), require("conjure.aniseed.nvim"), require("conjure.aniseed.string")}
+  _0_0["aniseed/local-fns"] = {require = {["bencode-stream"] = "conjure.bencode-stream", a = "conjure.aniseed.core", action = "conjure.client.clojure.nrepl.action", bridge = "conjure.bridge", client = "conjure.client", config = "conjure.config", eval = "conjure.eval", mapping = "conjure.mapping", nvim = "conjure.aniseed.nvim", str = "conjure.aniseed.string"}}
+  return {require("conjure.aniseed.core"), require("conjure.client.clojure.nrepl.action"), require("conjure.bencode-stream"), require("conjure.bridge"), require("conjure.client"), require("conjure.config"), require("conjure.eval"), require("conjure.mapping"), require("conjure.aniseed.nvim"), require("conjure.aniseed.string")}
 end
 local _2_ = _1_(...)
 local a = _2_[1]
+local str = _2_[10]
 local action = _2_[2]
-local bridge = _2_[3]
-local config = _2_[4]
-local eval = _2_[5]
-local mapping = _2_[6]
-local nvim = _2_[7]
-local str = _2_[8]
+local bencode_stream = _2_[3]
+local bridge = _2_[4]
+local client = _2_[5]
+local config = _2_[6]
+local eval = _2_[7]
+local mapping = _2_[8]
+local nvim = _2_[9]
 do local _ = ({nil, _0_0, {{}, nil}})[2] end
 local buf_suffix = nil
 do
@@ -56,6 +58,7 @@ do
   _0_0["aniseed/locals"]["cfg"] = v_0_
   cfg = v_0_
 end
+client["init-state"]({"clojure", "nrepl"}, {["awaiting-process?"] = false, ["join-next"] = {key = nil}, ["message-queue"] = {}, bs = bencode_stream.new(), conn = nil})
 config.merge({client = {clojure = {nrepl = {connection = {default_host = "localhost", port_files = {".nrepl-port", ".shadow-cljs/nrepl.port"}}, eval = {auto_require = true, pretty_print = true, print_options = {length = 500, level = 50}, print_quota = nil}, interrupt = {sample_limit = 0.29999999999999999}, mapping = {connect_port_file = "cf", disconnect = "cd", interrupt = "ei", last_exception = "ve", refresh_all = "ra", refresh_changed = "rr", refresh_clear = "rc", result_1 = "v1", result_2 = "v2", result_3 = "v3", run_all_tests = "ta", run_alternate_ns_tests = "tN", run_current_ns_tests = "tn", run_current_test = "tc", session_clone = "sc", session_close = "sq", session_close_all = "sQ", session_fresh = "sf", session_list = "sl", session_next = "sn", session_prev = "sp", session_select = "ss", view_source = "vs"}, refresh = {after = nil, before = nil, dirs = nil}}}}})
 local context = nil
 do
