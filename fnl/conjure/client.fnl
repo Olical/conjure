@@ -2,7 +2,8 @@
   {require {a conjure.aniseed.core
             nvim conjure.aniseed.nvim
             fennel conjure.aniseed.fennel
-            config conjure.config}})
+            config conjure.config
+            dyn conjure.dynamic}})
 
 (defonce- loaded {})
 (defonce- client-states {})
@@ -35,24 +36,16 @@
       result
       (error result))))
 
-(defonce- overrides {})
+(def- filetype (dyn.new #(do nvim.bo.filetype)))
 
 (defn with-filetype [ft f ...]
-  (set overrides.filetype ft)
-  (let [(ok? result) (pcall f ...)]
-    (set overrides.filetype nil)
-    (if ok?
-      result
-      (error result))))
-
-(defn- current-filetype []
-  (or overrides.filetype nvim.bo.filetype))
+  (dyn.bind {filetype #(do ft)} f ...))
 
 (defn- current-client-module-name []
-  (a.get (config.get-in [:filetype_client]) (current-filetype)))
+  (a.get (config.get-in [:filetype_client]) (filetype)))
 
 (defn current []
-  (let [ft (current-filetype)
+  (let [ft (filetype)
         mod-name (current-client-module-name)]
     (if mod-name
       (load-module mod-name)

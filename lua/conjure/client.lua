@@ -15,14 +15,15 @@ do
   _0_0 = module_0_
 end
 local function _1_(...)
-  _0_0["aniseed/local-fns"] = {require = {a = "conjure.aniseed.core", config = "conjure.config", fennel = "conjure.aniseed.fennel", nvim = "conjure.aniseed.nvim"}}
-  return {require("conjure.aniseed.core"), require("conjure.config"), require("conjure.aniseed.fennel"), require("conjure.aniseed.nvim")}
+  _0_0["aniseed/local-fns"] = {require = {a = "conjure.aniseed.core", config = "conjure.config", dyn = "conjure.dynamic", fennel = "conjure.aniseed.fennel", nvim = "conjure.aniseed.nvim"}}
+  return {require("conjure.aniseed.core"), require("conjure.config"), require("conjure.dynamic"), require("conjure.aniseed.fennel"), require("conjure.aniseed.nvim")}
 end
 local _2_ = _1_(...)
 local a = _2_[1]
 local config = _2_[2]
-local fennel = _2_[3]
-local nvim = _2_[4]
+local dyn = _2_[3]
+local fennel = _2_[4]
+local nvim = _2_[5]
 do local _ = ({nil, _0_0, {{}, nil}})[2] end
 local loaded = nil
 do
@@ -113,11 +114,15 @@ do
   _0_0["aniseed/locals"]["load-module"] = v_0_
   load_module = v_0_
 end
-local overrides = nil
+local filetype = nil
 do
-  local v_0_ = (_0_0["aniseed/locals"].overrides or {})
-  _0_0["aniseed/locals"]["overrides"] = v_0_
-  overrides = v_0_
+  local v_0_ = nil
+  local function _3_()
+    return nvim.bo.filetype
+  end
+  v_0_ = dyn.new(_3_)
+  _0_0["aniseed/locals"]["filetype"] = v_0_
+  filetype = v_0_
 end
 local with_filetype = nil
 do
@@ -125,14 +130,10 @@ do
   do
     local v_0_0 = nil
     local function with_filetype0(ft, f, ...)
-      overrides.filetype = ft
-      local ok_3f, result = pcall(f, ...)
-      overrides.filetype = nil
-      if ok_3f then
-        return result
-      else
-        return error(result)
+      local function _3_()
+        return ft
       end
+      return dyn.bind({[filetype] = _3_}, f, ...)
     end
     v_0_0 = with_filetype0
     _0_0["with-filetype"] = v_0_0
@@ -141,21 +142,11 @@ do
   _0_0["aniseed/locals"]["with-filetype"] = v_0_
   with_filetype = v_0_
 end
-local current_filetype = nil
-do
-  local v_0_ = nil
-  local function current_filetype0()
-    return (overrides.filetype or nvim.bo.filetype)
-  end
-  v_0_ = current_filetype0
-  _0_0["aniseed/locals"]["current-filetype"] = v_0_
-  current_filetype = v_0_
-end
 local current_client_module_name = nil
 do
   local v_0_ = nil
   local function current_client_module_name0()
-    return a.get(config["get-in"]({"filetype_client"}), current_filetype())
+    return a.get(config["get-in"]({"filetype_client"}), filetype())
   end
   v_0_ = current_client_module_name0
   _0_0["aniseed/locals"]["current-client-module-name"] = v_0_
@@ -167,7 +158,7 @@ do
   do
     local v_0_0 = nil
     local function current0()
-      local ft = current_filetype()
+      local ft = filetype()
       local mod_name = current_client_module_name()
       if mod_name then
         return load_module(mod_name)
