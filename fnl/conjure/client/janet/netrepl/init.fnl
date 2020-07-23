@@ -4,7 +4,7 @@
             bridge conjure.bridge
             mapping conjure.mapping
             text conjure.text
-            ui conjure.client.janet.netrepl.ui
+            log conjure.log
             config conjure.config
             server conjure.client.janet.netrepl.server}})
 
@@ -30,7 +30,7 @@
           ;; so that "eval and replace form" won't end up inserting ANSI codes.
           (opts.on-result (text.strip-ansi-escape-sequences clean)))
         (when (not opts.passive?)
-          (ui.display (text.split-lines clean)))))))
+          (log.append (text.split-lines clean)))))))
 
 (defn doc-str [opts]
   (eval-str (a.update opts :code #(.. "(doc " $1 ")"))))

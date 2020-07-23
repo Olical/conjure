@@ -33,3 +33,19 @@
         (t.= 2 (foo))))
 
     (t.= 1 (foo))))
+
+(deftest set!
+  (let [foo (dyn.new #(do 1))]
+    (t.= (foo) 1)
+    (dyn.bind
+      {foo #(do 2)}
+      (fn []
+        (t.= (foo) 2)
+        (dyn.set! foo #(do 3))
+        (t.= (foo) 3)))
+    (t.= (foo) 1)))
+
+(deftest type-guard
+  (let [(ok? result) (pcall dyn.new :foo)]
+    (t.= false ok?)
+    (t.ok? (string.match result "conjure.dynamic values must always be wrapped in a function"))))

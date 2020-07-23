@@ -15,13 +15,14 @@ do
   _0_0 = module_0_
 end
 local function _1_(...)
-  _0_0["aniseed/local-fns"] = {require = {["bencode-stream"] = "conjure.bencode-stream", a = "conjure.aniseed.core", bencode = "conjure.bencode", client = "conjure.client", config = "conjure.config", extract = "conjure.extract", log = "conjure.log", net = "conjure.net", str = "conjure.aniseed.string", ui = "conjure.client.clojure.nrepl.ui", uuid = "conjure.uuid"}}
-  return {require("conjure.aniseed.core"), require("conjure.bencode"), require("conjure.bencode-stream"), require("conjure.client"), require("conjure.config"), require("conjure.extract"), require("conjure.log"), require("conjure.net"), require("conjure.aniseed.string"), require("conjure.client.clojure.nrepl.ui"), require("conjure.uuid")}
+  _0_0["aniseed/local-fns"] = {require = {["bencode-stream"] = "conjure.bencode-stream", a = "conjure.aniseed.core", bencode = "conjure.bencode", client = "conjure.client", config = "conjure.config", extract = "conjure.extract", log = "conjure.log", net = "conjure.net", state = "conjure.client.clojure.nrepl.state", str = "conjure.aniseed.string", ui = "conjure.client.clojure.nrepl.ui", uuid = "conjure.uuid"}}
+  return {require("conjure.aniseed.core"), require("conjure.bencode"), require("conjure.bencode-stream"), require("conjure.client"), require("conjure.config"), require("conjure.extract"), require("conjure.log"), require("conjure.net"), require("conjure.client.clojure.nrepl.state"), require("conjure.aniseed.string"), require("conjure.client.clojure.nrepl.ui"), require("conjure.uuid")}
 end
 local _2_ = _1_(...)
 local a = _2_[1]
-local ui = _2_[10]
-local uuid = _2_[11]
+local str = _2_[10]
+local ui = _2_[11]
+local uuid = _2_[12]
 local bencode = _2_[2]
 local bencode_stream = _2_[3]
 local client = _2_[4]
@@ -29,21 +30,15 @@ local config = _2_[5]
 local extract = _2_[6]
 local log = _2_[7]
 local net = _2_[8]
-local str = _2_[9]
+local state = _2_[9]
 do local _ = ({nil, _0_0, {{}, nil}})[2] end
-local state = nil
-do
-  local v_0_ = client["state-fn"]("clojure", "nrepl")
-  _0_0["aniseed/locals"]["state"] = v_0_
-  state = v_0_
-end
 local with_conn_or_warn = nil
 do
   local v_0_ = nil
   do
     local v_0_0 = nil
     local function with_conn_or_warn0(f, opts)
-      local conn = state("conn")
+      local conn = state.get("conn")
       if conn then
         return f(conn)
       else
@@ -78,7 +73,7 @@ do
   do
     local v_0_0 = nil
     local function send0(msg, cb)
-      local conn = state("conn")
+      local conn = state.get("conn")
       if conn then
         local msg_id = uuid.v4()
         a.assoc(msg, "id", msg_id)
@@ -123,7 +118,7 @@ do
           do end (conn.sock):close()
         end
         display_conn_status("disconnected")
-        return a.assoc(state(), "conn", nil)
+        return a.assoc(state.get(), "conn", nil)
       end
       return with_conn_or_warn(_3_)
     end
@@ -177,7 +172,7 @@ do
   do
     local v_0_0 = nil
     local function assume_session0(session)
-      a.assoc(state("conn"), "session", a.get(session, "id"))
+      a.assoc(state.get("conn"), "session", a.get(session, "id"))
       return ui.display({("; Assumed session: " .. session.str())}, {["break?"] = true})
     end
     v_0_0 = assume_session0
@@ -209,7 +204,7 @@ do
             _7_ = _6_0
           end
         end
-        return send({["nrepl.middleware.print/options"] = {["associative-table?"] = 1, length = (config["get-in"]({"client", "clojure", "nrepl", "eval", "print_options", "length"}) or nil), level = (config["get-in"]({"client", "clojure", "nrepl", "eval", "print_options", "level"}) or nil)}, ["nrepl.middleware.print/print"] = _4_, ["nrepl.middleware.print/quota"] = config["get-in"]({"client", "clojure", "nrepl", "eval", "print_quota"}), code = opts.code, column = _7_, file = opts["file-path"], line = a["get-in"](opts, {"range", "start", 1}), ns = opts.context, op = "eval", session = (opts.session or state("conn", "session"))}, cb)
+        return send({["nrepl.middleware.print/options"] = {["associative-table?"] = 1, length = (config["get-in"]({"client", "clojure", "nrepl", "eval", "print_options", "length"}) or nil), level = (config["get-in"]({"client", "clojure", "nrepl", "eval", "print_options", "level"}) or nil)}, ["nrepl.middleware.print/print"] = _4_, ["nrepl.middleware.print/quota"] = config["get-in"]({"client", "clojure", "nrepl", "eval", "print_quota"}), code = opts.code, column = _7_, file = opts["file-path"], line = a["get-in"](opts, {"range", "start", 1}), ns = opts.context, op = "eval", session = (opts.session or state.get("conn", "session"))}, cb)
       end
       return with_conn_or_warn(_3_)
     end
@@ -416,7 +411,7 @@ local process_message = nil
 do
   local v_0_ = nil
   local function process_message0(err, chunk)
-    local conn = state("conn")
+    local conn = state.get("conn")
     if err then
       return display_conn_status(err)
     elseif not chunk then
@@ -451,7 +446,7 @@ do
           return a["assoc-in"](conn, {"msgs", msg.id}, nil)
         end
       end
-      return a["run!"](_3_, bencode_stream["decode-all"](state("bs"), chunk))
+      return a["run!"](_3_, bencode_stream["decode-all"](state.get("bs"), chunk))
     end
   end
   v_0_ = process_message0
@@ -462,10 +457,10 @@ local process_message_queue = nil
 do
   local v_0_ = nil
   local function process_message_queue0()
-    a.assoc(state(), "awaiting-process?", false)
-    if not a["empty?"](state("message-queue")) then
-      local msgs = state("message-queue")
-      a.assoc(state(), "message-queue", {})
+    a.assoc(state.get(), "awaiting-process?", false)
+    if not a["empty?"](state.get("message-queue")) then
+      local msgs = state.get("message-queue")
+      a.assoc(state.get(), "message-queue", {})
       local function _3_(args)
         return process_message(unpack(args))
       end
@@ -480,9 +475,9 @@ local enqueue_message = nil
 do
   local v_0_ = nil
   local function enqueue_message0(...)
-    table.insert(state("message-queue"), {...})
-    if not state("awaiting-process?") then
-      a.assoc(state(), "awaiting-process?", true)
+    table.insert(state.get("message-queue"), {...})
+    if not state.get("awaiting-process?") then
+      a.assoc(state.get(), "awaiting-process?", true)
       return vim.schedule(process_message_queue)
     end
   end
@@ -510,7 +505,7 @@ do
   local v_0_ = nil
   local function capture_describe0()
     local function _3_(msg)
-      return a.assoc(state("conn"), "describe", msg)
+      return a.assoc(state.get("conn"), "describe", msg)
     end
     return send({op = "describe"}, _3_)
   end
@@ -550,7 +545,7 @@ do
   local v_0_ = nil
   local function handle_connect_fn0(cb)
     local function _3_(err)
-      local conn = state("conn")
+      local conn = state.get("conn")
       if err then
         display_conn_status(err)
         return disconnect()
@@ -580,10 +575,10 @@ do
       local port = _4_["port"]
       local resolved_host = net.resolve(host)
       local conn = {["raw-host"] = host, ["seen-ns"] = {}, host = resolved_host, msgs = {}, port = port, session = nil, sock = vim.loop.new_tcp()}
-      if state("conn") then
+      if state.get("conn") then
         disconnect()
       end
-      a.assoc(state(), "conn", conn)
+      a.assoc(state.get(), "conn", conn)
       return (conn.sock):connect(resolved_host, port, handle_connect_fn(cb))
     end
     v_0_0 = connect0

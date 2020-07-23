@@ -15,8 +15,8 @@ do
   _0_0 = module_0_
 end
 local function _1_(...)
-  _0_0["aniseed/local-fns"] = {require = {a = "conjure.aniseed.core", client = "conjure.client", config = "conjure.config", log = "conjure.log", net = "conjure.net", trn = "conjure.client.janet.netrepl.transport", ui = "conjure.client.janet.netrepl.ui"}}
-  return {require("conjure.aniseed.core"), require("conjure.client"), require("conjure.config"), require("conjure.log"), require("conjure.net"), require("conjure.client.janet.netrepl.transport"), require("conjure.client.janet.netrepl.ui")}
+  _0_0["aniseed/local-fns"] = {require = {a = "conjure.aniseed.core", client = "conjure.client", config = "conjure.config", log = "conjure.log", net = "conjure.net", trn = "conjure.client.janet.netrepl.transport"}}
+  return {require("conjure.aniseed.core"), require("conjure.client"), require("conjure.config"), require("conjure.log"), require("conjure.net"), require("conjure.client.janet.netrepl.transport")}
 end
 local _2_ = _1_(...)
 local a = _2_[1]
@@ -25,12 +25,14 @@ local config = _2_[3]
 local log = _2_[4]
 local net = _2_[5]
 local trn = _2_[6]
-local ui = _2_[7]
 do local _ = ({nil, _0_0, {{}, nil}})[2] end
-client["init-state"]({"janet", "netrepl"}, {conn = nil})
 local state = nil
 do
-  local v_0_ = client["state-fn"]("janet", "netrepl")
+  local v_0_ = nil
+  local function _3_()
+    return {conn = nil}
+  end
+  v_0_ = (_0_0["aniseed/locals"].state or client["new-state"](_3_))
   _0_0["aniseed/locals"]["state"] = v_0_
   state = v_0_
 end
@@ -42,7 +44,7 @@ do
     if conn then
       return f(conn)
     else
-      return ui.display({"# No connection"})
+      return log.append({"# No connection"})
     end
   end
   v_0_ = with_conn_or_warn0
@@ -56,7 +58,7 @@ do
     local v_0_0 = nil
     local function display_conn_status0(status)
       local function _3_(conn)
-        return ui.display({("# " .. conn["raw-host"] .. ":" .. conn.port .. " (" .. status .. ")")}, {["break?"] = true})
+        return log.append({("# " .. conn["raw-host"] .. ":" .. conn.port .. " (" .. status .. ")")}, {["break?"] = true})
       end
       return with_conn_or_warn(_3_)
     end
@@ -91,16 +93,6 @@ do
   _0_0["aniseed/locals"]["disconnect"] = v_0_
   disconnect = v_0_
 end
-local dbg = nil
-do
-  local v_0_ = nil
-  local function dbg0(...)
-    return client["with-filetype"]("janet", log.dbg, ...)
-  end
-  v_0_ = dbg0
-  _0_0["aniseed/locals"]["dbg"] = v_0_
-  dbg = v_0_
-end
 local handle_message = nil
 do
   local v_0_ = nil
@@ -112,7 +104,7 @@ do
       return disconnect()
     else
       local function _3_(msg)
-        dbg("receive", msg)
+        log.dbg("receive", msg)
         local cb = table.remove(state("conn", "queue"))
         if cb then
           return cb(msg)
@@ -131,7 +123,7 @@ do
   do
     local v_0_0 = nil
     local function send0(msg, cb)
-      dbg("send", msg)
+      log.dbg("send", msg)
       local function _3_(conn)
         table.insert(state("conn", "queue"), 1, (cb or false))
         return (conn.sock):write(trn.encode(msg))
@@ -155,12 +147,12 @@ do
         display_conn_status(err)
         return disconnect()
       else
-        do end (conn.sock):read_start(vim.schedule_wrap(handle_message))
+        do end (conn.sock):read_start(client["schedule-wrap"](handle_message))
         send("Conjure")
         return display_conn_status("connected")
       end
     end
-    return vim.schedule_wrap(_3_)
+    return client["schedule-wrap"](_3_)
   end
   v_0_ = handle_connect_fn0
   _0_0["aniseed/locals"]["handle-connect-fn"] = v_0_

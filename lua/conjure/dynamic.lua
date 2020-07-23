@@ -27,12 +27,25 @@ do
   _0_0["aniseed/locals"]["stack-key"] = v_0_
   stack_key = v_0_
 end
+local assert_value_function_21 = nil
+do
+  local v_0_ = nil
+  local function assert_value_function_210(value)
+    if ("function" ~= type(value)) then
+      return error("conjure.dynamic values must always be wrapped in a function")
+    end
+  end
+  v_0_ = assert_value_function_210
+  _0_0["aniseed/locals"]["assert-value-function!"] = v_0_
+  assert_value_function_21 = v_0_
+end
 local new = nil
 do
   local v_0_ = nil
   do
     local v_0_0 = nil
     local function new0(base_value)
+      assert_value_function_21(base_value)
       local stack = {base_value}
       local function _3_(x, ...)
         if (stack_key == x) then
@@ -58,6 +71,7 @@ do
       local _5_ = _4_0
       local dyn = _5_[1]
       local new_value = _5_[2]
+      assert_value_function_21(new_value)
       return f(dyn(stack_key), new_value)
     end
     return a["map-indexed"](_3_, binds)
@@ -90,5 +104,23 @@ do
   end
   _0_0["aniseed/locals"]["bind"] = v_0_
   bind = v_0_
+end
+local set_21 = nil
+do
+  local v_0_ = nil
+  do
+    local v_0_0 = nil
+    local function set_210(dyn, new_value)
+      assert_value_function_21(new_value)
+      local stack = dyn(stack_key)
+      local depth = a.count(stack)
+      return a.assoc(stack, depth, new_value)
+    end
+    v_0_0 = set_210
+    _0_0["set!"] = v_0_0
+    v_0_ = v_0_0
+  end
+  _0_0["aniseed/locals"]["set!"] = v_0_
+  set_21 = v_0_
 end
 return nil

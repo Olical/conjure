@@ -25,69 +25,50 @@ local dyn = _2_[3]
 local fennel = _2_[4]
 local nvim = _2_[5]
 do local _ = ({nil, _0_0, {{}, nil}})[2] end
+local state_key = nil
+do
+  local v_0_ = nil
+  local function _3_()
+    return "default"
+  end
+  v_0_ = dyn.new(_3_)
+  _0_0["aniseed/locals"]["state-key"] = v_0_
+  state_key = v_0_
+end
+local new_state = nil
+do
+  local v_0_ = nil
+  do
+    local v_0_0 = nil
+    local function new_state0(init_fn)
+      local key__3estate = {}
+      local function _3_(...)
+        local key = state_key()
+        local state = a.get(key__3estate, key)
+        local _4_
+        if (nil == state) then
+          local new_state1 = init_fn()
+          a.assoc(key__3estate, key, new_state1)
+          _4_ = new_state1
+        else
+          _4_ = state
+        end
+        return a["get-in"](_4_, {...})
+      end
+      return _3_
+    end
+    v_0_0 = new_state0
+    _0_0["new-state"] = v_0_0
+    v_0_ = v_0_0
+  end
+  _0_0["aniseed/locals"]["new-state"] = v_0_
+  new_state = v_0_
+end
 local loaded = nil
 do
   local v_0_ = (_0_0["aniseed/locals"].loaded or {})
   _0_0["aniseed/locals"]["loaded"] = v_0_
   loaded = v_0_
-end
-local client_states = nil
-do
-  local v_0_ = (_0_0["aniseed/locals"]["client-states"] or {})
-  _0_0["aniseed/locals"]["client-states"] = v_0_
-  client_states = v_0_
-end
-local state = nil
-do
-  local v_0_ = nil
-  do
-    local v_0_0 = nil
-    local function state0(...)
-      return a["get-in"](client_states, {...})
-    end
-    v_0_0 = state0
-    _0_0["state"] = v_0_0
-    v_0_ = v_0_0
-  end
-  _0_0["aniseed/locals"]["state"] = v_0_
-  state = v_0_
-end
-local state_fn = nil
-do
-  local v_0_ = nil
-  do
-    local v_0_0 = nil
-    local function state_fn0(...)
-      local prefix = {...}
-      local function _3_(...)
-        local ks = a.concat(prefix, {...})
-        return state(unpack(ks))
-      end
-      return _3_
-    end
-    v_0_0 = state_fn0
-    _0_0["state-fn"] = v_0_0
-    v_0_ = v_0_0
-  end
-  _0_0["aniseed/locals"]["state-fn"] = v_0_
-  state_fn = v_0_
-end
-local init_state = nil
-do
-  local v_0_ = nil
-  do
-    local v_0_0 = nil
-    local function init_state0(ks, default)
-      if not a["get-in"](client_states, ks) then
-        return a["assoc-in"](client_states, ks, default)
-      end
-    end
-    v_0_0 = init_state0
-    _0_0["init-state"] = v_0_0
-    v_0_ = v_0_0
-  end
-  _0_0["aniseed/locals"]["init-state"] = v_0_
-  init_state = v_0_
 end
 local load_module = nil
 do
@@ -141,6 +122,45 @@ do
   end
   _0_0["aniseed/locals"]["with-filetype"] = v_0_
   with_filetype = v_0_
+end
+local wrap = nil
+do
+  local v_0_ = nil
+  do
+    local v_0_0 = nil
+    local function wrap0(f, ...)
+      local opts = {[filetype] = a.constantly(filetype()), [state_key] = a.constantly(state_key())}
+      local args = {...}
+      local function _3_(...)
+        if (0 ~= a.count(args)) then
+          return dyn.bind(opts, f, unpack(args), ...)
+        else
+          return dyn.bind(opts, f, ...)
+        end
+      end
+      return _3_
+    end
+    v_0_0 = wrap0
+    _0_0["wrap"] = v_0_0
+    v_0_ = v_0_0
+  end
+  _0_0["aniseed/locals"]["wrap"] = v_0_
+  wrap = v_0_
+end
+local schedule_wrap = nil
+do
+  local v_0_ = nil
+  do
+    local v_0_0 = nil
+    local function schedule_wrap0(f, ...)
+      return wrap(vim.schedule_wrap(f), ...)
+    end
+    v_0_0 = schedule_wrap0
+    _0_0["schedule-wrap"] = v_0_0
+    v_0_ = v_0_0
+  end
+  _0_0["aniseed/locals"]["schedule-wrap"] = v_0_
+  schedule_wrap = v_0_
 end
 local current_client_module_name = nil
 do

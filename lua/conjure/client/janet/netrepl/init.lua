@@ -15,18 +15,18 @@ do
   _0_0 = module_0_
 end
 local function _1_(...)
-  _0_0["aniseed/local-fns"] = {require = {a = "conjure.aniseed.core", bridge = "conjure.bridge", config = "conjure.config", mapping = "conjure.mapping", nvim = "conjure.aniseed.nvim", server = "conjure.client.janet.netrepl.server", text = "conjure.text", ui = "conjure.client.janet.netrepl.ui"}}
-  return {require("conjure.aniseed.core"), require("conjure.bridge"), require("conjure.config"), require("conjure.mapping"), require("conjure.aniseed.nvim"), require("conjure.client.janet.netrepl.server"), require("conjure.text"), require("conjure.client.janet.netrepl.ui")}
+  _0_0["aniseed/local-fns"] = {require = {a = "conjure.aniseed.core", bridge = "conjure.bridge", config = "conjure.config", log = "conjure.log", mapping = "conjure.mapping", nvim = "conjure.aniseed.nvim", server = "conjure.client.janet.netrepl.server", text = "conjure.text"}}
+  return {require("conjure.aniseed.core"), require("conjure.bridge"), require("conjure.config"), require("conjure.log"), require("conjure.mapping"), require("conjure.aniseed.nvim"), require("conjure.client.janet.netrepl.server"), require("conjure.text")}
 end
 local _2_ = _1_(...)
 local a = _2_[1]
 local bridge = _2_[2]
 local config = _2_[3]
-local mapping = _2_[4]
-local nvim = _2_[5]
-local server = _2_[6]
-local text = _2_[7]
-local ui = _2_[8]
+local log = _2_[4]
+local mapping = _2_[5]
+local nvim = _2_[6]
+local server = _2_[7]
+local text = _2_[8]
 do local _ = ({nil, _0_0, {{}, nil}})[2] end
 local buf_suffix = nil
 do
@@ -63,7 +63,7 @@ do
           opts["on-result"](text["strip-ansi-escape-sequences"](clean))
         end
         if not opts["passive?"] then
-          return ui.display(text["split-lines"](clean))
+          return log.append(text["split-lines"](clean))
         end
       end
       return server.send((opts.code .. "\n"), _3_)

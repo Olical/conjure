@@ -5,21 +5,21 @@
             config conjure.config
             dyn conjure.dynamic}})
 
-(defonce- loaded {})
-(defonce- client-states {})
+(def- state-key (dyn.new #(do :default)))
 
-(defn state [...]
-  (a.get-in client-states [...]))
-
-(defn state-fn [...]
-  (let [prefix [...]]
+(defn new-state [init-fn]
+  (let [key->state {}]
     (fn [...]
-      (let [ks (a.concat prefix [...])]
-        (state (unpack ks))))))
+      (let [key (state-key)
+            state (a.get key->state key)]
+        (-> (if (= nil state)
+              (let [new-state (init-fn)]
+                (a.assoc key->state key new-state)
+                new-state)
+              state)
+            (a.get-in [...]))))))
 
-(defn init-state [ks default]
-  (when (not (a.get-in client-states ks))
-    (a.assoc-in client-states ks default)))
+(defonce- loaded {})
 
 (defn- load-module [name]
   (let [(ok? result) (xpcall
@@ -40,6 +40,18 @@
 
 (defn with-filetype [ft f ...]
   (dyn.bind {filetype #(do ft)} f ...))
+
+(defn wrap [f ...]
+  (let [opts {filetype (a.constantly (filetype))
+              state-key (a.constantly (state-key))}
+        args [...]]
+    (fn [...]
+      (if (not= 0 (a.count args))
+        (dyn.bind opts f (unpack args) ...)
+        (dyn.bind opts f ...)))))
+
+(defn schedule-wrap [f ...]
+  (wrap (vim.schedule_wrap f) ...))
 
 (defn- current-client-module-name []
   (a.get (config.get-in [:filetype_client]) (filetype)))

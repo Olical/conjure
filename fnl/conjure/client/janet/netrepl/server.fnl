@@ -1,28 +1,23 @@
 (module conjure.client.janet.netrepl.server
-  {require {ui conjure.client.janet.netrepl.ui
-            a conjure.aniseed.core
+  {require {a conjure.aniseed.core
             net conjure.net
             log conjure.log
             client conjure.client
             config conjure.config
             trn conjure.client.janet.netrepl.transport}})
 
-(client.init-state
-  [:janet :netrepl]
-  {:conn nil})
-
-(def- state (client.state-fn :janet :netrepl))
+(defonce- state (client.new-state #(do {:conn nil})))
 
 (defn- with-conn-or-warn [f opts]
   (let [conn (state :conn)]
     (if conn
       (f conn)
-      (ui.display ["# No connection"]))))
+      (log.append ["# No connection"]))))
 
 (defn display-conn-status [status]
   (with-conn-or-warn
     (fn [conn]
-      (ui.display
+      (log.append
         [(.. "# " conn.raw-host ":" conn.port " (" status ")")]
         {:break? true}))))
 
@@ -36,9 +31,6 @@
       (display-conn-status :disconnected)
       (a.assoc (state) :conn nil))))
 
-(defn- dbg [...]
-  (client.with-filetype :janet log.dbg ...))
-
 (defn- handle-message [err chunk]
   (let [conn (state :conn)]
     (if
@@ -47,20 +39,20 @@
       (->> (conn.decode chunk)
            (a.run!
              (fn [msg]
-               (dbg "receive" msg)
+               (log.dbg "receive" msg)
                (let [cb (table.remove (state :conn :queue))]
                  (when cb
                    (cb msg)))))))))
 
 (defn send [msg cb]
-  (dbg "send" msg)
+  (log.dbg "send" msg)
   (with-conn-or-warn
     (fn [conn]
       (table.insert (state :conn :queue) 1 (or cb false))
       (conn.sock:write (trn.encode msg)))))
 
 (defn- handle-connect-fn [cb]
-  (vim.schedule_wrap
+  (client.schedule-wrap
     (fn [err]
       (let [conn (state :conn)]
         (if err
@@ -69,7 +61,7 @@
             (disconnect))
 
           (do
-            (conn.sock:read_start (vim.schedule_wrap handle-message))
+            (conn.sock:read_start (client.schedule-wrap handle-message))
             (send "Conjure")
             (display-conn-status :connected)))))))
 

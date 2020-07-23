@@ -834,4 +834,22 @@ do
   _0_0["aniseed/locals"]["update-in"] = v_0_
   update_in = v_0_
 end
+local constantly = nil
+do
+  local v_0_ = nil
+  do
+    local v_0_0 = nil
+    local function constantly0(v)
+      local function _3_()
+        return v
+      end
+      return _3_
+    end
+    v_0_0 = constantly0
+    _0_0["constantly"] = v_0_0
+    v_0_ = v_0_0
+  end
+  _0_0["aniseed/locals"]["constantly"] = v_0_
+  constantly = v_0_
+end
 return nil

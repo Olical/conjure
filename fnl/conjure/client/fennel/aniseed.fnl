@@ -38,9 +38,6 @@
 (defn- anic [mod f-name ...]
   ((ani mod f-name) ...))
 
-(defn- display [lines opts]
-  (client.with-filetype :fennel log.append lines opts))
-
 (defn display-result [opts]
   (when opts
     (let [{: ok? : results} opts
@@ -51,9 +48,10 @@
                        (a.first results))
           result-lines (str.split result-str "\n")]
       (when (not opts.passive?)
-        (display (if ok?
-                   result-lines
-                   (a.map #(.. "; " $1) result-lines))))
+        (log.append
+          (if ok?
+            result-lines
+            (a.map #(.. "; " $1) result-lines))))
       (when opts.on-result
         (opts.on-result result-str)))))
 
@@ -72,7 +70,7 @@
                       (set opts.ok? ok?)
                       (set opts.results results))))]
     (when (not (a.empty? out))
-      (display (text.prefixed-lines (text.trim-last-newline out) "; (out) ")))
+      (log.append (text.prefixed-lines (text.trim-last-newline out) "; (out) ")))
     (display-result opts)))
 
 (defn doc-str [opts]
@@ -85,9 +83,9 @@
     (eval-str opts)))
 
 (defn- wrapped-test [req-lines f]
-  (display req-lines {:break? true})
+  (log.append req-lines {:break? true})
   (let [res (anic :nu :with-out-str f)]
-    (display
+    (log.append
       (-> (if (= "" res)
             "No results."
             res)

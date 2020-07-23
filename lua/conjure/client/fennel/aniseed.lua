@@ -102,16 +102,6 @@ do
   _0_0["aniseed/locals"]["anic"] = v_0_
   anic = v_0_
 end
-local display = nil
-do
-  local v_0_ = nil
-  local function display0(lines, opts)
-    return client["with-filetype"]("fennel", log.append, lines, opts)
-  end
-  v_0_ = display0
-  _0_0["aniseed/locals"]["display"] = v_0_
-  display = v_0_
-end
 local display_result = nil
 do
   local v_0_ = nil
@@ -144,7 +134,7 @@ do
               return a.map(_5_, result_lines)
             end
           end
-          display(_5_())
+          log.append(_5_())
         end
         if opts["on-result"] then
           return opts["on-result"](result_str)
@@ -179,7 +169,7 @@ do
       end
       out = anic("nu", "with-out-str", _3_)
       if not a["empty?"](out) then
-        display(text["prefixed-lines"](text["trim-last-newline"](out), "; (out) "))
+        log.append(text["prefixed-lines"](text["trim-last-newline"](out), "; (out) "))
       end
       return display_result(opts)
     end
@@ -228,7 +218,7 @@ local wrapped_test = nil
 do
   local v_0_ = nil
   local function wrapped_test0(req_lines, f)
-    display(req_lines, {["break?"] = true})
+    log.append(req_lines, {["break?"] = true})
     local res = anic("nu", "with-out-str", f)
     local _3_
     if ("" == res) then
@@ -236,7 +226,7 @@ do
     else
       _3_ = res
     end
-    return display(text["prefixed-lines"](_3_, "; "))
+    return log.append(text["prefixed-lines"](_3_, "; "))
   end
   v_0_ = wrapped_test0
   _0_0["aniseed/locals"]["wrapped-test"] = v_0_
