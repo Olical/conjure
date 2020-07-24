@@ -372,9 +372,9 @@
                       {:break? true})
           (require-ns "clojure.test")
           (server.eval
-            {:code (.. "(clojure.test/test-var"
-                       "  (doto (resolve '" test-name ")"
-                       "    (assert \"" test-name " is not a var\")))")
+            {:code (.. "(clojure.test/test-vars"
+                       "  [(doto (resolve '" test-name ")"
+                       "     (assert \"" test-name " is not a var\"))])")
              :context (extract.context)}
             (server.with-all-msgs-fn
               (fn [msgs]
