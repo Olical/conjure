@@ -969,6 +969,16 @@ do
   _0_0["aniseed/locals"]["extract-completion-context"] = v_0_
   extract_completion_context = v_0_
 end
+local enhanced_cljs_completion_3f = nil
+do
+  local v_0_ = nil
+  local function enhanced_cljs_completion_3f0()
+    return config["get-in"]({"client", "clojure", "nrepl", "completion", "cljs", "use_suitable"})
+  end
+  v_0_ = enhanced_cljs_completion_3f0
+  _0_0["aniseed/locals"]["enhanced-cljs-completion?"] = v_0_
+  enhanced_cljs_completion_3f = v_0_
+end
 local completions = nil
 do
   local v_0_ = nil
@@ -976,10 +986,16 @@ do
     local v_0_0 = nil
     local function completions0(opts)
       local function _3_(conn)
-        local function _4_(msgs)
+        local _4_
+        if enhanced_cljs_completion_3f() then
+          _4_ = "t"
+        else
+        _4_ = nil
+        end
+        local function _6_(msgs)
           return opts.cb(a.map(clojure__3evim_completion, a.get(a.last(msgs), "completions")))
         end
-        return server.send({["enhanced-cljs-completion?"] = "t", ["extra-metadata"] = {"arglists", "doc"}, context = extract_completion_context(opts.prefix), ns = opts.context, op = "complete", session = conn.session, symbol = opts.prefix}, server["with-all-msgs-fn"](_4_))
+        return server.send({["enhanced-cljs-completion?"] = _4_, ["extra-metadata"] = {"arglists", "doc"}, context = extract_completion_context(opts.prefix), ns = opts.context, op = "complete", session = conn.session, symbol = opts.prefix}, server["with-all-msgs-fn"](_6_))
       end
       local function _4_()
         return opts.cb({})
