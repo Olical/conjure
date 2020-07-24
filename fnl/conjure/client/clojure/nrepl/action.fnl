@@ -184,7 +184,7 @@
         (let [column (or info.column 1)
               path (nrepl->nvim-path info.file)]
           (editor.go-to path info.line column)
-          (ui.display [(.. "; " path " [" info.line " " column "]") ]
+          (ui.display [(.. "; " path " [" info.line " " column "]")]
                       {:suppress-hud? true}))
 
         (ui.display ["; Unsupported target"
@@ -494,6 +494,9 @@
             (a.assoc line-index spliced)
             (->> (str.join "\n")))))))
 
+(defn- enhanced-cljs-completion? []
+  (config.get-in [:client :clojure :nrepl :completion :cljs :use_suitable]))
+
 (defn completions [opts]
   (server.with-conn-and-op-or-warn
     :complete
@@ -505,7 +508,7 @@
          :symbol opts.prefix
          :context (extract-completion-context opts.prefix)
          :extra-metadata [:arglists :doc]
-         :enhanced-cljs-completion? "t"}
+         :enhanced-cljs-completion? (when (enhanced-cljs-completion?) "t")}
         (server.with-all-msgs-fn
           (fn [msgs]
             (->> (a.get (a.last msgs) :completions)
