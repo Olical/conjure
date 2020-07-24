@@ -281,4 +281,8 @@ All configuration can be set as described in |conjure-configuration|.
             Clear the namespace refresh cache.
             Default: `rc`
 
+`g:conjure#client#clojure#nrepl#completion#cljs#use_suitable`
+            Use `clj-suitable` to improve cljs completion.
+            Default: `false`
+
 vim:tw=78:sw=2:ts=2:ft=help:norl:et:listchars=
