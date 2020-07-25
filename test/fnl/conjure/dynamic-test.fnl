@@ -41,7 +41,7 @@
       {foo #(do 2)}
       (fn []
         (t.= (foo) 2)
-        (dyn.set! foo #(do 3))
+        (t.= nil (dyn.set! foo #(do 3)))
         (t.= (foo) 3)))
     (t.= (foo) 1)))
 

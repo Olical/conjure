@@ -112,9 +112,12 @@ do
     local v_0_0 = nil
     local function set_210(dyn, new_value)
       assert_value_function_21(new_value)
-      local stack = dyn(stack_key)
-      local depth = a.count(stack)
-      return a.assoc(stack, depth, new_value)
+      do
+        local stack = dyn(stack_key)
+        local depth = a.count(stack)
+        a.assoc(stack, depth, new_value)
+      end
+      return nil
     end
     v_0_0 = set_210
     _0_0["set!"] = v_0_0

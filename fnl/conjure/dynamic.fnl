@@ -36,4 +36,6 @@
 
   (let [stack (dyn stack-key)
         depth (a.count stack)]
-    (a.assoc stack depth new-value)))
+    (a.assoc stack depth new-value))
+
+  nil)
