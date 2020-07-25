@@ -33,10 +33,8 @@
 (defn close-hud []
   (clear-close-hud-passive-timer)
   (when state.hud.id
-    (pcall
-      (fn []
-        (nvim.win_close state.hud.id true)
-        (set state.hud.id nil)))))
+    (pcall nvim.win_close state.hud.id true)
+    (set state.hud.id nil)))
 
 (defn close-hud-passive []
   (when state.hud.id
@@ -79,9 +77,14 @@
            :focusable false
            :style :minimal}]
 
-      (when (not state.hud.id)
-        (set state.hud.id (nvim.open_win buf false win-opts))
-        (nvim.win_set_option state.hud.id :wrap false))
+      (when (not (nvim.win_is_valid state.hud.id))
+        (close-hud))
+
+      (if state.hud.id
+        (nvim.win_set_buf state.hud.id buf)
+        (do
+          (set state.hud.id (nvim.open_win buf false win-opts))
+          (nvim.win_set_option state.hud.id :wrap false)))
 
       (if last-break
         (do

@@ -26,21 +26,6 @@ local state = _2_[4]
 local str = _2_[5]
 local text = _2_[6]
 do local _ = ({nil, _0_0, {{}, nil}})[2] end
-local display = nil
-do
-  local v_0_ = nil
-  do
-    local v_0_0 = nil
-    local function display0(lines, opts)
-      return client["with-filetype"]("clojure", log.append, lines, opts)
-    end
-    v_0_0 = display0
-    _0_0["display"] = v_0_0
-    v_0_ = v_0_0
-  end
-  _0_0["aniseed/locals"]["display"] = v_0_
-  display = v_0_
-end
 local handle_join_line = nil
 do
   local v_0_ = nil
@@ -98,7 +83,7 @@ do
       else
         _3_ = nil
       end
-      return display(_3_, {["join-first?"] = joined_3f})
+      return log.append(_3_, {["join-first?"] = joined_3f})
     end
     v_0_0 = display_result0
     _0_0["display-result"] = v_0_0
@@ -126,7 +111,7 @@ do
         end
         return str.join({"; ", _6_, idx, " - ", session.str()})
       end
-      display(a.concat({("; Sessions (" .. a.count(sessions) .. "):")}, a["map-indexed"](_3_, sessions)), {["break?"] = true})
+      log.append(a.concat({("; Sessions (" .. a.count(sessions) .. "):")}, a["map-indexed"](_3_, sessions)), {["break?"] = true})
       if cb then
         return cb()
       end

@@ -63,6 +63,9 @@
 (defn schedule-wrap [f ...]
   (wrap (vim.schedule_wrap f) ...))
 
+(defn schedule [f ...]
+  (vim.schedule (wrap f ...)))
+
 (defn- current-client-module-name []
   (a.get (config.get-in [:filetype_client]) (filetype)))
 

@@ -103,7 +103,7 @@ do
       if port then
         return server.connect({cb = passive_ns_require, host = cfg({"connection", "default_host"}), port = port})
       else
-        return ui.display({"; No nREPL port file found"}, {["break?"] = true})
+        return log.append({"; No nREPL port file found"}, {["break?"] = true})
       end
     end
     v_0_0 = connect_port_file0
@@ -131,7 +131,7 @@ do
         if parsed_port then
           return server.connect({cb = passive_ns_require, host = (opts.host or cfg({"connection", "default_host"})), port = parsed_port})
         else
-          return ui.display({("; Could not parse '" .. opts.port .. "' as a port number")})
+          return log.append({("; Could not parse '" .. opts.port .. "' as a port number")})
         end
       end
     end
@@ -258,16 +258,16 @@ do
           end
           return a["run!"](_5_, msgs)
         else
-          ui.display({"; No results, checking CIDER's info op"})
+          log.append({"; No results, checking CIDER's info op"})
           local function _5_(info)
             if a["nil?"](info) then
-              return ui.display({"; Nothing found via CIDER's info either"})
+              return log.append({"; Nothing found via CIDER's info either"})
             elseif info.javadoc then
-              return ui.display(java_info__3elines(info))
+              return log.append(java_info__3elines(info))
             elseif info.doc then
-              return ui.display(a.concat({("; " .. info.ns .. "/" .. info.name), ("; (" .. info["arglists-str"] .. ")")}, text["prefixed-lines"](info.doc, "; ")))
+              return log.append(a.concat({("; " .. info.ns .. "/" .. info.name), ("; (" .. info["arglists-str"] .. ")")}, text["prefixed-lines"](info.doc, "; ")))
             else
-              return ui.display(a.concat({"; Unknown result, it may still be helpful"}, text["prefixed-lines"](view.serialise(info), "; ")))
+              return log.append(a.concat({"; Unknown result, it may still be helpful"}, text["prefixed-lines"](view.serialise(info), "; ")))
             end
           end
           return with_info(opts, _5_)
@@ -312,28 +312,28 @@ do
     local function def_str0(opts)
       local function _3_(info)
         if a["nil?"](info) then
-          return ui.display({"; No definition information found"})
+          return log.append({"; No definition information found"})
         elseif info.candidates then
           local function _4_(_241)
             return (_241 .. "/" .. opts.code)
           end
-          return ui.display(a.concat({"; Multiple candidates found"}, a.map(_4_, a.keys(info.candidates))))
+          return log.append(a.concat({"; Multiple candidates found"}, a.map(_4_, a.keys(info.candidates))))
         elseif info.javadoc then
-          return ui.display({"; Can't open source, it's Java", ("; " .. info.javadoc)})
+          return log.append({"; Can't open source, it's Java", ("; " .. info.javadoc)})
         elseif info["special-form"] then
           local function _4_()
             if info.url then
               return ("; " .. info.url)
             end
           end
-          return ui.display({"; Can't open source, it's a special form", _4_()})
+          return log.append({"; Can't open source, it's a special form", _4_()})
         elseif (info.file and info.line) then
           local column = (info.column or 1)
           local path = nrepl__3envim_path(info.file)
           editor["go-to"](path, info.line, column)
-          return ui.display({("; " .. path .. " [" .. info.line .. " " .. column .. "]")}, {["suppress-hud?"] = true})
+          return log.append({("; " .. path .. " [" .. info.line .. " " .. column .. "]")}, {["suppress-hud?"] = true})
         else
-          return ui.display({"; Unsupported target", ("; " .. a["pr-str"](info))})
+          return log.append({"; Unsupported target", ("; " .. a["pr-str"](info))})
         end
       end
       return with_info(opts, _3_)
@@ -387,7 +387,7 @@ do
                 return ("session: " .. sess.str() .. "")
               end
             end
-            return ui.display({("; Interrupted: " .. _9_())}, {["break?"] = true})
+            return log.append({("; Interrupted: " .. _9_())}, {["break?"] = true})
           end
           return server["enrich-session-id"](session, _8_)
         end
@@ -476,7 +476,7 @@ do
     local function view_source0()
       local word = a.get(extract.word(), "content")
       if not a["empty?"](word) then
-        ui.display({("; source (word): " .. word)}, {["break?"] = true})
+        log.append({("; source (word): " .. word)}, {["break?"] = true})
         require_ns("clojure.repl")
         local function _3_(_241)
           return ui["display-result"](_241, {["ignore-nil?"] = true, ["raw-out?"] = true})
@@ -536,7 +536,7 @@ do
       local function _3_(conn)
         local function _4_(sess)
           a.assoc(conn, "session", nil)
-          ui.display({("; Closed current session: " .. sess.str())}, {["break?"] = true})
+          log.append({("; Closed current session: " .. sess.str())}, {["break?"] = true})
           local function _5_()
             return server["assume-or-create-session"]()
           end
@@ -579,7 +579,7 @@ do
     local function close_all_sessions0()
       local function _3_(sessions)
         a["run!"](server["close-session"], sessions)
-        ui.display({("; Closed all sessions (" .. a.count(sessions) .. ")")}, {["break?"] = true})
+        log.append({("; Closed all sessions (" .. a.count(sessions) .. ")")}, {["break?"] = true})
         return server["clone-session"]()
       end
       return server["with-sessions"](_3_)
@@ -598,7 +598,7 @@ do
     local function _3_(conn)
       local function _4_(sessions)
         if (1 == a.count(sessions)) then
-          return ui.display({"; No other sessions"}, {["break?"] = true})
+          return log.append({"; No other sessions"}, {["break?"] = true})
         else
           local session = a.get(conn, "session")
           local function _5_(_241)
@@ -659,7 +659,7 @@ do
     local function select_session_interactive0()
       local function _3_(sessions)
         if (1 == a.count(sessions)) then
-          return ui.display({"; No other sessions"}, {["break?"] = true})
+          return log.append({"; No other sessions"}, {["break?"] = true})
         else
           local function _4_()
             nvim.ex.redraw_()
@@ -668,7 +668,7 @@ do
             if ((1 <= n) and (n <= _5_)) then
               return server["assume-session"](a.get(sessions, n))
             else
-              return ui.display({"; Invalid session number."})
+              return log.append({"; Invalid session number."})
             end
           end
           return ui["display-sessions"](sessions, _4_)
@@ -689,7 +689,7 @@ do
   do
     local v_0_0 = nil
     local function run_all_tests0()
-      ui.display({"; run-all-tests"}, {["break?"] = true})
+      log.append({"; run-all-tests"}, {["break?"] = true})
       require_ns("clojure.test")
       local function _3_(_241)
         return ui["display-result"](_241, {["ignore-nil?"] = true, ["simple-out?"] = true})
@@ -708,7 +708,7 @@ do
   local v_0_ = nil
   local function run_ns_tests0(ns)
     if ns then
-      ui.display({("; run-ns-tests: " .. ns)}, {["break?"] = true})
+      log.append({("; run-ns-tests: " .. ns)}, {["break?"] = true})
       require_ns("clojure.test")
       local function _3_(_241)
         return ui["display-result"](_241, {["ignore-nil?"] = true, ["simple-out?"] = true})
@@ -768,11 +768,11 @@ do
       if form then
         local test_name, sub_count = string.gsub(form.content, ".*deftest%s+(.-)%s+.*", "%1")
         if (not a["empty?"](test_name) and (1 == sub_count)) then
-          ui.display({("; run-current-test: " .. test_name)}, {["break?"] = true})
+          log.append({("; run-current-test: " .. test_name)}, {["break?"] = true})
           require_ns("clojure.test")
           local function _3_(msgs)
             if ((2 == a.count(msgs)) and ("nil" == a.get(a.first(msgs), "value"))) then
-              return ui.display({"; Success!"})
+              return log.append({"; Success!"})
             else
               local function _4_(_241)
                 return ui["display-result"](_241, {["ignore-nil?"] = true, ["simple-out?"] = true})
@@ -798,11 +798,11 @@ do
     local function _3_(conn)
       local function _4_(msg)
         if msg.reloading then
-          return ui.display(msg.reloading)
+          return log.append(msg.reloading)
         elseif msg.error then
-          return ui.display({("; Error while reloading " .. msg["error-ns"])})
+          return log.append({("; Error while reloading " .. msg["error-ns"])})
         elseif msg.status.ok then
-          return ui.display({"; Refresh complete"})
+          return log.append({"; Refresh complete"})
         elseif msg.status.done then
           return nil
         else
@@ -823,7 +823,7 @@ do
   do
     local v_0_0 = nil
     local function refresh_changed0()
-      ui.display({"; Refreshing changed namespaces"}, {["break?"] = true})
+      log.append({"; Refreshing changed namespaces"}, {["break?"] = true})
       return refresh_impl("refresh")
     end
     v_0_0 = refresh_changed0
@@ -839,7 +839,7 @@ do
   do
     local v_0_0 = nil
     local function refresh_all0()
-      ui.display({"; Refreshing all namespaces"}, {["break?"] = true})
+      log.append({"; Refreshing all namespaces"}, {["break?"] = true})
       return refresh_impl("refresh-all")
     end
     v_0_0 = refresh_all0
@@ -855,10 +855,10 @@ do
   do
     local v_0_0 = nil
     local function refresh_clear0()
-      ui.display({"; Clearing refresh cache"}, {["break?"] = true})
+      log.append({"; Clearing refresh cache"}, {["break?"] = true})
       local function _3_(conn)
         local function _4_(msgs)
-          return ui.display({"; Clearing complete"})
+          return log.append({"; Clearing complete"})
         end
         return server.send({op = "refresh-clear", session = conn.session}, server["with-all-msgs-fn"](_4_))
       end
@@ -878,7 +878,7 @@ do
     local v_0_0 = nil
     local function shadow_select0(build)
       local function _3_(conn)
-        ui.display({("; shadow-cljs (select): " .. build)}, {["break?"] = true})
+        log.append({("; shadow-cljs (select): " .. build)}, {["break?"] = true})
         server.eval({code = ("(shadow.cljs.devtools.api/nrepl-select :" .. build .. ")")}, ui["display-result"])
         return passive_ns_require()
       end
@@ -898,7 +898,7 @@ do
     local v_0_0 = nil
     local function piggieback0(code)
       local function _3_(conn)
-        ui.display({("; piggieback: " .. code)}, {["break?"] = true})
+        log.append({("; piggieback: " .. code)}, {["break?"] = true})
         require_ns("cider.piggieback")
         server.eval({code = ("(cider.piggieback/cljs-repl " .. code .. ")")}, ui["display-result"])
         return passive_ns_require()
@@ -1015,7 +1015,7 @@ do
   do
     local v_0_0 = nil
     local function out_subscribe0()
-      ui.display({"; Subscribing to out"}, {["break?"] = true})
+      log.append({"; Subscribing to out"}, {["break?"] = true})
       local function _3_(conn)
         return server.send({op = "out-subscribe"})
       end
@@ -1034,7 +1034,7 @@ do
   do
     local v_0_0 = nil
     local function out_unsubscribe0()
-      ui.display({"; Unsubscribing from out"}, {["break?"] = true})
+      log.append({"; Unsubscribing from out"}, {["break?"] = true})
       local function _3_(conn)
         return server.send({op = "out-unsubscribe"})
       end

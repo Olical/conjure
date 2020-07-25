@@ -6,9 +6,6 @@
             str conjure.aniseed.string
             state conjure.client.clojure.nrepl.state}})
 
-(defn display [lines opts]
-  (client.with-filetype :clojure log.append lines opts))
-
 (defn- handle-join-line [resp]
   (let [next-key (if resp.out :out resp.err :err)
         key (state.get :join-next :key)]
@@ -23,7 +20,7 @@
 (defn display-result [resp opts]
   (local opts (or opts {}))
   (let [joined? (handle-join-line resp)]
-    (display
+    (log.append
       (if
         resp.out
         (text.prefixed-lines
@@ -49,13 +46,14 @@
 
 (defn display-sessions [sessions cb]
   (let [current (state.get :conn :session)]
-    (display (a.concat [(.. "; Sessions (" (a.count sessions) "):")]
-                       (a.map-indexed
-                         (fn [[idx session]]
-                           (str.join
-                             ["; " (if (= current session.id) ">" " ")
-                              idx " - " (session.str)]))
-                         sessions))
-             {:break? true})
+    (log.append
+      (a.concat [(.. "; Sessions (" (a.count sessions) "):")]
+                (a.map-indexed
+                  (fn [[idx session]]
+                    (str.join
+                      ["; " (if (= current session.id) ">" " ")
+                       idx " - " (session.str)]))
+                  sessions))
+      {:break? true})
     (when cb
       (cb))))

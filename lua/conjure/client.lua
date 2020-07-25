@@ -207,6 +207,21 @@ do
   _0_0["aniseed/locals"]["schedule-wrap"] = v_0_
   schedule_wrap = v_0_
 end
+local schedule = nil
+do
+  local v_0_ = nil
+  do
+    local v_0_0 = nil
+    local function schedule0(f, ...)
+      return vim.schedule(wrap(f, ...))
+    end
+    v_0_0 = schedule0
+    _0_0["schedule"] = v_0_0
+    v_0_ = v_0_0
+  end
+  _0_0["aniseed/locals"]["schedule"] = v_0_
+  schedule = v_0_
+end
 local current_client_module_name = nil
 do
   local v_0_ = nil

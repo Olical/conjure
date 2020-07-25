@@ -43,7 +43,7 @@ do
         return f(conn)
       else
         if not a.get(opts, "silent?") then
-          ui.display({"; No connection"})
+          log.append({"; No connection"})
         end
         if a.get(opts, "else") then
           return opts["else"]()
@@ -57,16 +57,6 @@ do
   _0_0["aniseed/locals"]["with-conn-or-warn"] = v_0_
   with_conn_or_warn = v_0_
 end
-local dbg = nil
-do
-  local v_0_ = nil
-  local function dbg0(...)
-    return client["with-filetype"]("clojure", log.dbg, ...)
-  end
-  v_0_ = dbg0
-  _0_0["aniseed/locals"]["dbg"] = v_0_
-  dbg = v_0_
-end
 local send = nil
 do
   local v_0_ = nil
@@ -77,7 +67,7 @@ do
       if conn then
         local msg_id = uuid.v4()
         a.assoc(msg, "id", msg_id)
-        dbg("send", msg)
+        log.dbg("send", msg)
         local function _3_()
         end
         a["assoc-in"](conn, {"msgs", msg_id}, {["sent-at"] = os.time(), cb = (cb or _3_), msg = msg})
@@ -97,7 +87,7 @@ do
   local v_0_ = nil
   local function display_conn_status0(status)
     local function _3_(conn)
-      return ui.display({("; " .. conn["raw-host"] .. ":" .. conn.port .. " (" .. status .. ")")}, {["break?"] = true})
+      return log.append({("; " .. conn["raw-host"] .. ":" .. conn.port .. " (" .. status .. ")")}, {["break?"] = true})
     end
     return with_conn_or_warn(_3_)
   end
@@ -173,7 +163,7 @@ do
     local v_0_0 = nil
     local function assume_session0(session)
       a.assoc(state.get("conn"), "session", a.get(session, "id"))
-      return ui.display({("; Assumed session: " .. session.str())}, {["break?"] = true})
+      return log.append({("; Assumed session: " .. session.str())}, {["break?"] = true})
     end
     v_0_0 = assume_session0
     _0_0["assume-session"] = v_0_0
@@ -418,7 +408,7 @@ do
       return disconnect()
     else
       local function _3_(msg)
-        dbg("receive", msg)
+        log.dbg("receive", msg)
         enrich_status(msg)
         if msg.status["need-input"] then
           local function _4_()
@@ -433,14 +423,14 @@ do
         cb = a["get-in"](conn, {"msgs", msg.id, "cb"}, _5_)
         local ok_3f, err0 = pcall(cb, msg)
         if not ok_3f then
-          ui.display({("; conjure.client.clojure.nrepl error: " .. err0)})
+          log.append({("; conjure.client.clojure.nrepl error: " .. err0)})
         end
         if msg.status["unknown-session"] then
-          ui.display({"; Unknown session, correcting"})
+          log.append({"; Unknown session, correcting"})
           assume_or_create_session()
         end
         if msg.status["namespace-not-found"] then
-          ui.display({("; Namespace not found: " .. msg.ns)})
+          log.append({("; Namespace not found: " .. msg.ns)})
         end
         if msg.status.done then
           return a["assoc-in"](conn, {"msgs", msg.id}, nil)
@@ -478,7 +468,7 @@ do
     table.insert(state.get("message-queue"), {...})
     if not state.get("awaiting-process?") then
       a.assoc(state.get(), "awaiting-process?", true)
-      return vim.schedule(process_message_queue)
+      return client.schedule(process_message_queue)
     end
   end
   v_0_ = enqueue_message0
@@ -524,7 +514,7 @@ do
           return f(conn)
         else
           if not a.get(opts, "silent?") then
-            ui.display({("; Unsupported operation: " .. op), "; Ensure the CIDER middleware is installed and up to date", "; https://docs.cider.mx/cider-nrepl/usage.html"})
+            log.append({("; Unsupported operation: " .. op), "; Ensure the CIDER middleware is installed and up to date", "; https://docs.cider.mx/cider-nrepl/usage.html"})
           end
           if a.get(opts, "else") then
             return opts["else"]()
@@ -550,14 +540,14 @@ do
         display_conn_status(err)
         return disconnect()
       else
-        do end (conn.sock):read_start(enqueue_message)
+        do end (conn.sock):read_start(client.wrap(enqueue_message))
         display_conn_status("connected")
         capture_describe()
         assume_or_create_session()
         return eval_preamble(cb)
       end
     end
-    return vim.schedule_wrap(_3_)
+    return client["schedule-wrap"](_3_)
   end
   v_0_ = handle_connect_fn0
   _0_0["aniseed/locals"]["handle-connect-fn"] = v_0_

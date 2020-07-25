@@ -18,19 +18,16 @@
       (f conn)
       (do
         (when (not (a.get opts :silent?))
-          (ui.display ["; No connection"]))
+          (log.append ["; No connection"]))
         (when (a.get opts :else)
           (opts.else))))))
-
-(defn- dbg [...]
-  (client.with-filetype :clojure log.dbg ...))
 
 (defn send [msg cb]
   (let [conn (state.get :conn)]
     (when conn
       (let [msg-id (uuid.v4)]
         (a.assoc msg :id msg-id)
-        (dbg "send" msg)
+        (log.dbg "send" msg)
         (a.assoc-in conn [:msgs msg-id]
                     {:msg msg
                      :cb (or cb (fn []))
@@ -41,7 +38,7 @@
 (defn- display-conn-status [status]
   (with-conn-or-warn
     (fn [conn]
-      (ui.display [(.. "; " conn.raw-host ":" conn.port " (" status ")")]
+      (log.append [(.. "; " conn.raw-host ":" conn.port " (" status ")")]
                   {:break? true}))))
 
 (defn disconnect []
@@ -68,7 +65,7 @@
 
 (defn assume-session [session]
   (a.assoc (state.get :conn) :session (a.get session :id))
-  (ui.display [(.. "; Assumed session: " (session.str))]
+  (log.append [(.. "; Assumed session: " (session.str))]
               {:break? true}))
 
 (defn eval [opts cb]
@@ -206,7 +203,7 @@
       (->> (bencode-stream.decode-all (state.get :bs) chunk)
            (a.run!
              (fn [msg]
-               (dbg "receive" msg)
+               (log.dbg "receive" msg)
                (enrich-status msg)
 
                (when msg.status.need-input
@@ -221,12 +218,12 @@
                (let [cb (a.get-in conn [:msgs msg.id :cb] #(ui.display-result $1))
                      (ok? err) (pcall cb msg)]
                  (when (not ok?)
-                   (ui.display [(.. "; conjure.client.clojure.nrepl error: " err)]))
+                   (log.append [(.. "; conjure.client.clojure.nrepl error: " err)]))
                  (when msg.status.unknown-session
-                   (ui.display ["; Unknown session, correcting"])
+                   (log.append ["; Unknown session, correcting"])
                    (assume-or-create-session))
                  (when msg.status.namespace-not-found
-                   (ui.display [(.. "; Namespace not found: " msg.ns)]))
+                   (log.append [(.. "; Namespace not found: " msg.ns)]))
                  (when msg.status.done
                    (a.assoc-in conn [:msgs msg.id] nil)))))))))
 
@@ -244,7 +241,7 @@
   (table.insert (state.get :message-queue) [...])
   (when (not (state.get :awaiting-process?))
     (a.assoc (state.get) :awaiting-process? true)
-    (vim.schedule process-message-queue)))
+    (client.schedule process-message-queue)))
 
 (defn- eval-preamble [cb]
   (send
@@ -270,7 +267,7 @@
         (f conn)
         (do
           (when (not (a.get opts :silent?))
-            (ui.display
+            (log.append
               [(.. "; Unsupported operation: " op)
                "; Ensure the CIDER middleware is installed and up to date"
                "; https://docs.cider.mx/cider-nrepl/usage.html"]))
@@ -279,7 +276,7 @@
     opts))
 
 (defn- handle-connect-fn [cb]
-  (vim.schedule_wrap
+  (client.schedule-wrap
     (fn [err]
       (let [conn (state.get :conn)]
         (if err
@@ -288,7 +285,7 @@
             (disconnect))
 
           (do
-            (conn.sock:read_start enqueue-message)
+            (conn.sock:read_start (client.wrap enqueue-message))
             (display-conn-status :connected)
             (capture-describe)
             (assume-or-create-session)
