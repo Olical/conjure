@@ -5,7 +5,17 @@
             config conjure.config
             dyn conjure.dynamic}})
 
-(def- state-key (dyn.new #(do :default)))
+(defonce state-key (dyn.new #(do :default)))
+
+(defonce- state
+  {:state-key-set? false})
+
+(defn set-state-key! [new-key]
+  (set state.state-key-set? true)
+  (dyn.set-root! state-key #(do new-key)))
+
+(defn multiple-states? []
+  state.state-key-set?)
 
 (defn new-state [init-fn]
   (let [key->state {}]

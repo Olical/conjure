@@ -21,11 +21,11 @@ end
 local _2_ = _1_(...)
 local a = _2_[1]
 do local _ = ({nil, _0_0, {{}, nil}})[2] end
-local stack_key = nil
+local get_stack_key = nil
 do
-  local v_0_ = "conjure.dynamic/stack"
-  _0_0["aniseed/locals"]["stack-key"] = v_0_
-  stack_key = v_0_
+  local v_0_ = "conjure.dynamic/get-stack"
+  _0_0["aniseed/locals"]["get-stack-key"] = v_0_
+  get_stack_key = v_0_
 end
 local assert_value_function_21 = nil
 do
@@ -48,7 +48,7 @@ do
       assert_value_function_21(base_value)
       local stack = {base_value}
       local function _3_(x, ...)
-        if (stack_key == x) then
+        if (get_stack_key == x) then
           return stack
         else
           return a.last(stack)(x, ...)
@@ -72,7 +72,7 @@ do
       local dyn = _5_[1]
       local new_value = _5_[2]
       assert_value_function_21(new_value)
-      return f(dyn(stack_key), new_value)
+      return f(dyn(get_stack_key), new_value)
     end
     return a["map-indexed"](_3_, binds)
   end
@@ -113,7 +113,7 @@ do
     local function set_210(dyn, new_value)
       assert_value_function_21(new_value)
       do
-        local stack = dyn(stack_key)
+        local stack = dyn(get_stack_key)
         local depth = a.count(stack)
         a.assoc(stack, depth, new_value)
       end
@@ -125,5 +125,22 @@ do
   end
   _0_0["aniseed/locals"]["set!"] = v_0_
   set_21 = v_0_
+end
+local set_root_21 = nil
+do
+  local v_0_ = nil
+  do
+    local v_0_0 = nil
+    local function set_root_210(dyn, new_value)
+      assert_value_function_21(new_value)
+      a.assoc(dyn(get_stack_key), 1, new_value)
+      return nil
+    end
+    v_0_0 = set_root_210
+    _0_0["set-root!"] = v_0_0
+    v_0_ = v_0_0
+  end
+  _0_0["aniseed/locals"]["set-root!"] = v_0_
+  set_root_21 = v_0_
 end
 return nil

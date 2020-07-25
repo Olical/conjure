@@ -46,6 +46,16 @@ do
   _0_0["aniseed/locals"]["break"] = v_0_
   _break = v_0_
 end
+local state_key_header = nil
+do
+  local v_0_ = nil
+  local function state_key_header0()
+    return (client.get("comment-prefix") .. "State: " .. client["state-key"]())
+  end
+  v_0_ = state_key_header0
+  _0_0["aniseed/locals"]["state-key-header"] = v_0_
+  state_key_header = v_0_
+end
 local log_buf_name = nil
 do
   local v_0_ = nil
@@ -281,7 +291,13 @@ do
         end
         local lines1 = nil
         if a.get(opts, "break?") then
-          lines1 = a.concat({_break()}, lines0)
+          local _4_
+          if client["multiple-states?"]() then
+            _4_ = {state_key_header()}
+          else
+          _4_ = nil
+          end
+          lines1 = a.concat({_break()}, _4_, lines0)
         elseif join_first_3f then
           lines1 = a.concat({(last_line(buf) .. a.first(lines0))}, a.rest(lines0))
         else

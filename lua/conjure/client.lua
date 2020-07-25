@@ -28,12 +28,57 @@ do local _ = ({nil, _0_0, {{}, nil}})[2] end
 local state_key = nil
 do
   local v_0_ = nil
-  local function _3_()
-    return "default"
+  do
+    local v_0_0 = nil
+    local function _3_()
+      return "default"
+    end
+    v_0_0 = (_0_0["state-key"] or dyn.new(_3_))
+    _0_0["state-key"] = v_0_0
+    v_0_ = v_0_0
   end
-  v_0_ = dyn.new(_3_)
   _0_0["aniseed/locals"]["state-key"] = v_0_
   state_key = v_0_
+end
+local state = nil
+do
+  local v_0_ = (_0_0["aniseed/locals"].state or {["state-key-set?"] = false})
+  _0_0["aniseed/locals"]["state"] = v_0_
+  state = v_0_
+end
+local set_state_key_21 = nil
+do
+  local v_0_ = nil
+  do
+    local v_0_0 = nil
+    local function set_state_key_210(new_key)
+      state["state-key-set?"] = true
+      local function _3_()
+        return new_key
+      end
+      return dyn["set-root!"](state_key, _3_)
+    end
+    v_0_0 = set_state_key_210
+    _0_0["set-state-key!"] = v_0_0
+    v_0_ = v_0_0
+  end
+  _0_0["aniseed/locals"]["set-state-key!"] = v_0_
+  set_state_key_21 = v_0_
+end
+local multiple_states_3f = nil
+do
+  local v_0_ = nil
+  do
+    local v_0_0 = nil
+    local function multiple_states_3f0()
+      return state["state-key-set?"]
+    end
+    v_0_0 = multiple_states_3f0
+    _0_0["multiple-states?"] = v_0_0
+    v_0_ = v_0_0
+  end
+  _0_0["aniseed/locals"]["multiple-states?"] = v_0_
+  multiple_states_3f = v_0_
 end
 local new_state = nil
 do
@@ -44,14 +89,14 @@ do
       local key__3estate = {}
       local function _3_(...)
         local key = state_key()
-        local state = a.get(key__3estate, key)
+        local state0 = a.get(key__3estate, key)
         local _4_
-        if (nil == state) then
+        if (nil == state0) then
           local new_state1 = init_fn()
           a.assoc(key__3estate, key, new_state1)
           _4_ = new_state1
         else
-          _4_ = state
+          _4_ = state0
         end
         return a["get-in"](_4_, {...})
       end

@@ -45,6 +45,19 @@
         (t.= (foo) 3)))
     (t.= (foo) 1)))
 
+(deftest set-root!
+  (let [foo (dyn.new #(do 1))]
+    (t.= (foo) 1)
+    (dyn.bind
+      {foo #(do 2)}
+      (fn []
+        (t.= (foo) 2)
+        (t.= nil (dyn.set-root! foo #(do 3)))
+        (t.= (foo) 2)))
+    (t.= (foo) 3)
+    (dyn.set-root! foo #(do 4))
+    (t.= (foo) 4)))
+
 (deftest type-guard
   (let [(ok? result) (pcall dyn.new :foo)]
     (t.= false ok?)

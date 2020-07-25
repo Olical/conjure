@@ -18,6 +18,9 @@
   (.. (client.get :comment-prefix)
       (string.rep "-" (config.get-in [:log :break_length]))))
 
+(defn- state-key-header []
+  (.. (client.get :comment-prefix) "State: " (client.state-key)))
+
 (defn- log-buf-name []
   (.. "conjure-log-" (nvim.fn.getpid) (client.get :buf-suffix)))
 
@@ -155,7 +158,11 @@
                     lines)
             lines (if
                     (a.get opts :break?)
-                    (a.concat [(break)] lines)
+                    (a.concat
+                      [(break)]
+                      (when (client.multiple-states?)
+                        [(state-key-header)])
+                      lines)
 
                     join-first?
                     (a.concat
