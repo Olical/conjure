@@ -76,6 +76,7 @@ These are clients I intend to build eventually or encourage another community me
  * https://fennel-lang.org/[Fennel] over https://gitlab.com/technomancy/jeejah/-/tree/master[nREPL] without Aniseed (for Lua scripting outside of Neovim)
  * https://racket-lang.org/[Racket]
  * http://lfe.io/[Lisp Flavoured Erlang]
+ * http://hylang.org/[Hy]
  * https://github.com/candid82/joker[Joker]
  * Scheme (https://www.call-cc.org/[Chicken], Chez or Guile? All?)
  * Common Lisp (https://github.com/Olical/conjure/issues/97[#97])
