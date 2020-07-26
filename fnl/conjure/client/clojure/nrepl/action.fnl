@@ -460,16 +460,16 @@
                                  :doc info
                                  : arglists}]
   {:word word
-   :menu (str.join
-           " "
-           (a.concat
-             [ns]
-             (when arglists
-               [(str.join " " arglists)])))
+   :menu (table.concat
+           [ns
+            (when arglists
+              (table.concat arglists " "))]
+           " ")
    :info info
    :kind (when (not (a.empty? kind))
            (string.upper
              (string.sub kind 1 1)))})
+
 
 (defn- extract-completion-context [prefix]
   (let [root-form (extract.form {:root? true})]

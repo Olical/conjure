@@ -38,31 +38,26 @@ do
       local _4_ = _3_(...)
       local sep = _4_[1]
       local xs = _4_[2]
-      local count = a.count(xs)
-      local result = ""
-      if (count > 0) then
-        for i = 1, count do
+      local len = a.count(xs)
+      local result = {}
+      if (len > 0) then
+        for i = 1, len do
           local x = xs[i]
-          local function _5_(...)
-            if (1 == i) then
-              return ""
-            else
-              return sep
-            end
+          local _5_0 = nil
+          if ("string" == type(x)) then
+            _5_0 = x
+          elseif (nil == x) then
+            _5_0 = x
+          else
+            _5_0 = a["pr-str"](x)
           end
-          local function _6_(...)
-            if a["string?"](x) then
-              return x
-            elseif a["nil?"](x) then
-              return ""
-            else
-              return a["pr-str"](x)
-            end
+          if _5_0 then
+            table.insert(result, _5_0)
+          else
           end
-          result = (result .. _5_(...) .. _6_(...))
         end
       end
-      return result
+      return table.concat(result, sep)
     end
     v_0_0 = join0
     _0_0["join"] = v_0_0

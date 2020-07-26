@@ -930,10 +930,10 @@ do
     end
     local function _7_()
       if arglists then
-        return {str.join(" ", arglists)}
+        return table.concat(arglists, " ")
       end
     end
-    return {info = info, kind = _5_, menu = str.join(" ", a.concat({ns}, _7_())), word = word}
+    return {info = info, kind = _5_, menu = table.concat({ns, _7_()}, " "), word = word}
   end
   v_0_ = clojure__3evim_completion0
   _0_0["aniseed/locals"]["clojure->vim-completion"] = v_0_
