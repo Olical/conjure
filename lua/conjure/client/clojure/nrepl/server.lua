@@ -177,7 +177,7 @@ do
       local function _3_(_)
         local _4_
         if config["get-in"]({"client", "clojure", "nrepl", "eval", "pretty_print"}) then
-          _4_ = "conjure.internal/pprint"
+          _4_ = config["get-in"]({"client", "clojure", "nrepl", "eval", "print_function"})
         else
         _4_ = nil
         end

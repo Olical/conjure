@@ -25,6 +25,7 @@
       {:pretty_print true
        :auto_require true
        :print_quota nil
+       :print_function :conjure.internal/pprint
        :print_options {:length 500
                        :level 50}}
 

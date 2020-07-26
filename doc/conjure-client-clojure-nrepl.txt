@@ -148,6 +148,16 @@ All configuration can be set as described in |conjure-configuration|.
             Relies on `clojure.pprint/write`.
             Default: `true`
 
+`g:conjure#client#clojure#nrepl#eval#print_quota`
+            A hard limit on the number of bytes printed for each value.
+            Default: `nil`
+
+`g:conjure#client#clojure#nrepl#eval#print_function`
+            A fully-qualified symbol naming a var whose function to use for
+            printing.
+            Must point to a function with signature [value writer options].
+            Default: `"conjure.internal/pprint"`
+
 `g:conjure#client#clojure#nrepl#eval#auto_require`
             Automatically require the namespace of any new buffer you open, or
             your current buffer after connection. This ensures buffers you're

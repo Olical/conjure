@@ -89,7 +89,7 @@
 
          :nrepl.middleware.print/print
          (when (config.get-in [:client :clojure :nrepl :eval :pretty_print])
-           :conjure.internal/pprint)}
+           (config.get-in [:client :clojure :nrepl :eval :print_function]))}
         cb))))
 
 (defn- with-session-ids [cb]
