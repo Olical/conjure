@@ -38,16 +38,13 @@
 (defn- display-conn-status [status]
   (with-conn-or-warn
     (fn [conn]
-      (log.append [(.. "; " conn.raw-host ":" conn.port " (" status ")")]
+      (log.append [(.. "; " conn.host ":" conn.port " (" status ")")]
                   {:break? true}))))
 
 (defn disconnect []
   (with-conn-or-warn
     (fn [conn]
-      (when (not (conn.sock:is_closing))
-        (conn.sock:read_stop)
-        (conn.sock:shutdown)
-        (conn.sock:close))
+      (conn.destroy)
       (display-conn-status :disconnected)
       (a.assoc (state.get) :conn nil))))
 
@@ -292,17 +289,16 @@
             (eval-preamble cb)))))))
 
 (defn connect [{: host : port : cb}]
-  (let [resolved-host (net.resolve host)
-        conn {:sock (vim.loop.new_tcp)
-              :host resolved-host
-              :raw-host host
-              :port port
-              :msgs {}
-              :seen-ns {}
-              :session nil}]
+  (when (state.get :conn)
+    (disconnect))
 
-    (when (state.get :conn)
-      (disconnect))
-
-    (a.assoc (state.get) :conn conn)
-    (conn.sock:connect resolved-host port (handle-connect-fn cb))))
+  (a.assoc
+    (state.get) :conn
+    (a.merge
+      (net.connect
+        {:host host
+         :port port
+         :cb (handle-connect-fn cb)})
+      {:msgs {}
+       :seen-ns {}
+       :session nil})))

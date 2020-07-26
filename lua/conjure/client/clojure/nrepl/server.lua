@@ -87,7 +87,7 @@ do
   local v_0_ = nil
   local function display_conn_status0(status)
     local function _3_(conn)
-      return log.append({("; " .. conn["raw-host"] .. ":" .. conn.port .. " (" .. status .. ")")}, {["break?"] = true})
+      return log.append({("; " .. conn.host .. ":" .. conn.port .. " (" .. status .. ")")}, {["break?"] = true})
     end
     return with_conn_or_warn(_3_)
   end
@@ -102,11 +102,7 @@ do
     local v_0_0 = nil
     local function disconnect0()
       local function _3_(conn)
-        if not (conn.sock):is_closing() then
-          do end (conn.sock):read_stop()
-          do end (conn.sock):shutdown()
-          do end (conn.sock):close()
-        end
+        conn.destroy()
         display_conn_status("disconnected")
         return a.assoc(state.get(), "conn", nil)
       end
@@ -563,13 +559,10 @@ do
       local cb = _4_["cb"]
       local host = _4_["host"]
       local port = _4_["port"]
-      local resolved_host = net.resolve(host)
-      local conn = {["raw-host"] = host, ["seen-ns"] = {}, host = resolved_host, msgs = {}, port = port, session = nil, sock = vim.loop.new_tcp()}
       if state.get("conn") then
         disconnect()
       end
-      a.assoc(state.get(), "conn", conn)
-      return (conn.sock):connect(resolved_host, port, handle_connect_fn(cb))
+      return a.assoc(state.get(), "conn", a.merge(net.connect({cb = handle_connect_fn(cb), host = host, port = port}), {["seen-ns"] = {}, msgs = {}, session = nil}))
     end
     v_0_0 = connect0
     _0_0["connect"] = v_0_0

@@ -236,10 +236,6 @@ do
   do
     local v_0_0 = nil
     local function on_load0()
-      nvim.ex.augroup("conjure_clojure_nrepl_cleanup")
-      nvim.ex.autocmd_()
-      nvim.ex.autocmd("VimLeavePre *", bridge["viml->lua"]("conjure.client.clojure.nrepl.server", "disconnect", {}))
-      nvim.ex.augroup("END")
       return action["connect-port-file"]()
     end
     v_0_0 = on_load0

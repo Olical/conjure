@@ -172,11 +172,4 @@
   (action.passive-ns-require))
 
 (defn on-load []
-  (nvim.ex.augroup :conjure_clojure_nrepl_cleanup)
-  (nvim.ex.autocmd_)
-  (nvim.ex.autocmd
-    "VimLeavePre *"
-    (bridge.viml->lua :conjure.client.clojure.nrepl.server :disconnect {}))
-  (nvim.ex.augroup :END)
-
   (action.connect-port-file))

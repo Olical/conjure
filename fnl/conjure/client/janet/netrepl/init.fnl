@@ -50,11 +50,4 @@
                :conjure.client.janet.netrepl.server :connect))
 
 (defn on-load []
-  (nvim.ex.augroup :conjure_janet_netrepl_cleanup)
-  (nvim.ex.autocmd_)
-  (nvim.ex.autocmd
-    "VimLeavePre *"
-    (bridge.viml->lua :conjure.client.janet.netrepl.server :disconnect {}))
-  (nvim.ex.augroup :END)
-
   (server.connect {}))
