@@ -66,7 +66,7 @@
        :refresh_all "ra"
        :refresh_clear "rc"}
       :completion
-      {:cljs {:use_suitable false}}}}}})
+      {:cljs {:use_suitable true}}}}}})
 
 
 (defn context [header]
