@@ -1,1 +1,1 @@
-return {"anthony-khong", "campbellr", "dharrigan", "djblue", "edderkoppen", "mamapitufo", "markwoodhall", "martinklepsch", "pyrmont", "rafaeldelboni", "rgm"}
+return {"anthony-khong", "campbellr", "dharrigan", "djblue", "edderkoppen", "mamapitufo", "markwoodhall", "martinklepsch", "penryu", "pyrmont", "rafaeldelboni", "rgm"}
