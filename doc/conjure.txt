@@ -66,6 +66,16 @@ I've also included some commands since they're related to the mappings.
                          `:ConjureConnect 5678`
                          `:ConjureConnect staging.my-app.com 5678`
 
+:ConjureClientState [state-key]
+                         Get or set (if an argument is provided) the current
+                         client state key. This defaults to `default` and can
+                         be used to have a connection per current working
+                         directory (or any other unique string of your
+                         choice!). Set up auto commands to suit your needs. >
+                         augroup conjure_set_state_key_on_dir_changed
+                           autocmd!
+                           autocmd DirChanged * execute "ConjureClientState " . getcwd()
+                         augroup END
 
 <localleader>ls          Open the log buffer in a new horizontal split window.
                          The direction can be controlled with |splitbelow|.

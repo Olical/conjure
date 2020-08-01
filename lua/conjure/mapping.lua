@@ -163,6 +163,25 @@ do
   _0_0["aniseed/locals"]["connect-command"] = v_0_
   connect_command = v_0_
 end
+local client_state_command = nil
+do
+  local v_0_ = nil
+  do
+    local v_0_0 = nil
+    local function client_state_command0(state_key)
+      if state_key then
+        return client["set-state-key!"](state_key)
+      else
+        return a.println(client["state-key"]())
+      end
+    end
+    v_0_0 = client_state_command0
+    _0_0["client-state-command"] = v_0_0
+    v_0_ = v_0_0
+  end
+  _0_0["aniseed/locals"]["client-state-command"] = v_0_
+  client_state_command = v_0_
+end
 local omnifunc = nil
 do
   local v_0_ = nil
@@ -191,4 +210,5 @@ nvim.ex.function_(str.join("\n", {"ConjureEvalMotion(kind)", "call luaeval(\"req
 nvim.ex.function_(str.join("\n", {"ConjureOmnifunc(findstart, base)", "return luaeval(\"require('conjure.mapping')['omnifunc'](_A[1] == 1, _A[2])\", [a:findstart, a:base])", "endfunction"}))
 nvim.ex.command_("-nargs=? -range ConjureEval", bridge["viml->lua"]("conjure.mapping", "eval-ranged-command", {args = "<line1>, <line2>, <q-args>"}))
 nvim.ex.command_("-nargs=* -range ConjureConnect", bridge["viml->lua"]("conjure.mapping", "connect-command", {args = "<f-args>"}))
+nvim.ex.command_("-nargs=* ConjureClientState", bridge["viml->lua"]("conjure.mapping", "client-state-command", {args = "<f-args>"}))
 return nvim.ex.command_("ConjureSchool", bridge["viml->lua"]("conjure.school", "start", {}))

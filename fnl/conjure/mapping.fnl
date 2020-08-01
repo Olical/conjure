@@ -78,6 +78,11 @@
         {:host (a.first args)
          :port (a.second args)}))))
 
+(defn client-state-command [state-key]
+  (if state-key
+    (client.set-state-key! state-key)
+    (a.println (client.state-key))))
+
 (defn omnifunc [find-start? base]
   (if find-start?
     (let [[row col] (nvim.win_get_cursor 0)
@@ -110,6 +115,12 @@
   "-nargs=* -range ConjureConnect"
   (bridge.viml->lua
     :conjure.mapping :connect-command
+    {:args "<f-args>"}))
+
+(nvim.ex.command_
+  "-nargs=* ConjureClientState"
+  (bridge.viml->lua
+    :conjure.mapping :client-state-command
     {:args "<f-args>"}))
 
 (nvim.ex.command_
