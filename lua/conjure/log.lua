@@ -178,7 +178,7 @@ do
         nvim.win_set_buf(state.hud.id, buf)
       else
         state.hud.id = nvim.open_win(buf, false, win_opts)
-        nvim.win_set_option(state.hud.id, "wrap", false)
+        nvim.win_set_option(state.hud.id, "wrap", config["get-in"]({"log", "wrap"}))
       end
       if last_break then
         nvim.win_set_cursor(state.hud.id, {1, 0})
@@ -359,7 +359,7 @@ do
     end
     nvim.command((_3_() .. cmd .. " " .. log_buf_name()))
     nvim.win_set_cursor(0, {nvim.buf_line_count(buf), 0})
-    nvim.win_set_option(0, "wrap", false)
+    nvim.win_set_option(0, "wrap", config["get-in"]({"log", "wrap"}))
     return buffer.unlist(buf)
   end
   v_0_ = create_win0

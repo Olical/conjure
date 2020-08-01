@@ -78,7 +78,8 @@
     :doc_word ["K"]}
 
    :log
-   {:hud {:width 0.42
+   {:wrap false
+    :hud {:width 0.42
           :height 0.3
           :enabled true
           :passive_close_delay 0}

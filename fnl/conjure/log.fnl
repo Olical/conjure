@@ -84,7 +84,7 @@
         (nvim.win_set_buf state.hud.id buf)
         (do
           (set state.hud.id (nvim.open_win buf false win-opts))
-          (nvim.win_set_option state.hud.id :wrap false)))
+          (nvim.win_set_option state.hud.id :wrap (config.get-in [:log :wrap]))))
 
       (if last-break
         (do
@@ -212,7 +212,7 @@
           cmd " "
           (log-buf-name)))
     (nvim.win_set_cursor 0 [(nvim.buf_line_count buf) 0])
-    (nvim.win_set_option 0 :wrap false)
+    (nvim.win_set_option 0 :wrap (config.get-in [:log :wrap]))
     (buffer.unlist buf)))
 
 (defn split []

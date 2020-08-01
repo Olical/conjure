@@ -312,6 +312,10 @@ defined as you enter a buffer and can't be altered after the fact.
             doesn't contain escape sequences) from slowing down your log.
             Default: `100`
 
+`g:conjure#log#wrap`
+            Enable line wrapping in the HUD and log.
+            Default: `false`
+
 `g:conjure#extract#context_header_lines`
             How many lines of the file should be checked for a context
             (namespace name) such as `(module foo.bar)` or `(ns foo.bar)`
