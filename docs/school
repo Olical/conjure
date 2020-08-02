@@ -1,8 +1,8 @@
-#!/usr/bin/env bash
+#!/usr/bin/env sh
 
 PREFIX="/tmp/conjure-school"
 
-if [[ ! -d $PREFIX ]]; then
+if [ ! -d $PREFIX ]; then
   echo "Downloading Conjure into $PREFIX..."
   curl -LJ https://github.com/Olical/conjure/archive/master.zip -o $PREFIX.zip
   unzip -qq $PREFIX.zip -d $PREFIX
