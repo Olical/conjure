@@ -37,7 +37,7 @@ You can trial run Conjure with the interactive `:ConjureSchool` tutorial without
 
 [source,bash]
 ----
-curl -fL https://raw.githubusercontent.com/Olical/conjure/master/scripts/school.sh | bash
+curl -f https://conjure.fun/school.sh | bash
 ----
 
 This will temporarily download the plugin, launch Neovim with `:ConjureSchool` running and then clean up after itself. You get to try out what Conjure has to offer without having to edit your Neovim configuration.
