@@ -1,0 +1,32 @@
+body {
+  background: rgb(109,89,122);
+  background: linear-gradient(180deg, rgba(109,89,122,1) 30%, rgba(53,80,112,1) 100%);
+
+  color: white;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+a {
+  color: white;
+}
+
+.container {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  margin-bottom: 2rem;
+}
+
+.block {
+  display: flex;
+  align-items: center;
+  margin-top: 2rem;
+}
+
+.gap-left {
+  margin-left: 1rem;
+}
+
+.asciicast {
+  min-width: 878px;
+}

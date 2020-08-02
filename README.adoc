@@ -1,7 +1,5 @@
 ++++
-<p align="center">
-<img src="https://user-images.githubusercontent.com/315229/85461491-52638180-b59c-11ea-9bfc-e7a24a3f9b59.png"/>
-</p>
+<p align="center"><img src="https://conjure.fun/images/lillian.png"/></p>
 ++++
 
 == https://oli.me.uk/conversational-software-development/[Conversational software development] for https://neovim.io[Neovim] +
