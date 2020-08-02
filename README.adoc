@@ -5,7 +5,7 @@
 ++++
 
 == https://oli.me.uk/conversational-software-development/[Conversational software development] for https://neovim.io[Neovim] +
-https://discord.gg/wXAMr8F[image:https://img.shields.io/discord/732957595249410108.svg?label=&logo=discord&logoColor=ffffff&color=7389D8&labelColor=6A7EC2[Discord]]
+https://conjure.fun/discord[image:https://img.shields.io/discord/732957595249410108.svg?label=&logo=discord&logoColor=ffffff&color=7389D8&labelColor=6A7EC2[Discord]]
 
 Conjure is an interactive environment for evaluating code within your running program.
 
