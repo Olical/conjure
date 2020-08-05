@@ -148,6 +148,8 @@ has completion support).
 You can get completions through the normal mapping of `<C-x><C-o>`, nothing
 else needs to be configured for this to work.
 
+The |omnifunc| used is configurable via the `g:conjure#completion...` options.
+
 Automatic completion as you type is provided by external plugins. Deoplete
 support is built into the Conjure plugin, so if you have Deoplete installed it
 should be working already.
@@ -275,12 +277,12 @@ defined as you enter a buffer and can't be altered after the fact.
             Default: `["K"]`
 
 `g:conjure#completion#omnifunc#client`
-            Omnifunc to set for clients that support completion. No
+            |omnifunc| to set for clients that support completion. No
             omnicompletion will be provided if you set this to `nil`.
             Default: `"ConjureOmnifunc"`
 
 `g:conjure#completion#omnifunc#fallback`
-            Omnifunc to set if the client doesn't support completion or
+            |omnifunc| to set if the client doesn't support completion or
             `g:conjure#completion#omnifunc#client` is `nil`.
             Default: `"syntaxcomplete#Complete"`
 
