@@ -274,6 +274,16 @@ defined as you enter a buffer and can't be altered after the fact.
             Looks up documentation for the word under the cursor.
             Default: `["K"]`
 
+`g:conjure#completion#omnifunc#client`
+            Omnifunc to set for clients that support completion. No
+            omnicompletion will be provided if you set this to `nil`.
+            Default: `"ConjureOmnifunc"`
+
+`g:conjure#completion#omnifunc#fallback`
+            Omnifunc to set if the client doesn't support completion or
+            `g:conjure#completion#omnifunc#client` is `nil`.
+            Default: `"syntaxcomplete#Complete"`
+
 `g:conjure#log#hud#width`
             Width of the HUD as a percentage of the editor width.
             A float between 0.0 and 1.0.

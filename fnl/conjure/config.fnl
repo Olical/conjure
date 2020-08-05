@@ -77,6 +77,10 @@
     :def_word "gd"
     :doc_word ["K"]}
 
+   :completion
+   {:omnifunc {:client :ConjureOmnifunc
+               :fallback :syntaxcomplete#Complete}}
+
    :log
    {:wrap false
     :hud {:width 0.42

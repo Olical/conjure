@@ -69,6 +69,23 @@ do
   _0_0["aniseed/locals"]["buf"] = v_0_
   buf = v_0_
 end
+local omnifunc = nil
+do
+  local v_0_ = nil
+  local function omnifunc0()
+    local client_fn_name = config["get-in"]({"completion", "omnifunc", "client"})
+    local fallback_fn_name = config["get-in"]({"completion", "omnifunc", "fallback"})
+    local completions_3f = ("function" == type(client.get("completions")))
+    if (completions_3f and client_fn_name) then
+      return client_fn_name
+    else
+      return fallback_fn_name
+    end
+  end
+  v_0_ = omnifunc0
+  _0_0["aniseed/locals"]["omnifunc"] = v_0_
+  omnifunc = v_0_
+end
 local on_filetype = nil
 do
   local v_0_ = nil
@@ -90,7 +107,12 @@ do
       buf("v", cfg("eval_visual"), "conjure.eval", "selection")
       buf("n", cfg("doc_word"), "conjure.eval", "doc-word")
       buf("n", cfg("def_word"), "conjure.eval", "def-word")
-      nvim.ex.setlocal("omnifunc=ConjureOmnifunc")
+      do
+        local fn_name = omnifunc()
+        if fn_name then
+          nvim.ex.setlocal(("omnifunc=" .. fn_name))
+        end
+      end
       return client["optional-call"]("on-filetype")
     end
     v_0_0 = on_filetype0
@@ -182,12 +204,12 @@ do
   _0_0["aniseed/locals"]["client-state-command"] = v_0_
   client_state_command = v_0_
 end
-local omnifunc = nil
+local omnifunc0 = nil
 do
   local v_0_ = nil
   do
     local v_0_0 = nil
-    local function omnifunc0(find_start_3f, base)
+    local function omnifunc1(find_start_3f, base)
       if find_start_3f then
         local _3_ = nvim.win_get_cursor(0)
         local row = _3_[1]
@@ -199,12 +221,12 @@ do
         return eval["completions-sync"](base)
       end
     end
-    v_0_0 = omnifunc0
+    v_0_0 = omnifunc1
     _0_0["omnifunc"] = v_0_0
     v_0_ = v_0_0
   end
   _0_0["aniseed/locals"]["omnifunc"] = v_0_
-  omnifunc = v_0_
+  omnifunc0 = v_0_
 end
 nvim.ex.function_(str.join("\n", {"ConjureEvalMotion(kind)", "call luaeval(\"require('conjure.eval')['selection'](_A)\", a:kind)", "endfunction"}))
 nvim.ex.function_(str.join("\n", {"ConjureOmnifunc(findstart, base)", "return luaeval(\"require('conjure.mapping')['omnifunc'](_A[1] == 1, _A[2])\", [a:findstart, a:base])", "endfunction"}))
