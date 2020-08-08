@@ -88,7 +88,7 @@ do
         a.println(("Warning: No Fennel filetype found, falling back to Clojure syntax.\n" .. "Install https://github.com/bakpakin/fennel.vim for better Fennel support.\n"))
         nvim.ex.augroup("conjure_school_filetype")
         nvim.ex.autocmd_()
-        nvim.ex.autocmd("BufNewFile,BufRead *.fnl set filetype=fennel | set syntax=clojure")
+        nvim.ex.autocmd("BufNewFile,BufRead *.fnl set filetype=fennel | set syntax=clojure | set lisp")
         nvim.ex.augroup("END")
       end
       local buf = upsert_buf()
