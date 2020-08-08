@@ -7,16 +7,16 @@
  :aliases
  {:nrepl
   {:extra-deps
-   {nrepl/nrepl {:mvn/version "0.7.0"}}}
+   {nrepl/nrepl {:mvn/version "0.8.0"}}}
 
   :cider
   {:extra-deps
-   {cider/cider-nrepl {:mvn/version "0.25.2"}}}
+   {cider/cider-nrepl {:mvn/version "0.25.3"}}}
 
   :cljs
   {:extra-deps
-   {org.clojure/clojurescript {:mvn/version "1.10.748"}}}
+   {org.clojure/clojurescript {:mvn/version "1.10.773"}}}
 
   :piggieback
   {:extra-deps
-   {cider/piggieback {:mvn/version "0.4.2"}}}}}
+   {cider/piggieback {:mvn/version "0.5.0"}}}}}
