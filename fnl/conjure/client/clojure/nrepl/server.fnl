@@ -78,7 +78,11 @@
          :session (or opts.session (state.get :conn :session))
 
          :nrepl.middleware.print/options
-         {:table 1
+         {;; This forces this table to remain associative even if level and length aren't set.
+          ;; If you have an empty table in Fennel / Lua like {} it actually becomes sequential by default.
+          ;; So it's as if we set the options to [] which is _not_ good.
+          :associative 1
+
           :level (or (config.get-in [:client :clojure :nrepl :eval :print_options :level])
                      nil)
           :length (or (config.get-in [:client :clojure :nrepl :eval :print_options :length])
