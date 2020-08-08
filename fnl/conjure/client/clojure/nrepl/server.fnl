@@ -78,7 +78,7 @@
          :session (or opts.session (state.get :conn :session))
 
          :nrepl.middleware.print/options
-         {:associative-table? 1
+         {:table 1
           :level (or (config.get-in [:client :clojure :nrepl :eval :print_options :level])
                      nil)
           :length (or (config.get-in [:client :clojure :nrepl :eval :print_options :length])

@@ -70,8 +70,7 @@
 (defn eval-str [opts]
   (server.with-conn-or-warn
     (fn [conn]
-      (when (and opts.context
-                 (not (a.get-in conn [:seen-ns opts.context])))
+      (when (and opts.context (not (a.get-in conn [:seen-ns opts.context])))
         (server.eval
           {:code (.. "(ns " opts.context ")")}
           (fn []))
