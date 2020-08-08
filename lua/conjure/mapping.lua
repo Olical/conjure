@@ -75,28 +75,30 @@ do
   do
     local v_0_0 = nil
     local function on_filetype0()
-      buf("n", cfg("eval_motion"), ":set opfunc=ConjureEvalMotion<cr>g@")
-      buf("n", cfg("log_split"), "conjure.log", "split")
-      buf("n", cfg("log_vsplit"), "conjure.log", "vsplit")
-      buf("n", cfg("log_tab"), "conjure.log", "tab")
-      buf("n", cfg("log_close_visible"), "conjure.log", "close-visible")
-      buf("n", cfg("eval_current_form"), "conjure.eval", "current-form")
-      buf("n", cfg("eval_root_form"), "conjure.eval", "root-form")
-      buf("n", cfg("eval_replace_form"), "conjure.eval", "replace-form")
-      buf("n", cfg("eval_marked_form"), "conjure.eval", "marked-form")
-      buf("n", cfg("eval_word"), "conjure.eval", "word")
-      buf("n", cfg("eval_file"), "conjure.eval", "file")
-      buf("n", cfg("eval_buf"), "conjure.eval", "buf")
-      buf("v", cfg("eval_visual"), "conjure.eval", "selection")
-      buf("n", cfg("doc_word"), "conjure.eval", "doc-word")
-      buf("n", cfg("def_word"), "conjure.eval", "def-word")
-      do
-        local fn_name = config["get-in"]({"completion", "omnifunc"})
-        if fn_name then
-          nvim.ex.setlocal(("omnifunc=" .. fn_name))
+      if not nvim.wo.diff then
+        buf("n", cfg("eval_motion"), ":set opfunc=ConjureEvalMotion<cr>g@")
+        buf("n", cfg("log_split"), "conjure.log", "split")
+        buf("n", cfg("log_vsplit"), "conjure.log", "vsplit")
+        buf("n", cfg("log_tab"), "conjure.log", "tab")
+        buf("n", cfg("log_close_visible"), "conjure.log", "close-visible")
+        buf("n", cfg("eval_current_form"), "conjure.eval", "current-form")
+        buf("n", cfg("eval_root_form"), "conjure.eval", "root-form")
+        buf("n", cfg("eval_replace_form"), "conjure.eval", "replace-form")
+        buf("n", cfg("eval_marked_form"), "conjure.eval", "marked-form")
+        buf("n", cfg("eval_word"), "conjure.eval", "word")
+        buf("n", cfg("eval_file"), "conjure.eval", "file")
+        buf("n", cfg("eval_buf"), "conjure.eval", "buf")
+        buf("v", cfg("eval_visual"), "conjure.eval", "selection")
+        buf("n", cfg("doc_word"), "conjure.eval", "doc-word")
+        buf("n", cfg("def_word"), "conjure.eval", "def-word")
+        do
+          local fn_name = config["get-in"]({"completion", "omnifunc"})
+          if fn_name then
+            nvim.ex.setlocal(("omnifunc=" .. fn_name))
+          end
         end
+        return client["optional-call"]("on-filetype")
       end
-      return client["optional-call"]("on-filetype")
     end
     v_0_0 = on_filetype0
     _0_0["on-filetype"] = v_0_0
