@@ -410,7 +410,7 @@ do
           local function _4_()
             return send({op = "stdin", session = conn.session, stdin = ((extract.prompt("Input required: ") or "") .. "\n")})
           end
-          vim.schedule(_4_)
+          client.schedule(_4_)
         end
         local cb = nil
         local function _5_(_241)

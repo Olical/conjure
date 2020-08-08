@@ -204,7 +204,7 @@
                (enrich-status msg)
 
                (when msg.status.need-input
-                 (vim.schedule
+                 (client.schedule
                    (fn []
                      (send {:op :stdin
                             :stdin (.. (or (extract.prompt "Input required: ")
