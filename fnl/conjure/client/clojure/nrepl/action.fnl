@@ -514,7 +514,7 @@
                  (a.map clojure->vim-completion)
                  (opts.cb))))))
     {:silent? true
-     :else #(opts.cb [])}))
+     :else opts.cb}))
 
 (defn out-subscribe []
   (log.append ["; Subscribing to out"] {:break? true})

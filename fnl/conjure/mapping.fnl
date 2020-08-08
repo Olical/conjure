@@ -26,14 +26,6 @@
         {:silent true
          :noremap true}))))
 
-(defn- omnifunc []
-  (let [client-fn-name (config.get-in [:completion :omnifunc :client])
-        fallback-fn-name (config.get-in [:completion :omnifunc :fallback])
-        completions? (= :function (type (client.get :completions)))]
-    (if (and completions? client-fn-name)
-      client-fn-name
-      fallback-fn-name)))
-
 (defn on-filetype []
   (buf :n (cfg :eval_motion) ":set opfunc=ConjureEvalMotion<cr>g@")
   (buf :n (cfg :log_split) :conjure.log :split)
@@ -51,7 +43,7 @@
   (buf :n (cfg :doc_word) :conjure.eval :doc-word)
   (buf :n (cfg :def_word) :conjure.eval :def-word)
 
-  (let [fn-name (omnifunc)]
+  (let [fn-name (config.get-in [:completion :omnifunc])]
     (when fn-name
       (nvim.ex.setlocal (.. "omnifunc=" fn-name))))
 

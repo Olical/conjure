@@ -276,14 +276,16 @@ defined as you enter a buffer and can't be altered after the fact.
             Looks up documentation for the word under the cursor.
             Default: `["K"]`
 
-`g:conjure#completion#omnifunc#client`
-            |omnifunc| to set for clients that support completion. No
-            omnicompletion will be provided if you set this to `nil`.
+`g:conjure#completion#omnifunc`
+            |omnifunc| to set for supported Conjure clients. No omnicompletion
+            will be provided if you set this to `nil`.
             Default: `"ConjureOmnifunc"`
 
-`g:conjure#completion#omnifunc#fallback`
-            |omnifunc| to set if the client doesn't support completion or
-            `g:conjure#completion#omnifunc#client` is `nil`.
+`g:conjure#completion#fallback`
+            |omnifunc| to use if the client isn't returning completions,
+            requires `completion#omnifunc` to be set to `"ConjureOmnifunc"`. For
+            Janet, this is the main completion method, for Clojure this kicks
+            in if you don't have an nREPL connection yet.
             Default: `"syntaxcomplete#Complete"`
 
 `g:conjure#log#hud#width`

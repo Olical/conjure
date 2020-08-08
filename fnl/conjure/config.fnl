@@ -78,8 +78,8 @@
     :doc_word ["K"]}
 
    :completion
-   {:omnifunc {:client :ConjureOmnifunc
-               :fallback :syntaxcomplete#Complete}}
+   {:omnifunc :ConjureOmnifunc
+    :fallback :syntaxcomplete#Complete}
 
    :log
    {:wrap false

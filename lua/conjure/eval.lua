@@ -395,10 +395,21 @@ do
   do
     local v_0_0 = nil
     local function completions0(prefix, cb)
+      local function cb_wrap(results)
+        local function _4_()
+          local _3_0 = config["get-in"]({"completion", "fallback"})
+          if _3_0 then
+            return nvim.call_function(_3_0, {0, prefix})
+          else
+            return _3_0
+          end
+        end
+        return cb((results or _4_()))
+      end
       if ("function" == type(client.get("completions"))) then
-        return client.call("completions", assoc_context({cb = cb, prefix = prefix}))
+        return client.call("completions", assoc_context({cb = cb_wrap, prefix = prefix}))
       else
-        return cb(nil)
+        return cb_wrap()
       end
     end
     v_0_0 = completions0

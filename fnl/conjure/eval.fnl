@@ -180,13 +180,17 @@
        :origin :selection})))
 
 (defn completions [prefix cb]
+  (fn cb-wrap [results]
+    (cb (or results
+            (-?> (config.get-in [:completion :fallback])
+                 (nvim.call_function [0 prefix])))))
   (if (= :function (type (client.get :completions)))
     (client.call
       :completions
       (-> {:prefix prefix
-           :cb cb}
+           :cb cb-wrap}
           (assoc-context)))
-    (cb nil)))
+    (cb-wrap)))
 
 (defn completions-promise [prefix]
   (let [p (promise.new)]
