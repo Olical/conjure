@@ -50,6 +50,8 @@
          ";; Conjure is written in Fennel, it's compiled to Lua and executed inside Neovim itself."
          ";; This means we can work with a Lisp without installing or running anything else."
          ""
+         ";; Note: Some colorschemes will make the HUD unreadable, see here for more: https://git.io/JJ1Hl"
+         ""
          ";; Let's learn how to evaluate it using Conjure's assortment of mappings."
          ";; You can learn how to change these mappings with :help conjure-mappings"
          ""
