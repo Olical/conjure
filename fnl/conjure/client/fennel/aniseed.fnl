@@ -56,22 +56,24 @@
         (opts.on-result result-str)))))
 
 (defn eval-str [opts]
-  (let [code (.. (.. "(module " (or opts.context "aniseed.user") ") ")
-                 opts.code "\n")
-        out (anic :nu :with-out-str
-                  (fn []
-                    (when (cfg [:use_metadata])
-                      (set package.loaded.fennel (ani :fennel)))
+  ((client.wrap
+     (fn []
+       (let [code (.. (.. "(module " (or opts.context "aniseed.user") ") ")
+                      opts.code "\n")
+             out (anic :nu :with-out-str
+                       (fn []
+                         (when (cfg [:use_metadata])
+                           (set package.loaded.fennel (ani :fennel)))
 
-                    (let [[ok? & results]
-                          [(anic :eval :str code
-                                 {:filename opts.file-path
-                                  :useMetadata (cfg [:use_metadata])})]]
-                      (set opts.ok? ok?)
-                      (set opts.results results))))]
-    (when (not (a.empty? out))
-      (log.append (text.prefixed-lines (text.trim-last-newline out) "; (out) ")))
-    (display-result opts)))
+                         (let [[ok? & results]
+                               [(anic :eval :str code
+                                      {:filename opts.file-path
+                                       :useMetadata (cfg [:use_metadata])})]]
+                           (set opts.ok? ok?)
+                           (set opts.results results))))]
+         (when (not (a.empty? out))
+           (log.append (text.prefixed-lines (text.trim-last-newline out) "; (out) ")))
+         (display-result opts))))))
 
 (defn doc-str [opts]
   (a.assoc opts :code (.. "(doc " opts.code ")"))

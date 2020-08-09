@@ -154,24 +154,27 @@ do
   do
     local v_0_0 = nil
     local function eval_str0(opts)
-      local code = (("(module " .. (opts.context or "aniseed.user") .. ") ") .. opts.code .. "\n")
-      local out = nil
       local function _3_()
-        if cfg({"use_metadata"}) then
-          package.loaded.fennel = ani("fennel")
+        local code = (("(module " .. (opts.context or "aniseed.user") .. ") ") .. opts.code .. "\n")
+        local out = nil
+        local function _4_()
+          if cfg({"use_metadata"}) then
+            package.loaded.fennel = ani("fennel")
+          end
+          local _6_ = {anic("eval", "str", code, {filename = opts["file-path"], useMetadata = cfg({"use_metadata"})})}
+          local ok_3f = _6_[1]
+          local results = {(table.unpack or unpack)(_6_, 2)}
+          opts["ok?"] = ok_3f
+          opts.results = results
+          return nil
         end
-        local _5_ = {anic("eval", "str", code, {filename = opts["file-path"], useMetadata = cfg({"use_metadata"})})}
-        local ok_3f = _5_[1]
-        local results = {(table.unpack or unpack)(_5_, 2)}
-        opts["ok?"] = ok_3f
-        opts.results = results
-        return nil
+        out = anic("nu", "with-out-str", _4_)
+        if not a["empty?"](out) then
+          log.append(text["prefixed-lines"](text["trim-last-newline"](out), "; (out) "))
+        end
+        return display_result(opts)
       end
-      out = anic("nu", "with-out-str", _3_)
-      if not a["empty?"](out) then
-        log.append(text["prefixed-lines"](text["trim-last-newline"](out), "; (out) "))
-      end
-      return display_result(opts)
+      return client.wrap(_3_)()
     end
     v_0_0 = eval_str0
     _0_0["eval-str"] = v_0_0
