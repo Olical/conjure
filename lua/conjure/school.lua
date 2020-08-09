@@ -98,7 +98,8 @@ do
       if ("<localleader>" == config["get-in"]({"mapping", "prefix"})) then
         if a["empty?"](nvim.g.maplocalleader) then
           nvim.g.maplocalleader = ","
-          _4_ = {";; Your <localleader> isn't set, see :help localleader for more information.", ";; I've set your <localleader> to comma (,) for now, but you should pick one that suits you later."}
+          nvim.ex.edit()
+          _4_ = {";; Your <localleader> wasn't configured so I've defaulted it to comma (,) for now.", ";; See :help localleader for more information. (let maplocalleader=\",\")"}
         else
           _4_ = {(";; Your <localleader> is currently mapped to \"" .. nvim.g.maplocalleader .. "\"")}
         end
