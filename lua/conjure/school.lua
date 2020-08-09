@@ -15,8 +15,8 @@ do
   _0_0 = module_0_
 end
 local function _1_(...)
-  _0_0["aniseed/local-fns"] = {require = {a = "conjure.aniseed.core", buffer = "conjure.buffer", config = "conjure.config", editor = "conjure.editor", nvim = "conjure.aniseed.nvim"}}
-  return {require("conjure.aniseed.core"), require("conjure.buffer"), require("conjure.config"), require("conjure.editor"), require("conjure.aniseed.nvim")}
+  _0_0["aniseed/local-fns"] = {require = {a = "conjure.aniseed.core", buffer = "conjure.buffer", config = "conjure.config", editor = "conjure.editor", nvim = "conjure.aniseed.nvim", str = "conjure.aniseed.string"}}
+  return {require("conjure.aniseed.core"), require("conjure.buffer"), require("conjure.config"), require("conjure.editor"), require("conjure.aniseed.nvim"), require("conjure.aniseed.string")}
 end
 local _2_ = _1_(...)
 local a = _2_[1]
@@ -24,6 +24,7 @@ local buffer = _2_[2]
 local config = _2_[3]
 local editor = _2_[4]
 local nvim = _2_[5]
+local str = _2_[6]
 do local _ = ({nil, _0_0, {{}, nil}})[2] end
 local buf_name = nil
 do
@@ -86,9 +87,10 @@ do
     local function start0()
       if not editor["has-filetype?"]("fennel") then
         a.println(("Warning: No Fennel filetype found, falling back to Clojure syntax.\n" .. "Install https://github.com/bakpakin/fennel.vim for better Fennel support.\n"))
+        nvim.g["conjure#filetype_client"] = a.assoc(nvim.g["conjure#filetype_client"], "clojure", nvim.g["conjure#filetype_client"].fennel)
         nvim.ex.augroup("conjure_school_filetype")
         nvim.ex.autocmd_()
-        nvim.ex.autocmd("BufNewFile,BufRead *.fnl set filetype=fennel | set syntax=clojure | set lisp")
+        nvim.ex.autocmd("BufNewFile,BufRead *.fnl setlocal filetype=clojure")
         nvim.ex.augroup("END")
       end
       local buf = upsert_buf()
@@ -121,7 +123,7 @@ do
   do
     local v_0_0 = nil
     local function lesson_10()
-      append({"", ";; Good job!", ";; You'll notice the heads up display (HUD) appeared showing the result of the evaluation.", ";; All results are appended to a log buffer. If that log is not open, the HUD will appear.", ";; The HUD closes automatically when you move your cursor.", "", (";; You can open the log buffer horizontally (" .. map_str("log_split") .. "), vertically (" .. map_str("log_vsplit") .. ") or in a tab (" .. map_str("log_tab") .. ")."), (";; All visible log windows (including the HUD) can be closed with " .. map_str("log_close_visible")), ";; Try opening and closing the log window to get the hang of those key mappings.", ";; It's a regular window and buffer, so you can edit and close it however you want.", ";; Feel free to leave the log open in a split for the next lesson to see how it behaves.", "", ";; Next, we have a form inside a comment. We want to evaluate that inner form, not the comment.", (";; Place your cursor on the inner form (the one inside the comment) and use " .. map_str("eval_current_form") .. " to evaluate it."), "(comment", "  (school.lesson-2))"})
+      append({"", ";; Good job!", ";; You'll notice the heads up display (HUD) appeared showing the result of the evaluation.", ";; All results are appended to a log buffer. If that log is not open, the HUD will appear.", ";; The HUD closes automatically when you move your cursor.", "", ";; You can open the log buffer in a few ways:", (";;  * Horizontally - " .. map_str("log_split")), (";;  * Vertically - " .. map_str("log_vsplit")), (";;  * New tab - " .. map_str("log_tab")), "", (";; All visible log windows (including the HUD) can be closed with " .. map_str("log_close_visible")), ";; Try opening and closing the log window to get the hang of those key mappings.", ";; It's a regular window and buffer, so you can edit and close it however you want.", ";; Feel free to leave the log open in a split for the next lesson to see how it behaves.", "", ";; Next, we have a form inside a comment. We want to evaluate that inner form, not the comment.", (";; Place your cursor on the inner form (the one inside the comment) and use " .. map_str("eval_current_form") .. " to evaluate it."), "(comment", "  (school.lesson-2))"})
       return progress(1)
     end
     v_0_0 = lesson_10

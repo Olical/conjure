@@ -3,6 +3,7 @@
             buffer conjure.buffer
             config conjure.config
             editor conjure.editor
+            str conjure.aniseed.string
             a conjure.aniseed.core}})
 
 (def- buf-name "conjure-school.fnl")
@@ -29,9 +30,12 @@
     (a.println
       (.. "Warning: No Fennel filetype found, falling back to Clojure syntax.\n"
           "Install https://github.com/bakpakin/fennel.vim for better Fennel support.\n"))
+    (set nvim.g.conjure#filetype_client
+         (a.assoc nvim.g.conjure#filetype_client :clojure
+                  nvim.g.conjure#filetype_client.fennel))
     (nvim.ex.augroup :conjure_school_filetype)
     (nvim.ex.autocmd_)
-    (nvim.ex.autocmd "BufNewFile,BufRead *.fnl set filetype=fennel | set syntax=clojure | set lisp")
+    (nvim.ex.autocmd "BufNewFile,BufRead *.fnl setlocal filetype=clojure")
     (nvim.ex.augroup :END))
 
   (let [buf (upsert-buf)]
@@ -74,7 +78,11 @@
      ";; All results are appended to a log buffer. If that log is not open, the HUD will appear."
      ";; The HUD closes automatically when you move your cursor."
      ""
-     (.. ";; You can open the log buffer horizontally (" (map-str :log_split) "), vertically (" (map-str :log_vsplit) ") or in a tab (" (map-str :log_tab) ").")
+     ";; You can open the log buffer in a few ways:"
+     (.. ";;  * Horizontally - " (map-str :log_split))
+     (.. ";;  * Vertically - " (map-str :log_vsplit))
+     (.. ";;  * New tab - " (map-str :log_tab))
+     ""
      (.. ";; All visible log windows (including the HUD) can be closed with " (map-str :log_close_visible))
      ";; Try opening and closing the log window to get the hang of those key mappings."
      ";; It's a regular window and buffer, so you can edit and close it however you want."
