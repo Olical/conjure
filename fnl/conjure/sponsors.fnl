@@ -8,8 +8,10 @@
 "mamapitufo"
 "markwoodhall"
 "martinklepsch"
+"orestis"
 "penryu"
 "pyrmont"
 "rafaeldelboni"
 "rgm"
+"thiru"
 ]
