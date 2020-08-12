@@ -35,7 +35,7 @@
         (when f (f result))))))
 
 (defn file []
-  (let [opts {:file-path (fs.resolve (extract.file-path))
+  (let [opts {:file-path (fs.resolve-relative (extract.file-path))
               :origin :file
               :action :eval}]
     (set opts.preview (preview opts))

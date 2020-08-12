@@ -24,7 +24,7 @@
 
 (defn go-to [path-or-win line column]
   (when (a.string? path-or-win)
-    (nvim.ex.edit (fs.resolve path-or-win)))
+    (nvim.ex.edit (fs.resolve-relative path-or-win)))
 
   (nvim.win_set_cursor
     (if (= :number (type path-or-win))

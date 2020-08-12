@@ -85,7 +85,7 @@ do
   do
     local v_0_0 = nil
     local function file0()
-      local opts = {["file-path"] = fs.resolve(extract["file-path"]()), action = "eval", origin = "file"}
+      local opts = {["file-path"] = fs["resolve-relative"](extract["file-path"]()), action = "eval", origin = "file"}
       opts.preview = preview(opts)
       display_request(opts)
       return client.call("eval-file", with_last_result_hook(opts))

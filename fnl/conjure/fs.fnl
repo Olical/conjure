@@ -23,7 +23,7 @@
     (when (not (a.empty? res))
       res)))
 
-(defn resolve [name]
+(defn resolve-above [name]
   "Resolve a file name to it's full path by looking in the current
   directory upwards followed by $XDG_CONFIG_HOME/conjure"
   (or
@@ -40,7 +40,7 @@
 (defn join-path [parts]
   (str.join "/" (a.concat parts)))
 
-(defn resolve-relative [path root]
+(defn resolve-relative-to [path root]
   "Successively remove parts of the path until we get to a relative path that
   points to a file we can read from the root. If we run out of parts default to
   the original path."
@@ -53,10 +53,10 @@
 
   (loop (split-path path)))
 
-(defn resolve [path]
+(defn resolve-relative [path]
   "If g:conjure#relative_file_root is set, will resolve the path relative to
   that. Will return the original path immidiately if not."
   (let [relative-file-root (config.get-in [:relative_file_root])]
     (if relative-file-root
-      (resolve-relative path relative-file-root)
+      (resolve-relative-to path relative-file-root)
       path)))

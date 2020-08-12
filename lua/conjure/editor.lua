@@ -125,7 +125,7 @@ do
     local v_0_0 = nil
     local function go_to0(path_or_win, line, column)
       if a["string?"](path_or_win) then
-        nvim.ex.edit(fs.resolve(path_or_win))
+        nvim.ex.edit(fs["resolve-relative"](path_or_win))
       end
       local _4_
       if ("number" == type(path_or_win)) then

@@ -70,20 +70,20 @@ do
   _0_0["aniseed/locals"]["findfile"] = v_0_
   findfile = v_0_
 end
-local resolve = nil
+local resolve_above = nil
 do
   local v_0_ = nil
   do
     local v_0_0 = nil
-    local function resolve0(name)
+    local function resolve_above0(name)
       return (findfile(name, ".;") or findfile(name, (config_dir() .. ";")))
     end
-    v_0_0 = resolve0
-    _0_0["resolve"] = v_0_0
+    v_0_0 = resolve_above0
+    _0_0["resolve-above"] = v_0_0
     v_0_ = v_0_0
   end
-  _0_0["aniseed/locals"]["resolve"] = v_0_
-  resolve = v_0_
+  _0_0["aniseed/locals"]["resolve-above"] = v_0_
+  resolve_above = v_0_
 end
 local file_readable_3f = nil
 do
@@ -133,12 +133,12 @@ do
   _0_0["aniseed/locals"]["join-path"] = v_0_
   join_path = v_0_
 end
-local resolve_relative = nil
+local resolve_relative_to = nil
 do
   local v_0_ = nil
   do
     local v_0_0 = nil
-    local function resolve_relative0(path, root)
+    local function resolve_relative_to0(path, root)
       local function loop(parts)
         if a["empty?"](parts) then
           return path
@@ -152,31 +152,31 @@ do
       end
       return loop(split_path(path))
     end
+    v_0_0 = resolve_relative_to0
+    _0_0["resolve-relative-to"] = v_0_0
+    v_0_ = v_0_0
+  end
+  _0_0["aniseed/locals"]["resolve-relative-to"] = v_0_
+  resolve_relative_to = v_0_
+end
+local resolve_relative = nil
+do
+  local v_0_ = nil
+  do
+    local v_0_0 = nil
+    local function resolve_relative0(path)
+      local relative_file_root = config["get-in"]({"relative_file_root"})
+      if relative_file_root then
+        return resolve_relative_to(path, relative_file_root)
+      else
+        return path
+      end
+    end
     v_0_0 = resolve_relative0
     _0_0["resolve-relative"] = v_0_0
     v_0_ = v_0_0
   end
   _0_0["aniseed/locals"]["resolve-relative"] = v_0_
   resolve_relative = v_0_
-end
-local resolve0 = nil
-do
-  local v_0_ = nil
-  do
-    local v_0_0 = nil
-    local function resolve1(path)
-      local relative_file_root = config["get-in"]({"relative_file_root"})
-      if relative_file_root then
-        return resolve_relative(path, relative_file_root)
-      else
-        return path
-      end
-    end
-    v_0_0 = resolve1
-    _0_0["resolve"] = v_0_0
-    v_0_ = v_0_0
-  end
-  _0_0["aniseed/locals"]["resolve"] = v_0_
-  resolve0 = v_0_
 end
 return nil

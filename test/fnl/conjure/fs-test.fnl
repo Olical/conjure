@@ -28,15 +28,15 @@
   (t.pr= "" (fs.join-path []))
   (t.pr= "foo/bar/baz" (fs.join-path ["foo" "bar" "baz"])))
 
-(deftest resolve-relative
+(deftest resolve-relative-to
   (t.= "fnl/conjure/fs.fnl"
-       (fs.resolve-relative
+       (fs.resolve-relative-to
          (.. (nvim.fn.getcwd) "/fnl/conjure/fs.fnl")
          (nvim.fn.getcwd))
        "cut down relative to the root")
 
   (t.= "/foo/bar/fnl/conjure/fs.fnl-nope"
-       (fs.resolve-relative
+       (fs.resolve-relative-to
          "/foo/bar/fnl/conjure/fs.fnl-nope"
          (nvim.fn.getcwd))
        "fall back to original"))
