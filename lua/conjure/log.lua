@@ -153,6 +153,23 @@ do
   _0_0["aniseed/locals"]["break-lines"] = v_0_
   break_lines = v_0_
 end
+local set_wrap_21 = nil
+do
+  local v_0_ = nil
+  local function set_wrap_210(win)
+    local function _3_()
+      if config["get-in"]({"log", "wrap"}) then
+        return true
+      else
+        return false
+      end
+    end
+    return nvim.win_set_option(win, "wrap", _3_())
+  end
+  v_0_ = set_wrap_210
+  _0_0["aniseed/locals"]["set-wrap!"] = v_0_
+  set_wrap_21 = v_0_
+end
 local display_hud = nil
 do
   local v_0_ = nil
@@ -178,7 +195,7 @@ do
         nvim.win_set_buf(state.hud.id, buf)
       else
         state.hud.id = nvim.open_win(buf, false, win_opts)
-        nvim.win_set_option(state.hud.id, "wrap", config["get-in"]({"log", "wrap"}))
+        set_wrap_21(state.hud.id)
       end
       if last_break then
         nvim.win_set_cursor(state.hud.id, {1, 0})
@@ -359,7 +376,7 @@ do
     end
     nvim.command((_3_() .. cmd .. " " .. log_buf_name()))
     nvim.win_set_cursor(0, {nvim.buf_line_count(buf), 0})
-    nvim.win_set_option(0, "wrap", config["get-in"]({"log", "wrap"}))
+    set_wrap_21(0)
     return buffer.unlist(buf)
   end
   v_0_ = create_win0

@@ -56,6 +56,13 @@
              (= s break-str)))
          (a.map a.first))))
 
+(defn- set-wrap! [win]
+  (nvim.win_set_option
+    win :wrap
+    (if (config.get-in [:log :wrap])
+      true
+      false)))
+
 (defn- display-hud []
   (when (config.get-in [:log :hud :enabled])
     (clear-close-hud-passive-timer)
@@ -84,7 +91,7 @@
         (nvim.win_set_buf state.hud.id buf)
         (do
           (set state.hud.id (nvim.open_win buf false win-opts))
-          (nvim.win_set_option state.hud.id :wrap (config.get-in [:log :wrap]))))
+          (set-wrap! state.hud.id)))
 
       (if last-break
         (do
@@ -212,7 +219,7 @@
           cmd " "
           (log-buf-name)))
     (nvim.win_set_cursor 0 [(nvim.buf_line_count buf) 0])
-    (nvim.win_set_option 0 :wrap (config.get-in [:log :wrap]))
+    (set-wrap! 0)
     (buffer.unlist buf)))
 
 (defn split []
