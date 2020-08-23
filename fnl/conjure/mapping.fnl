@@ -27,28 +27,27 @@
          :noremap true}))))
 
 (defn on-filetype []
-  (when (not nvim.wo.diff)
-    (buf :n (cfg :eval_motion) ":set opfunc=ConjureEvalMotion<cr>g@")
-    (buf :n (cfg :log_split) :conjure.log :split)
-    (buf :n (cfg :log_vsplit) :conjure.log :vsplit)
-    (buf :n (cfg :log_tab) :conjure.log :tab)
-    (buf :n (cfg :log_close_visible) :conjure.log :close-visible)
-    (buf :n (cfg :eval_current_form) :conjure.eval :current-form)
-    (buf :n (cfg :eval_root_form) :conjure.eval :root-form)
-    (buf :n (cfg :eval_replace_form) :conjure.eval :replace-form)
-    (buf :n (cfg :eval_marked_form) :conjure.eval :marked-form)
-    (buf :n (cfg :eval_word) :conjure.eval :word)
-    (buf :n (cfg :eval_file) :conjure.eval :file)
-    (buf :n (cfg :eval_buf) :conjure.eval :buf)
-    (buf :v (cfg :eval_visual) :conjure.eval :selection)
-    (buf :n (cfg :doc_word) :conjure.eval :doc-word)
-    (buf :n (cfg :def_word) :conjure.eval :def-word)
+  (buf :n (cfg :eval_motion) ":set opfunc=ConjureEvalMotion<cr>g@")
+  (buf :n (cfg :log_split) :conjure.log :split)
+  (buf :n (cfg :log_vsplit) :conjure.log :vsplit)
+  (buf :n (cfg :log_tab) :conjure.log :tab)
+  (buf :n (cfg :log_close_visible) :conjure.log :close-visible)
+  (buf :n (cfg :eval_current_form) :conjure.eval :current-form)
+  (buf :n (cfg :eval_root_form) :conjure.eval :root-form)
+  (buf :n (cfg :eval_replace_form) :conjure.eval :replace-form)
+  (buf :n (cfg :eval_marked_form) :conjure.eval :marked-form)
+  (buf :n (cfg :eval_word) :conjure.eval :word)
+  (buf :n (cfg :eval_file) :conjure.eval :file)
+  (buf :n (cfg :eval_buf) :conjure.eval :buf)
+  (buf :v (cfg :eval_visual) :conjure.eval :selection)
+  (buf :n (cfg :doc_word) :conjure.eval :doc-word)
+  (buf :n (cfg :def_word) :conjure.eval :def-word)
 
-    (let [fn-name (config.get-in [:completion :omnifunc])]
-      (when fn-name
-        (nvim.ex.setlocal (.. "omnifunc=" fn-name))))
+  (let [fn-name (config.get-in [:completion :omnifunc])]
+    (when fn-name
+      (nvim.ex.setlocal (.. "omnifunc=" fn-name))))
 
-    (client.optional-call :on-filetype)))
+  (client.optional-call :on-filetype))
 
 (defn init [filetypes]
   (nvim.ex.augroup :conjure_init_filetypes)

@@ -39,7 +39,7 @@
 
     (when (a.nil? (a.get loaded name))
       (a.assoc loaded name true)
-      (when result.on-load
+      (when (and result.on-load (not nvim.wo.diff))
         (vim.schedule result.on-load)))
 
     (if ok?

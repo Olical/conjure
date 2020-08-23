@@ -126,7 +126,7 @@ do
     ok_3f, result = xpcall(_3_, fennel.traceback)
     if a["nil?"](a.get(loaded, name)) then
       a.assoc(loaded, name, true)
-      if result["on-load"] then
+      if (result["on-load"] and not nvim.wo.diff) then
         vim.schedule(result["on-load"])
       end
     end
