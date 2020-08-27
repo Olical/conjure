@@ -118,7 +118,7 @@
     st
     (if (a.string? st)
       (.. st "?")
-      "no env")))
+      "https://conjure.fun/no-env")))
 
 (defn session-type [id cb]
   (send
