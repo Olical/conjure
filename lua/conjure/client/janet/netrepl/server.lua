@@ -51,6 +51,25 @@ do
   _0_0["aniseed/locals"]["with-conn-or-warn"] = v_0_
   with_conn_or_warn = v_0_
 end
+local connected_3f = nil
+do
+  local v_0_ = nil
+  do
+    local v_0_0 = nil
+    local function connected_3f0()
+      if state("conn") then
+        return true
+      else
+        return false
+      end
+    end
+    v_0_0 = connected_3f0
+    _0_0["connected?"] = v_0_0
+    v_0_ = v_0_0
+  end
+  _0_0["aniseed/locals"]["connected?"] = v_0_
+  connected_3f = v_0_
+end
 local display_conn_status = nil
 do
   local v_0_ = nil
@@ -144,7 +163,6 @@ do
         return disconnect()
       else
         do end (conn.sock):read_start(client["schedule-wrap"](handle_message))
-        send("Conjure")
         return display_conn_status("connected")
       end
     end
@@ -166,7 +184,8 @@ do
       if state("conn") then
         disconnect()
       end
-      return a.assoc(state(), "conn", a.merge(net.connect({cb = handle_connect_fn(), host = host, port = port}), {decode = trn.decoder(), queue = {}}))
+      a.assoc(state(), "conn", a.merge(net.connect({cb = handle_connect_fn(), host = host, port = port}), {decode = trn.decoder(), queue = {}}))
+      return send("Conjure")
     end
     v_0_0 = connect0
     _0_0["connect"] = v_0_0

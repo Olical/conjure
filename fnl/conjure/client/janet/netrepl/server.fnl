@@ -14,6 +14,11 @@
       (f conn)
       (log.append ["# No connection"]))))
 
+(defn connected? []
+  (if (state :conn)
+    true
+    false))
+
 (defn display-conn-status [status]
   (with-conn-or-warn
     (fn [conn]
@@ -59,7 +64,6 @@
 
           (do
             (conn.sock:read_start (client.schedule-wrap handle-message))
-            (send "Conjure")
             (display-conn-status :connected)))))))
 
 (defn connect [opts]
@@ -78,4 +82,5 @@
            :port port
            :cb (handle-connect-fn)})
         {:decode (trn.decoder)
-         :queue []}))))
+         :queue []}))
+    (send "Conjure")))

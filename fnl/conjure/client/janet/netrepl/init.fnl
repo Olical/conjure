@@ -20,7 +20,15 @@
       :mapping {:connect "cc"
                 :disconnect "cd"}}}}})
 
+(defn connect [opts]
+  (server.connect opts))
+
+(defn- try-ensure-conn []
+  (when (not (server.connected?))
+    (connect {:silent? true})))
+
 (defn eval-str [opts]
+  (try-ensure-conn)
   (server.send
     (.. opts.code "\n")
     (fn [msg]
@@ -33,15 +41,14 @@
           (log.append (text.split-lines clean)))))))
 
 (defn doc-str [opts]
+  (try-ensure-conn)
   (eval-str (a.update opts :code #(.. "(doc " $1 ")"))))
 
 (defn eval-file [opts]
+  (try-ensure-conn)
   (eval-str
     (a.assoc opts :code (.. "(do (dofile \"" opts.file-path
                             "\" :env (fiber/getenv (fiber/current))) nil)"))))
-
-(defn connect [opts]
-  (server.connect opts))
 
 (defn on-filetype []
   (mapping.buf :n (config.get-in [:client :janet :netrepl :mapping :disconnect])
