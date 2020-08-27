@@ -30,7 +30,7 @@
         (require-ns (extract.context)))
       {:silent? true})))
 
-(defn connect-port-file []
+(defn connect-port-file [opts]
   (let [port (-?>> (cfg [:connection :port_files])
                    (a.map fs.resolve-above)
                    (a.some a.slurp)
@@ -40,7 +40,14 @@
         {:host (cfg [:connection :default_host])
          :port port
          :cb passive-ns-require})
-      (log.append ["; No nREPL port file found"] {:break? true}))))
+      (when (not (a.get opts :silent?))
+        (log.append ["; No nREPL port file found"] {:break? true})))))
+
+(defn- try-ensure-conn []
+  (server.with-conn-or-warn
+    (fn [])
+    {:silent? true
+     :else #(connect-port-file {:silent? true})}))
 
 (defn connect-host-port [opts]
   (if (and (not opts.host) (not opts.port))
@@ -68,6 +75,7 @@
           (ui.display-result resp opts))))))
 
 (defn eval-str [opts]
+  (try-ensure-conn)
   (server.with-conn-or-warn
     (fn [conn]
       (when (and opts.context (not (a.get-in conn [:seen-ns opts.context])))
@@ -103,6 +111,7 @@
       [(.. "; " javadoc)])))
 
 (defn doc-str [opts]
+  (try-ensure-conn)
   (require-ns "clojure.repl")
   (server.eval
     (a.merge
@@ -158,6 +167,7 @@
     path))
 
 (defn def-str [opts]
+  (try-ensure-conn)
   (with-info
     opts
     (fn [info]
@@ -190,6 +200,7 @@
                      (.. "; " (a.pr-str info))])))))
 
 (defn eval-file [opts]
+  (try-ensure-conn)
   (server.eval
     (a.assoc opts :code (.. "(#?(:cljs cljs.core/load-file"
                             " :default clojure.core/load-file)"
@@ -197,6 +208,7 @@
     (eval-cb-fn opts)))
 
 (defn interrupt []
+  (try-ensure-conn)
   (server.with-conn-or-warn
     (fn [conn]
       (let [msgs (->> (a.vals conn.msgs)
@@ -242,6 +254,7 @@
 (def result-3 (eval-str-fn "*3"))
 
 (defn view-source []
+  (try-ensure-conn)
   (let [word (a.get (extract.word) :content)]
     (when (not (a.empty? word))
       (log.append [(.. "; source (word): " word)] {:break? true})
@@ -255,6 +268,7 @@
                  :ignore-nil? true})}))))
 
 (defn clone-current-session []
+  (try-ensure-conn)
   (server.with-conn-or-warn
     (fn [conn]
       (server.enrich-session-id
@@ -262,11 +276,13 @@
         server.clone-session))))
 
 (defn clone-fresh-session []
+  (try-ensure-conn)
   (server.with-conn-or-warn
     (fn [conn]
       (server.clone-session))))
 
 (defn close-current-session []
+  (try-ensure-conn)
   (server.with-conn-or-warn
     (fn [conn]
       (server.enrich-session-id
@@ -278,11 +294,13 @@
           (server.close-session sess #(server.assume-or-create-session)))))))
 
 (defn display-sessions [cb]
+  (try-ensure-conn)
   (server.with-sessions
     (fn [sessions]
       (ui.display-sessions sessions cb))))
 
 (defn close-all-sessions []
+  (try-ensure-conn)
   (server.with-sessions
     (fn [sessions]
       (a.run! server.close-session sessions)
@@ -291,6 +309,7 @@
       (server.clone-session))))
 
 (defn- cycle-session [f]
+  (try-ensure-conn)
   (server.with-conn-or-warn
     (fn [conn]
       (server.with-sessions
@@ -316,6 +335,7 @@
       (= current (a.get (->> node (ll.next) (ll.val)) :id)))))
 
 (defn select-session-interactive []
+  (try-ensure-conn)
   (server.with-sessions
     (fn [sessions]
       (if (= 1 (a.count sessions))
@@ -330,6 +350,7 @@
                 (log.append ["; Invalid session number."])))))))))
 
 (defn run-all-tests []
+  (try-ensure-conn)
   (log.append ["; run-all-tests"] {:break? true})
   (require-ns "clojure.test")
   (server.eval
@@ -340,6 +361,7 @@
         :ignore-nil? true})))
 
 (defn- run-ns-tests [ns]
+  (try-ensure-conn)
   (when ns
     (log.append [(.. "; run-ns-tests: " ns)]
                 {:break? true})
@@ -362,6 +384,7 @@
         (.. current-ns "-test")))))
 
 (defn run-current-test []
+  (try-ensure-conn)
   (let [form (extract.form {:root? true})]
     (when form
       (let [(test-name sub-count)
@@ -415,14 +438,17 @@
             (ui.display-result msg)))))))
 
 (defn refresh-changed []
+  (try-ensure-conn)
   (log.append ["; Refreshing changed namespaces"] {:break? true})
   (refresh-impl :refresh))
 
 (defn refresh-all []
+  (try-ensure-conn)
   (log.append ["; Refreshing all namespaces"] {:break? true})
   (refresh-impl :refresh-all))
 
 (defn refresh-clear []
+  (try-ensure-conn)
   (log.append ["; Clearing refresh cache"] {:break? true})
   (server.with-conn-and-op-or-warn
     :refresh-clear
@@ -435,6 +461,7 @@
             (log.append ["; Clearing complete"])))))))
 
 (defn shadow-select [build]
+  (try-ensure-conn)
   (server.with-conn-or-warn
     (fn [conn]
       (log.append [(.. "; shadow-cljs (select): " build)] {:break? true})
@@ -444,6 +471,7 @@
       (passive-ns-require))))
 
 (defn piggieback [code]
+  (try-ensure-conn)
   (server.with-conn-or-warn
     (fn [conn]
       (log.append [(.. "; piggieback: " code)] {:break? true})
@@ -517,6 +545,7 @@
      :else opts.cb}))
 
 (defn out-subscribe []
+  (try-ensure-conn)
   (log.append ["; Subscribing to out"] {:break? true})
   (server.with-conn-and-op-or-warn
     :out-subscribe
@@ -524,6 +553,7 @@
       (server.send {:op :out-subscribe}))))
 
 (defn out-unsubscribe []
+  (try-ensure-conn)
   (log.append ["; Unsubscribing from out"] {:break? true})
   (server.with-conn-and-op-or-warn
     :out-unsubscribe

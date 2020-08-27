@@ -80,7 +80,7 @@ do
   local v_0_ = nil
   do
     local v_0_0 = nil
-    local function connect_port_file0()
+    local function connect_port_file0(opts)
       local port = nil
       do
         local _3_0 = cfg({"connection", "port_files"})
@@ -103,7 +103,9 @@ do
       if port then
         return server.connect({cb = passive_ns_require, host = cfg({"connection", "default_host"}), port = port})
       else
-        return log.append({"; No nREPL port file found"}, {["break?"] = true})
+        if not a.get(opts, "silent?") then
+          return log.append({"; No nREPL port file found"}, {["break?"] = true})
+        end
       end
     end
     v_0_0 = connect_port_file0
@@ -112,6 +114,21 @@ do
   end
   _0_0["aniseed/locals"]["connect-port-file"] = v_0_
   connect_port_file = v_0_
+end
+local try_ensure_conn = nil
+do
+  local v_0_ = nil
+  local function try_ensure_conn0()
+    local function _3_()
+    end
+    local function _4_()
+      return connect_port_file({["silent?"] = true})
+    end
+    return server["with-conn-or-warn"](_3_, {["else"] = _4_, ["silent?"] = true})
+  end
+  v_0_ = try_ensure_conn0
+  _0_0["aniseed/locals"]["try-ensure-conn"] = v_0_
+  try_ensure_conn = v_0_
 end
 local connect_host_port = nil
 do
@@ -171,6 +188,7 @@ do
   do
     local v_0_0 = nil
     local function eval_str0(opts)
+      try_ensure_conn()
       local function _3_(conn)
         if (opts.context and not a["get-in"](conn, {"seen-ns", opts.context})) then
           local function _4_()
@@ -247,6 +265,7 @@ do
   do
     local v_0_0 = nil
     local function doc_str0(opts)
+      try_ensure_conn()
       require_ns("clojure.repl")
       local function _3_(msgs)
         local function _4_(msg)
@@ -310,6 +329,7 @@ do
   do
     local v_0_0 = nil
     local function def_str0(opts)
+      try_ensure_conn()
       local function _3_(info)
         if a["nil?"](info) then
           return log.append({"; No definition information found"})
@@ -351,6 +371,7 @@ do
   do
     local v_0_0 = nil
     local function eval_file0(opts)
+      try_ensure_conn()
       return server.eval(a.assoc(opts, "code", ("(#?(:cljs cljs.core/load-file" .. " :default clojure.core/load-file)" .. " \"" .. opts["file-path"] .. "\")")), eval_cb_fn(opts))
     end
     v_0_0 = eval_file0
@@ -366,6 +387,7 @@ do
   do
     local v_0_0 = nil
     local function interrupt0()
+      try_ensure_conn()
       local function _3_(conn)
         local msgs = nil
         local function _4_(msg)
@@ -474,6 +496,7 @@ do
   do
     local v_0_0 = nil
     local function view_source0()
+      try_ensure_conn()
       local word = a.get(extract.word(), "content")
       if not a["empty?"](word) then
         log.append({("; source (word): " .. word)}, {["break?"] = true})
@@ -497,6 +520,7 @@ do
   do
     local v_0_0 = nil
     local function clone_current_session0()
+      try_ensure_conn()
       local function _3_(conn)
         return server["enrich-session-id"](a.get(conn, "session"), server["clone-session"])
       end
@@ -515,6 +539,7 @@ do
   do
     local v_0_0 = nil
     local function clone_fresh_session0()
+      try_ensure_conn()
       local function _3_(conn)
         return server["clone-session"]()
       end
@@ -533,6 +558,7 @@ do
   do
     local v_0_0 = nil
     local function close_current_session0()
+      try_ensure_conn()
       local function _3_(conn)
         local function _4_(sess)
           a.assoc(conn, "session", nil)
@@ -559,6 +585,7 @@ do
   do
     local v_0_0 = nil
     local function display_sessions0(cb)
+      try_ensure_conn()
       local function _3_(sessions)
         return ui["display-sessions"](sessions, cb)
       end
@@ -577,6 +604,7 @@ do
   do
     local v_0_0 = nil
     local function close_all_sessions0()
+      try_ensure_conn()
       local function _3_(sessions)
         a["run!"](server["close-session"], sessions)
         log.append({("; Closed all sessions (" .. a.count(sessions) .. ")")}, {["break?"] = true})
@@ -595,6 +623,7 @@ local cycle_session = nil
 do
   local v_0_ = nil
   local function cycle_session0(f)
+    try_ensure_conn()
     local function _3_(conn)
       local function _4_(sessions)
         if (1 == a.count(sessions)) then
@@ -657,6 +686,7 @@ do
   do
     local v_0_0 = nil
     local function select_session_interactive0()
+      try_ensure_conn()
       local function _3_(sessions)
         if (1 == a.count(sessions)) then
           return log.append({"; No other sessions"}, {["break?"] = true})
@@ -689,6 +719,7 @@ do
   do
     local v_0_0 = nil
     local function run_all_tests0()
+      try_ensure_conn()
       log.append({"; run-all-tests"}, {["break?"] = true})
       require_ns("clojure.test")
       local function _3_(_241)
@@ -707,6 +738,7 @@ local run_ns_tests = nil
 do
   local v_0_ = nil
   local function run_ns_tests0(ns)
+    try_ensure_conn()
     if ns then
       log.append({("; run-ns-tests: " .. ns)}, {["break?"] = true})
       require_ns("clojure.test")
@@ -764,6 +796,7 @@ do
   do
     local v_0_0 = nil
     local function run_current_test0()
+      try_ensure_conn()
       local form = extract.form({["root?"] = true})
       if form then
         local test_name, sub_count = string.gsub(form.content, ".*deftest%s+(.-)%s+.*", "%1")
@@ -823,6 +856,7 @@ do
   do
     local v_0_0 = nil
     local function refresh_changed0()
+      try_ensure_conn()
       log.append({"; Refreshing changed namespaces"}, {["break?"] = true})
       return refresh_impl("refresh")
     end
@@ -839,6 +873,7 @@ do
   do
     local v_0_0 = nil
     local function refresh_all0()
+      try_ensure_conn()
       log.append({"; Refreshing all namespaces"}, {["break?"] = true})
       return refresh_impl("refresh-all")
     end
@@ -855,6 +890,7 @@ do
   do
     local v_0_0 = nil
     local function refresh_clear0()
+      try_ensure_conn()
       log.append({"; Clearing refresh cache"}, {["break?"] = true})
       local function _3_(conn)
         local function _4_(msgs)
@@ -877,6 +913,7 @@ do
   do
     local v_0_0 = nil
     local function shadow_select0(build)
+      try_ensure_conn()
       local function _3_(conn)
         log.append({("; shadow-cljs (select): " .. build)}, {["break?"] = true})
         server.eval({code = ("(shadow.cljs.devtools.api/nrepl-select :" .. build .. ")")}, ui["display-result"])
@@ -897,6 +934,7 @@ do
   do
     local v_0_0 = nil
     local function piggieback0(code)
+      try_ensure_conn()
       local function _3_(conn)
         log.append({("; piggieback: " .. code)}, {["break?"] = true})
         require_ns("cider.piggieback")
@@ -1012,6 +1050,7 @@ do
   do
     local v_0_0 = nil
     local function out_subscribe0()
+      try_ensure_conn()
       log.append({"; Subscribing to out"}, {["break?"] = true})
       local function _3_(conn)
         return server.send({op = "out-subscribe"})
@@ -1031,6 +1070,7 @@ do
   do
     local v_0_0 = nil
     local function out_unsubscribe0()
+      try_ensure_conn()
       log.append({"; Unsubscribing from out"}, {["break?"] = true})
       local function _3_(conn)
         return server.send({op = "out-unsubscribe"})
