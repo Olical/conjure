@@ -57,6 +57,25 @@ do
   _0_0["aniseed/locals"]["with-conn-or-warn"] = v_0_
   with_conn_or_warn = v_0_
 end
+local connected_3f = nil
+do
+  local v_0_ = nil
+  do
+    local v_0_0 = nil
+    local function connected_3f0()
+      if state.get("conn") then
+        return true
+      else
+        return false
+      end
+    end
+    v_0_0 = connected_3f0
+    _0_0["connected?"] = v_0_0
+    v_0_ = v_0_0
+  end
+  _0_0["aniseed/locals"]["connected?"] = v_0_
+  connected_3f = v_0_
+end
 local send = nil
 do
   local v_0_ = nil

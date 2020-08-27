@@ -61,11 +61,8 @@ do
   do
     local v_0_0 = nil
     local function passive_ns_require0()
-      if cfg({"eval", "auto_require"}) then
-        local function _3_(_)
-          return require_ns(extract.context())
-        end
-        return server["with-conn-or-warn"](_3_, {["silent?"] = true})
+      if (cfg({"eval", "auto_require"}) and server["connected?"]()) then
+        return require_ns(extract.context())
       end
     end
     v_0_0 = passive_ns_require0
@@ -119,12 +116,9 @@ local try_ensure_conn = nil
 do
   local v_0_ = nil
   local function try_ensure_conn0()
-    local function _3_()
-    end
-    local function _4_()
+    if not server["connected?"]() then
       return connect_port_file({["silent?"] = true})
     end
-    return server["with-conn-or-warn"](_3_, {["else"] = _4_, ["silent?"] = true})
   end
   v_0_ = try_ensure_conn0
   _0_0["aniseed/locals"]["try-ensure-conn"] = v_0_

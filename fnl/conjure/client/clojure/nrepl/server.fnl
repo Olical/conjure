@@ -22,6 +22,11 @@
         (when (a.get opts :else)
           (opts.else))))))
 
+(defn connected? []
+  (if (state.get :conn)
+    true
+    false))
+
 (defn send [msg cb]
   (let [conn (state.get :conn)]
     (when conn

@@ -24,11 +24,9 @@
 (def- cfg (config.get-in-fn [:client :clojure :nrepl]))
 
 (defn passive-ns-require []
-  (when (cfg [:eval :auto_require])
-    (server.with-conn-or-warn
-      (fn [_]
-        (require-ns (extract.context)))
-      {:silent? true})))
+  (when (and (cfg [:eval :auto_require])
+             (server.connected?))
+    (require-ns (extract.context))))
 
 (defn connect-port-file [opts]
   (let [port (-?>> (cfg [:connection :port_files])
@@ -44,10 +42,8 @@
         (log.append ["; No nREPL port file found"] {:break? true})))))
 
 (defn- try-ensure-conn []
-  (server.with-conn-or-warn
-    (fn [])
-    {:silent? true
-     :else #(connect-port-file {:silent? true})}))
+  (when (not (server.connected?))
+    (connect-port-file {:silent? true})))
 
 (defn connect-host-port [opts]
   (if (and (not opts.host) (not opts.port))
