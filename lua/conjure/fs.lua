@@ -76,7 +76,7 @@ do
   do
     local v_0_0 = nil
     local function resolve_above0(name)
-      return (findfile(name, ".;") or findfile(name, (config_dir() .. ";")))
+      return (findfile(name, ".;") or findfile(name, (nvim.fn.getcwd() .. ";")) or findfile(name, (config_dir() .. ";")))
     end
     v_0_0 = resolve_above0
     _0_0["resolve-above"] = v_0_0

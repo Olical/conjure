@@ -24,10 +24,12 @@
       res)))
 
 (defn resolve-above [name]
-  "Resolve a file name to it's full path by looking in the current
-  directory upwards followed by $XDG_CONFIG_HOME/conjure"
+  "Resolve a pathless file name to an absolute path by looking in the
+  containing and parent directories of the current file, current working
+  direcotry and finally $XDG_CONFIG_HOME/conjure"
   (or
     (findfile name ".;")
+    (findfile name (.. (nvim.fn.getcwd) ";"))
     (findfile name (.. (config-dir) ";"))))
 
 (defn file-readable? [path]
