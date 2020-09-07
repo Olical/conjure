@@ -518,7 +518,7 @@
             (->> (str.join "\n")))))))
 
 (defn- enhanced-cljs-completion? []
-  (config.get-in [:client :clojure :nrepl :completion :cljs :use_suitable]))
+  (cfg [:completion :cljs :use_suitable]))
 
 (defn completions [opts]
   (server.with-conn-and-op-or-warn
@@ -529,7 +529,8 @@
          :session conn.session
          :ns opts.context
          :symbol opts.prefix
-         :context (extract-completion-context opts.prefix)
+         :context (when (cfg [:completion :with_context])
+                    (extract-completion-context opts.prefix))
          :extra-metadata [:arglists :doc]
          :enhanced-cljs-completion? (when (enhanced-cljs-completion?) "t")}
         (server.with-all-msgs-fn

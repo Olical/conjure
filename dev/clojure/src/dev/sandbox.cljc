@@ -60,6 +60,10 @@
   (t/testing "bar"
     (t/is (= 10 10))))
 
+(let [some-local-thing 10
+      some-other-local-thing 20]
+  some-local-thing)
+
 (comment
   (set! *print-length* 5)
 
