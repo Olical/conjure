@@ -217,7 +217,7 @@
             "botright "
             "")
           cmd " "
-          (log-buf-name)))
+          (buffer.resolve (log-buf-name))))
     (nvim.win_set_cursor 0 [(nvim.buf_line_count buf) 0])
     (set-wrap! 0)
     (buffer.unlist buf)))

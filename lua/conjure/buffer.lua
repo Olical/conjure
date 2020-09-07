@@ -38,6 +38,21 @@ do
   _0_0["aniseed/locals"]["unlist"] = v_0_
   unlist = v_0_
 end
+local resolve = nil
+do
+  local v_0_ = nil
+  do
+    local v_0_0 = nil
+    local function resolve0(buf_name)
+      return nvim.buf_get_name(nvim.fn.bufnr(buf_name))
+    end
+    v_0_0 = resolve0
+    _0_0["resolve"] = v_0_0
+    v_0_ = v_0_0
+  end
+  _0_0["aniseed/locals"]["resolve"] = v_0_
+  resolve = v_0_
+end
 local upsert_hidden = nil
 do
   local v_0_ = nil

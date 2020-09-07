@@ -374,7 +374,7 @@ do
         return ""
       end
     end
-    nvim.command((_3_() .. cmd .. " " .. log_buf_name()))
+    nvim.command((_3_() .. cmd .. " " .. buffer.resolve(log_buf_name())))
     nvim.win_set_cursor(0, {nvim.buf_line_count(buf), 0})
     set_wrap_21(0)
     return buffer.unlist(buf)

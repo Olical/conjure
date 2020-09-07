@@ -9,6 +9,9 @@
   split the buffer into some new window."
   (nvim.buf_set_option buf :buflisted false))
 
+(defn resolve [buf-name]
+  (nvim.buf_get_name (nvim.fn.bufnr buf-name)))
+
 (defn upsert-hidden [buf-name]
   (let [buf (nvim.fn.bufnr buf-name)]
     (if (= -1 buf)
