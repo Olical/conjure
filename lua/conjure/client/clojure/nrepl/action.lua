@@ -98,7 +98,16 @@ do
         end
       end
       if port then
-        return server.connect({cb = passive_ns_require, host = cfg({"connection", "default_host"}), port = port})
+        local function _4_()
+          do
+            local cb = a.get(opts, "cb")
+            if cb then
+              cb()
+            end
+          end
+          return passive_ns_require()
+        end
+        return server.connect({cb = _4_, host = cfg({"connection", "default_host"}), port = port})
       else
         if not a.get(opts, "silent?") then
           return log.append({"; No nREPL port file found"}, {["break?"] = true})
@@ -115,9 +124,11 @@ end
 local try_ensure_conn = nil
 do
   local v_0_ = nil
-  local function try_ensure_conn0()
+  local function try_ensure_conn0(cb)
     if not server["connected?"]() then
-      return connect_port_file({["silent?"] = true})
+      return connect_port_file({["silent?"] = true, cb = cb})
+    else
+      return cb()
     end
   end
   v_0_ = try_ensure_conn0
@@ -182,17 +193,19 @@ do
   do
     local v_0_0 = nil
     local function eval_str0(opts)
-      try_ensure_conn()
-      local function _3_(conn)
-        if (opts.context and not a["get-in"](conn, {"seen-ns", opts.context})) then
-          local function _4_()
+      local function _3_()
+        local function _4_(conn)
+          if (opts.context and not a["get-in"](conn, {"seen-ns", opts.context})) then
+            local function _5_()
+            end
+            server.eval({code = ("(ns " .. opts.context .. ")")}, _5_)
+            a["assoc-in"](conn, {"seen-ns", opts.context}, true)
           end
-          server.eval({code = ("(ns " .. opts.context .. ")")}, _4_)
-          a["assoc-in"](conn, {"seen-ns", opts.context}, true)
+          return server.eval(opts, eval_cb_fn(opts))
         end
-        return server.eval(opts, eval_cb_fn(opts))
+        return server["with-conn-or-warn"](_4_)
       end
-      return server["with-conn-or-warn"](_3_)
+      return try_ensure_conn(_3_)
     end
     v_0_0 = eval_str0
     _0_0["eval-str"] = v_0_0
@@ -259,34 +272,36 @@ do
   do
     local v_0_0 = nil
     local function doc_str0(opts)
-      try_ensure_conn()
-      require_ns("clojure.repl")
-      local function _3_(msgs)
-        local function _4_(msg)
-          return (a.get(msg, "out") or a.get(msg, "err"))
-        end
-        if a.some(_4_, msgs) then
-          local function _5_(_241)
-            return ui["display-result"](_241, {["ignore-nil?"] = true, ["simple-out?"] = true})
+      local function _3_()
+        require_ns("clojure.repl")
+        local function _4_(msgs)
+          local function _5_(msg)
+            return (a.get(msg, "out") or a.get(msg, "err"))
           end
-          return a["run!"](_5_, msgs)
-        else
-          log.append({"; No results, checking CIDER's info op"})
-          local function _5_(info)
-            if a["nil?"](info) then
-              return log.append({"; Nothing found via CIDER's info either"})
-            elseif info.javadoc then
-              return log.append(java_info__3elines(info))
-            elseif info.doc then
-              return log.append(a.concat({("; " .. info.ns .. "/" .. info.name), ("; (" .. info["arglists-str"] .. ")")}, text["prefixed-lines"](info.doc, "; ")))
-            else
-              return log.append(a.concat({"; Unknown result, it may still be helpful"}, text["prefixed-lines"](view.serialise(info), "; ")))
+          if a.some(_5_, msgs) then
+            local function _6_(_241)
+              return ui["display-result"](_241, {["ignore-nil?"] = true, ["simple-out?"] = true})
             end
+            return a["run!"](_6_, msgs)
+          else
+            log.append({"; No results, checking CIDER's info op"})
+            local function _6_(info)
+              if a["nil?"](info) then
+                return log.append({"; Nothing found via CIDER's info either"})
+              elseif info.javadoc then
+                return log.append(java_info__3elines(info))
+              elseif info.doc then
+                return log.append(a.concat({("; " .. info.ns .. "/" .. info.name), ("; (" .. info["arglists-str"] .. ")")}, text["prefixed-lines"](info.doc, "; ")))
+              else
+                return log.append(a.concat({"; Unknown result, it may still be helpful"}, text["prefixed-lines"](view.serialise(info), "; ")))
+              end
+            end
+            return with_info(opts, _6_)
           end
-          return with_info(opts, _5_)
         end
+        return server.eval(a.merge({}, opts, {code = ("(clojure.repl/doc " .. opts.code .. ")")}), server["with-all-msgs-fn"](_4_))
       end
-      return server.eval(a.merge({}, opts, {code = ("(clojure.repl/doc " .. opts.code .. ")")}), server["with-all-msgs-fn"](_3_))
+      return try_ensure_conn(_3_)
     end
     v_0_0 = doc_str0
     _0_0["doc-str"] = v_0_0
@@ -323,34 +338,36 @@ do
   do
     local v_0_0 = nil
     local function def_str0(opts)
-      try_ensure_conn()
-      local function _3_(info)
-        if a["nil?"](info) then
-          return log.append({"; No definition information found"})
-        elseif info.candidates then
-          local function _4_(_241)
-            return (_241 .. "/" .. opts.code)
-          end
-          return log.append(a.concat({"; Multiple candidates found"}, a.map(_4_, a.keys(info.candidates))))
-        elseif info.javadoc then
-          return log.append({"; Can't open source, it's Java", ("; " .. info.javadoc)})
-        elseif info["special-form"] then
-          local function _4_()
-            if info.url then
-              return ("; " .. info.url)
+      local function _3_()
+        local function _4_(info)
+          if a["nil?"](info) then
+            return log.append({"; No definition information found"})
+          elseif info.candidates then
+            local function _5_(_241)
+              return (_241 .. "/" .. opts.code)
             end
+            return log.append(a.concat({"; Multiple candidates found"}, a.map(_5_, a.keys(info.candidates))))
+          elseif info.javadoc then
+            return log.append({"; Can't open source, it's Java", ("; " .. info.javadoc)})
+          elseif info["special-form"] then
+            local function _5_()
+              if info.url then
+                return ("; " .. info.url)
+              end
+            end
+            return log.append({"; Can't open source, it's a special form", _5_()})
+          elseif (info.file and info.line) then
+            local column = (info.column or 1)
+            local path = nrepl__3envim_path(info.file)
+            editor["go-to"](path, info.line, column)
+            return log.append({("; " .. path .. " [" .. info.line .. " " .. column .. "]")}, {["suppress-hud?"] = true})
+          else
+            return log.append({"; Unsupported target", ("; " .. a["pr-str"](info))})
           end
-          return log.append({"; Can't open source, it's a special form", _4_()})
-        elseif (info.file and info.line) then
-          local column = (info.column or 1)
-          local path = nrepl__3envim_path(info.file)
-          editor["go-to"](path, info.line, column)
-          return log.append({("; " .. path .. " [" .. info.line .. " " .. column .. "]")}, {["suppress-hud?"] = true})
-        else
-          return log.append({"; Unsupported target", ("; " .. a["pr-str"](info))})
         end
+        return with_info(opts, _4_)
       end
-      return with_info(opts, _3_)
+      return try_ensure_conn(_3_)
     end
     v_0_0 = def_str0
     _0_0["def-str"] = v_0_0
@@ -365,8 +382,10 @@ do
   do
     local v_0_0 = nil
     local function eval_file0(opts)
-      try_ensure_conn()
-      return server.eval(a.assoc(opts, "code", ("(#?(:cljs cljs.core/load-file" .. " :default clojure.core/load-file)" .. " \"" .. opts["file-path"] .. "\")")), eval_cb_fn(opts))
+      local function _3_()
+        return server.eval(a.assoc(opts, "code", ("(#?(:cljs cljs.core/load-file" .. " :default clojure.core/load-file)" .. " \"" .. opts["file-path"] .. "\")")), eval_cb_fn(opts))
+      end
+      return try_ensure_conn(_3_)
     end
     v_0_0 = eval_file0
     _0_0["eval-file"] = v_0_0
@@ -381,44 +400,46 @@ do
   do
     local v_0_0 = nil
     local function interrupt0()
-      try_ensure_conn()
-      local function _3_(conn)
-        local msgs = nil
-        local function _4_(msg)
-          return ("eval" == msg.msg.op)
-        end
-        msgs = a.filter(_4_, a.vals(conn.msgs))
-        local order_66 = nil
-        local function _5_(_6_0)
-          local _7_ = _6_0
-          local code = _7_["code"]
-          local id = _7_["id"]
-          local session = _7_["session"]
-          server.send({["interrupt-id"] = id, op = "interrupt", session = session})
-          local function _8_(sess)
-            local function _9_()
-              if code then
-                return text["left-sample"](code, editor["percent-width"](cfg({"interrupt", "sample_limit"})))
-              else
-                return ("session: " .. sess.str() .. "")
+      local function _3_()
+        local function _4_(conn)
+          local msgs = nil
+          local function _5_(msg)
+            return ("eval" == msg.msg.op)
+          end
+          msgs = a.filter(_5_, a.vals(conn.msgs))
+          local order_66 = nil
+          local function _6_(_7_0)
+            local _8_ = _7_0
+            local code = _8_["code"]
+            local id = _8_["id"]
+            local session = _8_["session"]
+            server.send({["interrupt-id"] = id, op = "interrupt", session = session})
+            local function _9_(sess)
+              local function _10_()
+                if code then
+                  return text["left-sample"](code, editor["percent-width"](cfg({"interrupt", "sample_limit"})))
+                else
+                  return ("session: " .. sess.str() .. "")
+                end
               end
+              return log.append({("; Interrupted: " .. _10_())}, {["break?"] = true})
             end
-            return log.append({("; Interrupted: " .. _9_())}, {["break?"] = true})
+            return server["enrich-session-id"](session, _9_)
           end
-          return server["enrich-session-id"](session, _8_)
-        end
-        order_66 = _5_
-        if a["empty?"](msgs) then
-          return order_66({session = conn.session})
-        else
-          local function _7_(a0, b)
-            return (a0["sent-at"] < b["sent-at"])
+          order_66 = _6_
+          if a["empty?"](msgs) then
+            return order_66({session = conn.session})
+          else
+            local function _8_(a0, b)
+              return (a0["sent-at"] < b["sent-at"])
+            end
+            table.sort(msgs, _8_)
+            return order_66(a.get(a.first(msgs), "msg"))
           end
-          table.sort(msgs, _7_)
-          return order_66(a.get(a.first(msgs), "msg"))
         end
+        return server["with-conn-or-warn"](_4_)
       end
-      return server["with-conn-or-warn"](_3_)
+      return try_ensure_conn(_3_)
     end
     v_0_0 = interrupt0
     _0_0["interrupt"] = v_0_0
@@ -490,16 +511,18 @@ do
   do
     local v_0_0 = nil
     local function view_source0()
-      try_ensure_conn()
-      local word = a.get(extract.word(), "content")
-      if not a["empty?"](word) then
-        log.append({("; source (word): " .. word)}, {["break?"] = true})
-        require_ns("clojure.repl")
-        local function _3_(_241)
-          return ui["display-result"](_241, {["ignore-nil?"] = true, ["raw-out?"] = true})
+      local function _3_()
+        local word = a.get(extract.word(), "content")
+        if not a["empty?"](word) then
+          log.append({("; source (word): " .. word)}, {["break?"] = true})
+          require_ns("clojure.repl")
+          local function _4_(_241)
+            return ui["display-result"](_241, {["ignore-nil?"] = true, ["raw-out?"] = true})
+          end
+          return eval_str({cb = _4_, code = ("(clojure.repl/source " .. word .. ")"), context = extract.context()})
         end
-        return eval_str({cb = _3_, code = ("(clojure.repl/source " .. word .. ")"), context = extract.context()})
       end
+      return try_ensure_conn(_3_)
     end
     v_0_0 = view_source0
     _0_0["view-source"] = v_0_0
@@ -514,11 +537,13 @@ do
   do
     local v_0_0 = nil
     local function clone_current_session0()
-      try_ensure_conn()
-      local function _3_(conn)
-        return server["enrich-session-id"](a.get(conn, "session"), server["clone-session"])
+      local function _3_()
+        local function _4_(conn)
+          return server["enrich-session-id"](a.get(conn, "session"), server["clone-session"])
+        end
+        return server["with-conn-or-warn"](_4_)
       end
-      return server["with-conn-or-warn"](_3_)
+      return try_ensure_conn(_3_)
     end
     v_0_0 = clone_current_session0
     _0_0["clone-current-session"] = v_0_0
@@ -533,11 +558,13 @@ do
   do
     local v_0_0 = nil
     local function clone_fresh_session0()
-      try_ensure_conn()
-      local function _3_(conn)
-        return server["clone-session"]()
+      local function _3_()
+        local function _4_(conn)
+          return server["clone-session"]()
+        end
+        return server["with-conn-or-warn"](_4_)
       end
-      return server["with-conn-or-warn"](_3_)
+      return try_ensure_conn(_3_)
     end
     v_0_0 = clone_fresh_session0
     _0_0["clone-fresh-session"] = v_0_0
@@ -552,19 +579,21 @@ do
   do
     local v_0_0 = nil
     local function close_current_session0()
-      try_ensure_conn()
-      local function _3_(conn)
-        local function _4_(sess)
-          a.assoc(conn, "session", nil)
-          log.append({("; Closed current session: " .. sess.str())}, {["break?"] = true})
-          local function _5_()
-            return server["assume-or-create-session"]()
+      local function _3_()
+        local function _4_(conn)
+          local function _5_(sess)
+            a.assoc(conn, "session", nil)
+            log.append({("; Closed current session: " .. sess.str())}, {["break?"] = true})
+            local function _6_()
+              return server["assume-or-create-session"]()
+            end
+            return server["close-session"](sess, _6_)
           end
-          return server["close-session"](sess, _5_)
+          return server["enrich-session-id"](a.get(conn, "session"), _5_)
         end
-        return server["enrich-session-id"](a.get(conn, "session"), _4_)
+        return server["with-conn-or-warn"](_4_)
       end
-      return server["with-conn-or-warn"](_3_)
+      return try_ensure_conn(_3_)
     end
     v_0_0 = close_current_session0
     _0_0["close-current-session"] = v_0_0
@@ -579,11 +608,13 @@ do
   do
     local v_0_0 = nil
     local function display_sessions0(cb)
-      try_ensure_conn()
-      local function _3_(sessions)
-        return ui["display-sessions"](sessions, cb)
+      local function _3_()
+        local function _4_(sessions)
+          return ui["display-sessions"](sessions, cb)
+        end
+        return server["with-sessions"](_4_)
       end
-      return server["with-sessions"](_3_)
+      return try_ensure_conn(_3_)
     end
     v_0_0 = display_sessions0
     _0_0["display-sessions"] = v_0_0
@@ -598,13 +629,15 @@ do
   do
     local v_0_0 = nil
     local function close_all_sessions0()
-      try_ensure_conn()
-      local function _3_(sessions)
-        a["run!"](server["close-session"], sessions)
-        log.append({("; Closed all sessions (" .. a.count(sessions) .. ")")}, {["break?"] = true})
-        return server["clone-session"]()
+      local function _3_()
+        local function _4_(sessions)
+          a["run!"](server["close-session"], sessions)
+          log.append({("; Closed all sessions (" .. a.count(sessions) .. ")")}, {["break?"] = true})
+          return server["clone-session"]()
+        end
+        return server["with-sessions"](_4_)
       end
-      return server["with-sessions"](_3_)
+      return try_ensure_conn(_3_)
     end
     v_0_0 = close_all_sessions0
     _0_0["close-all-sessions"] = v_0_0
@@ -617,22 +650,24 @@ local cycle_session = nil
 do
   local v_0_ = nil
   local function cycle_session0(f)
-    try_ensure_conn()
-    local function _3_(conn)
-      local function _4_(sessions)
-        if (1 == a.count(sessions)) then
-          return log.append({"; No other sessions"}, {["break?"] = true})
-        else
-          local session = a.get(conn, "session")
-          local function _5_(_241)
-            return f(session, _241)
+    local function _3_()
+      local function _4_(conn)
+        local function _5_(sessions)
+          if (1 == a.count(sessions)) then
+            return log.append({"; No other sessions"}, {["break?"] = true})
+          else
+            local session = a.get(conn, "session")
+            local function _6_(_241)
+              return f(session, _241)
+            end
+            return server["assume-session"](ll.val(ll["until"](_6_, ll.cycle(ll.create(sessions)))))
           end
-          return server["assume-session"](ll.val(ll["until"](_5_, ll.cycle(ll.create(sessions)))))
         end
+        return server["with-sessions"](_5_)
       end
-      return server["with-sessions"](_4_)
+      return server["with-conn-or-warn"](_4_)
     end
-    return server["with-conn-or-warn"](_3_)
+    return try_ensure_conn(_3_)
   end
   v_0_ = cycle_session0
   _0_0["aniseed/locals"]["cycle-session"] = v_0_
@@ -680,25 +715,27 @@ do
   do
     local v_0_0 = nil
     local function select_session_interactive0()
-      try_ensure_conn()
-      local function _3_(sessions)
-        if (1 == a.count(sessions)) then
-          return log.append({"; No other sessions"}, {["break?"] = true})
-        else
-          local function _4_()
-            nvim.ex.redraw_()
-            local n = nvim.fn.str2nr(extract.prompt("Session number: "))
-            local _5_ = a.count(sessions)
-            if ((1 <= n) and (n <= _5_)) then
-              return server["assume-session"](a.get(sessions, n))
-            else
-              return log.append({"; Invalid session number."})
+      local function _3_()
+        local function _4_(sessions)
+          if (1 == a.count(sessions)) then
+            return log.append({"; No other sessions"}, {["break?"] = true})
+          else
+            local function _5_()
+              nvim.ex.redraw_()
+              local n = nvim.fn.str2nr(extract.prompt("Session number: "))
+              local _6_ = a.count(sessions)
+              if ((1 <= n) and (n <= _6_)) then
+                return server["assume-session"](a.get(sessions, n))
+              else
+                return log.append({"; Invalid session number."})
+              end
             end
+            return ui["display-sessions"](sessions, _5_)
           end
-          return ui["display-sessions"](sessions, _4_)
         end
+        return server["with-sessions"](_4_)
       end
-      return server["with-sessions"](_3_)
+      return try_ensure_conn(_3_)
     end
     v_0_0 = select_session_interactive0
     _0_0["select-session-interactive"] = v_0_0
@@ -713,13 +750,15 @@ do
   do
     local v_0_0 = nil
     local function run_all_tests0()
-      try_ensure_conn()
-      log.append({"; run-all-tests"}, {["break?"] = true})
-      require_ns("clojure.test")
-      local function _3_(_241)
-        return ui["display-result"](_241, {["ignore-nil?"] = true, ["simple-out?"] = true})
+      local function _3_()
+        log.append({"; run-all-tests"}, {["break?"] = true})
+        require_ns("clojure.test")
+        local function _4_(_241)
+          return ui["display-result"](_241, {["ignore-nil?"] = true, ["simple-out?"] = true})
+        end
+        return server.eval({code = "(clojure.test/run-all-tests)"}, _4_)
       end
-      return server.eval({code = "(clojure.test/run-all-tests)"}, _3_)
+      return try_ensure_conn(_3_)
     end
     v_0_0 = run_all_tests0
     _0_0["run-all-tests"] = v_0_0
@@ -732,15 +771,17 @@ local run_ns_tests = nil
 do
   local v_0_ = nil
   local function run_ns_tests0(ns)
-    try_ensure_conn()
-    if ns then
-      log.append({("; run-ns-tests: " .. ns)}, {["break?"] = true})
-      require_ns("clojure.test")
-      local function _3_(_241)
-        return ui["display-result"](_241, {["ignore-nil?"] = true, ["simple-out?"] = true})
+    local function _3_()
+      if ns then
+        log.append({("; run-ns-tests: " .. ns)}, {["break?"] = true})
+        require_ns("clojure.test")
+        local function _4_(_241)
+          return ui["display-result"](_241, {["ignore-nil?"] = true, ["simple-out?"] = true})
+        end
+        return server.eval({code = ("(clojure.test/run-tests '" .. ns .. ")")}, _4_)
       end
-      return server.eval({code = ("(clojure.test/run-tests '" .. ns .. ")")}, _3_)
     end
+    return try_ensure_conn(_3_)
   end
   v_0_ = run_ns_tests0
   _0_0["aniseed/locals"]["run-ns-tests"] = v_0_
@@ -790,26 +831,28 @@ do
   do
     local v_0_0 = nil
     local function run_current_test0()
-      try_ensure_conn()
-      local form = extract.form({["root?"] = true})
-      if form then
-        local test_name, sub_count = string.gsub(form.content, ".*deftest%s+(.-)%s+.*", "%1")
-        if (not a["empty?"](test_name) and (1 == sub_count)) then
-          log.append({("; run-current-test: " .. test_name)}, {["break?"] = true})
-          require_ns("clojure.test")
-          local function _3_(msgs)
-            if ((2 == a.count(msgs)) and ("nil" == a.get(a.first(msgs), "value"))) then
-              return log.append({"; Success!"})
-            else
-              local function _4_(_241)
-                return ui["display-result"](_241, {["ignore-nil?"] = true, ["simple-out?"] = true})
+      local function _3_()
+        local form = extract.form({["root?"] = true})
+        if form then
+          local test_name, sub_count = string.gsub(form.content, ".*deftest%s+(.-)%s+.*", "%1")
+          if (not a["empty?"](test_name) and (1 == sub_count)) then
+            log.append({("; run-current-test: " .. test_name)}, {["break?"] = true})
+            require_ns("clojure.test")
+            local function _4_(msgs)
+              if ((2 == a.count(msgs)) and ("nil" == a.get(a.first(msgs), "value"))) then
+                return log.append({"; Success!"})
+              else
+                local function _5_(_241)
+                  return ui["display-result"](_241, {["ignore-nil?"] = true, ["simple-out?"] = true})
+                end
+                return a["run!"](_5_, msgs)
               end
-              return a["run!"](_4_, msgs)
             end
+            return server.eval({code = ("(clojure.test/test-vars" .. "  [(doto (resolve '" .. test_name .. ")" .. "     (assert \"" .. test_name .. " is not a var\"))])"), context = extract.context()}, server["with-all-msgs-fn"](_4_))
           end
-          return server.eval({code = ("(clojure.test/test-vars" .. "  [(doto (resolve '" .. test_name .. ")" .. "     (assert \"" .. test_name .. " is not a var\"))])"), context = extract.context()}, server["with-all-msgs-fn"](_3_))
         end
       end
+      return try_ensure_conn(_3_)
     end
     v_0_0 = run_current_test0
     _0_0["run-current-test"] = v_0_0
@@ -850,9 +893,11 @@ do
   do
     local v_0_0 = nil
     local function refresh_changed0()
-      try_ensure_conn()
-      log.append({"; Refreshing changed namespaces"}, {["break?"] = true})
-      return refresh_impl("refresh")
+      local function _3_()
+        log.append({"; Refreshing changed namespaces"}, {["break?"] = true})
+        return refresh_impl("refresh")
+      end
+      return try_ensure_conn(_3_)
     end
     v_0_0 = refresh_changed0
     _0_0["refresh-changed"] = v_0_0
@@ -867,9 +912,11 @@ do
   do
     local v_0_0 = nil
     local function refresh_all0()
-      try_ensure_conn()
-      log.append({"; Refreshing all namespaces"}, {["break?"] = true})
-      return refresh_impl("refresh-all")
+      local function _3_()
+        log.append({"; Refreshing all namespaces"}, {["break?"] = true})
+        return refresh_impl("refresh-all")
+      end
+      return try_ensure_conn(_3_)
     end
     v_0_0 = refresh_all0
     _0_0["refresh-all"] = v_0_0
@@ -884,15 +931,17 @@ do
   do
     local v_0_0 = nil
     local function refresh_clear0()
-      try_ensure_conn()
-      log.append({"; Clearing refresh cache"}, {["break?"] = true})
-      local function _3_(conn)
-        local function _4_(msgs)
-          return log.append({"; Clearing complete"})
+      local function _3_()
+        log.append({"; Clearing refresh cache"}, {["break?"] = true})
+        local function _4_(conn)
+          local function _5_(msgs)
+            return log.append({"; Clearing complete"})
+          end
+          return server.send({op = "refresh-clear", session = conn.session}, server["with-all-msgs-fn"](_5_))
         end
-        return server.send({op = "refresh-clear", session = conn.session}, server["with-all-msgs-fn"](_4_))
+        return server["with-conn-and-op-or-warn"]("refresh-clear", _4_)
       end
-      return server["with-conn-and-op-or-warn"]("refresh-clear", _3_)
+      return try_ensure_conn(_3_)
     end
     v_0_0 = refresh_clear0
     _0_0["refresh-clear"] = v_0_0
@@ -907,13 +956,15 @@ do
   do
     local v_0_0 = nil
     local function shadow_select0(build)
-      try_ensure_conn()
-      local function _3_(conn)
-        log.append({("; shadow-cljs (select): " .. build)}, {["break?"] = true})
-        server.eval({code = ("(shadow.cljs.devtools.api/nrepl-select :" .. build .. ")")}, ui["display-result"])
-        return passive_ns_require()
+      local function _3_()
+        local function _4_(conn)
+          log.append({("; shadow-cljs (select): " .. build)}, {["break?"] = true})
+          server.eval({code = ("(shadow.cljs.devtools.api/nrepl-select :" .. build .. ")")}, ui["display-result"])
+          return passive_ns_require()
+        end
+        return server["with-conn-or-warn"](_4_)
       end
-      return server["with-conn-or-warn"](_3_)
+      return try_ensure_conn(_3_)
     end
     v_0_0 = shadow_select0
     _0_0["shadow-select"] = v_0_0
@@ -928,14 +979,16 @@ do
   do
     local v_0_0 = nil
     local function piggieback0(code)
-      try_ensure_conn()
-      local function _3_(conn)
-        log.append({("; piggieback: " .. code)}, {["break?"] = true})
-        require_ns("cider.piggieback")
-        server.eval({code = ("(cider.piggieback/cljs-repl " .. code .. ")")}, ui["display-result"])
-        return passive_ns_require()
+      local function _3_()
+        local function _4_(conn)
+          log.append({("; piggieback: " .. code)}, {["break?"] = true})
+          require_ns("cider.piggieback")
+          server.eval({code = ("(cider.piggieback/cljs-repl " .. code .. ")")}, ui["display-result"])
+          return passive_ns_require()
+        end
+        return server["with-conn-or-warn"](_4_)
       end
-      return server["with-conn-or-warn"](_3_)
+      return try_ensure_conn(_3_)
     end
     v_0_0 = piggieback0
     _0_0["piggieback"] = v_0_0
