@@ -14,23 +14,23 @@ do
   package.loaded[name_0_] = module_0_
   _0_0 = module_0_
 end
-local function _1_(...)
+local function _2_(...)
   _0_0["aniseed/local-fns"] = {require = {["bencode-stream"] = "conjure.bencode-stream", a = "conjure.aniseed.core", bencode = "conjure.bencode", client = "conjure.client", config = "conjure.config", extract = "conjure.extract", log = "conjure.log", net = "conjure.net", state = "conjure.client.clojure.nrepl.state", str = "conjure.aniseed.string", ui = "conjure.client.clojure.nrepl.ui", uuid = "conjure.uuid"}}
   return {require("conjure.aniseed.core"), require("conjure.bencode"), require("conjure.bencode-stream"), require("conjure.client"), require("conjure.config"), require("conjure.extract"), require("conjure.log"), require("conjure.net"), require("conjure.client.clojure.nrepl.state"), require("conjure.aniseed.string"), require("conjure.client.clojure.nrepl.ui"), require("conjure.uuid")}
 end
-local _2_ = _1_(...)
-local a = _2_[1]
-local str = _2_[10]
-local ui = _2_[11]
-local uuid = _2_[12]
-local bencode = _2_[2]
-local bencode_stream = _2_[3]
-local client = _2_[4]
-local config = _2_[5]
-local extract = _2_[6]
-local log = _2_[7]
-local net = _2_[8]
-local state = _2_[9]
+local _1_ = _2_(...)
+local a = _1_[1]
+local str = _1_[10]
+local ui = _1_[11]
+local uuid = _1_[12]
+local bencode = _1_[2]
+local bencode_stream = _1_[3]
+local client = _1_[4]
+local config = _1_[5]
+local extract = _1_[6]
+local log = _1_[7]
+local net = _1_[8]
+local state = _1_[9]
 do local _ = ({nil, _0_0, {{}, nil}})[2] end
 local with_conn_or_warn = nil
 do

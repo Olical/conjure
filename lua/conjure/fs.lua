@@ -14,15 +14,15 @@ do
   package.loaded[name_0_] = module_0_
   _0_0 = module_0_
 end
-local function _1_(...)
+local function _2_(...)
   _0_0["aniseed/local-fns"] = {require = {a = "conjure.aniseed.core", config = "conjure.config", nvim = "conjure.aniseed.nvim", str = "conjure.aniseed.string"}}
   return {require("conjure.aniseed.core"), require("conjure.config"), require("conjure.aniseed.nvim"), require("conjure.aniseed.string")}
 end
-local _2_ = _1_(...)
-local a = _2_[1]
-local config = _2_[2]
-local nvim = _2_[3]
-local str = _2_[4]
+local _1_ = _2_(...)
+local a = _1_[1]
+local config = _1_[2]
+local nvim = _1_[3]
+local str = _1_[4]
 do local _ = ({nil, _0_0, {{}, nil}})[2] end
 local env = nil
 do

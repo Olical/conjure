@@ -14,13 +14,13 @@ do
   package.loaded[name_0_] = module_0_
   _0_0 = module_0_
 end
-local function _1_(...)
+local function _2_(...)
   _0_0["aniseed/local-fns"] = {require = {a = "conjure.aniseed.core", sponsors = "conjure.sponsors"}}
   return {require("conjure.aniseed.core"), require("conjure.sponsors")}
 end
-local _2_ = _1_(...)
-local a = _2_[1]
-local sponsors = _2_[2]
+local _1_ = _2_(...)
+local a = _1_[1]
+local sponsors = _1_[2]
 do local _ = ({nil, _0_0, {{}, nil}})[2] end
 local v4 = nil
 do

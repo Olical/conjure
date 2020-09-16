@@ -14,13 +14,13 @@ do
   package.loaded[name_0_] = module_0_
   _0_0 = module_0_
 end
-local function _1_(...)
+local function _2_(...)
   _0_0["aniseed/local-fns"] = {require = {compile = "conjure.aniseed.compile", nvim = "conjure.aniseed.nvim"}}
   return {require("conjure.aniseed.compile"), require("conjure.aniseed.nvim")}
 end
-local _2_ = _1_(...)
-local compile = _2_[1]
-local nvim = _2_[2]
+local _1_ = _2_(...)
+local compile = _1_[1]
+local nvim = _1_[2]
 do local _ = ({nil, _0_0, {{}, nil}})[2] end
 local config_dir = nil
 do
@@ -28,5 +28,6 @@ do
   _0_0["aniseed/locals"]["config-dir"] = v_0_
   config_dir = v_0_
 end
+compile["add-path"]((config_dir .. "/?.fnl"))
 compile.glob("**/*.fnl", (config_dir .. "/fnl"), (config_dir .. "/lua"))
 return require("dotfiles.init")

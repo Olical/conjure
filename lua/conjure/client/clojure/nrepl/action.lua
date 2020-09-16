@@ -14,26 +14,26 @@ do
   package.loaded[name_0_] = module_0_
   _0_0 = module_0_
 end
-local function _1_(...)
+local function _2_(...)
   _0_0["aniseed/local-fns"] = {require = {a = "conjure.aniseed.core", client = "conjure.client", config = "conjure.config", editor = "conjure.editor", eval = "conjure.aniseed.eval", extract = "conjure.extract", fs = "conjure.fs", ll = "conjure.linked-list", log = "conjure.log", nvim = "conjure.aniseed.nvim", server = "conjure.client.clojure.nrepl.server", str = "conjure.aniseed.string", text = "conjure.text", ui = "conjure.client.clojure.nrepl.ui", view = "conjure.aniseed.view"}}
   return {require("conjure.aniseed.core"), require("conjure.client"), require("conjure.config"), require("conjure.editor"), require("conjure.aniseed.eval"), require("conjure.extract"), require("conjure.fs"), require("conjure.linked-list"), require("conjure.log"), require("conjure.aniseed.nvim"), require("conjure.client.clojure.nrepl.server"), require("conjure.aniseed.string"), require("conjure.text"), require("conjure.client.clojure.nrepl.ui"), require("conjure.aniseed.view")}
 end
-local _2_ = _1_(...)
-local a = _2_[1]
-local nvim = _2_[10]
-local server = _2_[11]
-local str = _2_[12]
-local text = _2_[13]
-local ui = _2_[14]
-local view = _2_[15]
-local client = _2_[2]
-local config = _2_[3]
-local editor = _2_[4]
-local eval = _2_[5]
-local extract = _2_[6]
-local fs = _2_[7]
-local ll = _2_[8]
-local log = _2_[9]
+local _1_ = _2_(...)
+local a = _1_[1]
+local nvim = _1_[10]
+local server = _1_[11]
+local str = _1_[12]
+local text = _1_[13]
+local ui = _1_[14]
+local view = _1_[15]
+local client = _1_[2]
+local config = _1_[3]
+local editor = _1_[4]
+local eval = _1_[5]
+local extract = _1_[6]
+local fs = _1_[7]
+local ll = _1_[8]
+local log = _1_[9]
 do local _ = ({nil, _0_0, {{}, nil}})[2] end
 local require_ns = nil
 do
@@ -723,8 +723,7 @@ do
             local function _5_()
               nvim.ex.redraw_()
               local n = nvim.fn.str2nr(extract.prompt("Session number: "))
-              local _6_ = a.count(sessions)
-              if ((1 <= n) and (n <= _6_)) then
+              if (function(_6_,_7_,_8_) return (_6_ <= _7_) and (_7_ <= _8_) end)(1,n,a.count(sessions)) then
                 return server["assume-session"](a.get(sessions, n))
               else
                 return log.append({"; Invalid session number."})

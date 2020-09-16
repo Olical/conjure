@@ -14,12 +14,12 @@ do
   package.loaded[name_0_] = module_0_
   _0_0 = module_0_
 end
-local function _1_(...)
+local function _2_(...)
   _0_0["aniseed/local-fns"] = {require = {view = "conjure.aniseed.deps.fennelview"}}
   return {require("conjure.aniseed.deps.fennelview")}
 end
-local _2_ = _1_(...)
-local view = _2_[1]
+local _1_ = _2_(...)
+local view = _1_[1]
 do local _ = ({nil, _0_0, {{}, nil}})[2] end
 local serialise = nil
 do

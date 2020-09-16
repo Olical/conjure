@@ -14,17 +14,17 @@ do
   package.loaded[name_0_] = module_0_
   _0_0 = module_0_
 end
-local function _1_(...)
+local function _2_(...)
   _0_0["aniseed/local-fns"] = {require = {a = "conjure.aniseed.core", client = "conjure.client", config = "conjure.config", log = "conjure.log", net = "conjure.net", trn = "conjure.client.janet.netrepl.transport"}}
   return {require("conjure.aniseed.core"), require("conjure.client"), require("conjure.config"), require("conjure.log"), require("conjure.net"), require("conjure.client.janet.netrepl.transport")}
 end
-local _2_ = _1_(...)
-local a = _2_[1]
-local client = _2_[2]
-local config = _2_[3]
-local log = _2_[4]
-local net = _2_[5]
-local trn = _2_[6]
+local _1_ = _2_(...)
+local a = _1_[1]
+local client = _1_[2]
+local config = _1_[3]
+local log = _1_[4]
+local net = _1_[5]
+local trn = _1_[6]
 do local _ = ({nil, _0_0, {{}, nil}})[2] end
 local state = nil
 do

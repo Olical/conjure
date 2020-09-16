@@ -14,12 +14,12 @@ do
   package.loaded[name_0_] = module_0_
   _0_0 = module_0_
 end
-local function _1_(...)
+local function _2_(...)
   _0_0["aniseed/local-fns"] = {require = {nvim = "conjure.aniseed.nvim"}}
   return {require("conjure.aniseed.nvim")}
 end
-local _2_ = _1_(...)
-local nvim = _2_[1]
+local _1_ = _2_(...)
+local nvim = _1_[1]
 do local _ = ({nil, _0_0, {{}, nil}})[2] end
 local basename = nil
 do

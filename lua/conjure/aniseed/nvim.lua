@@ -14,9 +14,9 @@ do
   package.loaded[name_0_] = module_0_
   _0_0 = module_0_
 end
-local function _1_(...)
+local function _2_(...)
   _0_0["aniseed/local-fns"] = {}
   return {}
 end
-local _2_ = _1_(...)
+local _1_ = _2_(...)
 return ({nil, _0_0, {{}, nil}})[2]
