@@ -8,7 +8,8 @@
             view conjure.aniseed.view
             text conjure.text
             editor conjure.editor
-            timer conjure.timer}})
+            timer conjure.timer
+            sponsors conjure.sponsors}})
 
 (defonce- state
   {:hud {:id nil
@@ -24,8 +25,18 @@
 (defn- log-buf-name []
   (.. "conjure-log-" (nvim.fn.getpid) (client.get :buf-suffix)))
 
+(defn- on-new-log-buf [buf]
+  (nvim.buf_set_lines
+    buf 0 -1 false
+    [(.. (client.get :comment-prefix)
+         "Sponsored by @"
+         (a.get sponsors (a.inc (math.floor (a.rand (a.dec (a.count sponsors))))))
+         " ❤")]))
+
 (defn- upsert-buf []
-  (buffer.upsert-hidden (log-buf-name)))
+  (buffer.upsert-hidden
+    (log-buf-name)
+    on-new-log-buf))
 
 (defn clear-close-hud-passive-timer []
   (a.update-in state [:hud :timer] timer.destroy))

@@ -58,7 +58,7 @@ do
   local v_0_ = nil
   do
     local v_0_0 = nil
-    local function upsert_hidden0(buf_name)
+    local function upsert_hidden0(buf_name, new_buf_fn)
       local buf = nvim.fn.bufnr(buf_name)
       if (-1 == buf) then
         local buf0 = nvim.fn.bufadd(buf_name)
@@ -66,6 +66,9 @@ do
         nvim.buf_set_option(buf0, "bufhidden", "hide")
         nvim.buf_set_option(buf0, "swapfile", false)
         unlist(buf0)
+        if new_buf_fn then
+          new_buf_fn(buf0)
+        end
         return buf0
       else
         return buf

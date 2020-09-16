@@ -12,7 +12,7 @@
 (defn resolve [buf-name]
   (nvim.buf_get_name (nvim.fn.bufnr buf-name)))
 
-(defn upsert-hidden [buf-name]
+(defn upsert-hidden [buf-name new-buf-fn]
   (let [buf (nvim.fn.bufnr buf-name)]
     (if (= -1 buf)
       (let [buf (nvim.fn.bufadd buf-name)]
@@ -20,6 +20,8 @@
         (nvim.buf_set_option buf :bufhidden :hide)
         (nvim.buf_set_option buf :swapfile false)
         (unlist buf)
+        (when new-buf-fn
+          (new-buf-fn buf))
         buf)
       buf)))
 

@@ -1,6 +1,5 @@
 (module conjure.uuid
-  {require {a conjure.aniseed.core
-            sponsors conjure.sponsors}})
+  {require {a conjure.aniseed.core}})
 
 ;; Adapted from https://gist.github.com/jrus/3197011
 
@@ -25,12 +24,11 @@
 (def- cats-and-dogs
   ["Blue Lacy" "Queensland Heeler" "Rhod Ridgeback" "Retriever" "Chinese Sharpei" "Black Mouth Cur" "Catahoula" "Staffordshire" "Affenpinscher"
    "Afghan Hound" "Airedale Terrier" "Akita" "Australian Kelpie" "Alaskan Malamute" "English Bulldog" "American Bulldog" "American English Coonhound"
-   "American Eskimo Dog (Miniature)" "American Eskimo Dog (Standard)" "American Eskimo Dog (Toy)" "American Foxhound" "American Hairless Terrier"
-   "American Staffordshire Terrier" "American Water Spaniel" "Anatolian Shepherd Dog" "Australian Cattle Dog" "Australian Shepherd" "Australian Terrier"
+   "American Eskimo Dog" "American Foxhound" "American Hairless Terrier" "American Staffordshire Terrier" "American Water Spaniel" "Anatolian Shepherd Dog"
    "Basenji" "Basset Hound" "Beagle" "Bearded Collie" "Beauceron" "Bedlington Terrier" "Belgian Malinois" "Belgian Sheepdog" "Belgian Tervuren" "Bergamasco"
    "Berger Picard" "Bernese Mountain Dog" "Bichon Frise" "Black and Tan Coonhound" "Black Russian Terrier" "Bloodhound" "Bluetick Coonhound" "Boerboel"
    "Border Collie" "Border Terrier" "Borzoi" "Boston Terrier" "Bouvier des Flandres" "Boxer" "Boykin Spaniel" "Briard" "Brittany" "Brussels Griffon" "Bull Terrier"
-   "Bull Terrier (Miniature)" "Bulldog" "Bullmastiff" "Cairn Terrier" "Canaan Dog" "Cane Corso" "Cardigan Welsh Corgi" "Cavalier King Charles Spaniel" "Cesky Terrier"
+   "Bulldog" "Bullmastiff" "Cairn Terrier" "Canaan Dog" "Cane Corso" "Cardigan Welsh Corgi" "Cavalier King Charles Spaniel" "Cesky Terrier"
    "Chesapeake Bay Retriever" "Chihuahua" "Chinese Crested Dog" "Chinese Shar Pei" "Chinook" "Chow Chow" "Cirneco dell'Etna" "Clumber Spaniel" "Cocker Spaniel"
    "Collie" "Coton de Tulear" "Curly-Coated Retriever" "Dachshund" "Dalmatian" "Dandie Dinmont Terrier" "Doberman Pinsch" "Doberman Pinscher" "Dogue De Bordeaux"
    "English Cocker Spaniel" "English Foxhound" "English Setter" "English Springer Spaniel" "English Toy Spaniel" "Entlebucher Mountain Dog" "Field Spaniel"
@@ -48,29 +46,25 @@
    "Soft-Coated Wheaten Terrier" "Spanish Water Dog" "Spinone Italiano" "Staffordshire Bull Terrier" "Standard Schnauzer" "Sussex Spaniel" "Swedish Vallhund"
    "Tibetan Mastiff" "Tibetan Spaniel" "Tibetan Terrier" "Toy Fox Terrier" "Treeing Walker Coonhound" "Vizsla" "Weimaraner" "Welsh Springer Spaniel" "Welsh Terrier"
    "West Highland White Terrier" "Whippet" "Wire Fox Terrier" "Wirehaired Pointing Griffon" "Wirehaired Vizsla" "Xoloitzcuintli" "Yorkshire Terrier"
+   "Australian Cattle Dog" "Australian Shepherd" "Australian Terrier"
 
    "Abyssinian cat" "Aegean cat" "American Curl" "American Bobtail" "American Shorthair" "American Wirehair" "Arabian Mau" "Australian Mist" "Asian cat"
    "Asian Semi-longhair" "Balinese cat" "Bambino cat" "Bengal cat" "Birman" "Bombay cat" "Brazilian Shorthair" "British Longhair" "British Shorthair"
    "British Longhair" "Burmese cat" "Burmilla" "California Spangled" "Chantilly-Tiffany" "Chartreux" "Chausie" "Cheetoh cat" "Colorpoint Shorthair" "Cornish Rex"
    "Cymric cat" "Cyprus cat" "Devon Rex" "Donskoy cat" "Dragon Li" "Dwarf cat" "Egyptian Mau" "European Shorthair" "Exotic Shorthair"
-   "Foldex cat (Official Breed - CCA/AFC)" "German Rex" "Havana Brown" "Highlander cat" "Himalayan cat" "Japanese Bobtail" "Javanese cat" "Kurilian Bobtail"
+   "Foldex cat" "German Rex" "Havana Brown" "Highlander cat" "Himalayan cat" "Japanese Bobtail" "Javanese cat" "Kurilian Bobtail"
    "Khao Manee" "Korat" "Korean Bobtail" "Korn Ja" "Kurilian Bobtail" "LaPerm" "Lykoi" "Maine Coon" "Manx cat" "Mekong Bobtail" "Minskin" "Munchkin cat" "Nebelung"
    "Napoleon cat" "Norwegian Forest cat" "Ocicat" "Ojos Azules" "Oregon Rex" "Oriental Bicolor" "Oriental Shorthair" "Oriental Longhair"
-   "PerFold Cat (Experimental Breed - WCF)" "Persian cat" "Traditional Persian" "Peterbald" "Pixie-bob" "Raas cat" "Ragamuffin cat" "Ragdoll"
+   "PerFold Cat" "Persian cat" "Traditional Persian" "Peterbald" "Pixie-bob" "Raas cat" "Ragamuffin cat" "Ragdoll"
    "Russian Blue" "Russian White" "Sam Sawet" "Savannah cat" "Scottish Fold" "Selkirk Rex" "Serengeti cat" "Serrade petit cat" "Siamese cat"
    "Siberian cat" "Singapura cat" "Snowshoe cat" "Sokoke" "Somali cat" "Sphynx cat" "Suphalak" "Thai cat" "Thai Lilac" "Tonkinese cat" "Toyger"
    "Turkish Angora" "Turkish Van" "Ukrainian Levkoy"])
-
-(def- pretty-strs
-  (a.concat
-    (a.map #(.. "Sponsored by @" $1 " ❤") sponsors)
-    cats-and-dogs))
 
 (defn pretty [id]
   "Turns a UUID into something human readable. This MASSIVELY reduces the
   entropy but it should be good enough for a bunch of various UI / UX cases."
   (let [n (tonumber (string.sub id 1 8) 16)]
-    (a.get pretty-strs (a.inc (% n (a.count pretty-strs))))))
+    (a.get cats-and-dogs (a.inc (% n (a.count cats-and-dogs))))))
 
 (comment
   (v4)

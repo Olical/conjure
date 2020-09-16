@@ -15,20 +15,21 @@ do
   _0_0 = module_0_
 end
 local function _2_(...)
-  _0_0["aniseed/local-fns"] = {require = {a = "conjure.aniseed.core", buffer = "conjure.buffer", client = "conjure.client", config = "conjure.config", editor = "conjure.editor", nvim = "conjure.aniseed.nvim", str = "conjure.aniseed.string", text = "conjure.text", timer = "conjure.timer", view = "conjure.aniseed.view"}}
-  return {require("conjure.aniseed.core"), require("conjure.buffer"), require("conjure.client"), require("conjure.config"), require("conjure.editor"), require("conjure.aniseed.nvim"), require("conjure.aniseed.string"), require("conjure.text"), require("conjure.timer"), require("conjure.aniseed.view")}
+  _0_0["aniseed/local-fns"] = {require = {a = "conjure.aniseed.core", buffer = "conjure.buffer", client = "conjure.client", config = "conjure.config", editor = "conjure.editor", nvim = "conjure.aniseed.nvim", sponsors = "conjure.sponsors", str = "conjure.aniseed.string", text = "conjure.text", timer = "conjure.timer", view = "conjure.aniseed.view"}}
+  return {require("conjure.aniseed.core"), require("conjure.buffer"), require("conjure.client"), require("conjure.config"), require("conjure.editor"), require("conjure.aniseed.nvim"), require("conjure.sponsors"), require("conjure.aniseed.string"), require("conjure.text"), require("conjure.timer"), require("conjure.aniseed.view")}
 end
 local _1_ = _2_(...)
 local a = _1_[1]
-local view = _1_[10]
+local timer = _1_[10]
+local view = _1_[11]
 local buffer = _1_[2]
 local client = _1_[3]
 local config = _1_[4]
 local editor = _1_[5]
 local nvim = _1_[6]
-local str = _1_[7]
-local text = _1_[8]
-local timer = _1_[9]
+local sponsors = _1_[7]
+local str = _1_[8]
+local text = _1_[9]
 do local _ = ({nil, _0_0, {{}, nil}})[2] end
 local state = nil
 do
@@ -66,11 +67,21 @@ do
   _0_0["aniseed/locals"]["log-buf-name"] = v_0_
   log_buf_name = v_0_
 end
+local on_new_log_buf = nil
+do
+  local v_0_ = nil
+  local function on_new_log_buf0(buf)
+    return nvim.buf_set_lines(buf, 0, -1, false, {(client.get("comment-prefix") .. "Sponsored by @" .. a.get(sponsors, a.inc(math.floor(a.rand(a.dec(a.count(sponsors)))))) .. " \226\157\164")})
+  end
+  v_0_ = on_new_log_buf0
+  _0_0["aniseed/locals"]["on-new-log-buf"] = v_0_
+  on_new_log_buf = v_0_
+end
 local upsert_buf = nil
 do
   local v_0_ = nil
   local function upsert_buf0()
-    return buffer["upsert-hidden"](log_buf_name())
+    return buffer["upsert-hidden"](log_buf_name(), on_new_log_buf)
   end
   v_0_ = upsert_buf0
   _0_0["aniseed/locals"]["upsert-buf"] = v_0_
