@@ -164,10 +164,16 @@ do
   _0_0["aniseed/locals"]["break-lines"] = v_0_
   break_lines = v_0_
 end
-local set_wrap_21 = nil
+local fold_marker = nil
+do
+  local v_0_ = {["end"] = "}}}", start = "{{{"}
+  _0_0["aniseed/locals"]["fold-marker"] = v_0_
+  fold_marker = v_0_
+end
+local set_win_opts_21 = nil
 do
   local v_0_ = nil
-  local function set_wrap_210(win)
+  local function set_win_opts_210(win)
     local function _3_()
       if config["get-in"]({"log", "wrap"}) then
         return true
@@ -175,11 +181,14 @@ do
         return false
       end
     end
-    return nvim.win_set_option(win, "wrap", _3_())
+    nvim.win_set_option(win, "wrap", _3_())
+    nvim.win_set_option(win, "foldmethod", "marker")
+    nvim.win_set_option(win, "foldmarker", (fold_marker.start .. "," .. fold_marker["end"]))
+    return nvim.win_set_option(win, "foldlevel", 0)
   end
-  v_0_ = set_wrap_210
-  _0_0["aniseed/locals"]["set-wrap!"] = v_0_
-  set_wrap_21 = v_0_
+  v_0_ = set_win_opts_210
+  _0_0["aniseed/locals"]["set-win-opts!"] = v_0_
+  set_win_opts_21 = v_0_
 end
 local display_hud = nil
 do
@@ -206,7 +215,7 @@ do
         nvim.win_set_buf(state.hud.id, buf)
       else
         state.hud.id = nvim.open_win(buf, false, win_opts)
-        set_wrap_21(state.hud.id)
+        set_win_opts_21(state.hud.id)
       end
       if last_break then
         nvim.win_set_cursor(state.hud.id, {1, 0})
@@ -319,36 +328,43 @@ do
         else
           lines0 = lines
         end
+        local comment_prefix = client.get("comment-prefix")
         local lines1 = nil
-        if a.get(opts, "break?") then
-          local _4_
-          if client["multiple-states?"]() then
-            _4_ = {state_key_header()}
-          else
-          _4_ = nil
-          end
-          lines1 = a.concat({_break()}, _4_, lines0)
-        elseif join_first_3f then
-          lines1 = a.concat({(last_line(buf) .. a.first(lines0))}, a.rest(lines0))
+        if (not a.get(opts, "break?") and config["get-in"]({"log", "fold", "enabled"}) and (a.count(lines0) >= config["get-in"]({"log", "fold", "lines"}))) then
+          lines1 = a.concat({str.join({comment_prefix, fold_marker.start, " ", text["left-sample"](str.join("\n", lines0), editor["percent-width"](config["get-in"]({"preview", "sample_limit"})))})}, lines0, {str.join({comment_prefix, fold_marker["end"]})})
         else
           lines1 = lines0
         end
-        local old_lines = nvim.buf_line_count(buf)
-        local _5_
-        if buffer["empty?"](buf) then
-          _5_ = 0
+        local lines2 = nil
+        if a.get(opts, "break?") then
+          local _5_
+          if client["multiple-states?"]() then
+            _5_ = {state_key_header()}
+          else
+          _5_ = nil
+          end
+          lines2 = a.concat({_break()}, _5_, lines1)
         elseif join_first_3f then
-          _5_ = -2
+          lines2 = a.concat({(last_line(buf) .. a.first(lines1))}, a.rest(lines1))
         else
-          _5_ = -1
+          lines2 = lines1
         end
-        nvim.buf_set_lines(buf, _5_, -1, false, lines1)
+        local old_lines = nvim.buf_line_count(buf)
+        local _6_
+        if buffer["empty?"](buf) then
+          _6_ = 0
+        elseif join_first_3f then
+          _6_ = -2
+        else
+          _6_ = -1
+        end
+        nvim.buf_set_lines(buf, _6_, -1, false, lines2)
         do
           local new_lines = nvim.buf_line_count(buf)
-          local function _7_(win)
-            local _8_ = nvim.win_get_cursor(win)
-            local row = _8_[1]
-            local col = _8_[2]
+          local function _8_(win)
+            local _9_ = nvim.win_get_cursor(win)
+            local row = _9_[1]
+            local col = _9_[2]
             if ((win ~= state.hud.id) and win_visible_3f(win) and (win_botline(win) >= old_lines)) then
               visible_scrolling_log_3f = true
             end
@@ -356,7 +372,7 @@ do
               return nvim.win_set_cursor(win, {new_lines, 0})
             end
           end
-          with_buf_wins(buf, _7_)
+          with_buf_wins(buf, _8_)
         end
         if (not a.get(opts, "suppress-hud?") and not visible_scrolling_log_3f) then
           display_hud()
@@ -387,7 +403,7 @@ do
     end
     nvim.command((_3_() .. cmd .. " " .. buffer.resolve(log_buf_name())))
     nvim.win_set_cursor(0, {nvim.buf_line_count(buf), 0})
-    set_wrap_21(0)
+    set_win_opts_21(0)
     return buffer.unlist(buf)
   end
   v_0_ = create_win0

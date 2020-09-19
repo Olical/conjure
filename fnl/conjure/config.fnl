@@ -91,7 +91,9 @@
     :break_length 80
     :trim {:at 10000
            :to 6000}
-    :strip_ansi_escape_sequences_line_limit 100}
+    :strip_ansi_escape_sequences_line_limit 100
+    :fold {:enabled false
+           :lines 10}}
 
    :extract
    {:context_header_lines 24

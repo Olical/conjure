@@ -67,12 +67,17 @@
              (= s break-str)))
          (a.map a.first))))
 
-(defn- set-wrap! [win]
+(def- fold-marker {:start "{{{" :end "}}}"})
+
+(defn- set-win-opts! [win]
   (nvim.win_set_option
     win :wrap
     (if (config.get-in [:log :wrap])
       true
-      false)))
+      false))
+  (nvim.win_set_option win :foldmethod :marker)
+  (nvim.win_set_option win :foldmarker (.. fold-marker.start "," fold-marker.end))
+  (nvim.win_set_option win :foldlevel 0))
 
 (defn- display-hud []
   (when (config.get-in [:log :hud :enabled])
@@ -102,7 +107,7 @@
         (nvim.win_set_buf state.hud.id buf)
         (do
           (set state.hud.id (nvim.open_win buf false win-opts))
-          (set-wrap! state.hud.id)))
+          (set-win-opts! state.hud.id)))
 
       (if last-break
         (do
@@ -177,6 +182,25 @@
                           (config.get-in [:log :strip_ansi_escape_sequences_line_limit]))
                     (a.map text.strip-ansi-escape-sequences lines)
                     lines)
+            comment-prefix (client.get :comment-prefix)
+
+            ;; Optionally insert fold markers.
+            lines (if (and (not (a.get opts :break?))
+                           (config.get-in [:log :fold :enabled])
+                           (>= (a.count lines) (config.get-in [:log :fold :lines])))
+                    (a.concat
+                      [(str.join [comment-prefix
+                                  fold-marker.start
+                                  " "
+                                  (text.left-sample
+                                    (str.join "\n" lines)
+                                    (editor.percent-width
+                                      (config.get-in [:preview :sample_limit])))])]
+                      lines
+                      [(str.join [comment-prefix fold-marker.end])])
+                    lines)
+
+            ;; Insert break comments or join continuing lines if required.
             lines (if
                     (a.get opts :break?)
                     (a.concat
@@ -191,6 +215,7 @@
                       (a.rest lines))
 
                     lines)
+
             old-lines (nvim.buf_line_count buf)]
 
         (nvim.buf_set_lines
@@ -230,7 +255,7 @@
           cmd " "
           (buffer.resolve (log-buf-name))))
     (nvim.win_set_cursor 0 [(nvim.buf_line_count buf) 0])
-    (set-wrap! 0)
+    (set-win-opts! 0)
     (buffer.unlist buf)))
 
 (defn split []

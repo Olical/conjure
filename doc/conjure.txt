@@ -340,6 +340,14 @@ defined as you enter a buffer and can't be altered after the fact.
             Enable line wrapping in the HUD and log.
             Default: `false`
 
+`g:conjure#log#fold#enabled`
+            Enable or disable folding of results.
+            Default: `false`
+
+`g:conjure#log#fold#lines`
+            Fold results that have a line count >= this value.
+            Default: `10`
+
 `g:conjure#extract#context_header_lines`
             How many lines of the file should be checked for a context
             (namespace name) such as `(module foo.bar)` or `(ns foo.bar)`
@@ -365,6 +373,7 @@ defined as you enter a buffer and can't be altered after the fact.
             controls how long that preview should be before it trails off into
             ellipsis. It is a percentage value based on the width of the
             editor. This is so you can align it with the width of your HUD.
+            This also affects the preview in folded results.
             A float between 0.0 and 1.0.
             Default: `0.3`
 
