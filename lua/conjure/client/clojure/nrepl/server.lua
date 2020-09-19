@@ -15,14 +15,15 @@ do
   _0_0 = module_0_
 end
 local function _2_(...)
-  _0_0["aniseed/local-fns"] = {require = {["bencode-stream"] = "conjure.bencode-stream", a = "conjure.aniseed.core", bencode = "conjure.bencode", client = "conjure.client", config = "conjure.config", extract = "conjure.extract", log = "conjure.log", net = "conjure.net", state = "conjure.client.clojure.nrepl.state", str = "conjure.aniseed.string", ui = "conjure.client.clojure.nrepl.ui", uuid = "conjure.uuid"}}
-  return {require("conjure.aniseed.core"), require("conjure.bencode"), require("conjure.bencode-stream"), require("conjure.client"), require("conjure.config"), require("conjure.extract"), require("conjure.log"), require("conjure.net"), require("conjure.client.clojure.nrepl.state"), require("conjure.aniseed.string"), require("conjure.client.clojure.nrepl.ui"), require("conjure.uuid")}
+  _0_0["aniseed/local-fns"] = {require = {["bencode-stream"] = "conjure.bencode-stream", a = "conjure.aniseed.core", bencode = "conjure.bencode", client = "conjure.client", config = "conjure.config", extract = "conjure.extract", log = "conjure.log", net = "conjure.net", state = "conjure.client.clojure.nrepl.state", str = "conjure.aniseed.string", timer = "conjure.timer", ui = "conjure.client.clojure.nrepl.ui", uuid = "conjure.uuid"}}
+  return {require("conjure.aniseed.core"), require("conjure.bencode"), require("conjure.bencode-stream"), require("conjure.client"), require("conjure.config"), require("conjure.extract"), require("conjure.log"), require("conjure.net"), require("conjure.client.clojure.nrepl.state"), require("conjure.aniseed.string"), require("conjure.timer"), require("conjure.client.clojure.nrepl.ui"), require("conjure.uuid")}
 end
 local _1_ = _2_(...)
 local a = _1_[1]
 local str = _1_[10]
-local ui = _1_[11]
-local uuid = _1_[12]
+local timer = _1_[11]
+local ui = _1_[12]
+local uuid = _1_[13]
 local bencode = _1_[2]
 local bencode_stream = _1_[3]
 local client = _1_[4]
@@ -255,7 +256,7 @@ do
           return "https://conjure.fun/no-env"
         end
       end
-      return a.get({clj = "Clojure", cljr = "ClojureCLR", cljs = "ClojureScript", unknown = "Unknown"}, st, _3_())
+      return a.get({clj = "Clojure", cljr = "ClojureCLR", cljs = "ClojureScript", timeout = "Timeout", unknown = "Unknown"}, st, _3_())
     end
     v_0_0 = pretty_session_type0
     _0_0["pretty-session-type"] = v_0_0
@@ -270,20 +271,26 @@ do
   do
     local v_0_0 = nil
     local function session_type0(id, cb)
-      local function _3_(msgs)
+      local timeout = nil
+      local function _3_()
+        return cb("timeout")
+      end
+      timeout = timer.defer(_3_, 300)
+      local function _4_(msgs)
+        timer.destroy(timeout)
         local st = nil
-        local function _4_(_241)
+        local function _5_(_241)
           return a.get(_241, "value")
         end
-        st = a.some(_4_, msgs)
-        local function _5_()
+        st = a.some(_5_, msgs)
+        local function _6_()
           if st then
             return str.trim(st)
           end
         end
-        return cb(_5_())
+        return cb(_6_())
       end
-      return send({code = ("#?(" .. str.join(" ", {":clj 'clj", ":cljs 'cljs", ":cljr 'cljr", ":default 'unknown"}) .. ")"), op = "eval", session = id}, with_all_msgs_fn(_3_))
+      return send({code = ("#?(" .. str.join(" ", {":clj 'clj", ":cljs 'cljs", ":cljr 'cljr", ":default 'unknown"}) .. ")"), op = "eval", session = id}, with_all_msgs_fn(_4_))
     end
     v_0_0 = session_type0
     _0_0["session-type"] = v_0_0

@@ -2,6 +2,7 @@
   {require {a conjure.aniseed.core
             uuid conjure.uuid
             net conjure.net
+            timer conjure.timer
             extract conjure.extract
             log conjure.log
             client conjure.client
@@ -119,28 +120,31 @@
     {:clj :Clojure
      :cljs :ClojureScript
      :cljr :ClojureCLR
-     :unknown :Unknown}
+     :unknown :Unknown
+     :timeout :Timeout}
     st
     (if (a.string? st)
       (.. st "?")
       "https://conjure.fun/no-env")))
 
 (defn session-type [id cb]
-  (send
-    {:op :eval
-     :code (.. "#?("
-               (str.join
-                 " "
-                 [":clj 'clj"
-                  ":cljs 'cljs"
-                  ":cljr 'cljr"
-                  ":default 'unknown"])
-               ")")
-     :session id}
-    (with-all-msgs-fn
-      (fn [msgs]
-        (let [st (a.some #(a.get $1 :value) msgs)]
-          (cb (when st (str.trim st))))))))
+  (let [timeout (timer.defer #(cb :timeout) 300)]
+    (send
+      {:op :eval
+       :code (.. "#?("
+                 (str.join
+                   " "
+                   [":clj 'clj"
+                    ":cljs 'cljs"
+                    ":cljr 'cljr"
+                    ":default 'unknown"])
+                 ")")
+       :session id}
+      (with-all-msgs-fn
+        (fn [msgs]
+          (timer.destroy timeout)
+          (let [st (a.some #(a.get $1 :value) msgs)]
+            (cb (when st (str.trim st)))))))))
 
 (defn enrich-session-id [id cb]
   (session-type
