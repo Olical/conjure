@@ -50,7 +50,8 @@
     (connect-port-file
       {:silent? true
        :cb cb})
-    (cb)))
+    (when cb
+      (cb))))
 
 (defn connect-host-port [opts]
   (if (and (not opts.host) (not opts.port))

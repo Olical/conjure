@@ -128,7 +128,9 @@ do
     if not server["connected?"]() then
       return connect_port_file({["silent?"] = true, cb = cb})
     else
-      return cb()
+      if cb then
+        return cb()
+      end
     end
   end
   v_0_ = try_ensure_conn0
