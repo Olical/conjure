@@ -1,5 +1,5 @@
-(module conjure.client.janet.netrepl.transport-test
-  {require {trn conjure.client.janet.netrepl.transport}})
+(module conjure.remote.transport.netrepl-test
+  {require {trn conjure.remote.transport.netrepl}})
 
 ;; Encoding is always 1-1, no partial messages.
 (deftest encode

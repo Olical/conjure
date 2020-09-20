@@ -1,4 +1,4 @@
-(module conjure.client.janet.netrepl.transport
+(module conjure.remote.transport.netrepl
   {require {bit bit
             a conjure.aniseed.core
             str conjure.aniseed.string}})

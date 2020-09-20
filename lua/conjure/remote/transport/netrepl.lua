@@ -1,6 +1,6 @@
 local _0_0 = nil
 do
-  local name_0_ = "conjure.client.janet.netrepl.transport"
+  local name_0_ = "conjure.remote.transport.netrepl"
   local loaded_0_ = package.loaded[name_0_]
   local module_0_ = nil
   if ("table" == type(loaded_0_)) then
