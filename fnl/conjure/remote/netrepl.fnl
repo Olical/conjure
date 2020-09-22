@@ -55,12 +55,12 @@
   (send conn (or opts.name "Conjure"))
   conn)
 
-(comment
-  (def c (connect
-           {:host "127.0.0.1"
-            :port "9365"
-            :on-failure (fn [err] (a.println "oh no" err))
-            :on-success (fn [] (a.println "Yay!"))
-            :on-error (fn [err] (a.println "uh oh :(" err))}))
-  (send c "{:hello :world}" a.println)
-  (c.destroy))
+;; Example:
+; (def c (connect
+;          {:host "127.0.0.1"
+;           :port "9365"
+;           :on-failure (fn [err] (a.println "oh no" err))
+;           :on-success (fn [] (a.println "Yay!"))
+;           :on-error (fn [err] (a.println "uh oh :(" err))}))
+; (send c "{:hello :world}" a.println)
+; (c.destroy)
