@@ -299,8 +299,7 @@ All configuration can be set as described in |conjure-configuration|.
             Extract the root form surrounding the cursor as you type to
             provide local context aware completions (such as local let block
             items). This can actually be a huge performance hit on slower
-            machines in large buffers with lots of top level forms, switch
-            this off if you're having CPU issues while typing.
-            Default: `true`
+            machines in large buffers with lots of top level forms.
+            Default: `false`
 
 vim:tw=78:sw=2:ts=2:ft=help:norl:et:listchars=

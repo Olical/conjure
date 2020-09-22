@@ -83,5 +83,5 @@ do
   _0_0["aniseed/locals"]["connect"] = v_0_
   connect = v_0_
 end
--- (def c (connect table: 0x41b4f6e8)) (send c {:hello :world} a.println) (c.destroy)
+-- (def c (connect table: 0x41538938)) (send c {:hello :world} a.println) (c.destroy)
 return nil
