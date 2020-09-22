@@ -67,8 +67,6 @@
              (= s break-str)))
          (a.map a.first))))
 
-(def- fold-marker {:start "~~~%{" :end "}%~~~"})
-
 (defn- set-win-opts! [win]
   (nvim.win_set_option
     win :wrap
@@ -76,7 +74,9 @@
       true
       false))
   (nvim.win_set_option win :foldmethod :marker)
-  (nvim.win_set_option win :foldmarker (.. fold-marker.start "," fold-marker.end))
+  (nvim.win_set_option win :foldmarker (.. (config.get-in [:log :fold :marker :start])
+                                           ","
+                                           (config.get-in [:log :fold :marker :end])))
   (nvim.win_set_option win :foldlevel 0))
 
 (defn- display-hud []
@@ -190,14 +190,14 @@
                            (>= (a.count lines) (config.get-in [:log :fold :lines])))
                     (a.concat
                       [(str.join [comment-prefix
-                                  fold-marker.start
+                                  (config.get-in [:log :fold :marker :start])
                                   " "
                                   (text.left-sample
                                     (str.join "\n" lines)
                                     (editor.percent-width
                                       (config.get-in [:preview :sample_limit])))])]
                       lines
-                      [(str.join [comment-prefix fold-marker.end])])
+                      [(str.join [comment-prefix (config.get-in [:log :fold :marker :end])])])
                     lines)
 
             ;; Insert break comments or join continuing lines if required.

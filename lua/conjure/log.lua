@@ -164,12 +164,6 @@ do
   _0_0["aniseed/locals"]["break-lines"] = v_0_
   break_lines = v_0_
 end
-local fold_marker = nil
-do
-  local v_0_ = {["end"] = "}}}", start = "{{{"}
-  _0_0["aniseed/locals"]["fold-marker"] = v_0_
-  fold_marker = v_0_
-end
 local set_win_opts_21 = nil
 do
   local v_0_ = nil
@@ -183,7 +177,7 @@ do
     end
     nvim.win_set_option(win, "wrap", _3_())
     nvim.win_set_option(win, "foldmethod", "marker")
-    nvim.win_set_option(win, "foldmarker", (fold_marker.start .. "," .. fold_marker["end"]))
+    nvim.win_set_option(win, "foldmarker", (config["get-in"]({"log", "fold", "marker", "start"}) .. "," .. config["get-in"]({"log", "fold", "marker", "end"})))
     return nvim.win_set_option(win, "foldlevel", 0)
   end
   v_0_ = set_win_opts_210
@@ -331,7 +325,7 @@ do
         local comment_prefix = client.get("comment-prefix")
         local lines1 = nil
         if (not a.get(opts, "break?") and config["get-in"]({"log", "fold", "enabled"}) and (a.count(lines0) >= config["get-in"]({"log", "fold", "lines"}))) then
-          lines1 = a.concat({str.join({comment_prefix, fold_marker.start, " ", text["left-sample"](str.join("\n", lines0), editor["percent-width"](config["get-in"]({"preview", "sample_limit"})))})}, lines0, {str.join({comment_prefix, fold_marker["end"]})})
+          lines1 = a.concat({str.join({comment_prefix, config["get-in"]({"log", "fold", "marker", "start"}), " ", text["left-sample"](str.join("\n", lines0), editor["percent-width"](config["get-in"]({"preview", "sample_limit"})))})}, lines0, {str.join({comment_prefix, config["get-in"]({"log", "fold", "marker", "end"})})})
         else
           lines1 = lines0
         end

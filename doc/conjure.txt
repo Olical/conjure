@@ -348,6 +348,14 @@ defined as you enter a buffer and can't be altered after the fact.
             Fold results that have a line count >= this value.
             Default: `10`
 
+`g:conjure#log#fold#marker#start`
+            Marker to use to represent the start of a log fold.
+            Default: `"~~~%{"`
+
+`g:conjure#log#fold#marker#end`
+            Marker to use to represent the end of a log fold.
+            Default: `"}%~~~"`
+
 `g:conjure#extract#context_header_lines`
             How many lines of the file should be checked for a context
             (namespace name) such as `(module foo.bar)` or `(ns foo.bar)`
