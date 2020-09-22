@@ -67,7 +67,7 @@
              (= s break-str)))
          (a.map a.first))))
 
-(def- fold-marker {:start "{{{" :end "}}}"})
+(def- fold-marker {:start "~~~%{" :end "}%~~~"})
 
 (defn- set-win-opts! [win]
   (nvim.win_set_option
