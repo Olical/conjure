@@ -53,7 +53,7 @@ do
         end
       end
       local function _5_()
-        if _return then
+        if (_return ~= false) then
           return "return"
         else
           return "call"

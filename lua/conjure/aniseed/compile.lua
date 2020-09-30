@@ -67,7 +67,7 @@ do
     local v_0_0 = nil
     local function str0(code, opts)
       local function _3_()
-        return fennel.compileString(macros_prefix(code), opts)
+        return fennel.compileString(macros_prefix(code), a.merge({["compiler-env"] = _G}, opts))
       end
       return xpcall(_3_, fennel.traceback)
     end

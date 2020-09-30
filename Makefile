@@ -3,7 +3,7 @@
 default: deps sponsors compile test
 
 deps:
-	scripts/dep.sh Olical aniseed v3.7.0
+	scripts/dep.sh Olical aniseed origin/develop
 	scripts/dep.sh Olical bencode origin/master
 
 sponsors:
