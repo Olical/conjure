@@ -15,14 +15,15 @@ do
   _0_0 = module_0_
 end
 local function _2_(...)
-  _0_0["aniseed/local-fns"] = {require = {compile = "conjure.aniseed.compile", fennel = "conjure.aniseed.fennel", fs = "conjure.aniseed.fs", nvim = "conjure.aniseed.nvim"}}
-  return {require("conjure.aniseed.compile"), require("conjure.aniseed.fennel"), require("conjure.aniseed.fs"), require("conjure.aniseed.nvim")}
+  _0_0["aniseed/local-fns"] = {require = {a = "conjure.aniseed.core", compile = "conjure.aniseed.compile", fennel = "conjure.aniseed.fennel", fs = "conjure.aniseed.fs", nvim = "conjure.aniseed.nvim"}}
+  return {require("conjure.aniseed.core"), require("conjure.aniseed.compile"), require("conjure.aniseed.fennel"), require("conjure.aniseed.fs"), require("conjure.aniseed.nvim")}
 end
 local _1_ = _2_(...)
-local compile = _1_[1]
-local fennel = _1_[2]
-local fs = _1_[3]
-local nvim = _1_[4]
+local a = _1_[1]
+local compile = _1_[2]
+local fennel = _1_[3]
+local fs = _1_[4]
+local nvim = _1_[5]
 do local _ = ({nil, _0_0, {{}, nil}})[2] end
 local str = nil
 do
@@ -31,7 +32,7 @@ do
     local v_0_0 = nil
     local function str0(code, opts)
       local function _3_()
-        return fennel.eval(compile["macros-prefix"](code), opts)
+        return fennel.eval(compile["macros-prefix"](code), a.merge({["compiler-env"] = _G}, opts))
       end
       return xpcall(_3_, fennel.traceback)
     end
