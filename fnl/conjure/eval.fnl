@@ -179,11 +179,18 @@
        :range range
        :origin :selection})))
 
+(defn- wrap-completion-result [result]
+  (if (a.string? result)
+    {:word result}
+    result))
+
 (defn completions [prefix cb]
   (fn cb-wrap [results]
-    (cb (or results
-            (-?> (config.get-in [:completion :fallback])
-                 (nvim.call_function [0 prefix])))))
+    (cb (a.map
+          wrap-completion-result
+          (or results
+              (-?> (config.get-in [:completion :fallback])
+                   (nvim.call_function [0 prefix]))))))
   (if (= :function (type (client.get :completions)))
     (client.call
       :completions

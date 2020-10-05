@@ -389,6 +389,20 @@ do
   _0_0["aniseed/locals"]["selection"] = v_0_
   selection = v_0_
 end
+local wrap_completion_result = nil
+do
+  local v_0_ = nil
+  local function wrap_completion_result0(result)
+    if a["string?"](result) then
+      return {word = result}
+    else
+      return result
+    end
+  end
+  v_0_ = wrap_completion_result0
+  _0_0["aniseed/locals"]["wrap-completion-result"] = v_0_
+  wrap_completion_result = v_0_
+end
 local completions = nil
 do
   local v_0_ = nil
@@ -404,7 +418,7 @@ do
             return _3_0
           end
         end
-        return cb((results or _4_()))
+        return cb(a.map(wrap_completion_result, (results or _4_())))
       end
       if ("function" == type(client.get("completions"))) then
         return client.call("completions", assoc_context({cb = cb_wrap, prefix = prefix}))
