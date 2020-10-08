@@ -19,4 +19,6 @@ local function _2_(...)
   return {}
 end
 local _1_ = _2_(...)
-return ({nil, _0_0, {{}, nil}})[2]
+local _2amodule_2a = _0_0
+local _2amodule_name_2a = "conjure.aniseed.nvim"
+return ({nil, _0_0, {{}, nil, nil, nil}})[2]

@@ -25,7 +25,9 @@ local log = _1_[3]
 local state = _1_[4]
 local str = _1_[5]
 local text = _1_[6]
-do local _ = ({nil, _0_0, {{}, nil}})[2] end
+local _2amodule_2a = _0_0
+local _2amodule_name_2a = "conjure.client.clojure.nrepl.ui"
+do local _ = ({nil, _0_0, {{}, nil, nil, nil}})[2] end
 local handle_join_line = nil
 do
   local v_0_ = nil

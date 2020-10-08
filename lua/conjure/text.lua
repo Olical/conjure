@@ -21,7 +21,9 @@ end
 local _1_ = _2_(...)
 local a = _1_[1]
 local str = _1_[2]
-do local _ = ({nil, _0_0, {{}, nil}})[2] end
+local _2amodule_2a = _0_0
+local _2amodule_name_2a = "conjure.text"
+do local _ = ({nil, _0_0, {{}, nil, nil, nil}})[2] end
 local trailing_newline_3f = nil
 do
   local v_0_ = nil

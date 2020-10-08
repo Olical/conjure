@@ -24,7 +24,9 @@ local config = _1_[2]
 local dyn = _1_[3]
 local fennel = _1_[4]
 local nvim = _1_[5]
-do local _ = ({nil, _0_0, {{}, nil}})[2] end
+local _2amodule_2a = _0_0
+local _2amodule_name_2a = "conjure.client"
+do local _ = ({nil, _0_0, {{}, nil, nil, nil}})[2] end
 local state_key = nil
 do
   local v_0_ = nil

@@ -30,7 +30,9 @@ local nvim = _1_[6]
 local sponsors = _1_[7]
 local str = _1_[8]
 local text = _1_[9]
-do local _ = ({nil, _0_0, {{}, nil}})[2] end
+local _2amodule_2a = _0_0
+local _2amodule_name_2a = "conjure.log"
+do local _ = ({nil, _0_0, {{}, nil, nil, nil}})[2] end
 local state = nil
 do
   local v_0_ = (_0_0["aniseed/locals"].state or {hud = {id = nil, timer = nil}})

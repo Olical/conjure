@@ -21,7 +21,9 @@ end
 local _1_ = _2_(...)
 local config = _1_[1]
 local mapping = _1_[2]
-do local _ = ({nil, _0_0, {{}, nil}})[2] end
+local _2amodule_2a = _0_0
+local _2amodule_name_2a = "conjure.main"
+do local _ = ({nil, _0_0, {{}, nil, nil, nil}})[2] end
 local main = nil
 do
   local v_0_ = nil

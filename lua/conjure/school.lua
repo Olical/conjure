@@ -25,7 +25,9 @@ local config = _1_[3]
 local editor = _1_[4]
 local nvim = _1_[5]
 local str = _1_[6]
-do local _ = ({nil, _0_0, {{}, nil}})[2] end
+local _2amodule_2a = _0_0
+local _2amodule_name_2a = "conjure.school"
+do local _ = ({nil, _0_0, {{}, nil, nil, nil}})[2] end
 local buf_name = nil
 do
   local v_0_ = "conjure-school.fnl"

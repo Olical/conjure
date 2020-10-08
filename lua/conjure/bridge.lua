@@ -19,7 +19,9 @@ local function _2_(...)
   return {}
 end
 local _1_ = _2_(...)
-do local _ = ({nil, _0_0, {{}, nil}})[2] end
+local _2amodule_2a = _0_0
+local _2amodule_name_2a = "conjure.bridge"
+do local _ = ({nil, _0_0, {{}, nil, nil, nil}})[2] end
 local viml__3elua = nil
 do
   local v_0_ = nil

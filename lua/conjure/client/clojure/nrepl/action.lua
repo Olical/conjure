@@ -34,7 +34,9 @@ local extract = _1_[6]
 local fs = _1_[7]
 local ll = _1_[8]
 local log = _1_[9]
-do local _ = ({nil, _0_0, {{}, nil}})[2] end
+local _2amodule_2a = _0_0
+local _2amodule_name_2a = "conjure.client.clojure.nrepl.action"
+do local _ = ({nil, _0_0, {{}, nil, nil, nil}})[2] end
 local require_ns = nil
 do
   local v_0_ = nil

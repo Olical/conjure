@@ -37,9 +37,10 @@
                locals (-?> package.loaded
                            (. (tostring name))
                            (. :aniseed/locals))
-               local-fns (or (-?> package.loaded
-                                  (. (tostring name))
-                                  (. :aniseed/local-fns))
+               local-fns (or (and (not new-local-fns)
+                                  (-?> package.loaded
+                                       (. (tostring name))
+                                       (. :aniseed/local-fns)))
                              {})]
 
            (when new-local-fns
@@ -80,7 +81,9 @@
              (local ,aliases
                (do
                  (tset ,module-sym :aniseed/local-fns ,local-fns)
-                 ,vals))])]
+                 ,vals))
+             (local ,(sym "*module*") ,module-sym)
+             (local ,(sym "*module-name*") ,(tostring name))])]
        (. 2)))
 
 (fn def- [name value]

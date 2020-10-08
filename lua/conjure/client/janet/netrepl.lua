@@ -28,7 +28,9 @@ local mapping = _1_[6]
 local nvim = _1_[7]
 local remote = _1_[8]
 local text = _1_[9]
-do local _ = ({nil, _0_0, {{}, nil}})[2] end
+local _2amodule_2a = _0_0
+local _2amodule_name_2a = "conjure.client.janet.netrepl"
+do local _ = ({nil, _0_0, {{}, nil, nil, nil}})[2] end
 local buf_suffix = nil
 do
   local v_0_ = nil

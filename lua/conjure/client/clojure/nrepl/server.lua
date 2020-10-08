@@ -32,7 +32,9 @@ local extract = _1_[6]
 local log = _1_[7]
 local net = _1_[8]
 local state = _1_[9]
-do local _ = ({nil, _0_0, {{}, nil}})[2] end
+local _2amodule_2a = _0_0
+local _2amodule_name_2a = "conjure.client.clojure.nrepl.server"
+do local _ = ({nil, _0_0, {{}, nil, nil, nil}})[2] end
 local with_conn_or_warn = nil
 do
   local v_0_ = nil

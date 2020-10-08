@@ -22,7 +22,9 @@ local _1_ = _2_(...)
 local a = _1_[1]
 local nvim = _1_[2]
 local uuid = _1_[3]
-do local _ = ({nil, _0_0, {{}, nil}})[2] end
+local _2amodule_2a = _0_0
+local _2amodule_name_2a = "conjure.promise"
+do local _ = ({nil, _0_0, {{}, nil, nil, nil}})[2] end
 local state = nil
 do
   local v_0_ = (_0_0["aniseed/locals"].state or {})

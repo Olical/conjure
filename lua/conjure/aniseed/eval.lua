@@ -24,7 +24,9 @@ local compile = _1_[2]
 local fennel = _1_[3]
 local fs = _1_[4]
 local nvim = _1_[5]
-do local _ = ({nil, _0_0, {{}, nil}})[2] end
+local _2amodule_2a = _0_0
+local _2amodule_name_2a = "conjure.aniseed.eval"
+do local _ = ({nil, _0_0, {{}, nil, nil, nil}})[2] end
 local str = nil
 do
   local v_0_ = nil
