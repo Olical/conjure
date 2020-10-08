@@ -732,8 +732,8 @@ package.preload["conjure.aniseed.fennel.specials"] = package.preload["conjure.an
   end
   local function nonnative_method_call(ast, scope, parent, target, args)
     local method_string = tostring(compiler.compile1(ast[3], scope, parent, {nval = 1})[1])
-    table.insert(args, tostring(target))
-    return utils.expr(string.format("%s[%s](%s)", tostring(target), method_string, tostring(target), table.concat(args, ", ")), "statement")
+    local args0 = {tostring(target), unpack(args)}
+    return utils.expr(string.format("%s[%s](%s)", tostring(target), method_string, table.concat(args0, ", ")), "statement")
   end
   local function double_eval_protected_method_call(ast, scope, parent, target, args)
     local method_string = tostring(compiler.compile1(ast[3], scope, parent, {nval = 1})[1])
@@ -976,7 +976,7 @@ package.preload["conjure.aniseed.fennel.specials"] = package.preload["conjure.an
     end
     return v
   end
-  local safe_compiler_env = setmetatable({assert = assert, bit = _G.bit, error = error, getmetatable = getmetatable, ipairs = ipairs, math = math, next = next, pairs = pairs, pcall = pcall, print = print, select = select, setmetatable = setmetatable, string = string, table = table, tonumber = tonumber, tostring = tostring, type = type, xpcall = xpcall}, {__index = compiler_env_warn})
+  local safe_compiler_env = setmetatable({assert = assert, bit = _G.bit, error = error, getmetatable = getmetatable, ipairs = ipairs, math = math, next = next, pairs = pairs, pcall = pcall, print = print, rawequal = rawequal, rawget = rawget, rawlen = rawlen, rawset = rawset, select = select, setmetatable = setmetatable, string = string, table = table, tonumber = tonumber, tostring = tostring, type = type, xpcall = xpcall}, {__index = compiler_env_warn})
   local function make_compiler_env(ast, scope, parent)
     local function _1_()
       return compiler.scopes.macro
@@ -1065,7 +1065,7 @@ package.preload["conjure.aniseed.fennel.specials"] = package.preload["conjure.an
   end
   local macro_loaded = {}
   local function metadata_only_fennel(modname)
-    if ((modname == "conjure.aniseed.fennel.macros") or (package and package.loaded and package.loaded[modname] and (package.loaded[modname].metadata == compiler.metadata))) then
+    if ((modname == "conjure.aniseed.fennel.macros") or (package and package.loaded and ("table" == type(package.loaded[modname])) and (package.loaded[modname].metadata == compiler.metadata))) then
       return {metadata = compiler.metadata}
     end
   end
@@ -2815,7 +2815,7 @@ local function dofile_2a(filename, options, ...)
   opts.filename = filename
   return eval(source, opts, ...)
 end
-local mod = {["compile-stream"] = compiler["compile-stream"], ["compile-string"] = compiler["compile-string"], ["list?"] = utils["list?"], ["load-code"] = specials["load-code"], ["macro-loaded"] = specials["macro-loaded"], ["make-searcher"] = specials["make-searcher"], ["search-module"] = specials["search-module"], ["string-stream"] = parser["string-stream"], ["sym?"] = utils["sym?"], compile = compiler.compile, compile1 = compiler.compile1, compileStream = compiler["compile-stream"], compileString = compiler["compile-string"], doc = specials.doc, dofile = dofile_2a, eval = eval, gensym = compiler.gensym, granulate = parser.granulate, list = utils.list, loadCode = specials["load-code"], macroLoaded = specials["macro-loaded"], makeSearcher = specials["make-searcher"], make_searcher = specials["make-searcher"], mangle = compiler["global-mangling"], metadata = compiler.metadata, parser = parser.parser, path = utils.path, repl = repl, scope = compiler["make-scope"], searchModule = specials["search-module"], searcher = specials["make-searcher"](), stringStream = parser["string-stream"], sym = utils.sym, traceback = compiler.traceback, unmangle = compiler["global-unmangling"], varg = utils.varg, version = "0.6.0"}
+local mod = {["compile-stream"] = compiler["compile-stream"], ["compile-string"] = compiler["compile-string"], ["list?"] = utils["list?"], ["load-code"] = specials["load-code"], ["macro-loaded"] = specials["macro-loaded"], ["make-searcher"] = specials["make-searcher"], ["search-module"] = specials["search-module"], ["string-stream"] = parser["string-stream"], ["sym?"] = utils["sym?"], compile = compiler.compile, compile1 = compiler.compile1, compileStream = compiler["compile-stream"], compileString = compiler["compile-string"], doc = specials.doc, dofile = dofile_2a, eval = eval, gensym = compiler.gensym, granulate = parser.granulate, list = utils.list, loadCode = specials["load-code"], macroLoaded = specials["macro-loaded"], makeSearcher = specials["make-searcher"], make_searcher = specials["make-searcher"], mangle = compiler["global-mangling"], metadata = compiler.metadata, parser = parser.parser, path = utils.path, repl = repl, scope = compiler["make-scope"], searchModule = specials["search-module"], searcher = specials["make-searcher"](), stringStream = parser["string-stream"], sym = utils.sym, traceback = compiler.traceback, unmangle = compiler["global-unmangling"], varg = utils.varg, version = "0.6.1-dev"}
 utils["fennel-module"] = mod
 do
   local builtin_macros = [===[;; This module contains all the built-in Fennel macros. Unlike all the other
@@ -3006,7 +3006,8 @@ do
       (local subscope (fennel.scope scope))
       (fennel.compile-string (string.format "(require-macros %q)"
                                            modname)
-                            {:scope subscope})
+                            {:scope subscope
+                             :compiler-env utils.root.options.compiler-env})
       (if (sym? binding)
           ;; bind whole table of macros to table bound to symbol
           (do (tset scope.macros (. binding 1) {})
@@ -3140,10 +3141,14 @@ do
   end
   package.preload[module_name] = _0_
   _ = nil
-  local env = specials["make-compiler-env"](nil, compiler.scopes.compiler, {})
-  local _0 = nil
-  env.fennel = mod
-  _0 = nil
+  local env = nil
+  do
+    local _1_0 = specials["make-compiler-env"](nil, compiler.scopes.compiler, {})
+    _1_0["require"] = require
+    _1_0["utils"] = utils
+    _1_0["fennel"] = mod
+    env = _1_0
+  end
   local built_ins = eval(builtin_macros, {allowedGlobals = false, env = env, filename = "src/fennel/macros.fnl", moduleName = module_name, scope = compiler.scopes.compiler, useMetadata = true})
   for k, v in pairs(built_ins) do
     compiler.scopes.global.macros[k] = v
