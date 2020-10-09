@@ -119,7 +119,9 @@ do
       end
       src_paths = a.map(_3_, nvim.fn.globpath(src_dir, src_expr, true, true))
       for _, path in ipairs(src_paths) do
-        file((src_dir .. path), string.gsub((dest_dir .. path), ".fnl$", ".lua"), opts)
+        if (a.get(opts, "include-macros-suffix?") or not string.match(path, "macros.fnl$")) then
+          file((src_dir .. path), string.gsub((dest_dir .. path), ".fnl$", ".lua"), opts)
+        end
       end
       return nil
     end
