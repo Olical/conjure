@@ -976,7 +976,7 @@ package.preload["conjure.aniseed.fennel.specials"] = package.preload["conjure.an
     end
     return v
   end
-  local safe_compiler_env = setmetatable({assert = assert, bit = _G.bit, error = error, getmetatable = getmetatable, ipairs = ipairs, math = math, next = next, pairs = pairs, pcall = pcall, print = print, rawequal = rawequal, rawget = rawget, rawlen = rawlen, rawset = rawset, select = select, setmetatable = setmetatable, string = string, table = table, tonumber = tonumber, tostring = tostring, type = type, xpcall = xpcall}, {__index = compiler_env_warn})
+  local safe_compiler_env = setmetatable({assert = assert, bit = _G.bit, error = error, getmetatable = getmetatable, ipairs = ipairs, math = math, next = next, pairs = pairs, pcall = pcall, print = print, rawequal = rawequal, rawget = rawget, rawlen = _G.rawlen, rawset = rawset, select = select, setmetatable = setmetatable, string = string, table = table, tonumber = tonumber, tostring = tostring, type = type, xpcall = xpcall}, {__index = compiler_env_warn})
   local function make_compiler_env(ast, scope, parent)
     local function _1_()
       return compiler.scopes.macro
@@ -2329,16 +2329,18 @@ package.preload["conjure.aniseed.fennel.parser"] = package.preload["conjure.anis
     local function parse_stream()
       local whitespace_since_dispatch, done_3f, retval = true
       local function dispatch(v)
-        if (#stack == 0) then
+        local _0_0 = stack[#stack]
+        if (_0_0 == nil) then
           retval, done_3f, whitespace_since_dispatch = v, true, false
           return nil
-        elseif stack[#stack].prefix then
-          local stacktop = stack[#stack]
-          stack[#stack] = nil
-          return dispatch(utils.list(utils.sym(stacktop.prefix), v))
-        else
+        elseif ((type(_0_0) == "table") and (nil ~= _0_0.prefix)) then
+          local prefix = _0_0.prefix
+          table.remove(stack)
+          return dispatch(utils.list(utils.sym(prefix), v))
+        elseif (nil ~= _0_0) then
+          local top = _0_0
           whitespace_since_dispatch = false
-          return table.insert(stack[#stack], v)
+          return table.insert(top, v)
         end
       end
       local function badend()
