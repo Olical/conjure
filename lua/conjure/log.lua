@@ -15,8 +15,17 @@ do
   _0_0 = module_0_
 end
 local function _2_(...)
-  _0_0["aniseed/local-fns"] = {require = {a = "conjure.aniseed.core", buffer = "conjure.buffer", client = "conjure.client", config = "conjure.config", editor = "conjure.editor", nvim = "conjure.aniseed.nvim", sponsors = "conjure.sponsors", str = "conjure.aniseed.string", text = "conjure.text", timer = "conjure.timer", view = "conjure.aniseed.view"}}
-  return {require("conjure.aniseed.core"), require("conjure.buffer"), require("conjure.client"), require("conjure.config"), require("conjure.editor"), require("conjure.aniseed.nvim"), require("conjure.sponsors"), require("conjure.aniseed.string"), require("conjure.text"), require("conjure.timer"), require("conjure.aniseed.view")}
+  local ok_3f_0_, val_0_ = nil, nil
+  local function _2_()
+    return {require("conjure.aniseed.core"), require("conjure.buffer"), require("conjure.client"), require("conjure.config"), require("conjure.editor"), require("conjure.aniseed.nvim"), require("conjure.sponsors"), require("conjure.aniseed.string"), require("conjure.text"), require("conjure.timer"), require("conjure.aniseed.view")}
+  end
+  ok_3f_0_, val_0_ = pcall(_2_)
+  if ok_3f_0_ then
+    _0_0["aniseed/local-fns"] = {require = {a = "conjure.aniseed.core", buffer = "conjure.buffer", client = "conjure.client", config = "conjure.config", editor = "conjure.editor", nvim = "conjure.aniseed.nvim", sponsors = "conjure.sponsors", str = "conjure.aniseed.string", text = "conjure.text", timer = "conjure.timer", view = "conjure.aniseed.view"}}
+    return val_0_
+  else
+    return print(val_0_)
+  end
 end
 local _1_ = _2_(...)
 local a = _1_[1]

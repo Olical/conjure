@@ -79,9 +79,14 @@
 
            `[,effects
              (local ,aliases
-               (do
-                 (tset ,module-sym :aniseed/local-fns ,local-fns)
-                 ,vals))
+               (let [(ok?# val#)
+                     (pcall
+                       (fn [] ,vals))]
+                 (if ok?#
+                   (do
+                     (tset ,module-sym :aniseed/local-fns ,local-fns)
+                     val#)
+                   (print val#))))
              (local ,(sym "*module*") ,module-sym)
              (local ,(sym "*module-name*") ,(tostring name))])]
        (. 2)))

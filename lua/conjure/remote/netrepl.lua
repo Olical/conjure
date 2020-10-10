@@ -15,8 +15,17 @@ do
   _0_0 = module_0_
 end
 local function _2_(...)
-  _0_0["aniseed/local-fns"] = {require = {a = "conjure.aniseed.core", client = "conjure.client", log = "conjure.log", net = "conjure.net", trn = "conjure.remote.transport.netrepl"}}
-  return {require("conjure.aniseed.core"), require("conjure.client"), require("conjure.log"), require("conjure.net"), require("conjure.remote.transport.netrepl")}
+  local ok_3f_0_, val_0_ = nil, nil
+  local function _2_()
+    return {require("conjure.aniseed.core"), require("conjure.client"), require("conjure.log"), require("conjure.net"), require("conjure.remote.transport.netrepl")}
+  end
+  ok_3f_0_, val_0_ = pcall(_2_)
+  if ok_3f_0_ then
+    _0_0["aniseed/local-fns"] = {require = {a = "conjure.aniseed.core", client = "conjure.client", log = "conjure.log", net = "conjure.net", trn = "conjure.remote.transport.netrepl"}}
+    return val_0_
+  else
+    return print(val_0_)
+  end
 end
 local _1_ = _2_(...)
 local a = _1_[1]

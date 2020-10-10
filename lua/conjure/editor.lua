@@ -15,8 +15,17 @@ do
   _0_0 = module_0_
 end
 local function _2_(...)
-  _0_0["aniseed/local-fns"] = {require = {a = "conjure.aniseed.core", fs = "conjure.fs", nvim = "conjure.aniseed.nvim"}}
-  return {require("conjure.aniseed.core"), require("conjure.fs"), require("conjure.aniseed.nvim")}
+  local ok_3f_0_, val_0_ = nil, nil
+  local function _2_()
+    return {require("conjure.aniseed.core"), require("conjure.fs"), require("conjure.aniseed.nvim")}
+  end
+  ok_3f_0_, val_0_ = pcall(_2_)
+  if ok_3f_0_ then
+    _0_0["aniseed/local-fns"] = {require = {a = "conjure.aniseed.core", fs = "conjure.fs", nvim = "conjure.aniseed.nvim"}}
+    return val_0_
+  else
+    return print(val_0_)
+  end
 end
 local _1_ = _2_(...)
 local a = _1_[1]
