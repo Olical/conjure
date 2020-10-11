@@ -49,10 +49,10 @@
 (assoc-in
   [:filetype_client]
   (a.merge
-    (or nvim.g.conjure#filetype_client {})
     {:fennel :conjure.client.fennel.aniseed
      :clojure :conjure.client.clojure.nrepl
-     :janet :conjure.client.janet.netrepl}))
+     :janet :conjure.client.janet.netrepl}
+    (or nvim.g.conjure#filetype_client {})))
 
 (merge
   {:debug false
