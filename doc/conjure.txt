@@ -128,10 +128,10 @@ I've also included some commands since they're related to the mappings.
                          different to what's on disk if you've edited it
                          without saving.
 
-K                        Look up documentation for the word under the cursor.
+<localleader>gd          Go to the definition of the word under the cursor.
                          Support for this may vary between languages.
 
-gd                       Go to the definition of the word under the cursor.
+K                        Look up documentation for the word under the cursor.
                          Support for this may vary between languages.
 
 Language clients will provide their own extra mappings on top of these, you
