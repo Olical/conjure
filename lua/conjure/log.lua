@@ -306,8 +306,8 @@ do
   local v_0_ = nil
   do
     local v_0_0 = nil
-    local function last_line0(buf)
-      return a.first(nvim.buf_get_lines((buf or upsert_buf()), -2, -1, false))
+    local function last_line0(buf, extra_offset)
+      return a.first(nvim.buf_get_lines((buf or upsert_buf()), (-2 + (extra_offset or 0)), -1, false))
     end
     v_0_0 = last_line0
     _0_0["last-line"] = v_0_0
@@ -334,12 +334,14 @@ do
           lines0 = lines
         end
         local comment_prefix = client.get("comment-prefix")
+        local fold_marker_end = str.join({comment_prefix, config["get-in"]({"log", "fold", "marker", "end"})})
         local lines1 = nil
-        if (not a.get(opts, "break?") and config["get-in"]({"log", "fold", "enabled"}) and (a.count(lines0) >= config["get-in"]({"log", "fold", "lines"}))) then
-          lines1 = a.concat({str.join({comment_prefix, config["get-in"]({"log", "fold", "marker", "start"}), " ", text["left-sample"](str.join("\n", lines0), editor["percent-width"](config["get-in"]({"preview", "sample_limit"})))})}, lines0, {str.join({comment_prefix, config["get-in"]({"log", "fold", "marker", "end"})})})
+        if (not a.get(opts, "break?") and not join_first_3f and config["get-in"]({"log", "fold", "enabled"}) and (a.count(lines0) >= config["get-in"]({"log", "fold", "lines"}))) then
+          lines1 = a.concat({str.join({comment_prefix, config["get-in"]({"log", "fold", "marker", "start"}), " ", text["left-sample"](str.join("\n", lines0), editor["percent-width"](config["get-in"]({"preview", "sample_limit"})))})}, lines0, {fold_marker_end})
         else
           lines1 = lines0
         end
+        local last_fold_3f = (fold_marker_end == last_line(buf))
         local lines2 = nil
         if a.get(opts, "break?") then
           local _5_
@@ -350,7 +352,13 @@ do
           end
           lines2 = a.concat({_break()}, _5_, lines1)
         elseif join_first_3f then
-          lines2 = a.concat({(last_line(buf) .. a.first(lines1))}, a.rest(lines1))
+          local _5_
+          if last_fold_3f then
+            _5_ = {(last_line(buf, -1) .. a.first(lines1)), fold_marker_end}
+          else
+            _5_ = {(last_line(buf) .. a.first(lines1))}
+          end
+          lines2 = a.concat(_5_, a.rest(lines1))
         else
           lines2 = lines1
         end
@@ -359,7 +367,11 @@ do
         if buffer["empty?"](buf) then
           _6_ = 0
         elseif join_first_3f then
-          _6_ = -2
+          if last_fold_3f then
+            _6_ = -3
+          else
+            _6_ = -2
+          end
         else
           _6_ = -1
         end

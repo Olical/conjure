@@ -165,11 +165,11 @@
                   (nvim.win_set_cursor win [1 0])
                   (nvim.win_set_cursor win [row col]))))))))))
 
-(defn last-line [buf]
+(defn last-line [buf extra-offset]
   (a.first
     (nvim.buf_get_lines
       (or buf (upsert-buf))
-      -2 -1 false)))
+      (+ -2 (or extra-offset 0)) -1 false)))
 
 (defn append [lines opts]
   (let [line-count (a.count lines)]
@@ -185,7 +185,12 @@
             comment-prefix (client.get :comment-prefix)
 
             ;; Optionally insert fold markers.
+            ;; When we're not doing a "break" (seperator).
+            ;; Not joining with the previous line.
+            ;; Folding is enabled and we crossed the line count threshold.
+            fold-marker-end (str.join [comment-prefix (config.get-in [:log :fold :marker :end])])
             lines (if (and (not (a.get opts :break?))
+                           (not join-first?)
                            (config.get-in [:log :fold :enabled])
                            (>= (a.count lines) (config.get-in [:log :fold :lines])))
                     (a.concat
@@ -197,8 +202,13 @@
                                     (editor.percent-width
                                       (config.get-in [:preview :sample_limit])))])]
                       lines
-                      [(str.join [comment-prefix (config.get-in [:log :fold :marker :end])])])
+                      [fold-marker-end])
                     lines)
+
+            ;; When the last line in the buffer is a closing fold marker...
+            ;; It means join-first? should account for it so it joins _inside_
+            ;; the fold block by including the fold end line in the replacement.
+            last-fold? (= fold-marker-end (last-line buf))
 
             ;; Insert break comments or join continuing lines if required.
             lines (if
@@ -211,7 +221,11 @@
 
                     join-first?
                     (a.concat
-                      [(.. (last-line buf) (a.first lines))]
+                      (if last-fold?
+                        [(.. (last-line buf -1)
+                             (a.first lines))
+                         fold-marker-end]
+                        [(.. (last-line buf) (a.first lines))])
                       (a.rest lines))
 
                     lines)
@@ -222,7 +236,10 @@
           buf
           (if
             (buffer.empty? buf) 0
-            join-first? -2
+
+            ;; Replace one extra line if joining across fold markers.
+            join-first? (if last-fold? -3 -2)
+
             -1)
           -1 false lines)
 
