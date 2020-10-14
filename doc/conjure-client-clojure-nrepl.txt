@@ -152,6 +152,12 @@ All configuration can be set as described in |conjure-configuration|.
             A hard limit on the number of bytes printed for each value.
             Default: `nil`
 
+`g:conjure#client#clojure#nrepl#eval#print_buffer_size`
+            The size of the buffer to use when streaming results. Defaults to
+            1024 within nREPL itself. You can increase this value to reduce
+            the amount of messages large results are split up into by nREPL.
+            Default: `nil`
+
 `g:conjure#client#clojure#nrepl#eval#print_function`
             A fully-qualified symbol naming a var whose function to use for
             printing.

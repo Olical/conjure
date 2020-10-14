@@ -97,6 +97,9 @@
          :nrepl.middleware.print/quota
          (config.get-in [:client :clojure :nrepl :eval :print_quota])
 
+         :nrepl.middleware.print/buffer-size
+         (config.get-in [:client :clojure :nrepl :eval :print_buffer_size])
+
          :nrepl.middleware.print/print
          (when (config.get-in [:client :clojure :nrepl :eval :pretty_print])
            (config.get-in [:client :clojure :nrepl :eval :print_function]))}
