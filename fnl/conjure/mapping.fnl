@@ -64,6 +64,9 @@
   (nvim.ex.autocmd
     :VimLeavePre :*
     (bridge.viml->lua :conjure.log :clear-close-hud-passive-timer {}))
+  (nvim.ex.autocmd
+    :QuitPre :*
+    (bridge.viml->lua :conjure.log :close-hud {}))
   (nvim.ex.augroup :END))
 
 (defn eval-ranged-command [start end code]

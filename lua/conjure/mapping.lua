@@ -128,6 +128,7 @@ do
       nvim.ex.autocmd("CursorMoved", "*", bridge["viml->lua"]("conjure.log", "close-hud-passive", {}))
       nvim.ex.autocmd("CursorMovedI", "*", bridge["viml->lua"]("conjure.log", "close-hud-passive", {}))
       nvim.ex.autocmd("VimLeavePre", "*", bridge["viml->lua"]("conjure.log", "clear-close-hud-passive-timer", {}))
+      nvim.ex.autocmd("QuitPre", "*", bridge["viml->lua"]("conjure.log", "close-hud", {}))
       return nvim.ex.augroup("END")
     end
     v_0_0 = init0
