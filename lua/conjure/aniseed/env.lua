@@ -1,6 +1,6 @@
 local _0_0 = nil
 do
-  local name_0_ = "conjure.aniseed.dotfiles"
+  local name_0_ = "conjure.aniseed.env"
   local loaded_0_ = package.loaded[name_0_]
   local module_0_ = nil
   if ("table" == type(loaded_0_)) then
@@ -31,9 +31,8 @@ local _1_ = _2_(...)
 local compile = _1_[1]
 local nvim = _1_[2]
 local _2amodule_2a = _0_0
-local _2amodule_name_2a = "conjure.aniseed.dotfiles"
+local _2amodule_name_2a = "conjure.aniseed.env"
 do local _ = ({nil, _0_0, {{}, nil, nil, nil}})[2] end
-nvim.out_write("Warning: aniseed.dotfiles is deprecated, see :help aniseed-dotfiles\n")
 local config_dir = nil
 do
   local v_0_ = nvim.fn.stdpath("config")
@@ -41,5 +40,20 @@ do
   config_dir = v_0_
 end
 compile["add-path"]((config_dir .. "/?.fnl"))
-compile.glob("**/*.fnl", (config_dir .. "/fnl"), (config_dir .. "/lua"))
-return require("dotfiles.init")
+local init = nil
+do
+  local v_0_ = nil
+  do
+    local v_0_0 = nil
+    local function init0(module_name)
+      compile.glob("**/*.fnl", (config_dir .. "/fnl"), (config_dir .. "/lua"))
+      return require((module_name or "init"))
+    end
+    v_0_0 = init0
+    _0_0["init"] = v_0_0
+    v_0_ = v_0_0
+  end
+  _0_0["aniseed/locals"]["init"] = v_0_
+  init = v_0_
+end
+return nil

@@ -2255,13 +2255,22 @@ package.preload["conjure.aniseed.fennel.parser"] = package.preload["conjure.anis
           index = (index + 1)
           return b
         else
-          c = getchunk(parser_state)
-          if (not c or (c == "")) then
+          local _1_0, _2_0, _3_0 = getchunk(parser_state)
+          local _4_
+          do
+            local char = _1_0
+            _4_ = ((nil ~= _1_0) and (char ~= ""))
+          end
+          if _4_ then
+            local char = _1_0
+            c = char
+            index = 1
+            return c:byte()
+          else
+            local _ = _1_0
             done_3f = true
             return nil
           end
-          index = 2
-          return c:byte(1)
         end
       end
     end
@@ -2315,7 +2324,7 @@ package.preload["conjure.aniseed.fennel.parser"] = package.preload["conjure.anis
       end
       return r
     end
-    local function parse_error(msg)
+    local function parse_error(msg, byteindex_override)
       local _0_ = (utils.root.options or {})
       local source = _0_["source"]
       local unfriendly = _0_["unfriendly"]
@@ -2323,7 +2332,7 @@ package.preload["conjure.aniseed.fennel.parser"] = package.preload["conjure.anis
       if unfriendly then
         return error(string.format("Parse error in %s:%s: %s", (filename or "unknown"), (line or "?"), msg), 0)
       else
-        return friend["parse-error"](msg, (filename or "unknown"), (line or "?"), byteindex, source)
+        return friend["parse-error"](msg, (filename or "unknown"), (line or "?"), (byteindex_override or byteindex), source)
       end
     end
     local function parse_stream()
@@ -2345,170 +2354,210 @@ package.preload["conjure.aniseed.fennel.parser"] = package.preload["conjure.anis
       end
       local function badend()
         local accum = utils.map(stack, "closer")
-        return parse_error(string.format("expected closing delimiter%s %s", (((#stack == 1) and "") or "s"), string.char(unpack(accum))))
+        local _0_
+        if (#stack == 1) then
+          _0_ = ""
+        else
+          _0_ = "s"
+        end
+        return parse_error(string.format("expected closing delimiter%s %s", _0_, string.char(unpack(accum))))
       end
-      while true do
-        local b = nil
-        while true do
-          b = getb()
-          if (b and whitespace_3f(b)) then
-            whitespace_since_dispatch = true
-          end
-          if (not b or not whitespace_3f(b)) then
-            break
-          end
+      local function skip_whitespace(b)
+        if (b and whitespace_3f(b)) then
+          whitespace_since_dispatch = true
+          return skip_whitespace(getb())
+        elseif (not b and (#stack > 0)) then
+          return badend()
+        else
+          return b
         end
-        if not b then
-          if (#stack > 0) then
-            badend()
-          end
-          return nil
+      end
+      local function skip_comment(b)
+        if (b and (10 ~= b)) then
+          return skip_comment(getb())
+        else
+          return b
         end
-        if (b == 59) then
-          while true do
-            b = getb()
-            if (not b or (b == 10)) then
-              break
-            end
+      end
+      local function open_table(b)
+        if not whitespace_since_dispatch then
+          parse_error(("expected whitespace before opening delimiter " .. string.char(b)))
+        end
+        return table.insert(stack, {bytestart = byteindex, closer = delims[b], filename = filename, line = line})
+      end
+      local function close_list(list)
+        return dispatch(setmetatable(list, getmetatable(utils.list())))
+      end
+      local function close_sequence(tbl)
+        local val = utils.sequence(unpack(tbl))
+        for k, v in pairs(tbl) do
+          getmetatable(val)[k] = v
+        end
+        return dispatch(val)
+      end
+      local function close_curly_table(tbl)
+        local val = {}
+        if ((#tbl % 2) ~= 0) then
+          byteindex = (byteindex - 1)
+          parse_error("expected even number of values in table literal")
+        end
+        setmetatable(val, tbl)
+        for i = 1, #tbl, 2 do
+          if ((tostring(tbl[i]) == ":") and utils["sym?"](tbl[(i + 1)]) and utils["sym?"](tbl[i])) then
+            tbl[i] = tostring(tbl[(i + 1)])
           end
-        elseif (type(delims[b]) == "number") then
-          if not whitespace_since_dispatch then
-            parse_error(("expected whitespace before opening delimiter " .. string.char(b)))
-          end
-          table.insert(stack, setmetatable({bytestart = byteindex, closer = delims[b], filename = filename, line = line}, getmetatable(utils.list())))
-        elseif delims[b] then
-          local last = stack[#stack]
-          if (#stack == 0) then
-            parse_error(("unexpected closing delimiter " .. string.char(b)))
-          end
-          local val = nil
-          if (last.closer ~= b) then
-            parse_error(("mismatched closing delimiter " .. string.char(b) .. ", expected " .. string.char(last.closer)))
-          end
-          last.byteend = byteindex
-          if (b == 41) then
-            val = last
-          elseif (b == 93) then
-            val = utils.sequence(unpack(last))
-            for k, v in pairs(last) do
-              getmetatable(val)[k] = v
-            end
+          val[tbl[i]] = tbl[(i + 1)]
+        end
+        return dispatch(val)
+      end
+      local function close_table(b)
+        local top = table.remove(stack)
+        if (top == nil) then
+          parse_error(("unexpected closing delimiter " .. string.char(b)))
+        end
+        if (top.closer ~= b) then
+          parse_error(("mismatched closing delimiter " .. string.char(b) .. ", expected " .. string.char(top.closer)))
+        end
+        top.byteend = byteindex
+        if (b == 41) then
+          return close_list(top)
+        elseif (b == 93) then
+          return close_sequence(top)
+        else
+          return close_curly_table(top)
+        end
+      end
+      local function parse_string_loop(chars, b, state)
+        table.insert(chars, b)
+        local state0 = nil
+        do
+          local _0_0 = {state, b}
+          if ((type(_0_0) == "table") and (_0_0[1] == "base") and (_0_0[2] == 92)) then
+            state0 = "backslash"
+          elseif ((type(_0_0) == "table") and (_0_0[1] == "base") and (_0_0[2] == 34)) then
+            state0 = "done"
           else
-            if ((#last % 2) ~= 0) then
-              byteindex = (byteindex - 1)
-              parse_error("expected even number of values in table literal")
-            end
-            val = {}
-            setmetatable(val, last)
-            for i = 1, #last, 2 do
-              if ((tostring(last[i]) == ":") and utils["sym?"](last[(i + 1)]) and utils["sym?"](last[i])) then
-                last[i] = tostring(last[(i + 1)])
-              end
-              val[last[i]] = last[(i + 1)]
-            end
+            local _ = _0_0
+            state0 = "base"
           end
-          stack[#stack] = nil
-          dispatch(val)
-        elseif (b == 34) then
-          local chars = {34}
-          local state = "base"
-          stack[(#stack + 1)] = {closer = 34}
-          while true do
-            b = getb()
-            chars[(#chars + 1)] = b
-            if (state == "base") then
-              if (b == 92) then
-                state = "backslash"
-              elseif (b == 34) then
-                state = "done"
-              end
-            else
-              state = "base"
-            end
-            if (not b or (state == "done")) then
-              break
-            end
+        end
+        if (b and (state0 ~= "done")) then
+          return parse_string_loop(chars, getb(), state0)
+        else
+          return b
+        end
+      end
+      local function parse_string(b)
+        table.insert(stack, {closer = 34})
+        local chars = {34}
+        local b0 = (parse_string_loop(chars, getb(), "base") or badend())
+        table.remove(stack)
+        local raw = string.char(unpack(chars))
+        local formatted = nil
+        local function _0_(c)
+          return ("\\" .. c:byte())
+        end
+        formatted = raw:gsub("[\1-\31]", _0_)
+        local load_fn = (_G.loadstring or load)(("return " .. formatted))
+        return dispatch(load_fn())
+      end
+      local function parse_prefix(b)
+        table.insert(stack, {prefix = prefixes[b]})
+        local nextb = getb()
+        if whitespace_3f(nextb) then
+          if (b ~= 35) then
+            parse_error("invalid whitespace after quoting prefix")
           end
-          if not b then
-            badend()
-          end
-          stack[#stack] = nil
-          local raw = string.char(unpack(chars))
-          local formatted = nil
-          local function _2_(c)
-            return ("\\" .. c:byte())
-          end
-          formatted = raw:gsub("[\1-\31]", _2_)
-          local load_fn = (_G.loadstring or load)(string.format("return %s", formatted))
-          dispatch(load_fn())
-        elseif prefixes[b] then
-          table.insert(stack, {prefix = prefixes[b]})
-          local nextb = getb()
-          if whitespace_3f(nextb) then
-            if (b ~= 35) then
-              parse_error("invalid whitespace after quoting prefix")
-            end
-            stack[#stack] = nil
-            dispatch(utils.sym("#"))
-          end
-          ungetb(nextb)
-        elseif (symbolchar_3f(b) or (b == string.byte("~"))) then
-          local chars = {}
-          local bytestart = byteindex
-          while true do
-            chars[(#chars + 1)] = b
-            b = getb()
-            if (not b or not symbolchar_3f(b)) then
-              break
-            end
-          end
+          table.remove(stack)
+          dispatch(utils.sym("#"))
+        end
+        return ungetb(nextb)
+      end
+      local function parse_sym_loop(chars, b)
+        if (b and symbolchar_3f(b)) then
+          table.insert(chars, b)
+          return parse_sym_loop(chars, getb())
+        else
           if b then
             ungetb(b)
           end
-          local rawstr = string.char(unpack(chars))
-          if (rawstr == "true") then
-            dispatch(true)
-          elseif (rawstr == "false") then
-            dispatch(false)
-          elseif (rawstr == "...") then
-            dispatch(utils.varg())
-          elseif rawstr:match("^:.+$") then
-            dispatch(rawstr:sub(2))
-          elseif (rawstr:match("^~") and (rawstr ~= "~=")) then
-            parse_error("illegal character: ~")
-          else
-            local force_number = rawstr:match("^%d")
-            local number_with_stripped_underscores = rawstr:gsub("_", "")
-            local x = nil
-            if force_number then
-              x = (tonumber(number_with_stripped_underscores) or parse_error(("could not read number \"" .. rawstr .. "\"")))
-            else
-              x = tonumber(number_with_stripped_underscores)
-              if not x then
-                if rawstr:match("%.[0-9]") then
-                  byteindex = (((byteindex - #rawstr) + rawstr:find("%.[0-9]")) + 1)
-                  parse_error(("can't start multisym segment " .. "with a digit: " .. rawstr))
-                elseif (rawstr:match("[%.:][%.:]") and (rawstr ~= "..") and (rawstr ~= "$...")) then
-                  byteindex = ((byteindex - #rawstr) + 1 + rawstr:find("[%.:][%.:]"))
-                  parse_error(("malformed multisym: " .. rawstr))
-                elseif rawstr:match(":.+[%.:]") then
-                  byteindex = ((byteindex - #rawstr) + rawstr:find(":.+[%.:]"))
-                  parse_error(("method must be last component " .. "of multisym: " .. rawstr))
-                else
-                  x = utils.sym(rawstr, nil, {byteend = byteindex, bytestart = bytestart, filename = filename, line = line})
-                end
-              end
-            end
+          return chars
+        end
+      end
+      local function parse_number(rawstr, bytestart)
+        local force_number = rawstr:match("^%d")
+        local number_with_stripped_underscores = rawstr:gsub("_", "")
+        if force_number then
+          dispatch((tonumber(number_with_stripped_underscores) or parse_error(("could not read number \"" .. rawstr .. "\""))))
+          return true
+        else
+          local _0_0 = tonumber(number_with_stripped_underscores)
+          if (nil ~= _0_0) then
+            local x = _0_0
             dispatch(x)
+            return true
+          else
+            local _ = _0_0
+            return false
           end
+        end
+      end
+      local function check_malformed_sym(rawstr, bytestart)
+        if (rawstr:match("^~") and (rawstr ~= "~=")) then
+          return parse_error("illegal character: ~")
+        elseif rawstr:match("%.[0-9]") then
+          return parse_error(("can't start multisym segment " .. "with a digit: " .. rawstr), (((byteindex - #rawstr) + rawstr:find("%.[0-9]")) + 1))
+        elseif (rawstr:match("[%.:][%.:]") and (rawstr ~= "..") and (rawstr ~= "$...")) then
+          return parse_error(("malformed multisym: " .. rawstr), ((byteindex - #rawstr) + 1 + rawstr:find("[%.:][%.:]")))
+        elseif rawstr:match(":.+[%.:]") then
+          return parse_error(("method must be last component " .. "of multisym: " .. rawstr), ((byteindex - #rawstr) + rawstr:find(":.+[%.:]")))
+        end
+      end
+      local function parse_sym(b)
+        local bytestart = byteindex
+        local rawstr = string.char(unpack(parse_sym_loop({b}, getb())))
+        if (rawstr == "true") then
+          return dispatch(true)
+        elseif (rawstr == "false") then
+          return dispatch(false)
+        elseif (rawstr == "...") then
+          return dispatch(utils.varg())
+        elseif rawstr:match("^:.+$") then
+          return dispatch(rawstr:sub(2))
+        elseif parse_number(rawstr, bytestart) then
+          return nil
+        elseif check_malformed_sym(rawstr, bytestart) then
+          return nil
+        else
+          return dispatch(utils.sym(rawstr, nil, {byteend = byteindex, bytestart = bytestart, filename = filename, line = line}))
+        end
+      end
+      local function parse_loop(b)
+        if not b then
+        elseif (b == 59) then
+          skip_comment(getb())
+        elseif (type(delims[b]) == "number") then
+          open_table(b)
+        elseif delims[b] then
+          close_table(b)
+        elseif (b == 34) then
+          parse_string(b)
+        elseif prefixes[b] then
+          parse_prefix(b)
+        elseif (symbolchar_3f(b) or (b == string.byte("~"))) then
+          parse_sym(b)
         else
           parse_error(("illegal character: " .. string.char(b)))
         end
-        if done_3f then
-          break
+        if not b then
+          return nil
+        elseif done_3f then
+          return true, retval
+        else
+          return parse_loop(skip_whitespace(getb()))
         end
       end
-      return true, retval
+      return parse_loop(skip_whitespace(getb()))
     end
     local function _0_()
       stack = {}

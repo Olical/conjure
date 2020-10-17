@@ -125,8 +125,16 @@
      (tset tests# ,(tostring name) (fn [,(sym :t)] ,...))
      (tset ,module-sym :aniseed/tests tests#)))
 
+(fn time [...]
+  `(let [start# (vim.loop.hrtime)
+         result# (do ,...)
+         end# (vim.loop.hrtime)]
+     (print (.. "Elapsed time: " (/ (- end# start#) 1000000) " msecs"))
+     result#))
+
 {:module module
  :def- def- :def def
  :defn- defn- :defn defn
  :defonce- defonce- :defonce defonce
- :deftest deftest}
+ :deftest deftest
+ :time time}
