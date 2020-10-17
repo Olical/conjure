@@ -17,19 +17,20 @@ end
 local function _2_(...)
   local ok_3f_0_, val_0_ = nil, nil
   local function _2_()
-    return {require("conjure.aniseed.compile"), require("conjure.aniseed.nvim")}
+    return {require("conjure.aniseed.core"), require("conjure.aniseed.compile"), require("conjure.aniseed.nvim")}
   end
   ok_3f_0_, val_0_ = pcall(_2_)
   if ok_3f_0_ then
-    _0_0["aniseed/local-fns"] = {require = {compile = "conjure.aniseed.compile", nvim = "conjure.aniseed.nvim"}}
+    _0_0["aniseed/local-fns"] = {require = {a = "conjure.aniseed.core", compile = "conjure.aniseed.compile", nvim = "conjure.aniseed.nvim"}}
     return val_0_
   else
     return print(val_0_)
   end
 end
 local _1_ = _2_(...)
-local compile = _1_[1]
-local nvim = _1_[2]
+local a = _1_[1]
+local compile = _1_[2]
+local nvim = _1_[3]
 local _2amodule_2a = _0_0
 local _2amodule_name_2a = "conjure.aniseed.env"
 do local _ = ({nil, _0_0, {{}, nil, nil, nil}})[2] end
@@ -45,9 +46,9 @@ do
   local v_0_ = nil
   do
     local v_0_0 = nil
-    local function init0(module_name)
-      compile.glob("**/*.fnl", (config_dir .. "/fnl"), (config_dir .. "/lua"))
-      return require((module_name or "init"))
+    local function init0(opts)
+      compile.glob("**/*.fnl", (config_dir .. a.get(opts, "input", "/fnl")), (config_dir .. a.get(opts, "output", "/lua")))
+      return require(a.get(opts, "module", "init"))
     end
     v_0_0 = init0
     _0_0["init"] = v_0_0
