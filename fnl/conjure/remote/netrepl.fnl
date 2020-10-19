@@ -18,7 +18,7 @@
   * opts.port: Port as a string.
   * opts.name: Name of the client to send post-connection, defaults to `Conjure`.
   * opts.on-failure: Function to call after a failed connection with the error.
-  * opts.on-success: Function to call on a successful connnection.
+  * opts.on-success: Function to call on a successful connection.
   * opts.on-error: Function to call when we receive an error (passed as argument) or a nil response.
   Returns a connection table containing a `destroy` function."
 
