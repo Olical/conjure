@@ -17,11 +17,11 @@ end
 local function _2_(...)
   local ok_3f_0_, val_0_ = nil, nil
   local function _2_()
-    return {require("conjure.aniseed.core"), require("conjure.client"), require("conjure.log"), require("conjure.client.clojure.nrepl.state"), require("conjure.aniseed.string"), require("conjure.text")}
+    return {require("conjure.aniseed.core"), require("conjure.log"), require("conjure.client.clojure.nrepl.state"), require("conjure.aniseed.string"), require("conjure.text")}
   end
   ok_3f_0_, val_0_ = pcall(_2_)
   if ok_3f_0_ then
-    _0_0["aniseed/local-fns"] = {require = {a = "conjure.aniseed.core", client = "conjure.client", log = "conjure.log", state = "conjure.client.clojure.nrepl.state", str = "conjure.aniseed.string", text = "conjure.text"}}
+    _0_0["aniseed/local-fns"] = {require = {a = "conjure.aniseed.core", log = "conjure.log", state = "conjure.client.clojure.nrepl.state", str = "conjure.aniseed.string", text = "conjure.text"}}
     return val_0_
   else
     return print(val_0_)
@@ -29,11 +29,10 @@ local function _2_(...)
 end
 local _1_ = _2_(...)
 local a = _1_[1]
-local client = _1_[2]
-local log = _1_[3]
-local state = _1_[4]
-local str = _1_[5]
-local text = _1_[6]
+local log = _1_[2]
+local state = _1_[3]
+local str = _1_[4]
+local text = _1_[5]
 local _2amodule_2a = _0_0
 local _2amodule_name_2a = "conjure.client.clojure.nrepl.ui"
 do local _ = ({nil, _0_0, {{}, nil, nil, nil}})[2] end

@@ -1,6 +1,5 @@
 (module conjure.client.clojure.nrepl.ui
-  {require {client conjure.client
-            log conjure.log
+  {require {log conjure.log
             text conjure.text
             a conjure.aniseed.core
             str conjure.aniseed.string

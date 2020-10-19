@@ -17,11 +17,11 @@ end
 local function _2_(...)
   local ok_3f_0_, val_0_ = nil, nil
   local function _2_()
-    return {require("conjure.aniseed.core"), require("conjure.remote.transport.bencode"), require("conjure.client"), require("conjure.config"), require("conjure.extract"), require("conjure.log"), require("conjure.net"), require("conjure.client.clojure.nrepl.state"), require("conjure.aniseed.string"), require("conjure.timer"), require("conjure.client.clojure.nrepl.ui"), require("conjure.uuid")}
+    return {require("conjure.aniseed.core"), require("conjure.config"), require("conjure.log"), require("conjure.remote.nrepl"), require("conjure.client.clojure.nrepl.state"), require("conjure.aniseed.string"), require("conjure.timer"), require("conjure.client.clojure.nrepl.ui"), require("conjure.uuid")}
   end
   ok_3f_0_, val_0_ = pcall(_2_)
   if ok_3f_0_ then
-    _0_0["aniseed/local-fns"] = {require = {a = "conjure.aniseed.core", bencode = "conjure.remote.transport.bencode", client = "conjure.client", config = "conjure.config", extract = "conjure.extract", log = "conjure.log", net = "conjure.net", state = "conjure.client.clojure.nrepl.state", str = "conjure.aniseed.string", timer = "conjure.timer", ui = "conjure.client.clojure.nrepl.ui", uuid = "conjure.uuid"}}
+    _0_0["aniseed/local-fns"] = {require = {a = "conjure.aniseed.core", config = "conjure.config", log = "conjure.log", nrepl = "conjure.remote.nrepl", state = "conjure.client.clojure.nrepl.state", str = "conjure.aniseed.string", timer = "conjure.timer", ui = "conjure.client.clojure.nrepl.ui", uuid = "conjure.uuid"}}
     return val_0_
   else
     return print(val_0_)
@@ -29,17 +29,14 @@ local function _2_(...)
 end
 local _1_ = _2_(...)
 local a = _1_[1]
-local timer = _1_[10]
-local ui = _1_[11]
-local uuid = _1_[12]
-local bencode = _1_[2]
-local client = _1_[3]
-local config = _1_[4]
-local extract = _1_[5]
-local log = _1_[6]
-local net = _1_[7]
-local state = _1_[8]
-local str = _1_[9]
+local config = _1_[2]
+local log = _1_[3]
+local nrepl = _1_[4]
+local state = _1_[5]
+local str = _1_[6]
+local timer = _1_[7]
+local ui = _1_[8]
+local uuid = _1_[9]
 local _2amodule_2a = _0_0
 local _2amodule_name_2a = "conjure.client.clojure.nrepl.server"
 do local _ = ({nil, _0_0, {{}, nil, nil, nil}})[2] end
@@ -93,17 +90,10 @@ do
   do
     local v_0_0 = nil
     local function send0(msg, cb)
-      local conn = state.get("conn")
-      if conn then
-        local msg_id = uuid.v4()
-        a.assoc(msg, "id", msg_id)
-        log.dbg("send", msg)
-        local function _3_()
-        end
-        a["assoc-in"](conn, {"msgs", msg_id}, {["sent-at"] = os.time(), cb = (cb or _3_), msg = msg})
-        do end (conn.sock):write(bencode.encode(msg))
-        return nil
+      local function _3_(conn)
+        return conn.send(msg, cb)
       end
+      return with_conn_or_warn(_3_)
     end
     v_0_0 = send0
     _0_0["send"] = v_0_0
@@ -145,28 +135,6 @@ do
   _0_0["aniseed/locals"]["disconnect"] = v_0_
   disconnect = v_0_
 end
-local with_all_msgs_fn = nil
-do
-  local v_0_ = nil
-  do
-    local v_0_0 = nil
-    local function with_all_msgs_fn0(cb)
-      local acc = {}
-      local function _3_(msg)
-        table.insert(acc, msg)
-        if msg.status.done then
-          return cb(acc)
-        end
-      end
-      return _3_
-    end
-    v_0_0 = with_all_msgs_fn0
-    _0_0["with-all-msgs-fn"] = v_0_0
-    v_0_ = v_0_0
-  end
-  _0_0["aniseed/locals"]["with-all-msgs-fn"] = v_0_
-  with_all_msgs_fn = v_0_
-end
 local close_session = nil
 do
   local v_0_ = nil
@@ -188,7 +156,9 @@ do
   do
     local v_0_0 = nil
     local function assume_session0(session)
+      print("ASSUMING", session)
       a.assoc(state.get("conn"), "session", a.get(session, "id"))
+      print(state.get("conn").session)
       return log.append({("; Assumed session: " .. session.str())}, {["break?"] = true})
     end
     v_0_0 = assume_session0
@@ -300,7 +270,7 @@ do
         end
         return cb(_6_())
       end
-      return send({code = ("#?(" .. str.join(" ", {":clj 'clj", ":cljs 'cljs", ":cljr 'cljr", ":default 'unknown"}) .. ")"), op = "eval", session = id}, with_all_msgs_fn(_4_))
+      return send({code = ("#?(" .. str.join(" ", {":clj 'clj", ":cljs 'cljs", ":cljr 'cljr", ":default 'unknown"}) .. ")"), op = "eval", session = id}, nrepl["with-all-msgs-fn"](_4_))
     end
     v_0_0 = session_type0
     _0_0["session-type"] = v_0_0
@@ -381,7 +351,7 @@ do
         end
         return enrich_session_id(a.some(_4_, msgs), assume_session)
       end
-      return send({op = "clone", session = a.get(session, "id")}, with_all_msgs_fn(_3_))
+      return send({op = "clone", session = a.get(session, "id")}, nrepl["with-all-msgs-fn"](_3_))
     end
     v_0_0 = clone_session0
     _0_0["clone-session"] = v_0_0
@@ -412,108 +382,13 @@ do
   _0_0["aniseed/locals"]["assume-or-create-session"] = v_0_
   assume_or_create_session = v_0_
 end
-local enrich_status = nil
-do
-  local v_0_ = nil
-  local function enrich_status0(msg)
-    local ks = a.get(msg, "status")
-    local status = {}
-    local function _3_(k)
-      return a.assoc(status, k, true)
-    end
-    a["run!"](_3_, ks)
-    a.assoc(msg, "status", status)
-    return msg
-  end
-  v_0_ = enrich_status0
-  _0_0["aniseed/locals"]["enrich-status"] = v_0_
-  enrich_status = v_0_
-end
-local process_message = nil
-do
-  local v_0_ = nil
-  local function process_message0(err, chunk)
-    local conn = state.get("conn")
-    if err then
-      return display_conn_status(err)
-    elseif not chunk then
-      return disconnect()
-    else
-      local function _3_(msg)
-        log.dbg("receive", msg)
-        enrich_status(msg)
-        if msg.status["need-input"] then
-          local function _4_()
-            return send({op = "stdin", session = conn.session, stdin = ((extract.prompt("Input required: ") or "") .. "\n")})
-          end
-          client.schedule(_4_)
-        end
-        local cb = nil
-        local function _5_(_241)
-          return ui["display-result"](_241)
-        end
-        cb = a["get-in"](conn, {"msgs", msg.id, "cb"}, _5_)
-        local ok_3f, err0 = pcall(cb, msg)
-        if not ok_3f then
-          log.append({("; conjure.client.clojure.nrepl error: " .. err0)})
-        end
-        if msg.status["unknown-session"] then
-          log.append({"; Unknown session, correcting"})
-          assume_or_create_session()
-        end
-        if msg.status["namespace-not-found"] then
-          log.append({("; Namespace not found: " .. msg.ns)})
-        end
-        if msg.status.done then
-          return a["assoc-in"](conn, {"msgs", msg.id}, nil)
-        end
-      end
-      return a["run!"](_3_, bencode["decode-all"](state.get("bs"), chunk))
-    end
-  end
-  v_0_ = process_message0
-  _0_0["aniseed/locals"]["process-message"] = v_0_
-  process_message = v_0_
-end
-local process_message_queue = nil
-do
-  local v_0_ = nil
-  local function process_message_queue0()
-    a.assoc(state.get(), "awaiting-process?", false)
-    if not a["empty?"](state.get("message-queue")) then
-      local msgs = state.get("message-queue")
-      a.assoc(state.get(), "message-queue", {})
-      local function _3_(args)
-        return process_message(unpack(args))
-      end
-      return a["run!"](_3_, msgs)
-    end
-  end
-  v_0_ = process_message_queue0
-  _0_0["aniseed/locals"]["process-message-queue"] = v_0_
-  process_message_queue = v_0_
-end
-local enqueue_message = nil
-do
-  local v_0_ = nil
-  local function enqueue_message0(...)
-    table.insert(state.get("message-queue"), {...})
-    if not state.get("awaiting-process?") then
-      a.assoc(state.get(), "awaiting-process?", true)
-      return client.schedule(process_message_queue)
-    end
-  end
-  v_0_ = enqueue_message0
-  _0_0["aniseed/locals"]["enqueue-message"] = v_0_
-  enqueue_message = v_0_
-end
 local eval_preamble = nil
 do
   local v_0_ = nil
   local function eval_preamble0(cb)
     local function _3_()
       if cb then
-        return with_all_msgs_fn(cb)
+        return nrepl["with-all-msgs-fn"](cb)
       end
     end
     return send({code = ("(ns conjure.internal" .. "  (:require [clojure.pprint :as pp]))" .. "(defn pprint [val w opts]" .. "  (apply pp/write val" .. "    (mapcat identity (assoc opts :stream w))))"), op = "eval"}, _3_())
@@ -562,29 +437,6 @@ do
   _0_0["aniseed/locals"]["with-conn-and-op-or-warn"] = v_0_
   with_conn_and_op_or_warn = v_0_
 end
-local handle_connect_fn = nil
-do
-  local v_0_ = nil
-  local function handle_connect_fn0(cb)
-    local function _3_(err)
-      local conn = state.get("conn")
-      if err then
-        display_conn_status(err)
-        return disconnect()
-      else
-        do end (conn.sock):read_start(client.wrap(enqueue_message))
-        display_conn_status("connected")
-        capture_describe()
-        assume_or_create_session()
-        return eval_preamble(cb)
-      end
-    end
-    return client["schedule-wrap"](_3_)
-  end
-  v_0_ = handle_connect_fn0
-  _0_0["aniseed/locals"]["handle-connect-fn"] = v_0_
-  handle_connect_fn = v_0_
-end
 local connect = nil
 do
   local v_0_ = nil
@@ -598,7 +450,36 @@ do
       if state.get("conn") then
         disconnect()
       end
-      return a.assoc(state.get(), "conn", a.merge(net.connect({cb = handle_connect_fn(cb), host = host, port = port}), {["seen-ns"] = {}, msgs = {}, session = nil}))
+      local function _6_(result)
+        return ui["display-result"](result)
+      end
+      local function _7_(err)
+        if err then
+          return display_conn_status(err)
+        else
+          return disconnect()
+        end
+      end
+      local function _8_(err)
+        display_conn_status(err)
+        return disconnect()
+      end
+      local function _9_(msg)
+        if msg.status["unknown-session"] then
+          log.append({"; Unknown session, correcting"})
+          assume_or_create_session()
+        end
+        if msg.status["namespace-not-found"] then
+          return log.append({("; Namespace not found: " .. msg.ns)})
+        end
+      end
+      local function _10_()
+        display_conn_status("connected")
+        capture_describe()
+        assume_or_create_session()
+        return eval_preamble(cb)
+      end
+      return a.assoc(state.get(), "conn", a["merge!"](nrepl.connect({["default-callback"] = _6_, ["on-error"] = _7_, ["on-failure"] = _8_, ["on-message"] = _9_, ["on-success"] = _10_, host = host, port = port}), {["seen-ns"] = {}}))
     end
     v_0_0 = connect0
     _0_0["connect"] = v_0_0

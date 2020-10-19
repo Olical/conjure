@@ -17,19 +17,18 @@ end
 local function _2_(...)
   local ok_3f_0_, val_0_ = nil, nil
   local function _2_()
-    return {require("conjure.remote.transport.bencode"), require("conjure.client")}
+    return {require("conjure.client")}
   end
   ok_3f_0_, val_0_ = pcall(_2_)
   if ok_3f_0_ then
-    _0_0["aniseed/local-fns"] = {require = {bencode = "conjure.remote.transport.bencode", client = "conjure.client"}}
+    _0_0["aniseed/local-fns"] = {require = {client = "conjure.client"}}
     return val_0_
   else
     return print(val_0_)
   end
 end
 local _1_ = _2_(...)
-local bencode = _1_[1]
-local client = _1_[2]
+local client = _1_[1]
 local _2amodule_2a = _0_0
 local _2amodule_name_2a = "conjure.client.clojure.nrepl.state"
 do local _ = ({nil, _0_0, {{}, nil, nil, nil}})[2] end
@@ -39,7 +38,7 @@ do
   do
     local v_0_0 = nil
     local function _3_()
-      return {["awaiting-process?"] = false, ["join-next"] = {key = nil}, ["message-queue"] = {}, bs = bencode.new(), conn = nil}
+      return {["join-next"] = {key = nil}, conn = nil}
     end
     v_0_0 = (_0_0.get or client["new-state"](_3_))
     _0_0["get"] = v_0_0

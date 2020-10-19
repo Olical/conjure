@@ -1,6 +1,5 @@
 (module conjure.client.clojure.nrepl.action
-  {require {client conjure.client
-            text conjure.text
+  {require {text conjure.text
             extract conjure.extract
             editor conjure.editor
             ll conjure.linked-list
@@ -13,7 +12,8 @@
             config conjure.config
             server conjure.client.clojure.nrepl.server
             ui conjure.client.clojure.nrepl.ui
-            a conjure.aniseed.core}})
+            a conjure.aniseed.core
+            nrepl conjure.remote.nrepl}})
 
 (defn- require-ns [ns]
   (when ns
@@ -123,7 +123,7 @@
         (a.merge
           {} opts
           {:code (.. "(clojure.repl/doc " opts.code ")")})
-        (server.with-all-msgs-fn
+        (nrepl.with-all-msgs-fn
           (fn [msgs]
             (if (a.some (fn [msg]
                           (or (a.get msg :out)
@@ -419,7 +419,7 @@
                            "  [(doto (resolve '" test-name ")"
                            "     (assert \"" test-name " is not a var\"))])")
                  :context (extract.context)}
-                (server.with-all-msgs-fn
+                (nrepl.with-all-msgs-fn
                   (fn [msgs]
                     (if (and (= 2 (a.count msgs))
                              (= "nil" (a.get (a.first msgs) :value)))
@@ -480,7 +480,7 @@
           (server.send
             {:op :refresh-clear
              :session conn.session}
-            (server.with-all-msgs-fn
+            (nrepl.with-all-msgs-fn
               (fn [msgs]
                 (log.append ["; Clearing complete"])))))))))
 
@@ -563,7 +563,7 @@
                     (extract-completion-context opts.prefix))
          :extra-metadata [:arglists :doc]
          :enhanced-cljs-completion? (when (enhanced-cljs-completion?) "t")}
-        (server.with-all-msgs-fn
+        (nrepl.with-all-msgs-fn
           (fn [msgs]
             (->> (a.get (a.last msgs) :completions)
                  (a.map clojure->vim-completion)

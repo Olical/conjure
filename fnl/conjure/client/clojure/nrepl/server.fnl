@@ -1,16 +1,13 @@
 (module conjure.client.clojure.nrepl.server
   {require {a conjure.aniseed.core
             uuid conjure.uuid
-            net conjure.net
             timer conjure.timer
-            extract conjure.extract
             log conjure.log
-            client conjure.client
             str conjure.aniseed.string
-            bencode conjure.remote.transport.bencode
             config conjure.config
             ui conjure.client.clojure.nrepl.ui
-            state conjure.client.clojure.nrepl.state}})
+            state conjure.client.clojure.nrepl.state
+            nrepl conjure.remote.nrepl}})
 
 (defn with-conn-or-warn [f opts]
   (let [conn (state.get :conn)]
@@ -28,17 +25,9 @@
     false))
 
 (defn send [msg cb]
-  (let [conn (state.get :conn)]
-    (when conn
-      (let [msg-id (uuid.v4)]
-        (a.assoc msg :id msg-id)
-        (log.dbg "send" msg)
-        (a.assoc-in conn [:msgs msg-id]
-                    {:msg msg
-                     :cb (or cb (fn []))
-                     :sent-at (os.time)})
-        (conn.sock:write (bencode.encode msg))
-        nil))))
+  (with-conn-or-warn
+    (fn [conn]
+      (conn.send msg cb))))
 
 (defn- display-conn-status [status]
   (with-conn-or-warn
@@ -53,20 +42,15 @@
       (display-conn-status :disconnected)
       (a.assoc (state.get) :conn nil))))
 
-(defn with-all-msgs-fn [cb]
-  (let [acc []]
-    (fn [msg]
-      (table.insert acc msg)
-      (when msg.status.done
-        (cb acc)))))
-
 (defn close-session [session cb]
   (send
     {:op :close :session (a.get session :id)}
     cb))
 
 (defn assume-session [session]
+  (print "ASSUMING" session)
   (a.assoc (state.get :conn) :session (a.get session :id))
+  (print (. (state.get :conn) :session))
   (log.append [(.. "; Assumed session: " (session.str))]
               {:break? true}))
 
@@ -142,7 +126,7 @@
                     ":default 'unknown"])
                  ")")
        :session id}
-      (with-all-msgs-fn
+      (nrepl.with-all-msgs-fn
         (fn [msgs]
           (timer.destroy timeout)
           (let [st (a.some #(a.get $1 :value) msgs)]
@@ -184,7 +168,7 @@
   (send
     {:op :clone
      :session (a.get session :id)}
-    (with-all-msgs-fn
+    (nrepl.with-all-msgs-fn
       (fn [msgs]
         (enrich-session-id
           (a.some #(a.get $1 :new-session) msgs)
@@ -197,64 +181,6 @@
         (clone-session)
         (assume-session (a.first sessions))))))
 
-(defn- enrich-status [msg]
-  (let [ks (a.get msg :status)
-        status {}]
-    (a.run!
-      (fn [k]
-        (a.assoc status k true))
-      ks)
-    (a.assoc msg :status status)
-    msg))
-
-(defn- process-message [err chunk]
-  (let [conn (state.get :conn)]
-    (if
-      err (display-conn-status err)
-      (not chunk) (disconnect)
-      (->> (bencode.decode-all (state.get :bs) chunk)
-           (a.run!
-             (fn [msg]
-               (log.dbg "receive" msg)
-               (enrich-status msg)
-
-               (when msg.status.need-input
-                 (client.schedule
-                   (fn []
-                     (send {:op :stdin
-                            :stdin (.. (or (extract.prompt "Input required: ")
-                                           "")
-                                       "\n")
-                            :session conn.session}))))
-
-               (let [cb (a.get-in conn [:msgs msg.id :cb] #(ui.display-result $1))
-                     (ok? err) (pcall cb msg)]
-                 (when (not ok?)
-                   (log.append [(.. "; conjure.client.clojure.nrepl error: " err)]))
-                 (when msg.status.unknown-session
-                   (log.append ["; Unknown session, correcting"])
-                   (assume-or-create-session))
-                 (when msg.status.namespace-not-found
-                   (log.append [(.. "; Namespace not found: " msg.ns)]))
-                 (when msg.status.done
-                   (a.assoc-in conn [:msgs msg.id] nil)))))))))
-
-(defn- process-message-queue []
-  (a.assoc (state.get) :awaiting-process? false)
-  (when (not (a.empty? (state.get :message-queue)))
-    (let [msgs (state.get :message-queue)]
-      (a.assoc (state.get) :message-queue [])
-      (a.run!
-        (fn [args]
-          (process-message (unpack args)))
-        msgs))))
-
-(defn- enqueue-message [...]
-  (table.insert (state.get :message-queue) [...])
-  (when (not (state.get :awaiting-process?))
-    (a.assoc (state.get) :awaiting-process? true)
-    (client.schedule process-message-queue)))
-
 (defn- eval-preamble [cb]
   (send
     {:op :eval
@@ -264,7 +190,7 @@
                "  (apply pp/write val"
                "    (mapcat identity (assoc opts :stream w))))")}
     (when cb
-      (with-all-msgs-fn cb))))
+      (nrepl.with-all-msgs-fn cb))))
 
 (defn- capture-describe []
   (send
@@ -287,33 +213,45 @@
             (opts.else)))))
     opts))
 
-(defn- handle-connect-fn [cb]
-  (client.schedule-wrap
-    (fn [err]
-      (let [conn (state.get :conn)]
-        (if err
-          (do
-            (display-conn-status err)
-            (disconnect))
-
-          (do
-            (conn.sock:read_start (client.wrap enqueue-message))
-            (display-conn-status :connected)
-            (capture-describe)
-            (assume-or-create-session)
-            (eval-preamble cb)))))))
-
 (defn connect [{: host : port : cb}]
   (when (state.get :conn)
     (disconnect))
 
   (a.assoc
     (state.get) :conn
-    (a.merge
-      (net.connect
+    (a.merge!
+      (nrepl.connect
         {:host host
          :port port
-         :cb (handle-connect-fn cb)})
-      {:msgs {}
-       :seen-ns {}
-       :session nil})))
+
+         :on-failure
+         (fn [err]
+           (display-conn-status err)
+           (disconnect))
+
+         :on-success
+         (fn []
+           (display-conn-status :connected)
+           (capture-describe)
+           (assume-or-create-session)
+           (eval-preamble cb))
+
+         :on-error
+         (fn [err]
+           (if err
+             (display-conn-status err)
+             (disconnect)))
+
+         :on-message
+         (fn [msg]
+           (when msg.status.unknown-session
+             (log.append ["; Unknown session, correcting"])
+             (assume-or-create-session))
+           (when msg.status.namespace-not-found
+             (log.append [(.. "; Namespace not found: " msg.ns)])))
+
+         :default-callback
+         (fn [result]
+           (ui.display-result result))})
+
+      {:seen-ns {}})))

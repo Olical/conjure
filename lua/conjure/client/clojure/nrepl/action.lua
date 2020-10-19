@@ -17,11 +17,11 @@ end
 local function _2_(...)
   local ok_3f_0_, val_0_ = nil, nil
   local function _2_()
-    return {require("conjure.aniseed.core"), require("conjure.client"), require("conjure.config"), require("conjure.editor"), require("conjure.aniseed.eval"), require("conjure.extract"), require("conjure.fs"), require("conjure.linked-list"), require("conjure.log"), require("conjure.aniseed.nvim"), require("conjure.client.clojure.nrepl.server"), require("conjure.aniseed.string"), require("conjure.text"), require("conjure.client.clojure.nrepl.ui"), require("conjure.aniseed.view")}
+    return {require("conjure.aniseed.core"), require("conjure.config"), require("conjure.editor"), require("conjure.aniseed.eval"), require("conjure.extract"), require("conjure.fs"), require("conjure.linked-list"), require("conjure.log"), require("conjure.remote.nrepl"), require("conjure.aniseed.nvim"), require("conjure.client.clojure.nrepl.server"), require("conjure.aniseed.string"), require("conjure.text"), require("conjure.client.clojure.nrepl.ui"), require("conjure.aniseed.view")}
   end
   ok_3f_0_, val_0_ = pcall(_2_)
   if ok_3f_0_ then
-    _0_0["aniseed/local-fns"] = {require = {a = "conjure.aniseed.core", client = "conjure.client", config = "conjure.config", editor = "conjure.editor", eval = "conjure.aniseed.eval", extract = "conjure.extract", fs = "conjure.fs", ll = "conjure.linked-list", log = "conjure.log", nvim = "conjure.aniseed.nvim", server = "conjure.client.clojure.nrepl.server", str = "conjure.aniseed.string", text = "conjure.text", ui = "conjure.client.clojure.nrepl.ui", view = "conjure.aniseed.view"}}
+    _0_0["aniseed/local-fns"] = {require = {a = "conjure.aniseed.core", config = "conjure.config", editor = "conjure.editor", eval = "conjure.aniseed.eval", extract = "conjure.extract", fs = "conjure.fs", ll = "conjure.linked-list", log = "conjure.log", nrepl = "conjure.remote.nrepl", nvim = "conjure.aniseed.nvim", server = "conjure.client.clojure.nrepl.server", str = "conjure.aniseed.string", text = "conjure.text", ui = "conjure.client.clojure.nrepl.ui", view = "conjure.aniseed.view"}}
     return val_0_
   else
     return print(val_0_)
@@ -35,14 +35,14 @@ local str = _1_[12]
 local text = _1_[13]
 local ui = _1_[14]
 local view = _1_[15]
-local client = _1_[2]
-local config = _1_[3]
-local editor = _1_[4]
-local eval = _1_[5]
-local extract = _1_[6]
-local fs = _1_[7]
-local ll = _1_[8]
-local log = _1_[9]
+local config = _1_[2]
+local editor = _1_[3]
+local eval = _1_[4]
+local extract = _1_[5]
+local fs = _1_[6]
+local ll = _1_[7]
+local log = _1_[8]
+local nrepl = _1_[9]
 local _2amodule_2a = _0_0
 local _2amodule_name_2a = "conjure.client.clojure.nrepl.action"
 do local _ = ({nil, _0_0, {{}, nil, nil, nil}})[2] end
@@ -312,7 +312,7 @@ do
             return with_info(opts, _6_)
           end
         end
-        return server.eval(a.merge({}, opts, {code = ("(clojure.repl/doc " .. opts.code .. ")")}), server["with-all-msgs-fn"](_4_))
+        return server.eval(a.merge({}, opts, {code = ("(clojure.repl/doc " .. opts.code .. ")")}), nrepl["with-all-msgs-fn"](_4_))
       end
       return try_ensure_conn(_3_)
     end
@@ -860,7 +860,7 @@ do
                 return a["run!"](_5_, msgs)
               end
             end
-            return server.eval({code = ("(clojure.test/test-vars" .. "  [(doto (resolve '" .. test_name .. ")" .. "     (assert \"" .. test_name .. " is not a var\"))])"), context = extract.context()}, server["with-all-msgs-fn"](_4_))
+            return server.eval({code = ("(clojure.test/test-vars" .. "  [(doto (resolve '" .. test_name .. ")" .. "     (assert \"" .. test_name .. " is not a var\"))])"), context = extract.context()}, nrepl["with-all-msgs-fn"](_4_))
           end
         end
       end
@@ -949,7 +949,7 @@ do
           local function _5_(msgs)
             return log.append({"; Clearing complete"})
           end
-          return server.send({op = "refresh-clear", session = conn.session}, server["with-all-msgs-fn"](_5_))
+          return server.send({op = "refresh-clear", session = conn.session}, nrepl["with-all-msgs-fn"](_5_))
         end
         return server["with-conn-and-op-or-warn"]("refresh-clear", _4_)
       end
@@ -1098,7 +1098,7 @@ do
         local function _8_(msgs)
           return opts.cb(a.map(clojure__3evim_completion, a.get(a.last(msgs), "completions")))
         end
-        return server.send({["enhanced-cljs-completion?"] = _4_, ["extra-metadata"] = {"arglists", "doc"}, context = _6_, ns = opts.context, op = "complete", session = conn.session, symbol = opts.prefix}, server["with-all-msgs-fn"](_8_))
+        return server.send({["enhanced-cljs-completion?"] = _4_, ["extra-metadata"] = {"arglists", "doc"}, context = _6_, ns = opts.context, op = "complete", session = conn.session, symbol = opts.prefix}, nrepl["with-all-msgs-fn"](_8_))
       end
       return server["with-conn-and-op-or-warn"]("complete", _3_, {["else"] = opts.cb, ["silent?"] = true})
     end
