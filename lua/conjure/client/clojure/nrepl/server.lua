@@ -17,11 +17,11 @@ end
 local function _2_(...)
   local ok_3f_0_, val_0_ = nil, nil
   local function _2_()
-    return {require("conjure.aniseed.core"), require("conjure.bencode"), require("conjure.bencode-stream"), require("conjure.client"), require("conjure.config"), require("conjure.extract"), require("conjure.log"), require("conjure.net"), require("conjure.client.clojure.nrepl.state"), require("conjure.aniseed.string"), require("conjure.timer"), require("conjure.client.clojure.nrepl.ui"), require("conjure.uuid")}
+    return {require("conjure.aniseed.core"), require("conjure.remote.transport.bencode"), require("conjure.client"), require("conjure.config"), require("conjure.extract"), require("conjure.log"), require("conjure.net"), require("conjure.client.clojure.nrepl.state"), require("conjure.aniseed.string"), require("conjure.timer"), require("conjure.client.clojure.nrepl.ui"), require("conjure.uuid")}
   end
   ok_3f_0_, val_0_ = pcall(_2_)
   if ok_3f_0_ then
-    _0_0["aniseed/local-fns"] = {require = {["bencode-stream"] = "conjure.bencode-stream", a = "conjure.aniseed.core", bencode = "conjure.bencode", client = "conjure.client", config = "conjure.config", extract = "conjure.extract", log = "conjure.log", net = "conjure.net", state = "conjure.client.clojure.nrepl.state", str = "conjure.aniseed.string", timer = "conjure.timer", ui = "conjure.client.clojure.nrepl.ui", uuid = "conjure.uuid"}}
+    _0_0["aniseed/local-fns"] = {require = {a = "conjure.aniseed.core", bencode = "conjure.remote.transport.bencode", client = "conjure.client", config = "conjure.config", extract = "conjure.extract", log = "conjure.log", net = "conjure.net", state = "conjure.client.clojure.nrepl.state", str = "conjure.aniseed.string", timer = "conjure.timer", ui = "conjure.client.clojure.nrepl.ui", uuid = "conjure.uuid"}}
     return val_0_
   else
     return print(val_0_)
@@ -29,18 +29,17 @@ local function _2_(...)
 end
 local _1_ = _2_(...)
 local a = _1_[1]
-local str = _1_[10]
-local timer = _1_[11]
-local ui = _1_[12]
-local uuid = _1_[13]
+local timer = _1_[10]
+local ui = _1_[11]
+local uuid = _1_[12]
 local bencode = _1_[2]
-local bencode_stream = _1_[3]
-local client = _1_[4]
-local config = _1_[5]
-local extract = _1_[6]
-local log = _1_[7]
-local net = _1_[8]
-local state = _1_[9]
+local client = _1_[3]
+local config = _1_[4]
+local extract = _1_[5]
+local log = _1_[6]
+local net = _1_[7]
+local state = _1_[8]
+local str = _1_[9]
 local _2amodule_2a = _0_0
 local _2amodule_name_2a = "conjure.client.clojure.nrepl.server"
 do local _ = ({nil, _0_0, {{}, nil, nil, nil}})[2] end
@@ -469,7 +468,7 @@ do
           return a["assoc-in"](conn, {"msgs", msg.id}, nil)
         end
       end
-      return a["run!"](_3_, bencode_stream["decode-all"](state.get("bs"), chunk))
+      return a["run!"](_3_, bencode["decode-all"](state.get("bs"), chunk))
     end
   end
   v_0_ = process_message0

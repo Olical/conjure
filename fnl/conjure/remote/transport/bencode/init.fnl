@@ -1,5 +1,5 @@
-(module conjure.bencode-stream
-  {require {bencode conjure.bencode
+(module conjure.remote.transport.bencode
+  {require {impl conjure.remote.transport.bencode.impl
             a conjure.aniseed.core}})
 
 (defn new []
@@ -11,7 +11,7 @@
   (let [s (.. bs.data part)
         acc []]
     (while (and (< progress (a.count s)) (not end?))
-      (let [(msg consumed) (bencode.decode s progress)]
+      (let [(msg consumed) (impl.decode s progress)]
         (if (a.nil? msg)
           (set end? true)
           (do
@@ -19,3 +19,6 @@
             (set progress consumed)))))
     (a.assoc bs :data (string.sub s progress))
     acc))
+
+(defn encode [...]
+  (impl.encode ...))

@@ -7,8 +7,7 @@
             log conjure.log
             client conjure.client
             str conjure.aniseed.string
-            bencode conjure.bencode
-            bencode-stream conjure.bencode-stream
+            bencode conjure.remote.transport.bencode
             config conjure.config
             ui conjure.client.clojure.nrepl.ui
             state conjure.client.clojure.nrepl.state}})
@@ -213,7 +212,7 @@
     (if
       err (display-conn-status err)
       (not chunk) (disconnect)
-      (->> (bencode-stream.decode-all (state.get :bs) chunk)
+      (->> (bencode.decode-all (state.get :bs) chunk)
            (a.run!
              (fn [msg]
                (log.dbg "receive" msg)
