@@ -654,12 +654,12 @@ do
   _0_0["aniseed/locals"]["spit"] = v_0_
   spit = v_0_
 end
-local merge = nil
+local merge_21 = nil
 do
   local v_0_ = nil
   do
     local v_0_0 = nil
-    local function merge0(...)
+    local function merge_210(base, ...)
       local function _3_(acc, m)
         if m then
           for k, v in pairs(m) do
@@ -668,7 +668,22 @@ do
         end
         return acc
       end
-      return reduce(_3_, {}, {...})
+      return reduce(_3_, (base or {}), {...})
+    end
+    v_0_0 = merge_210
+    _0_0["merge!"] = v_0_0
+    v_0_ = v_0_0
+  end
+  _0_0["aniseed/locals"]["merge!"] = v_0_
+  merge_21 = v_0_
+end
+local merge = nil
+do
+  local v_0_ = nil
+  do
+    local v_0_0 = nil
+    local function merge0(...)
+      return merge_21({}, ...)
     end
     v_0_0 = merge0
     _0_0["merge"] = v_0_0
