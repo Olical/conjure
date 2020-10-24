@@ -31,8 +31,7 @@
 (defn connect-port-file [opts]
   (let [port (-?>> (cfg [:connection :port_files])
                    (a.map fs.resolve-above)
-                   (a.some a.slurp)
-                   (tonumber))]
+                   (a.some a.slurp))]
     (if port
       (server.connect
         {:host (cfg [:connection :default_host])
