@@ -308,4 +308,9 @@ All configuration can be set as described in |conjure-configuration|.
             machines in large buffers with lots of top level forms.
             Default: `false`
 
+`let g:conjure#filetype_client = {'markdown': 'conjure.client.clojure.nrepl'}`
+            Evaluate Clojure code from within a markdown file.  This needs to 
+            be set before you enter a relevant buffer since the mappings are
+            defined as you enter a buffer.
+
 vim:tw=78:sw=2:ts=2:ft=help:norl:et:listchars=
