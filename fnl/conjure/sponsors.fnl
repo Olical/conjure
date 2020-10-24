@@ -6,7 +6,6 @@
 "campbellr"
 "dharrigan"
 "djblue"
-"edderkoppen"
 "jkrasnay"
 "mamapitufo"
 "markwoodhall"
