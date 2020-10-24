@@ -40,10 +40,14 @@ do
   do
     local v_0_0 = nil
     local function resolve0(host)
-      local function _3_(_241)
-        return ("inet" == a.get(_241, "family"))
+      if (host == "::") then
+        return host
+      else
+        local function _3_(_241)
+          return ("inet" == a.get(_241, "family"))
+        end
+        return a.get(a.first(a.filter(_3_, vim.loop.getaddrinfo(host))), "addr")
       end
-      return a.get(a.first(a.filter(_3_, vim.loop.getaddrinfo(host))), "addr")
     end
     v_0_0 = resolve0
     _0_0["resolve"] = v_0_0
