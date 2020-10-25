@@ -50,6 +50,7 @@
   [:filetype_client]
   (a.merge
     {:fennel :conjure.client.fennel.aniseed
+     :racket :conjure.client.racket.nrepl
      :clojure :conjure.client.clojure.nrepl
      :janet :conjure.client.janet.netrepl}
     (or nvim.g.conjure#filetype_client {})))

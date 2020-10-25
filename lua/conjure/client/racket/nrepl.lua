@@ -1,6 +1,6 @@
 local _0_0 = nil
 do
-  local name_0_ = "conjure.client.fennel.nrepl"
+  local name_0_ = "conjure.client.racket.nrepl"
   local loaded_0_ = package.loaded[name_0_]
   local module_0_ = nil
   if ("table" == type(loaded_0_)) then
@@ -36,13 +36,13 @@ local mapping = _1_[5]
 local nrepl = _1_[6]
 local text = _1_[7]
 local _2amodule_2a = _0_0
-local _2amodule_name_2a = "conjure.client.fennel.nrepl"
+local _2amodule_name_2a = "conjure.client.racket.nrepl"
 do local _ = ({nil, _0_0, {{}, nil, nil, nil}})[2] end
 local buf_suffix = nil
 do
   local v_0_ = nil
   do
-    local v_0_0 = ".fnl"
+    local v_0_0 = ".rkt"
     _0_0["buf-suffix"] = v_0_0
     v_0_ = v_0_0
   end
@@ -60,14 +60,14 @@ do
   _0_0["aniseed/locals"]["comment-prefix"] = v_0_
   comment_prefix = v_0_
 end
-config.merge({client = {fennel = {nrepl = {connection = {default_host = "::", default_port = "7888"}, mapping = {connect = "cc", disconnect = "cd"}}}}})
+config.merge({client = {racket = {nrepl = {connection = {default_host = "127.0.0.1", default_port = "7888"}, mapping = {connect = "cc", disconnect = "cd"}}}}})
 local cfg = nil
 do
   local v_0_ = nil
   do
     local v_0_0 = nil
     local function cfg0(...)
-      return config["get-in"]({"client", "fennel", "nrepl", ...})
+      return config["get-in"]({"client", "racket", "nrepl", ...})
     end
     v_0_0 = cfg0
     _0_0["cfg"] = v_0_0
@@ -187,31 +187,6 @@ do
   _0_0["aniseed/locals"]["display-result"] = v_0_
   display_result = v_0_
 end
-local ensure_session = nil
-do
-  local v_0_ = nil
-  local function ensure_session0(cb)
-    local function assume_first_session(sessions)
-      print("ASSUMING", a.first(sessions), a.count(sessions))
-      return a.assoc(state("conn"), "session", a.first(sessions))
-    end
-    local function _3_(msg)
-      local sessions = msg.sessions
-      if a["empty?"](sessions) then
-        local function _4_(msg0)
-          return assume_first_session({msg0["new-session"]})
-        end
-        return send({op = "clone"}, _4_)
-      else
-        return assume_first_session(sessions)
-      end
-    end
-    return send({op = "ls-sessions"}, _3_)
-  end
-  v_0_ = ensure_session0
-  _0_0["aniseed/locals"]["ensure-session"] = v_0_
-  ensure_session = v_0_
-end
 local connect = nil
 do
   local v_0_ = nil
@@ -242,10 +217,7 @@ do
         return nil
       end
       local function _8_()
-        local function _9_()
-          return display_conn_status("connected")
-        end
-        return ensure_session(_9_)
+        return display_conn_status("connected")
       end
       return a.assoc(state(), "conn", a["merge!"](nrepl.connect({["default-callback"] = _4_, ["on-error"] = _5_, ["on-failure"] = _6_, ["on-message"] = _7_, ["on-success"] = _8_, host = host, port = port}), {["seen-ns"] = {}}))
     end
@@ -315,7 +287,7 @@ do
     local function doc_str0(opts)
       try_ensure_conn()
       local function _3_(s)
-        return ("(doc " .. s .. ")")
+        return ("(help " .. s .. ")")
       end
       return eval_str(a.update(opts, "code", _3_))
     end
@@ -333,7 +305,7 @@ do
     local v_0_0 = nil
     local function eval_file0(opts)
       try_ensure_conn()
-      return send({file = opts["file-path"], op = "load-file"}, eval_cb_fn(opts))
+      return eval_str(a.assoc(opts, "code", ("(load \"" .. opts["file-path"] .. "\")")))
     end
     v_0_0 = eval_file0
     _0_0["eval-file"] = v_0_0

@@ -1,4 +1,4 @@
-(module conjure.client.fennel.nrepl
+(module conjure.client.racket.nrepl
   {require {a conjure.aniseed.core
             mapping conjure.mapping
             text conjure.text
@@ -10,20 +10,20 @@
 ;; TODO Make this generic / reusable as a base nREPL language client.
 ;; TODO Only (print "Hello, World!") seems to work, all other evals fail silently.
 
-(def buf-suffix ".fnl")
+(def buf-suffix ".rkt")
 (def comment-prefix "; ")
 
 (config.merge
   {:client
-   {:fennel
+   {:racket
     {:nrepl
-     {:connection {:default_host "::"
+     {:connection {:default_host "127.0.0.1"
                    :default_port "7888"}
       :mapping {:connect "cc"
                 :disconnect "cd"}}}}})
 
 (defn cfg [...]
-  (config.get-in [:client :fennel :nrepl ...]))
+  (config.get-in [:client :racket :nrepl ...]))
 
 (defonce- state (client.new-state #(do {:conn nil})))
 
@@ -75,19 +75,20 @@
 
       nil)))
 
-(defn- ensure-session [cb]
-  (fn assume-first-session [sessions]
-    (print "ASSUMING" (a.first sessions) (a.count sessions))
-    (a.assoc (state :conn) :session (a.first sessions)))
+;; Used for Fennel nREPL.
+; (defn- ensure-session [cb]
+;   (fn assume-first-session [sessions]
+;     (print "ASSUMING" (a.first sessions) (a.count sessions))
+;     (a.assoc (state :conn) :session (a.first sessions)))
 
-  (send {:op :ls-sessions}
-        (fn [msg]
-          (let [sessions msg.sessions]
-            (if (a.empty? sessions)
-              (send {:op :clone}
-                    (fn [msg]
-                      (assume-first-session [msg.new-session])))
-              (assume-first-session sessions))))))
+;   (send {:op :ls-sessions}
+;         (fn [msg]
+;           (let [sessions msg.sessions]
+;             (if (a.empty? sessions)
+;               (send {:op :clone}
+;                     (fn [msg]
+;                       (assume-first-session [msg.new-session])))
+;               (assume-first-session sessions))))))
 
 (defn connect [opts]
   (let [opts (or opts {})
@@ -111,7 +112,7 @@
 
            :on-success
            (fn []
-             (ensure-session #(display-conn-status :connected)))
+             (display-conn-status :connected))
 
            :on-error
            (fn [err]
@@ -154,14 +155,11 @@
 
 (defn doc-str [opts]
   (try-ensure-conn)
-  (eval-str (a.update opts :code (fn [s] (.. "(doc " s ")")))))
+  (eval-str (a.update opts :code (fn [s] (.. "(help " s ")")))))
 
 (defn eval-file [opts]
   (try-ensure-conn)
-  (send
-    {:op :load-file
-     :file opts.file-path}
-    (eval-cb-fn opts)))
+  (eval-str (a.assoc opts :code (.. "(load \"" opts.file-path "\")"))))
 
 (defn on-filetype []
   (mapping.buf :n (cfg :mapping :disconnect) *module-name* :disconnect)
