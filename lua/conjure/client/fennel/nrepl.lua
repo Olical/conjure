@@ -17,11 +17,11 @@ end
 local function _2_(...)
   local ok_3f_0_, val_0_ = nil, nil
   local function _2_()
-    return {require("conjure.aniseed.core"), require("conjure.bridge"), require("conjure.client"), require("conjure.config"), require("conjure.log"), require("conjure.mapping"), require("conjure.remote.nrepl"), require("conjure.aniseed.nvim"), require("conjure.text")}
+    return {require("conjure.aniseed.core"), require("conjure.client"), require("conjure.config"), require("conjure.log"), require("conjure.mapping"), require("conjure.remote.nrepl"), require("conjure.text")}
   end
   ok_3f_0_, val_0_ = pcall(_2_)
   if ok_3f_0_ then
-    _0_0["aniseed/local-fns"] = {require = {a = "conjure.aniseed.core", bridge = "conjure.bridge", client = "conjure.client", config = "conjure.config", log = "conjure.log", mapping = "conjure.mapping", nrepl = "conjure.remote.nrepl", nvim = "conjure.aniseed.nvim", text = "conjure.text"}}
+    _0_0["aniseed/local-fns"] = {require = {a = "conjure.aniseed.core", client = "conjure.client", config = "conjure.config", log = "conjure.log", mapping = "conjure.mapping", nrepl = "conjure.remote.nrepl", text = "conjure.text"}}
     return val_0_
   else
     return print(val_0_)
@@ -29,14 +29,12 @@ local function _2_(...)
 end
 local _1_ = _2_(...)
 local a = _1_[1]
-local bridge = _1_[2]
-local client = _1_[3]
-local config = _1_[4]
-local log = _1_[5]
-local mapping = _1_[6]
-local nrepl = _1_[7]
-local nvim = _1_[8]
-local text = _1_[9]
+local client = _1_[2]
+local config = _1_[3]
+local log = _1_[4]
+local mapping = _1_[5]
+local nrepl = _1_[6]
+local text = _1_[7]
 local _2amodule_2a = _0_0
 local _2amodule_name_2a = "conjure.client.fennel.nrepl"
 do local _ = ({nil, _0_0, {{}, nil, nil, nil}})[2] end
@@ -189,6 +187,31 @@ do
   _0_0["aniseed/locals"]["display-result"] = v_0_
   display_result = v_0_
 end
+local ensure_session = nil
+do
+  local v_0_ = nil
+  local function ensure_session0(cb)
+    local function assume_first_session(sessions)
+      print("ASSUMING", a.first(sessions), a.count(sessions))
+      return a.assoc(state("conn"), "session", a.first(sessions))
+    end
+    local function _3_(msg)
+      local sessions = msg.sessions
+      if a["empty?"](sessions) then
+        local function _4_(msg0)
+          return assume_first_session({msg0["new-session"]})
+        end
+        return send({op = "clone"}, _4_)
+      else
+        return assume_first_session(sessions)
+      end
+    end
+    return send({op = "ls-sessions"}, _3_)
+  end
+  v_0_ = ensure_session0
+  _0_0["aniseed/locals"]["ensure-session"] = v_0_
+  ensure_session = v_0_
+end
 local connect = nil
 do
   local v_0_ = nil
@@ -219,7 +242,10 @@ do
         return nil
       end
       local function _8_()
-        return display_conn_status("connected")
+        local function _9_()
+          return display_conn_status("connected")
+        end
+        return ensure_session(_9_)
       end
       return a.assoc(state(), "conn", a["merge!"](nrepl.connect({["default-callback"] = _4_, ["on-error"] = _5_, ["on-failure"] = _6_, ["on-message"] = _7_, ["on-success"] = _8_, host = host, port = port}), {["seen-ns"] = {}}))
     end

@@ -1,7 +1,5 @@
 (module conjure.client.fennel.nrepl
   {require {a conjure.aniseed.core
-            nvim conjure.aniseed.nvim
-            bridge conjure.bridge
             mapping conjure.mapping
             text conjure.text
             log conjure.log
@@ -77,6 +75,20 @@
 
       nil)))
 
+(defn- ensure-session [cb]
+  (fn assume-first-session [sessions]
+    (print "ASSUMING" (a.first sessions) (a.count sessions))
+    (a.assoc (state :conn) :session (a.first sessions)))
+
+  (send {:op :ls-sessions}
+        (fn [msg]
+          (let [sessions msg.sessions]
+            (if (a.empty? sessions)
+              (send {:op :clone}
+                    (fn [msg]
+                      (assume-first-session [msg.new-session])))
+              (assume-first-session sessions))))))
+
 (defn connect [opts]
   (let [opts (or opts {})
         host (or opts.host (cfg :connection :default_host))
@@ -99,7 +111,7 @@
 
            :on-success
            (fn []
-             (display-conn-status :connected))
+             (ensure-session #(display-conn-status :connected)))
 
            :on-error
            (fn [err]
