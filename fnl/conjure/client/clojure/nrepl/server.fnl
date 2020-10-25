@@ -48,9 +48,7 @@
     cb))
 
 (defn assume-session [session]
-  (print "ASSUMING" session)
   (a.assoc (state.get :conn) :session (a.get session :id))
-  (print (. (state.get :conn) :session))
   (log.append [(.. "; Assumed session: " (session.str))]
               {:break? true}))
 
@@ -64,7 +62,7 @@
          :file opts.file-path
          :line (a.get-in opts [:range :start 1])
          :column (-?> (a.get-in opts [:range :start 2]) (a.inc))
-         :session (or opts.session (state.get :conn :session))
+         :session opts.session
 
          :nrepl.middleware.print/options
          {;; This forces this table to remain associative even if level and length aren't set.

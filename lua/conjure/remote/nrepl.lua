@@ -82,10 +82,13 @@ do
       local function send(msg, cb)
         local msg_id = uuid.v4()
         a.assoc(msg, "id", msg_id)
-        log.dbg("send", msg)
-        local function _3_()
+        if (not msg.session and conn.session) then
+          a.assoc(msg, "session", conn.session)
         end
-        a["assoc-in"](state, {"msgs", msg_id}, {["sent-at"] = os.time(), cb = (cb or _3_), msg = msg})
+        log.dbg("send", msg)
+        local function _4_()
+        end
+        a["assoc-in"](state, {"msgs", msg_id}, {["sent-at"] = os.time(), cb = (cb or _4_), msg = msg})
         do end (conn.sock):write(bencode.encode(msg))
         return nil
       end
