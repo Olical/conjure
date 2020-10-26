@@ -1,0 +1,72 @@
+                                                 *conjure-client-racket-nrepl*
+
+==============================================================================
+CONTENTS                                *conjure-client-racket-nrepl-contents*
+
+    1. Introduction ........ |conjure-client-racket-nrepl-introduction|
+    2. Mappings ................ |conjure-client-racket-nrepl-mappings|
+    3. Configuration ...... |conjure-client-racket-nrepl-configuration|
+
+==============================================================================
+INTRODUCTION                        *conjure-client-racket-nrepl-introduction*
+
+>
+  Racket is a general-purpose, multi-paradigm programming language based on
+  the Scheme dialect of Lisp. It is designed to be a platform for programming
+  language design and implementation.
+
+We can use Racket with Conjure by starting an nREPL server with Ogion and then
+opening a Racket file.
+>
+  raco pkg install https://gitlab.com/technomancy/ogion.git
+  racket -e "(require (submod ogion main))"
+<
+You should now be able to evaluate files and forms as you would with other
+Conjure supported languages. Check out `:ConjureSchool` if you're unsure about
+what evaluation operations you can perform.
+
+ * https://racket-lang.org/
+ * https://gitlab.com/technomancy/ogion
+
+==============================================================================
+MAPPINGS                                *conjure-client-racket-nrepl-mappings*
+
+These mappings are the defaults, you can change them as described in
+|conjure-mappings| and |conjure-configuration|.
+
+See |conjure-client-racket-nrepl-configuration| for specific configuration
+options relevant to these mappings.
+
+:ConjureConnect [host] [port]
+                         Connect to the given host and port. The host defaults
+                         to `127.0.0.1` and the port defaults to `9365`.
+                         `:ConjureConnect`
+                         `:ConjureConnect 5678`
+                         `:ConjureConnect staging.my-app.com 5555`
+
+<localleader>cc          Connect to an nREPL using the default host and port.
+
+<localleader>cd          Disconnect from the current nREPL.
+
+==============================================================================
+CONFIGURATION                      *conjure-client-racket-nrepl-configuration*
+
+All configuration can be set as described in |conjure-configuration|.
+
+`g:conjure#client#racket#nrepl#connection#default_host`
+            Host to use when connecting by default.
+            Default: `"127.0.0.1"`
+
+`g:conjure#client#racket#nrepl#connection#default_port`
+            Port to use when connecting by default.
+            Default: `"7888"`
+
+`g:conjure#client#racket#nrepl#mapping#connect`
+            Connect to a running netrepl using the default host and port.
+            Default: `"cc"`
+
+`g:conjure#client#racket#nrepl#mapping#disconnect`
+            Disconnect from the current netrepl.
+            Default: `"cd"`
+
+vim:tw=78:sw=2:ts=2:ft=help:norl:et:listchars=
