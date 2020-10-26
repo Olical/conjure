@@ -205,12 +205,10 @@ do
   local function with_session_ids0(cb)
     local function _3_(_)
       local function _4_(msg)
-        local sessions = nil
-        local function _5_(session)
-          return (msg.session ~= session)
+        local sessions = a.get(msg, "sessions")
+        if ("table" == type(sessions)) then
+          table.sort(sessions)
         end
-        sessions = a.filter(_5_, a.get(msg, "sessions"))
-        table.sort(sessions)
         return cb(sessions)
       end
       return send({op = "ls-sessions"}, _4_)

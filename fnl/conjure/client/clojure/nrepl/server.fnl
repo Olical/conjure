@@ -92,11 +92,9 @@
       (send
         {:op :ls-sessions}
         (fn [msg]
-          (let [sessions (->> (a.get msg :sessions)
-                              (a.filter
-                                (fn [session]
-                                  (not= msg.session session))))]
-            (table.sort sessions)
+          (let [sessions (a.get msg :sessions)]
+            (when (= :table (type sessions))
+              (table.sort sessions))
             (cb sessions)))))))
 
 (defn pretty-session-type [st]
