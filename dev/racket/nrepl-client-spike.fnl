@@ -7,8 +7,8 @@
             client conjure.client
             nrepl conjure.remote.nrepl}})
 
-;; TODO Make this generic / reusable as a base nREPL language client.
-;; TODO Only (print "Hello, World!") seems to work, all other evals fail silently.
+;; This kind of works for basic evaluations.
+;; It doesn't give us access to stdio and xrepl.
 
 (def buf-suffix ".rkt")
 (def comment-prefix "; ")
@@ -58,22 +58,9 @@
       (conn.send msg cb))))
 
 (defn display-result [resp]
-  (log.append
-    (if
-      resp.out
-      (text.prefixed-lines
-        (text.trim-last-newline resp.out)
-        (.. comment-prefix "(out) "))
-
-      resp.err
-      (text.prefixed-lines
-        (text.trim-last-newline resp.err)
-        (.. comment-prefix "(err) "))
-
-      resp.value
-      (text.split-lines resp.value)
-
-      nil)))
+  (let [s (or resp.value resp.ex)]
+    (when (a.string? s)
+      (log.append (text.split-lines s)))))
 
 ;; Used for Fennel nREPL.
 ; (defn- ensure-session [cb]
@@ -112,6 +99,7 @@
 
            :on-success
            (fn []
+             (send {:op :eval :code "(require xrepl)"} (fn []))
              (display-conn-status :connected))
 
            :on-error
@@ -155,7 +143,7 @@
 
 (defn doc-str [opts]
   (try-ensure-conn)
-  (eval-str (a.update opts :code (fn [s] (.. "(help " s ")")))))
+  (eval-str (a.update opts :code (fn [s] (.. ",doc " s)))))
 
 (defn eval-file [opts]
   (try-ensure-conn)

@@ -200,7 +200,7 @@ defined as you enter a buffer and can't be altered after the fact.
              - `g:conjure#filetype_client.fennel = "conjure.client.fennel.aniseed"`
              - `g:conjure#filetype_client.clojure = "conjure.client.clojure.nrepl"`
              - `g:conjure#filetype_client.janet = "conjure.client.janet.netrepl"`
-             - `g:conjure#filetype_client.racket = "conjure.client.racket.nrepl"`
+             - `g:conjure#filetype_client.racket = "conjure.client.racket.stdio"`
 
 `g:conjure#eval#result_register`
             Every evaluation captures the result and places it in a Neovim
@@ -456,7 +456,7 @@ your dotfiles.
  - |conjure-client-fennel-aniseed|
  - |conjure-client-clojure-nrepl|
  - |conjure-client-janet-netrepl|
- - |conjure-client-racket-nrepl|
+ - |conjure-client-racket-stdio|
 
 Language clients are simply Lua modules (which can be compiled from Fennel
 using Aniseed) that have a few essential properties and functions in them.

@@ -1,0 +1,55 @@
+                                                 *conjure-client-racket-stdio*
+
+==============================================================================
+CONTENTS                                *conjure-client-racket-stdio-contents*
+
+    1. Introduction ........ |conjure-client-racket-stdio-introduction|
+    2. Mappings ................ |conjure-client-racket-stdio-mappings|
+    3. Configuration ...... |conjure-client-racket-stdio-configuration|
+
+==============================================================================
+INTRODUCTION                        *conjure-client-racket-stdio-introduction*
+
+>
+  Racket is a general-purpose, multi-paradigm programming language based on
+  the Scheme dialect of Lisp. It is designed to be a platform for programming
+  language design and implementation.
+
+Conjure starts a Racket REPL within Neovim when you first open a Racket file.
+
+You should be able to evaluate files and forms as you would with other Conjure
+supported languages right away.
+
+Check out `:ConjureSchool` if you're unsure about what evaluation operations
+you can perform.
+
+ * https://racket-lang.org/
+
+==============================================================================
+MAPPINGS                                *conjure-client-racket-stdio-mappings*
+
+These mappings are the defaults, you can change them as described in
+|conjure-mappings| and |conjure-configuration|.
+
+See |conjure-client-racket-stdio-configuration| for specific configuration
+options relevant to these mappings.
+
+<localleader>cs          Start the Racket REPL if it's not running already.
+
+<localleader>cq          Stop any existing Racket REPL.
+
+==============================================================================
+CONFIGURATION                      *conjure-client-racket-stdio-configuration*
+
+All configuration can be set as described in |conjure-configuration|.
+
+
+`g:conjure#client#racket#stdio#mapping#start`
+            Start the Racket REPL if it's not running already.
+            Default: `"cs"`
+
+`g:conjure#client#racket#stdio#mapping#stop`
+            Stop any existing Racket REPL.
+            Default: `"cq"`
+
+vim:tw=78:sw=2:ts=2:ft=help:norl:et:listchars=
