@@ -232,16 +232,22 @@
 
             old-lines (nvim.buf_line_count buf)]
 
-        (nvim.buf_set_lines
-          buf
-          (if
-            (buffer.empty? buf) 0
+        (let [(ok? err)
+              (pcall
+                (fn []
+                  (nvim.buf_set_lines
+                    buf
+                    (if
+                      (buffer.empty? buf) 0
 
-            ;; Replace one extra line if joining across fold markers.
-            join-first? (if last-fold? -3 -2)
+                      ;; Replace one extra line if joining across fold markers.
+                      join-first? (if last-fold? -3 -2)
 
-            -1)
-          -1 false lines)
+                      -1)
+                    -1 false lines)))]
+          (when (not ok?)
+            (error (.. "Conjure failed to append to log: " err "\n"
+                       "Offending lines: " (a.pr-str lines)))))
 
         (let [new-lines (nvim.buf_line_count buf)]
           (with-buf-wins

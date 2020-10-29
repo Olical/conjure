@@ -363,25 +363,34 @@ do
           lines2 = lines1
         end
         local old_lines = nvim.buf_line_count(buf)
-        local _6_
-        if buffer["empty?"](buf) then
-          _6_ = 0
-        elseif join_first_3f then
-          if last_fold_3f then
-            _6_ = -3
-          else
-            _6_ = -2
+        do
+          local ok_3f, err = nil, nil
+          local function _6_()
+            local _7_
+            if buffer["empty?"](buf) then
+              _7_ = 0
+            elseif join_first_3f then
+              if last_fold_3f then
+                _7_ = -3
+              else
+                _7_ = -2
+              end
+            else
+              _7_ = -1
+            end
+            return nvim.buf_set_lines(buf, _7_, -1, false, lines2)
           end
-        else
-          _6_ = -1
+          ok_3f, err = pcall(_6_)
+          if not ok_3f then
+            error(("Conjure failed to append to log: " .. err .. "\n" .. "Offending lines: " .. a["pr-str"](lines2)))
+          end
         end
-        nvim.buf_set_lines(buf, _6_, -1, false, lines2)
         do
           local new_lines = nvim.buf_line_count(buf)
-          local function _8_(win)
-            local _9_ = nvim.win_get_cursor(win)
-            local row = _9_[1]
-            local col = _9_[2]
+          local function _6_(win)
+            local _7_ = nvim.win_get_cursor(win)
+            local row = _7_[1]
+            local col = _7_[2]
             if ((win ~= state.hud.id) and win_visible_3f(win) and (win_botline(win) >= old_lines)) then
               visible_scrolling_log_3f = true
             end
@@ -389,7 +398,7 @@ do
               return nvim.win_set_cursor(win, {new_lines, 0})
             end
           end
-          with_buf_wins(buf, _8_)
+          with_buf_wins(buf, _6_)
         end
         if (not a.get(opts, "suppress-hud?") and not visible_scrolling_log_3f) then
           display_hud()
