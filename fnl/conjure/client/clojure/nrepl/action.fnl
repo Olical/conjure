@@ -31,7 +31,8 @@
 (defn connect-port-file [opts]
   (let [port (-?>> (cfg [:connection :port_files])
                    (a.map fs.resolve-above)
-                   (a.some a.slurp))]
+                   (a.some a.slurp)
+                   (tonumber))]
     (if port
       (server.connect
         {:host (cfg [:connection :default_host])
@@ -250,8 +251,7 @@
                   msgs
                   (fn [a b]
                     (< a.sent-at b.sent-at)))
-                (order-66 (a.get (a.first msgs) :msg)))))))))
-  )
+                (order-66 (a.get (a.first msgs) :msg))))))))))
 
 (defn- eval-str-fn [code]
   (fn []

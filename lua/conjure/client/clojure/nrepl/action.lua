@@ -95,7 +95,12 @@ do
         if _3_0 then
           local _4_0 = a.map(fs["resolve-above"], _3_0)
           if _4_0 then
-            port = a.some(a.slurp, _4_0)
+            local _5_0 = a.some(a.slurp, _4_0)
+            if _5_0 then
+              port = tonumber(_5_0)
+            else
+              port = _5_0
+            end
           else
             port = _4_0
           end
