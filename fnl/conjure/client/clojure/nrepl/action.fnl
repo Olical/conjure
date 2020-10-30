@@ -446,8 +446,7 @@
             (log.append msg.reloading)
 
             msg.error
-            (log.append [(.. "; Error while reloading "
-                             msg.error-ns)])
+            (log.append [(str.join " " ["; Error while reloading" msg.error-ns])])
 
             msg.status.ok
             (log.append ["; Refresh complete"])

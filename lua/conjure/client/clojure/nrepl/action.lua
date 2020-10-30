@@ -882,7 +882,7 @@ do
         if msg.reloading then
           return log.append(msg.reloading)
         elseif msg.error then
-          return log.append({("; Error while reloading " .. msg["error-ns"])})
+          return log.append({str.join(" ", {"; Error while reloading", msg["error-ns"]})})
         elseif msg.status.ok then
           return log.append({"; Refresh complete"})
         elseif msg.status.done then
