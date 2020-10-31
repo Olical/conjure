@@ -39,7 +39,7 @@
           (stdout:close)
           (stderr:close)
           (repl.handle:close)))
-      (opts.on-exit code signal))
+      (client.schedule opts.on-exit code signal))
 
     (fn next-in-queue []
       (let [next-msg (a.first repl.queue)]
@@ -86,15 +86,16 @@
       (next-in-queue)
       nil)
 
-    (let [(handle pid) (uv.spawn opts.cmd {:stdio [stdin stdout stderr]} (client.wrap on-exit))]
-      (stdout:read_start (client.wrap on-stdout))
-      (stderr:read_start (client.wrap on-stderr))
+    (let [(handle pid) (uv.spawn opts.cmd {:stdio [stdin stdout stderr]} (client.schedule-wrap on-exit))]
+      (stdout:read_start (client.schedule-wrap on-stdout))
+      (stderr:read_start (client.schedule-wrap on-stderr))
       (opts.on-success)
       (a.merge!
         repl
         {:handle handle
          :pid pid
          :send send
+         :opts opts
          :destroy destroy}))))
 
 (comment

@@ -42,6 +42,20 @@ do
   _0_0["aniseed/locals"]["uv"] = v_0_
   uv = v_0_
 end
+local parse_prompt = nil
+do
+  local v_0_ = nil
+  local function parse_prompt0(s, pat)
+    if s:find(pat) then
+      return true, s:gsub(pat, "")
+    else
+      return false, s
+    end
+  end
+  v_0_ = parse_prompt0
+  _0_0["aniseed/locals"]["parse-prompt"] = v_0_
+  parse_prompt = v_0_
+end
 local start = nil
 do
   local v_0_ = nil
@@ -66,7 +80,8 @@ do
           stderr:close()
           return (repl.handle):close()
         end
-        return pcall(_3_)
+        pcall(_3_)
+        return client.schedule(opts["on-exit"], code, signal)
       end
       local function next_in_queue()
         local next_msg = a.first(repl.queue)
@@ -84,27 +99,13 @@ do
           return destroy()
         else
           if chunk then
-            local results = str.split(chunk, opts["prompt-pattern"])
-            local done_3f = (a.count(results) > 1)
-            local results0 = nil
-            local function _3_(_241)
-              return not a["empty?"](_241)
-            end
-            results0 = a.filter(_3_, results)
-            local result_count = a.count(results0)
-            local cb = a["get-in"](repl, {"current", "cb"})
+            local done_3f, result = parse_prompt(chunk, opts["prompt-pattern"])
+            local cb = a["get-in"](repl, {"current", "cb"}, opts["on-stray-output"])
             if cb then
-              local function _4_(_5_0)
-                local _6_ = _5_0
-                local n = _6_[1]
-                local result = _6_[2]
-                log.dbg("result", result)
-                local function _7_()
-                  return cb({["done?"] = (done_3f and (n == result_count)), [source] = result})
-                end
-                return pcall(_7_)
+              local function _3_()
+                return cb({["done?"] = done_3f, [source] = result})
               end
-              a["map-indexed"](_4_, results0)
+              pcall(_3_)
             end
             if done_3f then
               a.assoc(repl, "current", nil)
@@ -119,15 +120,29 @@ do
       local function on_stderr(err, chunk)
         return on_message("err", err, chunk)
       end
-      local function send(code, cb)
-        table.insert(repl.queue, {cb = cb, code = code})
+      local function send(code, cb, opts0)
+        local _3_
+        if a.get(opts0, "batch?") then
+          local msgs = {}
+          local function _5_(msg)
+            table.insert(msgs, msg)
+            if msg["done?"] then
+              return cb(msgs)
+            end
+          end
+          _3_ = _5_
+        else
+          _3_ = cb
+        end
+        table.insert(repl.queue, {cb = _3_, code = code})
         next_in_queue()
         return nil
       end
-      local handle, pid = uv.spawn(opts.cmd, {stdio = {stdin, stdout, stderr}}, client.wrap(on_exit))
-      stdout:read_start(client.wrap(on_stdout))
-      stderr:read_start(client.wrap(on_stderr))
-      return a["merge!"](repl, {destroy = destroy, handle = handle, pid = pid, send = send})
+      local handle, pid = uv.spawn(opts.cmd, {stdio = {stdin, stdout, stderr}}, client["schedule-wrap"](on_exit))
+      stdout:read_start(client["schedule-wrap"](on_stdout))
+      stderr:read_start(client["schedule-wrap"](on_stderr))
+      opts["on-success"]()
+      return a["merge!"](repl, {destroy = destroy, handle = handle, opts = opts, pid = pid, send = send})
     end
     v_0_0 = start0
     _0_0["start"] = v_0_0
@@ -136,5 +151,5 @@ do
   _0_0["aniseed/locals"]["start"] = v_0_
   start = v_0_
 end
--- (def repl (start table: 0x7f16b0efa068)) (repl.send (+ 1 2)  (fn table: 0x7f16b0f12378 (a.println msg: msg))) (repl.send (+ 1 2)(print "Hello, World!")  (fn table: 0x7f16b0e0b4e8 (a.println msg: msg))) (repl.send (/ 1 0)(display "boundary!")  (fn table: 0x7f16b0d83868 (a.println msg: msg))) (repl.destroy)
+-- (def repl (start table: 0x7f1c45fa7ed0)) (defn send table: 0x7f1c45ff4670 (repl.send code (fn table: 0x7f1c45f88500 (a.println msg: code => msg)) opts)) (send (+ 1 2)) (send (list (+ 1 2) (println "Hello, World!")) table: 0x7f1c4624c320) (repl.destroy)
 return nil
