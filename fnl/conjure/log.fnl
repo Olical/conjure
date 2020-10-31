@@ -299,10 +299,10 @@
              (= buf (nvim.win_get_buf win))))
          (a.run! #(nvim.win_close $1 true)))))
 
-(defn dbg [desc data]
+(defn dbg [desc ...]
   (when (config.get-in [:debug])
     (append
       (a.concat
         [(.. (client.get :comment-prefix) "debug: " desc)]
-        (text.split-lines (view.serialise data)))))
+        (text.split-lines (a.pr-str ...)))))
   data)

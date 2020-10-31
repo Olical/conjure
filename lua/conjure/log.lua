@@ -509,9 +509,9 @@ do
   local v_0_ = nil
   do
     local v_0_0 = nil
-    local function dbg0(desc, data)
+    local function dbg0(desc, ...)
       if config["get-in"]({"debug"}) then
-        append(a.concat({(client.get("comment-prefix") .. "debug: " .. desc)}, text["split-lines"](view.serialise(data))))
+        append(a.concat({(client.get("comment-prefix") .. "debug: " .. desc)}, text["split-lines"](a["pr-str"](...))))
       end
       return data
     end
