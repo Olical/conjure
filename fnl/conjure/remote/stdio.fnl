@@ -1,51 +1,95 @@
 (module conjure.remote.stdio
   {require {a conjure.aniseed.core
             nvim conjure.aniseed.nvim
+            str conjure.aniseed.string
             client conjure.client
             log conjure.log}})
 
 (def- uv vim.loop)
 
-;; TODO Event hooks for success, fail, message, death.
-;; TODO All results until prompt go to the front of the callback queue.
-;; TODO Bundle msg with queue so we only send when ready (avoids stdin getting swallowed by past evals).
-;; TODO With all msgs fn for batching where required, or maybe through an opt?
+(defn- parse-prompt [s pat]
+  (if (s:find pat)
+    (values true (s:gsub pat ""))
+    (values false s)))
 
 (defn start [opts]
   "Starts an external REPL and gives you hooks to send code to it and read
   responses back out. Tying an input to a result is near enough impossible
   through this stdio medium, so it's a best effort.
   * opts.prompt-pattern: Identify result boundaries such as '> '.
-  * opts.cmd: Command to run to start the REPL."
+  * opts.cmd: Command to run to start the REPL.
+  * opts.on-error: Called with an error string when we receive a true error from the process.
+  * opts.on-stray-output: Called with stray output that don't match up to a callback.
+  * opts.on-exit: Called on exit with the code and signal."
   (let [stdin (uv.new_pipe false)
         stdout (uv.new_pipe false)
         stderr (uv.new_pipe false)]
 
-    (var repl {:queue []})
+    (var repl {:queue []
+               :current nil})
 
     (fn destroy []
-      (stdin:shutdown))
+      (pcall #(stdin:shutdown))
+      nil)
 
     (fn on-exit [code signal]
-      (stdin:close)
-      (stdout:close)
-      (stderr:close)
-      (repl.handle:close))
+      (pcall
+        (fn []
+          (stdin:close)
+          (stdout:close)
+          (stderr:close)
+          (repl.handle:close)))
+      (opts.on-exit code signal))
+
+    (fn next-in-queue []
+      (let [next-msg (a.first repl.queue)]
+        (when (and next-msg (not repl.current))
+          (table.remove repl.queue 1)
+          (a.assoc repl :current next-msg)
+          (log.dbg "send" next-msg.code)
+          (stdin:write next-msg.code))))
+
+    (fn on-message [source err chunk]
+      (log.dbg "receive" source err chunk)
+      (if err
+        (do
+          (opts.on-error err)
+          (destroy))
+        (when chunk
+          (let [(done? result) (parse-prompt chunk opts.prompt-pattern)
+                cb (a.get-in repl [:current :cb] opts.on-stray-output)]
+            (when cb
+              (pcall
+                #(cb {source result
+                      :done? done?})))
+            (when done?
+              (a.assoc repl :current nil)
+              (next-in-queue))))))
 
     (fn on-stdout [err chunk]
-      (a.println "out:" err "-" chunk))
+      (on-message :out err chunk))
 
     (fn on-stderr [err chunk]
-      (a.println "err:" err "-" chunk))
+      (on-message :err err chunk))
 
-    (fn send [msg cb]
-      (table.insert repl.queue cb)
-      (log.dbg "send" msg)
-      (stdin:write msg))
+    (fn send [code cb opts]
+      (table.insert
+        repl.queue
+        {:code code
+         :cb (if (a.get opts :batch?)
+               (let [msgs []]
+                 (fn [msg]
+                   (table.insert msgs msg)
+                   (when msg.done?
+                     (cb msgs))))
+               cb)})
+      (next-in-queue)
+      nil)
 
     (let [(handle pid) (uv.spawn opts.cmd {:stdio [stdin stdout stderr]} (client.wrap on-exit))]
       (stdout:read_start (client.wrap on-stdout))
       (stderr:read_start (client.wrap on-stderr))
+      (opts.on-success)
       (a.merge!
         repl
         {:handle handle
@@ -54,9 +98,22 @@
          :destroy destroy}))))
 
 (comment
-  (def repl (start {:prompt-pattern "> "
-                    :cmd "racket"}))
-  (repl.send "(+ 1 2)\n"
-             (fn [msg]
-               (a.println "msg:" msg)))
+  (def repl (start {:prompt-pattern "\n?[%w%-]*> $"
+                    :cmd "racket"
+                    :on-success (fn []
+                                  (a.println "started"))
+                    :on-error (fn [err]
+                                (error err))
+                    :on-exit (fn [code signal]
+                               (a.println "exit:" code signal))
+                    :on-stray-output (fn [msg]
+                                       (a.println "stray:" msg))}))
+  (defn send [code opts]
+    (repl.send
+      code
+      (fn [msg]
+        (a.println "msg:" code "=>" msg))
+      opts))
+  (send "(+ 1 2)")
+  (send "(list (+ 1 2) (println \"Hello, World!\"))" {:batch? true})
   (repl.destroy))
