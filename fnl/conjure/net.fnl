@@ -1,7 +1,8 @@
 (module conjure.net
   {require {a conjure.aniseed.core
             nvim conjure.aniseed.nvim
-            bridge conjure.bridge}})
+            bridge conjure.bridge}
+   require-macros [macros.core]})
 
 (defn resolve [host]
   ;; Mostly to work around jeejah binding to localhost instead of 127.0.0.1 and
@@ -39,9 +40,6 @@
 (defn destroy-all-socks []
   (a.run! destroy-sock state.sock-drawer))
 
-(nvim.ex.augroup :conjure_net_sock_cleanup)
-(nvim.ex.autocmd_)
-(nvim.ex.autocmd
-  "VimLeavePre *"
-  (bridge.viml->lua :conjure.net :destroy-all-socks {}))
-(nvim.ex.augroup :END)
+(augroup
+  conjure-net-sock-cleanup
+  (autocmd :VimLeavePre :* (viml->fn :destroy-all-socks)))

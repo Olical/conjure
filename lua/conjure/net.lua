@@ -21,7 +21,7 @@ local function _2_(...)
   end
   ok_3f_0_, val_0_ = pcall(_2_)
   if ok_3f_0_ then
-    _0_0["aniseed/local-fns"] = {require = {a = "conjure.aniseed.core", bridge = "conjure.bridge", nvim = "conjure.aniseed.nvim"}}
+    _0_0["aniseed/local-fns"] = {["require-macros"] = {["macros.core"] = true}, require = {a = "conjure.aniseed.core", bridge = "conjure.bridge", nvim = "conjure.aniseed.nvim"}}
     return val_0_
   else
     return print(val_0_)
@@ -33,7 +33,7 @@ local bridge = _1_[2]
 local nvim = _1_[3]
 local _2amodule_2a = _0_0
 local _2amodule_name_2a = "conjure.net"
-do local _ = ({nil, _0_0, {{}, nil, nil, nil}})[2] end
+do local _ = ({nil, _0_0, {{nil}, nil, nil, nil}})[2] end
 local resolve = nil
 do
   local v_0_ = nil
@@ -122,7 +122,7 @@ do
   _0_0["aniseed/locals"]["destroy-all-socks"] = v_0_
   destroy_all_socks = v_0_
 end
-nvim.ex.augroup("conjure_net_sock_cleanup")
+nvim.ex.augroup("conjure-net-sock-cleanup")
 nvim.ex.autocmd_()
-nvim.ex.autocmd("VimLeavePre *", bridge["viml->lua"]("conjure.net", "destroy-all-socks", {}))
+nvim.ex.autocmd("VimLeavePre", "*", ("lua require('" .. _2amodule_name_2a .. "')['" .. "destroy-all-socks" .. "']()"))
 return nvim.ex.augroup("END")
