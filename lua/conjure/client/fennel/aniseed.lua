@@ -288,8 +288,8 @@ do
   do
     local v_0_0 = nil
     local function on_filetype0()
-      mapping.buf("n", cfg({"mapping", "run_buf_tests"}), "conjure.client.fennel.aniseed", "run-buf-tests")
-      return mapping.buf("n", cfg({"mapping", "run_all_tests"}), "conjure.client.fennel.aniseed", "run-all-tests")
+      mapping.buf("n", cfg({"mapping", "run_buf_tests"}), _2amodule_name_2a, "run-buf-tests")
+      return mapping.buf("n", cfg({"mapping", "run_all_tests"}), _2amodule_name_2a, "run-all-tests")
     end
     v_0_0 = on_filetype0
     _0_0["on-filetype"] = v_0_0
