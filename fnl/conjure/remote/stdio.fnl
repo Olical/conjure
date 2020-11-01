@@ -97,24 +97,3 @@
          :send send
          :opts opts
          :destroy destroy}))))
-
-(comment
-  (def repl (start {:prompt-pattern "\n?[%w%-]*> $"
-                    :cmd "racket"
-                    :on-success (fn []
-                                  (a.println "started"))
-                    :on-error (fn [err]
-                                (error err))
-                    :on-exit (fn [code signal]
-                               (a.println "exit:" code signal))
-                    :on-stray-output (fn [msg]
-                                       (a.println "stray:" msg))}))
-  (defn send [code opts]
-    (repl.send
-      code
-      (fn [msg]
-        (a.println "msg:" code "=>" msg))
-      opts))
-  (send "(+ 1 2)")
-  (send "(list (+ 1 2) (println \"Hello, World!\"))" {:batch? true})
-  (repl.destroy))

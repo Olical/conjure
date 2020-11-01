@@ -151,5 +151,4 @@ do
   _0_0["aniseed/locals"]["start"] = v_0_
   start = v_0_
 end
--- (def repl (start table: 0x7f1c45fa7ed0)) (defn send table: 0x7f1c45ff4670 (repl.send code (fn table: 0x7f1c45f88500 (a.println msg: code => msg)) opts)) (send (+ 1 2)) (send (list (+ 1 2) (println "Hello, World!")) table: 0x7f1c4624c320) (repl.destroy)
 return nil
