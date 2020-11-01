@@ -8,7 +8,6 @@
 "djblue"
 "jkrasnay"
 "mamapitufo"
-"markwoodhall"
 "martinklepsch"
 "nickcernis"
 "orestis"
