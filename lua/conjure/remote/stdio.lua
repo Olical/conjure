@@ -141,7 +141,10 @@ do
       local handle, pid = uv.spawn(opts.cmd, {stdio = {stdin, stdout, stderr}}, client["schedule-wrap"](on_exit))
       stdout:read_start(client["schedule-wrap"](on_stdout))
       stderr:read_start(client["schedule-wrap"](on_stderr))
-      opts["on-success"]()
+      local function _3_()
+        return opts["on-success"]()
+      end
+      client.schedule(_3_)
       return a["merge!"](repl, {destroy = destroy, handle = handle, opts = opts, pid = pid, send = send})
     end
     v_0_0 = start0

@@ -86,10 +86,11 @@
       (next-in-queue)
       nil)
 
-    (let [(handle pid) (uv.spawn opts.cmd {:stdio [stdin stdout stderr]} (client.schedule-wrap on-exit))]
+    (let [(handle pid) (uv.spawn opts.cmd {:stdio [stdin stdout stderr]}
+                                 (client.schedule-wrap on-exit))]
       (stdout:read_start (client.schedule-wrap on-stdout))
       (stderr:read_start (client.schedule-wrap on-stderr))
-      (opts.on-success)
+      (client.schedule #(opts.on-success))
       (a.merge!
         repl
         {:handle handle
