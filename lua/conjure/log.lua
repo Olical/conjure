@@ -78,6 +78,21 @@ do
   _0_0["aniseed/locals"]["log-buf-name"] = v_0_
   log_buf_name = v_0_
 end
+local log_buf_3f = nil
+do
+  local v_0_ = nil
+  do
+    local v_0_0 = nil
+    local function log_buf_3f0(name)
+      return name:match((log_buf_name() .. "$"))
+    end
+    v_0_0 = log_buf_3f0
+    _0_0["log-buf?"] = v_0_0
+    v_0_ = v_0_0
+  end
+  _0_0["aniseed/locals"]["log-buf?"] = v_0_
+  log_buf_3f = v_0_
+end
 local on_new_log_buf = nil
 do
   local v_0_ = nil
@@ -513,7 +528,7 @@ do
       if config["get-in"]({"debug"}) then
         append(a.concat({(client.get("comment-prefix") .. "debug: " .. desc)}, text["split-lines"](a["pr-str"](...))))
       end
-      return data
+      return ...
     end
     v_0_0 = dbg0
     _0_0["dbg"] = v_0_0

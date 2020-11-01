@@ -25,6 +25,9 @@
 (defn- log-buf-name []
   (.. "conjure-log-" (nvim.fn.getpid) (client.get :buf-suffix)))
 
+(defn log-buf? [name]
+  (name:match (.. (log-buf-name) "$")))
+
 (defn- on-new-log-buf [buf]
   (nvim.buf_set_lines
     buf 0 -1 false
@@ -305,4 +308,4 @@
       (a.concat
         [(.. (client.get :comment-prefix) "debug: " desc)]
         (text.split-lines (a.pr-str ...)))))
-  data)
+  ...)
