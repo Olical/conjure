@@ -36,7 +36,7 @@ options relevant to these mappings.
 
 <localleader>cs          Start the Racket REPL if it's not running already.
 
-<localleader>cq          Stop any existing Racket REPL.
+<localleader>cS          Stop any existing Racket REPL.
 
 ==============================================================================
 CONFIGURATION                      *conjure-client-racket-stdio-configuration*
@@ -50,6 +50,6 @@ All configuration can be set as described in |conjure-configuration|.
 
 `g:conjure#client#racket#stdio#mapping#stop`
             Stop any existing Racket REPL.
-            Default: `"cq"`
+            Default: `"cS"`
 
 vim:tw=78:sw=2:ts=2:ft=help:norl:et:listchars=
