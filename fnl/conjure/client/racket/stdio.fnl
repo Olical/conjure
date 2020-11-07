@@ -8,7 +8,7 @@
             mapping conjure.mapping
             client conjure.client
             log conjure.log}
-   require-macros [macros.core]})
+   require-macros [conjure.macros]})
 
 (config.merge
   {:client

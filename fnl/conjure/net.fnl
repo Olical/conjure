@@ -2,7 +2,7 @@
   {require {a conjure.aniseed.core
             nvim conjure.aniseed.nvim
             bridge conjure.bridge}
-   require-macros [macros.core]})
+   require-macros [conjure.macros]})
 
 (defn resolve [host]
   ;; Mostly to work around jeejah binding to localhost instead of 127.0.0.1 and
