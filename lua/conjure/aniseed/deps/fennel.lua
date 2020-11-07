@@ -1070,8 +1070,8 @@ package.preload["conjure.aniseed.fennel.specials"] = package.preload["conjure.an
       compiler.assert(compiler.scopes.macro, "must call from macro", ast)
       return compiler.scopes.macro.manglings[tostring(symbol)]
     end
-    local function _3_()
-      return utils.sym(compiler.gensym((compiler.scopes.macro or scope)))
+    local function _3_(base)
+      return utils.sym(compiler.gensym((compiler.scopes.macro or scope), base))
     end
     local function _4_(form)
       compiler.assert(compiler.scopes.macro, "must call from macro", ast)
@@ -1441,7 +1441,7 @@ package.preload["conjure.aniseed.fennel.compiler"] = package.preload["conjure.an
       mangling = ((base or "") .. "_" .. append .. "_")
       append = (append + 1)
     end
-    scope.unmanglings[mangling] = true
+    scope.unmanglings[mangling] = (base or true)
     return mangling
   end
   local function autogensym(base, scope)
@@ -1948,6 +1948,19 @@ package.preload["conjure.aniseed.fennel.compiler"] = package.preload["conjure.an
       end
       return ret
     end
+    local function effective_key(key, val)
+      local key0 = nil
+      if (utils["sym?"](key) and (tostring(key) == ":") and utils["sym?"](val)) then
+        key0 = tostring(val)
+      else
+        key0 = key
+      end
+      if (type(key0) == "string") then
+        return serialize_string(key0)
+      else
+        return key0
+      end
+    end
     local function destructure1(left, rightexprs, up1, top)
       if (utils["sym?"](left) and (left[1] ~= "nil")) then
         local lname = getname(left, up1)
@@ -1981,13 +1994,7 @@ package.preload["conjure.aniseed.fennel.compiler"] = package.preload["conjure.an
             destructure1(left[(k + 1)], {subexpr}, left)
             return
           else
-            if (utils["sym?"](k) and (tostring(k) == ":") and utils["sym?"](v)) then
-              k = tostring(v)
-            end
-            if (type(k) ~= "number") then
-              k = serialize_string(k)
-            end
-            local subexpr = utils.expr(string.format("%s[%s]", s, k), "expression")
+            local subexpr = utils.expr(string.format("%s[%s]", s, effective_key(k, v)), "expression")
             destructure1(v, {subexpr}, left)
           end
         end
@@ -3105,9 +3112,8 @@ do
         (if (table? a)
             (each [_ a (pairs a)]
               (check! a))
-            (and (not (string.match (tostring a) "^?"))
-                 (not= (tostring a) "&")
-                 (not= (tostring a) "..."))
+            (let [as (tostring a)]
+              (and (not (as:match "^?")) (not= as "&") (not= as "_") (not= as "...")))
             (table.insert args arity-check-position
                           `(assert (not= nil ,a)
                                    (string.format "Missing argument %s on %s:%s"

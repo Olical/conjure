@@ -33,6 +33,6 @@ local nvim = _1_[2]
 local _2amodule_2a = _0_0
 local _2amodule_name_2a = "conjure.aniseed.fennel"
 do local _ = ({nil, _0_0, {{}, nil, nil, nil}})[2] end
-nvim.ex.let("&runtimepath = &runtimepath")
-fennel["path"] = string.gsub(string.gsub(string.gsub(package.path, "/lua/", "/fnl/"), ".lua;", ".fnl;"), ".lua$", ".fnl")
+local suffix = "/fnl/?.fnl"
+fennel["path"] = ((nvim.o.runtimepath):gsub(",", (suffix .. ";")) .. suffix)
 return nil
