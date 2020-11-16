@@ -56,28 +56,25 @@ do
       local _3_ = (opts or {})
       local range = _3_["range"]
       local _return = _3_["return"]
-      local function _4_()
-        if range then
-          return " range"
-        else
-          return ""
-        end
+      local _4_
+      if range then
+        _4_ = " range"
+      else
+        _4_ = ""
       end
-      local function _5_()
-        if (_return ~= false) then
-          return "return"
-        else
-          return "call"
-        end
+      local _6_
+      if (_return ~= false) then
+        _6_ = "return"
+      else
+        _6_ = "call"
       end
-      local function _6_()
-        if range then
-          return "\" . a:firstline . \", \" . a:lastline . \", "
-        else
-          return ""
-        end
+      local _8_
+      if range then
+        _8_ = "\" . a:firstline . \", \" . a:lastline . \", "
+      else
+        _8_ = ""
       end
-      return nvim.ex.function_((viml_name .. "(...)" .. _4_() .. "\n          " .. _5_() .. " luaeval(\"require('" .. mod .. "')['" .. lua_name .. "'](" .. _6_() .. "unpack(_A))\", a:000)\n          endfunction"))
+      return nvim.ex.function_((viml_name .. "(...)" .. _4_ .. "\n          " .. _6_ .. " luaeval(\"require('" .. mod .. "')['" .. lua_name .. "'](" .. _8_ .. "unpack(_A))\", a:000)\n          endfunction"))
     end
     v_0_0 = fn_bridge0
     _0_0["fn-bridge"] = v_0_0

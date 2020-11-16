@@ -435,14 +435,13 @@ do
   local v_0_ = nil
   local function create_win0(cmd)
     local buf = upsert_buf()
-    local function _3_()
-      if config["get-in"]({"log", "botright"}) then
-        return "botright "
-      else
-        return ""
-      end
+    local _3_
+    if config["get-in"]({"log", "botright"}) then
+      _3_ = "botright "
+    else
+      _3_ = ""
     end
-    nvim.command((_3_() .. cmd .. " " .. buffer.resolve(log_buf_name())))
+    nvim.command((_3_ .. cmd .. " " .. buffer.resolve(log_buf_name())))
     nvim.win_set_cursor(0, {nvim.buf_line_count(buf), 0})
     set_win_opts_21(0)
     return buffer.unlist(buf)

@@ -64,14 +64,13 @@ do
         local assertions_passed = _3_["assertions-passed"]
         local tests = _3_["tests"]
         local tests_passed = _3_["tests-passed"]
-        local function _4_()
-          if ok_3f(results) then
-            return "OK"
-          else
-            return "FAILED"
-          end
+        local _4_
+        if ok_3f(results) then
+          _4_ = "OK"
+        else
+          _4_ = "FAILED"
         end
-        a.println((prefix .. " " .. _4_() .. " " .. tests_passed .. "/" .. tests .. " tests and " .. assertions_passed .. "/" .. assertions .. " assertions passed"))
+        a.println((prefix .. " " .. _4_ .. " " .. tests_passed .. "/" .. tests .. " tests and " .. assertions_passed .. "/" .. assertions .. " assertions passed"))
       end
       return results
     end
