@@ -128,15 +128,23 @@ do
   _0_0["aniseed/locals"]["display-result"] = v_0_
   display_result = v_0_
 end
-local wrap_code = nil
+local prep_code = nil
 do
   local v_0_ = nil
-  local function wrap_code0(s)
-    return (s .. "\n(flush-output)")
+  local function prep_code0(s)
+    local lang_line_pat = "#lang [^%s]+"
+    local code = nil
+    if s:match(lang_line_pat) then
+      log.append({(comment_prefix .. "Dropping #lang, only supported in file evaluation.")})
+      code = s:gsub(lang_line_pat, "")
+    else
+      code = s
+    end
+    return (code .. "\n(flush-output)")
   end
-  v_0_ = wrap_code0
-  _0_0["aniseed/locals"]["wrap-code"] = v_0_
-  wrap_code = v_0_
+  v_0_ = prep_code0
+  _0_0["aniseed/locals"]["prep-code"] = v_0_
+  prep_code = v_0_
 end
 local eval_str = nil
 do
@@ -152,7 +160,7 @@ do
           opts["on-result"](str.join("\n", format_message(a.last(msgs))))
           return a["run!"](display_result, msgs)
         end
-        return repl.send(wrap_code(opts.code), _4_, {["batch?"] = true})
+        return repl.send(prep_code(opts.code), _4_, {["batch?"] = true})
       end
       return with_repl_or_warn(_3_)
     end
@@ -240,7 +248,7 @@ do
       if (repl and not log["log-buf?"](path)) then
         local function _3_()
         end
-        return repl.send(wrap_code((",enter " .. path)), _3_)
+        return repl.send(prep_code((",enter " .. path)), _3_)
       end
     end
     v_0_0 = enter0

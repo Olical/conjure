@@ -44,14 +44,21 @@
     (->> (format-message msg)
          (a.filter #(not (= "" $1))))))
 
-(defn- wrap-code [s]
-  (.. s "\n(flush-output)"))
+(defn- prep-code [s]
+  (let [lang-line-pat "#lang [^%s]+"
+        code
+        (if (s:match lang-line-pat)
+          (do
+            (log.append [(.. comment-prefix "Dropping #lang, only supported in file evaluation.")])
+            (s:gsub lang-line-pat ""))
+          s)]
+    (.. code "\n(flush-output)")))
 
 (defn eval-str [opts]
   (with-repl-or-warn
     (fn [repl]
       (repl.send
-        (wrap-code opts.code)
+        (prep-code opts.code)
         (fn [msgs]
           (when (and (= 1 (a.count msgs))
                      (= "" (a.get-in msgs [1 :out])))
@@ -86,7 +93,7 @@
         path (nvim.fn.expand "%:p")]
     (when (and repl (not (log.log-buf? path)))
       (repl.send
-        (wrap-code (.. ",enter " path))
+        (prep-code (.. ",enter " path))
         (fn [])))))
 
 (defn start []
