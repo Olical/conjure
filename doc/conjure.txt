@@ -76,7 +76,7 @@ I've also included some commands since they're related to the mappings.
                            autocmd!
                            autocmd DirChanged * execute "ConjureClientState " . getcwd()
                          augroup END
-
+<
 <localleader>ls          Open the log buffer in a new horizontal split window.
                          The direction can be controlled with |splitbelow|.
 
