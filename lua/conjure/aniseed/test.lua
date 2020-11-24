@@ -198,14 +198,11 @@ do
   do
     local v_0_0 = nil
     local function suite0()
-      nvim.ex.redir_("> test/results.txt")
       local function _3_(path)
         return require(string.gsub(string.match(path, "^test/fnl/(.-).fnl$"), "/", "."))
       end
       a["run!"](_3_, nvim.fn.globpath("test/fnl", "**/*-test.fnl", false, true))
-      local results = run_all()
-      nvim.ex.redir("END")
-      if ok_3f(results) then
+      if ok_3f(run_all()) then
         return nvim.ex.q()
       else
         return nvim.ex.cq()

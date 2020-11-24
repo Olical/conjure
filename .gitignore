@@ -1,6 +1,5 @@
 /deps/
 /.lnvim.lua
-/test/results.txt
 /test/lua/
 /.cpcache/
 /.cljs_node_repl/
