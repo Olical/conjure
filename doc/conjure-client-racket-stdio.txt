@@ -52,4 +52,9 @@ All configuration can be set as described in |conjure-configuration|.
             Stop any existing Racket REPL.
             Default: `"cS"`
 
+`g:conjure#client#racket#stdio#command`
+            Command used to start the Racket REPL, you can modify this to add
+            arguments or change the command entirely.
+            Default: `"racket"`
+
 vim:tw=78:sw=2:ts=2:ft=help:norl:et:listchars=
