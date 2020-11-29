@@ -528,7 +528,7 @@ package.preload["conjure.aniseed.fennel.specials"] = package.preload["conjure.an
     local target = utils.deref(ast[2])
     local special_or_macro = (scope.specials[target] or scope.macros[target])
     if special_or_macro then
-      return ("print([[%s]])"):format(doc_2a(special_or_macro, target))
+      return ("print(%q)"):format(doc_2a(special_or_macro, target))
     else
       local value = tostring(compiler.compile1(ast[2], scope, parent, {nval = 1})[1])
       return ("print(require('%s').doc(%s, '%s'))"):format((utils.root.options.moduleName or "fennel"), value, tostring(ast[2]))
@@ -1127,11 +1127,11 @@ package.preload["conjure.aniseed.fennel.specials"] = package.preload["conjure.an
     return find_in_path(1)
   end
   local function make_searcher(options)
-    local opts = utils.copy(utils.root.options)
-    for k, v in pairs((options or {})) do
-      opts[k] = v
-    end
     local function _1_(module_name)
+      local opts = utils.copy(utils.root.options)
+      for k, v in pairs((options or {})) do
+        opts[k] = v
+      end
       local _2_0 = search_module(module_name)
       if (nil ~= _2_0) then
         local filename = _2_0
@@ -1187,7 +1187,7 @@ package.preload["conjure.aniseed.fennel.specials"] = package.preload["conjure.an
     return add_macros(macro_loaded[modname], ast, scope, parent)
   end
   doc_special("require-macros", {"macro-module-name"}, "Load given module and use its contents as macro definitions in current scope.\nMacro module should return a table of macro functions with string keys.\nConsider using import-macros instead as it is more flexible.")
-  local function emit_fennel(src, path, opts, sub_chunk)
+  local function emit_included_fennel(src, path, opts, sub_chunk)
     local subscope = compiler["make-scope"](utils.root.scope.parent)
     local forms = {}
     if utils.root.options.requireAsInclude then
@@ -1199,7 +1199,7 @@ package.preload["conjure.aniseed.fennel.specials"] = package.preload["conjure.an
     for i = 1, #forms do
       local subopts = nil
       if (i == #forms) then
-        subopts = {nval = 1, tail = true}
+        subopts = {tail = true}
       else
         subopts = {nval = 0}
       end
@@ -1237,7 +1237,7 @@ package.preload["conjure.aniseed.fennel.specials"] = package.preload["conjure.an
       table.insert(utils.root.chunk, i, v)
     end
     if fennel_3f then
-      emit_fennel(src, path, opts, sub_chunk)
+      emit_included_fennel(src, path, opts, sub_chunk)
     else
       compiler.emit(sub_chunk, src, ast)
     end
@@ -2240,11 +2240,7 @@ end
 package.preload["conjure.aniseed.fennel.friend"] = package.preload["conjure.aniseed.fennel.friend"] or function(...)
   local function ast_source(ast)
     local m = getmetatable(ast)
-    if (m and m.line and m) then
-      return m
-    else
-      return ast
-    end
+    return ((m and m.line and m) or ast or {})
   end
   local suggestions = {["$ and $... in hashfn are mutually exclusive"] = {"modifying the hashfn so it only contains $... or $, $1, $2, $3, etc"}, ["can't start multisym segment with a digit"] = {"removing the digit", "adding a non-digit before the digit"}, ["cannot call literal value"] = {"checking for typos", "checking for a missing function name"}, ["could not compile value of type "] = {"debugging the macro you're calling not to return a coroutine or userdata"}, ["could not read number (.*)"] = {"removing the non-digit character", "beginning the identifier with a non-digit if it is not meant to be a number"}, ["expected a function.* to call"] = {"removing the empty parentheses", "using square brackets if you want an empty table"}, ["expected binding table"] = {"placing a table here in square brackets containing identifiers to bind"}, ["expected body expression"] = {"putting some code in the body of this form after the bindings"}, ["expected each macro to be function"] = {"ensuring that the value for each key in your macros table contains a function", "avoid defining nested macro tables"}, ["expected even number of name/value bindings"] = {"finding where the identifier or value is missing"}, ["expected even number of values in table literal"] = {"removing a key", "adding a value"}, ["expected local"] = {"looking for a typo", "looking for a local which is used out of its scope"}, ["expected macros to be table"] = {"ensuring your macro definitions return a table"}, ["expected parameters"] = {"adding function parameters as a list of identifiers in brackets"}, ["expected rest argument before last parameter"] = {"moving & to right before the final identifier when destructuring"}, ["expected symbol for function parameter: (.*)"] = {"changing %s to an identifier instead of a literal value"}, ["expected var (.*)"] = {"declaring %s using var instead of let/local", "introducing a new local instead of changing the value of %s"}, ["expected vararg as last parameter"] = {"moving the \"...\" to the end of the parameter list"}, ["expected whitespace before opening delimiter"] = {"adding whitespace"}, ["global (.*) conflicts with local"] = {"renaming local %s"}, ["illegal character: (.)"] = {"deleting or replacing %s", "avoiding reserved characters like \", \\, ', ~, ;, @, `, and comma"}, ["local (.*) was overshadowed by a special form or macro"] = {"renaming local %s"}, ["macro not found in macro module"] = {"checking the keys of the imported macro module's returned table"}, ["macro tried to bind (.*) without gensym"] = {"changing to %s# when introducing identifiers inside macros"}, ["malformed multisym"] = {"ensuring each period or colon is not followed by another period or colon"}, ["may only be used at compile time"] = {"moving this to inside a macro if you need to manipulate symbols/lists", "using square brackets instead of parens to construct a table"}, ["method must be last component"] = {"using a period instead of a colon for field access", "removing segments after the colon", "making the method call, then looking up the field on the result"}, ["mismatched closing delimiter (.), expected (.)"] = {"replacing %s with %s", "deleting %s", "adding matching opening delimiter earlier"}, ["multisym method calls may only be in call position"] = {"using a period instead of a colon to reference a table's fields", "putting parens around this"}, ["unable to bind (.*)"] = {"replacing the %s with an identifier"}, ["unexpected closing delimiter (.)"] = {"deleting %s", "adding matching opening delimiter earlier"}, ["unexpected multi symbol (.*)"] = {"removing periods or colons from %s"}, ["unexpected vararg"] = {"putting \"...\" at the end of the fn parameters if the vararg was intended"}, ["unknown global in strict mode: (.*)"] = {"looking to see if there's a typo", "using the _G table instead, eg. _G.%s if you really want a global", "moving this code to somewhere that %s is in scope", "binding %s as a local in the scope of this code"}, ["unused local (.*)"] = {"fixing a typo so %s is used", "renaming the local to _%s"}, ["use of global (.*) is aliased by a local"] = {"renaming local %s", "refer to the global using _G.%s instead of directly"}}
   local unpack = (_G.unpack or table.unpack)
@@ -2582,9 +2578,8 @@ package.preload["conjure.aniseed.fennel.parser"] = package.preload["conjure.anis
         end
       end
       local function parse_number(rawstr)
-        local force_number = rawstr:match("^%d")
-        local number_with_stripped_underscores = rawstr:gsub("_", "")
-        if force_number then
+        local number_with_stripped_underscores = (not rawstr:find("^_") and rawstr:gsub("_", ""))
+        if rawstr:match("^%d") then
           dispatch((tonumber(number_with_stripped_underscores) or parse_error(("could not read number \"" .. rawstr .. "\""))))
           return true
         else
@@ -3137,7 +3132,7 @@ do
     "Define a single macro."
     (assert (sym? name) "expected symbol for macro name")
     (local args [...])
-    `(macros { ,(tostring name) (fn ,name ,(unpack args))}))
+    `(macros { ,(tostring name) (fn ,(unpack args))}))
   
   (fn macrodebug [form return?]
     "Print the resulting form after performing macroexpansion.
