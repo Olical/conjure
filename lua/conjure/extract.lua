@@ -99,7 +99,7 @@ do
       local stack_size = #stack
       local function _4_()
         local name = nvim.fn.synIDattr(stack[stack_size], "name")
-        return (name:find("Comment$") or name:find("String$") or name:find("Regexp$"))
+        return (name:find("Comment$") or name:find("String$") or name:find("Regexp%?$"))
       end
       if ("number" == type(((stack_size > 0) and _4_()))) then
         return 1

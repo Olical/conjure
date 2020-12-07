@@ -40,7 +40,7 @@
                   (let [name (nvim.fn.synIDattr (. stack stack-size) :name)]
                     (or (name:find "Comment$")
                         (name:find "String$")
-                        (name:find "Regexp$"))))))
+                        (name:find "Regexp%?$"))))))
       1
       0)))
 
