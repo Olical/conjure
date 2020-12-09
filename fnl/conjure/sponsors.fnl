@@ -7,6 +7,7 @@
 "campbellr"
 "dharrigan"
 "djblue"
+"frenchy64"
 "jkrasnay"
 "mamapitufo"
 "martinklepsch"
