@@ -207,6 +207,14 @@ defined as you enter a buffer and can't be altered after the fact.
              - `g:conjure#filetype_client.janet = "conjure.client.janet.netrepl"`
              - `g:conjure#filetype_client.racket = "conjure.client.racket.stdio"`
 
+            You can disable a client by setting the value to false.
+            >
+              " Before Conjure is loaded.
+              let g:conjure#filetype_client = {'racket': v:false}
+
+              " After Conjure is loaded.
+              let g:conjure#filetype_client.racket = v:false
+
 `g:conjure#eval#result_register`
             Every evaluation captures the result and places it in a Neovim
             register for you to use however you want. By default, if you

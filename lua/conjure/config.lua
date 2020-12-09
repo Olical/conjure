@@ -70,7 +70,10 @@ do
   do
     local v_0_0 = nil
     local function filetypes0()
-      return a.keys(get_in({"filetype_client"}))
+      local function _3_(key)
+        return get_in({"filetype_client", key})
+      end
+      return a.filter(_3_, a.keys(get_in({"filetype_client"})))
     end
     v_0_0 = filetypes0
     _0_0["filetypes"] = v_0_0
