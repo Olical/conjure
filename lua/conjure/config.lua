@@ -70,10 +70,7 @@ do
   do
     local v_0_0 = nil
     local function filetypes0()
-      local function _3_(key)
-        return get_in({"filetype_client", key})
-      end
-      return a.filter(_3_, a.keys(get_in({"filetype_client"})))
+      return a.map(a.first, a.filter(a.second, a["kv-pairs"](get_in({"filetype_client"}))))
     end
     v_0_0 = filetypes0
     _0_0["filetypes"] = v_0_0

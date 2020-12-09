@@ -15,10 +15,9 @@
       v)))
 
 (defn filetypes []
-  (a.filter
-    (fn [key]
-      (get-in [:filetype_client key]))
-    (a.keys (get-in [:filetype_client]))))
+  (->> (a.kv-pairs (get-in [:filetype_client]))
+       (a.filter a.second)
+       (a.map a.first)))
 
 (defn get-in-fn [prefix-ks]
   (fn [ks]
