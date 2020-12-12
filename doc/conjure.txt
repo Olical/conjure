@@ -90,11 +90,13 @@ I've also included some commands since they're related to the mappings.
 <localleader>lq          Close all visible log windows in your current tab.
                          Other tabs will remain unaffected.
 
-<localleader>lR          Reset the log buffer, completely deleting the buffer
-                         to empty all contents, mappings and buffer local
-                         settings. Useful if you've accidentally displayed
-                         300k lines of output or messed up the buffer state in
-                         some way.
+<localleader>lr          Soft reset the log buffer by deleting the lines while
+                         leaving any wider buffer state intact. This will
+                         leave any open log windows open.
+
+<localleader>lR          Hard reset the log buffer, completely deleting the
+                         buffer, mappings and buffer local settings. This will
+                         close any open log windows.
 
 <localleader>E           When in visual mode, evaluate the current selection.
 
@@ -248,8 +250,12 @@ defined as you enter a buffer and can't be altered after the fact.
             Opens the log in a new tab.
             Default: `"lt"`
 
-`g:conjure#mapping#log_reset`
-            Reset the log buffer by deleting it.
+`g:conjure#mapping#log_reset_soft`
+            Soft reset the log buffer by wiping the contents.
+            Default: `"lr"`
+
+`g:conjure#mapping#log_reset_hard`
+            Hard reset the log buffer by deleting the entire buffer.
             Default: `"lR"`
 
 `g:conjure#mapping#log_close_visible`

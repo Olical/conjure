@@ -310,5 +310,8 @@
         (text.split-lines (a.pr-str ...)))))
   ...)
 
-(defn reset []
-  (nvim.ex.bdelete_ (upsert-buf)))
+(defn reset-soft []
+  (on-new-log-buf (upsert-buf)))
+
+(defn reset-hard []
+  (nvim.ex.bwipeout_ (upsert-buf)))

@@ -536,19 +536,34 @@ do
   _0_0["aniseed/locals"]["dbg"] = v_0_
   dbg = v_0_
 end
-local reset = nil
+local reset_soft = nil
 do
   local v_0_ = nil
   do
     local v_0_0 = nil
-    local function reset0()
-      return nvim.ex.bdelete_(upsert_buf())
+    local function reset_soft0()
+      return on_new_log_buf(upsert_buf())
     end
-    v_0_0 = reset0
-    _0_0["reset"] = v_0_0
+    v_0_0 = reset_soft0
+    _0_0["reset-soft"] = v_0_0
     v_0_ = v_0_0
   end
-  _0_0["aniseed/locals"]["reset"] = v_0_
-  reset = v_0_
+  _0_0["aniseed/locals"]["reset-soft"] = v_0_
+  reset_soft = v_0_
+end
+local reset_hard = nil
+do
+  local v_0_ = nil
+  do
+    local v_0_0 = nil
+    local function reset_hard0()
+      return nvim.ex.bwipeout_(upsert_buf())
+    end
+    v_0_0 = reset_hard0
+    _0_0["reset-hard"] = v_0_0
+    v_0_ = v_0_0
+  end
+  _0_0["aniseed/locals"]["reset-hard"] = v_0_
+  reset_hard = v_0_
 end
 return nil
