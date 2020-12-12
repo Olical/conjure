@@ -17,11 +17,11 @@ end
 local function _2_(...)
   local ok_3f_0_, val_0_ = nil, nil
   local function _2_()
-    return {require("conjure.aniseed.core"), require("conjure.buffer"), require("conjure.client"), require("conjure.config"), require("conjure.editor"), require("conjure.extract"), require("conjure.fs"), require("conjure.log"), require("conjure.aniseed.nvim"), require("conjure.promise"), require("conjure.text"), require("conjure.uuid")}
+    return {require("conjure.aniseed.core"), require("conjure.buffer"), require("conjure.client"), require("conjure.config"), require("conjure.editor"), require("conjure.event"), require("conjure.extract"), require("conjure.fs"), require("conjure.log"), require("conjure.aniseed.nvim"), require("conjure.promise"), require("conjure.text"), require("conjure.uuid")}
   end
   ok_3f_0_, val_0_ = pcall(_2_)
   if ok_3f_0_ then
-    _0_0["aniseed/local-fns"] = {require = {a = "conjure.aniseed.core", buffer = "conjure.buffer", client = "conjure.client", config = "conjure.config", editor = "conjure.editor", extract = "conjure.extract", fs = "conjure.fs", log = "conjure.log", nvim = "conjure.aniseed.nvim", promise = "conjure.promise", text = "conjure.text", uuid = "conjure.uuid"}}
+    _0_0["aniseed/local-fns"] = {require = {a = "conjure.aniseed.core", buffer = "conjure.buffer", client = "conjure.client", config = "conjure.config", editor = "conjure.editor", event = "conjure.event", extract = "conjure.extract", fs = "conjure.fs", log = "conjure.log", nvim = "conjure.aniseed.nvim", promise = "conjure.promise", text = "conjure.text", uuid = "conjure.uuid"}}
     return val_0_
   else
     return print(val_0_)
@@ -29,17 +29,18 @@ local function _2_(...)
 end
 local _1_ = _2_(...)
 local a = _1_[1]
-local promise = _1_[10]
-local text = _1_[11]
-local uuid = _1_[12]
+local nvim = _1_[10]
+local promise = _1_[11]
+local text = _1_[12]
+local uuid = _1_[13]
 local buffer = _1_[2]
 local client = _1_[3]
 local config = _1_[4]
 local editor = _1_[5]
-local extract = _1_[6]
-local fs = _1_[7]
-local log = _1_[8]
-local nvim = _1_[9]
+local event = _1_[6]
+local extract = _1_[7]
+local fs = _1_[8]
+local log = _1_[9]
 local _2amodule_2a = _0_0
 local _2amodule_name_2a = "conjure.eval"
 do local _ = ({nil, _0_0, {{}, nil, nil, nil}})[2] end
@@ -96,6 +97,7 @@ do
   do
     local v_0_0 = nil
     local function file0()
+      event.emit("eval", "file")
       local opts = {["file-path"] = fs["resolve-relative"](extract["file-path"]()), action = "eval", origin = "file"}
       opts.preview = preview(opts)
       display_request(opts)
@@ -144,6 +146,7 @@ do
   do
     local v_0_0 = nil
     local function eval_str0(opts)
+      event.emit("eval", "str")
       local function _3_()
         if opts["passive?"] then
           return opts
@@ -161,15 +164,34 @@ do
   _0_0["aniseed/locals"]["eval-str"] = v_0_
   eval_str = v_0_
 end
+local wrap_emit = nil
+do
+  local v_0_ = nil
+  do
+    local v_0_0 = nil
+    local function wrap_emit0(name, f)
+      local function _3_(...)
+        event.emit(name)
+        return f(...)
+      end
+      return _3_
+    end
+    v_0_0 = wrap_emit0
+    _0_0["wrap-emit"] = v_0_0
+    v_0_ = v_0_0
+  end
+  _0_0["aniseed/locals"]["wrap-emit"] = v_0_
+  wrap_emit = v_0_
+end
 local doc_str = nil
 do
-  local v_0_ = client_exec_fn("doc", "doc-str")
+  local v_0_ = wrap_emit("doc", client_exec_fn("doc", "doc-str"))
   _0_0["aniseed/locals"]["doc-str"] = v_0_
   doc_str = v_0_
 end
 local def_str = nil
 do
-  local v_0_ = client_exec_fn("def", "def-str", {["suppress-hud?"] = true})
+  local v_0_ = wrap_emit("def", client_exec_fn("def", "def-str", {["suppress-hud?"] = true}))
   _0_0["aniseed/locals"]["def-str"] = v_0_
   def_str = v_0_
 end

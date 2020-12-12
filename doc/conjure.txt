@@ -14,7 +14,8 @@ CONTENTS                                                    *conjure-contents*
     3. Completion ................................. |conjure-completion|
     4. Configuration ........................... |conjure-configuration|
     5. Log ............................................... |conjure-log|
-    6. Clients ....................................... |conjure-clients|
+    6. Autocmds ..................................... |conjure-autocmds|
+    7. Clients ....................................... |conjure-clients|
 
 ==============================================================================
 INTRODUCTION                                            *conjure-introduction*
@@ -473,6 +474,39 @@ broken highlighting in the rest of the log buffer.
 Note: The HUD may be unreadable if your theme defines odd colours for the
 `Pmenu` highlight group. You can set a different background colour by theming
 `NormalFloat` or `Pmenu` with something like the following.
+
+==============================================================================
+AUTOCMDS                                                    *conjure-autocmds*
+
+Conjure emits custom |User| |autocmds| when certain things happen, such as when
+you perform an evaluation. You can use these to trigger other behaviour or
+plugins as you see fit.
+>
+  autocmd User ConjureEval if expand("%:t") =~ "^conjure-log-" | exec "normal G" | endif
+
+This example will cause all evaluations inside the Conjure log to jump the
+cursor to the bottom of the buffer, providing a slightly more REPL like
+experience.
+
+If there's an event you need and think would be a good general fit for the
+project, feel free to raise an issue to discuss it (and potentially submit a
+pull request if we agree!).
+
+`ConjureEval`
+            After an evaluation of any kind.
+
+`ConjureEvalFile`
+            After an evaluation of a file from disk.
+
+`ConjureEvalStr`
+            After an evaluation of an arbitrary string (from evaluating a
+            form, buffer, range, command etc).
+
+`ConjureDoc`
+            After requesting documentation.
+
+`ConjureDef`
+            After requesting definition lookup.
 
 ==============================================================================
 CLIENTS                                                      *conjure-clients*

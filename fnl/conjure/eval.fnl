@@ -10,7 +10,8 @@
             editor conjure.editor
             buffer conjure.buffer
             uuid conjure.uuid
-            log conjure.log}})
+            log conjure.log
+            event conjure.event}})
 
 (defn- preview [opts]
   (let [sample-limit (editor.percent-width
@@ -35,6 +36,7 @@
         (when f (f result))))))
 
 (defn file []
+  (event.emit :eval :file)
   (let [opts {:file-path (fs.resolve-relative (extract.file-path))
               :origin :file
               :action :eval}]
@@ -62,14 +64,20 @@
       (client.call f-name opts))))
 
 (defn eval-str [opts]
+  (event.emit :eval :str)
   ((client-exec-fn :eval :eval-str)
    (if opts.passive?
      opts
      (with-last-result-hook opts)))
   nil)
 
-(def- doc-str (client-exec-fn :doc :doc-str))
-(def- def-str (client-exec-fn :def :def-str {:suppress-hud? true}))
+(defn wrap-emit [name f]
+  (fn [...]
+    (event.emit name)
+    (f ...)))
+
+(def- doc-str (wrap-emit :doc (client-exec-fn :doc :doc-str)))
+(def- def-str (wrap-emit :def (client-exec-fn :def :def-str {:suppress-hud? true})))
 
 (defn current-form [extra-opts]
   (let [form (extract.form {})]
