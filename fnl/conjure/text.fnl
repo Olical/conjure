@@ -53,3 +53,7 @@
     (each [c (string.gmatch s ".")]
       (table.insert res c)))
   res)
+
+(defn upper-first [s]
+  (when s
+    (s:gsub "^%l" string.upper)))

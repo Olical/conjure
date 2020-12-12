@@ -208,4 +208,21 @@ do
   _0_0["aniseed/locals"]["chars"] = v_0_
   chars = v_0_
 end
+local upper_first = nil
+do
+  local v_0_ = nil
+  do
+    local v_0_0 = nil
+    local function upper_first0(s)
+      if s then
+        return s:gsub("^%l", string.upper)
+      end
+    end
+    v_0_0 = upper_first0
+    _0_0["upper-first"] = v_0_0
+    v_0_ = v_0_0
+  end
+  _0_0["aniseed/locals"]["upper-first"] = v_0_
+  upper_first = v_0_
+end
 return nil

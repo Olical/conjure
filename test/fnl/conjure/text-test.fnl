@@ -36,3 +36,11 @@
   (t.pr= [] (text.chars))
   (t.pr= [] (text.chars ""))
   (t.pr= [:a :b :c] (text.chars "abc")))
+
+(deftest upper-first
+  (t.= "" (text.upper-first ""))
+  (t.= "A" (text.upper-first "A"))
+  (t.= "A" (text.upper-first "a"))
+  (t.= "Foo bar bAZ 5" (text.upper-first "foo bar bAZ 5"))
+  (t.= nil (text.upper-first nil))
+  (t.= "123" (text.upper-first "123")))
