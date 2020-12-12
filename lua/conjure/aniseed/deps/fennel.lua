@@ -1132,6 +1132,7 @@ package.preload["conjure.aniseed.fennel.specials"] = package.preload["conjure.an
       for k, v in pairs((options or {})) do
         opts[k] = v
       end
+      opts["module-name"] = module_name
       local _2_0 = search_module(module_name)
       if (nil ~= _2_0) then
         local filename = _2_0
@@ -1177,9 +1178,12 @@ package.preload["conjure.aniseed.fennel.specials"] = package.preload["conjure.an
     end
     return nil
   end
-  SPECIALS["require-macros"] = function(ast, scope, parent)
-    compiler.assert((#ast == 2), "Expected one module name argument", ast)
-    local modname = ast[2]
+  SPECIALS["require-macros"] = function(ast, scope, parent, real_ast)
+    compiler.assert((#ast == 2), "Expected one module name argument", (real_ast or ast))
+    local filename = (ast[2].filename or ast.filename)
+    local modname_code = compiler.compile(ast[2])
+    local modname = load_code(modname_code, nil, filename)(utils.root.options["module-name"], filename)
+    compiler.assert((type(modname) == "string"), "module name must compile to string", (real_ast or ast))
     if not macro_loaded[modname] then
       local env = make_compiler_env(ast, scope, parent)
       macro_loaded[modname] = compiler_env_domodule(modname, env, ast)
@@ -1287,7 +1291,7 @@ package.preload["conjure.aniseed.fennel.specials"] = package.preload["conjure.an
     local opts = utils.copy(utils.root.options)
     opts.scope = compiler["make-scope"](compiler.scopes.compiler)
     opts.allowedGlobals = macro_globals(env, current_global_names())
-    return load_code(compiler.compile(ast, opts), wrap_env(env))()
+    return load_code(compiler.compile(ast, opts), wrap_env(env))(opts["module-name"], ast.filename)
   end
   SPECIALS.macros = function(ast, scope, parent)
     compiler.assert((#ast == 2), "Expected one table argument", ast)
@@ -1463,6 +1467,7 @@ package.preload["conjure.aniseed.fennel.compiler"] = package.preload["conjure.an
   end
   local function check_binding_valid(symbol, scope, ast)
     local name = utils.deref(symbol)
+    assert_compile(not name:find("&"), "illegal character: &", symbol)
     assert_compile(not (scope.specials[name] or scope.macros[name]), ("local %s was overshadowed by a special form or macro"):format(name), ast)
     return assert_compile(not utils["quoted?"](symbol), string.format("macro tried to bind %s without gensym", name), symbol)
   end
@@ -1959,38 +1964,53 @@ package.preload["conjure.aniseed.fennel.compiler"] = package.preload["conjure.an
       end
       return ret
     end
-    local function destructure1(left, rightexprs, up1, top_3f)
-      if (utils["sym?"](left) and (left[1] ~= "nil")) then
-        local lname = getname(left, up1)
-        check_binding_valid(left, scope, left)
+    local function destructure_sym(left, rightexprs, up1, top_3f)
+      local lname = getname(left, up1)
+      check_binding_valid(left, scope, left)
+      if top_3f then
+        compile_top_target({lname})
+      else
+        emit(parent, setter:format(lname, exprs1(rightexprs)), left)
+      end
+      if declaration then
+        scope.symmeta[utils.deref(left)] = {var = isvar}
+        return nil
+      end
+    end
+    local function destructure_table(left, rightexprs, top_3f, destructure1)
+      local s = gensym(scope)
+      local right = nil
+      do
+        local _2_0 = nil
         if top_3f then
-          compile_top_target({lname})
+          _2_0 = exprs1(compile1(from, scope, parent))
         else
-          emit(parent, setter:format(lname, exprs1(rightexprs)), left)
+          _2_0 = exprs1(rightexprs)
         end
-        if declaration then
-          scope.symmeta[utils.deref(left)] = {var = isvar}
-        end
-      elseif utils["table?"](left) then
-        local s = gensym(scope)
-        local right = nil
-        if top_3f then
-          right = exprs1(compile1(from, scope, parent))
-        else
-          right = exprs1(rightexprs)
-        end
-        if (right == "") then
+        if (_2_0 == "") then
           right = "nil"
+        elseif (nil ~= _2_0) then
+          local right0 = _2_0
+          right = right0
+        else
+        right = nil
         end
-        emit(parent, string.format("local %s = %s", s, right), left)
-        for k, v in utils.stablepairs(left) do
-          if (utils["sym?"](left[k]) and (left[k][1] == "&")) then
-            assert_compile(((type(k) == "number") and not left[(k + 2)]), "expected rest argument before last parameter", left)
+      end
+      emit(parent, string.format("local %s = %s", s, right), left)
+      for k, v in utils.stablepairs(left) do
+        if not (("number" == type(k)) and tostring(left[(k - 1)]):find("^&")) then
+          if (utils["sym?"](v) and (utils.deref(v) == "&")) then
             local unpack_str = "{(table.unpack or unpack)(%s, %s)}"
             local formatted = string.format(unpack_str, s, k)
             local subexpr = utils.expr(formatted, "expression")
+            assert_compile((utils["sequence?"](left) and (nil == left[(k + 2)])), "expected rest argument before last parameter", left)
             destructure1(left[(k + 1)], {subexpr}, left)
-            return
+          elseif (utils["sym?"](k) and (utils.deref(k) == "&as")) then
+            destructure_sym(v, {utils.expr(tostring(s))}, left)
+          elseif (utils["sequence?"](left) and (utils.deref(v) == "&as")) then
+            local _, next_sym, trailing = select(k, unpack(left))
+            assert_compile((nil == trailing), "expected &as argument before last parameter", left)
+            destructure_sym(next_sym, {utils.expr(tostring(s))}, left)
           else
             local key = nil
             if (type(k) == "string") then
@@ -2002,27 +2022,39 @@ package.preload["conjure.aniseed.fennel.compiler"] = package.preload["conjure.an
             destructure1(v, {subexpr}, left)
           end
         end
+      end
+      return nil
+    end
+    local function destructure_values(left, up1, top_3f, destructure1)
+      local left_names, tables = {}, {}
+      for i, name in ipairs(left) do
+        if utils["sym?"](name) then
+          table.insert(left_names, getname(name, up1))
+        else
+          local symname = gensym(scope)
+          table.insert(left_names, symname)
+          tables[i] = {name, utils.expr(symname, "sym")}
+        end
+      end
+      assert_compile(top_3f, "can't nest multi-value destructuring", left)
+      compile_top_target(left_names)
+      if declaration then
+        for _, sym in ipairs(left) do
+          scope.symmeta[utils.deref(sym)] = {var = isvar}
+        end
+      end
+      for _, pair in utils.stablepairs(tables) do
+        destructure1(pair[1], {pair[2]}, left)
+      end
+      return nil
+    end
+    local function destructure1(left, rightexprs, up1, top_3f)
+      if (utils["sym?"](left) and (left[1] ~= "nil")) then
+        destructure_sym(left, rightexprs, up1, top_3f)
+      elseif utils["table?"](left) then
+        destructure_table(left, rightexprs, top_3f, destructure1)
       elseif utils["list?"](left) then
-        local left_names, tables = {}, {}
-        for i, name in ipairs(left) do
-          if utils["sym?"](name) then
-            table.insert(left_names, getname(name, up1))
-          else
-            local symname = gensym(scope)
-            table.insert(left_names, symname)
-            tables[i] = {name, utils.expr(symname, "sym")}
-          end
-        end
-        assert_compile(top_3f, "can't nest multi-value destructuring", left)
-        compile_top_target(left_names)
-        if declaration then
-          for _, sym in ipairs(left) do
-            scope.symmeta[utils.deref(sym)] = {var = isvar}
-          end
-        end
-        for _, pair in utils.stablepairs(tables) do
-          destructure1(pair[1], {pair[2]}, left)
-        end
+        destructure_values(left, up1, top_3f, destructure1)
       else
         assert_compile(false, string.format("unable to bind %s %s", type(left), tostring(left)), (((type(up1[2]) == "table") and up1[2]) or up1))
       end
@@ -3061,6 +3093,33 @@ do
       `(let ,closable-bindings ,closer
             (close-handlers# (xpcall ,bodyfn ,traceback)))))
   
+  (fn collect [iter-tbl key-value-expr]
+    "Iterates through an iterator and populates an empty table with the key-value
+  pairs produced by an expression. This can be thought of as a \"table
+  comprehension\"."
+    (assert (and (sequence? iter-tbl) (>= (length iter-tbl) 2))
+            "expected iterator binding table")
+    (assert (not= nil key-value-expr)
+            "expected key-value expression")
+    `(let [tbl# {}]
+       (each ,iter-tbl
+         (match ,key-value-expr
+           (k# v#) (tset tbl# k# v#)))
+       tbl#))
+  
+  (fn icollect [iter-tbl value-expr]
+    "Iterates through an iterator and populates an empty table with the values
+  produced by an expression, making a sequential list. This can be thought of as
+  a \"list comprehension\"."
+    (assert (and (sequence? iter-tbl) (>= (length iter-tbl) 2))
+            "expected iterator binding table")
+    (assert (not= nil value-expr)
+            "expected table value expression")
+    `(let [tbl# []]
+       (each ,iter-tbl
+         (tset tbl# (+ (length tbl#) 1) ,value-expr))
+       tbl#))
+  
   (fn partial [f ...]
     "Returns a function with all arguments partially applied to f."
     (let [body (list f ...)]
@@ -3155,10 +3214,8 @@ do
             ;; to bring in macro module. after that, we just copy the
             ;; macros from subscope to scope.
             scope (get-scope)
-            subscope (fennel.scope scope)
-            opts {:scope subscope}]
-        (each [k v (pairs  utils.root.options)] (tset opts k v))
-        (fennel.compile-string (string.format "(require-macros %q)" modname) opts)
+            subscope (fennel.scope scope)]
+        (_SPECIALS.require-macros `(require-macros ,modname) subscope {} ast)
         (if (sym? binding)
             ;; bind whole table of macros to table bound to symbol
             (do (tset scope.macros (. binding 1) {})
@@ -3169,7 +3226,8 @@ do
             (table? binding)
             (each [macro-name [import-key] (pairs binding)]
               (assert (= :function (type (. subscope.macros macro-name)))
-                      (.. "macro " macro-name " not found in module " modname))
+                      (.. "macro " macro-name " not found in module "
+                          (tostring modname)))
               (tset scope.macros import-key (. subscope.macros macro-name))))))
     nil)
   
@@ -3285,6 +3343,7 @@ do
   
   {: -> : ->> : -?> : -?>>
    : doto : when : with-open
+   : collect : icollect
    : partial : lambda
    : pick-args : pick-values
    : macro : macrodebug : import-macros
