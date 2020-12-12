@@ -70,6 +70,7 @@
     :log_vsplit "lv"
     :log_tab "lt"
     :log_close_visible "lq"
+    :log_reset "lR"
     :eval_current_form "ee"
     :eval_root_form "er"
     :eval_replace_form "e!"

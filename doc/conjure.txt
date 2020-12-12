@@ -90,6 +90,12 @@ I've also included some commands since they're related to the mappings.
 <localleader>lq          Close all visible log windows in your current tab.
                          Other tabs will remain unaffected.
 
+<localleader>lR          Reset the log buffer, completely deleting the buffer
+                         to empty all contents, mappings and buffer local
+                         settings. Useful if you've accidentally displayed
+                         300k lines of output or messed up the buffer state in
+                         some way.
+
 <localleader>E           When in visual mode, evaluate the current selection.
 
 <localleader>E[motion]   Evaluate any given motion following this mapping such
@@ -241,6 +247,10 @@ defined as you enter a buffer and can't be altered after the fact.
 `g:conjure#mapping#log_tab`
             Opens the log in a new tab.
             Default: `"lt"`
+
+`g:conjure#mapping#log_reset`
+            Reset the log buffer by deleting it.
+            Default: `"lR"`
 
 `g:conjure#mapping#log_close_visible`
             Close all visible log windows.

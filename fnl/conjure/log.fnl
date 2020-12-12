@@ -309,3 +309,6 @@
         [(.. (client.get :comment-prefix) "debug: " desc)]
         (text.split-lines (a.pr-str ...)))))
   ...)
+
+(defn reset []
+  (nvim.ex.bdelete_ (upsert-buf)))
