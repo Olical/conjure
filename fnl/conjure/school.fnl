@@ -88,6 +88,10 @@
      ";; It's a regular window and buffer, so you can edit and close it however you want."
      ";; Feel free to leave the log open in a split for the next lesson to see how it behaves."
      ""
+     ";; If you ever need to clear your log you can use the reset mappings:"
+     (.. ";; * Soft reset (leaves windows open) - " (map-str :log_reset_soft))
+     (.. ";; * Hard reset (closes windows, deletes the buffer) - " (map-str :log_reset_hard))
+     ""
      ";; Next, we have a form inside a comment. We want to evaluate that inner form, not the comment."
      (.. ";; Place your cursor on the inner form (the one inside the comment) and use " (map-str :eval_current_form) " to evaluate it.")
      "(comment"
