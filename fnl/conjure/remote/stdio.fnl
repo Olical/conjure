@@ -12,12 +12,22 @@
     (values true (s:gsub pat ""))
     (values false s)))
 
+(defn parse-cmd [x]
+  (if
+    (a.table? x)
+    {:cmd (a.first x)
+     :args (a.rest x)}
+
+    (a.string? x)
+    (parse-cmd (str.split x "%s"))))
+
 (defn start [opts]
   "Starts an external REPL and gives you hooks to send code to it and read
   responses back out. Tying an input to a result is near enough impossible
   through this stdio medium, so it's a best effort.
   * opts.prompt-pattern: Identify result boundaries such as '> '.
   * opts.cmd: Command to run to start the REPL.
+  * opts.args: Arguments to pass to the REPL.
   * opts.on-error: Called with an error string when we receive a true error from the process.
   * opts.on-stray-output: Called with stray output that don't match up to a callback.
   * opts.on-exit: Called on exit with the code and signal."
@@ -86,7 +96,9 @@
       (next-in-queue)
       nil)
 
-    (let [(handle pid) (uv.spawn opts.cmd {:stdio [stdin stdout stderr]}
+    (let [{: cmd : args} (parse-cmd opts.cmd)
+          (handle pid) (uv.spawn cmd {:stdio [stdin stdout stderr]
+                                      :args args}
                                  (client.schedule-wrap on-exit))]
       (stdout:read_start (client.schedule-wrap on-stdout))
       (stderr:read_start (client.schedule-wrap on-stderr))

@@ -77,7 +77,7 @@
   (let [repl (state :repl)]
     (when repl
       (log.append
-        [(.. comment-prefix (a.get-in repl [:opts :cmd]) " (" status ")")]
+        [(.. comment-prefix (a.pr-str (a.get-in repl [:opts :cmd])) " (" status ")")]
         {:break? true}))))
 
 (defn stop []

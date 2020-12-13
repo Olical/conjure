@@ -210,7 +210,7 @@ do
   local function display_repl_status0(status)
     local repl = state("repl")
     if repl then
-      return log.append({(comment_prefix .. a["get-in"](repl, {"opts", "cmd"}) .. " (" .. status .. ")")}, {["break?"] = true})
+      return log.append({(comment_prefix .. a["pr-str"](a["get-in"](repl, {"opts", "cmd"})) .. " (" .. status .. ")")}, {["break?"] = true})
     end
   end
   v_0_ = display_repl_status0

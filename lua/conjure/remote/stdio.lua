@@ -56,6 +56,25 @@ do
   _0_0["aniseed/locals"]["parse-prompt"] = v_0_
   parse_prompt = v_0_
 end
+local parse_cmd = nil
+do
+  local v_0_ = nil
+  do
+    local v_0_0 = nil
+    local function parse_cmd0(x)
+      if a["table?"](x) then
+        return {args = a.rest(x), cmd = a.first(x)}
+      elseif a["string?"](x) then
+        return parse_cmd0(str.split(x, "%s"))
+      end
+    end
+    v_0_0 = parse_cmd0
+    _0_0["parse-cmd"] = v_0_0
+    v_0_ = v_0_0
+  end
+  _0_0["aniseed/locals"]["parse-cmd"] = v_0_
+  parse_cmd = v_0_
+end
 local start = nil
 do
   local v_0_ = nil
@@ -138,13 +157,16 @@ do
         next_in_queue()
         return nil
       end
-      local handle, pid = uv.spawn(opts.cmd, {stdio = {stdin, stdout, stderr}}, client["schedule-wrap"](on_exit))
+      local _3_ = parse_cmd(opts.cmd)
+      local args = _3_["args"]
+      local cmd = _3_["cmd"]
+      local handle, pid = uv.spawn(cmd, {args = args, stdio = {stdin, stdout, stderr}}, client["schedule-wrap"](on_exit))
       stdout:read_start(client["schedule-wrap"](on_stdout))
       stderr:read_start(client["schedule-wrap"](on_stderr))
-      local function _3_()
+      local function _4_()
         return opts["on-success"]()
       end
-      client.schedule(_3_)
+      client.schedule(_4_)
       return a["merge!"](repl, {destroy = destroy, handle = handle, opts = opts, pid = pid, send = send})
     end
     v_0_0 = start0
