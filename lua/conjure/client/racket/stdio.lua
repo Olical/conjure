@@ -303,7 +303,7 @@ do
     local v_0_0 = nil
     local function on_load0()
       do
-        nvim.ex.augroup("conjure-net-sock-cleanup")
+        nvim.ex.augroup("conjure-racket-stdio-bufenter")
         nvim.ex.autocmd_()
         nvim.ex.autocmd("BufEnter", ("*" .. buf_suffix), ("lua require('" .. _2amodule_name_2a .. "')['" .. "enter" .. "']()"))
         nvim.ex.augroup("END")

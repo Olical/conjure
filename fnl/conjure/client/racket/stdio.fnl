@@ -132,7 +132,7 @@
 
 (defn on-load []
   (augroup
-    conjure-net-sock-cleanup
+    conjure-racket-stdio-bufenter
     (autocmd :BufEnter (.. :* buf-suffix) (viml->fn :enter)))
   (start))
 
