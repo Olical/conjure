@@ -56,7 +56,7 @@ do
           compile["add-path"]((config_dir .. "/?.fnl"))
           state["path-added?"] = true
         end
-        compile.glob("**/*.fnl", (config_dir .. (opts0.input or "/fnl")), (config_dir .. (opts0.output or "/lua")))
+        compile.glob("**/*.fnl", (config_dir .. (opts0.input or "/fnl")), (config_dir .. (opts0.output or "/lua")), opts0)
       end
       return require((opts0.module or "init"))
     end
