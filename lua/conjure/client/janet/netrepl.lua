@@ -139,7 +139,6 @@ local send = nil
 do
   local v_0_ = nil
   local function send0(msg, cb)
-    log.dbg("send", msg)
     local function _3_(conn)
       return remote.send(conn, msg, cb)
     end

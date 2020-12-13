@@ -49,7 +49,6 @@
       (a.assoc (state) :conn nil))))
 
 (defn- send [msg cb]
-  (log.dbg "send" msg)
   (with-conn-or-warn
     (fn [conn]
       (remote.send conn msg cb))))
