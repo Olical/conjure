@@ -4,5 +4,6 @@
 
 (set nvim.g.conjure#filetype_client
      (a.assoc nvim.g.conjure#filetype_client
-              :fennel :conjure.client.fennel.nrepl))
-(set nvim.g.conjure#debug true)
+              :fennel :conjure.client.fennel.stdio))
+
+(set nvim.g.conjure#debug false)
