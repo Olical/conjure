@@ -17,9 +17,6 @@
      {:mapping {:start "cs"
                 :stop "cS"}
       :command "racket"
-
-      ;; TODO This needs to be smarter, maybe a function?
-      ;; Basically need to minimise the chance of a false positive.
       :prompt-pattern "\n?[\"%w%-./_]*> "}}}})
 
 (def- cfg (config.get-in-fn [:client :racket :stdio]))
