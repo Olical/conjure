@@ -14,12 +14,12 @@ do
   package.loaded[name_0_] = module_0_
   _0_0 = module_0_
 end
-local function _2_(...)
+local function _1_(...)
   local ok_3f_0_, val_0_ = nil, nil
-  local function _2_()
+  local function _1_()
     return {require("conjure.aniseed.core"), require("conjure.aniseed.fennel"), require("conjure.aniseed.fs"), require("conjure.aniseed.nvim")}
   end
-  ok_3f_0_, val_0_ = pcall(_2_)
+  ok_3f_0_, val_0_ = pcall(_1_)
   if ok_3f_0_ then
     _0_0["aniseed/local-fns"] = {require = {a = "conjure.aniseed.core", fennel = "conjure.aniseed.fennel", fs = "conjure.aniseed.fs", nvim = "conjure.aniseed.nvim"}}
     return val_0_
@@ -27,11 +27,11 @@ local function _2_(...)
     return print(val_0_)
   end
 end
-local _1_ = _2_(...)
-local a = _1_[1]
-local fennel = _1_[2]
-local fs = _1_[3]
-local nvim = _1_[4]
+local _local_0_ = _1_(...)
+local a = _local_0_[1]
+local fennel = _local_0_[2]
+local fs = _local_0_[3]
+local nvim = _local_0_[4]
 local _2amodule_2a = _0_0
 local _2amodule_name_2a = "conjure.aniseed.compile"
 do local _ = ({nil, _0_0, {{}, nil, nil, nil}})[2] end
@@ -73,10 +73,10 @@ do
   do
     local v_0_0 = nil
     local function str0(code, opts)
-      local function _3_()
+      local function _2_()
         return fennel.compileString(macros_prefix(code), a.merge({["compiler-env"] = _G}, opts))
       end
-      return xpcall(_3_, fennel.traceback)
+      return xpcall(_2_, fennel.traceback)
     end
     v_0_0 = str0
     _0_0["str"] = v_0_0
@@ -93,12 +93,12 @@ do
     local function file0(src, dest, opts)
       if ((a["table?"](opts) and opts.force) or (nvim.fn.getftime(src) > nvim.fn.getftime(dest))) then
         local code = a.slurp(src)
-        local _3_0, _4_0 = str(code, {filename = src})
-        if ((_3_0 == false) and (nil ~= _4_0)) then
-          local err = _4_0
+        local _2_0, _3_0 = str(code, {filename = src})
+        if ((_2_0 == false) and (nil ~= _3_0)) then
+          local err = _3_0
           return nvim.err_writeln(err)
-        elseif ((_3_0 == true) and (nil ~= _4_0)) then
-          local result = _4_0
+        elseif ((_2_0 == true) and (nil ~= _3_0)) then
+          local result = _3_0
           fs.mkdirp(fs.basename(dest))
           return a.spit(dest, result)
         end
@@ -119,10 +119,10 @@ do
     local function glob0(src_expr, src_dir, dest_dir, opts)
       local src_dir_len = a.inc(string.len(src_dir))
       local src_paths = nil
-      local function _3_(path)
+      local function _2_(path)
         return string.sub(path, src_dir_len)
       end
-      src_paths = a.map(_3_, nvim.fn.globpath(src_dir, src_expr, true, true))
+      src_paths = a.map(_2_, nvim.fn.globpath(src_dir, src_expr, true, true))
       for _, path in ipairs(src_paths) do
         if (a.get(opts, "include-macros-suffix?") or not string.match(path, "macros.fnl$")) then
           file((src_dir .. path), string.gsub((dest_dir .. path), ".fnl$", ".lua"), opts)

@@ -14,12 +14,12 @@ do
   package.loaded[name_0_] = module_0_
   _0_0 = module_0_
 end
-local function _2_(...)
+local function _1_(...)
   local ok_3f_0_, val_0_ = nil, nil
-  local function _2_()
+  local function _1_()
     return {require("conjure.aniseed.nvim")}
   end
-  ok_3f_0_, val_0_ = pcall(_2_)
+  ok_3f_0_, val_0_ = pcall(_1_)
   if ok_3f_0_ then
     _0_0["aniseed/local-fns"] = {require = {nvim = "conjure.aniseed.nvim"}}
     return val_0_
@@ -27,8 +27,8 @@ local function _2_(...)
     return print(val_0_)
   end
 end
-local _1_ = _2_(...)
-local nvim = _1_[1]
+local _local_0_ = _1_(...)
+local nvim = _local_0_[1]
 local _2amodule_2a = _0_0
 local _2amodule_name_2a = "conjure.aniseed.nvim.util"
 do local _ = ({nil, _0_0, {{}, nil, nil, nil}})[2] end
@@ -53,28 +53,28 @@ do
   do
     local v_0_0 = nil
     local function fn_bridge0(viml_name, mod, lua_name, opts)
-      local _3_ = (opts or {})
-      local range = _3_["range"]
-      local _return = _3_["return"]
-      local _4_
+      local _let_0_ = (opts or {})
+      local range = _let_0_["range"]
+      local _return = _let_0_["return"]
+      local _2_
       if range then
-        _4_ = " range"
+        _2_ = " range"
       else
-        _4_ = ""
+        _2_ = ""
+      end
+      local _4_
+      if (_return ~= false) then
+        _4_ = "return"
+      else
+        _4_ = "call"
       end
       local _6_
-      if (_return ~= false) then
-        _6_ = "return"
-      else
-        _6_ = "call"
-      end
-      local _8_
       if range then
-        _8_ = "\" . a:firstline . \", \" . a:lastline . \", "
+        _6_ = "\" . a:firstline . \", \" . a:lastline . \", "
       else
-        _8_ = ""
+        _6_ = ""
       end
-      return nvim.ex.function_((viml_name .. "(...)" .. _4_ .. "\n          " .. _6_ .. " luaeval(\"require('" .. mod .. "')['" .. lua_name .. "'](" .. _8_ .. "unpack(_A))\", a:000)\n          endfunction"))
+      return nvim.ex.function_((viml_name .. "(...)" .. _2_ .. "\n          " .. _4_ .. " luaeval(\"require('" .. mod .. "')['" .. lua_name .. "'](" .. _6_ .. "unpack(_A))\", a:000)\n          endfunction"))
     end
     v_0_0 = fn_bridge0
     _0_0["fn-bridge"] = v_0_0

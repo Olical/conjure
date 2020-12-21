@@ -14,12 +14,12 @@ do
   package.loaded[name_0_] = module_0_
   _0_0 = module_0_
 end
-local function _2_(...)
+local function _1_(...)
   local ok_3f_0_, val_0_ = nil, nil
-  local function _2_()
+  local function _1_()
     return {require("conjure.aniseed.core"), require("conjure.aniseed.nvim"), require("conjure.aniseed.string")}
   end
-  ok_3f_0_, val_0_ = pcall(_2_)
+  ok_3f_0_, val_0_ = pcall(_1_)
   if ok_3f_0_ then
     _0_0["aniseed/local-fns"] = {require = {a = "conjure.aniseed.core", nvim = "conjure.aniseed.nvim", str = "conjure.aniseed.string"}}
     return val_0_
@@ -27,10 +27,10 @@ local function _2_(...)
     return print(val_0_)
   end
 end
-local _1_ = _2_(...)
-local a = _1_[1]
-local nvim = _1_[2]
-local str = _1_[3]
+local _local_0_ = _1_(...)
+local a = _local_0_[1]
+local nvim = _local_0_[2]
+local str = _local_0_[3]
 local _2amodule_2a = _0_0
 local _2amodule_name_2a = "conjure.config"
 do local _ = ({nil, _0_0, {{}, nil, nil, nil}})[2] end
@@ -85,10 +85,10 @@ do
   do
     local v_0_0 = nil
     local function get_in_fn0(prefix_ks)
-      local function _3_(ks)
+      local function _2_(ks)
         return get_in(a.concat(prefix_ks, ks))
       end
-      return _3_
+      return _2_
     end
     v_0_0 = get_in_fn0
     _0_0["get-in-fn"] = v_0_0
@@ -121,10 +121,10 @@ do
     local function merge0(tbl, opts, ks)
       local ks0 = (ks or {})
       local opts0 = (opts or {})
-      local function _3_(_4_0)
-        local _5_ = _4_0
-        local k = _5_[1]
-        local v = _5_[2]
+      local function _2_(_3_0)
+        local _arg_0_ = _3_0
+        local k = _arg_0_[1]
+        local v = _arg_0_[2]
         local ks1 = a.concat(ks0, {k})
         local current = get_in(ks1)
         if (a["table?"](v) and not a.get(v, 1)) then
@@ -135,7 +135,7 @@ do
           end
         end
       end
-      a["run!"](_3_, a["kv-pairs"](tbl))
+      a["run!"](_2_, a["kv-pairs"](tbl))
       return nil
     end
     v_0_0 = merge0

@@ -481,7 +481,7 @@ package.preload["conjure.aniseed.fennel.specials"] = package.preload["conjure.an
       elseif utils["table?"](arg) then
         local raw = utils.sym(compiler.gensym(scope))
         local declared = compiler["declare-local"](raw, {}, f_scope, ast)
-        compiler.destructure(arg, raw, ast, f_scope, f_chunk, {declaration = true, nomulti = true})
+        compiler.destructure(arg, raw, ast, f_scope, f_chunk, {declaration = true, nomulti = true, symtype = "arg"})
         return declared
       else
         return compiler.assert(false, ("expected symbol for function parameter: %s"):format(tostring(arg)), ast[2])
@@ -565,32 +565,32 @@ package.preload["conjure.aniseed.fennel.specials"] = package.preload["conjure.an
   doc_special(".", {"tbl", "key1", "..."}, "Look up key1 in tbl table. If more args are provided, do a nested lookup.")
   SPECIALS.global = function(ast, scope, parent)
     compiler.assert((#ast == 3), "expected name and value", ast)
-    compiler.destructure(ast[2], ast[3], ast, scope, parent, {forceglobal = true, nomulti = true})
+    compiler.destructure(ast[2], ast[3], ast, scope, parent, {forceglobal = true, nomulti = true, symtype = "global"})
     return nil
   end
   doc_special("global", {"name", "val"}, "Set name as a global with val.")
   SPECIALS.set = function(ast, scope, parent)
     compiler.assert((#ast == 3), "expected name and value", ast)
-    compiler.destructure(ast[2], ast[3], ast, scope, parent, {noundef = true})
+    compiler.destructure(ast[2], ast[3], ast, scope, parent, {noundef = true, symtype = "set"})
     return nil
   end
   doc_special("set", {"name", "val"}, "Set a local variable to a new value. Only works on locals using var.")
   local function set_forcibly_21_2a(ast, scope, parent)
     compiler.assert((#ast == 3), "expected name and value", ast)
-    compiler.destructure(ast[2], ast[3], ast, scope, parent, {forceset = true})
+    compiler.destructure(ast[2], ast[3], ast, scope, parent, {forceset = true, symtype = "set"})
     return nil
   end
   SPECIALS["set-forcibly!"] = set_forcibly_21_2a
   local function local_2a(ast, scope, parent)
     compiler.assert((#ast == 3), "expected name and value", ast)
-    compiler.destructure(ast[2], ast[3], ast, scope, parent, {declaration = true, nomulti = true})
+    compiler.destructure(ast[2], ast[3], ast, scope, parent, {declaration = true, nomulti = true, symtype = "local"})
     return nil
   end
   SPECIALS["local"] = local_2a
   doc_special("local", {"name", "val"}, "Introduce new top-level immutable local.")
   SPECIALS.var = function(ast, scope, parent)
     compiler.assert((#ast == 3), "expected name and value", ast)
-    compiler.destructure(ast[2], ast[3], ast, scope, parent, {declaration = true, isvar = true, nomulti = true})
+    compiler.destructure(ast[2], ast[3], ast, scope, parent, {declaration = true, isvar = true, nomulti = true, symtype = "var"})
     return nil
   end
   doc_special("var", {"name", "val"}, "Introduce new mutable local.")
@@ -606,7 +606,7 @@ package.preload["conjure.aniseed.fennel.specials"] = package.preload["conjure.an
     local sub_scope = compiler["make-scope"](scope)
     local sub_chunk = {}
     for i = 1, #bindings, 2 do
-      compiler.destructure(bindings[i], bindings[(i + 1)], ast, sub_scope, sub_chunk, {declaration = true, nomulti = true})
+      compiler.destructure(bindings[i], bindings[(i + 1)], ast, sub_scope, sub_chunk, {declaration = true, nomulti = true, symtype = "let"})
     end
     return SPECIALS["do"](ast, scope, parent, opts, 3, sub_chunk, sub_scope, pre_syms)
   end
@@ -757,7 +757,7 @@ package.preload["conjure.aniseed.fennel.specials"] = package.preload["conjure.an
     local chunk = {}
     compiler.emit(parent, ("for %s in %s do"):format(table.concat(bind_vars, ", "), table.concat(val_names, ", ")), ast)
     for raw, args in utils.stablepairs(destructures) do
-      compiler.destructure(args, raw, ast, sub_scope, chunk, {declaration = true, nomulti = true})
+      compiler.destructure(args, raw, ast, sub_scope, chunk, {declaration = true, nomulti = true, symtype = "each"})
     end
     compiler["apply-manglings"](sub_scope, new_manglings, ast)
     compile_do(ast, sub_scope, chunk, 3)
@@ -1905,6 +1905,8 @@ package.preload["conjure.aniseed.fennel.compiler"] = package.preload["conjure.an
     local isvar = _0_["isvar"]
     local nomulti = _0_["nomulti"]
     local noundef = _0_["noundef"]
+    local symtype = _0_["symtype"]
+    local symtype0 = ("_" .. (symtype or "dst"))
     local setter = nil
     if declaration then
       setter = "local %s = %s"
@@ -1978,7 +1980,7 @@ package.preload["conjure.aniseed.fennel.compiler"] = package.preload["conjure.an
       end
     end
     local function destructure_table(left, rightexprs, top_3f, destructure1)
-      local s = gensym(scope)
+      local s = gensym(scope, symtype0)
       local right = nil
       do
         local _2_0 = nil
@@ -2031,7 +2033,7 @@ package.preload["conjure.aniseed.fennel.compiler"] = package.preload["conjure.an
         if utils["sym?"](name) then
           table.insert(left_names, getname(name, up1))
         else
-          local symname = gensym(scope)
+          local symname = gensym(scope, symtype0)
           table.insert(left_names, symname)
           tables[i] = {name, utils.expr(symname, "sym")}
         end
@@ -2404,7 +2406,7 @@ package.preload["conjure.aniseed.fennel.parser"] = package.preload["conjure.anis
     return _0_, _1_
   end
   local function string_stream(str)
-    local str0 = str:gsub("^#![^\n]*\n", "")
+    local str0 = str:gsub("^#!", ";;")
     local index = 1
     local function _0_()
       local r = str0:byte(index)
@@ -3094,9 +3096,16 @@ do
             (close-handlers# (xpcall ,bodyfn ,traceback)))))
   
   (fn collect [iter-tbl key-value-expr]
-    "Iterates through an iterator and populates an empty table with the key-value
-  pairs produced by an expression. This can be thought of as a \"table
-  comprehension\"."
+    "Returns a table made by running an iterator and evaluating an expression
+  that returns key-value pairs to be inserted sequentially into the table.
+  This can be thought of as a \"table comprehension\". The provided key-value
+  expression must return either 2 values, or nil.
+  
+  For example,
+    (collect [k v (pairs {:apple \"red\" :orange \"orange\"})]
+      (values v k))
+  returns
+    {:red \"apple\" :orange \"orange\"}"
     (assert (and (sequence? iter-tbl) (>= (length iter-tbl) 2))
             "expected iterator binding table")
     (assert (not= nil key-value-expr)
@@ -3108,9 +3117,14 @@ do
        tbl#))
   
   (fn icollect [iter-tbl value-expr]
-    "Iterates through an iterator and populates an empty table with the values
-  produced by an expression, making a sequential list. This can be thought of as
-  a \"list comprehension\"."
+    "Returns a sequential table made by running an iterator and evaluating an
+  expression that returns values to be inserted sequentially into the table.
+  This can be thought of as a \"list comprehension\".
+  
+  For example,
+    (icollect [_ v (ipairs [1 2 3 4 5])] (when (> v 2) (* v v)))
+  returns
+    [9 16 25]"
     (assert (and (sequence? iter-tbl) (>= (length iter-tbl) 2))
             "expected iterator binding table")
     (assert (not= nil value-expr)
