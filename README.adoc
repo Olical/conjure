@@ -75,7 +75,6 @@ Broader documentation can be found in the https://github.com/Olical/conjure/wiki
 These are clients I intend to build eventually or encourage another community member to build and maintain on my behalf. Every language we add creates another bridge between communities, I would like Conjure to be common ground between all of our beloved esoteric REPL based languages.
 
  * https://clojure.org/[Clojure] over https://oli.me.uk/clojure-socket-prepl-cookbook/[prepl]
- * https://fennel-lang.org/[Fennel] over https://gitlab.com/technomancy/jeejah/-/tree/master[nREPL] without Aniseed (for Lua scripting outside of Neovim)
  * http://lfe.io/[Lisp Flavoured Erlang]
  * http://hylang.org/[Hy]
  * https://github.com/candid82/joker[Joker]
