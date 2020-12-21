@@ -1,4 +1,3 @@
-                                                                     *conjure*
                     ______              _               ~
                    / ____/___  ____    (_)_  __________ ~
                   / /   / __ \/ __ \  / / / / / ___/ _ \~
@@ -517,6 +516,7 @@ install more clients through 3rd party plugins or simply write your own within
 your dotfiles.
 
  - |conjure-client-fennel-aniseed|
+ - |conjure-client-fennel-stdio|
  - |conjure-client-clojure-nrepl|
  - |conjure-client-janet-netrepl|
  - |conjure-client-racket-stdio|

@@ -1,0 +1,66 @@
+                                                 *conjure-client-fennel-stdio*
+
+==============================================================================
+CONTENTS                                *conjure-client-fennel-stdio-contents*
+
+    1. Introduction ........ |conjure-client-fennel-stdio-introduction|
+    2. Mappings ................ |conjure-client-fennel-stdio-mappings|
+    3. Configuration ...... |conjure-client-fennel-stdio-configuration|
+
+==============================================================================
+INTRODUCTION                        *conjure-client-fennel-stdio-introduction*
+
+>
+  Fennel is a programming language that brings together the speed, simplicity,
+  and reach of Lua with the flexibility of a lisp syntax and macro system.
+
+Conjure starts a Fennel REPL within Neovim when you first open a Fennel file.
+
+You should be able to evaluate files and forms as you would with other Conjure
+supported languages right away.
+
+Check out `:ConjureSchool` if you're unsure about what evaluation operations
+you can perform.
+
+ * https://fennel-lang.org/
+
+==============================================================================
+MAPPINGS                                *conjure-client-fennel-stdio-mappings*
+
+These mappings are the defaults, you can change them as described in
+|conjure-mappings| and |conjure-configuration|.
+
+See |conjure-client-fennel-stdio-configuration| for specific configuration
+options relevant to these mappings.
+
+<localleader>cs          Start the Fennel REPL if it's not running already.
+
+<localleader>cS          Stop any existing Fennel REPL.
+
+<localleader>eF          Reload the current file using the Fennel REPL's
+                         built-in `,reload ...` mechanism.
+
+==============================================================================
+CONFIGURATION                      *conjure-client-fennel-stdio-configuration*
+
+All configuration can be set as described in |conjure-configuration|.
+
+
+`g:conjure#client#fennel#stdio#mapping#start`
+            Start the Fennel REPL if it's not running already.
+            Default: `"cs"`
+
+`g:conjure#client#fennel#stdio#mapping#stop`
+            Stop any existing Fennel REPL.
+            Default: `"cS"`
+
+`g:conjure#client#fennel#stdio#mapping#eval-reload`
+            Reload the current file.
+            Default: `"eF"`
+
+`g:conjure#client#fennel#stdio#command`
+            Command used to start the Fennel REPL, you can modify this to add
+            arguments or change the command entirely.
+            Default: `"fennel"`
+
+vim:tw=78:sw=2:ts=2:ft=help:norl:et:listchars=
