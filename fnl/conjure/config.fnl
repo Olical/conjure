@@ -15,9 +15,7 @@
       v)))
 
 (defn filetypes []
-  (->> (a.kv-pairs (get-in [:filetype_client]))
-       (a.filter a.second)
-       (a.map a.first)))
+  (get-in [:filetypes]))
 
 (defn get-in-fn [prefix-ks]
   (fn [ks]
@@ -48,18 +46,15 @@
       (a.kv-pairs tbl))
     nil))
 
-(assoc-in
-  [:filetype_client]
-  (a.merge
-    {:fennel :conjure.client.fennel.aniseed
-     :racket :conjure.client.racket.stdio
-     :clojure :conjure.client.clojure.nrepl
-     :janet :conjure.client.janet.netrepl}
-    (or nvim.g.conjure#filetype_client {})))
-
 (merge
   {:debug false
    :relative_file_root nil
+
+   :filetypes [:clojure :fennel :janet :racket]
+   :filetype {:fennel :conjure.client.fennel.aniseed
+              :racket :conjure.client.racket.stdio
+              :clojure :conjure.client.clojure.nrepl
+              :janet :conjure.client.janet.netrepl}
 
    :eval
    {:result_register "c"}

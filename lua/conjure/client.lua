@@ -237,7 +237,7 @@ local current_client_module_name = nil
 do
   local v_0_ = nil
   local function current_client_module_name0()
-    return a.get(config["get-in"]({"filetype_client"}), filetype())
+    return config["get-in"]({"filetype", filetype()})
   end
   v_0_ = current_client_module_name0
   _0_0["aniseed/locals"]["current-client-module-name"] = v_0_

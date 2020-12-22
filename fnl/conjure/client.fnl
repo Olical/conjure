@@ -67,7 +67,7 @@
   (vim.schedule (wrap f ...)))
 
 (defn- current-client-module-name []
-  (a.get (config.get-in [:filetype_client]) (filetype)))
+  (config.get-in [:filetype (filetype)]))
 
 (defn current []
   (let [ft (filetype)

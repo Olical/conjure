@@ -206,22 +206,41 @@ You can disable a mapping entirely by setting it to `v:false` like so.
 These need to be set before you enter a relevant buffer since the mappings are
 defined as you enter a buffer and can't be altered after the fact.
 
-`g:conjure#filetype_client.[filetype]`
-            Lua module path to use as a client for a filetype. This can be any
-            module that adheres to the |conjure-clients| interface.
-            Defaults:
-             - `g:conjure#filetype_client.fennel = "conjure.client.fennel.aniseed"`
-             - `g:conjure#filetype_client.clojure = "conjure.client.clojure.nrepl"`
-             - `g:conjure#filetype_client.janet = "conjure.client.janet.netrepl"`
-             - `g:conjure#filetype_client.racket = "conjure.client.racket.stdio"`
+`g:conjure#filetypes`
+            A list of filetypes Conjure should be associated with. Conjure
+            will then look up which client module to use for this filetype
+            using `g:conjure#filetype#[filetype]`, which should be a string
+            that resolves to a Lua module that adheres to the
+            |conjure-clients| interface.
 
-            You can disable a client by setting the value to false.
-            >
-              " Before Conjure is loaded.
-              let g:conjure#filetype_client = {'racket': v:false}
+            Conjure will only initialise for filetypes in this list. It also
+            will not load if the file type is in this list but there isn't an
+            equivalent `g:conjure#filetype#[filetype]` configuration value.
 
-              " After Conjure is loaded.
-              let g:conjure#filetype_client.racket = v:false
+            Default: `["clojure", "fennel", "janet", "racket"]`
+
+`g:conjure#filetype#clojure`
+            Client to use for `clojure` buffers.
+            Help: |conjure-client-clojure-nrepl|
+            Default: `"conjure.client.clojure.nrepl"`
+
+`g:conjure#filetype#fennel`
+            Client to use for `fennel` buffers. Conjure also ships with an
+            alternative `"conjure.client.fennel.stdio"` client which allows
+            you to work with Fennel (without Aniseed) outside of Neovim in an
+            external Lua process.
+            Help: |conjure-client-fennel-aniseed|, |conjure-client-fennel-stdio|
+            Default: `"conjure.client.fennel.aniseed"`
+
+`g:conjure#filetype#janet`
+            Client to use for `janet` buffers.
+            Help: |conjure-client-janet-netrepl|
+            Default: `"conjure.client.janet.netrepl"`
+
+`g:conjure#filetype#racket`
+            Client to use for `racket` buffers.
+            Help: |conjure-client-racket-stdio|
+            Default: `"conjure.client.racket.stdio"`
 
 `g:conjure#eval#result_register`
             Every evaluation captures the result and places it in a Neovim
@@ -525,8 +544,8 @@ Language clients are simply Lua modules (which can be compiled from Fennel
 using Aniseed) that have a few essential properties and functions in them.
 
 The module doesn't have to be within Conjure's source tree, it can be inside a
-3rd party plugin repository, you just connect a filetype to it with the
-`g:conjure#filetype_client.[filetype]` configuration option.
+3rd party plugin repository, you can connect a filetype to it with the
+`g:conjure#filetype#[filetype]` configuration option.
 
 When implementing a new language client you'll need to provide the following
 values and functions at the top level of your module. You can split your

@@ -98,7 +98,7 @@ do
     local function start0()
       if not editor["has-filetype?"]("fennel") then
         a.println(("Warning: No Fennel filetype found, falling back to Clojure syntax.\n" .. "Install https://github.com/bakpakin/fennel.vim for better Fennel support.\n"))
-        nvim.g["conjure#filetype_client"] = a.assoc(nvim.g["conjure#filetype_client"], "clojure", nvim.g["conjure#filetype_client"].fennel)
+        nvim.g["conjure#filetype#clojure"] = nvim.g["conjure#filetype#fennel"]
         nvim.ex.augroup("conjure_school_filetype")
         nvim.ex.autocmd_()
         nvim.ex.autocmd("BufNewFile,BufRead *.fnl setlocal filetype=clojure")
