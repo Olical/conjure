@@ -335,7 +335,7 @@ do
       elseif (kind == "line") then
         nu.normal("'[V']y")
       elseif (kind == "block") then
-        nu.normal("`[\22`]y")
+        nu.normal("`[`]y")
       else
         nu.normal("`[v`]y")
       end

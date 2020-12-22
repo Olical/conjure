@@ -137,7 +137,7 @@ do
   local v_0_ = nil
   local function try_ensure_conn0(cb)
     if not server["connected?"]() then
-      return connect_port_file({["silent?"] = true, cb = cb})
+      return connect_port_file({cb = cb, ["silent?"] = true})
     else
       if cb then
         return cb()
@@ -1084,21 +1084,21 @@ do
     local function completions0(opts)
       local function _2_(conn)
         local _3_
-        if enhanced_cljs_completion_3f() then
-          _3_ = "t"
+        if cfg({"completion", "with_context"}) then
+          _3_ = extract_completion_context(opts.prefix)
         else
         _3_ = nil
         end
         local _5_
-        if cfg({"completion", "with_context"}) then
-          _5_ = extract_completion_context(opts.prefix)
+        if enhanced_cljs_completion_3f() then
+          _5_ = "t"
         else
         _5_ = nil
         end
         local function _7_(msgs)
           return opts.cb(a.map(clojure__3evim_completion, a.get(a.last(msgs), "completions")))
         end
-        return server.send({["enhanced-cljs-completion?"] = _3_, ["extra-metadata"] = {"arglists", "doc"}, context = _5_, ns = opts.context, op = "complete", session = conn.session, symbol = opts.prefix}, nrepl["with-all-msgs-fn"](_7_))
+        return server.send({context = _3_, ["enhanced-cljs-completion?"] = _5_, ["extra-metadata"] = {"arglists", "doc"}, ns = opts.context, op = "complete", session = conn.session, symbol = opts.prefix}, nrepl["with-all-msgs-fn"](_7_))
       end
       return server["with-conn-and-op-or-warn"]("complete", _2_, {["else"] = opts.cb, ["silent?"] = true})
     end
