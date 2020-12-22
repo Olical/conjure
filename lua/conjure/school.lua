@@ -97,7 +97,7 @@ do
     local v_0_0 = nil
     local function start0()
       if not editor["has-filetype?"]("fennel") then
-        a.println(("Warning: No Fennel filetype found, falling back to Clojure syntax.\n" .. "Install https://github.com/bakpakin/fennel.vim for better Fennel support.\n"))
+        nvim.echo("Warning: No Fennel filetype found, falling back to Clojure syntax.", "Install https://github.com/bakpakin/fennel.vim for better Fennel support.")
         nvim.g["conjure#filetype#clojure"] = nvim.g["conjure#filetype#fennel"]
         nvim.ex.augroup("conjure_school_filetype")
         nvim.ex.autocmd_()
@@ -119,7 +119,7 @@ do
       else
       _3_ = nil
       end
-      return append(a.concat({"(module user.conjure-school", "  {require {school conjure.school", "            nvim conjure.aniseed.nvim}})", "", ";; Welcome to Conjure school!", ";; Grab yourself a nice beverage and let's get evaluating. I hope you enjoy!", "", ";; This language is Fennel, it's quite similar to Clojure.", ";; Conjure is written in Fennel, it's compiled to Lua and executed inside Neovim itself.", ";; This means we can work with a Lisp without installing or running anything else.", "", ";; Note: Some colorschemes will make the HUD unreadable, see here for more: https://git.io/JJ1Hl", "", ";; Let's learn how to evaluate it using Conjure's assortment of mappings.", ";; You can learn how to change these mappings with :help conjure-mappings", "", (";; Let's begin by evaluating the whole buffer using " .. map_str("eval_buf"))}, _3_, {"(school.lesson-1)"}))
+      return append(a.concat({"(module user.conjure-school", "  {require {school conjure.school}})", "", ";; Welcome to Conjure school!", ";; Grab yourself a nice beverage and let's get evaluating. I hope you enjoy!", "", ";; This language is Fennel, it's quite similar to Clojure.", ";; Conjure is written in Fennel, it's compiled to Lua and executed inside Neovim itself.", ";; This means we can work with a Lisp without installing or running anything else.", "", ";; Note: Some colorschemes will make the HUD unreadable, see here for more: https://git.io/JJ1Hl", "", ";; Let's learn how to evaluate it using Conjure's assortment of mappings.", ";; You can learn how to change these mappings with :help conjure-mappings", "", (";; Let's begin by evaluating the whole buffer using " .. map_str("eval_buf"))}, _3_, {"(school.lesson-1)"}))
     end
     v_0_0 = start0
     _0_0["start"] = v_0_0
@@ -252,7 +252,7 @@ do
   do
     local v_0_0 = nil
     local function lesson_70()
-      append({"", ";; Excellent job, you made it to the end!", ";; To learn more about configuring Conjure check out :help conjure", ";; You can learn about specific languages with :help conjure-client- and then tab completion.", ";; For example, conjure-client-fennel-aniseed or conjure-client-clojure-nrepl.", (";; Evaluate the form below to open Conjure's help with " .. map_str("eval_current_form")), "(nvim.ex.help :conjure)", "", ";; I hope you have a wonderful time in Conjure!"})
+      append({"", ";; Excellent job, you made it to the end!", ";; To learn more about configuring Conjure, install the plugin and check out :help conjure", ";; You can learn about specific languages with :help conjure-client- and then tab completion.", ";; For example, conjure-client-fennel-aniseed or conjure-client-clojure-nrepl.", "", ";; I hope you have a wonderful time in Conjure!"})
       return progress(7)
     end
     v_0_0 = lesson_70

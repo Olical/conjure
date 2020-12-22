@@ -27,9 +27,9 @@
 
 (defn start []
   (when (not (editor.has-filetype? :fennel))
-    (a.println
-      (.. "Warning: No Fennel filetype found, falling back to Clojure syntax.\n"
-          "Install https://github.com/bakpakin/fennel.vim for better Fennel support.\n"))
+    (nvim.echo
+      "Warning: No Fennel filetype found, falling back to Clojure syntax."
+      "Install https://github.com/bakpakin/fennel.vim for better Fennel support.")
     (set nvim.g.conjure#filetype#clojure nvim.g.conjure#filetype#fennel)
     (nvim.ex.augroup :conjure_school_filetype)
     (nvim.ex.autocmd_)
@@ -42,8 +42,7 @@
     (append
       (a.concat
         ["(module user.conjure-school"
-         "  {require {school conjure.school"
-         "            nvim conjure.aniseed.nvim}})"
+         "  {require {school conjure.school}})"
          ""
          ";; Welcome to Conjure school!"
          ";; Grab yourself a nice beverage and let's get evaluating. I hope you enjoy!"
@@ -169,11 +168,9 @@
   (append
     [""
      ";; Excellent job, you made it to the end!"
-     ";; To learn more about configuring Conjure check out :help conjure"
+     ";; To learn more about configuring Conjure, install the plugin and check out :help conjure"
      ";; You can learn about specific languages with :help conjure-client- and then tab completion."
      ";; For example, conjure-client-fennel-aniseed or conjure-client-clojure-nrepl."
-     (.. ";; Evaluate the form below to open Conjure's help with " (map-str :eval_current_form))
-     "(nvim.ex.help :conjure)"
      ""
      ";; I hope you have a wonderful time in Conjure!"])
   (progress 7))
