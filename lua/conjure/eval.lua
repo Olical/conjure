@@ -266,39 +266,25 @@ do
   _0_0["aniseed/locals"]["root-form"] = v_0_
   root_form = v_0_
 end
-local at_mark = nil
-do
-  local v_0_ = nil
-  do
-    local v_0_0 = nil
-    local function at_mark0(mark)
-      local comment_prefix = client.get("comment-prefix")
-      local ok_3f, err = nil, nil
-      local function _2_()
-        return editor["go-to-mark"](mark)
-      end
-      ok_3f, err = pcall(_2_)
-      if ok_3f then
-        current_form({origin = ("marked-form [" .. mark .. "]")})
-        return editor["go-back"]()
-      else
-        return log.append({(comment_prefix .. "Couldn't eval form at mark: " .. mark), (comment_prefix .. err)}, {["break?"] = true})
-      end
-    end
-    v_0_0 = at_mark0
-    _0_0["at-mark"] = v_0_0
-    v_0_ = v_0_0
-  end
-  _0_0["aniseed/locals"]["at-mark"] = v_0_
-  at_mark = v_0_
-end
 local marked_form = nil
 do
   local v_0_ = nil
   do
     local v_0_0 = nil
-    local function marked_form0()
-      return at_mark(extract["prompt-char"]())
+    local function marked_form0(mark)
+      local comment_prefix = client.get("comment-prefix")
+      local mark0 = (mark or extract["prompt-char"]())
+      local ok_3f, err = nil, nil
+      local function _2_()
+        return editor["go-to-mark"](mark0)
+      end
+      ok_3f, err = pcall(_2_)
+      if ok_3f then
+        current_form({origin = ("marked-form [" .. mark0 .. "]")})
+        return editor["go-back"]()
+      else
+        return log.append({(comment_prefix .. "Couldn't eval form at mark: " .. mark0), (comment_prefix .. err)}, {["break?"] = true})
+      end
     end
     v_0_0 = marked_form0
     _0_0["marked-form"] = v_0_0
