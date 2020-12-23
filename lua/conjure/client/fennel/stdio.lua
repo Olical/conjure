@@ -21,7 +21,7 @@ local function _1_(...)
   end
   ok_3f_0_, val_0_ = pcall(_1_)
   if ok_3f_0_ then
-    _0_0["aniseed/local-fns"] = {["require-macros"] = {["conjure.macros"] = true}, require = {a = "conjure.aniseed.core", client = "conjure.client", config = "conjure.config", log = "conjure.log", mapping = "conjure.mapping", nvim = "conjure.aniseed.nvim", stdio = "conjure.remote.stdio", str = "conjure.aniseed.string", text = "conjure.text"}}
+    _0_0["aniseed/local-fns"] = {require = {a = "conjure.aniseed.core", client = "conjure.client", config = "conjure.config", log = "conjure.log", mapping = "conjure.mapping", nvim = "conjure.aniseed.nvim", stdio = "conjure.remote.stdio", str = "conjure.aniseed.string", text = "conjure.text"}, ["require-macros"] = {["conjure.macros"] = true}}
     return val_0_
   else
     return print(val_0_)
@@ -40,7 +40,7 @@ local text = _local_0_[9]
 local _2amodule_2a = _0_0
 local _2amodule_name_2a = "conjure.client.fennel.stdio"
 do local _ = ({nil, _0_0, {{nil}, nil, nil, nil}})[2] end
-config.merge({client = {fennel = {stdio = {["prompt-pattern"] = ">> ", command = "fennel", mapping = {["eval-reload"] = "eF", start = "cs", stop = "cS"}}}}})
+config.merge({client = {fennel = {stdio = {command = "fennel", mapping = {["eval-reload"] = "eF", start = "cs", stop = "cS"}, ["prompt-pattern"] = ">> "}}}})
 local cfg = nil
 do
   local v_0_ = config["get-in-fn"]({"client", "fennel", "stdio"})
@@ -173,7 +173,7 @@ do
       local file_path = nvim.fn.expand("%")
       local module_path = nvim.fn.fnamemodify(file_path, ":.:r")
       log.append({(comment_prefix .. ",reload " .. module_path)}, {["break?"] = true})
-      return eval_str({["file-path"] = file_path, action = "eval", code = (",reload " .. module_path), origin = "reload"})
+      return eval_str({action = "eval", code = (",reload " .. module_path), ["file-path"] = file_path, origin = "reload"})
     end
     v_0_0 = eval_reload0
     _0_0["eval-reload"] = v_0_0
@@ -260,7 +260,7 @@ do
         local function _5_()
           return display_repl_status("started")
         end
-        return a.assoc(state(), "repl", stdio.start({["on-error"] = _2_, ["on-exit"] = _3_, ["on-stray-output"] = _4_, ["on-success"] = _5_, ["prompt-pattern"] = cfg({"prompt-pattern"}), cmd = cfg({"command"})}))
+        return a.assoc(state(), "repl", stdio.start({cmd = cfg({"command"}), ["on-error"] = _2_, ["on-exit"] = _3_, ["on-stray-output"] = _4_, ["on-success"] = _5_, ["prompt-pattern"] = cfg({"prompt-pattern"})}))
       end
     end
     v_0_0 = start0

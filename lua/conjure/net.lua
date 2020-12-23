@@ -21,7 +21,7 @@ local function _1_(...)
   end
   ok_3f_0_, val_0_ = pcall(_1_)
   if ok_3f_0_ then
-    _0_0["aniseed/local-fns"] = {["require-macros"] = {["conjure.macros"] = true}, require = {a = "conjure.aniseed.core", bridge = "conjure.bridge", nvim = "conjure.aniseed.nvim"}}
+    _0_0["aniseed/local-fns"] = {require = {a = "conjure.aniseed.core", bridge = "conjure.bridge", nvim = "conjure.aniseed.nvim"}, ["require-macros"] = {["conjure.macros"] = true}}
     return val_0_
   else
     return print(val_0_)
@@ -98,7 +98,7 @@ do
       local function _3_()
         return destroy_sock(sock)
       end
-      return {["resolved-host"] = resolved_host, destroy = _3_, host = host, port = port, sock = sock}
+      return {destroy = _3_, host = host, port = port, ["resolved-host"] = resolved_host, sock = sock}
     end
     v_0_0 = connect0
     _0_0["connect"] = v_0_0

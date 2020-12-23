@@ -38,7 +38,7 @@ do
   do
     local v_0_0 = nil
     local function _2_()
-      return {["join-next"] = {key = nil}, conn = nil}
+      return {conn = nil, ["join-next"] = {key = nil}}
     end
     v_0_0 = (_0_0.get or client["new-state"](_2_))
     _0_0["get"] = v_0_0

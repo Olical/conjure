@@ -122,9 +122,8 @@
            :range range
            :origin :root-form})))))
 
-(defn marked-form []
-  (let [mark (extract.prompt-char)
-        comment-prefix (client.get :comment-prefix)
+(defn at-mark [mark]
+  (let [comment-prefix (client.get :comment-prefix)
         (ok? err) (pcall #(editor.go-to-mark mark))]
     (if ok?
       (do
@@ -133,6 +132,9 @@
       (log.append [(.. comment-prefix "Couldn't eval form at mark: " mark)
                    (.. comment-prefix err)]
                   {:break? true}))))
+
+(defn marked-form []
+  (at-mark (extract.prompt-char)))
 
 (defn word []
   (let [{: content : range} (extract.word)]
