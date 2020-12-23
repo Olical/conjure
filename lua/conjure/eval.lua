@@ -98,7 +98,7 @@ do
     local v_0_0 = nil
     local function file0()
       event.emit("eval", "file")
-      local opts = {action = "eval", ["file-path"] = fs["resolve-relative"](extract["file-path"]()), origin = "file"}
+      local opts = {["file-path"] = fs["resolve-relative"](extract["file-path"]()), action = "eval", origin = "file"}
       opts.preview = preview(opts)
       display_request(opts)
       return client.call("eval-file", with_last_result_hook(opts))
@@ -126,7 +126,7 @@ do
   local v_0_ = nil
   local function client_exec_fn0(action, f_name, base_opts)
     local function _2_(opts)
-      local opts0 = a.merge(opts, base_opts, {action = action, ["file-path"] = extract["file-path"]()})
+      local opts0 = a.merge(opts, base_opts, {["file-path"] = extract["file-path"](), action = action})
       assoc_context(opts0)
       opts0.preview = preview(opts0)
       if not opts0["passive?"] then
@@ -234,7 +234,7 @@ do
           buffer["replace-range"](buf, range, result)
           return editor["go-to"](win, a["get-in"](range, {"start", 1}), a.inc(a["get-in"](range, {"start", 2})))
         end
-        eval_str({code = content, ["on-result"] = _2_, origin = "replace-form", range = range, ["suppress-hud?"] = true})
+        eval_str({["on-result"] = _2_, ["suppress-hud?"] = true, code = content, origin = "replace-form", range = range})
         return form
       end
     end
@@ -424,7 +424,7 @@ do
   do
     local v_0_0 = nil
     local function selection0(kind)
-      local _let_0_ = extract.selection({kind = (kind or nvim.fn.visualmode()), ["visual?"] = not kind})
+      local _let_0_ = extract.selection({["visual?"] = not kind, kind = (kind or nvim.fn.visualmode())})
       local content = _let_0_["content"]
       local range0 = _let_0_["range"]
       return eval_str({code = content, origin = "selection", range = range0})

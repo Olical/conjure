@@ -174,7 +174,7 @@ do
       local function _5_()
         return display_conn_status("connected")
       end
-      return a.assoc(state(), "conn", remote.connect({host = host, ["on-error"] = _3_, ["on-failure"] = _4_, ["on-success"] = _5_, port = port}))
+      return a.assoc(state(), "conn", remote.connect({["on-error"] = _3_, ["on-failure"] = _4_, ["on-success"] = _5_, host = host, port = port}))
     end
     v_0_0 = connect0
     _0_0["connect"] = v_0_0

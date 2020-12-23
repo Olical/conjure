@@ -178,7 +178,7 @@ do
   do
     local v_0_0 = nil
     local function strip_ansi_escape_sequences0(s)
-      return string.gsub(string.gsub(string.gsub(string.gsub(string.gsub(s, "x1b%[%d+;%d+;%d+;%d+;%d+m", ""), "x1b%[%d+;%d+;%d+;%d+m", ""), "x1b%[%d+;%d+;%d+m", ""), "x1b%[%d+;%d+m", ""), "x1b%[%d+m", "")
+      return string.gsub(string.gsub(string.gsub(string.gsub(string.gsub(s, "\27%[%d+;%d+;%d+;%d+;%d+m", ""), "\27%[%d+;%d+;%d+;%d+m", ""), "\27%[%d+;%d+;%d+m", ""), "\27%[%d+;%d+m", ""), "\27%[%d+m", "")
     end
     v_0_0 = strip_ansi_escape_sequences0
     _0_0["strip-ansi-escape-sequences"] = v_0_0

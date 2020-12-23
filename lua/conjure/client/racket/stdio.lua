@@ -21,7 +21,7 @@ local function _1_(...)
   end
   ok_3f_0_, val_0_ = pcall(_1_)
   if ok_3f_0_ then
-    _0_0["aniseed/local-fns"] = {require = {a = "conjure.aniseed.core", client = "conjure.client", config = "conjure.config", log = "conjure.log", mapping = "conjure.mapping", nvim = "conjure.aniseed.nvim", stdio = "conjure.remote.stdio", str = "conjure.aniseed.string", text = "conjure.text"}, ["require-macros"] = {["conjure.macros"] = true}}
+    _0_0["aniseed/local-fns"] = {["require-macros"] = {["conjure.macros"] = true}, require = {a = "conjure.aniseed.core", client = "conjure.client", config = "conjure.config", log = "conjure.log", mapping = "conjure.mapping", nvim = "conjure.aniseed.nvim", stdio = "conjure.remote.stdio", str = "conjure.aniseed.string", text = "conjure.text"}}
     return val_0_
   else
     return print(val_0_)
@@ -40,7 +40,7 @@ local text = _local_0_[9]
 local _2amodule_2a = _0_0
 local _2amodule_name_2a = "conjure.client.racket.stdio"
 do local _ = ({nil, _0_0, {{nil}, nil, nil, nil}})[2] end
-config.merge({client = {racket = {stdio = {command = "racket", mapping = {start = "cs", stop = "cS"}, ["prompt-pattern"] = "\n?[\"%w%-./_]*> "}}}})
+config.merge({client = {racket = {stdio = {["prompt-pattern"] = "\n?[\"%w%-./_]*> ", command = "racket", mapping = {start = "cs", stop = "cS"}}}}})
 local cfg = nil
 do
   local v_0_ = config["get-in-fn"]({"client", "racket", "stdio"})
@@ -286,7 +286,7 @@ do
           display_repl_status("started")
           return enter()
         end
-        return a.assoc(state(), "repl", stdio.start({cmd = cfg({"command"}), ["on-error"] = _2_, ["on-exit"] = _3_, ["on-stray-output"] = _4_, ["on-success"] = _5_, ["prompt-pattern"] = cfg({"prompt-pattern"})}))
+        return a.assoc(state(), "repl", stdio.start({["on-error"] = _2_, ["on-exit"] = _3_, ["on-stray-output"] = _4_, ["on-success"] = _5_, ["prompt-pattern"] = cfg({"prompt-pattern"}), cmd = cfg({"command"})}))
       end
     end
     v_0_0 = start0

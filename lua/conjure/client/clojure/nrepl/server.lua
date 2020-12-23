@@ -173,22 +173,22 @@ do
     local v_0_0 = nil
     local function eval0(opts, cb)
       local function _2_(_)
-        local _4_
+        local _3_
+        if config["get-in"]({"client", "clojure", "nrepl", "eval", "pretty_print"}) then
+          _3_ = config["get-in"]({"client", "clojure", "nrepl", "eval", "print_function"})
+        else
+        _3_ = nil
+        end
+        local _6_
         do
-          local _3_0 = a["get-in"](opts, {"range", "start", 2})
-          if _3_0 then
-            _4_ = a.inc(_3_0)
+          local _5_0 = a["get-in"](opts, {"range", "start", 2})
+          if _5_0 then
+            _6_ = a.inc(_5_0)
           else
-            _4_ = _3_0
+            _6_ = _5_0
           end
         end
-        local _5_
-        if config["get-in"]({"client", "clojure", "nrepl", "eval", "pretty_print"}) then
-          _5_ = config["get-in"]({"client", "clojure", "nrepl", "eval", "print_function"})
-        else
-        _5_ = nil
-        end
-        return send({code = opts.code, column = _4_, file = opts["file-path"], line = a["get-in"](opts, {"range", "start", 1}), ["nrepl.middleware.print/buffer-size"] = config["get-in"]({"client", "clojure", "nrepl", "eval", "print_buffer_size"}), ["nrepl.middleware.print/options"] = {associative = 1, length = (config["get-in"]({"client", "clojure", "nrepl", "eval", "print_options", "length"}) or nil), level = (config["get-in"]({"client", "clojure", "nrepl", "eval", "print_options", "level"}) or nil)}, ["nrepl.middleware.print/print"] = _5_, ["nrepl.middleware.print/quota"] = config["get-in"]({"client", "clojure", "nrepl", "eval", "print_quota"}), ns = opts.context, op = "eval", session = opts.session}, cb)
+        return send({["nrepl.middleware.print/buffer-size"] = config["get-in"]({"client", "clojure", "nrepl", "eval", "print_buffer_size"}), ["nrepl.middleware.print/options"] = {associative = 1, length = (config["get-in"]({"client", "clojure", "nrepl", "eval", "print_options", "length"}) or nil), level = (config["get-in"]({"client", "clojure", "nrepl", "eval", "print_options", "level"}) or nil)}, ["nrepl.middleware.print/print"] = _3_, ["nrepl.middleware.print/quota"] = config["get-in"]({"client", "clojure", "nrepl", "eval", "print_quota"}), code = opts.code, column = _6_, file = opts["file-path"], line = a["get-in"](opts, {"range", "start", 1}), ns = opts.context, op = "eval", session = opts.session}, cb)
       end
       return with_conn_or_warn(_2_)
     end
@@ -282,7 +282,7 @@ do
     local v_0_0 = nil
     local function enrich_session_id0(id, cb)
       local function _2_(st)
-        local t = {id = id, name = uuid.pretty(id), ["pretty-type"] = pretty_session_type(st), type = st}
+        local t = {["pretty-type"] = pretty_session_type(st), id = id, name = uuid.pretty(id), type = st}
         local function _3_()
           return (t.name .. " (" .. t["pretty-type"] .. ")")
         end
@@ -475,7 +475,7 @@ do
         assume_or_create_session()
         return eval_preamble(cb)
       end
-      return a.assoc(state.get(), "conn", a["merge!"](nrepl.connect({["default-callback"] = _4_, host = host, ["on-error"] = _5_, ["on-failure"] = _6_, ["on-message"] = _7_, ["on-success"] = _8_, port = port}), {["seen-ns"] = {}}))
+      return a.assoc(state.get(), "conn", a["merge!"](nrepl.connect({["default-callback"] = _4_, ["on-error"] = _5_, ["on-failure"] = _6_, ["on-message"] = _7_, ["on-success"] = _8_, host = host, port = port}), {["seen-ns"] = {}}))
     end
     v_0_0 = connect0
     _0_0["connect"] = v_0_0

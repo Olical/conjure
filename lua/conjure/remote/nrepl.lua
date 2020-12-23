@@ -67,7 +67,7 @@ do
   do
     local v_0_0 = nil
     local function connect0(opts)
-      local state = {["awaiting-process?"] = false, bc = bencode.new(), ["message-queue"] = {}, msgs = {}}
+      local state = {["awaiting-process?"] = false, ["message-queue"] = {}, bc = bencode.new(), msgs = {}}
       local conn = {session = nil}
       local function enrich_status(msg)
         local ks = a.get(msg, "status")
@@ -88,7 +88,7 @@ do
         log.dbg("send", msg)
         local function _3_()
         end
-        a["assoc-in"](state, {"msgs", msg_id}, {cb = (cb or _3_), msg = msg, ["sent-at"] = os.time()})
+        a["assoc-in"](state, {"msgs", msg_id}, {["sent-at"] = os.time(), cb = (cb or _3_), msg = msg})
         do end (conn.sock):write(bencode.encode(msg))
         return nil
       end
