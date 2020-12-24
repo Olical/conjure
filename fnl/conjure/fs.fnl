@@ -9,12 +9,39 @@
     (when (and (a.string? v) (not (a.empty? v)))
       v)))
 
+(defn exists? [p]
+  "Takes a path and returns its type if its exists."
+  (assert
+    (= "string" (type p))
+    (.. "`exists` expected string got " (type p)))
+  (let [stat (vim.loop.fs_stat p)]
+    (if stat stat.type false)))
+
+(defn ensure [p]
+  "Takes a path and ensure it exist."
+  (assert
+    (= :string (type p))
+    (.. "`ensure` expected string got " (type p)))
+  (when (not (exists? p))
+    (if (= nil (string.match p "%.%w+"))
+      (let [handle (vim.loop.fs_open p "w" 438)]
+        (vim.loop.fs_close handle))
+      (vim.loop.fs_mkdir p 493)))
+  p)
+
 (defn config-dir []
   "Return $XDG_CONFIG_HOME/conjure.
   Defaulting the config directory to $HOME/.config."
   (..  (or (env "XDG_CONFIG_HOME")
            (.. (env "HOME") "/.config"))
       "/conjure"))
+
+(defn cache-dir []
+  "Return $XDG_CACHE_HOME/conjure.
+  Defaulting the config directory to $HOME/.cache."
+  (ensure (..  (or (env "XDG_CACHE_HOME")
+                   (.. (env "HOME") "/.config"))
+              "/conjure")))
 
 (defn findfile [name path]
   "Wrapper around Neovim's findfile() that returns nil
@@ -62,3 +89,4 @@
     (if relative-file-root
       (resolve-relative-to path relative-file-root)
       path)))
+

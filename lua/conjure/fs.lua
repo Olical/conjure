@@ -48,6 +48,51 @@ do
   _0_0["aniseed/locals"]["env"] = v_0_
   env = v_0_
 end
+local exists_3f = nil
+do
+  local v_0_ = nil
+  do
+    local v_0_0 = nil
+    local function exists_3f0(p)
+      assert(("string" == type(p)), ("`exists` expected string got " .. type(p)))
+      local stat = vim.loop.fs_stat(p)
+      if stat then
+        return stat.type
+      else
+        return false
+      end
+    end
+    v_0_0 = exists_3f0
+    _0_0["exists?"] = v_0_0
+    v_0_ = v_0_0
+  end
+  _0_0["aniseed/locals"]["exists?"] = v_0_
+  exists_3f = v_0_
+end
+local ensure = nil
+do
+  local v_0_ = nil
+  do
+    local v_0_0 = nil
+    local function ensure0(p)
+      assert(("string" == type(p)), ("`ensure` expected string got " .. type(p)))
+      if not exists_3f(p) then
+        if (nil == string.match(p, "%.%w+")) then
+          local handle = vim.loop.fs_open(p, "w", 438)
+          vim.loop.fs_close(handle)
+        else
+          vim.loop.fs_mkdir(p, 493)
+        end
+      end
+      return p
+    end
+    v_0_0 = ensure0
+    _0_0["ensure"] = v_0_0
+    v_0_ = v_0_0
+  end
+  _0_0["aniseed/locals"]["ensure"] = v_0_
+  ensure = v_0_
+end
 local config_dir = nil
 do
   local v_0_ = nil
@@ -62,6 +107,21 @@ do
   end
   _0_0["aniseed/locals"]["config-dir"] = v_0_
   config_dir = v_0_
+end
+local cache_dir = nil
+do
+  local v_0_ = nil
+  do
+    local v_0_0 = nil
+    local function cache_dir0()
+      return ensure(((env("XDG_CACHE_HOME") or (env("HOME") .. "/.config")) .. "/conjure"))
+    end
+    v_0_0 = cache_dir0
+    _0_0["cache-dir"] = v_0_0
+    v_0_ = v_0_0
+  end
+  _0_0["aniseed/locals"]["cache-dir"] = v_0_
+  cache_dir = v_0_
 end
 local findfile = nil
 do
