@@ -291,9 +291,9 @@ do
   do
     local v_0_0 = nil
     local function on_filetype0()
-      mapping.buf("n", cfg({"mapping", "start"}), _2amodule_name_2a, "start")
-      mapping.buf("n", cfg({"mapping", "stop"}), _2amodule_name_2a, "stop")
-      return mapping.buf("n", cfg({"mapping", "eval-reload"}), _2amodule_name_2a, "eval-reload")
+      mapping.buf("n", "FnlStart", cfg({"mapping", "start"}), _2amodule_name_2a, "start")
+      mapping.buf("n", "FnlStop", cfg({"mapping", "stop"}), _2amodule_name_2a, "stop")
+      return mapping.buf("n", "FnlEvalReload", cfg({"mapping", "eval-reload"}), _2amodule_name_2a, "eval-reload")
     end
     v_0_0 = on_filetype0
     _0_0["on-filetype"] = v_0_0

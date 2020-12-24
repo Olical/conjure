@@ -323,8 +323,8 @@ do
   do
     local v_0_0 = nil
     local function on_filetype0()
-      mapping.buf("n", cfg({"mapping", "start"}), _2amodule_name_2a, "start")
-      return mapping.buf("n", cfg({"mapping", "stop"}), _2amodule_name_2a, "stop")
+      mapping.buf("n", "RktStart", cfg({"mapping", "start"}), _2amodule_name_2a, "start")
+      return mapping.buf("n", "RktStop", cfg({"mapping", "stop"}), _2amodule_name_2a, "stop")
     end
     v_0_0 = on_filetype0
     _0_0["on-filetype"] = v_0_0

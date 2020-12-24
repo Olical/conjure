@@ -150,8 +150,8 @@
   (eval-str (a.assoc opts :code (.. "(load \"" opts.file-path "\")"))))
 
 (defn on-filetype []
-  (mapping.buf :n (cfg :mapping :disconnect) *module-name* :disconnect)
-  (mapping.buf :n (cfg :mapping :connect) *module-name* :connect))
+  (mapping.buf :n :RktDisconnect (cfg :mapping :disconnect) *module-name* :disconnect)
+  (mapping.buf :n :RktConnect (cfg :mapping :connect) *module-name* :connect))
 
 (defn on-load []
   (connect))

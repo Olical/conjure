@@ -134,5 +134,5 @@
   (start))
 
 (defn on-filetype []
-  (mapping.buf :n (cfg [:mapping :start]) *module-name* :start)
-  (mapping.buf :n (cfg [:mapping :stop]) *module-name* :stop))
+  (mapping.buf :n :RktStart (cfg [:mapping :start]) *module-name* :start)
+  (mapping.buf :n :RktStop (cfg [:mapping :stop]) *module-name* :stop))

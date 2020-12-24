@@ -104,5 +104,7 @@
   (wrapped-test ["; run-all-tests"] (ani :test :run-all)))
 
 (defn on-filetype []
-  (mapping.buf :n (cfg [:mapping :run_buf_tests]) *module-name* :run-buf-tests)
-  (mapping.buf :n (cfg [:mapping :run_all_tests]) *module-name* :run-all-tests))
+  (mapping.buf :n :FnlRunBufTests
+               (cfg [:mapping :run_buf_tests]) *module-name* :run-buf-tests)
+  (mapping.buf :n :FnlRunAllTests
+               (cfg [:mapping :run_all_tests]) *module-name* :run-all-tests))

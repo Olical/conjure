@@ -124,6 +124,9 @@
   (start))
 
 (defn on-filetype []
-  (mapping.buf :n (cfg [:mapping :start]) *module-name* :start)
-  (mapping.buf :n (cfg [:mapping :stop]) *module-name* :stop)
-  (mapping.buf :n (cfg [:mapping :eval-reload]) *module-name* :eval-reload))
+  (mapping.buf :n :FnlStart
+               (cfg [:mapping :start]) *module-name* :start)
+  (mapping.buf :n :FnlStop
+               (cfg [:mapping :stop]) *module-name* :stop)
+  (mapping.buf :n :FnlEvalReload
+               (cfg [:mapping :eval-reload]) *module-name* :eval-reload))
