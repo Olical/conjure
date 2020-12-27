@@ -17,11 +17,11 @@ end
 local function _1_(...)
   local ok_3f_0_, val_0_ = nil, nil
   local function _1_()
-    return {require("conjure.aniseed.core"), require("conjure.buffer"), require("conjure.client"), require("conjure.config"), require("conjure.editor"), require("conjure.event"), require("conjure.extract"), require("conjure.fs"), require("conjure.log"), require("conjure.aniseed.nvim"), require("conjure.promise"), require("conjure.text"), require("conjure.uuid")}
+    return {require("conjure.aniseed.core"), require("conjure.buffer"), require("conjure.client"), require("conjure.config"), require("conjure.editor"), require("conjure.event"), require("conjure.extract"), require("conjure.fs"), require("conjure.inline"), require("conjure.log"), require("conjure.aniseed.nvim"), require("conjure.promise"), require("conjure.text"), require("conjure.uuid")}
   end
   ok_3f_0_, val_0_ = pcall(_1_)
   if ok_3f_0_ then
-    _0_0["aniseed/local-fns"] = {require = {a = "conjure.aniseed.core", buffer = "conjure.buffer", client = "conjure.client", config = "conjure.config", editor = "conjure.editor", event = "conjure.event", extract = "conjure.extract", fs = "conjure.fs", log = "conjure.log", nvim = "conjure.aniseed.nvim", promise = "conjure.promise", text = "conjure.text", uuid = "conjure.uuid"}}
+    _0_0["aniseed/local-fns"] = {require = {a = "conjure.aniseed.core", buffer = "conjure.buffer", client = "conjure.client", config = "conjure.config", editor = "conjure.editor", event = "conjure.event", extract = "conjure.extract", fs = "conjure.fs", inline = "conjure.inline", log = "conjure.log", nvim = "conjure.aniseed.nvim", promise = "conjure.promise", text = "conjure.text", uuid = "conjure.uuid"}}
     return val_0_
   else
     return print(val_0_)
@@ -29,10 +29,11 @@ local function _1_(...)
 end
 local _local_0_ = _1_(...)
 local a = _local_0_[1]
-local nvim = _local_0_[10]
-local promise = _local_0_[11]
-local text = _local_0_[12]
-local uuid = _local_0_[13]
+local log = _local_0_[10]
+local nvim = _local_0_[11]
+local promise = _local_0_[12]
+local text = _local_0_[13]
+local uuid = _local_0_[14]
 local buffer = _local_0_[2]
 local client = _local_0_[3]
 local config = _local_0_[4]
@@ -40,7 +41,7 @@ local editor = _local_0_[5]
 local event = _local_0_[6]
 local extract = _local_0_[7]
 local fs = _local_0_[8]
-local log = _local_0_[9]
+local inline = _local_0_[9]
 local _2amodule_2a = _0_0
 local _2amodule_name_2a = "conjure.eval"
 do local _ = ({nil, _0_0, {{}, nil, nil, nil}})[2] end
@@ -76,9 +77,12 @@ local with_last_result_hook = nil
 do
   local v_0_ = nil
   local function with_last_result_hook0(opts)
+    local buf = nvim.win_get_buf(0)
+    local line = a.dec(a.first(nvim.win_get_cursor(0)))
     local function _2_(f)
       local function _3_(result)
         nvim.fn.setreg(config["get-in"]({"eval", "result_register"}), result)
+        inline.display({buf = buf, line = line, text = ("=> " .. result)})
         if f then
           return f(result)
         end

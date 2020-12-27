@@ -9,6 +9,7 @@
             promise conjure.promise
             editor conjure.editor
             buffer conjure.buffer
+            inline conjure.inline
             uuid conjure.uuid
             log conjure.log
             event conjure.event}})
@@ -28,12 +29,18 @@
     (a.merge opts {:break? true})))
 
 (defn- with-last-result-hook [opts]
-  (a.update
-    opts :on-result
-    (fn [f]
-      (fn [result]
-        (nvim.fn.setreg (config.get-in [:eval :result_register]) result)
-        (when f (f result))))))
+  (let [buf (nvim.win_get_buf 0)
+        line (a.dec (a.first (nvim.win_get_cursor 0)))]
+    (a.update
+      opts :on-result
+      (fn [f]
+        (fn [result]
+          (nvim.fn.setreg (config.get-in [:eval :result_register]) result)
+          (inline.display
+            {:buf buf
+             :text (.. "=> " result)
+             :line line})
+          (when f (f result)))))))
 
 (defn file []
   (event.emit :eval :file)
