@@ -82,7 +82,9 @@ do
     local function _2_(f)
       local function _3_(result)
         nvim.fn.setreg(config["get-in"]({"eval", "result_register"}), result)
-        inline.display({buf = buf, line = line, text = ("=> " .. result)})
+        if config["get-in"]({"eval", "inline_results"}) then
+          inline.display({buf = buf, line = line, text = ("=> " .. result)})
+        end
         if f then
           return f(result)
         end

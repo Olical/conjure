@@ -253,6 +253,12 @@ defined as you enter a buffer and can't be altered after the fact.
              * `"_"` the black hole when you don't want this at all.
             Default: `"c"`
 
+`g:conjure#eval#inline_results`
+            Displays the results of evaluations inline as virtual text at the
+            end of the line where the evaluation was initiated.
+            Example: `(+ 10 20) => 30`
+            Default: `true`
+
 `g:conjure#mapping#prefix`
             The key that proceeds most mappings.
             Default: `"<localleader>"`

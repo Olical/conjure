@@ -4,9 +4,6 @@
 
 (defonce ns-id (nvim.create_namespace *module-name*))
 
-;; TODO Options.
-;; TODO Documentation.
-
 (defn sanitise-text [s]
   (if (a.string? s)
     (s:gsub "%s+" " ")

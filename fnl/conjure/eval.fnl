@@ -36,10 +36,11 @@
       (fn [f]
         (fn [result]
           (nvim.fn.setreg (config.get-in [:eval :result_register]) result)
-          (inline.display
-            {:buf buf
-             :text (.. "=> " result)
-             :line line})
+          (when (config.get-in [:eval :inline_results])
+            (inline.display
+              {:buf buf
+               :text (.. "=> " result)
+               :line line}))
           (when f (f result)))))))
 
 (defn file []

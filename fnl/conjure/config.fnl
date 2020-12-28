@@ -57,7 +57,8 @@
               :janet :conjure.client.janet.netrepl}
 
    :eval
-   {:result_register "c"}
+   {:result_register "c"
+    :inline_results true}
 
    :mapping
    {:prefix "<localleader>"
