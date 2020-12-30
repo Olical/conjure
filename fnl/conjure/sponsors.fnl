@@ -12,7 +12,6 @@
 "mamapitufo"
 "martinklepsch"
 "nickcernis"
-"orestis"
 "penryu"
 "pyrmont"
 "rafaeldelboni"
