@@ -1,5 +1,6 @@
 if has("nvim-0.4")
-  let s:path = escape(expand('<sfile>:p:h:h'), '\,')
+  let s:path = escape(expand('<sfile>:h:h'), '\,')
+  echo s:path
   if stridx(&runtimepath, s:path) == -1
     let &runtimepath .= ',' . s:path
   endif
