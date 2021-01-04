@@ -1,5 +1,9 @@
 if has("nvim-0.4")
-  let &runtimepath .= ',' . escape(expand('<sfile>:p:h:h'), '\,')
+  let s:path = escape(expand('<sfile>:p:h:h'), '\,')
+  if stridx(&runtimepath, s:path) == -1
+    let &runtimepath .= ',' . s:path
+  endif
+
   lua require("conjure.main").main()
 else
   echoerr "Conjure requires Neovim > v0.4"
