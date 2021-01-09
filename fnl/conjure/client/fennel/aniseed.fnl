@@ -52,6 +52,8 @@
           (if ok?
             result-lines
             (a.map #(.. "; " $1) result-lines))))
+      (when opts.on-result-raw
+        (opts.on-result-raw results))
       (when opts.on-result
         (opts.on-result result-str)))))
 
@@ -108,3 +110,33 @@
                (cfg [:mapping :run_buf_tests]) *module-name* :run-buf-tests)
   (mapping.buf :n :FnlRunAllTests
                (cfg [:mapping :run_all_tests]) *module-name* :run-all-tests))
+
+(defn completions [opts]
+  (let [code (when (not (str.blank? opts.prefix))
+               (.. "((. (require :conjure.aniseed.core) :keys) "
+                   (opts.prefix:gsub ".$" "") ")"))
+        locals (if opts.context
+                 (let [m (require opts.context)]
+                   (a.concat
+                     (-?> (a.get m :aniseed/locals) (a.keys))
+                     (-?> (a.get-in m [:aniseed/local-fns :require]) (a.keys))))
+                 [])
+        (_ ok?)
+        (when code
+          (pcall
+            (fn []
+              (eval-str
+                {:context opts.context
+                 :code code
+                 :passive? true
+                 :on-result-raw (fn [results]
+                                  (let [xs (a.first results)]
+                                    (when (= :table (type xs))
+                                      (opts.cb (a.concat
+                                                 (a.map
+                                                   (fn [x]
+                                                     (.. opts.prefix x))
+                                                   xs)
+                                                 locals)))))}))))]
+    (when (not ok?)
+      (opts.cb locals))))

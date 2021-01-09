@@ -147,6 +147,9 @@ do
           end
           log.append(_3_())
         end
+        if opts["on-result-raw"] then
+          opts["on-result-raw"](results)
+        end
         if opts["on-result"] then
           return opts["on-result"](result_str)
         end
@@ -297,5 +300,70 @@ do
   end
   _0_0["aniseed/locals"]["on-filetype"] = v_0_
   on_filetype = v_0_
+end
+local completions = nil
+do
+  local v_0_ = nil
+  do
+    local v_0_0 = nil
+    local function completions0(opts)
+      local code = nil
+      if not str["blank?"](opts.prefix) then
+        code = ("((. (require :conjure.aniseed.core) :keys) " .. (opts.prefix):gsub(".$", "") .. ")")
+      else
+      code = nil
+      end
+      local locals = nil
+      if opts.context then
+        local m = require(opts.context)
+        local _4_
+        do
+          local _3_0 = a.get(m, "aniseed/locals")
+          if _3_0 then
+            _4_ = a.keys(_3_0)
+          else
+            _4_ = _3_0
+          end
+        end
+        local function _6_()
+          local _5_0 = a["get-in"](m, {"aniseed/local-fns", "require"})
+          if _5_0 then
+            return a.keys(_5_0)
+          else
+            return _5_0
+          end
+        end
+        locals = a.concat(_4_, _6_())
+      else
+        locals = {}
+      end
+      local _, ok_3f = nil, nil
+      if code then
+        local function _4_()
+          local function _5_(results)
+            local xs = a.first(results)
+            if ("table" == type(xs)) then
+              local function _6_(x)
+                return (opts.prefix .. x)
+              end
+              return opts.cb(a.concat(a.map(_6_, xs), locals))
+            end
+          end
+          return eval_str({["on-result-raw"] = _5_, ["passive?"] = true, code = code, context = opts.context})
+        end
+        _, ok_3f = pcall(_4_)
+      else
+      _, ok_3f = nil
+      end
+      if not ok_3f then
+        return opts.cb(locals)
+      end
+    end
+    v_0_0 = completions0
+    _0_0["completions"] = v_0_0
+    v_0_ = v_0_0
+  end
+  _0_0["aniseed/locals"]["completions"] = v_0_
+  completions = v_0_
 end
 return nil
