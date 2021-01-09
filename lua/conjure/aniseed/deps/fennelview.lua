@@ -189,11 +189,37 @@ local function put_table(self, t)
     end
   end
 end
+local function put_number(self, n)
+  local function _5_()
+    local _2_0, _3_0, _4_0 = math.modf(n)
+    if ((nil ~= _2_0) and (_3_0 == 0)) then
+      local int = _2_0
+      return tostring(int)
+    else
+      local _6_
+      do
+        local frac = _3_0
+        _6_ = (((_2_0 == 0) and (nil ~= _3_0)) and (frac < 0))
+      end
+      if _6_ then
+        local frac = _3_0
+        return ("-0." .. tostring(frac):gsub("^-?0.", ""))
+      elseif ((nil ~= _2_0) and (nil ~= _3_0)) then
+        local int = _2_0
+        local frac = _3_0
+        return (int .. "." .. tostring(frac):gsub("^-?0.", ""))
+      end
+    end
+  end
+  return puts(self, _5_())
+end
 local function _2_(self, v)
   local tv = type(v)
   if (tv == "string") then
     return puts(self, view_quote(escape(v)))
-  elseif ((tv == "number") or (tv == "boolean") or (tv == "nil")) then
+  elseif (tv == "number") then
+    return put_number(self, v)
+  elseif ((tv == "boolean") or (tv == "nil")) then
     return puts(self, tostring(v))
   else
     local _4_
@@ -207,7 +233,7 @@ local function _2_(self, v)
     end
     if ((tv == "table") or ((tv == "userdata") and (nil ~= _4_))) then
       return put_table(self, v)
-    elseif "else" then
+    else
       return puts(self, "#<", tostring(v), ">")
     end
   end

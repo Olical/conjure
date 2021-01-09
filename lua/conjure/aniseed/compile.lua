@@ -35,22 +35,6 @@ local nvim = _local_0_[4]
 local _2amodule_2a = _0_0
 local _2amodule_name_2a = "conjure.aniseed.compile"
 do local _ = ({nil, _0_0, {{}, nil, nil, nil}})[2] end
-local add_path = nil
-do
-  local v_0_ = nil
-  do
-    local v_0_0 = nil
-    local function add_path0(path)
-      fennel.path = (fennel.path .. ";" .. path)
-      return nil
-    end
-    v_0_0 = add_path0
-    _0_0["add-path"] = v_0_0
-    v_0_ = v_0_0
-  end
-  _0_0["aniseed/locals"]["add-path"] = v_0_
-  add_path = v_0_
-end
 local macros_prefix = nil
 do
   local v_0_ = nil

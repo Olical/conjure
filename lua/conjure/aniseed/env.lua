@@ -52,8 +52,9 @@ do
       local opts0 = (opts or {})
       if ((false ~= opts0.compile) or os.getenv("ANISEED_ENV_COMPILE")) then
         local compile = require("conjure.aniseed.compile")
+        local fennel = require("conjure.aniseed.fennel")
         if not state["path-added?"] then
-          compile["add-path"]((config_dir .. "/?.fnl"))
+          fennel["add-path"]((config_dir .. "/?.fnl"))
           state["path-added?"] = true
         end
         compile.glob("**/*.fnl", (config_dir .. (opts0.input or "/fnl")), (config_dir .. (opts0.output or "/lua")), opts0)
