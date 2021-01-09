@@ -837,6 +837,32 @@ do
   _0_0["aniseed/locals"]["run-alternate-ns-tests"] = v_0_
   run_alternate_ns_tests = v_0_
 end
+local extract_test_name_from_form = nil
+do
+  local v_0_ = nil
+  do
+    local v_0_0 = nil
+    local function extract_test_name_from_form0(form)
+      local seen_deftest_3f = false
+      local function _2_(part)
+        if text["ends-with"](part, "deftest") then
+          seen_deftest_3f = true
+          return false
+        elseif text["starts-with"](part, "^") then
+          return false
+        elseif seen_deftest_3f then
+          return part
+        end
+      end
+      return a.some(_2_, str.split(form, "%s+"))
+    end
+    v_0_0 = extract_test_name_from_form0
+    _0_0["extract-test-name-from-form"] = v_0_0
+    v_0_ = v_0_0
+  end
+  _0_0["aniseed/locals"]["extract-test-name-from-form"] = v_0_
+  extract_test_name_from_form = v_0_
+end
 local run_current_test = nil
 do
   local v_0_ = nil
@@ -846,8 +872,8 @@ do
       local function _2_()
         local form = extract.form({["root?"] = true})
         if form then
-          local test_name, sub_count = string.gsub(form.content, ".*deftest%s+(.-)%s+.*", "%1")
-          if (not a["empty?"](test_name) and (1 == sub_count)) then
+          local test_name = extract_test_name_from_form(form.content)
+          if test_name then
             log.append({("; run-current-test: " .. test_name)}, {["break?"] = true})
             require_ns("clojure.test")
             local function _3_(msgs)

@@ -402,14 +402,28 @@
         (string.sub current-ns 1 -6)
         (.. current-ns "-test")))))
 
+(defn extract-test-name-from-form [form]
+  (var seen-deftest? false)
+  (->> (str.split form "%s+")
+       (a.some
+         (fn [part]
+           (if
+             (text.ends-with part "deftest")
+             (do (set seen-deftest? true) false)
+
+             (text.starts-with part "^")
+             false
+
+             seen-deftest?
+             part)))))
+
 (defn run-current-test []
   (try-ensure-conn
     (fn []
       (let [form (extract.form {:root? true})]
         (when form
-          (let [(test-name sub-count)
-                (string.gsub form.content ".*deftest%s+(.-)%s+.*" "%1")]
-            (when (and (not (a.empty? test-name)) (= 1 sub-count))
+          (let [test-name (extract-test-name-from-form form.content)]
+            (when test-name
               (log.append [(.. "; run-current-test: " test-name)]
                           {:break? true})
               (require-ns "clojure.test")
