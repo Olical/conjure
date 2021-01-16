@@ -315,12 +315,12 @@ do
       end
       local mods = a.keys(package.loaded)
       local locals = nil
-      if opts.context then
+      do
         local ok_3f, m = nil, nil
         local function _3_()
           return require(opts.context)
         end
-        ok_3f, m = pcall(_3_)
+        ok_3f, m = (opts.context and pcall(_3_))
         if ok_3f then
           local _5_
           do
@@ -342,26 +342,24 @@ do
           end
           locals = a.concat(_5_, _7_, mods)
         else
-        locals = nil
+          locals = mods
         end
-      else
-        locals = mods
       end
       local _, ok_3f = nil, nil
       if code then
-        local function _4_()
-          local function _5_(results)
+        local function _3_()
+          local function _4_(results)
             local xs = a.first(results)
             if ("table" == type(xs)) then
-              local function _6_(x)
+              local function _5_(x)
                 return (opts.prefix .. x)
               end
-              return opts.cb(a.concat(a.map(_6_, xs), locals))
+              return opts.cb(a.concat(a.map(_5_, xs), locals))
             end
           end
-          return eval_str({["on-result-raw"] = _5_, ["passive?"] = true, code = code, context = opts.context})
+          return eval_str({["on-result-raw"] = _4_, ["passive?"] = true, code = code, context = opts.context})
         end
-        _, ok_3f = pcall(_4_)
+        _, ok_3f = pcall(_3_)
       else
       _, ok_3f = nil
       end
