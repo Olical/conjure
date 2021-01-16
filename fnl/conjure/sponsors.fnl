@@ -10,7 +10,6 @@
 "jkrasnay"
 "mamapitufo"
 "martinklepsch"
-"nickcernis"
 "penryu"
 "pyrmont"
 "rafaeldelboni"
