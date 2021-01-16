@@ -68,7 +68,7 @@ do
     local v_0_0 = nil
     local function connect0(opts)
       local state = {["awaiting-process?"] = false, ["message-queue"] = {}, bc = bencode.new(), msgs = {}}
-      local conn = {session = nil}
+      local conn = {session = nil, state = state}
       local function enrich_status(msg)
         local ks = a.get(msg, "status")
         local status = {}

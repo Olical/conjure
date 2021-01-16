@@ -30,7 +30,9 @@
                :bc (bencode.new)
                :msgs {}}]
 
-    (var conn {:session nil})
+    (var conn
+      {:session nil
+       :state state})
 
     (fn enrich-status [msg]
       (let [ks (a.get msg :status)
