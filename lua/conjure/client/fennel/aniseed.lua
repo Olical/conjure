@@ -313,6 +313,7 @@ do
       else
       code = nil
       end
+      local mods = a.keys(package.loaded)
       local locals = nil
       if opts.context then
         local ok_3f, m = nil, nil
@@ -330,20 +331,21 @@ do
               _5_ = _4_0
             end
           end
-          local function _7_()
+          local _7_
+          do
             local _6_0 = a["get-in"](m, {"aniseed/local-fns", "require"})
             if _6_0 then
-              return a.keys(_6_0)
+              _7_ = a.keys(_6_0)
             else
-              return _6_0
+              _7_ = _6_0
             end
           end
-          locals = a.concat(_5_, _7_())
+          locals = a.concat(_5_, _7_, mods)
         else
         locals = nil
         end
       else
-        locals = {}
+        locals = mods
       end
       local _, ok_3f = nil, nil
       if code then
