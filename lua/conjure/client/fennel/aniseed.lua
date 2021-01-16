@@ -315,25 +315,33 @@ do
       end
       local locals = nil
       if opts.context then
-        local m = require(opts.context)
-        local _4_
-        do
-          local _3_0 = a.get(m, "aniseed/locals")
-          if _3_0 then
-            _4_ = a.keys(_3_0)
-          else
-            _4_ = _3_0
-          end
+        local ok_3f, m = nil, nil
+        local function _3_()
+          return require(opts.context)
         end
-        local function _6_()
-          local _5_0 = a["get-in"](m, {"aniseed/local-fns", "require"})
-          if _5_0 then
-            return a.keys(_5_0)
-          else
-            return _5_0
+        ok_3f, m = pcall(_3_)
+        if ok_3f then
+          local _5_
+          do
+            local _4_0 = a.get(m, "aniseed/locals")
+            if _4_0 then
+              _5_ = a.keys(_4_0)
+            else
+              _5_ = _4_0
+            end
           end
+          local function _7_()
+            local _6_0 = a["get-in"](m, {"aniseed/local-fns", "require"})
+            if _6_0 then
+              return a.keys(_6_0)
+            else
+              return _6_0
+            end
+          end
+          locals = a.concat(_5_, _7_())
+        else
+        locals = nil
         end
-        locals = a.concat(_4_, _6_())
       else
         locals = {}
       end

@@ -116,10 +116,11 @@
                (.. "((. (require :conjure.aniseed.core) :keys) "
                    (opts.prefix:gsub ".$" "") ")"))
         locals (if opts.context
-                 (let [m (require opts.context)]
-                   (a.concat
-                     (-?> (a.get m :aniseed/locals) (a.keys))
-                     (-?> (a.get-in m [:aniseed/local-fns :require]) (a.keys))))
+                 (let [(ok? m) (pcall #(require opts.context))]
+                   (when ok?
+                     (a.concat
+                       (-?> (a.get m :aniseed/locals) (a.keys))
+                       (-?> (a.get-in m [:aniseed/local-fns :require]) (a.keys)))))
                  [])
         (_ ok?)
         (when code
