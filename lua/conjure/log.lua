@@ -446,7 +446,7 @@ do
     else
       _2_ = ""
     end
-    nvim.command((_2_ .. cmd .. " " .. buffer.resolve(log_buf_name())))
+    nvim.command(("keepalt " .. _2_ .. cmd .. " " .. buffer.resolve(log_buf_name())))
     nvim.win_set_cursor(0, {nvim.buf_line_count(buf), 0})
     set_win_opts_21(0)
     return buffer.unlist(buf)

@@ -281,7 +281,8 @@
 (defn- create-win [cmd]
   (let [buf (upsert-buf)]
     (nvim.command
-      (.. (if (config.get-in [:log :botright])
+      (.. "keepalt "
+          (if (config.get-in [:log :botright])
             "botright "
             "")
           cmd " "
