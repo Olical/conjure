@@ -181,6 +181,12 @@
 
       (let [buf (upsert-buf)
             join-first? (a.get opts :join-first?)
+
+            ;; A failsafe for newlines in lines. They _should_ be split up by
+            ;; the calling code but this means we at least print the line
+            ;; rather than throwing an error.
+            lines (a.map (fn [s] (s:gsub "\n" "↵")) lines)
+
             lines (if (<= line-count
                           (config.get-in [:log :strip_ansi_escape_sequences_line_limit]))
                     (a.map text.strip-ansi-escape-sequences lines)

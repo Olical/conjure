@@ -343,66 +343,71 @@ do
         local buf = upsert_buf()
         local join_first_3f = a.get(opts, "join-first?")
         local lines0 = nil
-        if (line_count <= config["get-in"]({"log", "strip_ansi_escape_sequences_line_limit"})) then
-          lines0 = a.map(text["strip-ansi-escape-sequences"], lines)
-        else
-          lines0 = lines
+        local function _2_(s)
+          return s:gsub("\n", "\226\134\181")
         end
-        local comment_prefix = client.get("comment-prefix")
-        local fold_marker_end = str.join({comment_prefix, config["get-in"]({"log", "fold", "marker", "end"})})
+        lines0 = a.map(_2_, lines)
         local lines1 = nil
-        if (not a.get(opts, "break?") and not join_first_3f and config["get-in"]({"log", "fold", "enabled"}) and (a.count(lines0) >= config["get-in"]({"log", "fold", "lines"}))) then
-          lines1 = a.concat({str.join({comment_prefix, config["get-in"]({"log", "fold", "marker", "start"}), " ", text["left-sample"](str.join("\n", lines0), editor["percent-width"](config["get-in"]({"preview", "sample_limit"})))})}, lines0, {fold_marker_end})
+        if (line_count <= config["get-in"]({"log", "strip_ansi_escape_sequences_line_limit"})) then
+          lines1 = a.map(text["strip-ansi-escape-sequences"], lines0)
         else
           lines1 = lines0
         end
-        local last_fold_3f = (fold_marker_end == last_line(buf))
+        local comment_prefix = client.get("comment-prefix")
+        local fold_marker_end = str.join({comment_prefix, config["get-in"]({"log", "fold", "marker", "end"})})
         local lines2 = nil
-        if a.get(opts, "break?") then
-          local _4_
-          if client["multiple-states?"]() then
-            _4_ = {state_key_header()}
-          else
-          _4_ = nil
-          end
-          lines2 = a.concat({_break()}, _4_, lines1)
-        elseif join_first_3f then
-          local _4_
-          if last_fold_3f then
-            _4_ = {(last_line(buf, -1) .. a.first(lines1)), fold_marker_end}
-          else
-            _4_ = {(last_line(buf) .. a.first(lines1))}
-          end
-          lines2 = a.concat(_4_, a.rest(lines1))
+        if (not a.get(opts, "break?") and not join_first_3f and config["get-in"]({"log", "fold", "enabled"}) and (a.count(lines1) >= config["get-in"]({"log", "fold", "lines"}))) then
+          lines2 = a.concat({str.join({comment_prefix, config["get-in"]({"log", "fold", "marker", "start"}), " ", text["left-sample"](str.join("\n", lines1), editor["percent-width"](config["get-in"]({"preview", "sample_limit"})))})}, lines1, {fold_marker_end})
         else
           lines2 = lines1
+        end
+        local last_fold_3f = (fold_marker_end == last_line(buf))
+        local lines3 = nil
+        if a.get(opts, "break?") then
+          local _5_
+          if client["multiple-states?"]() then
+            _5_ = {state_key_header()}
+          else
+          _5_ = nil
+          end
+          lines3 = a.concat({_break()}, _5_, lines2)
+        elseif join_first_3f then
+          local _5_
+          if last_fold_3f then
+            _5_ = {(last_line(buf, -1) .. a.first(lines2)), fold_marker_end}
+          else
+            _5_ = {(last_line(buf) .. a.first(lines2))}
+          end
+          lines3 = a.concat(_5_, a.rest(lines2))
+        else
+          lines3 = lines2
         end
         local old_lines = nvim.buf_line_count(buf)
         do
           local ok_3f, err = nil, nil
-          local function _5_()
-            local _6_
+          local function _6_()
+            local _7_
             if buffer["empty?"](buf) then
-              _6_ = 0
+              _7_ = 0
             elseif join_first_3f then
               if last_fold_3f then
-                _6_ = -3
+                _7_ = -3
               else
-                _6_ = -2
+                _7_ = -2
               end
             else
-              _6_ = -1
+              _7_ = -1
             end
-            return nvim.buf_set_lines(buf, _6_, -1, false, lines2)
+            return nvim.buf_set_lines(buf, _7_, -1, false, lines3)
           end
-          ok_3f, err = pcall(_5_)
+          ok_3f, err = pcall(_6_)
           if not ok_3f then
-            error(("Conjure failed to append to log: " .. err .. "\n" .. "Offending lines: " .. a["pr-str"](lines2)))
+            error(("Conjure failed to append to log: " .. err .. "\n" .. "Offending lines: " .. a["pr-str"](lines3)))
           end
         end
         do
           local new_lines = nvim.buf_line_count(buf)
-          local function _5_(win)
+          local function _6_(win)
             local _let_0_ = nvim.win_get_cursor(win)
             local row = _let_0_[1]
             local col = _let_0_[2]
@@ -413,7 +418,7 @@ do
               return nvim.win_set_cursor(win, {new_lines, 0})
             end
           end
-          with_buf_wins(buf, _5_)
+          with_buf_wins(buf, _6_)
         end
         if (not a.get(opts, "suppress-hud?") and not visible_scrolling_log_3f) then
           display_hud()
