@@ -125,6 +125,10 @@ I've also included some commands since they're related to the mappings.
                          file. You can evaluate that form at any time with
                          `<localleader>emF`.
 
+<localleader>ec          Evaluates the form under the cursor and displays the
+                         result as a comment at the end of the line or below
+                         the current line if you already have a comment there.
+
 <localleader>ew          Evaluate the word under the cursor, good for peeking
                          inside vars defined in your file.
 
@@ -302,6 +306,11 @@ defined as you enter a buffer and can't be altered after the fact.
 `g:conjure#mapping#eval_marked_form`
             Evaluates the form at the marks location.
             Default: `"em"`
+
+`g:conjure#mapping#eval_comment_form`
+            Evaluates the form under the cursor and displays the result as a
+            comment at the end of the current line or below the current line.
+            Default: `"ec"`
 
 `g:conjure#mapping#eval_word`
             Evaluates the word under the cursor.

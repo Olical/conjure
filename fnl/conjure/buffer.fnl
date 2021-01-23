@@ -1,6 +1,7 @@
 (module conjure.buffer
   {require {nvim conjure.aniseed.nvim
             a conjure.aniseed.core
+            str conjure.aniseed.string
             text conjure.text}})
 
 (defn unlist [buf]
@@ -50,3 +51,44 @@
       (fn [l] (.. l tail)))
 
     (nvim.buf_set_lines buf start-line end-line false new-lines)))
+
+(defn- take-while [f xs]
+  (var acc [])
+  (var done? false)
+  (for [i 1 (a.count xs) 1]
+    (let [v (. xs i)]
+      (if (and (not done?) (f v))
+        (table.insert acc v)
+        (set done? true))))
+  acc)
+
+(defn append-prefixed-line [buf [tl tc] prefix body]
+  "Appends a string to the end of the current line, or the one below this one
+  if there's already the same suffix on the end. If there's already a matching
+  suffix on the end of this line and the one below, it will insert another
+  below that last one and so on."
+  (let [tl (a.dec tl)
+        [head-line & lines] (nvim.buf_get_lines buf tl -1 false)
+        to-append (text.prefixed-lines body prefix {})]
+    (if (head-line:find prefix tc)
+      (let [[new-tl lines]
+            (or
+              (->> (a.kv-pairs lines)
+                   (a.map
+                     (fn [[n line]]
+                       (if (text.starts-with line prefix)
+                         [(+ tl n) (a.concat [line] to-append)]
+                         false)))
+                   (take-while a.identity)
+                   (a.last))
+              [tl (a.concat [head-line] to-append)])]
+        (nvim.buf_set_lines buf new-tl (a.inc new-tl) false lines))
+      (nvim.buf_set_lines
+        buf tl
+        (a.inc tl)
+        false
+        (if (= 1 (a.count to-append))
+          [(.. head-line " " (a.first to-append))]
+          (a.concat
+            [head-line]
+            to-append))))))

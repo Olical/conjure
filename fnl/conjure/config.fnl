@@ -72,6 +72,7 @@
     :eval_current_form "ee"
     :eval_root_form "er"
     :eval_replace_form "e!"
+    :eval_comment_form "ec"
     :eval_marked_form "em"
     :eval_word "ew"
     :eval_file "ef"

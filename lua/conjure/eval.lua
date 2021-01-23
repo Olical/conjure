@@ -299,6 +299,33 @@ do
   _0_0["aniseed/locals"]["marked-form"] = v_0_
   marked_form = v_0_
 end
+local comment_form = nil
+do
+  local v_0_ = nil
+  do
+    local v_0_0 = nil
+    local function comment_form0(mark)
+      local buf = nvim.win_get_buf(0)
+      local form = extract.form({})
+      local comment_prefix = client.get("comment-prefix")
+      if form then
+        local _3_ = form
+        local content = _3_["content"]
+        local range = _3_["range"]
+        local function _4_(result)
+          return buffer["append-prefixed-line"](buf, range["end"], comment_prefix, result)
+        end
+        eval_str({["on-result"] = _4_, ["suppress-hud?"] = true, code = content, origin = "comment-form", range = range})
+        return form
+      end
+    end
+    v_0_0 = comment_form0
+    _0_0["comment-form"] = v_0_0
+    v_0_ = v_0_0
+  end
+  _0_0["aniseed/locals"]["comment-form"] = v_0_
+  comment_form = v_0_
+end
 local word = nil
 do
   local v_0_ = nil

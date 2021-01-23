@@ -142,6 +142,26 @@
                    (.. comment-prefix err)]
                   {:break? true}))))
 
+(defn comment-form [mark]
+  (let [buf (nvim.win_get_buf 0)
+        form (extract.form {})
+        comment-prefix (client.get :comment-prefix)]
+    (when form
+      (let [{: content : range} form]
+        (eval-str
+          {:code content
+           :range range
+           :origin :comment-form
+           :suppress-hud? true
+           :on-result
+           (fn [result]
+             (buffer.append-prefixed-line
+               buf
+               (. range :end)
+               comment-prefix
+               result))})
+        form))))
+
 (defn word []
   (let [{: content : range} (extract.word)]
     (when (not (a.empty? content))

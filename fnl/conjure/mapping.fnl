@@ -43,6 +43,7 @@
   (buf :n :EvalRootForm (cfg :eval_root_form) :conjure.eval :root-form)
   (buf :n :EvalReplaceForm (cfg :eval_replace_form) :conjure.eval :replace-form)
   (buf :n :EvalMarkedForm (cfg :eval_marked_form) :conjure.eval :marked-form)
+  (buf :n :EvalCommentForm (cfg :eval_comment_form) :conjure.eval :comment-form)
   (buf :n :EvalWord (cfg :eval_word) :conjure.eval :word)
   (buf :n :EvalFile (cfg :eval_file) :conjure.eval :file)
   (buf :n :EvalBuf (cfg :eval_buf) :conjure.eval :buf)
