@@ -14,12 +14,12 @@ do
   package.loaded[name_0_] = module_0_
   _0_0 = module_0_
 end
-local function _1_(...)
+local function _2_(...)
   local ok_3f_0_, val_0_ = nil, nil
-  local function _1_()
+  local function _2_()
     return {require("conjure.aniseed.core"), require("conjure.aniseed.nvim"), require("conjure.text")}
   end
-  ok_3f_0_, val_0_ = pcall(_1_)
+  ok_3f_0_, val_0_ = pcall(_2_)
   if ok_3f_0_ then
     _0_0["aniseed/local-fns"] = {require = {a = "conjure.aniseed.core", nvim = "conjure.aniseed.nvim", text = "conjure.text"}}
     return val_0_
@@ -27,10 +27,10 @@ local function _1_(...)
     return print(val_0_)
   end
 end
-local _local_0_ = _1_(...)
-local a = _local_0_[1]
-local nvim = _local_0_[2]
-local text = _local_0_[3]
+local _1_ = _2_(...)
+local a = _1_[1]
+local nvim = _1_[2]
+local text = _1_[3]
 local _2amodule_2a = _0_0
 local _2amodule_name_2a = "conjure.buffer"
 do local _ = ({nil, _0_0, {{}, nil, nil, nil}})[2] end
@@ -121,14 +121,14 @@ do
       local old_lines = nvim.buf_get_lines(buf, start_line, end_line, false)
       local head = string.sub(a.first(old_lines), 1, start_char)
       local tail = string.sub(a.last(old_lines), (end_char + 2))
-      local function _2_(l)
+      local function _3_(l)
         return (head .. l)
       end
-      a.update(new_lines, 1, _2_)
-      local function _3_(l)
+      a.update(new_lines, 1, _3_)
+      local function _4_(l)
         return (l .. tail)
       end
-      a.update(new_lines, a.count(new_lines), _3_)
+      a.update(new_lines, a.count(new_lines), _4_)
       return nvim.buf_set_lines(buf, start_line, end_line, false, new_lines)
     end
     v_0_0 = replace_range0

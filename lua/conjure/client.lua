@@ -14,12 +14,12 @@ do
   package.loaded[name_0_] = module_0_
   _0_0 = module_0_
 end
-local function _1_(...)
+local function _2_(...)
   local ok_3f_0_, val_0_ = nil, nil
-  local function _1_()
+  local function _2_()
     return {require("conjure.aniseed.core"), require("conjure.config"), require("conjure.dynamic"), require("conjure.aniseed.fennel"), require("conjure.aniseed.nvim")}
   end
-  ok_3f_0_, val_0_ = pcall(_1_)
+  ok_3f_0_, val_0_ = pcall(_2_)
   if ok_3f_0_ then
     _0_0["aniseed/local-fns"] = {require = {a = "conjure.aniseed.core", config = "conjure.config", dyn = "conjure.dynamic", fennel = "conjure.aniseed.fennel", nvim = "conjure.aniseed.nvim"}}
     return val_0_
@@ -27,12 +27,12 @@ local function _1_(...)
     return print(val_0_)
   end
 end
-local _local_0_ = _1_(...)
-local a = _local_0_[1]
-local config = _local_0_[2]
-local dyn = _local_0_[3]
-local fennel = _local_0_[4]
-local nvim = _local_0_[5]
+local _1_ = _2_(...)
+local a = _1_[1]
+local config = _1_[2]
+local dyn = _1_[3]
+local fennel = _1_[4]
+local nvim = _1_[5]
 local _2amodule_2a = _0_0
 local _2amodule_name_2a = "conjure.client"
 do local _ = ({nil, _0_0, {{}, nil, nil, nil}})[2] end
@@ -41,10 +41,10 @@ do
   local v_0_ = nil
   do
     local v_0_0 = nil
-    local function _2_()
+    local function _3_()
       return "default"
     end
-    v_0_0 = (_0_0["state-key"] or dyn.new(_2_))
+    v_0_0 = (_0_0["state-key"] or dyn.new(_3_))
     _0_0["state-key"] = v_0_0
     v_0_ = v_0_0
   end
@@ -64,10 +64,10 @@ do
     local v_0_0 = nil
     local function set_state_key_210(new_key)
       state["state-key-set?"] = true
-      local function _2_()
+      local function _3_()
         return new_key
       end
-      return dyn["set-root!"](state_key, _2_)
+      return dyn["set-root!"](state_key, _3_)
     end
     v_0_0 = set_state_key_210
     _0_0["set-state-key!"] = v_0_0
@@ -98,20 +98,20 @@ do
     local v_0_0 = nil
     local function new_state0(init_fn)
       local key__3estate = {}
-      local function _2_(...)
+      local function _3_(...)
         local key = state_key()
         local state0 = a.get(key__3estate, key)
-        local _3_
+        local _4_
         if (nil == state0) then
           local new_state1 = init_fn()
           a.assoc(key__3estate, key, new_state1)
-          _3_ = new_state1
+          _4_ = new_state1
         else
-          _3_ = state0
+          _4_ = state0
         end
-        return a["get-in"](_3_, {...})
+        return a["get-in"](_4_, {...})
       end
-      return _2_
+      return _3_
     end
     v_0_0 = new_state0
     _0_0["new-state"] = v_0_0
@@ -131,10 +131,10 @@ do
   local v_0_ = nil
   local function load_module0(name)
     local ok_3f, result = nil, nil
-    local function _2_()
+    local function _3_()
       return require(name)
     end
-    ok_3f, result = xpcall(_2_, fennel.traceback)
+    ok_3f, result = xpcall(_3_, fennel.traceback)
     if a["nil?"](a.get(loaded, name)) then
       a.assoc(loaded, name, true)
       if (result["on-load"] and not nvim.wo.diff) then
@@ -154,10 +154,10 @@ end
 local filetype = nil
 do
   local v_0_ = nil
-  local function _2_()
+  local function _3_()
     return nvim.bo.filetype
   end
-  v_0_ = dyn.new(_2_)
+  v_0_ = dyn.new(_3_)
   _0_0["aniseed/locals"]["filetype"] = v_0_
   filetype = v_0_
 end
@@ -167,10 +167,10 @@ do
   do
     local v_0_0 = nil
     local function with_filetype0(ft, f, ...)
-      local function _2_()
+      local function _3_()
         return ft
       end
-      return dyn.bind({[filetype] = _2_}, f, ...)
+      return dyn.bind({[filetype] = _3_}, f, ...)
     end
     v_0_0 = with_filetype0
     _0_0["with-filetype"] = v_0_0
@@ -187,14 +187,14 @@ do
     local function wrap0(f, ...)
       local opts = {[filetype] = a.constantly(filetype()), [state_key] = a.constantly(state_key())}
       local args = {...}
-      local function _2_(...)
+      local function _3_(...)
         if (0 ~= a.count(args)) then
           return dyn.bind(opts, f, unpack(args), ...)
         else
           return dyn.bind(opts, f, ...)
         end
       end
-      return _2_
+      return _3_
     end
     v_0_0 = wrap0
     _0_0["wrap"] = v_0_0

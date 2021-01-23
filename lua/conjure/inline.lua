@@ -14,12 +14,12 @@ do
   package.loaded[name_0_] = module_0_
   _0_0 = module_0_
 end
-local function _1_(...)
+local function _2_(...)
   local ok_3f_0_, val_0_ = nil, nil
-  local function _1_()
+  local function _2_()
     return {require("conjure.aniseed.core"), require("conjure.aniseed.nvim")}
   end
-  ok_3f_0_, val_0_ = pcall(_1_)
+  ok_3f_0_, val_0_ = pcall(_2_)
   if ok_3f_0_ then
     _0_0["aniseed/local-fns"] = {require = {a = "conjure.aniseed.core", nvim = "conjure.aniseed.nvim"}}
     return val_0_
@@ -27,9 +27,9 @@ local function _1_(...)
     return print(val_0_)
   end
 end
-local _local_0_ = _1_(...)
-local a = _local_0_[1]
-local nvim = _local_0_[2]
+local _1_ = _2_(...)
+local a = _1_[1]
+local nvim = _1_[2]
 local _2amodule_2a = _0_0
 local _2amodule_name_2a = "conjure.inline"
 do local _ = ({nil, _0_0, {{}, nil, nil, nil}})[2] end
@@ -69,10 +69,10 @@ do
   do
     local v_0_0 = nil
     local function display0(opts)
-      local function _2_()
+      local function _3_()
         return nvim.buf_set_virtual_text(a.get(opts, "buf", 0), ns_id, opts.line, {{sanitise_text(opts.text), "comment"}}, {})
       end
-      return pcall(_2_)
+      return pcall(_3_)
     end
     v_0_0 = display0
     _0_0["display"] = v_0_0
@@ -87,10 +87,10 @@ do
   do
     local v_0_0 = nil
     local function clear0(opts)
-      local function _2_()
+      local function _3_()
         return nvim.buf_clear_namespace(a.get(opts, "buf", 0), ns_id, 0, -1)
       end
-      return pcall(_2_)
+      return pcall(_3_)
     end
     v_0_0 = clear0
     _0_0["clear"] = v_0_0

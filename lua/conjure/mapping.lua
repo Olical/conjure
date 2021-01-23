@@ -14,12 +14,12 @@ do
   package.loaded[name_0_] = module_0_
   _0_0 = module_0_
 end
-local function _1_(...)
+local function _2_(...)
   local ok_3f_0_, val_0_ = nil, nil
-  local function _1_()
+  local function _2_()
     return {require("conjure.aniseed.core"), require("conjure.bridge"), require("conjure.client"), require("conjure.config"), require("conjure.eval"), require("conjure.extract"), require("conjure.aniseed.fennel"), require("conjure.aniseed.nvim"), require("conjure.aniseed.string")}
   end
-  ok_3f_0_, val_0_ = pcall(_1_)
+  ok_3f_0_, val_0_ = pcall(_2_)
   if ok_3f_0_ then
     _0_0["aniseed/local-fns"] = {require = {a = "conjure.aniseed.core", bridge = "conjure.bridge", client = "conjure.client", config = "conjure.config", eval = "conjure.eval", extract = "conjure.extract", fennel = "conjure.aniseed.fennel", nvim = "conjure.aniseed.nvim", str = "conjure.aniseed.string"}}
     return val_0_
@@ -27,16 +27,16 @@ local function _1_(...)
     return print(val_0_)
   end
 end
-local _local_0_ = _1_(...)
-local a = _local_0_[1]
-local bridge = _local_0_[2]
-local client = _local_0_[3]
-local config = _local_0_[4]
-local eval = _local_0_[5]
-local extract = _local_0_[6]
-local fennel = _local_0_[7]
-local nvim = _local_0_[8]
-local str = _local_0_[9]
+local _1_ = _2_(...)
+local a = _1_[1]
+local bridge = _1_[2]
+local client = _1_[3]
+local config = _1_[4]
+local eval = _1_[5]
+local extract = _1_[6]
+local fennel = _1_[7]
+local nvim = _1_[8]
+local str = _1_[9]
 local _2amodule_2a = _0_0
 local _2amodule_name_2a = "conjure.mapping"
 do local _ = ({nil, _0_0, {{}, nil, nil, nil}})[2] end
@@ -62,19 +62,19 @@ do
         if cmd then
           nvim.ex.command_(("-range " .. cmd), bridge["viml->lua"](unpack(args)))
         end
-        local _3_
+        local _4_
         if a["string?"](keys) then
-          _3_ = (cfg("prefix") .. keys)
+          _4_ = (cfg("prefix") .. keys)
         else
-          _3_ = a.first(keys)
+          _4_ = a.first(keys)
         end
-        local _5_
+        local _6_
         if cmd then
-          _5_ = (":" .. cmd .. "<cr>")
+          _6_ = (":" .. cmd .. "<cr>")
         else
-          _5_ = unpack(args)
+          _6_ = unpack(args)
         end
-        return nvim.buf_set_keymap(0, mode, _3_, _5_, {noremap = true, silent = true})
+        return nvim.buf_set_keymap(0, mode, _4_, _6_, {noremap = true, silent = true})
       end
     end
     v_0_0 = buf0
@@ -172,14 +172,14 @@ do
     local v_0_0 = nil
     local function connect_command0(...)
       local args = {...}
-      local function _2_(...)
+      local function _3_(...)
         if (1 == a.count(args)) then
           return {port = a.first(args)}
         else
           return {host = a.first(args), port = a.second(args)}
         end
       end
-      return client.call("connect", _2_(...))
+      return client.call("connect", _3_(...))
     end
     v_0_0 = connect_command0
     _0_0["connect-command"] = v_0_0
@@ -214,11 +214,11 @@ do
     local v_0_0 = nil
     local function omnifunc0(find_start_3f, base)
       if find_start_3f then
-        local _let_0_ = nvim.win_get_cursor(0)
-        local row = _let_0_[1]
-        local col = _let_0_[2]
-        local _let_1_ = nvim.buf_get_lines(0, a.dec(row), row, false)
-        local line = _let_1_[1]
+        local _3_ = nvim.win_get_cursor(0)
+        local row = _3_[1]
+        local col = _3_[2]
+        local _4_ = nvim.buf_get_lines(0, a.dec(row), row, false)
+        local line = _4_[1]
         return (col - a.count(nvim.fn.matchstr(string.sub(line, 1, col), "\\k\\+$")))
       else
         return eval["completions-sync"](base)

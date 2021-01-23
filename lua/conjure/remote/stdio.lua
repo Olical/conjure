@@ -14,12 +14,12 @@ do
   package.loaded[name_0_] = module_0_
   _0_0 = module_0_
 end
-local function _1_(...)
+local function _2_(...)
   local ok_3f_0_, val_0_ = nil, nil
-  local function _1_()
+  local function _2_()
     return {require("conjure.aniseed.core"), require("conjure.client"), require("conjure.log"), require("conjure.aniseed.nvim"), require("conjure.aniseed.string")}
   end
-  ok_3f_0_, val_0_ = pcall(_1_)
+  ok_3f_0_, val_0_ = pcall(_2_)
   if ok_3f_0_ then
     _0_0["aniseed/local-fns"] = {require = {a = "conjure.aniseed.core", client = "conjure.client", log = "conjure.log", nvim = "conjure.aniseed.nvim", str = "conjure.aniseed.string"}}
     return val_0_
@@ -27,12 +27,12 @@ local function _1_(...)
     return print(val_0_)
   end
 end
-local _local_0_ = _1_(...)
-local a = _local_0_[1]
-local client = _local_0_[2]
-local log = _local_0_[3]
-local nvim = _local_0_[4]
-local str = _local_0_[5]
+local _1_ = _2_(...)
+local a = _1_[1]
+local client = _1_[2]
+local log = _1_[3]
+local nvim = _1_[4]
+local str = _1_[5]
 local _2amodule_2a = _0_0
 local _2amodule_name_2a = "conjure.remote.stdio"
 do local _ = ({nil, _0_0, {{}, nil, nil, nil}})[2] end
@@ -86,20 +86,20 @@ do
       local stderr = uv.new_pipe(false)
       local repl = {current = nil, queue = {}}
       local function destroy()
-        local function _2_()
+        local function _3_()
           return stdin:shutdown()
         end
-        pcall(_2_)
+        pcall(_3_)
         return nil
       end
       local function on_exit(code, signal)
-        local function _2_()
+        local function _3_()
           stdin:close()
           stdout:close()
           stderr:close()
           return (repl.handle):close()
         end
-        pcall(_2_)
+        pcall(_3_)
         return client.schedule(opts["on-exit"], code, signal)
       end
       local function next_in_queue()
@@ -121,10 +121,10 @@ do
             local done_3f, result = parse_prompt(chunk, opts["prompt-pattern"])
             local cb = a["get-in"](repl, {"current", "cb"}, opts["on-stray-output"])
             if cb then
-              local function _2_()
+              local function _3_()
                 return cb({["done?"] = done_3f, [source] = result})
               end
-              pcall(_2_)
+              pcall(_3_)
             end
             if done_3f then
               a.assoc(repl, "current", nil)
@@ -140,33 +140,33 @@ do
         return on_message("err", err, chunk)
       end
       local function send(code, cb, opts0)
-        local _2_
+        local _3_
         if a.get(opts0, "batch?") then
           local msgs = {}
-          local function _4_(msg)
+          local function _5_(msg)
             table.insert(msgs, msg)
             if msg["done?"] then
               return cb(msgs)
             end
           end
-          _2_ = _4_
+          _3_ = _5_
         else
-          _2_ = cb
+          _3_ = cb
         end
-        table.insert(repl.queue, {cb = _2_, code = code})
+        table.insert(repl.queue, {cb = _3_, code = code})
         next_in_queue()
         return nil
       end
-      local _let_0_ = parse_cmd(opts.cmd)
-      local args = _let_0_["args"]
-      local cmd = _let_0_["cmd"]
+      local _3_ = parse_cmd(opts.cmd)
+      local args = _3_["args"]
+      local cmd = _3_["cmd"]
       local handle, pid = uv.spawn(cmd, {args = args, stdio = {stdin, stdout, stderr}}, client["schedule-wrap"](on_exit))
       stdout:read_start(client["schedule-wrap"](on_stdout))
       stderr:read_start(client["schedule-wrap"](on_stderr))
-      local function _2_()
+      local function _4_()
         return opts["on-success"]()
       end
-      client.schedule(_2_)
+      client.schedule(_4_)
       return a["merge!"](repl, {destroy = destroy, handle = handle, opts = opts, pid = pid, send = send})
     end
     v_0_0 = start0

@@ -14,12 +14,12 @@ do
   package.loaded[name_0_] = module_0_
   _0_0 = module_0_
 end
-local function _1_(...)
+local function _2_(...)
   local ok_3f_0_, val_0_ = nil, nil
-  local function _1_()
+  local function _2_()
     return {require("conjure.aniseed.core")}
   end
-  ok_3f_0_, val_0_ = pcall(_1_)
+  ok_3f_0_, val_0_ = pcall(_2_)
   if ok_3f_0_ then
     _0_0["aniseed/local-fns"] = {require = {a = "conjure.aniseed.core"}}
     return val_0_
@@ -27,8 +27,8 @@ local function _1_(...)
     return print(val_0_)
   end
 end
-local _local_0_ = _1_(...)
-local a = _local_0_[1]
+local _1_ = _2_(...)
+local a = _1_[1]
 local _2amodule_2a = _0_0
 local _2amodule_name_2a = "conjure.dynamic"
 do local _ = ({nil, _0_0, {{}, nil, nil, nil}})[2] end
@@ -58,14 +58,14 @@ do
     local function new0(base_value)
       assert_value_function_21(base_value)
       local stack = {base_value}
-      local function _2_(x, ...)
+      local function _3_(x, ...)
         if (get_stack_key == x) then
           return stack
         else
           return a.last(stack)(x, ...)
         end
       end
-      return _2_
+      return _3_
     end
     v_0_0 = new0
     _0_0["new"] = v_0_0
@@ -78,14 +78,14 @@ local run_binds_21 = nil
 do
   local v_0_ = nil
   local function run_binds_210(f, binds)
-    local function _2_(_3_0)
-      local _arg_0_ = _3_0
-      local dyn = _arg_0_[1]
-      local new_value = _arg_0_[2]
+    local function _3_(_4_0)
+      local _5_ = _4_0
+      local dyn = _5_[1]
+      local new_value = _5_[2]
       assert_value_function_21(new_value)
       return f(dyn(get_stack_key), new_value)
     end
-    return a["map-indexed"](_2_, binds)
+    return a["map-indexed"](_3_, binds)
   end
   v_0_ = run_binds_210
   _0_0["aniseed/locals"]["run-binds!"] = v_0_
@@ -99,10 +99,10 @@ do
     local function bind0(binds, f, ...)
       run_binds_21(table.insert, binds)
       local ok_3f, result = pcall(f, ...)
-      local function _2_(_241)
+      local function _3_(_241)
         return table.remove(_241)
       end
-      run_binds_21(_2_, binds)
+      run_binds_21(_3_, binds)
       if ok_3f then
         return result
       else

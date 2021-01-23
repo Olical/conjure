@@ -14,12 +14,12 @@ do
   package.loaded[name_0_] = module_0_
   _0_0 = module_0_
 end
-local function _1_(...)
+local function _2_(...)
   local ok_3f_0_, val_0_ = nil, nil
-  local function _1_()
+  local function _2_()
     return {require("conjure.aniseed.core"), require("conjure.client"), require("conjure.config"), require("conjure.extract"), require("conjure.log"), require("conjure.mapping"), require("conjure.aniseed.nvim"), require("conjure.aniseed.string"), require("conjure.text"), require("conjure.aniseed.view")}
   end
-  ok_3f_0_, val_0_ = pcall(_1_)
+  ok_3f_0_, val_0_ = pcall(_2_)
   if ok_3f_0_ then
     _0_0["aniseed/local-fns"] = {require = {a = "conjure.aniseed.core", client = "conjure.client", config = "conjure.config", extract = "conjure.extract", log = "conjure.log", mapping = "conjure.mapping", nvim = "conjure.aniseed.nvim", str = "conjure.aniseed.string", text = "conjure.text", view = "conjure.aniseed.view"}}
     return val_0_
@@ -27,17 +27,17 @@ local function _1_(...)
     return print(val_0_)
   end
 end
-local _local_0_ = _1_(...)
-local a = _local_0_[1]
-local view = _local_0_[10]
-local client = _local_0_[2]
-local config = _local_0_[3]
-local extract = _local_0_[4]
-local log = _local_0_[5]
-local mapping = _local_0_[6]
-local nvim = _local_0_[7]
-local str = _local_0_[8]
-local text = _local_0_[9]
+local _1_ = _2_(...)
+local a = _1_[1]
+local view = _1_[10]
+local client = _1_[2]
+local config = _1_[3]
+local extract = _1_[4]
+local log = _1_[5]
+local mapping = _1_[6]
+local nvim = _1_[7]
+local str = _1_[8]
+local text = _1_[9]
 local _2amodule_2a = _0_0
 local _2amodule_name_2a = "conjure.client.fennel.aniseed"
 do local _ = ({nil, _0_0, {{}, nil, nil, nil}})[2] end
@@ -120,9 +120,9 @@ do
     local v_0_0 = nil
     local function display_result0(opts)
       if opts then
-        local _let_0_ = opts
-        local ok_3f = _let_0_["ok?"]
-        local results = _let_0_["results"]
+        local _3_ = opts
+        local ok_3f = _3_["ok?"]
+        local results = _3_["results"]
         local result_str = nil
         if ok_3f then
           if a["empty?"](results) then
@@ -135,17 +135,17 @@ do
         end
         local result_lines = str.split(result_str, "\n")
         if not opts["passive?"] then
-          local function _3_()
+          local function _5_()
             if ok_3f then
               return result_lines
             else
-              local function _3_(_241)
+              local function _5_(_241)
                 return ("; " .. _241)
               end
-              return a.map(_3_, result_lines)
+              return a.map(_5_, result_lines)
             end
           end
-          log.append(_3_())
+          log.append(_5_())
         end
         if opts["on-result-raw"] then
           opts["on-result-raw"](results)
@@ -168,27 +168,27 @@ do
   do
     local v_0_0 = nil
     local function eval_str0(opts)
-      local function _2_()
+      local function _3_()
         local code = (("(module " .. (opts.context or "aniseed.user") .. ") ") .. opts.code .. "\n")
         local out = nil
-        local function _3_()
+        local function _4_()
           if cfg({"use_metadata"}) then
             package.loaded.fennel = ani("fennel")
           end
-          local _let_0_ = {anic("eval", "str", code, {filename = opts["file-path"], useMetadata = cfg({"use_metadata"})})}
-          local ok_3f = _let_0_[1]
-          local results = {(table.unpack or unpack)(_let_0_, 2)}
+          local _6_ = {anic("eval", "str", code, {filename = opts["file-path"], useMetadata = cfg({"use_metadata"})})}
+          local ok_3f = _6_[1]
+          local results = {(table.unpack or unpack)(_6_, 2)}
           opts["ok?"] = ok_3f
           opts.results = results
           return nil
         end
-        out = anic("nu", "with-out-str", _3_)
+        out = anic("nu", "with-out-str", _4_)
         if not a["empty?"](out) then
           log.append(text["prefixed-lines"](text["trim-last-newline"](out), "; (out) "))
         end
         return display_result(opts)
       end
-      return client.wrap(_2_)()
+      return client.wrap(_3_)()
     end
     v_0_0 = eval_str0
     _0_0["eval-str"] = v_0_0
@@ -237,13 +237,13 @@ do
   local function wrapped_test0(req_lines, f)
     log.append(req_lines, {["break?"] = true})
     local res = anic("nu", "with-out-str", f)
-    local _2_
+    local _3_
     if ("" == res) then
-      _2_ = "No results."
+      _3_ = "No results."
     else
-      _2_ = res
+      _3_ = res
     end
-    return log.append(text["prefixed-lines"](_2_, "; "))
+    return log.append(text["prefixed-lines"](_3_, "; "))
   end
   v_0_ = wrapped_test0
   _0_0["aniseed/locals"]["wrapped-test"] = v_0_
@@ -257,10 +257,10 @@ do
     local function run_buf_tests0()
       local c = extract.context()
       if c then
-        local function _2_()
+        local function _3_()
           return anic("test", "run", c)
         end
-        return wrapped_test({("; run-buf-tests (" .. c .. ")")}, _2_)
+        return wrapped_test({("; run-buf-tests (" .. c .. ")")}, _3_)
       end
     end
     v_0_0 = run_buf_tests0
@@ -317,49 +317,49 @@ do
       local locals = nil
       do
         local ok_3f, m = nil, nil
-        local function _3_()
+        local function _4_()
           return require(opts.context)
         end
-        ok_3f, m = (opts.context and pcall(_3_))
+        ok_3f, m = (opts.context and pcall(_4_))
         if ok_3f then
-          local _5_
+          local _6_
           do
-            local _4_0 = a.get(m, "aniseed/locals")
-            if _4_0 then
-              _5_ = a.keys(_4_0)
+            local _5_0 = a.get(m, "aniseed/locals")
+            if _5_0 then
+              _6_ = a.keys(_5_0)
             else
-              _5_ = _4_0
+              _6_ = _5_0
             end
           end
-          local _7_
+          local _8_
           do
-            local _6_0 = a["get-in"](m, {"aniseed/local-fns", "require"})
-            if _6_0 then
-              _7_ = a.keys(_6_0)
+            local _7_0 = a["get-in"](m, {"aniseed/local-fns", "require"})
+            if _7_0 then
+              _8_ = a.keys(_7_0)
             else
-              _7_ = _6_0
+              _8_ = _7_0
             end
           end
-          locals = a.concat(_5_, _7_, mods)
+          locals = a.concat(_6_, _8_, mods)
         else
           locals = mods
         end
       end
       local _, ok_3f = nil, nil
       if code then
-        local function _3_()
-          local function _4_(results)
+        local function _4_()
+          local function _5_(results)
             local xs = a.first(results)
             if ("table" == type(xs)) then
-              local function _5_(x)
+              local function _6_(x)
                 return (opts.prefix .. x)
               end
-              return opts.cb(a.concat(a.map(_5_, xs), locals))
+              return opts.cb(a.concat(a.map(_6_, xs), locals))
             end
           end
-          return eval_str({["on-result-raw"] = _4_, ["passive?"] = true, code = code, context = opts.context})
+          return eval_str({["on-result-raw"] = _5_, ["passive?"] = true, code = code, context = opts.context})
         end
-        _, ok_3f = pcall(_3_)
+        _, ok_3f = pcall(_4_)
       else
       _, ok_3f = nil
       end

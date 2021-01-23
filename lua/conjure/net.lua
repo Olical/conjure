@@ -14,12 +14,12 @@ do
   package.loaded[name_0_] = module_0_
   _0_0 = module_0_
 end
-local function _1_(...)
+local function _2_(...)
   local ok_3f_0_, val_0_ = nil, nil
-  local function _1_()
+  local function _2_()
     return {require("conjure.aniseed.core"), require("conjure.bridge"), require("conjure.aniseed.nvim")}
   end
-  ok_3f_0_, val_0_ = pcall(_1_)
+  ok_3f_0_, val_0_ = pcall(_2_)
   if ok_3f_0_ then
     _0_0["aniseed/local-fns"] = {["require-macros"] = {["conjure.macros"] = true}, require = {a = "conjure.aniseed.core", bridge = "conjure.bridge", nvim = "conjure.aniseed.nvim"}}
     return val_0_
@@ -27,10 +27,10 @@ local function _1_(...)
     return print(val_0_)
   end
 end
-local _local_0_ = _1_(...)
-local a = _local_0_[1]
-local bridge = _local_0_[2]
-local nvim = _local_0_[3]
+local _1_ = _2_(...)
+local a = _1_[1]
+local bridge = _1_[2]
+local nvim = _1_[3]
 local _2amodule_2a = _0_0
 local _2amodule_name_2a = "conjure.net"
 do local _ = ({nil, _0_0, {{nil}, nil, nil, nil}})[2] end
@@ -43,10 +43,10 @@ do
       if (host == "::") then
         return host
       else
-        local function _2_(_241)
+        local function _3_(_241)
           return ("inet" == a.get(_241, "family"))
         end
-        return a.get(a.first(a.filter(_2_, vim.loop.getaddrinfo(host))), "addr")
+        return a.get(a.first(a.filter(_3_, vim.loop.getaddrinfo(host))), "addr")
       end
     end
     v_0_0 = resolve0
@@ -71,10 +71,10 @@ do
       sock:shutdown()
       sock:close()
     end
-    local function _3_(_241)
+    local function _4_(_241)
       return (sock ~= _241)
     end
-    state["sock-drawer"] = a.filter(_3_, state["sock-drawer"])
+    state["sock-drawer"] = a.filter(_4_, state["sock-drawer"])
     return nil
   end
   v_0_ = destroy_sock0
@@ -86,19 +86,19 @@ do
   local v_0_ = nil
   do
     local v_0_0 = nil
-    local function connect0(_2_0)
-      local _arg_0_ = _2_0
-      local cb = _arg_0_["cb"]
-      local host = _arg_0_["host"]
-      local port = _arg_0_["port"]
+    local function connect0(_3_0)
+      local _4_ = _3_0
+      local cb = _4_["cb"]
+      local host = _4_["host"]
+      local port = _4_["port"]
       local sock = vim.loop.new_tcp()
       local resolved_host = resolve(host)
       sock:connect(resolved_host, port, cb)
       table.insert(state["sock-drawer"], sock)
-      local function _3_()
+      local function _5_()
         return destroy_sock(sock)
       end
-      return {["resolved-host"] = resolved_host, destroy = _3_, host = host, port = port, sock = sock}
+      return {["resolved-host"] = resolved_host, destroy = _5_, host = host, port = port, sock = sock}
     end
     v_0_0 = connect0
     _0_0["connect"] = v_0_0

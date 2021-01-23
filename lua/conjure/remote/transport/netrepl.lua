@@ -14,12 +14,12 @@ do
   package.loaded[name_0_] = module_0_
   _0_0 = module_0_
 end
-local function _1_(...)
+local function _2_(...)
   local ok_3f_0_, val_0_ = nil, nil
-  local function _1_()
+  local function _2_()
     return {require("conjure.aniseed.core"), require("bit"), require("conjure.aniseed.string")}
   end
-  ok_3f_0_, val_0_ = pcall(_1_)
+  ok_3f_0_, val_0_ = pcall(_2_)
   if ok_3f_0_ then
     _0_0["aniseed/local-fns"] = {require = {a = "conjure.aniseed.core", bit = "bit", str = "conjure.aniseed.string"}}
     return val_0_
@@ -27,10 +27,10 @@ local function _1_(...)
     return print(val_0_)
   end
 end
-local _local_0_ = _1_(...)
-local a = _local_0_[1]
-local bit = _local_0_[2]
-local str = _local_0_[3]
+local _1_ = _2_(...)
+local a = _1_[1]
+local bit = _1_[2]
+local str = _1_[3]
 local _2amodule_2a = _0_0
 local _2amodule_name_2a = "conjure.remote.transport.netrepl"
 do local _ = ({nil, _0_0, {{}, nil, nil, nil}})[2] end
