@@ -49,6 +49,7 @@
 (merge
   {:debug false
    :relative_file_root nil
+   :path_subs nil
 
    :filetypes [:clojure :fennel :janet :racket]
    :filetype {:fennel :conjure.client.fennel.aniseed

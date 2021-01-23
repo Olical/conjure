@@ -40,3 +40,25 @@
          "/foo/bar/fnl/conjure/fs.fnl-nope"
          (nvim.fn.getcwd))
        "fall back to original"))
+
+(deftest apply-path-subs
+  (t.= "/home/olical/foo"
+       (fs.apply-path-subs
+         "/home/ollie/foo"
+         {"ollie" "olical"})
+       "simple mid-string replacement")
+  (t.= "/home/ollie/foo"
+       (fs.apply-path-subs
+         "/home/ollie/foo"
+         {"^ollie" "olical"})
+       "non matches do nothing")
+  (t.= "/home/ollie/foo"
+       (fs.apply-path-subs
+         "/home/ollie/foo"
+         nil)
+       "nil path-subs does nothing")
+  (t.= "/home/olical/foo"
+       (fs.apply-path-subs
+         "/home/ollie/foo"
+         {"^(/home/)ollie" "%1olical"})
+       "gsub capture group replacement"))

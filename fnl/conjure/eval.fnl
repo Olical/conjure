@@ -45,7 +45,7 @@
 
 (defn file []
   (event.emit :eval :file)
-  (let [opts {:file-path (fs.resolve-relative (extract.file-path))
+  (let [opts {:file-path (fs.localise-path (extract.file-path))
               :origin :file
               :action :eval}]
     (set opts.preview (preview opts))

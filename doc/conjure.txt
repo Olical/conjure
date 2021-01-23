@@ -448,9 +448,34 @@ defined as you enter a buffer and can't be altered after the fact.
             different parts of the overall file system. Here's how you could
             resolve all file paths relative to a sub-directory under your
             Neovim current working directory.
+
             `:let g:conjure#relative_file_root = getcwd() . "/sub-proj"`
+
             Now `/foo/bar/sub-proj/baz.clj` would be `baz.clj` if your Neovim
             CWD was `/foo/bar`.
+
+            See also `g:conjure#path_subs`.
+
+            Default: `undefined`
+
+`g:conjure#path_subs`
+            If set Conjure will modify paths on "go to definition" as well as
+            "eval file". The path will be substituted using Lua's
+            `string.gsub` function. The keys of the `path_subs` table are the
+            patterns and the values are the replacements.
+
+            Lua pattern documentation: https://www.lua.org/pil/20.2.html
+            >
+              {"/root/.m2" "/home/ollie/.m2"
+               "/src/app" "."
+               "^(/home)/foo" "%1/bar"}
+<
+            This can be used when connecting to REPLs outside of your local
+            machine or within Docker containers where the filesystems don't
+            quite match up.
+
+            See also `g:conjure#relative_file_root`.
+
             Default: `undefined`
 
 `g:conjure#debug`

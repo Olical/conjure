@@ -57,8 +57,22 @@
 
 (defn resolve-relative [path]
   "If g:conjure#relative_file_root is set, will resolve the path relative to
-  that. Will return the original path immidiately if not."
+  that. Will return the original path immediately if not."
   (let [relative-file-root (config.get-in [:relative_file_root])]
     (if relative-file-root
       (resolve-relative-to path relative-file-root)
       path)))
+
+(defn apply-path-subs [path path-subs]
+  (a.reduce
+    (fn [path [pat rep]]
+      (path:gsub pat rep))
+    path
+    (a.kv-pairs path-subs)))
+
+(defn localise-path [path]
+  "Apply the g:conjure#relative_file_root and g:conjure#path_subs configuration
+  to the given path."
+  (-> path
+      (apply-path-subs (config.get-in [:path_subs]))
+      (resolve-relative)))
