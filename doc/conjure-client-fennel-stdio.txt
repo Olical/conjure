@@ -6,6 +6,7 @@ CONTENTS                                *conjure-client-fennel-stdio-contents*
     1. Introduction ........ |conjure-client-fennel-stdio-introduction|
     2. Mappings ................ |conjure-client-fennel-stdio-mappings|
     3. Configuration ...... |conjure-client-fennel-stdio-configuration|
+    4. Bugs ........................ |conjure-client-fennel-stdio-bugs|
 
 ==============================================================================
 INTRODUCTION                        *conjure-client-fennel-stdio-introduction*
@@ -67,5 +68,17 @@ All configuration can be set as described in |conjure-configuration|.
             Command used to start the Fennel REPL, you can modify this to add
             arguments or change the command entirely.
             Default: `"fennel"`
+
+==============================================================================
+BUGS                                        *conjure-client-fennel-stdio-bugs*
+
+If you find that after enabling the fennel stdio client, Neovim becomes
+unresponsive and/or generally broken when opening .fnl files, the fennel
+readline integration is probably breaking things. In this case, you should
+uninstall the lua readline module, remove it from your `LUA_PATH` environment
+variable or use an alternate lua interpreter by setting the command variable.
+For example, with this option:
+>
+  let g:conjure#client#fennel#stdio#command = "fennel --lua /usr/bin/lua5.4"
 
 vim:tw=78:sw=2:ts=2:ft=help:norl:et:listchars=
