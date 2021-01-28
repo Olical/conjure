@@ -9,8 +9,8 @@ do
     module_0_ = {}
   end
   module_0_["aniseed/module"] = name_0_
-  module_0_["aniseed/locals"] = (module_0_["aniseed/locals"] or {})
-  module_0_["aniseed/local-fns"] = (module_0_["aniseed/local-fns"] or {})
+  module_0_["aniseed/locals"] = ((module_0_)["aniseed/locals"] or {})
+  module_0_["aniseed/local-fns"] = ((module_0_)["aniseed/local-fns"] or {})
   package.loaded[name_0_] = module_0_
   _0_0 = module_0_
 end
@@ -45,7 +45,8 @@ do
     _0_0["rand"] = v_0_0
     v_0_ = v_0_0
   end
-  _0_0["aniseed/locals"]["rand"] = v_0_
+  local t_0_ = (_0_0)["aniseed/locals"]
+  t_0_["rand"] = v_0_
   rand = v_0_
 end
 local string_3f = nil
@@ -60,7 +61,8 @@ do
     _0_0["string?"] = v_0_0
     v_0_ = v_0_0
   end
-  _0_0["aniseed/locals"]["string?"] = v_0_
+  local t_0_ = (_0_0)["aniseed/locals"]
+  t_0_["string?"] = v_0_
   string_3f = v_0_
 end
 local nil_3f = nil
@@ -75,7 +77,8 @@ do
     _0_0["nil?"] = v_0_0
     v_0_ = v_0_0
   end
-  _0_0["aniseed/locals"]["nil?"] = v_0_
+  local t_0_ = (_0_0)["aniseed/locals"]
+  t_0_["nil?"] = v_0_
   nil_3f = v_0_
 end
 local table_3f = nil
@@ -90,7 +93,8 @@ do
     _0_0["table?"] = v_0_0
     v_0_ = v_0_0
   end
-  _0_0["aniseed/locals"]["table?"] = v_0_
+  local t_0_ = (_0_0)["aniseed/locals"]
+  t_0_["table?"] = v_0_
   table_3f = v_0_
 end
 local count = nil
@@ -111,7 +115,8 @@ do
     _0_0["count"] = v_0_0
     v_0_ = v_0_0
   end
-  _0_0["aniseed/locals"]["count"] = v_0_
+  local t_0_ = (_0_0)["aniseed/locals"]
+  t_0_["count"] = v_0_
   count = v_0_
 end
 local empty_3f = nil
@@ -126,7 +131,8 @@ do
     _0_0["empty?"] = v_0_0
     v_0_ = v_0_0
   end
-  _0_0["aniseed/locals"]["empty?"] = v_0_
+  local t_0_ = (_0_0)["aniseed/locals"]
+  t_0_["empty?"] = v_0_
   empty_3f = v_0_
 end
 local first = nil
@@ -143,7 +149,8 @@ do
     _0_0["first"] = v_0_0
     v_0_ = v_0_0
   end
-  _0_0["aniseed/locals"]["first"] = v_0_
+  local t_0_ = (_0_0)["aniseed/locals"]
+  t_0_["first"] = v_0_
   first = v_0_
 end
 local second = nil
@@ -160,7 +167,8 @@ do
     _0_0["second"] = v_0_0
     v_0_ = v_0_0
   end
-  _0_0["aniseed/locals"]["second"] = v_0_
+  local t_0_ = (_0_0)["aniseed/locals"]
+  t_0_["second"] = v_0_
   second = v_0_
 end
 local last = nil
@@ -177,7 +185,8 @@ do
     _0_0["last"] = v_0_0
     v_0_ = v_0_0
   end
-  _0_0["aniseed/locals"]["last"] = v_0_
+  local t_0_ = (_0_0)["aniseed/locals"]
+  t_0_["last"] = v_0_
   last = v_0_
 end
 local inc = nil
@@ -192,7 +201,8 @@ do
     _0_0["inc"] = v_0_0
     v_0_ = v_0_0
   end
-  _0_0["aniseed/locals"]["inc"] = v_0_
+  local t_0_ = (_0_0)["aniseed/locals"]
+  t_0_["inc"] = v_0_
   inc = v_0_
 end
 local dec = nil
@@ -207,7 +217,8 @@ do
     _0_0["dec"] = v_0_0
     v_0_ = v_0_0
   end
-  _0_0["aniseed/locals"]["dec"] = v_0_
+  local t_0_ = (_0_0)["aniseed/locals"]
+  t_0_["dec"] = v_0_
   dec = v_0_
 end
 local even_3f = nil
@@ -222,7 +233,8 @@ do
     _0_0["even?"] = v_0_0
     v_0_ = v_0_0
   end
-  _0_0["aniseed/locals"]["even?"] = v_0_
+  local t_0_ = (_0_0)["aniseed/locals"]
+  t_0_["even?"] = v_0_
   even_3f = v_0_
 end
 local odd_3f = nil
@@ -237,7 +249,8 @@ do
     _0_0["odd?"] = v_0_0
     v_0_ = v_0_0
   end
-  _0_0["aniseed/locals"]["odd?"] = v_0_
+  local t_0_ = (_0_0)["aniseed/locals"]
+  t_0_["odd?"] = v_0_
   odd_3f = v_0_
 end
 local keys = nil
@@ -258,7 +271,8 @@ do
     _0_0["keys"] = v_0_0
     v_0_ = v_0_0
   end
-  _0_0["aniseed/locals"]["keys"] = v_0_
+  local t_0_ = (_0_0)["aniseed/locals"]
+  t_0_["keys"] = v_0_
   keys = v_0_
 end
 local vals = nil
@@ -279,7 +293,8 @@ do
     _0_0["vals"] = v_0_0
     v_0_ = v_0_0
   end
-  _0_0["aniseed/locals"]["vals"] = v_0_
+  local t_0_ = (_0_0)["aniseed/locals"]
+  t_0_["vals"] = v_0_
   vals = v_0_
 end
 local kv_pairs = nil
@@ -300,7 +315,8 @@ do
     _0_0["kv-pairs"] = v_0_0
     v_0_ = v_0_0
   end
-  _0_0["aniseed/locals"]["kv-pairs"] = v_0_
+  local t_0_ = (_0_0)["aniseed/locals"]
+  t_0_["kv-pairs"] = v_0_
   kv_pairs = v_0_
 end
 local run_21 = nil
@@ -323,7 +339,8 @@ do
     _0_0["run!"] = v_0_0
     v_0_ = v_0_0
   end
-  _0_0["aniseed/locals"]["run!"] = v_0_
+  local t_0_ = (_0_0)["aniseed/locals"]
+  t_0_["run!"] = v_0_
   run_21 = v_0_
 end
 local filter = nil
@@ -345,7 +362,8 @@ do
     _0_0["filter"] = v_0_0
     v_0_ = v_0_0
   end
-  _0_0["aniseed/locals"]["filter"] = v_0_
+  local t_0_ = (_0_0)["aniseed/locals"]
+  t_0_["filter"] = v_0_
   filter = v_0_
 end
 local map = nil
@@ -373,7 +391,8 @@ do
     _0_0["map"] = v_0_0
     v_0_ = v_0_0
   end
-  _0_0["aniseed/locals"]["map"] = v_0_
+  local t_0_ = (_0_0)["aniseed/locals"]
+  t_0_["map"] = v_0_
   map = v_0_
 end
 local map_indexed = nil
@@ -388,7 +407,8 @@ do
     _0_0["map-indexed"] = v_0_0
     v_0_ = v_0_0
   end
-  _0_0["aniseed/locals"]["map-indexed"] = v_0_
+  local t_0_ = (_0_0)["aniseed/locals"]
+  t_0_["map-indexed"] = v_0_
   map_indexed = v_0_
 end
 local identity = nil
@@ -403,7 +423,8 @@ do
     _0_0["identity"] = v_0_0
     v_0_ = v_0_0
   end
-  _0_0["aniseed/locals"]["identity"] = v_0_
+  local t_0_ = (_0_0)["aniseed/locals"]
+  t_0_["identity"] = v_0_
   identity = v_0_
 end
 local reduce = nil
@@ -424,7 +445,8 @@ do
     _0_0["reduce"] = v_0_0
     v_0_ = v_0_0
   end
-  _0_0["aniseed/locals"]["reduce"] = v_0_
+  local t_0_ = (_0_0)["aniseed/locals"]
+  t_0_["reduce"] = v_0_
   reduce = v_0_
 end
 local some = nil
@@ -448,7 +470,8 @@ do
     _0_0["some"] = v_0_0
     v_0_ = v_0_0
   end
-  _0_0["aniseed/locals"]["some"] = v_0_
+  local t_0_ = (_0_0)["aniseed/locals"]
+  t_0_["some"] = v_0_
   some = v_0_
 end
 local butlast = nil
@@ -470,7 +493,8 @@ do
     _0_0["butlast"] = v_0_0
     v_0_ = v_0_0
   end
-  _0_0["aniseed/locals"]["butlast"] = v_0_
+  local t_0_ = (_0_0)["aniseed/locals"]
+  t_0_["butlast"] = v_0_
   butlast = v_0_
 end
 local rest = nil
@@ -491,7 +515,8 @@ do
     _0_0["rest"] = v_0_0
     v_0_ = v_0_0
   end
-  _0_0["aniseed/locals"]["rest"] = v_0_
+  local t_0_ = (_0_0)["aniseed/locals"]
+  t_0_["rest"] = v_0_
   rest = v_0_
 end
 local concat = nil
@@ -514,7 +539,8 @@ do
     _0_0["concat"] = v_0_0
     v_0_ = v_0_0
   end
-  _0_0["aniseed/locals"]["concat"] = v_0_
+  local t_0_ = (_0_0)["aniseed/locals"]
+  t_0_["concat"] = v_0_
   concat = v_0_
 end
 local mapcat = nil
@@ -529,7 +555,8 @@ do
     _0_0["mapcat"] = v_0_0
     v_0_ = v_0_0
   end
-  _0_0["aniseed/locals"]["mapcat"] = v_0_
+  local t_0_ = (_0_0)["aniseed/locals"]
+  t_0_["mapcat"] = v_0_
   mapcat = v_0_
 end
 local pr_str = nil
@@ -553,7 +580,8 @@ do
     _0_0["pr-str"] = v_0_0
     v_0_ = v_0_0
   end
-  _0_0["aniseed/locals"]["pr-str"] = v_0_
+  local t_0_ = (_0_0)["aniseed/locals"]
+  t_0_["pr-str"] = v_0_
   pr_str = v_0_
 end
 local println = nil
@@ -588,7 +616,8 @@ do
     _0_0["println"] = v_0_0
     v_0_ = v_0_0
   end
-  _0_0["aniseed/locals"]["println"] = v_0_
+  local t_0_ = (_0_0)["aniseed/locals"]
+  t_0_["println"] = v_0_
   println = v_0_
 end
 local pr = nil
@@ -603,7 +632,8 @@ do
     _0_0["pr"] = v_0_0
     v_0_ = v_0_0
   end
-  _0_0["aniseed/locals"]["pr"] = v_0_
+  local t_0_ = (_0_0)["aniseed/locals"]
+  t_0_["pr"] = v_0_
   pr = v_0_
 end
 local slurp = nil
@@ -627,7 +657,8 @@ do
     _0_0["slurp"] = v_0_0
     v_0_ = v_0_0
   end
-  _0_0["aniseed/locals"]["slurp"] = v_0_
+  local t_0_ = (_0_0)["aniseed/locals"]
+  t_0_["slurp"] = v_0_
   slurp = v_0_
 end
 local spit = nil
@@ -651,7 +682,8 @@ do
     _0_0["spit"] = v_0_0
     v_0_ = v_0_0
   end
-  _0_0["aniseed/locals"]["spit"] = v_0_
+  local t_0_ = (_0_0)["aniseed/locals"]
+  t_0_["spit"] = v_0_
   spit = v_0_
 end
 local merge_21 = nil
@@ -674,7 +706,8 @@ do
     _0_0["merge!"] = v_0_0
     v_0_ = v_0_0
   end
-  _0_0["aniseed/locals"]["merge!"] = v_0_
+  local t_0_ = (_0_0)["aniseed/locals"]
+  t_0_["merge!"] = v_0_
   merge_21 = v_0_
 end
 local merge = nil
@@ -689,7 +722,8 @@ do
     _0_0["merge"] = v_0_0
     v_0_ = v_0_0
   end
-  _0_0["aniseed/locals"]["merge"] = v_0_
+  local t_0_ = (_0_0)["aniseed/locals"]
+  t_0_["merge"] = v_0_
   merge = v_0_
 end
 local select_keys = nil
@@ -714,7 +748,8 @@ do
     _0_0["select-keys"] = v_0_0
     v_0_ = v_0_0
   end
-  _0_0["aniseed/locals"]["select-keys"] = v_0_
+  local t_0_ = (_0_0)["aniseed/locals"]
+  t_0_["select-keys"] = v_0_
   select_keys = v_0_
 end
 local get = nil
@@ -744,7 +779,8 @@ do
     _0_0["get"] = v_0_0
     v_0_ = v_0_0
   end
-  _0_0["aniseed/locals"]["get"] = v_0_
+  local t_0_ = (_0_0)["aniseed/locals"]
+  t_0_["get"] = v_0_
   get = v_0_
 end
 local get_in = nil
@@ -770,7 +806,8 @@ do
     _0_0["get-in"] = v_0_0
     v_0_ = v_0_0
   end
-  _0_0["aniseed/locals"]["get-in"] = v_0_
+  local t_0_ = (_0_0)["aniseed/locals"]
+  t_0_["get-in"] = v_0_
   get_in = v_0_
 end
 local assoc = nil
@@ -800,7 +837,8 @@ do
     _0_0["assoc"] = v_0_0
     v_0_ = v_0_0
   end
-  _0_0["aniseed/locals"]["assoc"] = v_0_
+  local t_0_ = (_0_0)["aniseed/locals"]
+  t_0_["assoc"] = v_0_
   assoc = v_0_
 end
 local assoc_in = nil
@@ -827,7 +865,8 @@ do
     _0_0["assoc-in"] = v_0_0
     v_0_ = v_0_0
   end
-  _0_0["aniseed/locals"]["assoc-in"] = v_0_
+  local t_0_ = (_0_0)["aniseed/locals"]
+  t_0_["assoc-in"] = v_0_
   assoc_in = v_0_
 end
 local update = nil
@@ -842,7 +881,8 @@ do
     _0_0["update"] = v_0_0
     v_0_ = v_0_0
   end
-  _0_0["aniseed/locals"]["update"] = v_0_
+  local t_0_ = (_0_0)["aniseed/locals"]
+  t_0_["update"] = v_0_
   update = v_0_
 end
 local update_in = nil
@@ -857,7 +897,8 @@ do
     _0_0["update-in"] = v_0_0
     v_0_ = v_0_0
   end
-  _0_0["aniseed/locals"]["update-in"] = v_0_
+  local t_0_ = (_0_0)["aniseed/locals"]
+  t_0_["update-in"] = v_0_
   update_in = v_0_
 end
 local constantly = nil
@@ -875,7 +916,8 @@ do
     _0_0["constantly"] = v_0_0
     v_0_ = v_0_0
   end
-  _0_0["aniseed/locals"]["constantly"] = v_0_
+  local t_0_ = (_0_0)["aniseed/locals"]
+  t_0_["constantly"] = v_0_
   constantly = v_0_
 end
 return nil

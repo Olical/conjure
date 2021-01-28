@@ -9,8 +9,8 @@ do
     module_0_ = {}
   end
   module_0_["aniseed/module"] = name_0_
-  module_0_["aniseed/locals"] = (module_0_["aniseed/locals"] or {})
-  module_0_["aniseed/local-fns"] = (module_0_["aniseed/local-fns"] or {})
+  module_0_["aniseed/locals"] = ((module_0_)["aniseed/locals"] or {})
+  module_0_["aniseed/local-fns"] = ((module_0_)["aniseed/local-fns"] or {})
   package.loaded[name_0_] = module_0_
   _0_0 = module_0_
 end
@@ -38,7 +38,8 @@ nvim.out_write("Warning: aniseed.dotfiles is deprecated, see :help aniseed-dotfi
 local config_dir = nil
 do
   local v_0_ = nvim.fn.stdpath("config")
-  _0_0["aniseed/locals"]["config-dir"] = v_0_
+  local t_0_ = (_0_0)["aniseed/locals"]
+  t_0_["config-dir"] = v_0_
   config_dir = v_0_
 end
 fennel["add-path"]((config_dir .. "/?.fnl"))

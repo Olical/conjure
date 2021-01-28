@@ -93,8 +93,9 @@
 
 (fn def- [name value]
   `(local ,name
-     (let [v# ,value]
-       (tset (. ,module-sym :aniseed/locals) ,(tostring name) v#)
+     (let [v# ,value
+           t# (. ,module-sym :aniseed/locals)]
+       (tset t# ,(tostring name) v#)
        v#)))
 
 (fn def [name value]

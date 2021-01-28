@@ -14,12 +14,12 @@ do
   package.loaded[name_0_] = module_0_
   _0_0 = module_0_
 end
-local function _2_(...)
+local function _1_(...)
   local ok_3f_0_, val_0_ = nil, nil
-  local function _2_()
+  local function _1_()
     return {require("conjure.aniseed.core"), require("conjure.aniseed.string")}
   end
-  ok_3f_0_, val_0_ = pcall(_2_)
+  ok_3f_0_, val_0_ = pcall(_1_)
   if ok_3f_0_ then
     _0_0["aniseed/local-fns"] = {require = {a = "conjure.aniseed.core", str = "conjure.aniseed.string"}}
     return val_0_
@@ -27,9 +27,9 @@ local function _2_(...)
     return print(val_0_)
   end
 end
-local _1_ = _2_(...)
-local a = _1_[1]
-local str = _1_[2]
+local _local_0_ = _1_(...)
+local a = _local_0_[1]
+local str = _local_0_[2]
 local _2amodule_2a = _0_0
 local _2amodule_name_2a = "conjure.text"
 do local _ = ({nil, _0_0, {{}, nil, nil, nil}})[2] end
@@ -45,7 +45,8 @@ do
     _0_0["trailing-newline?"] = v_0_0
     v_0_ = v_0_0
   end
-  _0_0["aniseed/locals"]["trailing-newline?"] = v_0_
+  local t_0_ = _0_0["aniseed/locals"]
+  t_0_["trailing-newline?"] = v_0_
   trailing_newline_3f = v_0_
 end
 local trim_last_newline = nil
@@ -64,7 +65,8 @@ do
     _0_0["trim-last-newline"] = v_0_0
     v_0_ = v_0_0
   end
-  _0_0["aniseed/locals"]["trim-last-newline"] = v_0_
+  local t_0_ = _0_0["aniseed/locals"]
+  t_0_["trim-last-newline"] = v_0_
   trim_last_newline = v_0_
 end
 local left_sample = nil
@@ -84,7 +86,8 @@ do
     _0_0["left-sample"] = v_0_0
     v_0_ = v_0_0
   end
-  _0_0["aniseed/locals"]["left-sample"] = v_0_
+  local t_0_ = _0_0["aniseed/locals"]
+  t_0_["left-sample"] = v_0_
   left_sample = v_0_
 end
 local right_sample = nil
@@ -99,7 +102,8 @@ do
     _0_0["right-sample"] = v_0_0
     v_0_ = v_0_0
   end
-  _0_0["aniseed/locals"]["right-sample"] = v_0_
+  local t_0_ = _0_0["aniseed/locals"]
+  t_0_["right-sample"] = v_0_
   right_sample = v_0_
 end
 local split_lines = nil
@@ -114,7 +118,8 @@ do
     _0_0["split-lines"] = v_0_0
     v_0_ = v_0_0
   end
-  _0_0["aniseed/locals"]["split-lines"] = v_0_
+  local t_0_ = _0_0["aniseed/locals"]
+  t_0_["split-lines"] = v_0_
   split_lines = v_0_
 end
 local prefixed_lines = nil
@@ -123,23 +128,24 @@ do
   do
     local v_0_0 = nil
     local function prefixed_lines0(s, prefix, opts)
-      local function _3_(_4_0)
-        local _5_ = _4_0
-        local n = _5_[1]
-        local line = _5_[2]
+      local function _2_(_3_0)
+        local _arg_0_ = _3_0
+        local n = _arg_0_[1]
+        local line = _arg_0_[2]
         if ((1 == n) and a.get(opts, "skip-first?")) then
           return line
         else
           return (prefix .. line)
         end
       end
-      return a["map-indexed"](_3_, split_lines(s))
+      return a["map-indexed"](_2_, split_lines(s))
     end
     v_0_0 = prefixed_lines0
     _0_0["prefixed-lines"] = v_0_0
     v_0_ = v_0_0
   end
-  _0_0["aniseed/locals"]["prefixed-lines"] = v_0_
+  local t_0_ = _0_0["aniseed/locals"]
+  t_0_["prefixed-lines"] = v_0_
   prefixed_lines = v_0_
 end
 local starts_with = nil
@@ -154,7 +160,8 @@ do
     _0_0["starts-with"] = v_0_0
     v_0_ = v_0_0
   end
-  _0_0["aniseed/locals"]["starts-with"] = v_0_
+  local t_0_ = _0_0["aniseed/locals"]
+  t_0_["starts-with"] = v_0_
   starts_with = v_0_
 end
 local ends_with = nil
@@ -169,7 +176,8 @@ do
     _0_0["ends-with"] = v_0_0
     v_0_ = v_0_0
   end
-  _0_0["aniseed/locals"]["ends-with"] = v_0_
+  local t_0_ = _0_0["aniseed/locals"]
+  t_0_["ends-with"] = v_0_
   ends_with = v_0_
 end
 local strip_ansi_escape_sequences = nil
@@ -184,7 +192,8 @@ do
     _0_0["strip-ansi-escape-sequences"] = v_0_0
     v_0_ = v_0_0
   end
-  _0_0["aniseed/locals"]["strip-ansi-escape-sequences"] = v_0_
+  local t_0_ = _0_0["aniseed/locals"]
+  t_0_["strip-ansi-escape-sequences"] = v_0_
   strip_ansi_escape_sequences = v_0_
 end
 local chars = nil
@@ -205,7 +214,8 @@ do
     _0_0["chars"] = v_0_0
     v_0_ = v_0_0
   end
-  _0_0["aniseed/locals"]["chars"] = v_0_
+  local t_0_ = _0_0["aniseed/locals"]
+  t_0_["chars"] = v_0_
   chars = v_0_
 end
 local upper_first = nil
@@ -222,7 +232,8 @@ do
     _0_0["upper-first"] = v_0_0
     v_0_ = v_0_0
   end
-  _0_0["aniseed/locals"]["upper-first"] = v_0_
+  local t_0_ = _0_0["aniseed/locals"]
+  t_0_["upper-first"] = v_0_
   upper_first = v_0_
 end
 return nil

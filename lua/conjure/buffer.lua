@@ -14,12 +14,12 @@ do
   package.loaded[name_0_] = module_0_
   _0_0 = module_0_
 end
-local function _2_(...)
+local function _1_(...)
   local ok_3f_0_, val_0_ = nil, nil
-  local function _2_()
+  local function _1_()
     return {require("conjure.aniseed.core"), require("conjure.aniseed.nvim"), require("conjure.aniseed.string"), require("conjure.text")}
   end
-  ok_3f_0_, val_0_ = pcall(_2_)
+  ok_3f_0_, val_0_ = pcall(_1_)
   if ok_3f_0_ then
     _0_0["aniseed/local-fns"] = {require = {a = "conjure.aniseed.core", nvim = "conjure.aniseed.nvim", str = "conjure.aniseed.string", text = "conjure.text"}}
     return val_0_
@@ -27,11 +27,11 @@ local function _2_(...)
     return print(val_0_)
   end
 end
-local _1_ = _2_(...)
-local a = _1_[1]
-local nvim = _1_[2]
-local str = _1_[3]
-local text = _1_[4]
+local _local_0_ = _1_(...)
+local a = _local_0_[1]
+local nvim = _local_0_[2]
+local str = _local_0_[3]
+local text = _local_0_[4]
 local _2amodule_2a = _0_0
 local _2amodule_name_2a = "conjure.buffer"
 do local _ = ({nil, _0_0, {{}, nil, nil, nil}})[2] end
@@ -47,7 +47,8 @@ do
     _0_0["unlist"] = v_0_0
     v_0_ = v_0_0
   end
-  _0_0["aniseed/locals"]["unlist"] = v_0_
+  local t_0_ = _0_0["aniseed/locals"]
+  t_0_["unlist"] = v_0_
   unlist = v_0_
 end
 local resolve = nil
@@ -62,7 +63,8 @@ do
     _0_0["resolve"] = v_0_0
     v_0_ = v_0_0
   end
-  _0_0["aniseed/locals"]["resolve"] = v_0_
+  local t_0_ = _0_0["aniseed/locals"]
+  t_0_["resolve"] = v_0_
   resolve = v_0_
 end
 local upsert_hidden = nil
@@ -90,7 +92,8 @@ do
     _0_0["upsert-hidden"] = v_0_0
     v_0_ = v_0_0
   end
-  _0_0["aniseed/locals"]["upsert-hidden"] = v_0_
+  local t_0_ = _0_0["aniseed/locals"]
+  t_0_["upsert-hidden"] = v_0_
   upsert_hidden = v_0_
 end
 local empty_3f = nil
@@ -105,7 +108,8 @@ do
     _0_0["empty?"] = v_0_0
     v_0_ = v_0_0
   end
-  _0_0["aniseed/locals"]["empty?"] = v_0_
+  local t_0_ = _0_0["aniseed/locals"]
+  t_0_["empty?"] = v_0_
   empty_3f = v_0_
 end
 local replace_range = nil
@@ -122,21 +126,22 @@ do
       local old_lines = nvim.buf_get_lines(buf, start_line, end_line, false)
       local head = string.sub(a.first(old_lines), 1, start_char)
       local tail = string.sub(a.last(old_lines), (end_char + 2))
-      local function _3_(l)
+      local function _2_(l)
         return (head .. l)
       end
-      a.update(new_lines, 1, _3_)
-      local function _4_(l)
+      a.update(new_lines, 1, _2_)
+      local function _3_(l)
         return (l .. tail)
       end
-      a.update(new_lines, a.count(new_lines), _4_)
+      a.update(new_lines, a.count(new_lines), _3_)
       return nvim.buf_set_lines(buf, start_line, end_line, false, new_lines)
     end
     v_0_0 = replace_range0
     _0_0["replace-range"] = v_0_0
     v_0_ = v_0_0
   end
-  _0_0["aniseed/locals"]["replace-range"] = v_0_
+  local t_0_ = _0_0["aniseed/locals"]
+  t_0_["replace-range"] = v_0_
   replace_range = v_0_
 end
 local take_while = nil
@@ -156,7 +161,8 @@ do
     return acc
   end
   v_0_ = take_while0
-  _0_0["aniseed/locals"]["take-while"] = v_0_
+  local t_0_ = _0_0["aniseed/locals"]
+  t_0_["take-while"] = v_0_
   take_while = v_0_
 end
 local append_prefixed_line = nil
@@ -164,46 +170,47 @@ do
   local v_0_ = nil
   do
     local v_0_0 = nil
-    local function append_prefixed_line0(buf, _3_0, prefix, body)
-      local _4_ = _3_0
-      local tl = _4_[1]
-      local tc = _4_[2]
+    local function append_prefixed_line0(buf, _2_0, prefix, body)
+      local _arg_0_ = _2_0
+      local tl = _arg_0_[1]
+      local tc = _arg_0_[2]
       local tl0 = a.dec(tl)
-      local _5_ = nvim.buf_get_lines(buf, tl0, -1, false)
-      local head_line = _5_[1]
-      local lines = {(table.unpack or unpack)(_5_, 2)}
+      local _let_0_ = nvim.buf_get_lines(buf, tl0, -1, false)
+      local head_line = _let_0_[1]
+      local lines = {(table.unpack or unpack)(_let_0_, 2)}
       local to_append = text["prefixed-lines"](body, prefix, {})
       if head_line:find(prefix, tc) then
-        local function _7_(_8_0)
-          local _9_ = _8_0
-          local n = _9_[1]
-          local line = _9_[2]
+        local function _3_(_4_0)
+          local _arg_1_ = _4_0
+          local n = _arg_1_[1]
+          local line = _arg_1_[2]
           if text["starts-with"](line, prefix) then
             return {(tl0 + n), a.concat({line}, to_append)}
           else
             return false
           end
         end
-        local _6_ = (a.last(take_while(a.identity, a.map(_7_, a["kv-pairs"](lines)))) or {tl0, a.concat({head_line}, to_append)})
-        local new_tl = _6_[1]
-        local lines0 = _6_[2]
+        local _let_1_ = (a.last(take_while(a.identity, a.map(_3_, a["kv-pairs"](lines)))) or {tl0, a.concat({head_line}, to_append)})
+        local new_tl = _let_1_[1]
+        local lines0 = _let_1_[2]
         return nvim.buf_set_lines(buf, new_tl, a.inc(new_tl), false, lines0)
       else
-        local function _6_()
+        local function _3_()
           if (1 == a.count(to_append)) then
             return {(head_line .. " " .. a.first(to_append))}
           else
             return a.concat({head_line}, to_append)
           end
         end
-        return nvim.buf_set_lines(buf, tl0, a.inc(tl0), false, _6_())
+        return nvim.buf_set_lines(buf, tl0, a.inc(tl0), false, _3_())
       end
     end
     v_0_0 = append_prefixed_line0
     _0_0["append-prefixed-line"] = v_0_0
     v_0_ = v_0_0
   end
-  _0_0["aniseed/locals"]["append-prefixed-line"] = v_0_
+  local t_0_ = _0_0["aniseed/locals"]
+  t_0_["append-prefixed-line"] = v_0_
   append_prefixed_line = v_0_
 end
 return nil

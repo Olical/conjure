@@ -14,12 +14,12 @@ do
   package.loaded[name_0_] = module_0_
   _0_0 = module_0_
 end
-local function _2_(...)
+local function _1_(...)
   local ok_3f_0_, val_0_ = nil, nil
-  local function _2_()
+  local function _1_()
     return {require("conjure.aniseed.core"), require("conjure.remote.transport.bencode.impl")}
   end
-  ok_3f_0_, val_0_ = pcall(_2_)
+  ok_3f_0_, val_0_ = pcall(_1_)
   if ok_3f_0_ then
     _0_0["aniseed/local-fns"] = {require = {a = "conjure.aniseed.core", impl = "conjure.remote.transport.bencode.impl"}}
     return val_0_
@@ -27,9 +27,9 @@ local function _2_(...)
     return print(val_0_)
   end
 end
-local _1_ = _2_(...)
-local a = _1_[1]
-local impl = _1_[2]
+local _local_0_ = _1_(...)
+local a = _local_0_[1]
+local impl = _local_0_[2]
 local _2amodule_2a = _0_0
 local _2amodule_name_2a = "conjure.remote.transport.bencode"
 do local _ = ({nil, _0_0, {{}, nil, nil, nil}})[2] end
@@ -45,7 +45,8 @@ do
     _0_0["new"] = v_0_0
     v_0_ = v_0_0
   end
-  _0_0["aniseed/locals"]["new"] = v_0_
+  local t_0_ = _0_0["aniseed/locals"]
+  t_0_["new"] = v_0_
   new = v_0_
 end
 local decode_all = nil
@@ -74,7 +75,8 @@ do
     _0_0["decode-all"] = v_0_0
     v_0_ = v_0_0
   end
-  _0_0["aniseed/locals"]["decode-all"] = v_0_
+  local t_0_ = _0_0["aniseed/locals"]
+  t_0_["decode-all"] = v_0_
   decode_all = v_0_
 end
 local encode = nil
@@ -89,7 +91,8 @@ do
     _0_0["encode"] = v_0_0
     v_0_ = v_0_0
   end
-  _0_0["aniseed/locals"]["encode"] = v_0_
+  local t_0_ = _0_0["aniseed/locals"]
+  t_0_["encode"] = v_0_
   encode = v_0_
 end
 return nil

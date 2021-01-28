@@ -14,12 +14,12 @@ do
   package.loaded[name_0_] = module_0_
   _0_0 = module_0_
 end
-local function _2_(...)
+local function _1_(...)
   local ok_3f_0_, val_0_ = nil, nil
-  local function _2_()
+  local function _1_()
     return {require("conjure.aniseed.core"), require("conjure.buffer"), require("conjure.config"), require("conjure.editor"), require("conjure.aniseed.nvim"), require("conjure.aniseed.string")}
   end
-  ok_3f_0_, val_0_ = pcall(_2_)
+  ok_3f_0_, val_0_ = pcall(_1_)
   if ok_3f_0_ then
     _0_0["aniseed/local-fns"] = {require = {a = "conjure.aniseed.core", buffer = "conjure.buffer", config = "conjure.config", editor = "conjure.editor", nvim = "conjure.aniseed.nvim", str = "conjure.aniseed.string"}}
     return val_0_
@@ -27,20 +27,21 @@ local function _2_(...)
     return print(val_0_)
   end
 end
-local _1_ = _2_(...)
-local a = _1_[1]
-local buffer = _1_[2]
-local config = _1_[3]
-local editor = _1_[4]
-local nvim = _1_[5]
-local str = _1_[6]
+local _local_0_ = _1_(...)
+local a = _local_0_[1]
+local buffer = _local_0_[2]
+local config = _local_0_[3]
+local editor = _local_0_[4]
+local nvim = _local_0_[5]
+local str = _local_0_[6]
 local _2amodule_2a = _0_0
 local _2amodule_name_2a = "conjure.school"
 do local _ = ({nil, _0_0, {{}, nil, nil, nil}})[2] end
 local buf_name = nil
 do
   local v_0_ = "conjure-school.fnl"
-  _0_0["aniseed/locals"]["buf-name"] = v_0_
+  local t_0_ = _0_0["aniseed/locals"]
+  t_0_["buf-name"] = v_0_
   buf_name = v_0_
 end
 local upsert_buf = nil
@@ -50,7 +51,8 @@ do
     return buffer["upsert-hidden"](buf_name)
   end
   v_0_ = upsert_buf0
-  _0_0["aniseed/locals"]["upsert-buf"] = v_0_
+  local t_0_ = _0_0["aniseed/locals"]
+  t_0_["upsert-buf"] = v_0_
   upsert_buf = v_0_
 end
 local append = nil
@@ -58,16 +60,17 @@ do
   local v_0_ = nil
   local function append0(lines)
     local buf = upsert_buf()
-    local _3_
+    local _2_
     if buffer["empty?"](buf) then
-      _3_ = 0
+      _2_ = 0
     else
-      _3_ = -1
+      _2_ = -1
     end
-    return nvim.buf_set_lines(buf, _3_, -1, false, lines)
+    return nvim.buf_set_lines(buf, _2_, -1, false, lines)
   end
   v_0_ = append0
-  _0_0["aniseed/locals"]["append"] = v_0_
+  local t_0_ = _0_0["aniseed/locals"]
+  t_0_["append"] = v_0_
   append = v_0_
 end
 local map_str = nil
@@ -77,7 +80,8 @@ do
     return (config["get-in"]({"mapping", "prefix"}) .. config["get-in"]({"mapping", m}))
   end
   v_0_ = map_str0
-  _0_0["aniseed/locals"]["map-str"] = v_0_
+  local t_0_ = _0_0["aniseed/locals"]
+  t_0_["map-str"] = v_0_
   map_str = v_0_
 end
 local progress = nil
@@ -87,7 +91,8 @@ do
     return ("Lesson [" .. n .. "/7] complete!")
   end
   v_0_ = progress0
-  _0_0["aniseed/locals"]["progress"] = v_0_
+  local t_0_ = _0_0["aniseed/locals"]
+  t_0_["progress"] = v_0_
   progress = v_0_
 end
 local start = nil
@@ -107,25 +112,26 @@ do
       local buf = upsert_buf()
       nvim.ex.edit(buf_name)
       nvim.buf_set_lines(buf, 0, -1, false, {})
-      local _4_
+      local _3_
       if ("<localleader>" == config["get-in"]({"mapping", "prefix"})) then
         if a["empty?"](nvim.g.maplocalleader) then
           nvim.g.maplocalleader = ","
           nvim.ex.edit()
-          _4_ = {";; Your <localleader> wasn't configured so I've defaulted it to comma (,) for now.", ";; See :help localleader for more information. (let maplocalleader=\",\")"}
+          _3_ = {";; Your <localleader> wasn't configured so I've defaulted it to comma (,) for now.", ";; See :help localleader for more information. (let maplocalleader=\",\")"}
         else
-          _4_ = {(";; Your <localleader> is currently mapped to \"" .. nvim.g.maplocalleader .. "\"")}
+          _3_ = {(";; Your <localleader> is currently mapped to \"" .. nvim.g.maplocalleader .. "\"")}
         end
       else
-      _4_ = nil
+      _3_ = nil
       end
-      return append(a.concat({"(module user.conjure-school", "  {require {school conjure.school}})", "", ";; Welcome to Conjure school!", ";; Grab yourself a nice beverage and let's get evaluating. I hope you enjoy!", "", ";; This language is Fennel, it's quite similar to Clojure.", ";; Conjure is written in Fennel, it's compiled to Lua and executed inside Neovim itself.", ";; This means we can work with a Lisp without installing or running anything else.", "", ";; Note: Some colorschemes will make the HUD unreadable, see here for more: https://git.io/JJ1Hl", "", ";; Let's learn how to evaluate it using Conjure's assortment of mappings.", ";; You can learn how to change these mappings with :help conjure-mappings", "", (";; Let's begin by evaluating the whole buffer using " .. map_str("eval_buf"))}, _4_, {"(school.lesson-1)"}))
+      return append(a.concat({"(module user.conjure-school", "  {require {school conjure.school}})", "", ";; Welcome to Conjure school!", ";; Grab yourself a nice beverage and let's get evaluating. I hope you enjoy!", "", ";; This language is Fennel, it's quite similar to Clojure.", ";; Conjure is written in Fennel, it's compiled to Lua and executed inside Neovim itself.", ";; This means we can work with a Lisp without installing or running anything else.", "", ";; Note: Some colorschemes will make the HUD unreadable, see here for more: https://git.io/JJ1Hl", "", ";; Let's learn how to evaluate it using Conjure's assortment of mappings.", ";; You can learn how to change these mappings with :help conjure-mappings", "", (";; Let's begin by evaluating the whole buffer using " .. map_str("eval_buf"))}, _3_, {"(school.lesson-1)"}))
     end
     v_0_0 = start0
     _0_0["start"] = v_0_0
     v_0_ = v_0_0
   end
-  _0_0["aniseed/locals"]["start"] = v_0_
+  local t_0_ = _0_0["aniseed/locals"]
+  t_0_["start"] = v_0_
   start = v_0_
 end
 local lesson_1 = nil
@@ -141,7 +147,8 @@ do
     _0_0["lesson-1"] = v_0_0
     v_0_ = v_0_0
   end
-  _0_0["aniseed/locals"]["lesson-1"] = v_0_
+  local t_0_ = _0_0["aniseed/locals"]
+  t_0_["lesson-1"] = v_0_
   lesson_1 = v_0_
 end
 local lesson_2 = nil
@@ -157,7 +164,8 @@ do
     _0_0["lesson-2"] = v_0_0
     v_0_ = v_0_0
   end
-  _0_0["aniseed/locals"]["lesson-2"] = v_0_
+  local t_0_ = _0_0["aniseed/locals"]
+  t_0_["lesson-2"] = v_0_
   lesson_2 = v_0_
 end
 local lesson_3 = nil
@@ -173,7 +181,8 @@ do
     _0_0["lesson-3"] = v_0_0
     v_0_ = v_0_0
   end
-  _0_0["aniseed/locals"]["lesson-3"] = v_0_
+  local t_0_ = _0_0["aniseed/locals"]
+  t_0_["lesson-3"] = v_0_
   lesson_3 = v_0_
 end
 local lesson_4 = nil
@@ -189,7 +198,8 @@ do
     _0_0["lesson-4"] = v_0_0
     v_0_ = v_0_0
   end
-  _0_0["aniseed/locals"]["lesson-4"] = v_0_
+  local t_0_ = _0_0["aniseed/locals"]
+  t_0_["lesson-4"] = v_0_
   lesson_4 = v_0_
 end
 local lesson_5_message = nil
@@ -200,7 +210,8 @@ do
     _0_0["lesson-5-message"] = v_0_0
     v_0_ = v_0_0
   end
-  _0_0["aniseed/locals"]["lesson-5-message"] = v_0_
+  local t_0_ = _0_0["aniseed/locals"]
+  t_0_["lesson-5-message"] = v_0_
   lesson_5_message = v_0_
 end
 local lesson_5 = nil
@@ -216,7 +227,8 @@ do
     _0_0["lesson-5"] = v_0_0
     v_0_ = v_0_0
   end
-  _0_0["aniseed/locals"]["lesson-5"] = v_0_
+  local t_0_ = _0_0["aniseed/locals"]
+  t_0_["lesson-5"] = v_0_
   lesson_5 = v_0_
 end
 local lesson_6_message = nil
@@ -227,7 +239,8 @@ do
     _0_0["lesson-6-message"] = v_0_0
     v_0_ = v_0_0
   end
-  _0_0["aniseed/locals"]["lesson-6-message"] = v_0_
+  local t_0_ = _0_0["aniseed/locals"]
+  t_0_["lesson-6-message"] = v_0_
   lesson_6_message = v_0_
 end
 local lesson_6 = nil
@@ -243,7 +256,8 @@ do
     _0_0["lesson-6"] = v_0_0
     v_0_ = v_0_0
   end
-  _0_0["aniseed/locals"]["lesson-6"] = v_0_
+  local t_0_ = _0_0["aniseed/locals"]
+  t_0_["lesson-6"] = v_0_
   lesson_6 = v_0_
 end
 local lesson_7 = nil
@@ -259,7 +273,8 @@ do
     _0_0["lesson-7"] = v_0_0
     v_0_ = v_0_0
   end
-  _0_0["aniseed/locals"]["lesson-7"] = v_0_
+  local t_0_ = _0_0["aniseed/locals"]
+  t_0_["lesson-7"] = v_0_
   lesson_7 = v_0_
 end
 return nil

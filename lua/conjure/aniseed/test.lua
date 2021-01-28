@@ -9,8 +9,8 @@ do
     module_0_ = {}
   end
   module_0_["aniseed/module"] = name_0_
-  module_0_["aniseed/locals"] = (module_0_["aniseed/locals"] or {})
-  module_0_["aniseed/local-fns"] = (module_0_["aniseed/local-fns"] or {})
+  module_0_["aniseed/locals"] = ((module_0_)["aniseed/locals"] or {})
+  module_0_["aniseed/local-fns"] = ((module_0_)["aniseed/local-fns"] or {})
   package.loaded[name_0_] = module_0_
   _0_0 = module_0_
 end
@@ -49,7 +49,8 @@ do
     _0_0["ok?"] = v_0_0
     v_0_ = v_0_0
   end
-  _0_0["aniseed/locals"]["ok?"] = v_0_
+  local t_0_ = (_0_0)["aniseed/locals"]
+  t_0_["ok?"] = v_0_
   ok_3f = v_0_
 end
 local display_results = nil
@@ -78,7 +79,8 @@ do
     _0_0["display-results"] = v_0_0
     v_0_ = v_0_0
   end
-  _0_0["aniseed/locals"]["display-results"] = v_0_
+  local t_0_ = (_0_0)["aniseed/locals"]
+  t_0_["display-results"] = v_0_
   display_results = v_0_
 end
 local run = nil
@@ -168,7 +170,8 @@ do
     _0_0["run"] = v_0_0
     v_0_ = v_0_0
   end
-  _0_0["aniseed/locals"]["run"] = v_0_
+  local t_0_ = (_0_0)["aniseed/locals"]
+  t_0_["run"] = v_0_
   run = v_0_
 end
 local run_all = nil
@@ -189,7 +192,8 @@ do
     _0_0["run-all"] = v_0_0
     v_0_ = v_0_0
   end
-  _0_0["aniseed/locals"]["run-all"] = v_0_
+  local t_0_ = (_0_0)["aniseed/locals"]
+  t_0_["run-all"] = v_0_
   run_all = v_0_
 end
 local suite = nil
@@ -212,7 +216,8 @@ do
     _0_0["suite"] = v_0_0
     v_0_ = v_0_0
   end
-  _0_0["aniseed/locals"]["suite"] = v_0_
+  local t_0_ = (_0_0)["aniseed/locals"]
+  t_0_["suite"] = v_0_
   suite = v_0_
 end
 return nil

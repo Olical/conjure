@@ -9,8 +9,8 @@ do
     module_0_ = {}
   end
   module_0_["aniseed/module"] = name_0_
-  module_0_["aniseed/locals"] = (module_0_["aniseed/locals"] or {})
-  module_0_["aniseed/local-fns"] = (module_0_["aniseed/local-fns"] or {})
+  module_0_["aniseed/locals"] = ((module_0_)["aniseed/locals"] or {})
+  module_0_["aniseed/local-fns"] = ((module_0_)["aniseed/local-fns"] or {})
   package.loaded[name_0_] = module_0_
   _0_0 = module_0_
 end
@@ -74,7 +74,8 @@ do
     _0_0["join"] = v_0_0
     v_0_ = v_0_0
   end
-  _0_0["aniseed/locals"]["join"] = v_0_
+  local t_0_ = (_0_0)["aniseed/locals"]
+  t_0_["join"] = v_0_
   join = v_0_
 end
 local split = nil
@@ -102,7 +103,8 @@ do
     _0_0["split"] = v_0_0
     v_0_ = v_0_0
   end
-  _0_0["aniseed/locals"]["split"] = v_0_
+  local t_0_ = (_0_0)["aniseed/locals"]
+  t_0_["split"] = v_0_
   split = v_0_
 end
 local blank_3f = nil
@@ -117,7 +119,8 @@ do
     _0_0["blank?"] = v_0_0
     v_0_ = v_0_0
   end
-  _0_0["aniseed/locals"]["blank?"] = v_0_
+  local t_0_ = (_0_0)["aniseed/locals"]
+  t_0_["blank?"] = v_0_
   blank_3f = v_0_
 end
 local triml = nil
@@ -132,7 +135,8 @@ do
     _0_0["triml"] = v_0_0
     v_0_ = v_0_0
   end
-  _0_0["aniseed/locals"]["triml"] = v_0_
+  local t_0_ = (_0_0)["aniseed/locals"]
+  t_0_["triml"] = v_0_
   triml = v_0_
 end
 local trimr = nil
@@ -147,7 +151,8 @@ do
     _0_0["trimr"] = v_0_0
     v_0_ = v_0_0
   end
-  _0_0["aniseed/locals"]["trimr"] = v_0_
+  local t_0_ = (_0_0)["aniseed/locals"]
+  t_0_["trimr"] = v_0_
   trimr = v_0_
 end
 local trim = nil
@@ -162,7 +167,8 @@ do
     _0_0["trim"] = v_0_0
     v_0_ = v_0_0
   end
-  _0_0["aniseed/locals"]["trim"] = v_0_
+  local t_0_ = (_0_0)["aniseed/locals"]
+  t_0_["trim"] = v_0_
   trim = v_0_
 end
 return nil

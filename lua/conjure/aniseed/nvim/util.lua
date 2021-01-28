@@ -9,8 +9,8 @@ do
     module_0_ = {}
   end
   module_0_["aniseed/module"] = name_0_
-  module_0_["aniseed/locals"] = (module_0_["aniseed/locals"] or {})
-  module_0_["aniseed/local-fns"] = (module_0_["aniseed/local-fns"] or {})
+  module_0_["aniseed/locals"] = ((module_0_)["aniseed/locals"] or {})
+  module_0_["aniseed/local-fns"] = ((module_0_)["aniseed/local-fns"] or {})
   package.loaded[name_0_] = module_0_
   _0_0 = module_0_
 end
@@ -44,7 +44,8 @@ do
     _0_0["normal"] = v_0_0
     v_0_ = v_0_0
   end
-  _0_0["aniseed/locals"]["normal"] = v_0_
+  local t_0_ = (_0_0)["aniseed/locals"]
+  t_0_["normal"] = v_0_
   normal = v_0_
 end
 local fn_bridge = nil
@@ -80,7 +81,8 @@ do
     _0_0["fn-bridge"] = v_0_0
     v_0_ = v_0_0
   end
-  _0_0["aniseed/locals"]["fn-bridge"] = v_0_
+  local t_0_ = (_0_0)["aniseed/locals"]
+  t_0_["fn-bridge"] = v_0_
   fn_bridge = v_0_
 end
 local with_out_str = nil
@@ -105,7 +107,8 @@ do
     _0_0["with-out-str"] = v_0_0
     v_0_ = v_0_0
   end
-  _0_0["aniseed/locals"]["with-out-str"] = v_0_
+  local t_0_ = (_0_0)["aniseed/locals"]
+  t_0_["with-out-str"] = v_0_
   with_out_str = v_0_
 end
 return nil

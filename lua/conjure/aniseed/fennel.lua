@@ -9,8 +9,8 @@ do
     module_0_ = require("conjure.aniseed.deps.fennel")
   end
   module_0_["aniseed/module"] = name_0_
-  module_0_["aniseed/locals"] = (module_0_["aniseed/locals"] or {})
-  module_0_["aniseed/local-fns"] = (module_0_["aniseed/local-fns"] or {})
+  module_0_["aniseed/locals"] = ((module_0_)["aniseed/locals"] or {})
+  module_0_["aniseed/local-fns"] = ((module_0_)["aniseed/local-fns"] or {})
   package.loaded[name_0_] = module_0_
   _0_0 = module_0_
 end
@@ -46,7 +46,8 @@ do
     _0_0["add-path"] = v_0_0
     v_0_ = v_0_0
   end
-  _0_0["aniseed/locals"]["add-path"] = v_0_
+  local t_0_ = (_0_0)["aniseed/locals"]
+  t_0_["add-path"] = v_0_
   add_path = v_0_
 end
 local sync_rtp = nil
@@ -66,7 +67,8 @@ do
     _0_0["sync-rtp"] = v_0_0
     v_0_ = v_0_0
   end
-  _0_0["aniseed/locals"]["sync-rtp"] = v_0_
+  local t_0_ = (_0_0)["aniseed/locals"]
+  t_0_["sync-rtp"] = v_0_
   sync_rtp = v_0_
 end
 return sync_rtp()

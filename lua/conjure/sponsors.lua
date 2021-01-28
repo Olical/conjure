@@ -1,1 +1,1 @@
-return {"aleksandersumowski", "Aljendro", "anthony-khong", "BerkeleyTrue", "campbellr", "dharrigan", "djblue", "frenchy64", "jkrasnay", "mamapitufo", "martinklepsch", "penryu", "pyrmont", "rafaeldelboni", "rgm", "thiru", "victorb", "zhming0"}
+return {"aleksandersumowski", "Aljendro", "anthony-khong", "BerkeleyTrue", "campbellr", "dharrigan", "frenchy64", "jkrasnay", "mamapitufo", "martinklepsch", "penryu", "pyrmont", "rafaeldelboni", "rgm", "thiru", "victorb", "zhming0"}

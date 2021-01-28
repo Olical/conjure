@@ -9,8 +9,8 @@ do
     module_0_ = {}
   end
   module_0_["aniseed/module"] = name_0_
-  module_0_["aniseed/locals"] = (module_0_["aniseed/locals"] or {})
-  module_0_["aniseed/local-fns"] = (module_0_["aniseed/local-fns"] or {})
+  module_0_["aniseed/locals"] = ((module_0_)["aniseed/locals"] or {})
+  module_0_["aniseed/local-fns"] = ((module_0_)["aniseed/local-fns"] or {})
   package.loaded[name_0_] = module_0_
   _0_0 = module_0_
 end
@@ -44,7 +44,8 @@ do
     _0_0["basename"] = v_0_0
     v_0_ = v_0_0
   end
-  _0_0["aniseed/locals"]["basename"] = v_0_
+  local t_0_ = (_0_0)["aniseed/locals"]
+  t_0_["basename"] = v_0_
   basename = v_0_
 end
 local mkdirp = nil
@@ -59,7 +60,8 @@ do
     _0_0["mkdirp"] = v_0_0
     v_0_ = v_0_0
   end
-  _0_0["aniseed/locals"]["mkdirp"] = v_0_
+  local t_0_ = (_0_0)["aniseed/locals"]
+  t_0_["mkdirp"] = v_0_
   mkdirp = v_0_
 end
 return nil

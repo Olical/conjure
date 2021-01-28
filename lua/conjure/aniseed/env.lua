@@ -9,8 +9,8 @@ do
     module_0_ = {}
   end
   module_0_["aniseed/module"] = name_0_
-  module_0_["aniseed/locals"] = (module_0_["aniseed/locals"] or {})
-  module_0_["aniseed/local-fns"] = (module_0_["aniseed/local-fns"] or {})
+  module_0_["aniseed/locals"] = ((module_0_)["aniseed/locals"] or {})
+  module_0_["aniseed/local-fns"] = ((module_0_)["aniseed/local-fns"] or {})
   package.loaded[name_0_] = module_0_
   _0_0 = module_0_
 end
@@ -34,13 +34,15 @@ do local _ = ({nil, _0_0, {{}, nil, nil, nil}})[2] end
 local config_dir = nil
 do
   local v_0_ = vim.api.nvim_call_function("stdpath", {"config"})
-  _0_0["aniseed/locals"]["config-dir"] = v_0_
+  local t_0_ = (_0_0)["aniseed/locals"]
+  t_0_["config-dir"] = v_0_
   config_dir = v_0_
 end
 local state = nil
 do
-  local v_0_ = (_0_0["aniseed/locals"].state or {["path-added?"] = false})
-  _0_0["aniseed/locals"]["state"] = v_0_
+  local v_0_ = (((_0_0)["aniseed/locals"]).state or {["path-added?"] = false})
+  local t_0_ = (_0_0)["aniseed/locals"]
+  t_0_["state"] = v_0_
   state = v_0_
 end
 local init = nil
@@ -65,7 +67,8 @@ do
     _0_0["init"] = v_0_0
     v_0_ = v_0_0
   end
-  _0_0["aniseed/locals"]["init"] = v_0_
+  local t_0_ = (_0_0)["aniseed/locals"]
+  t_0_["init"] = v_0_
   init = v_0_
 end
 return nil

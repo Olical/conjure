@@ -14,12 +14,12 @@ do
   package.loaded[name_0_] = module_0_
   _0_0 = module_0_
 end
-local function _2_(...)
+local function _1_(...)
   local ok_3f_0_, val_0_ = nil, nil
-  local function _2_()
+  local function _1_()
     return {require("conjure.aniseed.core"), require("bit"), require("conjure.aniseed.string")}
   end
-  ok_3f_0_, val_0_ = pcall(_2_)
+  ok_3f_0_, val_0_ = pcall(_1_)
   if ok_3f_0_ then
     _0_0["aniseed/local-fns"] = {require = {a = "conjure.aniseed.core", bit = "bit", str = "conjure.aniseed.string"}}
     return val_0_
@@ -27,10 +27,10 @@ local function _2_(...)
     return print(val_0_)
   end
 end
-local _1_ = _2_(...)
-local a = _1_[1]
-local bit = _1_[2]
-local str = _1_[3]
+local _local_0_ = _1_(...)
+local a = _local_0_[1]
+local bit = _local_0_[2]
+local str = _local_0_[3]
 local _2amodule_2a = _0_0
 local _2amodule_name_2a = "conjure.remote.transport.netrepl"
 do local _ = ({nil, _0_0, {{}, nil, nil, nil}})[2] end
@@ -47,7 +47,8 @@ do
     _0_0["encode"] = v_0_0
     v_0_ = v_0_0
   end
-  _0_0["aniseed/locals"]["encode"] = v_0_
+  local t_0_ = _0_0["aniseed/locals"]
+  t_0_["encode"] = v_0_
   encode = v_0_
 end
 local split = nil
@@ -58,7 +59,8 @@ do
     return bit.bor(bit.band(b0, 255), bit.lshift(bit.band(b1, 255), 8), bit.lshift(bit.band(b2, 255), 16), bit.lshift(bit.band(b3, 255), 24)), string.sub(chunk, 5)
   end
   v_0_ = split0
-  _0_0["aniseed/locals"]["split"] = v_0_
+  local t_0_ = _0_0["aniseed/locals"]
+  t_0_["split"] = v_0_
   split = v_0_
 end
 local decoder = nil
@@ -106,7 +108,8 @@ do
     _0_0["decoder"] = v_0_0
     v_0_ = v_0_0
   end
-  _0_0["aniseed/locals"]["decoder"] = v_0_
+  local t_0_ = _0_0["aniseed/locals"]
+  t_0_["decoder"] = v_0_
   decoder = v_0_
 end
 return nil
