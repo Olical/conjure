@@ -271,6 +271,14 @@ defined as you enter a buffer and can't be altered after the fact.
             Example: `(+ 10 20) => 30`
             Default: `true`
 
+`g:conjure#eval#comment_prefix`
+            The comment prefix to use for "eval and insert result as comment"
+            mappings. Defaults to whatever comment character (normally
+            singular) the language uses, such as `"; "`, if you would like two
+            character comments, you can set this to `";; "` (note the trailing
+            space!).
+            Default: `nil` (whatever comment character the language uses)
+
 `g:conjure#mapping#prefix`
             The key that proceeds most mappings.
             Default: `"<localleader>"`

@@ -318,7 +318,7 @@ do
   local v_0_ = nil
   local function insert_result_comment0(tag, input)
     local buf = nvim.win_get_buf(0)
-    local comment_prefix = client.get("comment-prefix")
+    local comment_prefix = (config["get-in"]({"eval", "comment_prefix"}) or client.get("comment-prefix"))
     if input then
       local _let_0_ = input
       local content = _let_0_["content"]

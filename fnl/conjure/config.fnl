@@ -59,7 +59,8 @@
 
    :eval
    {:result_register "c"
-    :inline_results true}
+    :inline_results true
+    :comment_prefix nil}
 
    :mapping
    {:prefix "<localleader>"

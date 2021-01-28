@@ -144,7 +144,9 @@
 
 (defn- insert-result-comment [tag input]
   (let [buf (nvim.win_get_buf 0)
-        comment-prefix (client.get :comment-prefix)]
+        comment-prefix (or
+                         (config.get-in [:eval :comment_prefix])
+                         (client.get :comment-prefix))]
     (when input
       (let [{: content : range} input]
         (eval-str
