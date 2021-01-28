@@ -63,18 +63,25 @@
 
    :mapping
    {:prefix "<localleader>"
+
     :log_split "ls"
     :log_vsplit "lv"
     :log_tab "lt"
     :log_close_visible "lq"
     :log_reset_soft "lr"
     :log_reset_hard "lR"
+
     :eval_current_form "ee"
+    :eval_comment_current_form "ece"
+
     :eval_root_form "er"
-    :eval_replace_form "e!"
-    :eval_comment_form "ec"
-    :eval_marked_form "em"
+    :eval_comment_root_form "ecr"
+
     :eval_word "ew"
+    :eval_comment_word "ecw"
+
+    :eval_replace_form "e!"
+    :eval_marked_form "em"
     :eval_file "ef"
     :eval_buf "eb"
     :eval_visual "E"

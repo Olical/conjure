@@ -109,11 +109,26 @@ I've also included some commands since they're related to the mappings.
                          strings). `g:conjure#extract#form_pairs` controls the
                          character pairs.
 
+<localleader>ece         Evaluates the form under the cursor and displays the
+                         result as a comment at the end of the line or below
+                         the current line if you already have a comment there.
+
 <localleader>er          Evaluate the root form under the cursor. This is the
                          outermost pair. Great for evaluating a function
                          you're editing if your cursor is within a few nested
                          forms. `g:conjure#extract#form_pairs` controls the
                          character pairs.
+
+<localleader>ecr         Evaluates the root form under the cursor and displays the
+                         result as a comment at the end of the line or below
+                         the current line if you already have a comment there.
+
+<localleader>ew          Evaluate the word under the cursor, good for peeking
+                         inside vars defined in your file.
+
+<localleader>ecw         Evaluates the word under the cursor and displays the
+                         result as a comment at the end of the line or below
+                         the current line if you already have a comment there.
 
 <localleader>e!          Evaluate the form under the cursor and replace it
                          with the result of the evaluation. Using this on the
@@ -124,13 +139,6 @@ I've also included some commands since they're related to the mappings.
                          `mF` for example in any file, then jump to another
                          file. You can evaluate that form at any time with
                          `<localleader>emF`.
-
-<localleader>ec          Evaluates the form under the cursor and displays the
-                         result as a comment at the end of the line or below
-                         the current line if you already have a comment there.
-
-<localleader>ew          Evaluate the word under the cursor, good for peeking
-                         inside vars defined in your file.
 
 <localleader>ef          Evaluate the current file from disk. This may be
                          different to what's currently in your buffer if you
@@ -295,9 +303,28 @@ defined as you enter a buffer and can't be altered after the fact.
             Evaluates the form under the cursor.
             Default: `"ee"`
 
+`g:conjure#mapping#eval_comment_current_form`
+            Evaluates the form under the cursor and inserts the result as a
+            comment.
+            Default: `"ece"`
+
 `g:conjure#mapping#eval_root_form`
             Evaluates the root form under the cursor.
             Default: `"er"`
+
+`g:conjure#mapping#eval_comment_root_form`
+            Evaluates the root form under the cursor and inserts the result as
+            a comment.
+            Default: `"ecr"`
+
+`g:conjure#mapping#eval_word`
+            Evaluates the word under the cursor.
+            Default: `"ew"`
+
+`g:conjure#mapping#eval_comment_word`
+            Evaluates the word under the cursor and inserts the result as a
+            comment.
+            Default: `"ecw"`
 
 `g:conjure#mapping#eval_replace_form`
             Evaluates the form under the cursor and replace with the result.
@@ -311,10 +338,6 @@ defined as you enter a buffer and can't be altered after the fact.
             Evaluates the form under the cursor and displays the result as a
             comment at the end of the current line or below the current line.
             Default: `"ec"`
-
-`g:conjure#mapping#eval_word`
-            Evaluates the word under the cursor.
-            Default: `"ew"`
 
 `g:conjure#mapping#eval_file`
             Evaluates the file from disk.

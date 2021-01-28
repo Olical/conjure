@@ -142,16 +142,15 @@
                    (.. comment-prefix err)]
                   {:break? true}))))
 
-(defn comment-form [mark]
+(defn- insert-result-comment [tag input]
   (let [buf (nvim.win_get_buf 0)
-        form (extract.form {})
         comment-prefix (client.get :comment-prefix)]
-    (when form
-      (let [{: content : range} form]
+    (when input
+      (let [{: content : range} input]
         (eval-str
           {:code content
            :range range
-           :origin :comment-form
+           :origin (.. :comment- tag)
            :suppress-hud? true
            :on-result
            (fn [result]
@@ -160,7 +159,16 @@
                (. range :end)
                comment-prefix
                result))})
-        form))))
+        input))))
+
+(defn comment-current-form []
+  (insert-result-comment :current-form (extract.form {})))
+
+(defn comment-root-form []
+  (insert-result-comment :root-form (extract.form {:root? true})))
+
+(defn comment-word []
+  (insert-result-comment :word (extract.word)))
 
 (defn word []
   (let [{: content : range} (extract.word)]

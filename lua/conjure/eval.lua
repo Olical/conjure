@@ -313,33 +313,75 @@ do
   t_0_["marked-form"] = v_0_
   marked_form = v_0_
 end
-local comment_form = nil
+local insert_result_comment = nil
+do
+  local v_0_ = nil
+  local function insert_result_comment0(tag, input)
+    local buf = nvim.win_get_buf(0)
+    local comment_prefix = client.get("comment-prefix")
+    if input then
+      local _let_0_ = input
+      local content = _let_0_["content"]
+      local range = _let_0_["range"]
+      local function _2_(result)
+        return buffer["append-prefixed-line"](buf, range["end"], comment_prefix, result)
+      end
+      eval_str({["on-result"] = _2_, ["suppress-hud?"] = true, code = content, origin = ("comment-" .. tag), range = range})
+      return input
+    end
+  end
+  v_0_ = insert_result_comment0
+  local t_0_ = _0_0["aniseed/locals"]
+  t_0_["insert-result-comment"] = v_0_
+  insert_result_comment = v_0_
+end
+local comment_current_form = nil
 do
   local v_0_ = nil
   do
     local v_0_0 = nil
-    local function comment_form0(mark)
-      local buf = nvim.win_get_buf(0)
-      local form = extract.form({})
-      local comment_prefix = client.get("comment-prefix")
-      if form then
-        local _let_0_ = form
-        local content = _let_0_["content"]
-        local range = _let_0_["range"]
-        local function _2_(result)
-          return buffer["append-prefixed-line"](buf, range["end"], comment_prefix, result)
-        end
-        eval_str({["on-result"] = _2_, ["suppress-hud?"] = true, code = content, origin = "comment-form", range = range})
-        return form
-      end
+    local function comment_current_form0()
+      return insert_result_comment("current-form", extract.form({}))
     end
-    v_0_0 = comment_form0
-    _0_0["comment-form"] = v_0_0
+    v_0_0 = comment_current_form0
+    _0_0["comment-current-form"] = v_0_0
     v_0_ = v_0_0
   end
   local t_0_ = _0_0["aniseed/locals"]
-  t_0_["comment-form"] = v_0_
-  comment_form = v_0_
+  t_0_["comment-current-form"] = v_0_
+  comment_current_form = v_0_
+end
+local comment_root_form = nil
+do
+  local v_0_ = nil
+  do
+    local v_0_0 = nil
+    local function comment_root_form0()
+      return insert_result_comment("root-form", extract.form({["root?"] = true}))
+    end
+    v_0_0 = comment_root_form0
+    _0_0["comment-root-form"] = v_0_0
+    v_0_ = v_0_0
+  end
+  local t_0_ = _0_0["aniseed/locals"]
+  t_0_["comment-root-form"] = v_0_
+  comment_root_form = v_0_
+end
+local comment_word = nil
+do
+  local v_0_ = nil
+  do
+    local v_0_0 = nil
+    local function comment_word0()
+      return insert_result_comment("word", extract.word())
+    end
+    v_0_0 = comment_word0
+    _0_0["comment-word"] = v_0_0
+    v_0_ = v_0_0
+  end
+  local t_0_ = _0_0["aniseed/locals"]
+  t_0_["comment-word"] = v_0_
+  comment_word = v_0_
 end
 local word = nil
 do
