@@ -408,7 +408,9 @@
        (a.some
          (fn [part]
            (if
-             (text.ends-with part "deftest")
+             (a.some (fn [config-current-form-name]
+                       (text.ends-with part config-current-form-name))
+                     (cfg [:test :current_form_names]))
              (do (set seen-deftest? true) false)
 
              (text.starts-with part "^")

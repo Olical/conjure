@@ -37,6 +37,9 @@
        :before nil
        :dirs nil}
 
+      :test
+      {:current_form_names ["deftest"]}
+
       :mapping
       {:disconnect "cd"
        :connect_port_file "cf"
