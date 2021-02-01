@@ -879,7 +879,10 @@ do
     local function extract_test_name_from_form0(form)
       local seen_deftest_3f = false
       local function _2_(part)
-        if text["ends-with"](part, "deftest") then
+        local function _3_(config_current_form_name)
+          return text["ends-with"](part, config_current_form_name)
+        end
+        if a.some(_3_, cfg({"test", "current_form_names"})) then
           seen_deftest_3f = true
           return false
         elseif text["starts-with"](part, "^") then

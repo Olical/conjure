@@ -203,6 +203,11 @@ All configuration can be set as described in |conjure-configuration|.
             all directories on the classpath.
             Default: `nil`
 
+`g:conjure#client#clojure#nrepl#test#current_form_names`
+            List of keywords that are used to decide if the
+            current root form is a test that should be ran.
+            Default: `["deftest"]`
+
 `g:conjure#client#clojure#nrepl#mapping#disconnect`
             Disconnect from the current nREPL server.
             Default: `cd`
