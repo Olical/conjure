@@ -14,12 +14,12 @@ do
   package.loaded[name_0_] = module_0_
   _0_0 = module_0_
 end
-local function _1_(...)
+local function _2_(...)
   local ok_3f_0_, val_0_ = nil, nil
-  local function _1_()
+  local function _2_()
     return {require("conjure.aniseed.core")}
   end
-  ok_3f_0_, val_0_ = pcall(_1_)
+  ok_3f_0_, val_0_ = pcall(_2_)
   if ok_3f_0_ then
     _0_0["aniseed/local-fns"] = {require = {a = "conjure.aniseed.core"}}
     return val_0_
@@ -27,8 +27,8 @@ local function _1_(...)
     return print(val_0_)
   end
 end
-local _local_0_ = _1_(...)
-local a = _local_0_[1]
+local _1_ = _2_(...)
+local a = _1_[1]
 local _2amodule_2a = _0_0
 local _2amodule_name_2a = "conjure.uuid"
 do local _ = ({nil, _0_0, {{}, nil, nil, nil}})[2] end
@@ -38,10 +38,10 @@ do
   do
     local v_0_0 = nil
     local function v40()
-      local function _2_(_241)
+      local function _3_(_241)
         return string.format("%x", (((_241 == "x") and math.random(0, 15)) or math.random(8, 11)))
       end
-      return string.gsub("xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx", "[xy]", _2_)
+      return string.gsub("xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx", "[xy]", _3_)
     end
     v_0_0 = v40
     _0_0["v4"] = v_0_0

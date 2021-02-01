@@ -14,12 +14,12 @@ do
   package.loaded[name_0_] = module_0_
   _0_0 = module_0_
 end
-local function _1_(...)
+local function _2_(...)
   local ok_3f_0_, val_0_ = nil, nil
-  local function _1_()
+  local function _2_()
     return {require("conjure.aniseed.core"), require("conjure.buffer"), require("conjure.client"), require("conjure.config"), require("conjure.editor"), require("conjure.aniseed.nvim"), require("conjure.sponsors"), require("conjure.aniseed.string"), require("conjure.text"), require("conjure.timer"), require("conjure.aniseed.view")}
   end
-  ok_3f_0_, val_0_ = pcall(_1_)
+  ok_3f_0_, val_0_ = pcall(_2_)
   if ok_3f_0_ then
     _0_0["aniseed/local-fns"] = {require = {a = "conjure.aniseed.core", buffer = "conjure.buffer", client = "conjure.client", config = "conjure.config", editor = "conjure.editor", nvim = "conjure.aniseed.nvim", sponsors = "conjure.sponsors", str = "conjure.aniseed.string", text = "conjure.text", timer = "conjure.timer", view = "conjure.aniseed.view"}}
     return val_0_
@@ -27,18 +27,18 @@ local function _1_(...)
     return print(val_0_)
   end
 end
-local _local_0_ = _1_(...)
-local a = _local_0_[1]
-local timer = _local_0_[10]
-local view = _local_0_[11]
-local buffer = _local_0_[2]
-local client = _local_0_[3]
-local config = _local_0_[4]
-local editor = _local_0_[5]
-local nvim = _local_0_[6]
-local sponsors = _local_0_[7]
-local str = _local_0_[8]
-local text = _local_0_[9]
+local _1_ = _2_(...)
+local a = _1_[1]
+local timer = _1_[10]
+local view = _1_[11]
+local buffer = _1_[2]
+local client = _1_[3]
+local config = _1_[4]
+local editor = _1_[5]
+local nvim = _1_[6]
+local sponsors = _1_[7]
+local str = _1_[8]
+local text = _1_[9]
 local _2amodule_2a = _0_0
 local _2amodule_name_2a = "conjure.log"
 do local _ = ({nil, _0_0, {{}, nil, nil, nil}})[2] end
@@ -188,13 +188,13 @@ do
   local v_0_ = nil
   local function break_lines0(buf)
     local break_str = _break()
-    local function _2_(_3_0)
-      local _arg_0_ = _3_0
-      local n = _arg_0_[1]
-      local s = _arg_0_[2]
+    local function _3_(_4_0)
+      local _5_ = _4_0
+      local n = _5_[1]
+      local s = _5_[2]
       return (s == break_str)
     end
-    return a.map(a.first, a.filter(_2_, a["kv-pairs"](nvim.buf_get_lines(buf, 0, -1, false))))
+    return a.map(a.first, a.filter(_3_, a["kv-pairs"](nvim.buf_get_lines(buf, 0, -1, false))))
   end
   v_0_ = break_lines0
   local t_0_ = _0_0["aniseed/locals"]
@@ -205,14 +205,14 @@ local set_win_opts_21 = nil
 do
   local v_0_ = nil
   local function set_win_opts_210(win)
-    local function _2_()
+    local function _3_()
       if config["get-in"]({"log", "wrap"}) then
         return true
       else
         return false
       end
     end
-    nvim.win_set_option(win, "wrap", _2_())
+    nvim.win_set_option(win, "wrap", _3_())
     nvim.win_set_option(win, "foldmethod", "marker")
     nvim.win_set_option(win, "foldmarker", (config["get-in"]({"log", "fold", "marker", "start"}) .. "," .. config["get-in"]({"log", "fold", "marker", "end"})))
     return nvim.win_set_option(win, "foldlevel", 0)
@@ -233,13 +233,13 @@ do
       local last_break = a.last(break_lines(buf))
       local line_count = nvim.buf_line_count(buf)
       local win_opts = nil
-      local _2_
+      local _3_
       if cursor_top_right_3f then
-        _2_ = (editor.height() - 2)
+        _3_ = (editor.height() - 2)
       else
-        _2_ = 0
+        _3_ = 0
       end
-      win_opts = {anchor = "SE", col = editor.width(), focusable = false, height = editor["percent-height"](config["get-in"]({"log", "hud", "height"})), relative = "editor", row = _2_, style = "minimal", width = editor["percent-width"](config["get-in"]({"log", "hud", "width"}))}
+      win_opts = {anchor = "SE", col = editor.width(), focusable = false, height = editor["percent-height"](config["get-in"]({"log", "hud", "height"})), relative = "editor", row = _3_, style = "minimal", width = editor["percent-width"](config["get-in"]({"log", "hud", "width"}))}
       if not nvim.win_is_valid(state.hud.id) then
         close_hud()
       end
@@ -277,12 +277,12 @@ local with_buf_wins = nil
 do
   local v_0_ = nil
   local function with_buf_wins0(buf, f)
-    local function _2_(win)
+    local function _3_(win)
       if (buf == nvim.win_get_buf(win)) then
         return f(win)
       end
     end
-    return a["run!"](_2_, nvim.list_wins())
+    return a["run!"](_3_, nvim.list_wins())
   end
   v_0_ = with_buf_wins0
   local t_0_ = _0_0["aniseed/locals"]
@@ -308,23 +308,23 @@ do
     if (line_count > config["get-in"]({"log", "trim", "at"})) then
       local target_line_count = (line_count - config["get-in"]({"log", "trim", "to"}))
       local break_line = nil
-      local function _2_(line)
+      local function _3_(line)
         if (line >= target_line_count) then
           return line
         end
       end
-      break_line = a.some(_2_, break_lines(buf))
+      break_line = a.some(_3_, break_lines(buf))
       if break_line then
         nvim.buf_set_lines(buf, 0, break_line, false, {})
         local line_count0 = nvim.buf_line_count(buf)
-        local function _3_(win)
-          local _let_0_ = nvim.win_get_cursor(win)
-          local row = _let_0_[1]
-          local col = _let_0_[2]
+        local function _4_(win)
+          local _5_ = nvim.win_get_cursor(win)
+          local row = _5_[1]
+          local col = _5_[2]
           nvim.win_set_cursor(win, {1, 0})
           return nvim.win_set_cursor(win, {row, col})
         end
-        return with_buf_wins(buf, _3_)
+        return with_buf_wins(buf, _4_)
       end
     end
   end
@@ -361,10 +361,10 @@ do
         local buf = upsert_buf()
         local join_first_3f = a.get(opts, "join-first?")
         local lines0 = nil
-        local function _2_(s)
+        local function _3_(s)
           return s:gsub("\n", "\226\134\181")
         end
-        lines0 = a.map(_2_, lines)
+        lines0 = a.map(_3_, lines)
         local lines1 = nil
         if (line_count <= config["get-in"]({"log", "strip_ansi_escape_sequences_line_limit"})) then
           lines1 = a.map(text["strip-ansi-escape-sequences"], lines0)
@@ -382,53 +382,53 @@ do
         local last_fold_3f = (fold_marker_end == last_line(buf))
         local lines3 = nil
         if a.get(opts, "break?") then
-          local _5_
+          local _6_
           if client["multiple-states?"]() then
-            _5_ = {state_key_header()}
+            _6_ = {state_key_header()}
           else
-          _5_ = nil
+          _6_ = nil
           end
-          lines3 = a.concat({_break()}, _5_, lines2)
+          lines3 = a.concat({_break()}, _6_, lines2)
         elseif join_first_3f then
-          local _5_
+          local _6_
           if last_fold_3f then
-            _5_ = {(last_line(buf, -1) .. a.first(lines2)), fold_marker_end}
+            _6_ = {(last_line(buf, -1) .. a.first(lines2)), fold_marker_end}
           else
-            _5_ = {(last_line(buf) .. a.first(lines2))}
+            _6_ = {(last_line(buf) .. a.first(lines2))}
           end
-          lines3 = a.concat(_5_, a.rest(lines2))
+          lines3 = a.concat(_6_, a.rest(lines2))
         else
           lines3 = lines2
         end
         local old_lines = nvim.buf_line_count(buf)
         do
           local ok_3f, err = nil, nil
-          local function _6_()
-            local _7_
+          local function _7_()
+            local _8_
             if buffer["empty?"](buf) then
-              _7_ = 0
+              _8_ = 0
             elseif join_first_3f then
               if last_fold_3f then
-                _7_ = -3
+                _8_ = -3
               else
-                _7_ = -2
+                _8_ = -2
               end
             else
-              _7_ = -1
+              _8_ = -1
             end
-            return nvim.buf_set_lines(buf, _7_, -1, false, lines3)
+            return nvim.buf_set_lines(buf, _8_, -1, false, lines3)
           end
-          ok_3f, err = pcall(_6_)
+          ok_3f, err = pcall(_7_)
           if not ok_3f then
             error(("Conjure failed to append to log: " .. err .. "\n" .. "Offending lines: " .. a["pr-str"](lines3)))
           end
         end
         do
           local new_lines = nvim.buf_line_count(buf)
-          local function _6_(win)
-            local _let_0_ = nvim.win_get_cursor(win)
-            local row = _let_0_[1]
-            local col = _let_0_[2]
+          local function _7_(win)
+            local _8_ = nvim.win_get_cursor(win)
+            local row = _8_[1]
+            local col = _8_[2]
             if ((win ~= state.hud.id) and win_visible_3f(win) and (win_botline(win) >= old_lines)) then
               visible_scrolling_log_3f = true
             end
@@ -436,7 +436,7 @@ do
               return nvim.win_set_cursor(win, {new_lines, 0})
             end
           end
-          with_buf_wins(buf, _6_)
+          with_buf_wins(buf, _7_)
         end
         if (not a.get(opts, "suppress-hud?") and not visible_scrolling_log_3f) then
           display_hud()
@@ -459,13 +459,13 @@ do
   local v_0_ = nil
   local function create_win0(cmd)
     local buf = upsert_buf()
-    local _2_
+    local _3_
     if config["get-in"]({"log", "botright"}) then
-      _2_ = "botright "
+      _3_ = "botright "
     else
-      _2_ = ""
+      _3_ = ""
     end
-    nvim.command(("keepalt " .. _2_ .. cmd .. " " .. buffer.resolve(log_buf_name())))
+    nvim.command(("keepalt " .. _3_ .. cmd .. " " .. buffer.resolve(log_buf_name())))
     nvim.win_set_cursor(0, {nvim.buf_line_count(buf), 0})
     set_win_opts_21(0)
     return buffer.unlist(buf)
@@ -531,13 +531,13 @@ do
     local function close_visible0()
       local buf = upsert_buf()
       close_hud()
-      local function _2_(_241)
+      local function _3_(_241)
         return nvim.win_close(_241, true)
       end
-      local function _3_(win)
+      local function _4_(win)
         return (buf == nvim.win_get_buf(win))
       end
-      return a["run!"](_2_, a.filter(_3_, nvim.tabpage_list_wins(0)))
+      return a["run!"](_3_, a.filter(_4_, nvim.tabpage_list_wins(0)))
     end
     v_0_0 = close_visible0
     _0_0["close-visible"] = v_0_0

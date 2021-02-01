@@ -14,12 +14,12 @@ do
   package.loaded[name_0_] = module_0_
   _0_0 = module_0_
 end
-local function _1_(...)
+local function _2_(...)
   local ok_3f_0_, val_0_ = nil, nil
-  local function _1_()
+  local function _2_()
     return {require("conjure.config"), require("conjure.mapping")}
   end
-  ok_3f_0_, val_0_ = pcall(_1_)
+  ok_3f_0_, val_0_ = pcall(_2_)
   if ok_3f_0_ then
     _0_0["aniseed/local-fns"] = {require = {config = "conjure.config", mapping = "conjure.mapping"}}
     return val_0_
@@ -27,9 +27,9 @@ local function _1_(...)
     return print(val_0_)
   end
 end
-local _local_0_ = _1_(...)
-local config = _local_0_[1]
-local mapping = _local_0_[2]
+local _1_ = _2_(...)
+local config = _1_[1]
+local mapping = _1_[2]
 local _2amodule_2a = _0_0
 local _2amodule_name_2a = "conjure.main"
 do local _ = ({nil, _0_0, {{}, nil, nil, nil}})[2] end
