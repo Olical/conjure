@@ -15,6 +15,9 @@
 (defn buf [mode cmd-suffix keys ...]
   (when keys
     (let [args [...]
+          mapping (if (a.string? keys)
+                    (.. (cfg :prefix) keys)
+                    (a.first keys))
           cmd (and cmd-suffix (.. :Conjure cmd-suffix))]
       (when cmd
         (nvim.ex.command_
@@ -22,11 +25,9 @@
           (bridge.viml->lua (unpack args))))
       (nvim.buf_set_keymap
         0 mode
-        (if (a.string? keys)
-          (.. (cfg :prefix) keys)
-          (a.first keys))
+        mapping
         (if cmd
-          (.. ":" cmd "<cr>")
+          (.. ":" cmd "<cr>:silent! call repeat#set('" mapping "', v:count)<cr>")
           (unpack args))
         {:silent true
          :noremap true}))))

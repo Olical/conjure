@@ -61,23 +61,23 @@ do
     local function buf0(mode, cmd_suffix, keys, ...)
       if keys then
         local args = {...}
+        local mapping = nil
+        if a["string?"](keys) then
+          mapping = (cfg("prefix") .. keys)
+        else
+          mapping = a.first(keys)
+        end
         local cmd = (cmd_suffix and ("Conjure" .. cmd_suffix))
         if cmd then
           nvim.ex.command_(("-range " .. cmd), bridge["viml->lua"](unpack(args)))
         end
-        local _3_
-        if a["string?"](keys) then
-          _3_ = (cfg("prefix") .. keys)
-        else
-          _3_ = a.first(keys)
-        end
-        local _5_
+        local _4_
         if cmd then
-          _5_ = (":" .. cmd .. "<cr>")
+          _4_ = (":" .. cmd .. "<cr>:silent! call repeat#set('" .. mapping .. "', v:count)<cr>")
         else
-          _5_ = unpack(args)
+          _4_ = unpack(args)
         end
-        return nvim.buf_set_keymap(0, mode, _3_, _5_, {noremap = true, silent = true})
+        return nvim.buf_set_keymap(0, mode, mapping, _4_, {noremap = true, silent = true})
       end
     end
     v_0_0 = buf0
