@@ -1,12 +1,14 @@
 local _0_0 = nil
 do
   local name_0_ = "conjure.aniseed.view"
-  local loaded_0_ = package.loaded[name_0_]
   local module_0_ = nil
-  if ("table" == type(loaded_0_)) then
-    module_0_ = loaded_0_
-  else
-    module_0_ = {}
+  do
+    local x_0_ = package.loaded[name_0_]
+    if ("table" == type(x_0_)) then
+      module_0_ = x_0_
+    else
+      module_0_ = {}
+    end
   end
   module_0_["aniseed/module"] = name_0_
   module_0_["aniseed/locals"] = ((module_0_)["aniseed/locals"] or {})

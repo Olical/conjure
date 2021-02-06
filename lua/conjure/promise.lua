@@ -1,25 +1,27 @@
 local _0_0 = nil
 do
   local name_0_ = "conjure.promise"
-  local loaded_0_ = package.loaded[name_0_]
   local module_0_ = nil
-  if ("table" == type(loaded_0_)) then
-    module_0_ = loaded_0_
-  else
-    module_0_ = {}
+  do
+    local x_0_ = package.loaded[name_0_]
+    if ("table" == type(x_0_)) then
+      module_0_ = x_0_
+    else
+      module_0_ = {}
+    end
   end
   module_0_["aniseed/module"] = name_0_
-  module_0_["aniseed/locals"] = (module_0_["aniseed/locals"] or {})
-  module_0_["aniseed/local-fns"] = (module_0_["aniseed/local-fns"] or {})
+  module_0_["aniseed/locals"] = ((module_0_)["aniseed/locals"] or {})
+  module_0_["aniseed/local-fns"] = ((module_0_)["aniseed/local-fns"] or {})
   package.loaded[name_0_] = module_0_
   _0_0 = module_0_
 end
-local function _2_(...)
+local function _1_(...)
   local ok_3f_0_, val_0_ = nil, nil
-  local function _2_()
+  local function _1_()
     return {require("conjure.aniseed.core"), require("conjure.aniseed.nvim"), require("conjure.uuid")}
   end
-  ok_3f_0_, val_0_ = pcall(_2_)
+  ok_3f_0_, val_0_ = pcall(_1_)
   if ok_3f_0_ then
     _0_0["aniseed/local-fns"] = {require = {a = "conjure.aniseed.core", nvim = "conjure.aniseed.nvim", uuid = "conjure.uuid"}}
     return val_0_
@@ -27,17 +29,17 @@ local function _2_(...)
     return print(val_0_)
   end
 end
-local _1_ = _2_(...)
-local a = _1_[1]
-local nvim = _1_[2]
-local uuid = _1_[3]
+local _local_0_ = _1_(...)
+local a = _local_0_[1]
+local nvim = _local_0_[2]
+local uuid = _local_0_[3]
 local _2amodule_2a = _0_0
 local _2amodule_name_2a = "conjure.promise"
 do local _ = ({nil, _0_0, {{}, nil, nil, nil}})[2] end
 local state = nil
 do
-  local v_0_ = (_0_0["aniseed/locals"].state or {})
-  local t_0_ = _0_0["aniseed/locals"]
+  local v_0_ = (((_0_0)["aniseed/locals"]).state or {})
+  local t_0_ = (_0_0)["aniseed/locals"]
   t_0_["state"] = v_0_
   state = v_0_
 end
@@ -55,7 +57,7 @@ do
     _0_0["new"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = _0_0["aniseed/locals"]
+  local t_0_ = (_0_0)["aniseed/locals"]
   t_0_["new"] = v_0_
   new = v_0_
 end
@@ -71,7 +73,7 @@ do
     _0_0["done?"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = _0_0["aniseed/locals"]
+  local t_0_ = (_0_0)["aniseed/locals"]
   t_0_["done?"] = v_0_
   done_3f = v_0_
 end
@@ -91,7 +93,7 @@ do
     _0_0["deliver"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = _0_0["aniseed/locals"]
+  local t_0_ = (_0_0)["aniseed/locals"]
   t_0_["deliver"] = v_0_
   deliver = v_0_
 end
@@ -101,16 +103,16 @@ do
   do
     local v_0_0 = nil
     local function deliver_fn0(id)
-      local function _3_(_241)
+      local function _2_(_241)
         return deliver(id, _241)
       end
-      return _3_
+      return _2_
     end
     v_0_0 = deliver_fn0
     _0_0["deliver-fn"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = _0_0["aniseed/locals"]
+  local t_0_ = (_0_0)["aniseed/locals"]
   t_0_["deliver-fn"] = v_0_
   deliver_fn = v_0_
 end
@@ -128,7 +130,7 @@ do
     _0_0["close"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = _0_0["aniseed/locals"]
+  local t_0_ = (_0_0)["aniseed/locals"]
   t_0_["close"] = v_0_
   close = v_0_
 end
@@ -144,7 +146,7 @@ do
     _0_0["await"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = _0_0["aniseed/locals"]
+  local t_0_ = (_0_0)["aniseed/locals"]
   t_0_["await"] = v_0_
   await = v_0_
 end

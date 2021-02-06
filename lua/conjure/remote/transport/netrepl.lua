@@ -1,25 +1,27 @@
 local _0_0 = nil
 do
   local name_0_ = "conjure.remote.transport.netrepl"
-  local loaded_0_ = package.loaded[name_0_]
   local module_0_ = nil
-  if ("table" == type(loaded_0_)) then
-    module_0_ = loaded_0_
-  else
-    module_0_ = {}
+  do
+    local x_0_ = package.loaded[name_0_]
+    if ("table" == type(x_0_)) then
+      module_0_ = x_0_
+    else
+      module_0_ = {}
+    end
   end
   module_0_["aniseed/module"] = name_0_
-  module_0_["aniseed/locals"] = (module_0_["aniseed/locals"] or {})
-  module_0_["aniseed/local-fns"] = (module_0_["aniseed/local-fns"] or {})
+  module_0_["aniseed/locals"] = ((module_0_)["aniseed/locals"] or {})
+  module_0_["aniseed/local-fns"] = ((module_0_)["aniseed/local-fns"] or {})
   package.loaded[name_0_] = module_0_
   _0_0 = module_0_
 end
-local function _2_(...)
+local function _1_(...)
   local ok_3f_0_, val_0_ = nil, nil
-  local function _2_()
+  local function _1_()
     return {require("conjure.aniseed.core"), require("bit"), require("conjure.aniseed.string")}
   end
-  ok_3f_0_, val_0_ = pcall(_2_)
+  ok_3f_0_, val_0_ = pcall(_1_)
   if ok_3f_0_ then
     _0_0["aniseed/local-fns"] = {require = {a = "conjure.aniseed.core", bit = "bit", str = "conjure.aniseed.string"}}
     return val_0_
@@ -27,10 +29,10 @@ local function _2_(...)
     return print(val_0_)
   end
 end
-local _1_ = _2_(...)
-local a = _1_[1]
-local bit = _1_[2]
-local str = _1_[3]
+local _local_0_ = _1_(...)
+local a = _local_0_[1]
+local bit = _local_0_[2]
+local str = _local_0_[3]
 local _2amodule_2a = _0_0
 local _2amodule_name_2a = "conjure.remote.transport.netrepl"
 do local _ = ({nil, _0_0, {{}, nil, nil, nil}})[2] end
@@ -47,7 +49,7 @@ do
     _0_0["encode"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = _0_0["aniseed/locals"]
+  local t_0_ = (_0_0)["aniseed/locals"]
   t_0_["encode"] = v_0_
   encode = v_0_
 end
@@ -59,7 +61,7 @@ do
     return bit.bor(bit.band(b0, 255), bit.lshift(bit.band(b1, 255), 8), bit.lshift(bit.band(b2, 255), 16), bit.lshift(bit.band(b3, 255), 24)), string.sub(chunk, 5)
   end
   v_0_ = split0
-  local t_0_ = _0_0["aniseed/locals"]
+  local t_0_ = (_0_0)["aniseed/locals"]
   t_0_["split"] = v_0_
   split = v_0_
 end
@@ -108,7 +110,7 @@ do
     _0_0["decoder"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = _0_0["aniseed/locals"]
+  local t_0_ = (_0_0)["aniseed/locals"]
   t_0_["decoder"] = v_0_
   decoder = v_0_
 end

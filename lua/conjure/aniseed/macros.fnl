@@ -19,10 +19,10 @@
 (fn module [name new-local-fns initial-mod]
   `(-> [(local ,module-sym
           (let [name# ,(tostring name)
-                loaded# (. package.loaded name#)
-                module# (if (= :table (type loaded#))
-                          loaded#
-                          ,(or initial-mod {}))]
+                module# (let [x# (. package.loaded name#)]
+                          (if (= :table (type x#))
+                            x#
+                            ,(or initial-mod {})))]
             (tset module# :aniseed/module name#)
             (tset module# :aniseed/locals (or (. module# :aniseed/locals) {}))
             (tset module# :aniseed/local-fns (or (. module# :aniseed/local-fns) {}))
@@ -34,13 +34,12 @@
         ,(let [aliases []
                vals []
                effects []
-               locals (-?> package.loaded
-                           (. (tostring name))
-                           (. :aniseed/locals))
+               pkg (let [x (. package.loaded (tostring name))]
+                     (when (= :table (type x))
+                       x))
+               locals (-?> pkg (. :aniseed/locals))
                local-fns (or (and (not new-local-fns)
-                                  (-?> package.loaded
-                                       (. (tostring name))
-                                       (. :aniseed/local-fns)))
+                                  (-?> pkg (. :aniseed/local-fns)))
                              {})]
 
            (when new-local-fns
