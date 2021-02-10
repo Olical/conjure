@@ -12,9 +12,12 @@
 (defn- cfg [k]
   (config.get-in [:mapping k]))
 
-(defn buf [mode cmd-suffix keys ...]
+(defn buf [mode-or-opts cmd-suffix keys ...]
   (when keys
-    (let [args [...]
+    (let [[mode opts] (if (= :table (type mode-or-opts))
+                        [(a.get mode-or-opts :mode) mode-or-opts]
+                        [mode-or-opts {}])
+          args [...]
           mapping (if (a.string? keys)
                     (.. (cfg :prefix) keys)
                     (a.first keys))
@@ -27,7 +30,10 @@
         0 mode
         mapping
         (if cmd
-          (.. ":" cmd "<cr>:silent! call repeat#set('" mapping "', v:count)<cr>")
+          (.. ":" cmd "<cr>"
+              (if (not= false (a.get opts :repeat?))
+                (.. ":silent! call repeat#set('" mapping "', v:count)<cr>")
+                ""))
           (unpack args))
         {:silent true
          :noremap true}))))
@@ -52,7 +58,7 @@
   (buf :n :EvalCommentWord (cfg :eval_comment_word) :conjure.eval :comment-word)
 
   (buf :n :EvalReplaceForm (cfg :eval_replace_form) :conjure.eval :replace-form)
-  (buf :n :EvalMarkedForm (cfg :eval_marked_form) :conjure.eval :marked-form)
+  (buf {:mode :n :repeat? false} :EvalMarkedForm (cfg :eval_marked_form) :conjure.eval :marked-form)
   (buf :n :EvalFile (cfg :eval_file) :conjure.eval :file)
   (buf :n :EvalBuf (cfg :eval_buf) :conjure.eval :buf)
   (buf :v :EvalVisual (cfg :eval_visual) :conjure.eval :selection)

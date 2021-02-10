@@ -58,8 +58,18 @@ do
   local v_0_ = nil
   do
     local v_0_0 = nil
-    local function buf0(mode, cmd_suffix, keys, ...)
+    local function buf0(mode_or_opts, cmd_suffix, keys, ...)
       if keys then
+        local function _2_(...)
+          if ("table" == type(mode_or_opts)) then
+            return {a.get(mode_or_opts, "mode"), mode_or_opts}
+          else
+            return {mode_or_opts, {}}
+          end
+        end
+        local _let_0_ = _2_(...)
+        local mode = _let_0_[1]
+        local opts = _let_0_[2]
         local args = {...}
         local mapping = nil
         if a["string?"](keys) then
@@ -71,13 +81,20 @@ do
         if cmd then
           nvim.ex.command_(("-range " .. cmd), bridge["viml->lua"](unpack(args)))
         end
-        local _4_
+        local _5_
         if cmd then
-          _4_ = (":" .. cmd .. "<cr>:silent! call repeat#set('" .. mapping .. "', v:count)<cr>")
+          local function _6_(...)
+            if (false ~= a.get(opts, "repeat?")) then
+              return (":silent! call repeat#set('" .. mapping .. "', v:count)<cr>")
+            else
+              return ""
+            end
+          end
+          _5_ = (":" .. cmd .. "<cr>" .. _6_(...))
         else
-          _4_ = unpack(args)
+          _5_ = unpack(args)
         end
-        return nvim.buf_set_keymap(0, mode, mapping, _4_, {noremap = true, silent = true})
+        return nvim.buf_set_keymap(0, mode, mapping, _5_, {noremap = true, silent = true})
       end
     end
     v_0_0 = buf0
@@ -108,7 +125,7 @@ do
       buf("n", "EvalWord", cfg("eval_word"), "conjure.eval", "word")
       buf("n", "EvalCommentWord", cfg("eval_comment_word"), "conjure.eval", "comment-word")
       buf("n", "EvalReplaceForm", cfg("eval_replace_form"), "conjure.eval", "replace-form")
-      buf("n", "EvalMarkedForm", cfg("eval_marked_form"), "conjure.eval", "marked-form")
+      buf({["repeat?"] = false, mode = "n"}, "EvalMarkedForm", cfg("eval_marked_form"), "conjure.eval", "marked-form")
       buf("n", "EvalFile", cfg("eval_file"), "conjure.eval", "file")
       buf("n", "EvalBuf", cfg("eval_buf"), "conjure.eval", "buf")
       buf("v", "EvalVisual", cfg("eval_visual"), "conjure.eval", "selection")
