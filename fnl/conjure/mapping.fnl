@@ -38,6 +38,16 @@
         {:silent true
          :noremap true}))))
 
+(defn eval-marked-form []
+  (let [mark (eval.marked-form)
+        mapping (a.some
+                  (fn [m]
+                    (and (= ":ConjureEvalMarkedForm<CR>" m.rhs)
+                         m.lhs))
+                  (nvim.buf_get_keymap 0 :n))]
+    (when (and mark mapping)
+      (nvim.ex.silent_ (.. "call repeat#set('" mapping mark "', 1)")))))
+
 (defn on-filetype []
   (buf :n :LogSplit (cfg :log_split) :conjure.log :split)
   (buf :n :LogVSplit (cfg :log_vsplit) :conjure.log :vsplit)
@@ -58,7 +68,7 @@
   (buf :n :EvalCommentWord (cfg :eval_comment_word) :conjure.eval :comment-word)
 
   (buf :n :EvalReplaceForm (cfg :eval_replace_form) :conjure.eval :replace-form)
-  (buf {:mode :n :repeat? false} :EvalMarkedForm (cfg :eval_marked_form) :conjure.eval :marked-form)
+  (buf {:mode :n :repeat? false} :EvalMarkedForm (cfg :eval_marked_form) :conjure.mapping :eval-marked-form)
   (buf :n :EvalFile (cfg :eval_file) :conjure.eval :file)
   (buf :n :EvalBuf (cfg :eval_buf) :conjure.eval :buf)
   (buf :v :EvalVisual (cfg :eval_visual) :conjure.eval :selection)

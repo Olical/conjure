@@ -302,10 +302,11 @@ do
       ok_3f, err = pcall(_2_)
       if ok_3f then
         current_form({origin = ("marked-form [" .. mark0 .. "]")})
-        return editor["go-back"]()
+        editor["go-back"]()
       else
-        return log.append({(comment_prefix .. "Couldn't eval form at mark: " .. mark0), (comment_prefix .. err)}, {["break?"] = true})
+        log.append({(comment_prefix .. "Couldn't eval form at mark: " .. mark0), (comment_prefix .. err)}, {["break?"] = true})
       end
+      return mark0
     end
     v_0_0 = marked_form0
     _0_0["marked-form"] = v_0_0

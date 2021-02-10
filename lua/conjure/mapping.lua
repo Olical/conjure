@@ -105,6 +105,30 @@ do
   t_0_["buf"] = v_0_
   buf = v_0_
 end
+local eval_marked_form = nil
+do
+  local v_0_ = nil
+  do
+    local v_0_0 = nil
+    local function eval_marked_form0()
+      local mark = eval["marked-form"]()
+      local mapping = nil
+      local function _2_(m)
+        return ((":ConjureEvalMarkedForm<CR>" == m.rhs) and m.lhs)
+      end
+      mapping = a.some(_2_, nvim.buf_get_keymap(0, "n"))
+      if (mark and mapping) then
+        return nvim.ex.silent_(("call repeat#set('" .. mapping .. mark .. "', 1)"))
+      end
+    end
+    v_0_0 = eval_marked_form0
+    _0_0["eval-marked-form"] = v_0_0
+    v_0_ = v_0_0
+  end
+  local t_0_ = (_0_0)["aniseed/locals"]
+  t_0_["eval-marked-form"] = v_0_
+  eval_marked_form = v_0_
+end
 local on_filetype = nil
 do
   local v_0_ = nil
@@ -125,7 +149,7 @@ do
       buf("n", "EvalWord", cfg("eval_word"), "conjure.eval", "word")
       buf("n", "EvalCommentWord", cfg("eval_comment_word"), "conjure.eval", "comment-word")
       buf("n", "EvalReplaceForm", cfg("eval_replace_form"), "conjure.eval", "replace-form")
-      buf({["repeat?"] = false, mode = "n"}, "EvalMarkedForm", cfg("eval_marked_form"), "conjure.eval", "marked-form")
+      buf({["repeat?"] = false, mode = "n"}, "EvalMarkedForm", cfg("eval_marked_form"), "conjure.mapping", "eval-marked-form")
       buf("n", "EvalFile", cfg("eval_file"), "conjure.eval", "file")
       buf("n", "EvalBuf", cfg("eval_buf"), "conjure.eval", "buf")
       buf("v", "EvalVisual", cfg("eval_visual"), "conjure.eval", "selection")

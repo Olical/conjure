@@ -140,7 +140,8 @@
         (editor.go-back))
       (log.append [(.. comment-prefix "Couldn't eval form at mark: " mark)
                    (.. comment-prefix err)]
-                  {:break? true}))))
+                  {:break? true}))
+    mark))
 
 (defn- insert-result-comment [tag input]
   (let [buf (nvim.win_get_buf 0)
