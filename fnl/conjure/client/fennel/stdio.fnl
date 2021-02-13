@@ -99,6 +99,7 @@
       (stdio.start
         {:prompt-pattern (cfg [:prompt-pattern])
          :cmd (cfg [:command])
+         :env ["INPUTRC=/dev/null"]
 
          :on-success
          (fn []
