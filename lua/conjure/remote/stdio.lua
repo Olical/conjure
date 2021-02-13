@@ -165,7 +165,7 @@ do
       local _let_0_ = parse_cmd(opts.cmd)
       local args = _let_0_["args"]
       local cmd = _let_0_["cmd"]
-      local handle, pid = uv.spawn(cmd, {args = args, stdio = {stdin, stdout, stderr}}, client["schedule-wrap"](on_exit))
+      local handle, pid = uv.spawn(cmd, {args = args, env = opts.env, stdio = {stdin, stdout, stderr}}, client["schedule-wrap"](on_exit))
       stdout:read_start(client["schedule-wrap"](on_stdout))
       stderr:read_start(client["schedule-wrap"](on_stderr))
       local function _2_()
