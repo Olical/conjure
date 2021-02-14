@@ -99,7 +99,9 @@
     (let [{: cmd : args} (parse-cmd opts.cmd)
           (handle pid) (uv.spawn cmd {:stdio [stdin stdout stderr]
                                       :args args
-                                      :env opts.env}
+
+                                      ;; Disable custom readline config.
+                                      :env ["INPUTRC=/dev/null"]}
                                  (client.schedule-wrap on-exit))]
       (stdout:read_start (client.schedule-wrap on-stdout))
       (stderr:read_start (client.schedule-wrap on-stderr))

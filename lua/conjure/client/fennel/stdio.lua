@@ -275,7 +275,7 @@ do
         local function _5_()
           return display_repl_status("started")
         end
-        return a.assoc(state(), "repl", stdio.start({["on-error"] = _2_, ["on-exit"] = _3_, ["on-stray-output"] = _4_, ["on-success"] = _5_, ["prompt-pattern"] = cfg({"prompt-pattern"}), cmd = cfg({"command"}), env = {"INPUTRC=/dev/null"}}))
+        return a.assoc(state(), "repl", stdio.start({["on-error"] = _2_, ["on-exit"] = _3_, ["on-stray-output"] = _4_, ["on-success"] = _5_, ["prompt-pattern"] = cfg({"prompt-pattern"}), cmd = cfg({"command"})}))
       end
     end
     v_0_0 = start0
