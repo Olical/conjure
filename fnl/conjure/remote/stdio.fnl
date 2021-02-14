@@ -21,6 +21,15 @@
     (a.string? x)
     (parse-cmd (str.split x "%s"))))
 
+(defn- extend-env [vars]
+  (->> (a.merge
+         (nvim.fn.environ)
+         vars)
+       (a.kv-pairs)
+       (a.map
+         (fn [[k v]]
+           (.. k "=" v)))))
+
 (defn start [opts]
   "Starts an external REPL and gives you hooks to send code to it and read
   responses back out. Tying an input to a result is near enough impossible
@@ -99,9 +108,9 @@
     (let [{: cmd : args} (parse-cmd opts.cmd)
           (handle pid) (uv.spawn cmd {:stdio [stdin stdout stderr]
                                       :args args
-
-                                      ;; Disable custom readline config.
-                                      :env ["INPUTRC=/dev/null"]}
+                                      :env (extend-env
+                                             ;; Disable custom readline config.
+                                             {:INPUTRC "/dev/null"})}
                                  (client.schedule-wrap on-exit))]
       (stdout:read_start (client.schedule-wrap on-stdout))
       (stderr:read_start (client.schedule-wrap on-stderr))
