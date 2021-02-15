@@ -74,7 +74,7 @@
 
 (defn doc-str [opts]
   (let [obj (when (= "." (string.sub opts.code 1 1))
-             (extract.prompt "Specify object or module: "))
+              (extract.prompt "Specify object or module: "))
         obj (.. (or obj "") opts.code)
         code (.. "(if (in (mangle '" obj ") --macros--)
                     (doc " obj ")
@@ -154,4 +154,3 @@
   (mapping.buf :n :HyStart (cfg [:mapping :start]) *module-name* :start)
   (mapping.buf :n :HyStop (cfg [:mapping :stop]) *module-name* :stop)
   (mapping.buf :n :HyInterrupt (cfg [:mapping :interrupt]) *module-name* :interrupt))
-

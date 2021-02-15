@@ -86,18 +86,6 @@ do
   t_0_["comment-prefix"] = v_0_
   comment_prefix = v_0_
 end
-local context_pattern = nil
-do
-  local v_0_ = nil
-  do
-    local v_0_0 = ""
-    _0_0["context-pattern"] = v_0_0
-    v_0_ = v_0_0
-  end
-  local t_0_ = (_0_0)["aniseed/locals"]
-  t_0_["context-pattern"] = v_0_
-  context_pattern = v_0_
-end
 local with_repl_or_warn = nil
 do
   local v_0_ = nil
@@ -106,7 +94,7 @@ do
     if repl then
       return f(repl)
     else
-      return log.append({(comment_prefix .. "No REPL running")})
+      return log.append({(comment_prefix .. "No REPL running"), (comment_prefix .. "Start REPL with " .. config["get-in"]({"mapping", "prefix"}) .. cfg({"mapping", "start"}))})
     end
   end
   v_0_ = with_repl_or_warn0
@@ -114,25 +102,25 @@ do
   t_0_["with-repl-or-warn"] = v_0_
   with_repl_or_warn = v_0_
 end
-local format_message = nil
-do
-  local v_0_ = nil
-  local function format_message0(msg)
-    return str.split((msg.out or msg.err), "\n")
-  end
-  v_0_ = format_message0
-  local t_0_ = (_0_0)["aniseed/locals"]
-  t_0_["format-message"] = v_0_
-  format_message = v_0_
-end
 local display_result = nil
 do
   local v_0_ = nil
   local function display_result0(msg)
-    local function _2_(_241)
-      return not ("" == _241)
+    local prefix = nil
+    local _2_
+    if msg.err then
+      _2_ = "(err)"
+    else
+      _2_ = "(out)"
     end
-    return log.append(a.filter(_2_, format_message(msg)))
+    prefix = (comment_prefix .. _2_ .. " ")
+    local function _4_(_241)
+      return (prefix .. _241)
+    end
+    local function _5_(_241)
+      return ("" ~= _241)
+    end
+    return log.append(a.map(_4_, a.filter(_5_, str.split((msg.err or msg.out), "\n"))))
   end
   v_0_ = display_result0
   local t_0_ = (_0_0)["aniseed/locals"]
@@ -156,16 +144,25 @@ do
   do
     local v_0_0 = nil
     local function eval_str0(opts)
+      local last_value = nil
       local function _2_(repl)
-        local function _3_(msgs)
-          log.dbg("msgs:", msgs)
-          if ((1 == a.count(msgs)) and ("" == a["get-in"](msgs, {1, "out"}))) then
-            a["assoc-in"](msgs, {1, "out"}, (comment_prefix .. "Empty result."))
+        local function _3_(msg)
+          log.dbg("msg", msg)
+          local msgs = nil
+          local function _4_(_241)
+            return not ("" == _241)
           end
-          opts["on-result"](str.join("\n", format_message(a.last(msgs))))
-          return a["run!"](display_result, msgs)
+          msgs = a.filter(_4_, str.split((msg.err or msg.out), "\n"))
+          last_value = (a.last(msgs) or last_value)
+          display_result(msg)
+          if msg["done?"] then
+            log.append({""})
+            if opts["on-result"] then
+              return opts["on-result"](last_value)
+            end
+          end
         end
-        return repl.send(prep_code(opts.code), _3_, {["batch?"] = true})
+        return repl.send(prep_code(opts.code), _3_)
       end
       return with_repl_or_warn(_2_)
     end
@@ -183,7 +180,7 @@ do
   do
     local v_0_0 = nil
     local function eval_file0(opts)
-      return log.append({"Not implemented"})
+      return log.append({(comment_prefix .. "Not implemented")})
     end
     v_0_0 = eval_file0
     _0_0["eval-file"] = v_0_0
@@ -207,7 +204,20 @@ do
       end
       local obj0 = ((obj or "") .. opts.code)
       local code = ("(if (in (mangle '" .. obj0 .. ") --macros--)\n                    (doc " .. obj0 .. ")\n                    (help " .. obj0 .. "))")
-      return eval_str(a.assoc(opts, "code", code))
+      local function _3_(repl)
+        local function _4_(msg)
+          local function _5_()
+            if msg.err then
+              return "(err) "
+            else
+              return "(doc) "
+            end
+          end
+          return log.append(text["prefixed-lines"]((msg.err or msg.out), (comment_prefix .. _5_())))
+        end
+        return repl.send(prep_code(code), _4_)
+      end
+      return with_repl_or_warn(_3_)
     end
     v_0_0 = doc_str0
     _0_0["doc-str"] = v_0_0
@@ -259,7 +269,7 @@ do
     local v_0_0 = nil
     local function start0()
       if state("repl") then
-        return log.append({"; Can't start, REPL is already running.", ("; Stop the REPL with " .. config["get-in"]({"mapping", "prefix"}) .. cfg({"mapping", "stop"}))}, {["break?"] = true})
+        return log.append({(comment_prefix .. "Can't start, REPL is already running."), (comment_prefix .. "Stop the REPL with " .. config["get-in"]({"mapping", "prefix"}) .. cfg({"mapping", "stop"}))}, {["break?"] = true})
       else
         local function _2_(err)
           return display_repl_status(err)
