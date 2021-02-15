@@ -7,6 +7,13 @@
 
 (def- uv vim.loop)
 
+(defn- strip-unprintable [s]
+  (string.gsub
+    (string.gsub
+      (string.gsub s "%c%[[%d%;]+m" "")
+      "\1" "")
+    "\2" ""))
+
 (defn- parse-prompt [s pat]
   (if (s:find pat)
     (values true (s:gsub pat ""))
@@ -54,7 +61,7 @@
             (next-in-queue)))))
 
     (fn on-output [err chunk]
-      (on-message chunk))
+      (on-message (strip-unprintable chunk)))
 
     (fn send [code cb opts]
       (table.insert
