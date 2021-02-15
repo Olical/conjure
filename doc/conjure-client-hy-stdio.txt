@@ -1,0 +1,63 @@
+                                                     *conjure-client-hy-stdio*
+
+==============================================================================
+CONTENTS                                    *conjure-client-hy-stdio-contents*
+
+    1. Introduction ........ |conjure-client-hy-stdio-introduction|
+    2. Mappings ................ |conjure-client-hy-stdio-mappings|
+    3. Configuration ...... |conjure-client-hy-stdio-configuration|
+
+==============================================================================
+INTRODUCTION                            *conjure-client-hy-stdio-introduction*
+
+>
+  Hy is a Lisp dialect that’s embedded in Python. Since Hy transforms its Lisp
+  code into Python abstract syntax tree (AST) objects, you have the whole
+  beautiful world of Python at your fingertips, in Lisp form.
+
+Conjure starts a Hy REPL within Neovim when you first open a Hy file.
+
+You should be able to evaluate files and forms as you would with other Conjure
+supported languages right away.
+
+Check out `:ConjureSchool` if you're unsure about what evaluation operations
+you can perform.
+
+ * http://hylang.org/
+
+==============================================================================
+MAPPINGS                                    *conjure-client-hy-stdio-mappings*
+
+These mappings are the defaults, you can change them as described in
+|conjure-mappings| and |conjure-configuration|.
+
+See |conjure-client-hy-stdio-configuration| for specific configuration
+options relevant to these mappings.
+
+<localleader>cs          Start the Hy REPL if it's not running already.
+
+<localleader>cS          Stop any existing Hy REPL.
+
+<localleader>ei          Interrupt running command. Same as pressing Ctrl-C
+                         in a cmdline REPL.
+
+==============================================================================
+CONFIGURATION                          *conjure-client-hy-stdio-configuration*
+
+All configuration can be set as described in |conjure-configuration|.
+
+
+`g:conjure#client#hy#stdio#mapping#start`
+            Start the Hy REPL if it's not running already.
+            Default: `"cs"`
+
+`g:conjure#client#hy#stdio#mapping#stop`
+            Stop any existing Hy REPL.
+            Default: `"cS"`
+
+`g:conjure#client#hy#stdio#command`
+            Command used to start the Hy REPL, you can modify this to add
+            arguments or change the command entirely.
+            Default: `"hy --repl-output-fn=hy.contrib.hy-repr.hy-repr"`
+
+vim:tw=78:sw=2:ts=2:ft=help:norl:et:listchars=

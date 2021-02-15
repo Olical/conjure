@@ -14,6 +14,7 @@ The core features of Conjure are language agnostic (although it's targeted at Li
  * https://fennel-lang.org[Fennel] outside of Neovim within any Lua process through an stdio REPL (https://github.com/Olical/conjure/wiki/Quick-start:-Fennel-(stdio)[quickstart])
  * https://janet-lang.org/[Janet] over https://github.com/janet-lang/spork/#networked-repl[spork/netrepl] (https://github.com/Olical/conjure/wiki/Quick-start:-Janet-(netrepl)[quickstart])
  * https://racket-lang.org/[Racket] over stdio (https://github.com/Olical/conjure/wiki/Quick-start:-Racket-(stdio)[quickstart])
+ * https://docs.hylang.org[Hy] over stdio (https://github.com/Olical/conjure/wiki/Quick-start:-Hy-(stdio)[quickstart])
 
 == User experience
 
@@ -66,6 +67,7 @@ ____
  * https://github.com/Olical/conjure/wiki/Quick-start:-Fennel-(Aniseed)[Fennel (Aniseed)]
  * https://github.com/Olical/conjure/wiki/Quick-start:-Fennel-(stdio)[Fennel (stdio)]
  * https://github.com/Olical/conjure/wiki/Quick-start:-Racket-(stdio)[Racket (stdio)]
+ * https://github.com/Olical/conjure/wiki/Quick-start:-Hy-(stdio)[Hy (stdio)]
  * https://github.com/Olical/conjure/wiki/Frequently-asked-questions[Frequently asked questions]
 
 All further documentation is found within link:doc/conjure.txt[`:help conjure`]. You can also use `:ConjureSchool` to get an interactive introduction to the workflow and mappings Conjure provides.
@@ -80,7 +82,6 @@ These are clients I intend to build eventually or encourage another community me
 
  * https://clojure.org/[Clojure] over https://oli.me.uk/clojure-socket-prepl-cookbook/[prepl]
  * http://lfe.io/[Lisp Flavoured Erlang]
- * http://hylang.org/[Hy]
  * https://github.com/candid82/joker[Joker]
  * Scheme (https://www.call-cc.org/[Chicken], Chez or Guile? All?)
  * Common Lisp (https://github.com/Olical/conjure/issues/97[#97])
