@@ -33,7 +33,8 @@
   (let [repl-pipe (uv.new_pipe true)]
 
     (var repl {:queue []
-               :current nil})
+               :current nil
+               :text ""})
 
     (fn destroy []
       (pcall #(repl-pipe:shutdown))
@@ -52,16 +53,19 @@
       (when chunk
         (let [(done? result) (parse-prompt chunk opts.prompt-pattern)
               cb (a.get-in repl [:current :cb] opts.on-stray-output)]
-          (when cb
-            (pcall
-              #(cb {:out result
-                    :done? done?})))
           (when done?
+            (when cb
+              (pcall
+                #(cb {:out result
+                      :done? done?})))
             (a.assoc repl :current nil)
+            (a.assoc repl :text "")
             (next-in-queue)))))
 
     (fn on-output [err chunk]
-      (on-message (strip-unprintable chunk)))
+      (when chunk
+        (a.assoc repl :text (.. (a.get repl :text) chunk))
+        (on-message (strip-unprintable (a.get repl :text)))))
 
     (fn send [code cb opts]
       (table.insert
