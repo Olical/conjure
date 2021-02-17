@@ -103,7 +103,10 @@
 
          :on-error
          (fn [err]
-           (display-repl-status err))
+           (log.append ["Error!"])
+           (with-repl-or-warn
+             (fn [repl]
+               (repl.send ",q" nil))))
 
          :on-stray-output
          (fn [msg]

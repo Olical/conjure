@@ -48,6 +48,10 @@
       (when chunk
         (let [(done? error? result) (opts.parse-output chunk)
               cb (a.get-in repl [:current :cb] opts.on-stray-output)]
+
+          (when error?
+            (opts.on-error chunk))
+
           (when done?
             (when cb
               (pcall
