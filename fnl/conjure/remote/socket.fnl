@@ -14,11 +14,6 @@
       "\1" "")
     "\2" ""))
 
-(defn- parse-prompt [s pat]
-  (if (s:find pat)
-    (values true (s:gsub pat ""))
-    (values false s)))
-
 (defn start [opts]
   "Connects to an external REPL via a socket (TCP or named pipe), and gives you
   hooks to send code to it and read responses back out. This allows you to
@@ -51,7 +46,7 @@
     (fn on-message [chunk]
       (log.dbg "receive" chunk)
       (when chunk
-        (let [(done? result) (parse-prompt chunk opts.prompt-pattern)
+        (let [(done? error? result) (opts.parse-output chunk)
               cb (a.get-in repl [:current :cb] opts.on-stray-output)]
           (when done?
             (when cb

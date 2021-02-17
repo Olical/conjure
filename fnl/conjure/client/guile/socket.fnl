@@ -18,8 +18,7 @@
                 :stop "cS"}
       :pipename nil
       :hostname nil
-      :port nil
-      :prompt-pattern "\n?scheme@%([%w%-]+%)> "}}}})
+      :port nil}}}})
 
 (def- cfg (config.get-in-fn [:client :guile :socket]))
 
@@ -76,6 +75,14 @@
       (display-repl-status :disconnected)
       (a.assoc (state) :repl nil))))
 
+(defn- parse-guile-result [s]
+  (if (s:find "scheme@%([%w%-]+%)> ")
+    (let [(ind1 ind2 result) (s:find "%$%d+ = ([^\n]+)\n")]
+      (values true false result))
+    (if (s:find "scheme@%([%w%-]+%) %[%d+%]>")
+      (values true true nil)
+      (values false false s))))
+
 (defn start []
   (if (state :repl)
     (log.append ["; Can't start, REPL is already running."
@@ -86,7 +93,7 @@
     (a.assoc
       (state) :repl
       (socket.start
-        {:prompt-pattern (cfg [:prompt-pattern])
+        {:parse-output parse-guile-result
 
          :pipe-name (cfg [:pipename])
 
