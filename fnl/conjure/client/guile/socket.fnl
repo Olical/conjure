@@ -7,7 +7,8 @@
             text conjure.text
             mapping conjure.mapping
             client conjure.client
-            log conjure.log}
+            log conjure.log
+            extract conjure.extract}
    require-macros [conjure.macros]})
 
 (config.merge
@@ -26,6 +27,7 @@
 
 (def buf-suffix ".scm")
 (def comment-prefix "; ")
+(def context-pattern "%(define%-module%s+(%([%g%s]-%))")
 
 (defn- with-repl-or-warn [f opts]
   (let [repl (state :repl)]
@@ -83,6 +85,18 @@
       (values true true nil)
       (values false false s))))
 
+(defn enter []
+  (let [repl (state :repl)
+        c (extract.context)]
+    (when repl
+      (if c
+        (repl.send
+          (.. ",m " c "\n")
+          (fn []))
+        (repl.send
+          ",m (guile-user)\n"
+          (fn []))))))
+
 (defn start []
   (if (state :repl)
     (log.append ["; Can't start, REPL is already running."
@@ -99,7 +113,8 @@
 
          :on-success
          (fn []
-           (display-repl-status :connected))
+           (display-repl-status :connected)
+           (enter))
 
          :on-error
          (fn [err]
@@ -113,9 +128,9 @@
            (display-result msg))}))))
 
 (defn on-load []
-  ;(augroup
-  ;  conjure-guile-socket-bufenter
-  ;  (autocmd :BufEnter (.. :* buf-suffix) (viml->fn :enter)))
+  (augroup
+    conjure-guile-socket-bufenter
+    (autocmd :BufEnter (.. :* buf-suffix) (viml->fn :enter)))
   (start))
 
 (defn on-filetype []
