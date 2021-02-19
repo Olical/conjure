@@ -78,10 +78,10 @@
       (a.assoc (state) :repl nil))))
 
 (defn- parse-guile-result [s]
-  (if (s:find "scheme@%([%w%-]+%)> ")
+  (if (s:find "scheme@%([%w%-%s]+%)> ")
     (let [(ind1 ind2 result) (s:find "%$%d+ = ([^\n]+)\n")]
       (values true false result))
-    (if (s:find "scheme@%([%w%-]+%) %[%d+%]>")
+    (if (s:find "scheme@%([%w%-%s]+%) %[%d+%]>")
       (values true true nil)
       (values false false s))))
 
