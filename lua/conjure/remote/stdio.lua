@@ -80,6 +80,23 @@ do
   t_0_["parse-cmd"] = v_0_
   parse_cmd = v_0_
 end
+local extend_env = nil
+do
+  local v_0_ = nil
+  local function extend_env0(vars)
+    local function _2_(_3_0)
+      local _arg_0_ = _3_0
+      local k = _arg_0_[1]
+      local v = _arg_0_[2]
+      return (k .. "=" .. v)
+    end
+    return a.map(_2_, a["kv-pairs"](a.merge(nvim.fn.environ(), vars)))
+  end
+  v_0_ = extend_env0
+  local t_0_ = (_0_0)["aniseed/locals"]
+  t_0_["extend-env"] = v_0_
+  extend_env = v_0_
+end
 local start = nil
 do
   local v_0_ = nil
@@ -165,7 +182,7 @@ do
       local _let_0_ = parse_cmd(opts.cmd)
       local args = _let_0_["args"]
       local cmd = _let_0_["cmd"]
-      local handle, pid = uv.spawn(cmd, {args = args, stdio = {stdin, stdout, stderr}}, client["schedule-wrap"](on_exit))
+      local handle, pid = uv.spawn(cmd, {args = args, env = extend_env({INPUTRC = "/dev/null"}), stdio = {stdin, stdout, stderr}}, client["schedule-wrap"](on_exit))
       stdout:read_start(client["schedule-wrap"](on_stdout))
       stderr:read_start(client["schedule-wrap"](on_stderr))
       local function _2_()

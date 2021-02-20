@@ -53,6 +53,17 @@ do
   t_0_["cfg"] = v_0_
   cfg = v_0_
 end
+local vim_repeat = nil
+do
+  local v_0_ = nil
+  local function vim_repeat0(mapping)
+    return ("repeat#set(\"" .. nvim.fn.escape(mapping, "\"") .. "\", 1)")
+  end
+  v_0_ = vim_repeat0
+  local t_0_ = (_0_0)["aniseed/locals"]
+  t_0_["vim-repeat"] = v_0_
+  vim_repeat = v_0_
+end
 local buf = nil
 do
   local v_0_ = nil
@@ -85,7 +96,7 @@ do
         if cmd then
           local function _6_(...)
             if (false ~= a.get(opts, "repeat?")) then
-              return (":silent! call repeat#set('" .. mapping .. "', v:count)<cr>")
+              return (":silent! call " .. vim_repeat(mapping) .. "<cr>")
             else
               return ""
             end
@@ -118,7 +129,7 @@ do
       end
       mapping = a.some(_2_, nvim.buf_get_keymap(0, "n"))
       if (mark and mapping) then
-        return nvim.ex.silent_(("call repeat#set('" .. mapping .. mark .. "', 1)"))
+        return nvim.ex.silent_("call", vim_repeat((mapping .. mark)))
       end
     end
     v_0_0 = eval_marked_form0

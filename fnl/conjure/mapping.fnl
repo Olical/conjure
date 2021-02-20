@@ -12,6 +12,9 @@
 (defn- cfg [k]
   (config.get-in [:mapping k]))
 
+(defn- vim-repeat [mapping]
+  (.. "repeat#set(\"" (nvim.fn.escape mapping "\"") "\", 1)"))
+
 (defn buf [mode-or-opts cmd-suffix keys ...]
   (when keys
     (let [[mode opts] (if (= :table (type mode-or-opts))
@@ -32,7 +35,7 @@
         (if cmd
           (.. ":" cmd "<cr>"
               (if (not= false (a.get opts :repeat?))
-                (.. ":silent! call repeat#set('" mapping "', v:count)<cr>")
+                (.. ":silent! call " (vim-repeat mapping) "<cr>")
                 ""))
           (unpack args))
         {:silent true
@@ -46,7 +49,7 @@
                          m.lhs))
                   (nvim.buf_get_keymap 0 :n))]
     (when (and mark mapping)
-      (nvim.ex.silent_ (.. "call repeat#set('" mapping mark "', 1)")))))
+      (nvim.ex.silent_ :call (vim-repeat (.. mapping mark))))))
 
 (defn on-filetype []
   (buf :n :LogSplit (cfg :log_split) :conjure.log :split)
