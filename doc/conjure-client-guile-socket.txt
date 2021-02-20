@@ -1,0 +1,61 @@
+                                                 *conjure-client-guile-socket*
+
+==============================================================================
+CONTENTS                                *conjure-client-guile-socket-contents*
+
+    1. Introduction ........ |conjure-client-guile-socket-introduction|
+    2. Mappings ................ |conjure-client-guile-socket-mappings|
+    3. Configuration ...... |conjure-client-guile-socket-configuration|
+
+==============================================================================
+INTRODUCTION                        *conjure-client-guile-socket-introduction*
+
+>
+  Guile is the "GNU Ubiquitous Intelligent Language for Extensions", 
+  implementing the Scheme dialect of Lisp. 
+
+With this client, Conjure connects to Guile's REPL socket.  To create the
+socket, run your Guile program using "--listen=/home/user/guile.socket".
+Note that you must give a full path for the socket, because the leading slash
+tells Guile to listen via a Unix domain socket instead of a network socket.
+Network socket support is planned for this client, but not yet available - a
+Unix domain socket is strongly preferred, where possible, for security.
+
+Check out `:ConjureSchool` if you're unsure about what evaluation operations
+you can perform.
+
+ * https://www.gnu.org/software/guile/
+ * https://www.gnu.org/software/guile/manual/html_node/Command_002dline-Options.html
+
+==============================================================================
+MAPPINGS                                *conjure-client-guile-socket-mappings*
+
+These mappings are the defaults, you can change them as described in
+|conjure-mappings| and |conjure-configuration|.
+
+See |conjure-client-guile-socket-configuration| for specific configuration
+options relevant to these mappings.
+
+<localleader>cs          Connect to Guile REPL
+
+<localleader>cS          Disconnect from Guile REPL
+
+==============================================================================
+CONFIGURATION                      *conjure-client-guile-socket-configuration*
+
+All configuration can be set as described in |conjure-configuration|.
+
+
+`g:conjure#client#guile#socket#mapping#start`
+            Connect to Guile REPL
+            Default: `"cs"`
+
+`g:conjure#client#guile#socket#mapping#stop`
+            Disconnect from Guile REPL
+            Default: `"cS"`
+
+`g:conjure#client#guile#stdio#pipename`
+            Name of Guile socket, e.g. /home/user/guile.socket
+            Default: none - you must set this variable
+
+vim:tw=78:sw=2:ts=2:ft=help:norl:et:listchars=
