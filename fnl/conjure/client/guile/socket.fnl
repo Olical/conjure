@@ -99,8 +99,8 @@
 
 (defn start []
   (if (state :repl)
-    (log.append ["; Can't start, REPL is already running."
-                 (.. "; Stop the REPL with "
+    (log.append ["; Already connected."
+                 (.. "; Disconnect from the REPL with "
                      (config.get-in [:mapping :prefix])
                      (cfg [:mapping :stop]))]
                 {:break? true})
