@@ -3,6 +3,7 @@
             nvim conjure.aniseed.nvim
             str conjure.aniseed.string
             client conjure.client
+            text conjure.text
             log conjure.log}})
 
 (def- uv vim.loop)
@@ -10,7 +11,7 @@
 (defn- strip-unprintable [s]
   (string.gsub
     (string.gsub
-      (string.gsub s "%c%[[%d%;]+m" "")
+      (text.strip-ansi-escape-sequences s)
       "\1" "")
     "\2" ""))
 
