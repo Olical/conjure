@@ -58,7 +58,7 @@
         {:batch? true}))))
 
 (defn eval-file [opts]
-  (eval-str (a.assoc opts :code (.. "(define a 666)"))))
+  (eval-str (a.assoc opts :code (.. "(load \"" opts.file-path "\")"))))
 
 (defn doc-str [opts]
   (eval-str (a.update opts :code #(.. ",doc " $1))))
