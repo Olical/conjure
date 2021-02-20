@@ -51,11 +51,12 @@
    :relative_file_root nil
    :path_subs nil
 
-   :filetypes [:clojure :fennel :janet :racket]
+   :filetypes [:clojure :fennel :janet :racket :scheme.guile]
    :filetype {:fennel :conjure.client.fennel.aniseed
               :racket :conjure.client.racket.stdio
               :clojure :conjure.client.clojure.nrepl
-              :janet :conjure.client.janet.netrepl}
+              :janet :conjure.client.janet.netrepl
+              :scheme.guile :conjure.client.guile.socket}
 
    :eval
    {:result_register "c"
