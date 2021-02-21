@@ -229,6 +229,10 @@ defined as you enter a buffer and can't be altered after the fact.
             will not load if the file type is in this list but there isn't an
             equivalent `g:conjure#filetype#[filetype]` configuration value.
 
+            Dotted filetypes are matched right to left, so the `guile.socket`
+            client will match against `scheme` or `scheme.guile` filetypes by
+            default.
+
             Default: `["clojure", "fennel", "janet", "racket"]`
 
 `g:conjure#filetype#clojure`

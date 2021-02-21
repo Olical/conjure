@@ -2,6 +2,7 @@
   {require {a conjure.aniseed.core
             nvim conjure.aniseed.nvim
             fennel conjure.aniseed.fennel
+            str conjure.aniseed.string
             config conjure.config
             dyn conjure.dynamic}})
 
@@ -67,7 +68,13 @@
   (vim.schedule (wrap f ...)))
 
 (defn- current-client-module-name []
-  (config.get-in [:filetype (filetype)]))
+  (var mod-name nil)
+  (let [fts (str.split (filetype) "%.")]
+    (for [i (a.count fts) 1 -1]
+      (let [x (config.get-in [:filetype (. fts i)])]
+        (when (and (not mod-name) x)
+          (set mod-name x)))))
+  mod-name)
 
 (defn current []
   (let [ft (filetype)

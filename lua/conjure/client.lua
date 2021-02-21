@@ -19,11 +19,11 @@ end
 local function _1_(...)
   local ok_3f_0_, val_0_ = nil, nil
   local function _1_()
-    return {require("conjure.aniseed.core"), require("conjure.config"), require("conjure.dynamic"), require("conjure.aniseed.fennel"), require("conjure.aniseed.nvim")}
+    return {require("conjure.aniseed.core"), require("conjure.config"), require("conjure.dynamic"), require("conjure.aniseed.fennel"), require("conjure.aniseed.nvim"), require("conjure.aniseed.string")}
   end
   ok_3f_0_, val_0_ = pcall(_1_)
   if ok_3f_0_ then
-    _0_0["aniseed/local-fns"] = {require = {a = "conjure.aniseed.core", config = "conjure.config", dyn = "conjure.dynamic", fennel = "conjure.aniseed.fennel", nvim = "conjure.aniseed.nvim"}}
+    _0_0["aniseed/local-fns"] = {require = {a = "conjure.aniseed.core", config = "conjure.config", dyn = "conjure.dynamic", fennel = "conjure.aniseed.fennel", nvim = "conjure.aniseed.nvim", str = "conjure.aniseed.string"}}
     return val_0_
   else
     return print(val_0_)
@@ -35,6 +35,7 @@ local config = _local_0_[2]
 local dyn = _local_0_[3]
 local fennel = _local_0_[4]
 local nvim = _local_0_[5]
+local str = _local_0_[6]
 local _2amodule_2a = _0_0
 local _2amodule_name_2a = "conjure.client"
 do local _ = ({nil, _0_0, {{}, nil, nil, nil}})[2] end
@@ -251,7 +252,17 @@ local current_client_module_name = nil
 do
   local v_0_ = nil
   local function current_client_module_name0()
-    return config["get-in"]({"filetype", filetype()})
+    local mod_name = nil
+    do
+      local fts = str.split(filetype(), "%.")
+      for i = a.count(fts), 1, -1 do
+        local x = config["get-in"]({"filetype", fts[i]})
+        if (not mod_name and x) then
+          mod_name = x
+        end
+      end
+    end
+    return mod_name
   end
   v_0_ = current_client_module_name0
   local t_0_ = (_0_0)["aniseed/locals"]
