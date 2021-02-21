@@ -224,6 +224,98 @@ do
   t_0_["set-win-opts!"] = v_0_
   set_win_opts_21 = v_0_
 end
+local in_box_3f = nil
+do
+  local v_0_ = nil
+  local function in_box_3f0(box, pos)
+    return ((pos.x >= box.x1) and (pos.x <= box.x2) and (pos.y >= box.y1) and (pos.y <= box.y2))
+  end
+  v_0_ = in_box_3f0
+  local t_0_ = (_0_0)["aniseed/locals"]
+  t_0_["in-box?"] = v_0_
+  in_box_3f = v_0_
+end
+local flip_anchor = nil
+do
+  local v_0_ = nil
+  local function flip_anchor0(anchor, n)
+    local chars = {anchor:sub(1, 1), anchor:sub(2)}
+    local flip = {E = "W", N = "S", S = "N", W = "E"}
+    local function _2_(_241)
+      return a.get(flip, _241)
+    end
+    return str.join(a.update(chars, n, _2_))
+  end
+  v_0_ = flip_anchor0
+  local t_0_ = (_0_0)["aniseed/locals"]
+  t_0_["flip-anchor"] = v_0_
+  flip_anchor = v_0_
+end
+local pad_box = nil
+do
+  local v_0_ = nil
+  local function pad_box0(box, padding)
+    local function _2_(_241)
+      return (_241 - padding.x)
+    end
+    local function _3_(_241)
+      return (_241 - padding.y)
+    end
+    local function _4_(_241)
+      return (_241 + padding.x)
+    end
+    local function _5_(_241)
+      return (_241 + padding.y)
+    end
+    return a.update(a.update(a.update(a.update(box, "x1", _2_), "y1", _3_), "x2", _4_), "y2", _5_)
+  end
+  v_0_ = pad_box0
+  local t_0_ = (_0_0)["aniseed/locals"]
+  t_0_["pad-box"] = v_0_
+  pad_box = v_0_
+end
+local hud_window_pos = nil
+do
+  local v_0_ = nil
+  local function hud_window_pos0(anchor, size, rec_3f)
+    local north = 0
+    local west = 0
+    local south = (editor.height() - 2)
+    local east = editor.width()
+    local padding_percent = config["get-in"]({"log", "hud", "overlap_padding"})
+    local pos = nil
+    local _2_
+    if ("NE" == anchor) then
+      _2_ = {box = {x1 = (east - size.width), x2 = east, y1 = north, y2 = (north + size.height)}, col = east, row = north}
+    elseif ("SE" == anchor) then
+      _2_ = {box = {x1 = (east - size.width), x2 = east, y1 = (south - size.height), y2 = south}, col = east, row = south}
+    elseif ("SW" == anchor) then
+      _2_ = {box = {x1 = west, x2 = (west + size.width), y1 = (south - size.height), y2 = south}, col = west, row = south}
+    elseif ("NW" == anchor) then
+      _2_ = {box = {x1 = west, x2 = (west + size.width), y1 = north, y2 = (north + size.height)}, col = west, row = north}
+    else
+      nvim.err_writeln("g:conjure#log#hud#anchor must be one of: NE, SE, SW, NW")
+      _2_ = hud_window_pos0("NE", size)
+    end
+    pos = a.assoc(_2_, "anchor", anchor)
+    if (not rec_3f and in_box_3f(pad_box(pos.box, {x = editor["percent-width"](padding_percent), y = editor["percent-height"](padding_percent)}), {x = editor["cursor-left"](), y = editor["cursor-top"]()})) then
+      local function _4_()
+        if (size.width > size.height) then
+          return 1
+        else
+          return 2
+        end
+      end
+      return hud_window_pos0(flip_anchor(anchor, _4_()), size, true)
+    else
+      return pos
+    end
+  end
+  v_0_ = hud_window_pos0
+  local t_0_ = (_0_0)["aniseed/locals"]
+  t_0_["hud-window-pos"] = v_0_
+  hud_window_pos = v_0_
+end
 local display_hud = nil
 do
   local v_0_ = nil
@@ -231,17 +323,11 @@ do
     if config["get-in"]({"log", "hud", "enabled"}) then
       clear_close_hud_passive_timer()
       local buf = upsert_buf()
-      local cursor_top_right_3f = ((editor["cursor-left"]() > editor["percent-width"](0.5)) and (editor["cursor-top"]() < editor["percent-height"](0.5)))
       local last_break = a.last(break_lines(buf))
       local line_count = nvim.buf_line_count(buf)
-      local win_opts = nil
-      local _2_
-      if cursor_top_right_3f then
-        _2_ = (editor.height() - 2)
-      else
-        _2_ = 0
-      end
-      win_opts = {anchor = "SE", col = editor.width(), focusable = false, height = editor["percent-height"](config["get-in"]({"log", "hud", "height"})), relative = "editor", row = _2_, style = "minimal", width = editor["percent-width"](config["get-in"]({"log", "hud", "width"}))}
+      local size = {height = editor["percent-height"](config["get-in"]({"log", "hud", "height"})), width = editor["percent-width"](config["get-in"]({"log", "hud", "width"}))}
+      local pos = hud_window_pos(config["get-in"]({"log", "hud", "anchor"}), size)
+      local win_opts = {anchor = pos.anchor, col = pos.col, focusable = false, height = size.height, relative = "editor", row = pos.row, style = "minimal", width = size.width}
       if not nvim.win_is_valid(state.hud.id) then
         close_hud()
       end

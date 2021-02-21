@@ -403,6 +403,21 @@ defined as you enter a buffer and can't be altered after the fact.
             disable the mechanic entirely and close instantly.
             Default: `0`
 
+`g:conjure#log#hud#overlap_padding`
+            Extra space checked around the HUD window for the cursor. If it's
+            within this padded boundary (too close to the HUD) it'll move to
+            the opposite side of the screen to stay out of the way.
+            A float between 0.0 and 1.0.
+            Default: `0.1`
+
+`g:conjure#log#hud#anchor`
+            Preferred corner position for the HUD. This is not guaranteed, it
+            will try to move out of the way to avoid covering your cursor and
+            the code you're reading.
+            Example: Set this to `"SE"` and the width to `1.0` to get a full
+            window width HUD at the bottom of the screen.
+            Default: `"NE"`
+
 `g:conjure#log#botright`
             Force the log to always open at the bottom or far right of the
             editor, taking up the full width or height respectively.

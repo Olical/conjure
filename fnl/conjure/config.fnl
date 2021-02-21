@@ -100,7 +100,9 @@
     :hud {:width 0.42
           :height 0.3
           :enabled true
-          :passive_close_delay 0}
+          :passive_close_delay 0
+          :overlap_padding 0.1
+          :anchor :NE}
     :botright false
     :break_length 80
     :trim {:at 10000

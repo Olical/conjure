@@ -82,24 +82,79 @@
                                            (config.get-in [:log :fold :marker :end])))
   (nvim.win_set_option win :foldlevel 0))
 
+(defn- in-box? [box pos]
+  (and (>= pos.x box.x1) (<= pos.x box.x2)
+       (>= pos.y box.y1) (<= pos.y box.y2)))
+
+(defn- flip-anchor [anchor n]
+  (let [chars [(anchor:sub 1 1)
+               (anchor:sub 2)]
+        flip {:N :S
+              :S :N
+              :E :W
+              :W :E}]
+    (str.join (a.update chars n #(a.get flip $1)))))
+
+(defn- pad-box [box padding]
+  (-> box
+      (a.update :x1 #(- $1 padding.x))
+      (a.update :y1 #(- $1 padding.y))
+      (a.update :x2 #(+ $1 padding.x))
+      (a.update :y2 #(+ $1 padding.y))))
+
+(defn- hud-window-pos [anchor size rec?]
+  (let [north 0 west 0
+        south (- (editor.height) 2)
+        east (editor.width)
+        padding-percent (config.get-in [:log :hud :overlap_padding])
+        pos (-> (if
+                  (= :NE anchor) {:row north :col east
+                                  :box {:y1 north :x1 (- east size.width)
+                                        :y2 (+ north size.height) :x2 east}}
+                  (= :SE anchor) {:row south :col east
+                                  :box {:y1 (- south size.height) :x1 (- east size.width)
+                                        :y2 south :x2 east}}
+                  (= :SW anchor) {:row south :col west
+                                  :box {:y1 (- south size.height) :x1 west
+                                        :y2 south :x2 (+ west size.width)}}
+                  (= :NW anchor) {:row north :col west
+                                  :box {:y1 north :x1 west
+                                        :y2 (+ north size.height) :x2 (+ west size.width)}}
+                  (do
+                    (nvim.err_writeln "g:conjure#log#hud#anchor must be one of: NE, SE, SW, NW")
+                    (hud-window-pos :NE size)))
+                (a.assoc :anchor anchor))]
+
+    (if (and (not rec?)
+             (in-box?
+               (pad-box
+                 pos.box
+                 {:x (editor.percent-width padding-percent)
+                  :y (editor.percent-height padding-percent)})
+               {:x (editor.cursor-left)
+                :y (editor.cursor-top)}))
+      (hud-window-pos
+        (flip-anchor anchor (if (> size.width size.height) 1 2))
+        size true)
+      pos)))
+
 (defn- display-hud []
   (when (config.get-in [:log :hud :enabled])
     (clear-close-hud-passive-timer)
     (let [buf (upsert-buf)
-          cursor-top-right? (and (> (editor.cursor-left) (editor.percent-width 0.5))
-                                 (< (editor.cursor-top) (editor.percent-height 0.5)))
           last-break (a.last (break-lines buf))
           line-count (nvim.buf_line_count buf)
+          size {:width (editor.percent-width (config.get-in [:log :hud :width]))
+                :height (editor.percent-height (config.get-in [:log :hud :height]))}
+          pos (hud-window-pos (config.get-in [:log :hud :anchor]) size)
           win-opts
           {:relative :editor
-           :row (if cursor-top-right?
-                  (- (editor.height) 2)
-                  0)
-           :col (editor.width)
-           :anchor :SE
+           :row pos.row
+           :col pos.col
+           :anchor pos.anchor
 
-           :width (editor.percent-width (config.get-in [:log :hud :width]))
-           :height (editor.percent-height (config.get-in [:log :hud :height]))
+           :width size.width
+           :height size.height
            :focusable false
            :style :minimal}]
 
