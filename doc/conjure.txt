@@ -233,7 +233,7 @@ defined as you enter a buffer and can't be altered after the fact.
             client will match against `scheme` or `scheme.guile` filetypes by
             default.
 
-            Default: `["clojure", "fennel", "janet", "racket"]`
+            Default: `["clojure", "fennel", "janet", "racket", "guile", "scheme"]`
 
 `g:conjure#filetype#clojure`
             Client to use for `clojure` buffers.
@@ -257,6 +257,11 @@ defined as you enter a buffer and can't be altered after the fact.
             Client to use for `racket` buffers.
             Help: |conjure-client-racket-stdio|
             Default: `"conjure.client.racket.stdio"`
+
+`g:conjure#filetype#scheme` and `g:conjure#filetype#guile`
+            Client to use for `scheme` and `guile` buffers.
+            Help: |conjure-client-guile-socket|
+            Default: `"conjure.client.guile.socket"`
 
 `g:conjure#eval#result_register`
             Every evaluation captures the result and places it in a Neovim
