@@ -112,6 +112,7 @@
                (cfg [:mapping :run_all_tests]) *module-name* :run-all-tests))
 
 (defn completions [opts]
+  ;; TODO Add type hints
   (let [code (when (not (str.blank? opts.prefix))
                (.. "((. (require :conjure.aniseed.core) :keys) "
                    (opts.prefix:gsub ".$" "") ")"))
