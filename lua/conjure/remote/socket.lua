@@ -19,11 +19,11 @@ end
 local function _1_(...)
   local ok_3f_0_, val_0_ = nil, nil
   local function _1_()
-    return {require("conjure.aniseed.core"), require("conjure.client"), require("conjure.log"), require("conjure.aniseed.nvim"), require("conjure.aniseed.string")}
+    return {require("conjure.aniseed.core"), require("conjure.client"), require("conjure.log"), require("conjure.aniseed.nvim"), require("conjure.aniseed.string"), require("conjure.text")}
   end
   ok_3f_0_, val_0_ = pcall(_1_)
   if ok_3f_0_ then
-    _0_0["aniseed/local-fns"] = {require = {a = "conjure.aniseed.core", client = "conjure.client", log = "conjure.log", nvim = "conjure.aniseed.nvim", str = "conjure.aniseed.string"}}
+    _0_0["aniseed/local-fns"] = {require = {a = "conjure.aniseed.core", client = "conjure.client", log = "conjure.log", nvim = "conjure.aniseed.nvim", str = "conjure.aniseed.string", text = "conjure.text"}}
     return val_0_
   else
     return print(val_0_)
@@ -35,6 +35,7 @@ local client = _local_0_[2]
 local log = _local_0_[3]
 local nvim = _local_0_[4]
 local str = _local_0_[5]
+local text = _local_0_[6]
 local _2amodule_2a = _0_0
 local _2amodule_name_2a = "conjure.remote.socket"
 do local _ = ({nil, _0_0, {{}, nil, nil, nil}})[2] end
@@ -49,7 +50,7 @@ local strip_unprintable = nil
 do
   local v_0_ = nil
   local function strip_unprintable0(s)
-    return string.gsub(string.gsub(string.gsub(s, "%c%[[%d%;]+m", ""), "\1", ""), "\2", "")
+    return string.gsub(string.gsub(text["strip-ansi-escape-sequences"](s), "\1", ""), "\2", "")
   end
   v_0_ = strip_unprintable0
   local t_0_ = (_0_0)["aniseed/locals"]
