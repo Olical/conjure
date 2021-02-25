@@ -162,7 +162,7 @@
     {:args "<line1>, <line2>, <q-args>"}))
 
 (nvim.ex.command_
-  "-nargs=* -range ConjureConnect"
+  "-nargs=* -range -complete=file ConjureConnect"
   (bridge.viml->lua
     :conjure.mapping :connect-command
     {:args "<f-args>"}))
