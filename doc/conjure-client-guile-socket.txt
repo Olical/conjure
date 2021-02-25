@@ -36,9 +36,9 @@ These mappings are the defaults, you can change them as described in
 See |conjure-client-guile-socket-configuration| for specific configuration
 options relevant to these mappings.
 
-<localleader>cs          Connect to Guile REPL
+<localleader>cc          Connect to Guile REPL
 
-<localleader>cS          Disconnect from Guile REPL
+<localleader>cd          Disconnect from Guile REPL
 
 ==============================================================================
 CONFIGURATION                      *conjure-client-guile-socket-configuration*
@@ -54,8 +54,11 @@ All configuration can be set as described in |conjure-configuration|.
             Disconnect from Guile REPL
             Default: `"cS"`
 
-`g:conjure#client#guile#stdio#pipename`
-            Name of Guile socket, e.g. /home/user/guile.socket
-            Default: none - you must set this variable
+`g:conjure#client#guile#socket#pipename`
+            Default path to your Guile socket used when connecting. Guile
+            requires this path to be absolute!
+            Command: `guile --listen=/home/user/guile-repl.socket`
+            Example: `"/home/user/guile-repl.socket"`
+            Default: `nil`
 
 vim:tw=78:sw=2:ts=2:ft=help:norl:et:listchars=

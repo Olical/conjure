@@ -9,11 +9,8 @@
 (def- uv vim.loop)
 
 (defn- strip-unprintable [s]
-  (string.gsub
-    (string.gsub
-      (text.strip-ansi-escape-sequences s)
-      "\1" "")
-    "\2" ""))
+  (-> (text.strip-ansi-escape-sequences s)
+      (string.gsub "[\1\2]" "")))
 
 (defn start [opts]
   "Connects to an external REPL via a socket (TCP or named pipe), and gives you
@@ -21,16 +18,17 @@
   connect Conjure to a running process, but has the same problem as stdio
   clients regarding the difficulty of tying results to input.
   * opts.prompt-pattern: Identify result boundaries such as '> '.
-  * opts.pipe-name: Name of the pipe
-  * opts.hostname: Hostname to connect to
-  * opts.port: Port number to connect to
+  * opts.pipename: Name of the pipe
+  * opts.on-success: Called when the connection succeeds.
+  * opts.on-failure: Called when the connection fails.
+  * opts.on-close: Called when the connection closes.
   * opts.on-stray-output: Called with stray output that don't match up to a callback.
   * opts.on-exit: Called on exit with the code and signal."
-  (let [repl-pipe (uv.new_pipe true)]
-
-    (var repl {:queue []
-               :current nil
-               :text ""})
+  (let [repl-pipe (uv.new_pipe true)
+        repl {:status :pending
+              :queue []
+              :current nil
+              :buffer ""}]
 
     (fn destroy []
       (pcall #(repl-pipe:shutdown))
@@ -47,25 +45,35 @@
     (fn on-message [chunk]
       (log.dbg "receive" chunk)
       (when chunk
-        (let [(done? error? result) (opts.parse-output chunk)
+        (let [{: done? : error? : result} (opts.parse-output chunk)
               cb (a.get-in repl [:current :cb] opts.on-stray-output)]
 
           (when error?
-            (opts.on-error chunk))
+            (opts.on-error {:err repl.buffer :done? done?} repl))
 
           (when done?
             (when cb
-              (pcall
-                #(cb {:out result
-                      :done? done?})))
+              (pcall #(cb {:out result :done? done?})))
             (a.assoc repl :current nil)
-            (a.assoc repl :text "")
+            (a.assoc repl :buffer "")
             (next-in-queue)))))
 
     (fn on-output [err chunk]
-      (when chunk
-        (a.assoc repl :text (.. (a.get repl :text) chunk))
-        (on-message (strip-unprintable (a.get repl :text)))))
+      (if
+        err
+        (do
+          (opts.on-failure
+            (a.merge!
+              repl
+              {:status :failed
+               :err err})))
+
+        chunk
+        (do
+          (a.assoc repl :buffer (.. (a.get repl :buffer) chunk))
+          (on-message (strip-unprintable (a.get repl :buffer))))
+
+        (opts.on-close (a.assoc repl :status :closed))))
 
     (fn send [code cb opts]
       (table.insert
@@ -81,15 +89,29 @@
       (next-in-queue)
       nil)
 
-    ;; FIXME: Open TCP socket if hostname/port given
-    (when opts.pipe-name
-      (when (not (= :fail (uv.pipe_connect repl-pipe opts.pipe-name)))
-        (client.schedule #(opts.on-success))))
+    ;; TODO Add support for host / port sockets.
+    (if opts.pipename
+      (uv.pipe_connect
+        repl-pipe opts.pipename
+        (client.schedule-wrap
+          (fn [err]
+            (if err
+              (opts.on-failure
+                (a.merge!
+                  repl
+                  {:status :failed
+                   :err err}))
+              (do
+                (opts.on-success (a.assoc repl :status :connected))
+                (repl-pipe:read_start
+                  (client.schedule-wrap
+                    (fn [err chunk]
+                      (on-output err chunk)))))))))
 
-    (repl-pipe:read_start (client.schedule-wrap on-output))
+      (nvim.err_writeln (.. *module-name* ": No pipename specified")))
 
     (a.merge!
       repl
-      {:send send
-       :opts opts
-       :destroy destroy})))
+      {:opts opts
+       :destroy destroy
+       :send send})))

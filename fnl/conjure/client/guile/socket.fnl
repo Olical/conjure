@@ -15,11 +15,9 @@
   {:client
    {:guile
     {:socket
-     {:mapping {:start "cs"
-                :stop "cS"}
-      :pipename nil
-      :hostname nil
-      :port nil}}}})
+     {:mapping {:connect "cc"
+                :disconnect "cd"}
+      :pipename nil}}}})
 
 (def- cfg (config.get-in-fn [:client :guile :socket]))
 
@@ -31,17 +29,26 @@
 
 (defn- with-repl-or-warn [f opts]
   (let [repl (state :repl)]
-    (if repl
+    (if (and repl (= :connected repl.status))
       (f repl)
       (log.append [(.. comment-prefix "No REPL running")]))))
 
 (defn- format-message [msg]
-  (str.split (or msg.out msg.err) "\n"))
+  (if
+    msg.out
+    (text.split-lines msg.out)
+
+    msg.err
+    (-> msg.err
+        (string.gsub "%s*Entering a new prompt%. .*]>%s*" "")
+        (text.prefixed-lines comment-prefix))
+
+    [(.. comment-prefix "Empty result")]))
 
 (defn- display-result [msg]
   (log.append
     (->> (format-message msg)
-         (a.filter #(not (= "" $1))))))
+         (a.filter #(not= "" $1)))))
 
 (defn eval-str [opts]
   (with-repl-or-warn
@@ -51,7 +58,7 @@
         (fn [msgs]
           (when (and (= 1 (a.count msgs))
                      (= "" (a.get-in msgs [1 :out])))
-            (a.assoc-in msgs [1 :out] (.. comment-prefix "Empty result.")))
+            (a.assoc-in msgs [1 :out] (.. comment-prefix "Empty result")))
 
           (opts.on-result (str.join "\n" (format-message (a.last msgs))))
           (a.run! display-result msgs))
@@ -63,76 +70,83 @@
 (defn doc-str [opts]
   (eval-str (a.update opts :code #(.. "(procedure-documentation " $1 ")"))))
 
-(defn- display-repl-status [status]
+(defn- display-repl-status []
   (let [repl (state :repl)]
     (when repl
       (log.append
-        [(.. comment-prefix (a.pr-str (a.get-in repl [:opts :pipe-name])) " (" status ")")]
+        [(.. comment-prefix
+             (let [pipename (a.get-in repl [:opts :pipename])]
+               (if pipename
+                 (.. pipename " ")
+                 ""))
+             "(" repl.status
+             (let [err (a.get repl :err)]
+               (if err
+                 (.. " " err)
+                 ""))
+             ")")]
         {:break? true}))))
 
-(defn stop []
+(defn disconnect []
   (let [repl (state :repl)]
     (when repl
       (repl.destroy)
-      (display-repl-status :disconnected)
+      (a.assoc repl :status :disconnected)
+      (display-repl-status)
       (a.assoc (state) :repl nil))))
 
 (defn- parse-guile-result [s]
   (if (s:find "scheme@%([%w%-%s]+%)> ")
     (let [(ind1 ind2 result) (s:find "%$%d+ = ([^\n]+)\n")]
-      (values true false result))
+      {:done? true
+       :error? false
+       :result result})
     (if (s:find "scheme@%([%w%-%s]+%) %[%d+%]>")
-      (values true true nil)
-      (values false false s))))
+      {:done? true
+       :error? true
+       :result nil}
+      {:done? false
+       :error? false
+       :result s})))
 
 (defn enter []
   (let [repl (state :repl)
         c (extract.context)]
-    (when repl
-      (if c
-        (repl.send
-          (.. ",m " c "\n")
-          (fn []))
-        (repl.send
-          ",m (guile-user)\n"
-          (fn []))))))
+    (when (and repl (= :connected repl.status))
+      (repl.send
+        (.. ",m " (or c "(guile-user)") "\n")
+        (fn [])))))
 
-(defn start []
-  (if (state :repl)
-    (log.append ["; Already connected."
-                 (.. "; Disconnect from the REPL with "
-                     (config.get-in [:mapping :prefix])
-                     (cfg [:mapping :stop]))]
-                {:break? true})
-    (a.assoc
-      (state) :repl
-      (socket.start
-        {:parse-output parse-guile-result
-
-         :pipe-name (cfg [:pipename])
-
-         :on-success
-         (fn []
-           (display-repl-status :connected)
-           (enter))
-
-         :on-error
-         (fn [err]
-           (log.append ["Error!"])
-           (with-repl-or-warn
-             (fn [repl]
-               (repl.send ",q" nil))))
-
-         :on-stray-output
-         (fn [msg]
-           (display-result msg))}))))
+(defn connect [opts]
+  (disconnect)
+  (let [pipename (or (cfg [:pipename]) (a.get opts :port))]
+    (if (not= :string (type pipename))
+      (log.append
+        [(.. comment-prefix "g:conjure#client#guile#socket#pipename is not specified")
+         (.. comment-prefix "Please set it to the name of your Guile REPL pipe or pass it to :ConjureConnect [pipename]")])
+      (a.assoc
+        (state) :repl
+        (socket.start
+          {:parse-output parse-guile-result
+           :pipename pipename
+           :on-success
+           (fn []
+             (display-repl-status)
+             (enter))
+           :on-error
+           (fn [msg repl]
+             (display-result msg)
+             (repl.send ",q\n" (fn [])))
+           :on-failure disconnect
+           :on-close disconnect
+           :on-stray-output display-result})))))
 
 (defn on-load []
   (augroup
     conjure-guile-socket-bufenter
     (autocmd :BufEnter (.. :* buf-suffix) (viml->fn :enter)))
-  (start))
+  (connect))
 
 (defn on-filetype []
-  (mapping.buf :n :GuileStart (cfg [:mapping :start]) *module-name* :start)
-  (mapping.buf :n :GuileStop (cfg [:mapping :stop]) *module-name* :stop))
+  (mapping.buf :n :GuileConnect (cfg [:mapping :connect]) *module-name* :connect)
+  (mapping.buf :n :GuileDisconnect (cfg [:mapping :disconnect]) *module-name* :disconnect))

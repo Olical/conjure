@@ -50,7 +50,7 @@ local strip_unprintable = nil
 do
   local v_0_ = nil
   local function strip_unprintable0(s)
-    return string.gsub(string.gsub(text["strip-ansi-escape-sequences"](s), "\1", ""), "\2", "")
+    return string.gsub(text["strip-ansi-escape-sequences"](s), "[\1\2]", "")
   end
   v_0_ = strip_unprintable0
   local t_0_ = (_0_0)["aniseed/locals"]
@@ -64,7 +64,7 @@ do
     local v_0_0 = nil
     local function start0(opts)
       local repl_pipe = uv.new_pipe(true)
-      local repl = {current = nil, queue = {}, text = ""}
+      local repl = {buffer = "", current = nil, queue = {}, status = "pending"}
       local function destroy()
         local function _2_()
           return repl_pipe:shutdown()
@@ -84,10 +84,13 @@ do
       local function on_message(chunk)
         log.dbg("receive", chunk)
         if chunk then
-          local done_3f, error_3f, result = opts["parse-output"](chunk)
+          local _let_0_ = opts["parse-output"](chunk)
+          local done_3f = _let_0_["done?"]
+          local error_3f = _let_0_["error?"]
+          local result = _let_0_["result"]
           local cb = a["get-in"](repl, {"current", "cb"}, opts["on-stray-output"])
           if error_3f then
-            opts["on-error"](chunk)
+            opts["on-error"]({["done?"] = done_3f, err = repl.buffer}, repl)
           end
           if done_3f then
             if cb then
@@ -97,15 +100,19 @@ do
               pcall(_3_)
             end
             a.assoc(repl, "current", nil)
-            a.assoc(repl, "text", "")
+            a.assoc(repl, "buffer", "")
             return next_in_queue()
           end
         end
       end
       local function on_output(err, chunk)
-        if chunk then
-          a.assoc(repl, "text", (a.get(repl, "text") .. chunk))
-          return on_message(strip_unprintable(a.get(repl, "text")))
+        if err then
+          return opts["on-failure"](a["merge!"](repl, {err = err, status = "failed"}))
+        elseif chunk then
+          a.assoc(repl, "buffer", (a.get(repl, "buffer") .. chunk))
+          return on_message(strip_unprintable(a.get(repl, "buffer")))
+        else
+          return opts["on-close"](a.assoc(repl, "status", "closed"))
         end
       end
       local function send(code, cb, opts0)
@@ -126,15 +133,22 @@ do
         next_in_queue()
         return nil
       end
-      if opts["pipe-name"] then
-        if not ("fail" == uv.pipe_connect(repl_pipe, opts["pipe-name"])) then
-          local function _2_()
-            return opts["on-success"]()
+      if opts.pipename then
+        local function _2_(err)
+          if err then
+            return opts["on-failure"](a["merge!"](repl, {err = err, status = "failed"}))
+          else
+            opts["on-success"](a.assoc(repl, "status", "connected"))
+            local function _3_(err0, chunk)
+              return on_output(err0, chunk)
+            end
+            return repl_pipe:read_start(client["schedule-wrap"](_3_))
           end
-          client.schedule(_2_)
         end
+        uv.pipe_connect(repl_pipe, opts.pipename, client["schedule-wrap"](_2_))
+      else
+        nvim.err_writeln((_2amodule_name_2a .. ": No pipename specified"))
       end
-      repl_pipe:read_start(client["schedule-wrap"](on_output))
       return a["merge!"](repl, {destroy = destroy, opts = opts, send = send})
     end
     v_0_0 = start0

@@ -43,7 +43,7 @@ local str = _local_0_[9]
 local _2amodule_2a = _0_0
 local _2amodule_name_2a = "conjure.client.guile.socket"
 do local _ = ({nil, _0_0, {{nil}, nil, nil, nil}})[2] end
-config.merge({client = {guile = {socket = {hostname = nil, mapping = {start = "cs", stop = "cS"}, pipename = nil, port = nil}}}})
+config.merge({client = {guile = {socket = {mapping = {connect = "cc", disconnect = "cd"}, pipename = nil}}}})
 local cfg = nil
 do
   local v_0_ = config["get-in-fn"]({"client", "guile", "socket"})
@@ -103,7 +103,7 @@ do
   local v_0_ = nil
   local function with_repl_or_warn0(f, opts)
     local repl = state("repl")
-    if repl then
+    if (repl and ("connected" == repl.status)) then
       return f(repl)
     else
       return log.append({(comment_prefix .. "No REPL running")})
@@ -118,7 +118,13 @@ local format_message = nil
 do
   local v_0_ = nil
   local function format_message0(msg)
-    return str.split((msg.out or msg.err), "\n")
+    if msg.out then
+      return text["split-lines"](msg.out)
+    elseif msg.err then
+      return text["prefixed-lines"](string.gsub(msg.err, "%s*Entering a new prompt%. .*]>%s*", ""), comment_prefix)
+    else
+      return {(comment_prefix .. "Empty result")}
+    end
   end
   v_0_ = format_message0
   local t_0_ = (_0_0)["aniseed/locals"]
@@ -130,7 +136,7 @@ do
   local v_0_ = nil
   local function display_result0(msg)
     local function _2_(_241)
-      return not ("" == _241)
+      return ("" ~= _241)
     end
     return log.append(a.filter(_2_, format_message(msg)))
   end
@@ -148,7 +154,7 @@ do
       local function _2_(repl)
         local function _3_(msgs)
           if ((1 == a.count(msgs)) and ("" == a["get-in"](msgs, {1, "out"}))) then
-            a["assoc-in"](msgs, {1, "out"}, (comment_prefix .. "Empty result."))
+            a["assoc-in"](msgs, {1, "out"}, (comment_prefix .. "Empty result"))
           end
           opts["on-result"](str.join("\n", format_message(a.last(msgs))))
           return a["run!"](display_result, msgs)
@@ -203,10 +209,28 @@ end
 local display_repl_status = nil
 do
   local v_0_ = nil
-  local function display_repl_status0(status)
+  local function display_repl_status0()
     local repl = state("repl")
     if repl then
-      return log.append({(comment_prefix .. a["pr-str"](a["get-in"](repl, {"opts", "pipe-name"})) .. " (" .. status .. ")")}, {["break?"] = true})
+      local _2_
+      do
+        local pipename = a["get-in"](repl, {"opts", "pipename"})
+        if pipename then
+          _2_ = (pipename .. " ")
+        else
+          _2_ = ""
+        end
+      end
+      local _3_
+      do
+        local err = a.get(repl, "err")
+        if err then
+          _3_ = (" " .. err)
+        else
+          _3_ = ""
+        end
+      end
+      return log.append({(comment_prefix .. _2_ .. "(" .. repl.status .. _3_ .. ")")}, {["break?"] = true})
     end
   end
   v_0_ = display_repl_status0
@@ -214,26 +238,27 @@ do
   t_0_["display-repl-status"] = v_0_
   display_repl_status = v_0_
 end
-local stop = nil
+local disconnect = nil
 do
   local v_0_ = nil
   do
     local v_0_0 = nil
-    local function stop0()
+    local function disconnect0()
       local repl = state("repl")
       if repl then
         repl.destroy()
-        display_repl_status("disconnected")
+        a.assoc(repl, "status", "disconnected")
+        display_repl_status()
         return a.assoc(state(), "repl", nil)
       end
     end
-    v_0_0 = stop0
-    _0_0["stop"] = v_0_0
+    v_0_0 = disconnect0
+    _0_0["disconnect"] = v_0_0
     v_0_ = v_0_0
   end
   local t_0_ = (_0_0)["aniseed/locals"]
-  t_0_["stop"] = v_0_
-  stop = v_0_
+  t_0_["disconnect"] = v_0_
+  disconnect = v_0_
 end
 local parse_guile_result = nil
 do
@@ -241,12 +266,12 @@ do
   local function parse_guile_result0(s)
     if s:find("scheme@%([%w%-%s]+%)> ") then
       local ind1, ind2, result = s:find("%$%d+ = ([^\n]+)\n")
-      return true, false, result
+      return {["done?"] = true, ["error?"] = false, result = result}
     else
       if s:find("scheme@%([%w%-%s]+%) %[%d+%]>") then
-        return true, true, nil
+        return {["done?"] = true, ["error?"] = true, result = nil}
       else
-        return false, false, s
+        return {["done?"] = false, ["error?"] = false, result = s}
       end
     end
   end
@@ -263,16 +288,10 @@ do
     local function enter0()
       local repl = state("repl")
       local c = extract.context()
-      if repl then
-        if c then
-          local function _2_()
-          end
-          return repl.send((",m " .. c .. "\n"), _2_)
-        else
-          local function _2_()
-          end
-          return repl.send(",m (guile-user)\n", _2_)
+      if (repl and ("connected" == repl.status)) then
+        local function _2_()
         end
+        return repl.send((",m " .. (c or "(guile-user)") .. "\n"), _2_)
       end
     end
     v_0_0 = enter0
@@ -283,39 +302,37 @@ do
   t_0_["enter"] = v_0_
   enter = v_0_
 end
-local start = nil
+local connect = nil
 do
   local v_0_ = nil
   do
     local v_0_0 = nil
-    local function start0()
-      if state("repl") then
-        return log.append({"; Already connected.", ("; Disconnect from the REPL with " .. config["get-in"]({"mapping", "prefix"}) .. cfg({"mapping", "stop"}))}, {["break?"] = true})
+    local function connect0(opts)
+      disconnect()
+      local pipename = (cfg({"pipename"}) or a.get(opts, "port"))
+      if ("string" ~= type(pipename)) then
+        return log.append({(comment_prefix .. "g:conjure#client#guile#socket#pipename is not specified"), (comment_prefix .. "Please set it to the name of your Guile REPL pipe or pass it to :ConjureConnect [pipename]")})
       else
-        local function _2_(err)
-          log.append({"Error!"})
-          local function _3_(repl)
-            return repl.send(",q", nil)
+        local function _2_(msg, repl)
+          display_result(msg)
+          local function _3_()
           end
-          return with_repl_or_warn(_3_)
+          return repl.send(",q\n", _3_)
         end
-        local function _3_(msg)
-          return display_result(msg)
-        end
-        local function _4_()
-          display_repl_status("connected")
+        local function _3_()
+          display_repl_status()
           return enter()
         end
-        return a.assoc(state(), "repl", socket.start({["on-error"] = _2_, ["on-stray-output"] = _3_, ["on-success"] = _4_, ["parse-output"] = parse_guile_result, ["pipe-name"] = cfg({"pipename"})}))
+        return a.assoc(state(), "repl", socket.start({["on-close"] = disconnect, ["on-error"] = _2_, ["on-failure"] = disconnect, ["on-stray-output"] = display_result, ["on-success"] = _3_, ["parse-output"] = parse_guile_result, pipename = pipename}))
       end
     end
-    v_0_0 = start0
-    _0_0["start"] = v_0_0
+    v_0_0 = connect0
+    _0_0["connect"] = v_0_0
     v_0_ = v_0_0
   end
   local t_0_ = (_0_0)["aniseed/locals"]
-  t_0_["start"] = v_0_
-  start = v_0_
+  t_0_["connect"] = v_0_
+  connect = v_0_
 end
 local on_load = nil
 do
@@ -329,7 +346,7 @@ do
         nvim.ex.autocmd("BufEnter", ("*" .. buf_suffix), ("lua require('" .. _2amodule_name_2a .. "')['" .. "enter" .. "']()"))
         nvim.ex.augroup("END")
       end
-      return start()
+      return connect()
     end
     v_0_0 = on_load0
     _0_0["on-load"] = v_0_0
@@ -345,8 +362,8 @@ do
   do
     local v_0_0 = nil
     local function on_filetype0()
-      mapping.buf("n", "GuileStart", cfg({"mapping", "start"}), _2amodule_name_2a, "start")
-      return mapping.buf("n", "GuileStop", cfg({"mapping", "stop"}), _2amodule_name_2a, "stop")
+      mapping.buf("n", "GuileConnect", cfg({"mapping", "connect"}), _2amodule_name_2a, "connect")
+      return mapping.buf("n", "GuileDisconnect", cfg({"mapping", "disconnect"}), _2amodule_name_2a, "disconnect")
     end
     v_0_0 = on_filetype0
     _0_0["on-filetype"] = v_0_0

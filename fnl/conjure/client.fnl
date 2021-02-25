@@ -69,11 +69,14 @@
 
 (defn- current-client-module-name []
   (var mod-name nil)
-  (let [fts (str.split (filetype) "%.")]
-    (for [i (a.count fts) 1 -1]
-      (let [x (config.get-in [:filetype (. fts i)])]
-        (when (and (not mod-name) x)
-          (set mod-name x)))))
+  (let [ft (filetype)
+        fts (when ft
+              (str.split ft "%."))]
+    (when fts
+      (for [i (a.count fts) 1 -1]
+        (let [x (config.get-in [:filetype (. fts i)])]
+          (when (and (not mod-name) x)
+            (set mod-name x))))))
   mod-name)
 
 (defn current []
@@ -81,7 +84,7 @@
         mod-name (current-client-module-name)]
     (if mod-name
       (load-module mod-name)
-      (error (.. "No Conjure client for filetype: '" ft "'")))))
+      (error (.. "No Conjure client for filetype: '" (or ft "nil") "'")))))
 
 (defn get [...]
   (a.get-in (current) [...]))

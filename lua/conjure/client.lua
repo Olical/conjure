@@ -254,11 +254,19 @@ do
   local function current_client_module_name0()
     local mod_name = nil
     do
-      local fts = str.split(filetype(), "%.")
-      for i = a.count(fts), 1, -1 do
-        local x = config["get-in"]({"filetype", fts[i]})
-        if (not mod_name and x) then
-          mod_name = x
+      local ft = filetype()
+      local fts = nil
+      if ft then
+        fts = str.split(ft, "%.")
+      else
+      fts = nil
+      end
+      if fts then
+        for i = a.count(fts), 1, -1 do
+          local x = config["get-in"]({"filetype", fts[i]})
+          if (not mod_name and x) then
+            mod_name = x
+          end
         end
       end
     end
@@ -280,7 +288,7 @@ do
       if mod_name then
         return load_module(mod_name)
       else
-        return error(("No Conjure client for filetype: '" .. ft .. "'"))
+        return error(("No Conjure client for filetype: '" .. (ft or "nil") .. "'"))
       end
     end
     v_0_0 = current0
