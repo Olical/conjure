@@ -1,4 +1,4 @@
 (module conjure.dev.guile
   {require {nvim conjure.aniseed.nvim}})
 
-(set nvim.g.conjure#client#guile#socket#pipename "dev/guile/guile-repl.socket")
+(set nvim.g.conjure#client#guile#socket#pipename "guile-repl.socket")
