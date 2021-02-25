@@ -15,6 +15,7 @@ The core features of Conjure are language agnostic (although it's targeted at Li
  * https://janet-lang.org/[Janet] over https://github.com/janet-lang/spork/#networked-repl[spork/netrepl] (https://github.com/Olical/conjure/wiki/Quick-start:-Janet-(netrepl)[quickstart])
  * https://racket-lang.org/[Racket] over stdio (https://github.com/Olical/conjure/wiki/Quick-start:-Racket-(stdio)[quickstart])
  * https://docs.hylang.org[Hy] over stdio (https://github.com/Olical/conjure/wiki/Quick-start:-Hy-(stdio)[quickstart])
+ * https://www.gnu.org/software/guile/[Guile] over a socket file (https://github.com/Olical/conjure/wiki/Quick-start:-Guile-(socket)[quickstart])
 
 == User experience
 
@@ -22,7 +23,7 @@ What does wielding Conjure actually look like? What can you do with it?
 
 https://asciinema.org/a/325517[image:https://asciinema.org/a/325517.svg[asciicast]]
 
- * Open a file of a supported file type such as `clojure`, `fennel`, `janet` or `racket`.
+ * Open a file of a supported file type such as `clojure` or `racket`.
  * Some languages, such as Clojure, will automatically connect to your REPL or give you the commands and mappings to do so yourself.
  * Use various mappings to execute the code you're interested in such as the current form, file, buffer or even form at a Neovim mark.
  * Every result is kept in a log buffer that you can access at any time.
@@ -68,6 +69,7 @@ ____
  * https://github.com/Olical/conjure/wiki/Quick-start:-Fennel-(stdio)[Fennel (stdio)]
  * https://github.com/Olical/conjure/wiki/Quick-start:-Racket-(stdio)[Racket (stdio)]
  * https://github.com/Olical/conjure/wiki/Quick-start:-Hy-(stdio)[Hy (stdio)]
+ * https://github.com/Olical/conjure/wiki/Quick-start:-Guile-(socket)[Guile (socket)]
  * https://github.com/Olical/conjure/wiki/Frequently-asked-questions[Frequently asked questions]
 
 All further documentation is found within link:doc/conjure.txt[`:help conjure`]. You can also use `:ConjureSchool` to get an interactive introduction to the workflow and mappings Conjure provides.
@@ -83,7 +85,7 @@ These are clients I intend to build eventually or encourage another community me
  * https://clojure.org/[Clojure] over https://oli.me.uk/clojure-socket-prepl-cookbook/[prepl]
  * http://lfe.io/[Lisp Flavoured Erlang]
  * https://github.com/candid82/joker[Joker]
- * Scheme (https://www.call-cc.org/[Chicken], Chez or Guile? All?)
+ * More Schemes? (https://www.call-cc.org/[Chicken], Chez or Guile? All?)
  * Common Lisp (https://github.com/Olical/conjure/issues/97[#97])
  * Non-Lisp languages and beyond! (when Neovim has tree-sitter)
 
