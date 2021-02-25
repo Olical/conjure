@@ -634,6 +634,8 @@ your dotfiles.
  - |conjure-client-clojure-nrepl|
  - |conjure-client-janet-netrepl|
  - |conjure-client-racket-stdio|
+ - |conjure-client-hy-stdio|
+ - |conjure-client-guile-socket|
 
 Language clients are simply Lua modules (which can be compiled from Fennel
 using Aniseed) that have a few essential properties and functions in them.
