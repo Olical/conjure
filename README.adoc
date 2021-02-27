@@ -74,7 +74,7 @@ ____
 
 All further documentation is found within link:doc/conjure.txt[`:help conjure`]. You can also use `:ConjureSchool` to get an interactive introduction to the workflow and mappings Conjure provides.
 
-Please do get in touch via http://clojurians.net/[Slack] (`#conjure`), https://gitter.im/Olical/conjure[Gitter] or Twitter (https://twitter.com/OliverCaldwell[@OliverCaldwell]) if you have any questions or issues.
+Please do get in touch via https://conjure.fun/discord[Discord] or https://twitter.com/OliverCaldwell[Twitter] if you have any questions or issues.
 
 Broader documentation can be found in the https://github.com/Olical/conjure/wiki[Conjure wiki], there you'll find blog posts and guides that will help you get common workflows up and running. Contributions are encouraged!
 
