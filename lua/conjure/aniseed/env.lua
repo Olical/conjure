@@ -53,7 +53,12 @@ do
   do
     local v_0_0 = nil
     local function init0(opts)
-      local opts0 = (opts or {})
+      local opts0 = nil
+      if ("table" == type(opts)) then
+        opts0 = opts
+      else
+        opts0 = {}
+      end
       if ((false ~= opts0.compile) or os.getenv("ANISEED_ENV_COMPILE")) then
         local compile = require("conjure.aniseed.compile")
         local fennel = require("conjure.aniseed.fennel")
