@@ -21,6 +21,9 @@ The core features of Conjure are language agnostic (although it's targeted at Li
 
 What does wielding Conjure actually look like? What can you do with it?
 
+ * YouTube: https://youtu.be/ZSwbiZhvMdQ[How I use Conjure and Neovim to interact with Clojure (and more!)]
+ * Asciinema (see below)
+
 https://asciinema.org/a/325517[image:https://asciinema.org/a/325517.svg[asciicast]]
 
  * Open a file of a supported file type such as `clojure` or `racket`.
