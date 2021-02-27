@@ -318,6 +318,30 @@ do
   t_0_["on-filetype"] = v_0_
   on_filetype = v_0_
 end
+local value__3ecompletions = nil
+do
+  local v_0_ = nil
+  do
+    local v_0_0 = nil
+    local function value__3ecompletions0(x)
+      if ("table" == type(x)) then
+        local function _2_(_3_0)
+          local _arg_0_ = _3_0
+          local k = _arg_0_[1]
+          local v = _arg_0_[2]
+          return {info = nil, kind = type(v), menu = nil, word = k}
+        end
+        return a.map(_2_, a["kv-pairs"](x))
+      end
+    end
+    v_0_0 = value__3ecompletions0
+    _0_0["value->completions"] = v_0_0
+    v_0_ = v_0_0
+  end
+  local t_0_ = (_0_0)["aniseed/locals"]
+  t_0_["value->completions"] = v_0_
+  value__3ecompletions = v_0_
+end
 local completions = nil
 do
   local v_0_ = nil
@@ -326,11 +350,11 @@ do
     local function completions0(opts)
       local code = nil
       if not str["blank?"](opts.prefix) then
-        code = ("((. (require :conjure.aniseed.core) :keys) " .. (opts.prefix):gsub(".$", "") .. ")")
+        code = ("((. (require :" .. _2amodule_name_2a .. ") :value->completions) " .. (opts.prefix):gsub(".$", "") .. ")")
       else
       code = nil
       end
-      local mods = a.keys(package.loaded)
+      local mods = value__3ecompletions(package.loaded)
       local locals = nil
       do
         local ok_3f, m = nil, nil
@@ -339,44 +363,36 @@ do
         end
         ok_3f, m = (opts.context and pcall(_3_))
         if ok_3f then
-          local _5_
-          do
-            local _4_0 = a.get(m, "aniseed/locals")
-            if _4_0 then
-              _5_ = a.keys(_4_0)
-            else
-              _5_ = _4_0
-            end
-          end
-          local _7_
-          do
-            local _6_0 = a["get-in"](m, {"aniseed/local-fns", "require"})
-            if _6_0 then
-              _7_ = a.keys(_6_0)
-            else
-              _7_ = _6_0
-            end
-          end
-          locals = a.concat(_5_, _7_, mods)
+          locals = a.concat(value__3ecompletions(a.get(m, "aniseed/locals")), value__3ecompletions(a["get-in"](m, {"aniseed/local-fns", "require"})), mods)
         else
           locals = mods
         end
       end
+      local result_fn = nil
+      local function _3_(results)
+        local xs = a.first(results)
+        local function _4_()
+          if ("table" == type(xs)) then
+            local function _4_(x)
+              local function _5_(_241)
+                return (opts.prefix .. _241)
+              end
+              return a.update(x, "word", _5_)
+            end
+            return a.concat(a.map(_4_, xs), locals)
+          else
+            return locals
+          end
+        end
+        return opts.cb(_4_())
+      end
+      result_fn = _3_
       local _, ok_3f = nil, nil
       if code then
-        local function _3_()
-          local function _4_(results)
-            local xs = a.first(results)
-            if ("table" == type(xs)) then
-              local function _5_(x)
-                return (opts.prefix .. x)
-              end
-              return opts.cb(a.concat(a.map(_5_, xs), locals))
-            end
-          end
-          return eval_str({["on-result-raw"] = _4_, ["passive?"] = true, code = code, context = opts.context})
+        local function _4_()
+          return eval_str({["on-result-raw"] = result_fn, ["passive?"] = true, code = code, context = opts.context})
         end
-        _, ok_3f = pcall(_3_)
+        _, ok_3f = pcall(_4_)
       else
       _, ok_3f = nil
       end

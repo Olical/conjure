@@ -111,12 +111,15 @@
   (mapping.buf :n :FnlRunAllTests
                (cfg [:mapping :run_all_tests]) *module-name* :run-all-tests))
 
-;; TODO Add type hints
 (defn value->completions [x]
-  (when (and x (= :table (type x)))
+  (when (= :table (type x))
     (a.map
-      (fn [k] {:word k})
-      (a.keys x))))
+      (fn [[k v]]
+        {:word k
+         :kind (type v)
+         :menu nil
+         :info nil})
+      (a.kv-pairs x))))
 
 (defn completions [opts]
   (let [code (when (not (str.blank? opts.prefix))
