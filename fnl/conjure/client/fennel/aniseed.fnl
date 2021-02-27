@@ -111,19 +111,37 @@
   (mapping.buf :n :FnlRunAllTests
                (cfg [:mapping :run_all_tests]) *module-name* :run-all-tests))
 
+;; TODO Add type hints
+(defn value->completions [x]
+  (when (and x (= :table (type x)))
+    (a.map
+      (fn [k] {:word k})
+      (a.keys x))))
+
 (defn completions [opts]
-  ;; TODO Add type hints
   (let [code (when (not (str.blank? opts.prefix))
-               (.. "((. (require :conjure.aniseed.core) :keys) "
+               (.. "((. (require :" *module-name* ") :value->completions) "
                    (opts.prefix:gsub ".$" "") ")"))
-        mods (a.keys package.loaded)
+        mods (value->completions package.loaded)
         locals (let [(ok? m) (and opts.context (pcall #(require opts.context)))]
                  (if ok?
                    (a.concat
-                     (-?> (a.get m :aniseed/locals) (a.keys))
-                     (-?> (a.get-in m [:aniseed/local-fns :require]) (a.keys))
+                     (value->completions (a.get m :aniseed/locals))
+                     (value->completions (a.get-in m [:aniseed/local-fns :require]))
                      mods)
                    mods))
+        result-fn
+        (fn [results]
+          (let [xs (a.first results)]
+            (opts.cb
+              (if (= :table (type xs))
+                (a.concat
+                  (a.map
+                    (fn [x]
+                      (a.update x :word #(.. opts.prefix $1)))
+                    xs)
+                  locals)
+                locals))))
         (_ ok?)
         (when code
           (pcall
@@ -132,14 +150,7 @@
                 {:context opts.context
                  :code code
                  :passive? true
-                 :on-result-raw (fn [results]
-                                  (let [xs (a.first results)]
-                                    (when (= :table (type xs))
-                                      (opts.cb (a.concat
-                                                 (a.map
-                                                   (fn [x]
-                                                     (.. opts.prefix x))
-                                                   xs)
-                                                 locals)))))}))))]
+                 :on-result-raw result-fn}))))]
+
     (when (not ok?)
       (opts.cb locals))))
