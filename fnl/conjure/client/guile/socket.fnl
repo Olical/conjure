@@ -50,19 +50,29 @@
     (->> (format-message msg)
          (a.filter #(not= "" $1)))))
 
+(defn- clean-input-code [code]
+  "Guile will take newlines as input and produce no result (unlike every other
+  REPL I know?), so we want to strip out whitespace at either end and then just
+  return nothing if it's empty. We shouldn't send code that contains nothing,
+  it'll confuse the callback / message queue system."
+  (let [clean (str.trim code)]
+    (when (not (str.blank? clean))
+      clean)))
+
 (defn eval-str [opts]
   (with-repl-or-warn
     (fn [repl]
-      (repl.send
-        opts.code
-        (fn [msgs]
-          (when (and (= 1 (a.count msgs))
-                     (= "" (a.get-in msgs [1 :out])))
-            (a.assoc-in msgs [1 :out] (.. comment-prefix "Empty result")))
+      (-?> opts.code
+           (clean-input-code)
+           (repl.send
+             (fn [msgs]
+               (when (and (= 1 (a.count msgs))
+                          (= "" (a.get-in msgs [1 :out])))
+                 (a.assoc-in msgs [1 :out] (.. comment-prefix "Empty result")))
 
-          (opts.on-result (str.join "\n" (format-message (a.last msgs))))
-          (a.run! display-result msgs))
-        {:batch? true}))))
+               (opts.on-result (str.join "\n" (format-message (a.last msgs))))
+               (a.run! display-result msgs))
+             {:batch? true})))))
 
 (defn eval-file [opts]
   (eval-str (a.assoc opts :code (.. "(load \"" opts.file-path "\")"))))
