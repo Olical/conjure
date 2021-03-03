@@ -96,10 +96,7 @@
     (let [node (if opts.root?
                  (ts.get-root)
                  (ts.get-form))]
-      (print (ts.node->str node))
       (when node
-        (a.println {:range (ts.range node)
-                    :content (ts.node->str node)})
         {:range (ts.range node)
          :content (ts.node->str node)}))
     (do
