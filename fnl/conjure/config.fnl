@@ -119,7 +119,8 @@
    {:context_header_lines 24
     :form_pairs [["(" ")"]
                  ["{" "}"]
-                 ["[" "]" true]]}
+                 ["[" "]" true]]
+    :tree_sitter {:enabled false}}
 
    :preview
    {:sample_limit 0.3}})

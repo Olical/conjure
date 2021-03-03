@@ -19,11 +19,11 @@ end
 local function _1_(...)
   local ok_3f_0_, val_0_ = nil, nil
   local function _1_()
-    return {require("conjure.aniseed.core"), require("conjure.client"), require("conjure.config"), require("conjure.aniseed.nvim.util"), require("conjure.aniseed.nvim"), require("conjure.aniseed.string")}
+    return {require("conjure.aniseed.core"), require("conjure.client"), require("conjure.config"), require("conjure.aniseed.nvim.util"), require("conjure.aniseed.nvim"), require("conjure.aniseed.string"), require("conjure.tree-sitter")}
   end
   ok_3f_0_, val_0_ = pcall(_1_)
   if ok_3f_0_ then
-    _0_0["aniseed/local-fns"] = {require = {a = "conjure.aniseed.core", client = "conjure.client", config = "conjure.config", nu = "conjure.aniseed.nvim.util", nvim = "conjure.aniseed.nvim", str = "conjure.aniseed.string"}}
+    _0_0["aniseed/local-fns"] = {require = {a = "conjure.aniseed.core", client = "conjure.client", config = "conjure.config", nu = "conjure.aniseed.nvim.util", nvim = "conjure.aniseed.nvim", str = "conjure.aniseed.string", ts = "conjure.tree-sitter"}}
     return val_0_
   else
     return print(val_0_)
@@ -36,6 +36,7 @@ local config = _local_0_[3]
 local nu = _local_0_[4]
 local nvim = _local_0_[5]
 local str = _local_0_[6]
+local ts = _local_0_[7]
 local _2amodule_2a = _0_0
 local _2amodule_name_2a = "conjure.extract"
 do local _ = ({nil, _0_0, {{}, nil, nil, nil}})[2] end
@@ -220,19 +221,33 @@ do
   do
     local v_0_0 = nil
     local function form0(opts)
-      local forms = nil
-      local function _2_(_241)
-        return form_2a(_241, opts)
-      end
-      forms = a.filter(a["table?"], a.map(_2_, config["get-in"]({"extract", "form_pairs"})))
-      local function _3_(_241, _242)
-        return distance_gt(range_distance(_241.range), range_distance(_242.range))
-      end
-      table.sort(forms, _3_)
-      if opts["root?"] then
-        return a.last(forms)
+      if ts["enabled?"]() then
+        local node = nil
+        if opts["root?"] then
+          node = ts["get-root"]()
+        else
+          node = ts["get-form"]()
+        end
+        print(ts["node->str"](node))
+        if node then
+          a.println({content = ts["node->str"](node), range = ts.range(node)})
+          return {content = ts["node->str"](node), range = ts.range(node)}
+        end
       else
-        return a.first(forms)
+        local forms = nil
+        local function _2_(_241)
+          return form_2a(_241, opts)
+        end
+        forms = a.filter(a["table?"], a.map(_2_, config["get-in"]({"extract", "form_pairs"})))
+        local function _3_(_241, _242)
+          return distance_gt(range_distance(_241.range), range_distance(_242.range))
+        end
+        table.sort(forms, _3_)
+        if opts["root?"] then
+          return a.last(forms)
+        else
+          return a.first(forms)
+        end
       end
     end
     v_0_0 = form0

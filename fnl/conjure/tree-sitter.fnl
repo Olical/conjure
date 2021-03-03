@@ -1,12 +1,10 @@
 (module conjure.tree-sitter
   {require {a conjure.aniseed.core
             str conjure.aniseed.string
-            client conjure.client}})
+            client conjure.client
+            config conjure.config}})
 
 ;; From https://github.com/savq/conjure-julia <3
-
-;; TODO Add tree-sitter options and docs.
-;; TODO Document new client interfaces for accepting nodes as forms.
 
 (def- ts
   (let [(ok? x) (pcall #(require :nvim-treesitter.ts_utils))]
@@ -17,9 +15,12 @@
   "Do we have tree-sitter support in the current nvim, buffer and filetype. If
   this is false, you might need to install
   https://github.com/nvim-treesitter/nvim-treesitter
-  and then `:TSInstall [filetype]`"
+  and then `:TSInstall [filetype]`
+
+  See also: g:conjure#extract#tree_sitter#enabled"
   (and
     (= :table (type ts))
+    (config.get-in [:extract :tree_sitter :enabled])
     (let [(ok? _) (pcall vim.treesitter.get_parser)]
       ok?)))
 
@@ -38,6 +39,13 @@
 (defn document? [node]
   "Is the node the entire document, i.e. has no parent?"
   (not (parent node)))
+
+(defn range [node]
+  "Get the character range of the form."
+  (when node
+    (let [(sr sc er ec) (node:range)]
+      {:start [(a.inc sr) sc]
+       :end [(a.inc er) (a.dec ec)]})))
 
 (defn get-root [node]
   "Get the root node below the entire document."
@@ -59,21 +67,16 @@
     (when (leaf? node)
       node)))
 
-;; TODO This picks up things in Lisp land that I don't want to eval.
-;; I need to implement form-node? for every client (or some similar idea?) that
-;; allows clients to specify what kinds of nodes they consider an eval-able
-;; form. Like for Lisps I probably want to check if the node as a string begins
-;; with a parenthesis. Hammock time.
 (defn get-form [node]
   "Get the current form under the cursor. Walks up until it finds a non-leaf."
   (let [node (or node (ts.get_node_at_cursor))]
     (if
       (or
         (document? node)
-        (not= false (client.optional-call :form-node? node)))
+        (= false (client.optional-call :form-node? node)))
       nil
 
-      (leaf? node) (get-form (parent node))
-      node)))
+      (leaf? node)
+      (get-form (parent node))
 
-(node->str (get-form))
+      node)))

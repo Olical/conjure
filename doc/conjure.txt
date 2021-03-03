@@ -494,6 +494,24 @@ defined as you enter a buffer and can't be altered after the fact.
             enable escaping for use in |searchpairpos()|.
             Default: `[["(" ")"] ["{" "}"] ["[" "]" true]]`
 
+`g:conjure#extract#tree_sitter#enabled`
+            Enable tree-sitter support for extracting code from the buffer.
+            This is used by non-Lisp clients to find the appropriate chunk of
+            code under the cursor to evaluate.
+
+            This is experimental and requires the following:
+
+             * Neovim 0.5+ with tree-sitter support
+             * https://github.com/nvim-treesitter/nvim-treesitter
+             * The appropriate `:TSInstall [filetype]` to have already been run.
+             * This flag to be `true`.
+
+            If any of these conditions are not met it'll fall back to looking
+            for matching parenthesis in the buffer from the cursors current
+            location.
+
+            Default: `false`
+
 `g:conjure#preview#sample_limit`
             Most evaluation actions create a line in the log buffer with a
             preview of the code that was evaluated as a reminder. This setting
@@ -667,7 +685,7 @@ See `fnl/conjure/client/clojure/nrepl/init.fnl` for an example of this.
             `context` function instead.
 
 `context`
-            Function
+            Function(header)
             Called instead of `context-pattern` if it's not defined. Is passed
             the first few lines of the buffer as it's only argument. You can
             parse out the context string in any way you see fit.
@@ -793,5 +811,14 @@ See `fnl/conjure/client/clojure/nrepl/init.fnl` for an example of this.
             You do not need to provide this if there are no connection steps
             for your client such as a purely stdio based client running within
             Neovim as a sub-process.
+
+`form-node?`
+            Function(node)
+            When tree-sitter is in use this will be called with each node
+            considered when looking for the "current form under the cursor".
+            Your client can then (optionally) accept or reject the node by
+            returning `true` or `false`. For example, Lisp clients probably
+            want to reject any form that doesn't start with an opening
+            parenthesis.
 
 vim:tw=78:sw=2:ts=2:ft=help:norl:et:listchars=

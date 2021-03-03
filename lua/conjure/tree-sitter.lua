@@ -19,11 +19,11 @@ end
 local function _1_(...)
   local ok_3f_0_, val_0_ = nil, nil
   local function _1_()
-    return {require("conjure.aniseed.core"), require("conjure.client"), require("conjure.aniseed.string")}
+    return {require("conjure.aniseed.core"), require("conjure.client"), require("conjure.config"), require("conjure.aniseed.string")}
   end
   ok_3f_0_, val_0_ = pcall(_1_)
   if ok_3f_0_ then
-    _0_0["aniseed/local-fns"] = {require = {a = "conjure.aniseed.core", client = "conjure.client", str = "conjure.aniseed.string"}}
+    _0_0["aniseed/local-fns"] = {require = {a = "conjure.aniseed.core", client = "conjure.client", config = "conjure.config", str = "conjure.aniseed.string"}}
     return val_0_
   else
     return print(val_0_)
@@ -32,7 +32,8 @@ end
 local _local_0_ = _1_(...)
 local a = _local_0_[1]
 local client = _local_0_[2]
-local str = _local_0_[3]
+local config = _local_0_[3]
+local str = _local_0_[4]
 local _2amodule_2a = _0_0
 local _2amodule_name_2a = "conjure.tree-sitter"
 do local _ = ({nil, _0_0, {{}, nil, nil, nil}})[2] end
@@ -65,7 +66,7 @@ do
         local ok_3f, _ = pcall(vim.treesitter.get_parser)
         return ok_3f
       end
-      return (("table" == type(ts)) and _2_())
+      return (("table" == type(ts)) and config["get-in"]({"extract", "tree_sitter", "enabled"}) and _2_())
     end
     v_0_0 = enabled_3f0
     _0_0["enabled?"] = v_0_0
@@ -126,6 +127,25 @@ do
   local t_0_ = (_0_0)["aniseed/locals"]
   t_0_["document?"] = v_0_
   document_3f = v_0_
+end
+local range = nil
+do
+  local v_0_ = nil
+  do
+    local v_0_0 = nil
+    local function range0(node)
+      if node then
+        local sr, sc, er, ec = node:range()
+        return {["end"] = {a.inc(er), a.dec(ec)}, start = {a.inc(sr), sc}}
+      end
+    end
+    v_0_0 = range0
+    _0_0["range"] = v_0_0
+    v_0_ = v_0_0
+  end
+  local t_0_ = (_0_0)["aniseed/locals"]
+  t_0_["range"] = v_0_
+  range = v_0_
 end
 local get_root = nil
 do
@@ -194,7 +214,7 @@ do
     local v_0_0 = nil
     local function get_form0(node)
       local node0 = (node or ts.get_node_at_cursor())
-      if (document_3f(node0) or (false ~= client["optional-call"]("form-node?", node0))) then
+      if (document_3f(node0) or (false == client["optional-call"]("form-node?", node0))) then
         return nil
       elseif leaf_3f(node0) then
         return get_form0(parent(node0))
@@ -210,4 +230,4 @@ do
   t_0_["get-form"] = v_0_
   get_form = v_0_
 end
-return node__3estr(get_form())
+return nil
