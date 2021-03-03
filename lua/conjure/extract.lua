@@ -228,9 +228,7 @@ do
         else
           node = ts["get-form"]()
         end
-        print(ts["node->str"](node))
         if node then
-          a.println({content = ts["node->str"](node), range = ts.range(node)})
           return {content = ts["node->str"](node), range = ts.range(node)}
         end
       else
