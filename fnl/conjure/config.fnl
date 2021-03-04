@@ -57,7 +57,10 @@
               :clojure :conjure.client.clojure.nrepl
               :janet :conjure.client.janet.netrepl
               :hy :conjure.client.hy.stdio
-              :scheme :conjure.client.guile.socket
+              ;; TODO leave this as is, make mit-scheme an optional alternative
+              ;; to guile
+              ; :scheme :conjure.client.guile.socket
+              :scheme :conjure.client.mit-scheme.stdio
               :guile :conjure.client.guile.socket}
 
    :eval
