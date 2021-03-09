@@ -797,6 +797,12 @@ See `fnl/conjure/client/clojure/nrepl/init.fnl` for an example of this.
             up an autocommand to clean up any existing nREPL connection before
             Neovim exits.
 
+`on-exit`
+            Function()
+            Called by the |ExitPre| autocommand, use this hook to tidy up
+            child processes, close non-essential windows and destroy
+            connections. This can help Neovim exit cleanly in some situations.
+
 `connect`
             Function(opts)
             Called with an `opts` table that contains the following when the

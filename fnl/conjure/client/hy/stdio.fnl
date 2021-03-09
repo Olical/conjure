@@ -143,6 +143,9 @@
 (defn on-load []
   (start))
 
+(defn on-exit []
+  (stop))
+
 (defn interrupt []
   (log.dbg "sending interrupt message" "")
   (with-repl-or-warn

@@ -136,3 +136,6 @@
 (defn on-filetype []
   (mapping.buf :n :RktStart (cfg [:mapping :start]) *module-name* :start)
   (mapping.buf :n :RktStop (cfg [:mapping :stop]) *module-name* :stop))
+
+(defn on-exit []
+  (stop))

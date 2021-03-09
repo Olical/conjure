@@ -19,11 +19,11 @@ end
 local function _1_(...)
   local ok_3f_0_, val_0_ = nil, nil
   local function _1_()
-    return {require("conjure.aniseed.core"), require("conjure.bridge"), require("conjure.client"), require("conjure.config"), require("conjure.eval"), require("conjure.extract"), require("conjure.aniseed.fennel"), require("conjure.aniseed.nvim"), require("conjure.aniseed.string")}
+    return {require("conjure.aniseed.core"), require("conjure.bridge"), require("conjure.client"), require("conjure.config"), require("conjure.eval"), require("conjure.extract"), require("conjure.aniseed.fennel"), require("conjure.log"), require("conjure.aniseed.nvim"), require("conjure.aniseed.string")}
   end
   ok_3f_0_, val_0_ = pcall(_1_)
   if ok_3f_0_ then
-    _0_0["aniseed/local-fns"] = {require = {a = "conjure.aniseed.core", bridge = "conjure.bridge", client = "conjure.client", config = "conjure.config", eval = "conjure.eval", extract = "conjure.extract", fennel = "conjure.aniseed.fennel", nvim = "conjure.aniseed.nvim", str = "conjure.aniseed.string"}}
+    _0_0["aniseed/local-fns"] = {["require-macros"] = {["conjure.macros"] = true}, require = {a = "conjure.aniseed.core", bridge = "conjure.bridge", client = "conjure.client", config = "conjure.config", eval = "conjure.eval", extract = "conjure.extract", fennel = "conjure.aniseed.fennel", log = "conjure.log", nvim = "conjure.aniseed.nvim", str = "conjure.aniseed.string"}}
     return val_0_
   else
     return print(val_0_)
@@ -31,17 +31,18 @@ local function _1_(...)
 end
 local _local_0_ = _1_(...)
 local a = _local_0_[1]
+local str = _local_0_[10]
 local bridge = _local_0_[2]
 local client = _local_0_[3]
 local config = _local_0_[4]
 local eval = _local_0_[5]
 local extract = _local_0_[6]
 local fennel = _local_0_[7]
-local nvim = _local_0_[8]
-local str = _local_0_[9]
+local log = _local_0_[8]
+local nvim = _local_0_[9]
 local _2amodule_2a = _0_0
 local _2amodule_name_2a = "conjure.mapping"
-do local _ = ({nil, _0_0, {{}, nil, nil, nil}})[2] end
+do local _ = ({nil, _0_0, {{nil}, nil, nil, nil}})[2] end
 local cfg = nil
 do
   local v_0_ = nil
@@ -182,6 +183,26 @@ do
   t_0_["on-filetype"] = v_0_
   on_filetype = v_0_
 end
+local on_exit = nil
+do
+  local v_0_ = nil
+  do
+    local v_0_0 = nil
+    local function on_exit0()
+      local function _2_()
+        return client["optional-call"]("on-exit")
+      end
+      client["each-loaded-client"](_2_)
+      return log["close-hud"]()
+    end
+    v_0_0 = on_exit0
+    _0_0["on-exit"] = v_0_0
+    v_0_ = v_0_0
+  end
+  local t_0_ = (_0_0)["aniseed/locals"]
+  t_0_["on-exit"] = v_0_
+  on_exit = v_0_
+end
 local init = nil
 do
   local v_0_ = nil
@@ -196,7 +217,7 @@ do
       nvim.ex.autocmd("CursorMoved", "*", bridge["viml->lua"]("conjure.inline", "clear", {}))
       nvim.ex.autocmd("CursorMovedI", "*", bridge["viml->lua"]("conjure.inline", "clear", {}))
       nvim.ex.autocmd("VimLeavePre", "*", bridge["viml->lua"]("conjure.log", "clear-close-hud-passive-timer", {}))
-      nvim.ex.autocmd("QuitPre", "*", bridge["viml->lua"]("conjure.log", "close-hud", {}))
+      nvim.ex.autocmd("ExitPre", "*", ("lua require('" .. _2amodule_name_2a .. "')['" .. "on-exit" .. "']()"))
       return nvim.ex.augroup("END")
     end
     v_0_0 = init0

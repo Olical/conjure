@@ -157,6 +157,9 @@
     (autocmd :BufEnter (.. :* buf-suffix) (viml->fn :enter)))
   (connect))
 
+(defn on-exit []
+  (disconnect))
+
 (defn on-filetype []
   (mapping.buf :n :GuileConnect (cfg [:mapping :connect]) *module-name* :connect)
   (mapping.buf :n :GuileDisconnect (cfg [:mapping :disconnect]) *module-name* :disconnect))

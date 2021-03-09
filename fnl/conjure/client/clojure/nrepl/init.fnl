@@ -7,6 +7,7 @@
             str conjure.aniseed.string
             config conjure.config
             action conjure.client.clojure.nrepl.action
+            server conjure.client.clojure.nrepl.server
             client conjure.client}})
 
 (def buf-suffix ".cljc")
@@ -176,3 +177,6 @@
 
 (defn on-load []
   (action.connect-port-file))
+
+(defn on-exit []
+  (server.disconnect))

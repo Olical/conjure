@@ -32,14 +32,17 @@
 
 (defonce- loaded {})
 
-(defn- load-module [name]
+(defn- load-module [ft name]
   (let [(ok? result) (xpcall
                        (fn []
                          (require name))
                        fennel.traceback)]
 
-    (when (a.nil? (a.get loaded name))
-      (a.assoc loaded name true)
+    (when (and ok? (a.nil? (a.get loaded name)))
+      (a.assoc loaded name
+               {:filetype ft
+                :module-name name
+                :module result})
       (when (and result.on-load (not nvim.wo.diff))
         (vim.schedule result.on-load)))
 
@@ -83,7 +86,7 @@
   (let [ft (filetype)
         mod-name (current-client-module-name)]
     (if mod-name
-      (load-module mod-name)
+      (load-module ft mod-name)
       (error (.. "No Conjure client for filetype: '" (or ft "nil") "'")))))
 
 (defn get [...]
@@ -102,3 +105,9 @@
   (let [f (get fn-name)]
     (when f
       (f ...))))
+
+(defn each-loaded-client [f]
+  (a.run!
+    (fn [{: filetype}]
+      (with-filetype filetype f))
+    (a.vals loaded)))

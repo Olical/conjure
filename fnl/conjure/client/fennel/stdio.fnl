@@ -123,6 +123,9 @@
 (defn on-load []
   (start))
 
+(defn on-exit []
+  (stop))
+
 (defn on-filetype []
   (mapping.buf :n :FnlStart
                (cfg [:mapping :start]) *module-name* :start)
