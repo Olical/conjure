@@ -192,8 +192,7 @@ do
       local function _2_()
         return client["optional-call"]("on-exit")
       end
-      client["each-loaded-client"](_2_)
-      return log["close-hud"]()
+      return client["each-loaded-client"](_2_)
     end
     v_0_0 = on_exit0
     _0_0["on-exit"] = v_0_0
@@ -202,6 +201,22 @@ do
   local t_0_ = (_0_0)["aniseed/locals"]
   t_0_["on-exit"] = v_0_
   on_exit = v_0_
+end
+local on_quit = nil
+do
+  local v_0_ = nil
+  do
+    local v_0_0 = nil
+    local function on_quit0()
+      return log["close-hud"]()
+    end
+    v_0_0 = on_quit0
+    _0_0["on-quit"] = v_0_0
+    v_0_ = v_0_0
+  end
+  local t_0_ = (_0_0)["aniseed/locals"]
+  t_0_["on-quit"] = v_0_
+  on_quit = v_0_
 end
 local init = nil
 do
@@ -218,6 +233,7 @@ do
       nvim.ex.autocmd("CursorMovedI", "*", bridge["viml->lua"]("conjure.inline", "clear", {}))
       nvim.ex.autocmd("VimLeavePre", "*", bridge["viml->lua"]("conjure.log", "clear-close-hud-passive-timer", {}))
       nvim.ex.autocmd("ExitPre", "*", ("lua require('" .. _2amodule_name_2a .. "')['" .. "on-exit" .. "']()"))
+      nvim.ex.autocmd("QuitPre", "*", ("lua require('" .. _2amodule_name_2a .. "')['" .. "on-quit" .. "']()"))
       return nvim.ex.augroup("END")
     end
     v_0_0 = init0

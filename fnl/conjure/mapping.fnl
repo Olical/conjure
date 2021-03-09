@@ -88,10 +88,9 @@
   (client.optional-call :on-filetype))
 
 (defn on-exit []
-  (client.each-loaded-client
-    (fn []
-      (client.optional-call :on-exit)))
+  (client.each-loaded-client #(client.optional-call :on-exit)))
 
+(defn on-quit []
   (log.close-hud))
 
 (defn init [filetypes]
@@ -119,6 +118,7 @@
     :VimLeavePre :*
     (bridge.viml->lua :conjure.log :clear-close-hud-passive-timer {}))
   (nvim.ex.autocmd :ExitPre :* (viml->fn on-exit))
+  (nvim.ex.autocmd :QuitPre :* (viml->fn on-quit))
   (nvim.ex.augroup :END))
 
 (defn eval-ranged-command [start end code]
