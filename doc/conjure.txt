@@ -229,11 +229,12 @@ defined as you enter a buffer and can't be altered after the fact.
             will not load if the file type is in this list but there isn't an
             equivalent `g:conjure#filetype#[filetype]` configuration value.
 
-            Dotted filetypes are matched right to left, so the `guile.socket`
-            client will match against `scheme` or `scheme.guile` filetypes by
-            default.
+            Dotted filetypes are matched right to left. For example, since the
+            `guile.socket` client is assigned to the `guile` filetype by
+            default, the `guile.socket` client will load when you're in a file
+            of with the `scheme.guile` filetype.
 
-            Default: `["clojure", "fennel", "janet", "racket", "guile", "scheme"]`
+            Default: `["clojure", "fennel", "janet", "racket", "guile"]`
 
 `g:conjure#filetype#clojure`
             Client to use for `clojure` buffers.
@@ -258,8 +259,8 @@ defined as you enter a buffer and can't be altered after the fact.
             Help: |conjure-client-racket-stdio|
             Default: `"conjure.client.racket.stdio"`
 
-`g:conjure#filetype#scheme` and `g:conjure#filetype#guile`
-            Client to use for `scheme` and `guile` buffers.
+`g:conjure#filetype#guile`
+            Client to use for `guile` buffers.
             Help: |conjure-client-guile-socket|
             Default: `"conjure.client.guile.socket"`
 
