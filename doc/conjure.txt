@@ -264,6 +264,20 @@ defined as you enter a buffer and can't be altered after the fact.
             Help: |conjure-client-guile-socket|
             Default: `"conjure.client.guile.socket"`
 
+`g:conjure#filetype_suffixes#[filetype]`
+            If a client is loading when it shouldn't we can configure that
+            filetype to match a specific set of file extensions. This is
+            useful in the Scheme / Racket / Guile world where they share
+            filetype strings and extentions in a lot of places, making it
+            difficult to determine which client we should use.
+            Default: `nil`
+
+`g:conjure#filetype_suffixes#racket`
+            Racket filetype support cycles between the `scheme` and `racket`
+            filetypes at times, this list restricts the Racket client to the
+            right paths as well as filetypes.
+            Default: `["rkt"]`
+
 `g:conjure#eval#result_register`
             Every evaluation captures the result and places it in a Neovim
             register for you to use however you want. By default, if you

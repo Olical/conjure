@@ -71,16 +71,21 @@
   (vim.schedule (wrap f ...)))
 
 (defn- current-client-module-name []
-  (var mod-name nil)
+  (var result nil)
   (let [ft (filetype)
+        ext (nvim.fn.expand "%:e")
         fts (when ft
               (str.split ft "%."))]
     (when fts
       (for [i (a.count fts) 1 -1]
-        (let [x (config.get-in [:filetype (. fts i)])]
-          (when (and (not mod-name) x)
-            (set mod-name x))))))
-  mod-name)
+        (let [ft-part (. fts i)
+              mod-name (config.get-in [:filetype ft-part])
+              suffixes (config.get-in [:filetype_suffixes ft-part])]
+          (when (and (not result) mod-name
+                     (or (not suffixes)
+                         (a.some #(= ext $)) suffixes))
+            (set result mod-name))))))
+  result)
 
 (defn current []
   (let [ft (filetype)

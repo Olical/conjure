@@ -252,9 +252,10 @@ local current_client_module_name = nil
 do
   local v_0_ = nil
   local function current_client_module_name0()
-    local mod_name = nil
+    local result = nil
     do
       local ft = filetype()
+      local ext = nvim.fn.expand("%:e")
       local fts = nil
       if ft then
         fts = str.split(ft, "%.")
@@ -263,14 +264,19 @@ do
       end
       if fts then
         for i = a.count(fts), 1, -1 do
-          local x = config["get-in"]({"filetype", fts[i]})
-          if (not mod_name and x) then
-            mod_name = x
+          local ft_part = fts[i]
+          local mod_name = config["get-in"]({"filetype", ft_part})
+          local suffixes = config["get-in"]({"filetype_suffixes", ft_part})
+          local function _3_(_241)
+            return (ext == _241)
+          end
+          if (not result and mod_name and (not suffixes or a.some(_3_) or suffixes)) then
+            result = mod_name
           end
         end
       end
     end
-    return mod_name
+    return result
   end
   v_0_ = current_client_module_name0
   local t_0_ = (_0_0)["aniseed/locals"]
