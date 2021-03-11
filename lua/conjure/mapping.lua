@@ -189,6 +189,7 @@ do
   do
     local v_0_0 = nil
     local function on_exit0()
+      log["on-exit"]()
       local function _2_()
         return client["optional-call"]("on-exit")
       end

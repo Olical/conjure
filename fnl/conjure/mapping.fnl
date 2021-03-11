@@ -88,6 +88,7 @@
   (client.optional-call :on-filetype))
 
 (defn on-exit []
+  (log.on-exit)
   (client.each-loaded-client #(client.optional-call :on-exit)))
 
 (defn on-quit []
