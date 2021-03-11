@@ -85,11 +85,9 @@ Broader documentation can be found in the https://github.com/Olical/conjure/wiki
 
 These are clients I intend to build eventually or encourage another community member to build and maintain on my behalf. Every language we add creates another bridge between communities, I would like Conjure to be common ground between all of our beloved esoteric REPL based languages.
 
- * https://clojure.org/[Clojure] over https://oli.me.uk/clojure-socket-prepl-cookbook/[prepl]
  * http://lfe.io/[Lisp Flavoured Erlang]
- * https://github.com/candid82/joker[Joker]
- * More Schemes? (https://www.call-cc.org/[Chicken], Chez or Guile? All?)
  * Common Lisp (https://github.com/Olical/conjure/issues/97[#97])
+ * Minimal https://clojure.org/[Clojure] sans nREPL+CIDER over https://oli.me.uk/clojure-socket-prepl-cookbook/[prepl] (or socket REPL)
  * Non-Lisp languages and beyond! (when Neovim has tree-sitter)
 
 == Behind the curtain
