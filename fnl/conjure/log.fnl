@@ -379,4 +379,4 @@
   (nvim.ex.bwipeout_ (upsert-buf)))
 
 (defn on-exit []
-  (a.set state :exiting? true))
+  (a.assoc state :exiting? true))

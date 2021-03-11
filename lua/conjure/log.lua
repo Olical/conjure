@@ -692,7 +692,7 @@ do
   do
     local v_0_0 = nil
     local function on_exit0()
-      return a.set(state, "exiting?", true)
+      return a.assoc(state, "exiting?", true)
     end
     v_0_0 = on_exit0
     _0_0["on-exit"] = v_0_0
