@@ -44,7 +44,7 @@ do local _ = ({nil, _0_0, {{nil}, nil, nil, nil}})[2] end
 config.merge({client = {mit_scheme = {stdio = {["prompt-pattern"] = "[%]e][=r]r?o?r?> ", command = "mit-scheme", mapping = {start = "cs", stop = "cS"}}}}})
 local cfg = nil
 do
-  local v_0_ = config["get-in-fn"]({"client", "mit-scheme", "stdio"})
+  local v_0_ = config["get-in-fn"]({"client", "mit_scheme", "stdio"})
   local t_0_ = (_0_0)["aniseed/locals"]
   t_0_["cfg"] = v_0_
   cfg = v_0_
@@ -154,7 +154,7 @@ do
           opts["on-result"](a.last(msgs0))
           return log.append(msgs0)
         end
-        return repl.send(opts.code, _3_, {["batch?"] = true})
+        return repl.send((opts.code .. "\n"), _3_, {["batch?"] = true})
       end
       return with_repl_or_warn(_2_)
     end
@@ -165,6 +165,22 @@ do
   local t_0_ = (_0_0)["aniseed/locals"]
   t_0_["eval-str"] = v_0_
   eval_str = v_0_
+end
+local eval_file = nil
+do
+  local v_0_ = nil
+  do
+    local v_0_0 = nil
+    local function eval_file0(opts)
+      return eval_str(a.assoc(opts, "code", ("(load \"" .. opts["file-path"] .. "\")")))
+    end
+    v_0_0 = eval_file0
+    _0_0["eval-file"] = v_0_0
+    v_0_ = v_0_0
+  end
+  local t_0_ = (_0_0)["aniseed/locals"]
+  t_0_["eval-file"] = v_0_
+  eval_file = v_0_
 end
 local display_repl_status = nil
 do

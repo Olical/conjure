@@ -13,17 +13,11 @@
 ;;;;
 ;;;; TODO Exiting vim without first stopping the REPL with <leader>cS causes
 ;;;; mit-scheme to spike to 100% CPU and stay there until it's killed.
-;;;;
-;;;; TODO Evaluate word doesn't work. After trying to evaluate word I get no
-;;;; output at all until I stop the REPL at which point I get all the output at
-;;;; once.
+;;;; https://github.com/Olical/conjure/issues/185
 ;;;;
 ;;;; TODO Output caught by on-stray-output (e.g. the startup preamble) is not
 ;;;; cleanly broken on linebreaks, so it ends up with extra linebreaks where
 ;;;; there shouldn't be any.
-;;;;
-;;;; TODO I haven't even tried to add support for evaluate file yet (evaluate
-;;;; buffer works fine).
 
 (config.merge
   {:client
@@ -35,7 +29,7 @@
       ;; Match "]=> " or "error> "
       :prompt-pattern "[%]e][=r]r?o?r?> "}}}})
 
-(def- cfg (config.get-in-fn [:client :mit-scheme :stdio]))
+(def- cfg (config.get-in-fn [:client :mit_scheme :stdio]))
 
 (defonce- state (client.new-state #(do {:repl nil})))
 
@@ -67,12 +61,15 @@
   (with-repl-or-warn
     (fn [repl]
       (repl.send
-        opts.code
+        (.. opts.code "\n")
         (fn [msgs]
           (let [msgs (-> msgs unbatch format-msg)]
             (opts.on-result (a.last msgs))
             (log.append msgs)))
         {:batch? true}))))
+
+(defn eval-file [opts]
+  (eval-str (a.assoc opts :code (.. "(load \"" opts.file-path "\")"))))
 
 (defn- display-repl-status [status]
   (let [repl (state :repl)]
