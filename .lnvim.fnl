@@ -1,6 +1,7 @@
 (module conjure-local-fennel-config
   {require {nvim aniseed.nvim}})
 
+(set nvim.g.conjure#extract#tree_sitter#enabled true)
 (set package.path (.. package.path ";test/lua/?.lua"))
 
 (comment

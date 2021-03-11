@@ -229,11 +229,12 @@ defined as you enter a buffer and can't be altered after the fact.
             will not load if the file type is in this list but there isn't an
             equivalent `g:conjure#filetype#[filetype]` configuration value.
 
-            Dotted filetypes are matched right to left, so the `guile.socket`
-            client will match against `scheme` or `scheme.guile` filetypes by
-            default.
+            Dotted filetypes are matched right to left. For example, since the
+            `guile.socket` client is assigned to the `guile` filetype by
+            default, the `guile.socket` client will load when you're in a file
+            of with the `scheme.guile` filetype.
 
-            Default: `["clojure", "fennel", "janet", "racket", "guile", "scheme"]`
+            Default: `["clojure", "fennel", "janet", "racket", "guile"]`
 
 `g:conjure#filetype#clojure`
             Client to use for `clojure` buffers.
@@ -258,10 +259,24 @@ defined as you enter a buffer and can't be altered after the fact.
             Help: |conjure-client-racket-stdio|
             Default: `"conjure.client.racket.stdio"`
 
-`g:conjure#filetype#scheme` and `g:conjure#filetype#guile`
-            Client to use for `scheme` and `guile` buffers.
+`g:conjure#filetype#guile`
+            Client to use for `guile` buffers.
             Help: |conjure-client-guile-socket|
             Default: `"conjure.client.guile.socket"`
+
+`g:conjure#filetype_suffixes#[filetype]`
+            If a client is loading when it shouldn't we can configure that
+            filetype to match a specific set of file extensions. This is
+            useful in the Scheme / Racket / Guile world where they share
+            filetype strings and extentions in a lot of places, making it
+            difficult to determine which client we should use.
+            Default: `nil`
+
+`g:conjure#filetype_suffixes#racket`
+            Racket filetype support cycles between the `scheme` and `racket`
+            filetypes at times, this list restricts the Racket client to the
+            right paths as well as filetypes.
+            Default: `["rkt"]`
 
 `g:conjure#eval#result_register`
             Every evaluation captures the result and places it in a Neovim
@@ -494,6 +509,24 @@ defined as you enter a buffer and can't be altered after the fact.
             enable escaping for use in |searchpairpos()|.
             Default: `[["(" ")"] ["{" "}"] ["[" "]" true]]`
 
+`g:conjure#extract#tree_sitter#enabled`
+            Enable tree-sitter support for extracting code from the buffer.
+            This is used by non-Lisp clients to find the appropriate chunk of
+            code under the cursor to evaluate.
+
+            This is experimental and requires the following:
+
+             * Neovim 0.5+ with tree-sitter support
+             * https://github.com/nvim-treesitter/nvim-treesitter
+             * The appropriate `:TSInstall [filetype]` to have already been run.
+             * This flag to be `true`.
+
+            If any of these conditions are not met it'll fall back to looking
+            for matching parenthesis in the buffer from the cursors current
+            location.
+
+            Default: `false`
+
 `g:conjure#preview#sample_limit`
             Most evaluation actions create a line in the log buffer with a
             preview of the code that was evaluated as a reminder. This setting
@@ -667,7 +700,7 @@ See `fnl/conjure/client/clojure/nrepl/init.fnl` for an example of this.
             `context` function instead.
 
 `context`
-            Function
+            Function(header)
             Called instead of `context-pattern` if it's not defined. Is passed
             the first few lines of the buffer as it's only argument. You can
             parse out the context string in any way you see fit.
@@ -779,6 +812,12 @@ See `fnl/conjure/client/clojure/nrepl/init.fnl` for an example of this.
             up an autocommand to clean up any existing nREPL connection before
             Neovim exits.
 
+`on-exit`
+            Function()
+            Called by the |ExitPre| autocommand, use this hook to tidy up
+            child processes, close non-essential windows and destroy
+            connections. This can help Neovim exit cleanly in some situations.
+
 `connect`
             Function(opts)
             Called with an `opts` table that contains the following when the
@@ -793,5 +832,14 @@ See `fnl/conjure/client/clojure/nrepl/init.fnl` for an example of this.
             You do not need to provide this if there are no connection steps
             for your client such as a purely stdio based client running within
             Neovim as a sub-process.
+
+`form-node?`
+            Function(node)
+            When tree-sitter is in use this will be called with each node
+            considered when looking for the "current form under the cursor".
+            Your client can then (optionally) accept or reject the node by
+            returning `true` or `false`. For example, Lisp clients probably
+            want to reject any form that doesn't start with an opening
+            parenthesis.
 
 vim:tw=78:sw=2:ts=2:ft=help:norl:et:listchars=

@@ -4,10 +4,12 @@
             str conjure.aniseed.string
             config conjure.config
             extract conjure.extract
+            log conjure.log
             client conjure.client
             eval conjure.eval
             bridge conjure.bridge
-            fennel conjure.aniseed.fennel}})
+            fennel conjure.aniseed.fennel}
+   require-macros [conjure.macros]})
 
 (defn- cfg [k]
   (config.get-in [:mapping k]))
@@ -85,6 +87,12 @@
 
   (client.optional-call :on-filetype))
 
+(defn on-exit []
+  (client.each-loaded-client #(client.optional-call :on-exit)))
+
+(defn on-quit []
+  (log.close-hud))
+
 (defn init [filetypes]
   (nvim.ex.augroup :conjure_init_filetypes)
   (nvim.ex.autocmd_)
@@ -109,9 +117,8 @@
   (nvim.ex.autocmd
     :VimLeavePre :*
     (bridge.viml->lua :conjure.log :clear-close-hud-passive-timer {}))
-  (nvim.ex.autocmd
-    :QuitPre :*
-    (bridge.viml->lua :conjure.log :close-hud {}))
+  (nvim.ex.autocmd :ExitPre :* (viml->fn on-exit))
+  (nvim.ex.autocmd :QuitPre :* (viml->fn on-quit))
   (nvim.ex.augroup :END))
 
 (defn eval-ranged-command [start end code]

@@ -109,19 +109,29 @@ do
       local repl = {current = nil, queue = {}}
       local function destroy()
         local function _2_()
-          return stdin:shutdown()
+          return stdin:close()
         end
         pcall(_2_)
+        local function _3_()
+          return stdout:close()
+        end
+        pcall(_3_)
+        local function _4_()
+          return stderr:close()
+        end
+        pcall(_4_)
+        local function _5_()
+          return (repl.handle):close()
+        end
+        pcall(_5_)
+        local function _6_()
+          return stdin:shutdown()
+        end
+        pcall(_6_)
         return nil
       end
       local function on_exit(code, signal)
-        local function _2_()
-          stdin:close()
-          stdout:close()
-          stderr:close()
-          return (repl.handle):close()
-        end
-        pcall(_2_)
+        destroy()
         return client.schedule(opts["on-exit"], code, signal)
       end
       local function next_in_queue()

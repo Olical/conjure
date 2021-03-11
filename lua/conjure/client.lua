@@ -138,14 +138,14 @@ end
 local load_module = nil
 do
   local v_0_ = nil
-  local function load_module0(name)
+  local function load_module0(ft, name)
     local ok_3f, result = nil, nil
     local function _2_()
       return require(name)
     end
     ok_3f, result = xpcall(_2_, fennel.traceback)
-    if a["nil?"](a.get(loaded, name)) then
-      a.assoc(loaded, name, true)
+    if (ok_3f and a["nil?"](a.get(loaded, name))) then
+      a.assoc(loaded, name, {["module-name"] = name, filetype = ft, module = result})
       if (result["on-load"] and not nvim.wo.diff) then
         vim.schedule(result["on-load"])
       end
@@ -252,9 +252,10 @@ local current_client_module_name = nil
 do
   local v_0_ = nil
   local function current_client_module_name0()
-    local mod_name = nil
+    local result = nil
     do
       local ft = filetype()
+      local ext = nvim.fn.expand("%:e")
       local fts = nil
       if ft then
         fts = str.split(ft, "%.")
@@ -263,14 +264,19 @@ do
       end
       if fts then
         for i = a.count(fts), 1, -1 do
-          local x = config["get-in"]({"filetype", fts[i]})
-          if (not mod_name and x) then
-            mod_name = x
+          local ft_part = fts[i]
+          local mod_name = config["get-in"]({"filetype", ft_part})
+          local suffixes = config["get-in"]({"filetype_suffixes", ft_part})
+          local function _3_(_241)
+            return (ext == _241)
+          end
+          if (not result and mod_name and (not suffixes or a.some(_3_) or suffixes)) then
+            result = mod_name
           end
         end
       end
     end
-    return mod_name
+    return result
   end
   v_0_ = current_client_module_name0
   local t_0_ = (_0_0)["aniseed/locals"]
@@ -286,7 +292,7 @@ do
       local ft = filetype()
       local mod_name = current_client_module_name()
       if mod_name then
-        return load_module(mod_name)
+        return load_module(ft, mod_name)
       else
         return error(("No Conjure client for filetype: '" .. (ft or "nil") .. "'"))
       end
@@ -354,5 +360,26 @@ do
   local t_0_ = (_0_0)["aniseed/locals"]
   t_0_["optional-call"] = v_0_
   optional_call = v_0_
+end
+local each_loaded_client = nil
+do
+  local v_0_ = nil
+  do
+    local v_0_0 = nil
+    local function each_loaded_client0(f)
+      local function _2_(_3_0)
+        local _arg_0_ = _3_0
+        local filetype0 = _arg_0_["filetype"]
+        return with_filetype(filetype0, f)
+      end
+      return a["run!"](_2_, a.vals(loaded))
+    end
+    v_0_0 = each_loaded_client0
+    _0_0["each-loaded-client"] = v_0_0
+    v_0_ = v_0_0
+  end
+  local t_0_ = (_0_0)["aniseed/locals"]
+  t_0_["each-loaded-client"] = v_0_
+  each_loaded_client = v_0_
 end
 return nil

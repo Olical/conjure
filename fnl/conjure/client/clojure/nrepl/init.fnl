@@ -7,6 +7,7 @@
             str conjure.aniseed.string
             config conjure.config
             action conjure.client.clojure.nrepl.action
+            server conjure.client.clojure.nrepl.server
             client conjure.client}})
 
 (def buf-suffix ".cljc")
@@ -142,7 +143,7 @@
                :conjure.client.clojure.nrepl.action :run-current-ns-tests)
   (mapping.buf :n :CljRunAlternateNsTests (cfg [:mapping :run_alternate_ns_tests])
                :conjure.client.clojure.nrepl.action :run-alternate-ns-tests)
-  (mapping.buf :n :CljRunCurrentTests (cfg [:mapping :run_current_test])
+  (mapping.buf :n :CljRunCurrentTest (cfg [:mapping :run_current_test])
                :conjure.client.clojure.nrepl.action :run-current-test)
 
   (mapping.buf :n :CljRefreshChanged (cfg [:mapping :refresh_changed])
@@ -176,3 +177,6 @@
 
 (defn on-load []
   (action.connect-port-file))
+
+(defn on-exit []
+  (server.disconnect))

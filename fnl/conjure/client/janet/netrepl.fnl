@@ -119,3 +119,6 @@
 
 (defn on-load []
   (connect {}))
+
+(defn on-exit []
+  (disconnect))

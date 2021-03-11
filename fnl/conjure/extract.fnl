@@ -4,7 +4,8 @@
             nu conjure.aniseed.nvim.util
             str conjure.aniseed.string
             config conjure.config
-            client conjure.client}})
+            client conjure.client
+            ts conjure.tree-sitter}})
 
 (defn- read-range [[srow scol] [erow ecol]]
   (let [lines (nvim.buf_get_lines
@@ -91,21 +92,34 @@
       (and (= al bl) (> ac bc))))
 
 (defn form [opts]
-  (local forms
-    (->> (config.get-in [:extract :form_pairs])
-         (a.map #(form* $1 opts))
-         (a.filter a.table?)))
+  (if (ts.enabled?)
+    (let [node (if opts.root?
+                 (ts.get-root)
+                 (ts.get-form))]
+      (when node
+        {:range (ts.range node)
+         :content (ts.node->str node)}))
+    (do
+      (local forms
+        (->> (config.get-in [:extract :form_pairs])
+             (a.map #(form* $1 opts))
+             (a.filter a.table?)))
 
-  (table.sort
-    forms
-    #(distance-gt
-       (range-distance $1.range)
-       (range-distance $2.range)))
+      (table.sort
+        forms
+        #(distance-gt
+           (range-distance $1.range)
+           (range-distance $2.range)))
 
-  (if opts.root?
-    (a.last forms)
-    (a.first forms)))
+      (if opts.root?
+        (a.last forms)
+        (a.first forms)))))
 
+; TODO Maybe use tree-sitter for this, although less value and doesn't work the same right now.
+;(if (ts.enabled?)
+;  (let [node (ts.get-leaf)]
+;    {:content (ts.node->str node)
+;     :range (ts.range node)}))
 (defn word []
   {:content (nvim.fn.expand "<cword>")
 

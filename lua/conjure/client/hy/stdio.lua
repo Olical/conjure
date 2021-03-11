@@ -320,6 +320,22 @@ do
   t_0_["on-load"] = v_0_
   on_load = v_0_
 end
+local on_exit = nil
+do
+  local v_0_ = nil
+  do
+    local v_0_0 = nil
+    local function on_exit0()
+      return stop()
+    end
+    v_0_0 = on_exit0
+    _0_0["on-exit"] = v_0_0
+    v_0_ = v_0_0
+  end
+  local t_0_ = (_0_0)["aniseed/locals"]
+  t_0_["on-exit"] = v_0_
+  on_exit = v_0_
+end
 local interrupt = nil
 do
   local v_0_ = nil

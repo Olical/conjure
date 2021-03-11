@@ -145,6 +145,20 @@ do
   t_0_["display-result"] = v_0_
   display_result = v_0_
 end
+local clean_input_code = nil
+do
+  local v_0_ = nil
+  local function clean_input_code0(code)
+    local clean = str.trim(code)
+    if not str["blank?"](clean) then
+      return clean
+    end
+  end
+  v_0_ = clean_input_code0
+  local t_0_ = (_0_0)["aniseed/locals"]
+  t_0_["clean-input-code"] = v_0_
+  clean_input_code = v_0_
+end
 local eval_str = nil
 do
   local v_0_ = nil
@@ -152,14 +166,24 @@ do
     local v_0_0 = nil
     local function eval_str0(opts)
       local function _2_(repl)
-        local function _3_(msgs)
-          if ((1 == a.count(msgs)) and ("" == a["get-in"](msgs, {1, "out"}))) then
-            a["assoc-in"](msgs, {1, "out"}, (comment_prefix .. "Empty result"))
+        local _3_0 = opts.code
+        if _3_0 then
+          local _4_0 = clean_input_code(_3_0)
+          if _4_0 then
+            local function _5_(msgs)
+              if ((1 == a.count(msgs)) and ("" == a["get-in"](msgs, {1, "out"}))) then
+                a["assoc-in"](msgs, {1, "out"}, (comment_prefix .. "Empty result"))
+              end
+              opts["on-result"](str.join("\n", format_message(a.last(msgs))))
+              return a["run!"](display_result, msgs)
+            end
+            return repl.send(_4_0, _5_, {["batch?"] = true})
+          else
+            return _4_0
           end
-          opts["on-result"](str.join("\n", format_message(a.last(msgs))))
-          return a["run!"](display_result, msgs)
+        else
+          return _3_0
         end
-        return repl.send(opts.code, _3_, {["batch?"] = true})
       end
       return with_repl_or_warn(_2_)
     end
@@ -355,6 +379,22 @@ do
   local t_0_ = (_0_0)["aniseed/locals"]
   t_0_["on-load"] = v_0_
   on_load = v_0_
+end
+local on_exit = nil
+do
+  local v_0_ = nil
+  do
+    local v_0_0 = nil
+    local function on_exit0()
+      return disconnect()
+    end
+    v_0_0 = on_exit0
+    _0_0["on-exit"] = v_0_0
+    v_0_ = v_0_0
+  end
+  local t_0_ = (_0_0)["aniseed/locals"]
+  t_0_["on-exit"] = v_0_
+  on_exit = v_0_
 end
 local on_filetype = nil
 do

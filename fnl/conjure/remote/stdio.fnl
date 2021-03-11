@@ -48,16 +48,15 @@
                :current nil})
 
     (fn destroy []
+      (pcall #(stdin:close))
+      (pcall #(stdout:close))
+      (pcall #(stderr:close))
+      (pcall #(repl.handle:close))
       (pcall #(stdin:shutdown))
       nil)
 
     (fn on-exit [code signal]
-      (pcall
-        (fn []
-          (stdin:close)
-          (stdout:close)
-          (stderr:close)
-          (repl.handle:close)))
+      (destroy)
       (client.schedule opts.on-exit code signal))
 
     (fn next-in-queue []

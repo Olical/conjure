@@ -19,11 +19,11 @@ end
 local function _1_(...)
   local ok_3f_0_, val_0_ = nil, nil
   local function _1_()
-    return {require("conjure.aniseed.core"), require("conjure.client.clojure.nrepl.action"), require("conjure.bridge"), require("conjure.client"), require("conjure.config"), require("conjure.eval"), require("conjure.mapping"), require("conjure.aniseed.nvim"), require("conjure.aniseed.string")}
+    return {require("conjure.aniseed.core"), require("conjure.client.clojure.nrepl.action"), require("conjure.bridge"), require("conjure.client"), require("conjure.config"), require("conjure.eval"), require("conjure.mapping"), require("conjure.aniseed.nvim"), require("conjure.client.clojure.nrepl.server"), require("conjure.aniseed.string")}
   end
   ok_3f_0_, val_0_ = pcall(_1_)
   if ok_3f_0_ then
-    _0_0["aniseed/local-fns"] = {require = {a = "conjure.aniseed.core", action = "conjure.client.clojure.nrepl.action", bridge = "conjure.bridge", client = "conjure.client", config = "conjure.config", eval = "conjure.eval", mapping = "conjure.mapping", nvim = "conjure.aniseed.nvim", str = "conjure.aniseed.string"}}
+    _0_0["aniseed/local-fns"] = {require = {a = "conjure.aniseed.core", action = "conjure.client.clojure.nrepl.action", bridge = "conjure.bridge", client = "conjure.client", config = "conjure.config", eval = "conjure.eval", mapping = "conjure.mapping", nvim = "conjure.aniseed.nvim", server = "conjure.client.clojure.nrepl.server", str = "conjure.aniseed.string"}}
     return val_0_
   else
     return print(val_0_)
@@ -31,6 +31,7 @@ local function _1_(...)
 end
 local _local_0_ = _1_(...)
 local a = _local_0_[1]
+local str = _local_0_[10]
 local action = _local_0_[2]
 local bridge = _local_0_[3]
 local client = _local_0_[4]
@@ -38,7 +39,7 @@ local config = _local_0_[5]
 local eval = _local_0_[6]
 local mapping = _local_0_[7]
 local nvim = _local_0_[8]
-local str = _local_0_[9]
+local server = _local_0_[9]
 local _2amodule_2a = _0_0
 local _2amodule_name_2a = "conjure.client.clojure.nrepl"
 do local _ = ({nil, _0_0, {{}, nil, nil, nil}})[2] end
@@ -236,7 +237,7 @@ do
       mapping.buf("n", "CljRunAllTests", cfg({"mapping", "run_all_tests"}), "conjure.client.clojure.nrepl.action", "run-all-tests")
       mapping.buf("n", "CljRunCurrentNsTests", cfg({"mapping", "run_current_ns_tests"}), "conjure.client.clojure.nrepl.action", "run-current-ns-tests")
       mapping.buf("n", "CljRunAlternateNsTests", cfg({"mapping", "run_alternate_ns_tests"}), "conjure.client.clojure.nrepl.action", "run-alternate-ns-tests")
-      mapping.buf("n", "CljRunCurrentTests", cfg({"mapping", "run_current_test"}), "conjure.client.clojure.nrepl.action", "run-current-test")
+      mapping.buf("n", "CljRunCurrentTest", cfg({"mapping", "run_current_test"}), "conjure.client.clojure.nrepl.action", "run-current-test")
       mapping.buf("n", "CljRefreshChanged", cfg({"mapping", "refresh_changed"}), "conjure.client.clojure.nrepl.action", "refresh-changed")
       mapping.buf("n", "CljRefreshAll", cfg({"mapping", "refresh_all"}), "conjure.client.clojure.nrepl.action", "refresh-all")
       mapping.buf("n", "CljRefreshClear", cfg({"mapping", "refresh_clear"}), "conjure.client.clojure.nrepl.action", "refresh-clear")
@@ -269,5 +270,21 @@ do
   local t_0_ = (_0_0)["aniseed/locals"]
   t_0_["on-load"] = v_0_
   on_load = v_0_
+end
+local on_exit = nil
+do
+  local v_0_ = nil
+  do
+    local v_0_0 = nil
+    local function on_exit0()
+      return server.disconnect()
+    end
+    v_0_0 = on_exit0
+    _0_0["on-exit"] = v_0_0
+    v_0_ = v_0_0
+  end
+  local t_0_ = (_0_0)["aniseed/locals"]
+  t_0_["on-exit"] = v_0_
+  on_exit = v_0_
 end
 return nil

@@ -51,15 +51,13 @@
    :relative_file_root nil
    :path_subs nil
 
-   :filetypes [:clojure :fennel :janet :racket :hy :guile :scheme]
+   :filetypes [:clojure :fennel :janet :racket :hy :guile]
+   :filetype_suffixes {:racket [:rkt]}
    :filetype {:fennel :conjure.client.fennel.aniseed
               :racket :conjure.client.racket.stdio
               :clojure :conjure.client.clojure.nrepl
               :janet :conjure.client.janet.netrepl
               :hy :conjure.client.hy.stdio
-              ;; TODO leave this as is, make mit-scheme an optional alternative
-              ;; to guile
-              ; :scheme :conjure.client.guile.socket
               :scheme :conjure.client.mit-scheme.stdio
               :guile :conjure.client.guile.socket}
 
@@ -122,7 +120,8 @@
    {:context_header_lines 24
     :form_pairs [["(" ")"]
                  ["{" "}"]
-                 ["[" "]" true]]}
+                 ["[" "]" true]]
+    :tree_sitter {:enabled false}}
 
    :preview
    {:sample_limit 0.3}})
