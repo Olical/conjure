@@ -115,11 +115,6 @@
         (a.last forms)
         (a.first forms)))))
 
-; TODO Maybe use tree-sitter for this, although less value and doesn't work the same right now.
-;(if (ts.enabled?)
-;  (let [node (ts.get-leaf)]
-;    {:content (ts.node->str node)
-;     :range (ts.range node)}))
 (defn word []
   {:content (nvim.fn.expand "<cword>")
 
