@@ -519,7 +519,7 @@
         (else
          (remainder (* base (expmod base (- exp 1) m))
                     m))))
-
+
 ;;;SECTION 1.3
 
 (define (cube x) (* x x x))
@@ -805,4 +805,3 @@
 
 ;;EXERCISE 1.43
 ;: ((repeated square 2) 5)
-

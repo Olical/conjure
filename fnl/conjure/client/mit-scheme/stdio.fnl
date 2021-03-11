@@ -86,8 +86,6 @@
       (display-repl-status :stopped)
       (a.assoc (state) :repl nil))))
 
-(defn enter [] nil)
-
 (defn start []
   (if (state :repl)
     (log.append [(.. comment-prefix "Can't start, REPL is already running.")
@@ -103,8 +101,7 @@
 
          :on-success
          (fn []
-           (display-repl-status :started)
-           (enter))
+           (display-repl-status :started))
 
          :on-error
          (fn [err]
@@ -123,11 +120,11 @@
            (log.append (format-msg msg)))}))))
 
 (defn on-load []
-  (augroup
-    conjure-mit-scheme-stdio-bufenter
-    (autocmd :BufEnter (.. :* buf-suffix) (viml->fn :enter)))
   (start))
 
 (defn on-filetype []
   (mapping.buf :n :MITSchemeStart (cfg [:mapping :start]) *module-name* :start)
   (mapping.buf :n :MITSchemeStop (cfg [:mapping :stop]) *module-name* :stop))
+
+(defn on-exit []
+  (stop))

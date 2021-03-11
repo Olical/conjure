@@ -48,11 +48,8 @@
                :current nil})
 
     (fn destroy []
-      (pcall #(stdin:close))
-      (pcall #(stdout:close))
-      (pcall #(stderr:close))
-      (pcall #(repl.handle:close))
-      (pcall #(stdin:shutdown))
+      (when repl.handle
+        (uv.process_kill repl.handle))
       nil)
 
     (fn on-exit [code signal]

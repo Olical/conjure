@@ -71,28 +71,31 @@
   (vim.schedule (wrap f ...)))
 
 (defn- current-client-module-name []
-  (var result nil)
-  (let [ft (filetype)
-        ext (nvim.fn.expand "%:e")
-        fts (when ft
-              (str.split ft "%."))]
+  (var result {:filetype (filetype)
+               :extension (nvim.fn.expand "%:e")
+               :module-name nil})
+  (let [fts (when result.filetype
+              (str.split result.filetype "%."))]
     (when fts
       (for [i (a.count fts) 1 -1]
         (let [ft-part (. fts i)
-              mod-name (config.get-in [:filetype ft-part])
+              module-name (config.get-in [:filetype ft-part])
               suffixes (config.get-in [:filetype_suffixes ft-part])]
-          (when (and (not result) mod-name
+          (when (and (not result.module-name) module-name
                      (or (not suffixes)
-                         (a.some #(= ext $) suffixes)))
-            (set result mod-name))))))
+                         (a.some #(= result.extension $) suffixes)))
+            (set result.module-name module-name))))))
   result)
 
 (defn current []
-  (let [ft (filetype)
-        mod-name (current-client-module-name)]
-    (if mod-name
-      (load-module ft mod-name)
-      (error (.. "No Conjure client for filetype: '" (or ft "nil") "'")))))
+  (let [{: module-name : filetype : extension}
+        (current-client-module-name)]
+    (if module-name
+      (load-module filetype module-name)
+      (error (.. "No Conjure client for filetype / extension: '"
+                 (or filetype "nil")
+                 " / "
+                 (or extension "nil") "'")))))
 
 (defn get [...]
   (a.get-in (current) [...]))
@@ -102,7 +105,7 @@
     (if f
       (f ...)
       (error (.. "Conjure client '"
-                 (current-client-module-name)
+                 (a.get (current-client-module-name) :module-name)
                  "' doesn't support function: "
                  fn-name)))))
 

@@ -252,26 +252,24 @@ local current_client_module_name = nil
 do
   local v_0_ = nil
   local function current_client_module_name0()
-    local result = nil
+    local result = {["module-name"] = nil, extension = nvim.fn.expand("%:e"), filetype = filetype()}
     do
-      local ft = filetype()
-      local ext = nvim.fn.expand("%:e")
       local fts = nil
-      if ft then
-        fts = str.split(ft, "%.")
+      if result.filetype then
+        fts = str.split(result.filetype, "%.")
       else
       fts = nil
       end
       if fts then
         for i = a.count(fts), 1, -1 do
           local ft_part = fts[i]
-          local mod_name = config["get-in"]({"filetype", ft_part})
+          local module_name = config["get-in"]({"filetype", ft_part})
           local suffixes = config["get-in"]({"filetype_suffixes", ft_part})
           local function _3_(_241)
-            return (ext == _241)
+            return (result.extension == _241)
           end
-          if (not result and mod_name and (not suffixes or a.some(_3_, suffixes))) then
-            result = mod_name
+          if (not result["module-name"] and module_name and (not suffixes or a.some(_3_, suffixes))) then
+            result["module-name"] = module_name
           end
         end
       end
@@ -289,12 +287,14 @@ do
   do
     local v_0_0 = nil
     local function current0()
-      local ft = filetype()
-      local mod_name = current_client_module_name()
-      if mod_name then
-        return load_module(ft, mod_name)
+      local _let_0_ = current_client_module_name()
+      local extension = _let_0_["extension"]
+      local filetype0 = _let_0_["filetype"]
+      local module_name = _let_0_["module-name"]
+      if module_name then
+        return load_module(filetype0, module_name)
       else
-        return error(("No Conjure client for filetype: '" .. (ft or "nil") .. "'"))
+        return error(("No Conjure client for filetype / extension: '" .. (filetype0 or "nil") .. " / " .. (extension or "nil") .. "'"))
       end
     end
     v_0_0 = current0
@@ -331,7 +331,7 @@ do
       if f then
         return f(...)
       else
-        return error(("Conjure client '" .. current_client_module_name() .. "' doesn't support function: " .. fn_name))
+        return error(("Conjure client '" .. a.get(current_client_module_name(), "module-name") .. "' doesn't support function: " .. fn_name))
       end
     end
     v_0_0 = call0

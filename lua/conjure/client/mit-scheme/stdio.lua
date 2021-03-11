@@ -217,22 +217,6 @@ do
   t_0_["stop"] = v_0_
   stop = v_0_
 end
-local enter = nil
-do
-  local v_0_ = nil
-  do
-    local v_0_0 = nil
-    local function enter0()
-      return nil
-    end
-    v_0_0 = enter0
-    _0_0["enter"] = v_0_0
-    v_0_ = v_0_0
-  end
-  local t_0_ = (_0_0)["aniseed/locals"]
-  t_0_["enter"] = v_0_
-  enter = v_0_
-end
 local start = nil
 do
   local v_0_ = nil
@@ -258,8 +242,7 @@ do
           return log.append(format_msg(msg))
         end
         local function _5_()
-          display_repl_status("started")
-          return enter()
+          return display_repl_status("started")
         end
         return a.assoc(state(), "repl", stdio.start({["on-error"] = _2_, ["on-exit"] = _3_, ["on-stray-output"] = _4_, ["on-success"] = _5_, ["prompt-pattern"] = cfg({"prompt-pattern"}), cmd = cfg({"command"})}))
       end
@@ -278,12 +261,6 @@ do
   do
     local v_0_0 = nil
     local function on_load0()
-      do
-        nvim.ex.augroup("conjure-mit-scheme-stdio-bufenter")
-        nvim.ex.autocmd_()
-        nvim.ex.autocmd("BufEnter", ("*" .. buf_suffix), ("lua require('" .. _2amodule_name_2a .. "')['" .. "enter" .. "']()"))
-        nvim.ex.augroup("END")
-      end
       return start()
     end
     v_0_0 = on_load0
@@ -310,5 +287,21 @@ do
   local t_0_ = (_0_0)["aniseed/locals"]
   t_0_["on-filetype"] = v_0_
   on_filetype = v_0_
+end
+local on_exit = nil
+do
+  local v_0_ = nil
+  do
+    local v_0_0 = nil
+    local function on_exit0()
+      return stop()
+    end
+    v_0_0 = on_exit0
+    _0_0["on-exit"] = v_0_0
+    v_0_ = v_0_0
+  end
+  local t_0_ = (_0_0)["aniseed/locals"]
+  t_0_["on-exit"] = v_0_
+  on_exit = v_0_
 end
 return nil
