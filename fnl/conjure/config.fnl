@@ -58,6 +58,7 @@
               :clojure :conjure.client.clojure.nrepl
               :janet :conjure.client.janet.netrepl
               :hy :conjure.client.hy.stdio
+              :scheme :conjure.client.mit-scheme.stdio
               :guile :conjure.client.guile.socket}
 
    :eval

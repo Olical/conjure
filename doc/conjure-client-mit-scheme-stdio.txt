@@ -1,0 +1,58 @@
+                                              *conjure-client-mit-scheme-stdio
+
+==============================================================================
+CONTENTS                              *conjure-client-mit-scheme-stdio-contents*
+
+    1. Introduction ........ |conjure-client-mit-scheme-stdio-introduction|
+    2. Mappings ................ |conjure-client-mit-scheme-stdio-mappings|
+    3. Configuration ...... |conjure-client-mit-scheme-stdio-configuration|
+
+==============================================================================
+INTRODUCTION                      *conjure-client-mit-scheme-stdio-introduction*
+
+
+MIT/GNU Scheme is an implementation of the Scheme programming language.
+
+Conjure starts a Scheme REPL within Neovim when you first open a Scheme file.
+
+You should be able to evaluate files and forms as you would with other Conjure
+supported languages right away.
+
+Check out `:ConjureSchool` if you're unsure about what evaluation operations
+you can perform.
+
+ * https://www.gnu.org/software/mit-scheme/
+
+==============================================================================
+MAPPINGS                              *conjure-client-mit-scheme-stdio-mappings*
+
+These mappings are the defaults, you can change them as described in
+|conjure-mappings| and |conjure-configuration|.
+
+See |conjure-client-mit-scheme-stdio-configuration| for specific configuration
+options relevant to these mappings.
+
+<localleader>cs          Start the Scheme REPL if it's not running already.
+
+<localleader>cS          Stop any existing Scheme REPL.
+
+==============================================================================
+CONFIGURATION                    *conjure-client-mit-scheme-stdio-configuration*
+
+All configuration can be set as described in |conjure-configuration|.
+
+
+`g:conjure#client#mit-scheme#stdio#mapping#start`
+            Start the Scheme REPL if it's not running already.
+            Default: `"cs"`
+
+`g:conjure#client#mit-scheme#stdio#mapping#stop`
+            Stop any existing Scheme REPL.
+            Default: `"cS"`
+
+`g:conjure#client#mit-scheme#stdio#command`
+            Command used to start the Scheme REPL, you can modify this to add
+            arguments or change the command entirely.
+            Default: `"mit-scheme"`
+
+vim:tw=78:sw=2:ts=2:ft=help:norl:et:listchars=
