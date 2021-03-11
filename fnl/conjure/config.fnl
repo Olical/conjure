@@ -51,8 +51,9 @@
    :relative_file_root nil
    :path_subs nil
 
-   :filetypes [:clojure :fennel :janet :racket :hy :guile]
-   :filetype_suffixes {:racket [:rkt]}
+   :filetypes [:clojure :fennel :janet :racket :hy :guile :scheme]
+   :filetype_suffixes {:racket [:rkt]
+                       :scheme [:scm]}
    :filetype {:fennel :conjure.client.fennel.aniseed
               :racket :conjure.client.racket.stdio
               :clojure :conjure.client.clojure.nrepl

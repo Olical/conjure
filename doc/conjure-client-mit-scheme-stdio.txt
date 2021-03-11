@@ -42,15 +42,15 @@ CONFIGURATION                    *conjure-client-mit-scheme-stdio-configuration*
 All configuration can be set as described in |conjure-configuration|.
 
 
-`g:conjure#client#mit-scheme#stdio#mapping#start`
+`g:conjure#client#mit_scheme#stdio#mapping#start`
             Start the Scheme REPL if it's not running already.
             Default: `"cs"`
 
-`g:conjure#client#mit-scheme#stdio#mapping#stop`
+`g:conjure#client#mit_scheme#stdio#mapping#stop`
             Stop any existing Scheme REPL.
             Default: `"cS"`
 
-`g:conjure#client#mit-scheme#stdio#command`
+`g:conjure#client#mit_scheme#stdio#command`
             Command used to start the Scheme REPL, you can modify this to add
             arguments or change the command entirely.
             Default: `"mit-scheme"`

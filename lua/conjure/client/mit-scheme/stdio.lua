@@ -41,7 +41,7 @@ local str = _local_0_[8]
 local _2amodule_2a = _0_0
 local _2amodule_name_2a = "conjure.client.mit-scheme.stdio"
 do local _ = ({nil, _0_0, {{nil}, nil, nil, nil}})[2] end
-config.merge({client = {["mit-scheme"] = {stdio = {["prompt-pattern"] = "[%]e][=r]r?o?r?> ", command = "mit-scheme", mapping = {start = "cs", stop = "cS"}}}}})
+config.merge({client = {mit_scheme = {stdio = {["prompt-pattern"] = "[%]e][=r]r?o?r?> ", command = "mit-scheme", mapping = {start = "cs", stop = "cS"}}}}})
 local cfg = nil
 do
   local v_0_ = config["get-in-fn"]({"client", "mit-scheme", "stdio"})

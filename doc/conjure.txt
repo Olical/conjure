@@ -254,6 +254,16 @@ defined as you enter a buffer and can't be altered after the fact.
             Help: |conjure-client-janet-netrepl|
             Default: `"conjure.client.janet.netrepl"`
 
+`g:conjure#filetype#hy`
+            Client to use for `hy` buffers.
+            Help: |conjure-client-hy-stdio|
+            Default: `"conjure.client.hy.stdio"`
+
+`g:conjure#filetype#scheme`
+            Client to use for `scheme` buffers.
+            Help: |conjure-client-mit-scheme-stdio|
+            Default: `"conjure.client.mit-scheme.stdio"`
+
 `g:conjure#filetype#racket`
             Client to use for `racket` buffers.
             Help: |conjure-client-racket-stdio|
@@ -277,6 +287,12 @@ defined as you enter a buffer and can't be altered after the fact.
             filetypes at times, this list restricts the Racket client to the
             right paths as well as filetypes.
             Default: `["rkt"]`
+
+`g:conjure#filetype_suffixes#scheme`
+            We don't want the MIT Scheme client to activate for Racket or
+            Guile buffers, which both sometimes flick their filetype to
+            `scheme` just to try and confuse us. But we're ready for it!
+            Default: `["scm"]`
 
 `g:conjure#eval#result_register`
             Every evaluation captures the result and places it in a Neovim

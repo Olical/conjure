@@ -1,3 +1,14 @@
+(module conjure.client.mit-scheme.stdio
+  {require {a conjure.aniseed.core
+            str conjure.aniseed.string
+            nvim conjure.aniseed.nvim
+            stdio conjure.remote.stdio
+            config conjure.config
+            mapping conjure.mapping
+            client conjure.client
+            log conjure.log}
+   require-macros [conjure.macros]})
+
 ;;;; Known issues, non-exhaustive:
 ;;;;
 ;;;; TODO Exiting vim without first stopping the REPL with <leader>cS causes
@@ -14,20 +25,9 @@
 ;;;; TODO I haven't even tried to add support for evaluate file yet (evaluate
 ;;;; buffer works fine).
 
-(module conjure.client.mit-scheme.stdio
-  {require {a conjure.aniseed.core
-            str conjure.aniseed.string
-            nvim conjure.aniseed.nvim
-            stdio conjure.remote.stdio
-            config conjure.config
-            mapping conjure.mapping
-            client conjure.client
-            log conjure.log}
-   require-macros [conjure.macros]})
-
 (config.merge
   {:client
-   {:mit-scheme
+   {:mit_scheme
     {:stdio
      {:mapping {:start "cs"
                 :stop "cS"}
@@ -95,8 +95,8 @@
   (if (state :repl)
     (log.append [(.. comment-prefix "Can't start, REPL is already running.")
                  (.. comment-prefix "Stop the REPL with "
-                   (config.get-in [:mapping :prefix])
-                   (cfg [:mapping :stop]))]
+                     (config.get-in [:mapping :prefix])
+                     (cfg [:mapping :stop]))]
                 {:break? true})
     (a.assoc
       (state) :repl
