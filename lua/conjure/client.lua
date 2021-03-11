@@ -293,8 +293,6 @@ do
       local module_name = _let_0_["module-name"]
       if module_name then
         return load_module(filetype0, module_name)
-      else
-        return error(("No Conjure client for filetype / extension: '" .. (filetype0 or "nil") .. " / " .. (extension or "nil") .. "'"))
       end
     end
     v_0_0 = current0

@@ -90,12 +90,8 @@
 (defn current []
   (let [{: module-name : filetype : extension}
         (current-client-module-name)]
-    (if module-name
-      (load-module filetype module-name)
-      (error (.. "No Conjure client for filetype / extension: '"
-                 (or filetype "nil")
-                 " / "
-                 (or extension "nil") "'")))))
+    (when module-name
+      (load-module filetype module-name))))
 
 (defn get [...]
   (a.get-in (current) [...]))

@@ -51,16 +51,17 @@
    :relative_file_root nil
    :path_subs nil
 
-   :filetypes [:clojure :fennel :janet :racket :hy :guile :scheme]
+   :filetypes [:clojure :fennel :janet :hy :racket :scheme]
    :filetype_suffixes {:racket [:rkt]
                        :scheme [:scm]}
    :filetype {:fennel :conjure.client.fennel.aniseed
-              :racket :conjure.client.racket.stdio
               :clojure :conjure.client.clojure.nrepl
               :janet :conjure.client.janet.netrepl
               :hy :conjure.client.hy.stdio
-              :scheme :conjure.client.mit-scheme.stdio
-              :guile :conjure.client.guile.socket}
+              :racket :conjure.client.racket.stdio
+
+              ; :scheme :conjure.client.guile.socket
+              :scheme :conjure.client.mit-scheme.stdio}
 
    :eval
    {:result_register "c"
