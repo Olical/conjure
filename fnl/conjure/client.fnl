@@ -83,7 +83,7 @@
               suffixes (config.get-in [:filetype_suffixes ft-part])]
           (when (and (not result) mod-name
                      (or (not suffixes)
-                         (a.some #(= ext $)) suffixes))
+                         (a.some #(= ext $) suffixes)))
             (set result mod-name))))))
   result)
 

@@ -270,7 +270,7 @@ do
           local function _3_(_241)
             return (ext == _241)
           end
-          if (not result and mod_name and (not suffixes or a.some(_3_) or suffixes)) then
+          if (not result and mod_name and (not suffixes or a.some(_3_, suffixes))) then
             result = mod_name
           end
         end
