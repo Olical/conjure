@@ -15,6 +15,7 @@ The core features of Conjure are language agnostic (although it's targeted at Li
  * https://janet-lang.org/[Janet] over https://github.com/janet-lang/spork/#networked-repl[spork/netrepl] (https://github.com/Olical/conjure/wiki/Quick-start:-Janet-(netrepl)[quickstart])
  * https://racket-lang.org/[Racket] over stdio (https://github.com/Olical/conjure/wiki/Quick-start:-Racket-(stdio)[quickstart])
  * https://docs.hylang.org[Hy] over stdio (https://github.com/Olical/conjure/wiki/Quick-start:-Hy-(stdio)[quickstart])
+ * https://www.gnu.org/software/mit-scheme/[MIT Scheme] over stdio (https://github.com/Olical/conjure/wiki/Quick-start:-MIT-Scheme-(stdio)[quickstart])
  * https://www.gnu.org/software/guile/[Guile] over a socket file (https://github.com/Olical/conjure/wiki/Quick-start:-Guile-(socket)[quickstart])
 
 == User experience
@@ -72,6 +73,7 @@ ____
  * https://github.com/Olical/conjure/wiki/Quick-start:-Fennel-(stdio)[Fennel (stdio)]
  * https://github.com/Olical/conjure/wiki/Quick-start:-Racket-(stdio)[Racket (stdio)]
  * https://github.com/Olical/conjure/wiki/Quick-start:-Hy-(stdio)[Hy (stdio)]
+ * https://github.com/Olical/conjure/wiki/Quick-start:-MIT-Scheme-(stdio)[MIT Scheme (stdio)]
  * https://github.com/Olical/conjure/wiki/Quick-start:-Guile-(socket)[Guile (socket)]
  * https://github.com/Olical/conjure/wiki/Frequently-asked-questions[Frequently asked questions]
 

@@ -9,7 +9,6 @@ CONTENTS                                *conjure-client-racket-stdio-contents*
 
 ==============================================================================
 INTRODUCTION                        *conjure-client-racket-stdio-introduction*
-
 >
   Racket is a general-purpose, multi-paradigm programming language based on
   the Scheme dialect of Lisp. It is designed to be a platform for programming

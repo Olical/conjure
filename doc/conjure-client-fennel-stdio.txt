@@ -9,7 +9,6 @@ CONTENTS                                *conjure-client-fennel-stdio-contents*
 
 ==============================================================================
 INTRODUCTION                        *conjure-client-fennel-stdio-introduction*
-
 >
   Fennel is a programming language that brings together the speed, simplicity,
   and reach of Lua with the flexibility of a lisp syntax and macro system.

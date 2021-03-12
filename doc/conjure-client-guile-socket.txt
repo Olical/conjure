@@ -9,17 +9,22 @@ CONTENTS                                *conjure-client-guile-socket-contents*
 
 ==============================================================================
 INTRODUCTION                        *conjure-client-guile-socket-introduction*
-
 >
-  Guile is the "GNU Ubiquitous Intelligent Language for Extensions", 
-  implementing the Scheme dialect of Lisp. 
+  Guile is the "GNU Ubiquitous Intelligent Language for Extensions",
+  implementing the Scheme dialect of Lisp.
 
 With this client, Conjure connects to Guile's REPL socket.  To create the
 socket, run your Guile program using "--listen=/home/user/guile.socket".
+
 Note that you must give a full path for the socket, because the leading slash
 tells Guile to listen via a Unix domain socket instead of a network socket.
 Network socket support is planned for this client, but not yet available - a
 Unix domain socket is strongly preferred, where possible, for security.
+
+The default Scheme filetype client is `conjure.client.mit-scheme.stdio`, to
+use this client instead you must override the configuration.
+>
+  let g:conjure#filetype#scheme = "conjure.client.guile.socket"
 
 Check out `:ConjureSchool` if you're unsure about what evaluation operations
 you can perform.

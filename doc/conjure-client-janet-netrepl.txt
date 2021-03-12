@@ -9,7 +9,6 @@ CONTENTS                               *conjure-client-janet-netrepl-contents*
 
 ==============================================================================
 INTRODUCTION                       *conjure-client-janet-netrepl-introduction*
-
 >
   Janet is a functional and imperative programming language. It runs on
   Windows, Linux, macOS, BSDs, and should run on other systems with some

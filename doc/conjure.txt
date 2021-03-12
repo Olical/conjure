@@ -229,12 +229,7 @@ defined as you enter a buffer and can't be altered after the fact.
             will not load if the file type is in this list but there isn't an
             equivalent `g:conjure#filetype#[filetype]` configuration value.
 
-            Dotted filetypes are matched right to left. For example, since the
-            `guile.socket` client is assigned to the `guile` filetype by
-            default, the `guile.socket` client will load when you're in a file
-            of with the `scheme.guile` filetype.
-
-            Default: `["clojure", "fennel", "janet", "racket", "guile"]`
+            Default: `["clojure", "fennel", "janet", "racket", "scheme"]`
 
 `g:conjure#filetype#clojure`
             Client to use for `clojure` buffers.
@@ -260,19 +255,15 @@ defined as you enter a buffer and can't be altered after the fact.
             Default: `"conjure.client.hy.stdio"`
 
 `g:conjure#filetype#scheme`
-            Client to use for `scheme` buffers.
-            Help: |conjure-client-mit-scheme-stdio|
+            Client to use for `scheme` buffers. You can use Guile instead by
+            setting this to `"conjure.client.guile.socket"`.
+            Help: |conjure-client-mit-scheme-stdio|, |conjure-client-guile-socket|
             Default: `"conjure.client.mit-scheme.stdio"`
 
 `g:conjure#filetype#racket`
             Client to use for `racket` buffers.
             Help: |conjure-client-racket-stdio|
             Default: `"conjure.client.racket.stdio"`
-
-`g:conjure#filetype#guile`
-            Client to use for `guile` buffers.
-            Help: |conjure-client-guile-socket|
-            Default: `"conjure.client.guile.socket"`
 
 `g:conjure#filetype_suffixes#[filetype]`
             If a client is loading when it shouldn't we can configure that
@@ -682,8 +673,9 @@ your dotfiles.
  - |conjure-client-fennel-stdio|
  - |conjure-client-clojure-nrepl|
  - |conjure-client-janet-netrepl|
- - |conjure-client-racket-stdio|
  - |conjure-client-hy-stdio|
+ - |conjure-client-racket-stdio|
+ - |conjure-client-mit-scheme-stdio|
  - |conjure-client-guile-socket|
 
 Language clients are simply Lua modules (which can be compiled from Fennel
