@@ -108,14 +108,35 @@ do
       local stderr = uv.new_pipe(false)
       local repl = {current = nil, queue = {}}
       local function destroy()
-        stdout:read_stop()
-        stderr:read_stop()
-        stdout:close()
-        stderr:close()
-        stdin:close()
+        local function _2_()
+          return stdout:read_stop()
+        end
+        pcall(_2_)
+        local function _3_()
+          return stderr:read_stop()
+        end
+        pcall(_3_)
+        local function _4_()
+          return stdout:close()
+        end
+        pcall(_4_)
+        local function _5_()
+          return stderr:close()
+        end
+        pcall(_5_)
+        local function _6_()
+          return stdin:close()
+        end
+        pcall(_6_)
         if repl.handle then
-          uv.process_kill(repl.handle)
-          do end (repl.handle):close()
+          local function _7_()
+            return uv.process_kill(repl.handle)
+          end
+          pcall(_7_)
+          local function _8_()
+            return (repl.handle):close()
+          end
+          pcall(_8_)
         end
         return nil
       end

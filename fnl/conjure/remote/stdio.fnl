@@ -49,14 +49,14 @@
 
     (fn destroy []
       ;; https://teukka.tech/vimloop.html
-      (stdout:read_stop)
-      (stderr:read_stop)
-      (stdout:close)
-      (stderr:close)
-      (stdin:close)
+      (pcall #(stdout:read_stop))
+      (pcall #(stderr:read_stop))
+      (pcall #(stdout:close))
+      (pcall #(stderr:close))
+      (pcall #(stdin:close))
       (when repl.handle
-        (uv.process_kill repl.handle)
-        (repl.handle:close))
+        (pcall #(uv.process_kill repl.handle))
+        (pcall #(repl.handle:close)))
       nil)
 
     (fn on-exit [code signal]
