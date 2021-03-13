@@ -444,7 +444,7 @@ do
     local v_0_0 = nil
     local function append0(lines, opts)
       local line_count = a.count(lines)
-      if ((line_count > 0) and not state["exiting?"]) then
+      if (line_count > 0) then
         local visible_scrolling_log_3f = false
         local buf = upsert_buf()
         local join_first_3f = a.get(opts, "join-first?")
@@ -685,21 +685,5 @@ do
   local t_0_ = (_0_0)["aniseed/locals"]
   t_0_["reset-hard"] = v_0_
   reset_hard = v_0_
-end
-local on_exit = nil
-do
-  local v_0_ = nil
-  do
-    local v_0_0 = nil
-    local function on_exit0()
-      return a.assoc(state, "exiting?", true)
-    end
-    v_0_0 = on_exit0
-    _0_0["on-exit"] = v_0_0
-    v_0_ = v_0_0
-  end
-  local t_0_ = (_0_0)["aniseed/locals"]
-  t_0_["on-exit"] = v_0_
-  on_exit = v_0_
 end
 return nil

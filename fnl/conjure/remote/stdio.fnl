@@ -48,8 +48,14 @@
                :current nil})
 
     (fn destroy []
+      ;; https://teukka.tech/vimloop.html
+      (stdout:read_stop)
+      (stderr:read_stop)
+      (stdout:close)
+      (stderr:close)
       (when repl.handle
-        (uv.process_kill repl.handle))
+        (uv.process_kill repl.handle)
+        (repl.handle:close))
       nil)
 
     (fn on-exit [code signal]

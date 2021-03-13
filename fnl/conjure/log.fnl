@@ -231,7 +231,7 @@
 
 (defn append [lines opts]
   (let [line-count (a.count lines)]
-    (when (and (> line-count 0) (not state.exiting?))
+    (when (> line-count 0)
       (var visible-scrolling-log? false)
 
       (let [buf (upsert-buf)
@@ -377,6 +377,3 @@
 
 (defn reset-hard []
   (nvim.ex.bwipeout_ (upsert-buf)))
-
-(defn on-exit []
-  (a.assoc state :exiting? true))
