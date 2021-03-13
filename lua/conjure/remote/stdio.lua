@@ -112,6 +112,7 @@ do
         stderr:read_stop()
         stdout:close()
         stderr:close()
+        stdin:close()
         if repl.handle then
           uv.process_kill(repl.handle)
           do end (repl.handle):close()

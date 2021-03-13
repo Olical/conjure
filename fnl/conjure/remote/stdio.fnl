@@ -53,6 +53,7 @@
       (stderr:read_stop)
       (stdout:close)
       (stderr:close)
+      (stdin:close)
       (when repl.handle
         (uv.process_kill repl.handle)
         (repl.handle:close))
