@@ -172,6 +172,17 @@ do
   t_0_["filetype"] = v_0_
   filetype = v_0_
 end
+local extension = nil
+do
+  local v_0_ = nil
+  local function _2_()
+    return nvim.fn.expand("%:e")
+  end
+  v_0_ = dyn.new(_2_)
+  local t_0_ = (_0_0)["aniseed/locals"]
+  t_0_["extension"] = v_0_
+  extension = v_0_
+end
 local with_filetype = nil
 do
   local v_0_ = nil
@@ -179,9 +190,12 @@ do
     local v_0_0 = nil
     local function with_filetype0(ft, f, ...)
       local function _2_()
+        return nil
+      end
+      local function _3_()
         return ft
       end
-      return dyn.bind({[filetype] = _2_}, f, ...)
+      return dyn.bind({[extension] = _2_, [filetype] = _3_}, f, ...)
     end
     v_0_0 = with_filetype0
     _0_0["with-filetype"] = v_0_0
@@ -252,7 +266,7 @@ local current_client_module_name = nil
 do
   local v_0_ = nil
   local function current_client_module_name0()
-    local result = {["module-name"] = nil, extension = nvim.fn.expand("%:e"), filetype = filetype()}
+    local result = {["module-name"] = nil, extension = extension(), filetype = filetype()}
     do
       local fts = nil
       if result.filetype then
@@ -268,7 +282,7 @@ do
           local function _3_(_241)
             return (result.extension == _241)
           end
-          if (not result["module-name"] and module_name and (not suffixes or a.some(_3_, suffixes))) then
+          if (not result["module-name"] and module_name and (not suffixes or not result.extension or a.some(_3_, suffixes))) then
             result["module-name"] = module_name
           end
         end
@@ -288,7 +302,7 @@ do
     local v_0_0 = nil
     local function current0()
       local _let_0_ = current_client_module_name()
-      local extension = _let_0_["extension"]
+      local extension0 = _let_0_["extension"]
       local filetype0 = _let_0_["filetype"]
       local module_name = _let_0_["module-name"]
       if module_name then

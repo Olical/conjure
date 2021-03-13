@@ -51,9 +51,13 @@
       (error result))))
 
 (def- filetype (dyn.new #(do nvim.bo.filetype)))
+(def- extension (dyn.new #(nvim.fn.expand "%:e")))
 
 (defn with-filetype [ft f ...]
-  (dyn.bind {filetype #(do ft)} f ...))
+  (dyn.bind
+    {filetype #(do ft)
+     extension #(do)}
+    f ...))
 
 (defn wrap [f ...]
   (let [opts {filetype (a.constantly (filetype))
@@ -72,7 +76,7 @@
 
 (defn- current-client-module-name []
   (var result {:filetype (filetype)
-               :extension (nvim.fn.expand "%:e")
+               :extension (extension)
                :module-name nil})
   (let [fts (when result.filetype
               (str.split result.filetype "%."))]
@@ -83,6 +87,7 @@
               suffixes (config.get-in [:filetype_suffixes ft-part])]
           (when (and (not result.module-name) module-name
                      (or (not suffixes)
+                         (not result.extension)
                          (a.some #(= result.extension $) suffixes)))
             (set result.module-name module-name))))))
   result)
