@@ -255,10 +255,11 @@ defined as you enter a buffer and can't be altered after the fact.
             Default: `"conjure.client.hy.stdio"`
 
 `g:conjure#filetype#scheme`
-            Client to use for `scheme` buffers. You can use Guile instead by
-            setting this to `"conjure.client.guile.socket"`.
-            Help: |conjure-client-mit-scheme-stdio|, |conjure-client-guile-socket|
-            Default: `"conjure.client.mit-scheme.stdio"`
+            Client to use for `scheme` buffers. You can use Guile over a
+            socket file instead by setting this to
+            `"conjure.client.guile.socket"`.
+            Help: |conjure-client-scheme-stdio|, |conjure-client-guile-socket|
+            Default: `"conjure.client.scheme.stdio"`
 
 `g:conjure#filetype#racket`
             Client to use for `racket` buffers.
@@ -280,9 +281,9 @@ defined as you enter a buffer and can't be altered after the fact.
             Default: `["rkt"]`
 
 `g:conjure#filetype_suffixes#scheme`
-            We don't want the MIT Scheme client to activate for Racket or
-            Guile buffers, which both sometimes flick their filetype to
-            `scheme` just to try and confuse us. But we're ready for it!
+            We don't want the Scheme client to activate for Racket or Guile
+            buffers, which both sometimes flick their filetype to `scheme`
+            just to try and confuse us. But we're ready for it!
             Default: `["scm"]`
 
 `g:conjure#eval#result_register`
@@ -675,7 +676,7 @@ your dotfiles.
  - |conjure-client-janet-netrepl|
  - |conjure-client-hy-stdio|
  - |conjure-client-racket-stdio|
- - |conjure-client-mit-scheme-stdio|
+ - |conjure-client-scheme-stdio|
  - |conjure-client-guile-socket|
 
 Language clients are simply Lua modules (which can be compiled from Fennel

@@ -1,6 +1,6 @@
 local _0_0 = nil
 do
-  local name_0_ = "conjure.client.mit-scheme.stdio"
+  local name_0_ = "conjure.client.scheme.stdio"
   local module_0_ = nil
   do
     local x_0_ = package.loaded[name_0_]
@@ -39,12 +39,12 @@ local nvim = _local_0_[6]
 local stdio = _local_0_[7]
 local str = _local_0_[8]
 local _2amodule_2a = _0_0
-local _2amodule_name_2a = "conjure.client.mit-scheme.stdio"
+local _2amodule_name_2a = "conjure.client.scheme.stdio"
 do local _ = ({nil, _0_0, {{nil}, nil, nil, nil}})[2] end
-config.merge({client = {mit_scheme = {stdio = {["prompt-pattern"] = "[%]e][=r]r?o?r?> ", command = "mit-scheme", mapping = {start = "cs", stop = "cS"}}}}})
+config.merge({client = {scheme = {stdio = {["prompt-pattern"] = "[%]e][=r]r?o?r?> ", command = "mit-scheme", mapping = {start = "cs", stop = "cS"}}}}})
 local cfg = nil
 do
-  local v_0_ = config["get-in-fn"]({"client", "mit_scheme", "stdio"})
+  local v_0_ = config["get-in-fn"]({"client", "scheme", "stdio"})
   local t_0_ = (_0_0)["aniseed/locals"]
   t_0_["cfg"] = v_0_
   cfg = v_0_
@@ -277,8 +277,8 @@ do
   do
     local v_0_0 = nil
     local function on_filetype0()
-      mapping.buf("n", "MITSchemeStart", cfg({"mapping", "start"}), _2amodule_name_2a, "start")
-      return mapping.buf("n", "MITSchemeStop", cfg({"mapping", "stop"}), _2amodule_name_2a, "stop")
+      mapping.buf("n", "SchemeStart", cfg({"mapping", "start"}), _2amodule_name_2a, "start")
+      return mapping.buf("n", "SchemeStop", cfg({"mapping", "stop"}), _2amodule_name_2a, "stop")
     end
     v_0_0 = on_filetype0
     _0_0["on-filetype"] = v_0_0

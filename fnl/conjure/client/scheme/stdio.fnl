@@ -1,4 +1,4 @@
-(module conjure.client.mit-scheme.stdio
+(module conjure.client.scheme.stdio
   {require {a conjure.aniseed.core
             str conjure.aniseed.string
             nvim conjure.aniseed.nvim
@@ -11,17 +11,13 @@
 
 ;;;; Known issues, non-exhaustive:
 ;;;;
-;;;; TODO Exiting vim without first stopping the REPL with <leader>cS causes
-;;;; mit-scheme to spike to 100% CPU and stay there until it's killed.
-;;;; https://github.com/Olical/conjure/issues/185
-;;;;
 ;;;; TODO Output caught by on-stray-output (e.g. the startup preamble) is not
 ;;;; cleanly broken on linebreaks, so it ends up with extra linebreaks where
 ;;;; there shouldn't be any.
 
 (config.merge
   {:client
-   {:mit_scheme
+   {:scheme
     {:stdio
      {:mapping {:start "cs"
                 :stop "cS"}
@@ -29,7 +25,7 @@
       ;; Match "]=> " or "error> "
       :prompt-pattern "[%]e][=r]r?o?r?> "}}}})
 
-(def- cfg (config.get-in-fn [:client :mit_scheme :stdio]))
+(def- cfg (config.get-in-fn [:client :scheme :stdio]))
 
 (defonce- state (client.new-state #(do {:repl nil})))
 
@@ -123,8 +119,8 @@
   (start))
 
 (defn on-filetype []
-  (mapping.buf :n :MITSchemeStart (cfg [:mapping :start]) *module-name* :start)
-  (mapping.buf :n :MITSchemeStop (cfg [:mapping :stop]) *module-name* :stop))
+  (mapping.buf :n :SchemeStart (cfg [:mapping :start]) *module-name* :start)
+  (mapping.buf :n :SchemeStop (cfg [:mapping :stop]) *module-name* :stop))
 
 (defn on-exit []
   (stop))
