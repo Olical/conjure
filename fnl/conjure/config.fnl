@@ -98,6 +98,11 @@
    {:omnifunc :ConjureOmnifunc
     :fallback :syntaxcomplete#Complete}
 
+   :highlight
+   {:enabled false
+    :group "IncSearch"
+    :timeout 500}
+
    :log
    {:wrap false
     :hud {:width 0.42
