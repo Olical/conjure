@@ -77,6 +77,27 @@ do
   t_0_["display-request"] = v_0_
   display_request = v_0_
 end
+local highlight_range = nil
+do
+  local v_0_ = nil
+  local function highlight_range0(range)
+    if (config["get-in"]({"highlight", "enabled"}) and vim.highlight) then
+      local bufnr = (range.bufnr or 0)
+      local namespace = vim.api.nvim_create_namespace("conjure_highlight")
+      local hl_start = {(range.start[1] - 1), range.start[2]}
+      local hl_end = {((range["end"])[1] - 1), (range["end"])[2]}
+      vim.highlight.range(bufnr, namespace, config["get-in"]({"highlight", "group"}), hl_start, hl_end, "v", true)
+      local function _2_()
+        return vim.api.nvim_buf_clear_namespace(bufnr, namespace, 0, -1)
+      end
+      return vim.defer_fn(_2_, config["get-in"]({"highlight", "timeout"}))
+    end
+  end
+  v_0_ = highlight_range0
+  local t_0_ = (_0_0)["aniseed/locals"]
+  t_0_["highlight-range"] = v_0_
+  highlight_range = v_0_
+end
 local with_last_result_hook = nil
 do
   local v_0_ = nil
@@ -160,6 +181,7 @@ do
   do
     local v_0_0 = nil
     local function eval_str0(opts)
+      highlight_range(opts.range)
       event.emit("eval", "str")
       local function _2_()
         if opts["passive?"] then
