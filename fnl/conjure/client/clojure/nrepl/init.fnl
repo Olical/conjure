@@ -8,6 +8,7 @@
             config conjure.config
             action conjure.client.clojure.nrepl.action
             server conjure.client.clojure.nrepl.server
+            parse conjure.client.clojure.nrepl.parse
             client conjure.client}})
 
 (def buf-suffix ".cljc")
@@ -74,12 +75,10 @@
       {:cljs {:use_suitable true}
        :with_context false}}}}})
 
-
 (defn context [header]
   (-?> header
        (string.match "%(%s*ns%s+([^)]*)")
-       (string.gsub "%^:.-%s+" "")
-       (string.gsub "%^%b{}%s+" "")
+       (parse.strip-meta)
        (str.split "%s+")
        (a.first)))
 

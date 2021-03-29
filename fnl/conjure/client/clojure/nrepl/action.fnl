@@ -12,6 +12,7 @@
             config conjure.config
             server conjure.client.clojure.nrepl.server
             ui conjure.client.clojure.nrepl.ui
+            parse conjure.client.clojure.nrepl.parse
             a conjure.aniseed.core
             nrepl conjure.remote.nrepl}})
 
@@ -404,20 +405,19 @@
 
 (defn extract-test-name-from-form [form]
   (var seen-deftest? false)
-  (->> (str.split form "%s+")
-       (a.some
-         (fn [part]
-           (if
-             (a.some (fn [config-current-form-name]
-                       (text.ends-with part config-current-form-name))
-                     (cfg [:test :current_form_names]))
-             (do (set seen-deftest? true) false)
+  (-> (parse.strip-meta form)
+      (str.split "%s+")
+      (->>
+        (a.some
+          (fn [part]
+            (if
+              (a.some (fn [config-current-form-name]
+                        (text.ends-with part config-current-form-name))
+                      (cfg [:test :current_form_names]))
+              (do (set seen-deftest? true) false)
 
-             (text.starts-with part "^")
-             false
-
-             seen-deftest?
-             part)))))
+              seen-deftest?
+              part))))))
 
 (defn run-current-test []
   (try-ensure-conn

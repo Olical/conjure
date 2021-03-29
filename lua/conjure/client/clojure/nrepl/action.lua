@@ -19,11 +19,11 @@ end
 local function _1_(...)
   local ok_3f_0_, val_0_ = nil, nil
   local function _1_()
-    return {require("conjure.aniseed.core"), require("conjure.config"), require("conjure.editor"), require("conjure.aniseed.eval"), require("conjure.extract"), require("conjure.fs"), require("conjure.linked-list"), require("conjure.log"), require("conjure.remote.nrepl"), require("conjure.aniseed.nvim"), require("conjure.client.clojure.nrepl.server"), require("conjure.aniseed.string"), require("conjure.text"), require("conjure.client.clojure.nrepl.ui"), require("conjure.aniseed.view")}
+    return {require("conjure.aniseed.core"), require("conjure.config"), require("conjure.editor"), require("conjure.aniseed.eval"), require("conjure.extract"), require("conjure.fs"), require("conjure.linked-list"), require("conjure.log"), require("conjure.remote.nrepl"), require("conjure.aniseed.nvim"), require("conjure.client.clojure.nrepl.parse"), require("conjure.client.clojure.nrepl.server"), require("conjure.aniseed.string"), require("conjure.text"), require("conjure.client.clojure.nrepl.ui"), require("conjure.aniseed.view")}
   end
   ok_3f_0_, val_0_ = pcall(_1_)
   if ok_3f_0_ then
-    _0_0["aniseed/local-fns"] = {require = {a = "conjure.aniseed.core", config = "conjure.config", editor = "conjure.editor", eval = "conjure.aniseed.eval", extract = "conjure.extract", fs = "conjure.fs", ll = "conjure.linked-list", log = "conjure.log", nrepl = "conjure.remote.nrepl", nvim = "conjure.aniseed.nvim", server = "conjure.client.clojure.nrepl.server", str = "conjure.aniseed.string", text = "conjure.text", ui = "conjure.client.clojure.nrepl.ui", view = "conjure.aniseed.view"}}
+    _0_0["aniseed/local-fns"] = {require = {a = "conjure.aniseed.core", config = "conjure.config", editor = "conjure.editor", eval = "conjure.aniseed.eval", extract = "conjure.extract", fs = "conjure.fs", ll = "conjure.linked-list", log = "conjure.log", nrepl = "conjure.remote.nrepl", nvim = "conjure.aniseed.nvim", parse = "conjure.client.clojure.nrepl.parse", server = "conjure.client.clojure.nrepl.server", str = "conjure.aniseed.string", text = "conjure.text", ui = "conjure.client.clojure.nrepl.ui", view = "conjure.aniseed.view"}}
     return val_0_
   else
     return print(val_0_)
@@ -32,11 +32,12 @@ end
 local _local_0_ = _1_(...)
 local a = _local_0_[1]
 local nvim = _local_0_[10]
-local server = _local_0_[11]
-local str = _local_0_[12]
-local text = _local_0_[13]
-local ui = _local_0_[14]
-local view = _local_0_[15]
+local parse = _local_0_[11]
+local server = _local_0_[12]
+local str = _local_0_[13]
+local text = _local_0_[14]
+local ui = _local_0_[15]
+local view = _local_0_[16]
 local config = _local_0_[2]
 local editor = _local_0_[3]
 local eval = _local_0_[4]
@@ -887,13 +888,11 @@ do
         if a.some(_3_, cfg({"test", "current_form_names"})) then
           seen_deftest_3f = true
           return false
-        elseif text["starts-with"](part, "^") then
-          return false
         elseif seen_deftest_3f then
           return part
         end
       end
-      return a.some(_2_, str.split(form, "%s+"))
+      return a.some(_2_, str.split(parse["strip-meta"](form), "%s+"))
     end
     v_0_0 = extract_test_name_from_form0
     _0_0["extract-test-name-from-form"] = v_0_0

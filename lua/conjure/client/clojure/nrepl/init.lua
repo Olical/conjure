@@ -19,11 +19,11 @@ end
 local function _1_(...)
   local ok_3f_0_, val_0_ = nil, nil
   local function _1_()
-    return {require("conjure.aniseed.core"), require("conjure.client.clojure.nrepl.action"), require("conjure.bridge"), require("conjure.client"), require("conjure.config"), require("conjure.eval"), require("conjure.mapping"), require("conjure.aniseed.nvim"), require("conjure.client.clojure.nrepl.server"), require("conjure.aniseed.string")}
+    return {require("conjure.aniseed.core"), require("conjure.client.clojure.nrepl.action"), require("conjure.bridge"), require("conjure.client"), require("conjure.config"), require("conjure.eval"), require("conjure.mapping"), require("conjure.aniseed.nvim"), require("conjure.client.clojure.nrepl.parse"), require("conjure.client.clojure.nrepl.server"), require("conjure.aniseed.string")}
   end
   ok_3f_0_, val_0_ = pcall(_1_)
   if ok_3f_0_ then
-    _0_0["aniseed/local-fns"] = {require = {a = "conjure.aniseed.core", action = "conjure.client.clojure.nrepl.action", bridge = "conjure.bridge", client = "conjure.client", config = "conjure.config", eval = "conjure.eval", mapping = "conjure.mapping", nvim = "conjure.aniseed.nvim", server = "conjure.client.clojure.nrepl.server", str = "conjure.aniseed.string"}}
+    _0_0["aniseed/local-fns"] = {require = {a = "conjure.aniseed.core", action = "conjure.client.clojure.nrepl.action", bridge = "conjure.bridge", client = "conjure.client", config = "conjure.config", eval = "conjure.eval", mapping = "conjure.mapping", nvim = "conjure.aniseed.nvim", parse = "conjure.client.clojure.nrepl.parse", server = "conjure.client.clojure.nrepl.server", str = "conjure.aniseed.string"}}
     return val_0_
   else
     return print(val_0_)
@@ -31,7 +31,8 @@ local function _1_(...)
 end
 local _local_0_ = _1_(...)
 local a = _local_0_[1]
-local str = _local_0_[10]
+local server = _local_0_[10]
+local str = _local_0_[11]
 local action = _local_0_[2]
 local bridge = _local_0_[3]
 local client = _local_0_[4]
@@ -39,7 +40,7 @@ local config = _local_0_[5]
 local eval = _local_0_[6]
 local mapping = _local_0_[7]
 local nvim = _local_0_[8]
-local server = _local_0_[9]
+local parse = _local_0_[9]
 local _2amodule_2a = _0_0
 local _2amodule_name_2a = "conjure.client.clojure.nrepl"
 do local _ = ({nil, _0_0, {{}, nil, nil, nil}})[2] end
@@ -85,16 +86,11 @@ do
       if _2_0 then
         local _3_0 = string.match(_2_0, "%(%s*ns%s+([^)]*)")
         if _3_0 then
-          local _4_0 = string.gsub(_3_0, "%^:.-%s+", "")
+          local _4_0 = parse["strip-meta"](_3_0)
           if _4_0 then
-            local _5_0 = string.gsub(_4_0, "%^%b{}%s+", "")
+            local _5_0 = str.split(_4_0, "%s+")
             if _5_0 then
-              local _6_0 = str.split(_5_0, "%s+")
-              if _6_0 then
-                return a.first(_6_0)
-              else
-                return _6_0
-              end
+              return a.first(_5_0)
             else
               return _5_0
             end
