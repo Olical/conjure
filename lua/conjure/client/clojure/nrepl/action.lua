@@ -789,6 +789,28 @@ do
   t_0_["select-session-interactive"] = v_0_
   select_session_interactive = v_0_
 end
+local require_test_runner = nil
+do
+  local v_0_ = nil
+  local function require_test_runner0()
+    return require_ns(cfg({"test", "runner_namespace"}))
+  end
+  v_0_ = require_test_runner0
+  local t_0_ = (_0_0)["aniseed/locals"]
+  t_0_["require-test-runner"] = v_0_
+  require_test_runner = v_0_
+end
+local test_runner_code = nil
+do
+  local v_0_ = nil
+  local function test_runner_code0(fn_config_name, ...)
+    return ("(" .. str.join(" ", {(cfg({"test", "runner_namespace"}) .. "/" .. cfg({"test", (fn_config_name .. "_fn")})), ...}) .. ")")
+  end
+  v_0_ = test_runner_code0
+  local t_0_ = (_0_0)["aniseed/locals"]
+  t_0_["test-runner-code"] = v_0_
+  test_runner_code = v_0_
+end
 local run_all_tests = nil
 do
   local v_0_ = nil
@@ -797,11 +819,11 @@ do
     local function run_all_tests0()
       local function _2_()
         log.append({"; run-all-tests"}, {["break?"] = true})
-        require_ns("clojure.test")
+        require_test_runner()
         local function _3_(_241)
           return ui["display-result"](_241, {["ignore-nil?"] = true, ["simple-out?"] = true})
         end
-        return server.eval({code = "(clojure.test/run-all-tests)"}, _3_)
+        return server.eval({code = test_runner_code("all")}, _3_)
       end
       return try_ensure_conn(_2_)
     end
@@ -820,11 +842,11 @@ do
     local function _2_()
       if ns then
         log.append({("; run-ns-tests: " .. ns)}, {["break?"] = true})
-        require_ns("clojure.test")
+        require_test_runner()
         local function _3_(_241)
           return ui["display-result"](_241, {["ignore-nil?"] = true, ["simple-out?"] = true})
         end
-        return server.eval({code = ("(clojure.test/run-tests '" .. ns .. ")")}, _3_)
+        return server.eval({code = test_runner_code("ns", ("'" .. ns))}, _3_)
       end
     end
     return try_ensure_conn(_2_)
@@ -914,7 +936,7 @@ do
           local test_name = extract_test_name_from_form(form.content)
           if test_name then
             log.append({("; run-current-test: " .. test_name)}, {["break?"] = true})
-            require_ns("clojure.test")
+            require_test_runner()
             local function _3_(msgs)
               if ((2 == a.count(msgs)) and ("nil" == a.get(a.first(msgs), "value"))) then
                 return log.append({"; Success!"})
@@ -925,7 +947,7 @@ do
                 return a["run!"](_4_, msgs)
               end
             end
-            return server.eval({code = ("(clojure.test/test-vars" .. "  [(doto (resolve '" .. test_name .. ")" .. "     (assert \"" .. test_name .. " is not a var\"))])"), context = extract.context()}, nrepl["with-all-msgs-fn"](_3_))
+            return server.eval({code = test_runner_code("var", (cfg({"test", "var_prefix"}) .. "#'" .. test_name .. cfg({"test", "var_suffix"}))), context = extract.context()}, nrepl["with-all-msgs-fn"](_3_))
           end
         end
       end

@@ -367,13 +367,26 @@
                     (server.assume-session (a.get sessions n))
                     (log.append ["; Invalid session number."])))))))))))
 
+(defn- require-test-runner []
+  (require-ns (cfg [:test :runner_namespace])))
+
+(defn- test-runner-code [fn-config-name ...]
+  (..
+    "("
+    (str.join
+      " "
+      [(.. (cfg [:test :runner_namespace]) "/"
+           (cfg [:test (.. fn-config-name "_fn")]))
+       ...])
+    ")"))
+
 (defn run-all-tests []
   (try-ensure-conn
     (fn []
       (log.append ["; run-all-tests"] {:break? true})
-      (require-ns "clojure.test")
+      (require-test-runner)
       (server.eval
-        {:code "(clojure.test/run-all-tests)"}
+        {:code (test-runner-code :all)}
         #(ui.display-result
            $1
            {:simple-out? true
@@ -385,9 +398,9 @@
       (when ns
         (log.append [(.. "; run-ns-tests: " ns)]
                     {:break? true})
-        (require-ns "clojure.test")
+        (require-test-runner)
         (server.eval
-          {:code (.. "(clojure.test/run-tests '" ns ")")}
+          {:code (test-runner-code :ns (.. "'" ns))}
           #(ui.display-result
              $1
              {:simple-out? true
@@ -428,11 +441,14 @@
             (when test-name
               (log.append [(.. "; run-current-test: " test-name)]
                           {:break? true})
-              (require-ns "clojure.test")
+              (require-test-runner)
               (server.eval
-                {:code (.. "(clojure.test/test-vars"
-                           "  [(doto (resolve '" test-name ")"
-                           "     (assert \"" test-name " is not a var\"))])")
+                {:code (test-runner-code
+                         :var
+                         (.. (cfg [:test :var_prefix])
+                             "#'"
+                             test-name
+                             (cfg [:test :var_suffix])))
                  :context (extract.context)}
                 (nrepl.with-all-msgs-fn
                   (fn [msgs]

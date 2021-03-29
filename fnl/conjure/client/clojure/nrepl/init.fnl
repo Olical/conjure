@@ -40,7 +40,13 @@
        :dirs nil}
 
       :test
-      {:current_form_names ["deftest"]}
+      {:current_form_names ["deftest"]
+       :runner_namespace "clojure.test"
+       :all_fn "run-all-tests"
+       :ns_fn "run-tests"
+       :var_fn "test-vars"
+       :var_prefix "["
+       :var_suffix "]"}
 
       :mapping
       {:disconnect "cd"

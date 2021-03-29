@@ -208,6 +208,35 @@ All configuration can be set as described in |conjure-configuration|.
             current root form is a test that should be ran.
             Default: `["deftest"]`
 
+`g:conjure#client#clojure#nrepl#test#runner_namespace`
+            Namespace used for test running. Prefixes the test runner function
+            names and will be required when you perform testing actions
+            through Conjure.
+            Default: `"clojure.test"`
+
+`g:conjure#client#clojure#nrepl#test#all_fn`
+            Function to call when executing all tests. This function will come
+            from the `runner_namespace`.
+            Default: `"run-all-tests"`
+
+`g:conjure#client#clojure#nrepl#test#ns_fn`
+            Function to call when executing all tests in a namespace. This
+            function will come from the `runner_namespace`.
+            Default: `"run-tests"`
+
+`g:conjure#client#clojure#nrepl#test#var_fn`
+            Function to call when executing a specific test. This function
+            will come from the `runner_namespace`.
+            Default: `"test-vars"`
+
+`g:conjure#client#clojure#nrepl#test#var_prefix`
+            String that comes before the var symbol when testing a single var.
+            Default: `"["`
+
+`g:conjure#client#clojure#nrepl#test#var_suffix`
+            String that comes after the var symbol when testing a single var.
+            Default: `"]"`
+
 `g:conjure#client#clojure#nrepl#mapping#disconnect`
             Disconnect from the current nREPL server.
             Default: `cd`
