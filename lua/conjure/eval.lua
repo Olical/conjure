@@ -19,11 +19,11 @@ end
 local function _1_(...)
   local ok_3f_0_, val_0_ = nil, nil
   local function _1_()
-    return {require("conjure.aniseed.core"), require("conjure.buffer"), require("conjure.client"), require("conjure.config"), require("conjure.editor"), require("conjure.event"), require("conjure.extract"), require("conjure.fs"), require("conjure.inline"), require("conjure.log"), require("conjure.aniseed.nvim"), require("conjure.promise"), require("conjure.text"), require("conjure.uuid")}
+    return {require("conjure.aniseed.core"), require("conjure.buffer"), require("conjure.client"), require("conjure.config"), require("conjure.editor"), require("conjure.event"), require("conjure.extract"), require("conjure.fs"), require("conjure.inline"), require("conjure.log"), require("conjure.aniseed.nvim"), require("conjure.promise"), require("conjure.text"), require("conjure.timer"), require("conjure.uuid")}
   end
   ok_3f_0_, val_0_ = pcall(_1_)
   if ok_3f_0_ then
-    _0_0["aniseed/local-fns"] = {require = {a = "conjure.aniseed.core", buffer = "conjure.buffer", client = "conjure.client", config = "conjure.config", editor = "conjure.editor", event = "conjure.event", extract = "conjure.extract", fs = "conjure.fs", inline = "conjure.inline", log = "conjure.log", nvim = "conjure.aniseed.nvim", promise = "conjure.promise", text = "conjure.text", uuid = "conjure.uuid"}}
+    _0_0["aniseed/local-fns"] = {require = {a = "conjure.aniseed.core", buffer = "conjure.buffer", client = "conjure.client", config = "conjure.config", editor = "conjure.editor", event = "conjure.event", extract = "conjure.extract", fs = "conjure.fs", inline = "conjure.inline", log = "conjure.log", nvim = "conjure.aniseed.nvim", promise = "conjure.promise", text = "conjure.text", timer = "conjure.timer", uuid = "conjure.uuid"}}
     return val_0_
   else
     return print(val_0_)
@@ -35,7 +35,8 @@ local log = _local_0_[10]
 local nvim = _local_0_[11]
 local promise = _local_0_[12]
 local text = _local_0_[13]
-local uuid = _local_0_[14]
+local timer = _local_0_[14]
+local uuid = _local_0_[15]
 local buffer = _local_0_[2]
 local client = _local_0_[3]
 local config = _local_0_[4]
@@ -82,15 +83,18 @@ do
   local v_0_ = nil
   local function highlight_range0(range)
     if (config["get-in"]({"highlight", "enabled"}) and vim.highlight) then
-      local bufnr = (range.bufnr or 0)
+      local bufnr = (range.bufnr or nvim.buf.nr())
       local namespace = vim.api.nvim_create_namespace("conjure_highlight")
       local hl_start = {(range.start[1] - 1), range.start[2]}
       local hl_end = {((range["end"])[1] - 1), (range["end"])[2]}
       vim.highlight.range(bufnr, namespace, config["get-in"]({"highlight", "group"}), hl_start, hl_end, "v", true)
       local function _2_()
-        return vim.api.nvim_buf_clear_namespace(bufnr, namespace, 0, -1)
+        local function _3_()
+          return vim.api.nvim_buf_clear_namespace(bufnr, namespace, 0, -1)
+        end
+        return pcall(_3_)
       end
-      return vim.defer_fn(_2_, config["get-in"]({"highlight", "timeout"}))
+      return timer.defer(_2_, config["get-in"]({"highlight", "timeout"}))
     end
   end
   v_0_ = highlight_range0

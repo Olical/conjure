@@ -5,6 +5,7 @@
             client conjure.client
             text conjure.text
             fs conjure.fs
+            timer conjure.timer
             config conjure.config
             promise conjure.promise
             editor conjure.editor
@@ -31,27 +32,26 @@
 (defn- highlight-range [range]
   (when (and (config.get-in [:highlight :enabled])
              vim.highlight)
-    (let [bufnr (or (. range :bufnr) 0)
+    (let [bufnr (or (. range :bufnr) (nvim.buf.nr))
           namespace (vim.api.nvim_create_namespace "conjure_highlight")
           hl_start {1 (- (. range.start 1) 1)
                     2 (. range.start 2)}
           hl_end {1 (- (. range.end 1) 1)
                   2 (. range.end 2)}]
 
-      (vim.highlight.range bufnr
-                           namespace
-                           (config.get-in [:highlight :group])
-                           hl_start
-                           hl_end
-                           :v
-                           true)
+      (vim.highlight.range
+        bufnr
+        namespace
+        (config.get-in [:highlight :group])
+        hl_start
+        hl_end
+        :v
+        true)
 
-      (vim.defer_fn
+      (timer.defer
         (fn []
-          (vim.api.nvim_buf_clear_namespace bufnr
-                                            namespace
-                                            0
-                                            -1))
+          (pcall #(vim.api.nvim_buf_clear_namespace
+                    bufnr namespace 0 -1)))
         (config.get-in [:highlight :timeout])))))
 
 (defn- with-last-result-hook [opts]
