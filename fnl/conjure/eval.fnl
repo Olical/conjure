@@ -28,6 +28,32 @@
     [opts.preview]
     (a.merge opts {:break? true})))
 
+(defn- highlight-range [range]
+  (when (and (config.get-in [:highlight :enabled])
+             vim.highlight)
+    (let [bufnr (or (. range :bufnr) 0)
+          namespace (vim.api.nvim_create_namespace "conjure_highlight")
+          hl_start {1 (- (. range.start 1) 1)
+                    2 (. range.start 2)}
+          hl_end {1 (- (. range.end 1) 1)
+                  2 (. range.end 2)}]
+
+      (vim.highlight.range bufnr
+                           namespace
+                           (config.get-in [:highlight :group])
+                           hl_start
+                           hl_end
+                           :v
+                           true)
+
+      (vim.defer_fn
+        (fn []
+          (vim.api.nvim_buf_clear_namespace bufnr
+                                            namespace
+                                            0
+                                            -1))
+        (config.get-in [:highlight :timeout])))))
+
 (defn- with-last-result-hook [opts]
   (let [buf (nvim.win_get_buf 0)
         line (a.dec (a.first (nvim.win_get_cursor 0)))]
@@ -72,6 +98,7 @@
       (client.call f-name opts))))
 
 (defn eval-str [opts]
+  (highlight-range opts.range)
   (event.emit :eval :str)
   ((client-exec-fn :eval :eval-str)
    (if opts.passive?
