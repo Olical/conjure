@@ -41,7 +41,7 @@ local str = _local_0_[8]
 local _2amodule_2a = _0_0
 local _2amodule_name_2a = "conjure.client.scheme.stdio"
 do local _ = ({nil, _0_0, {{nil}, nil, nil, nil}})[2] end
-config.merge({client = {scheme = {stdio = {["prompt-pattern"] = "[%]e][=r]r?o?r?> ", command = "mit-scheme", mapping = {start = "cs", stop = "cS"}}}}})
+config.merge({client = {scheme = {stdio = {command = "mit-scheme", mapping = {start = "cs", stop = "cS"}, prompt_pattern = "[%]e][=r]r?o?r?> "}}}})
 local cfg = nil
 do
   local v_0_ = config["get-in-fn"]({"client", "scheme", "stdio"})
@@ -244,7 +244,7 @@ do
         local function _5_()
           return display_repl_status("started")
         end
-        return a.assoc(state(), "repl", stdio.start({["on-error"] = _2_, ["on-exit"] = _3_, ["on-stray-output"] = _4_, ["on-success"] = _5_, ["prompt-pattern"] = cfg({"prompt-pattern"}), cmd = cfg({"command"})}))
+        return a.assoc(state(), "repl", stdio.start({["on-error"] = _2_, ["on-exit"] = _3_, ["on-stray-output"] = _4_, ["on-success"] = _5_, ["prompt-pattern"] = cfg({"prompt_pattern"}), cmd = cfg({"command"})}))
       end
     end
     v_0_0 = start0

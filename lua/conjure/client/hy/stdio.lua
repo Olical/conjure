@@ -43,7 +43,7 @@ local str = _local_0_[9]
 local _2amodule_2a = _0_0
 local _2amodule_name_2a = "conjure.client.hy.stdio"
 do local _ = ({nil, _0_0, {{nil}, nil, nil, nil}})[2] end
-config.merge({client = {hy = {stdio = {["prompt-pattern"] = "=> ", command = "hy --repl-output-fn=hy.contrib.hy-repr.hy-repr", mapping = {interrupt = "ei", start = "cs", stop = "cS"}}}}})
+config.merge({client = {hy = {stdio = {command = "hy --repl-output-fn=hy.contrib.hy-repr.hy-repr", mapping = {interrupt = "ei", start = "cs", stop = "cS"}, prompt_pattern = "=> "}}}})
 local cfg = nil
 do
   local v_0_ = config["get-in-fn"]({"client", "hy", "stdio"})
@@ -293,7 +293,7 @@ do
           end
           return with_repl_or_warn(_6_)
         end
-        return a.assoc(state(), "repl", stdio.start({["on-error"] = _2_, ["on-exit"] = _3_, ["on-stray-output"] = _4_, ["on-success"] = _5_, ["prompt-pattern"] = cfg({"prompt-pattern"}), cmd = cfg({"command"})}))
+        return a.assoc(state(), "repl", stdio.start({["on-error"] = _2_, ["on-exit"] = _3_, ["on-stray-output"] = _4_, ["on-success"] = _5_, ["prompt-pattern"] = cfg({"prompt_pattern"}), cmd = cfg({"command"})}))
       end
     end
     v_0_0 = start0

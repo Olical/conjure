@@ -17,7 +17,7 @@
      {:mapping {:start "cs"
                 :stop "cS"}
       :command "racket"
-      :prompt-pattern "\n?[\"%w%-./_]*> "}}}})
+      :prompt_pattern "\n?[\"%w%-./_]*> "}}}})
 
 (def- cfg (config.get-in-fn [:client :racket :stdio]))
 
@@ -103,7 +103,7 @@
     (a.assoc
       (state) :repl
       (stdio.start
-        {:prompt-pattern (cfg [:prompt-pattern])
+        {:prompt-pattern (cfg [:prompt_pattern])
          :cmd (cfg [:command])
 
          :on-success

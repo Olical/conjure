@@ -16,9 +16,9 @@
     {:stdio
      {:mapping {:start "cs"
                 :stop "cS"
-                :eval-reload "eF"}
+                :eval_reload "eF"}
       :command "fennel"
-      :prompt-pattern ">> "}}}})
+      :prompt_pattern ">> "}}}})
 
 (def- cfg (config.get-in-fn [:client :fennel :stdio]))
 
@@ -97,7 +97,7 @@
     (a.assoc
       (state) :repl
       (stdio.start
-        {:prompt-pattern (cfg [:prompt-pattern])
+        {:prompt-pattern (cfg [:prompt_pattern])
          :cmd (cfg [:command])
 
          :on-success
@@ -132,4 +132,4 @@
   (mapping.buf :n :FnlStop
                (cfg [:mapping :stop]) *module-name* :stop)
   (mapping.buf :n :FnlEvalReload
-               (cfg [:mapping :eval-reload]) *module-name* :eval-reload))
+               (cfg [:mapping :eval_reload]) *module-name* :eval-reload))

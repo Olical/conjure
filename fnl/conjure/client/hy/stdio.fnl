@@ -19,7 +19,7 @@
                 :stop "cS"
                 :interrupt "ei"}
       :command "hy --repl-output-fn=hy.contrib.hy-repr.hy-repr"
-      :prompt-pattern "=> "}}}})
+      :prompt_pattern "=> "}}}})
 
 (def- cfg (config.get-in-fn [:client :hy :stdio]))
 
@@ -113,7 +113,7 @@
     (a.assoc
       (state) :repl
       (stdio.start
-        {:prompt-pattern (cfg [:prompt-pattern])
+        {:prompt-pattern (cfg [:prompt_pattern])
          :cmd (cfg [:command])
 
          :on-success

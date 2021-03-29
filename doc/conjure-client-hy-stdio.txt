@@ -59,4 +59,11 @@ All configuration can be set as described in |conjure-configuration|.
             arguments or change the command entirely.
             Default: `"hy --repl-output-fn=hy.contrib.hy-repr.hy-repr"`
 
+`g:conjure#client#hy#stdio#prompt_pattern`
+            Lua pattern to identify a new REPL prompt. This match signals to
+            Conjure that the previous evaluation is complete and we're ready
+            to submit more code as well as collect all output prior to the
+            marker as the result.
+            Default: `"=> "`
+
 vim:tw=78:sw=2:ts=2:ft=help:norl:et:listchars=

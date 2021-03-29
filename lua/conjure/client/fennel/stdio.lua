@@ -42,7 +42,7 @@ local text = _local_0_[9]
 local _2amodule_2a = _0_0
 local _2amodule_name_2a = "conjure.client.fennel.stdio"
 do local _ = ({nil, _0_0, {{nil}, nil, nil, nil}})[2] end
-config.merge({client = {fennel = {stdio = {["prompt-pattern"] = ">> ", command = "fennel", mapping = {["eval-reload"] = "eF", start = "cs", stop = "cS"}}}}})
+config.merge({client = {fennel = {stdio = {command = "fennel", mapping = {eval_reload = "eF", start = "cs", stop = "cS"}, prompt_pattern = ">> "}}}})
 local cfg = nil
 do
   local v_0_ = config["get-in-fn"]({"client", "fennel", "stdio"})
@@ -275,7 +275,7 @@ do
         local function _5_()
           return display_repl_status("started")
         end
-        return a.assoc(state(), "repl", stdio.start({["on-error"] = _2_, ["on-exit"] = _3_, ["on-stray-output"] = _4_, ["on-success"] = _5_, ["prompt-pattern"] = cfg({"prompt-pattern"}), cmd = cfg({"command"})}))
+        return a.assoc(state(), "repl", stdio.start({["on-error"] = _2_, ["on-exit"] = _3_, ["on-stray-output"] = _4_, ["on-success"] = _5_, ["prompt-pattern"] = cfg({"prompt_pattern"}), cmd = cfg({"command"})}))
       end
     end
     v_0_0 = start0
@@ -326,7 +326,7 @@ do
     local function on_filetype0()
       mapping.buf("n", "FnlStart", cfg({"mapping", "start"}), _2amodule_name_2a, "start")
       mapping.buf("n", "FnlStop", cfg({"mapping", "stop"}), _2amodule_name_2a, "stop")
-      return mapping.buf("n", "FnlEvalReload", cfg({"mapping", "eval-reload"}), _2amodule_name_2a, "eval-reload")
+      return mapping.buf("n", "FnlEvalReload", cfg({"mapping", "eval_reload"}), _2amodule_name_2a, "eval-reload")
     end
     v_0_0 = on_filetype0
     _0_0["on-filetype"] = v_0_0

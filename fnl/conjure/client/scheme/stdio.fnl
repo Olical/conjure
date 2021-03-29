@@ -9,12 +9,6 @@
             log conjure.log}
    require-macros [conjure.macros]})
 
-;;;; Known issues, non-exhaustive:
-;;;;
-;;;; TODO Output caught by on-stray-output (e.g. the startup preamble) is not
-;;;; cleanly broken on linebreaks, so it ends up with extra linebreaks where
-;;;; there shouldn't be any.
-
 (config.merge
   {:client
    {:scheme
@@ -23,7 +17,7 @@
                 :stop "cS"}
       :command "mit-scheme"
       ;; Match "]=> " or "error> "
-      :prompt-pattern "[%]e][=r]r?o?r?> "}}}})
+      :prompt_pattern "[%]e][=r]r?o?r?> "}}}})
 
 (def- cfg (config.get-in-fn [:client :scheme :stdio]))
 
@@ -92,7 +86,7 @@
     (a.assoc
       (state) :repl
       (stdio.start
-        {:prompt-pattern (cfg [:prompt-pattern])
+        {:prompt-pattern (cfg [:prompt_pattern])
          :cmd (cfg [:command])
 
          :on-success

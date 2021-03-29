@@ -42,7 +42,7 @@ local text = _local_0_[9]
 local _2amodule_2a = _0_0
 local _2amodule_name_2a = "conjure.client.racket.stdio"
 do local _ = ({nil, _0_0, {{nil}, nil, nil, nil}})[2] end
-config.merge({client = {racket = {stdio = {["prompt-pattern"] = "\n?[\"%w%-./_]*> ", command = "racket", mapping = {start = "cs", stop = "cS"}}}}})
+config.merge({client = {racket = {stdio = {command = "racket", mapping = {start = "cs", stop = "cS"}, prompt_pattern = "\n?[\"%w%-./_]*> "}}}})
 local cfg = nil
 do
   local v_0_ = config["get-in-fn"]({"client", "racket", "stdio"})
@@ -303,7 +303,7 @@ do
           display_repl_status("started")
           return enter()
         end
-        return a.assoc(state(), "repl", stdio.start({["on-error"] = _2_, ["on-exit"] = _3_, ["on-stray-output"] = _4_, ["on-success"] = _5_, ["prompt-pattern"] = cfg({"prompt-pattern"}), cmd = cfg({"command"})}))
+        return a.assoc(state(), "repl", stdio.start({["on-error"] = _2_, ["on-exit"] = _3_, ["on-stray-output"] = _4_, ["on-success"] = _5_, ["prompt-pattern"] = cfg({"prompt_pattern"}), cmd = cfg({"command"})}))
       end
     end
     v_0_0 = start0
