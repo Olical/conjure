@@ -2,7 +2,8 @@
 
  :deps
  {org.clojure/clojure {:mvn/version "1.10.1"}
-  org.clojure/tools.logging {:mvn/version "1.1.0"}}
+  org.clojure/tools.logging {:mvn/version "1.1.0"}
+  lambdaisland/kaocha {:mvn/version "1.0.829"}}
 
  :aliases
  {:nrepl
