@@ -15,7 +15,7 @@ Aniseed to provide a module syntax akin to Clojure and interactive evaluation
 within Neovim's own process (since it contains LuaJIT).
 
 You can use Conjure to evaluate Fennel as soon as you have support for the
-syntax (`bakpakin/fennel.vim`). Open up a `.fnl` file and start evaluating
+syntax (`Olical/fennel.vim`). Open up a `.fnl` file and start evaluating
 things with the generic |conjure-mappings|.
 
 You don't need to have Aniseed installed, Conjure will rely on it's own
@@ -26,7 +26,7 @@ installed Aniseed version by setting the following:
     :let g:conjure#client#fennel#aniseed#aniseed_module_prefix = "aniseed."
 <
  * https://github.com/bakpakin/Fennel
- * https://github.com/bakpakin/fennel.vim
+ * https://github.com/Olical/fennel.vim
  * https://github.com/Olical/aniseed
  * https://github.com/Olical/nvim-local-fennel
 
