@@ -789,22 +789,30 @@ do
   t_0_["select-session-interactive"] = v_0_
   select_session_interactive = v_0_
 end
-local require_test_runner = nil
+local test_runners = nil
+do
+  local v_0_ = {clojure = {["all-fn"] = "run-all-tests", ["call-suffix"] = "", ["name-prefix"] = "[(resolve '", ["name-suffix"] = ")]", ["ns-fn"] = "run-tests", ["single-fn"] = "test-vars", namespace = "clojure.test"}, kaocha = {["all-fn"] = "run-all", ["call-suffix"] = "{:kaocha/color? false}", ["name-prefix"] = "#'", ["name-suffix"] = "", ["ns-fn"] = "run", ["single-fn"] = "run", namespace = "kaocha.repl"}}
+  local t_0_ = (_0_0)["aniseed/locals"]
+  t_0_["test-runners"] = v_0_
+  test_runners = v_0_
+end
+local test_cfg = nil
 do
   local v_0_ = nil
-  local function require_test_runner0()
-    return require_ns(cfg({"test", "runner_namespace"}))
+  local function test_cfg0(k)
+    local runner = cfg({"test", "runner"})
+    return (a["get-in"](test_runners, {runner, k}) or error(str.join({"No test-runners configuration for ", runner, " / ", k})))
   end
-  v_0_ = require_test_runner0
+  v_0_ = test_cfg0
   local t_0_ = (_0_0)["aniseed/locals"]
-  t_0_["require-test-runner"] = v_0_
-  require_test_runner = v_0_
+  t_0_["test-cfg"] = v_0_
+  test_cfg = v_0_
 end
 local test_runner_code = nil
 do
   local v_0_ = nil
   local function test_runner_code0(fn_config_name, ...)
-    return ("(" .. str.join(" ", {(cfg({"test", "runner_namespace"}) .. "/" .. cfg({"test", (fn_config_name .. "_fn")})), ...}) .. ")")
+    return ("(require '" .. test_cfg("namespace") .. ")" .. "(" .. str.join(" ", {(test_cfg("namespace") .. "/" .. test_cfg((fn_config_name .. "-fn"))), ...}) .. test_cfg("call-suffix") .. ")")
   end
   v_0_ = test_runner_code0
   local t_0_ = (_0_0)["aniseed/locals"]
@@ -819,7 +827,6 @@ do
     local function run_all_tests0()
       local function _2_()
         log.append({"; run-all-tests"}, {["break?"] = true})
-        require_test_runner()
         local function _3_(_241)
           return ui["display-result"](_241, {["ignore-nil?"] = true, ["simple-out?"] = true})
         end
@@ -842,7 +849,6 @@ do
     local function _2_()
       if ns then
         log.append({("; run-ns-tests: " .. ns)}, {["break?"] = true})
-        require_test_runner()
         local function _3_(_241)
           return ui["display-result"](_241, {["ignore-nil?"] = true, ["simple-out?"] = true})
         end
@@ -936,9 +942,8 @@ do
           local test_name = extract_test_name_from_form(form.content)
           if test_name then
             log.append({("; run-current-test: " .. test_name)}, {["break?"] = true})
-            require_test_runner()
             local function _3_(msgs)
-              if ((2 == a.count(msgs)) and ("nil" == a.get(a.first(msgs), "value"))) then
+              if ((3 == a.count(msgs)) and ("nil" == a.get(a.second(msgs), "value"))) then
                 return log.append({"; Success!"})
               else
                 local function _4_(_241)
@@ -947,7 +952,7 @@ do
                 return a["run!"](_4_, msgs)
               end
             end
-            return server.eval({code = test_runner_code("var", (cfg({"test", "var_prefix"}) .. "#'" .. test_name .. cfg({"test", "var_suffix"}))), context = extract.context()}, nrepl["with-all-msgs-fn"](_3_))
+            return server.eval({code = test_runner_code("single", (test_cfg("name-prefix") .. test_name .. test_cfg("name-suffix"))), context = extract.context()}, nrepl["with-all-msgs-fn"](_3_))
           end
         end
       end

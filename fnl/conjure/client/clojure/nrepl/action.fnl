@@ -367,24 +367,45 @@
                     (server.assume-session (a.get sessions n))
                     (log.append ["; Invalid session number."])))))))))))
 
-(defn- require-test-runner []
-  (require-ns (cfg [:test :runner_namespace])))
+(def- test-runners
+  {:clojure
+   {:namespace "clojure.test"
+    :all-fn "run-all-tests"
+    :ns-fn "run-tests"
+    :single-fn "test-vars"
+    :call-suffix ""
+    :name-prefix "[(resolve '"
+    :name-suffix ")]"}
+   :kaocha
+   {:namespace "kaocha.repl"
+    :all-fn "run-all"
+    :ns-fn "run"
+    :single-fn "run"
+    :call-suffix "{:kaocha/color? false}"
+    :name-prefix "#'"
+    :name-suffix ""}})
+
+(defn- test-cfg [k]
+  (let [runner (cfg [:test :runner])]
+    (or (a.get-in test-runners [runner k])
+        (error (str.join ["No test-runners configuration for " runner " / " k])))))
 
 (defn- test-runner-code [fn-config-name ...]
   (..
+    "(require '" (test-cfg :namespace) ")"
     "("
     (str.join
       " "
-      [(.. (cfg [:test :runner_namespace]) "/"
-           (cfg [:test (.. fn-config-name "_fn")]))
+      [(.. (test-cfg :namespace) "/"
+           (test-cfg (.. fn-config-name "-fn")))
        ...])
+    (test-cfg :call-suffix)
     ")"))
 
 (defn run-all-tests []
   (try-ensure-conn
     (fn []
       (log.append ["; run-all-tests"] {:break? true})
-      (require-test-runner)
       (server.eval
         {:code (test-runner-code :all)}
         #(ui.display-result
@@ -398,7 +419,6 @@
       (when ns
         (log.append [(.. "; run-ns-tests: " ns)]
                     {:break? true})
-        (require-test-runner)
         (server.eval
           {:code (test-runner-code :ns (.. "'" ns))}
           #(ui.display-result
@@ -441,19 +461,17 @@
             (when test-name
               (log.append [(.. "; run-current-test: " test-name)]
                           {:break? true})
-              (require-test-runner)
               (server.eval
                 {:code (test-runner-code
-                         :var
-                         (.. (cfg [:test :var_prefix])
-                             "#'"
+                         :single
+                         (.. (test-cfg :name-prefix)
                              test-name
-                             (cfg [:test :var_suffix])))
+                             (test-cfg :name-suffix)))
                  :context (extract.context)}
                 (nrepl.with-all-msgs-fn
                   (fn [msgs]
-                    (if (and (= 2 (a.count msgs))
-                             (= "nil" (a.get (a.first msgs) :value)))
+                    (if (and (= 3 (a.count msgs))
+                             (= "nil" (a.get (a.second msgs) :value)))
                       (log.append ["; Success!"])
                       (a.run! #(ui.display-result
                                  $1
