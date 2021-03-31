@@ -186,10 +186,7 @@ local display_repl_status = nil
 do
   local v_0_ = nil
   local function display_repl_status0(status)
-    local repl = state("repl")
-    if repl then
-      return log.append({(comment_prefix .. a["pr-str"](a["get-in"](repl, {"opts", "cmd"})) .. " (" .. status .. ")")}, {["break?"] = true})
-    end
+    return log.append({(comment_prefix .. cfg({"command"}) .. " (" .. (status or "no status") .. ")")}, {["break?"] = true})
   end
   v_0_ = display_repl_status0
   local t_0_ = (_0_0)["aniseed/locals"]

@@ -62,12 +62,11 @@
   (eval-str (a.assoc opts :code (.. "(load \"" opts.file-path "\")"))))
 
 (defn- display-repl-status [status]
-  (let [repl (state :repl)]
-    (when repl
-      (log.append
-        [(.. comment-prefix
-           (a.pr-str (a.get-in repl [:opts :cmd])) " (" status ")")]
-        {:break? true}))))
+  (log.append
+    [(.. comment-prefix
+         (cfg [:command])
+         " (" (or status "no status") ")")]
+    {:break? true}))
 
 (defn stop []
   (let [repl (state :repl)]

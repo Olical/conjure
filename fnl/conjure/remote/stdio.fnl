@@ -109,19 +109,27 @@
       nil)
 
     (let [{: cmd : args} (parse-cmd opts.cmd)
-          (handle pid) (uv.spawn cmd {:stdio [stdin stdout stderr]
-                                      :args args
-                                      :env (extend-env
-                                             ;; Disable custom readline config.
-                                             {:INPUTRC "/dev/null"})}
-                                 (client.schedule-wrap on-exit))]
-      (stdout:read_start (client.schedule-wrap on-stdout))
-      (stderr:read_start (client.schedule-wrap on-stderr))
-      (client.schedule #(opts.on-success))
-      (a.merge!
-        repl
-        {:handle handle
-         :pid pid
-         :send send
-         :opts opts
-         :destroy destroy}))))
+          (handle pid-or-err)
+          (uv.spawn cmd {:stdio [stdin stdout stderr]
+                         :args args
+                         :env (extend-env
+                                ;; Trying to disable custom readline config.
+                                ;; Doesn't work in practice but is probably close?
+                                ;; If you know how, please open a PR!
+                                {:INPUTRC "/dev/null"})}
+                    (client.schedule-wrap on-exit))]
+      (if handle
+        (do
+          (stdout:read_start (client.schedule-wrap on-stdout))
+          (stderr:read_start (client.schedule-wrap on-stderr))
+          (client.schedule #(opts.on-success))
+          (a.merge!
+            repl
+            {:handle handle
+             :pid pid-or-err
+             :send send
+             :opts opts
+             :destroy destroy}))
+        (do
+          (client.schedule #(opts.on-error pid-or-err))
+          (destroy))))))

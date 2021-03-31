@@ -202,14 +202,22 @@ do
       local _let_0_ = parse_cmd(opts.cmd)
       local args = _let_0_["args"]
       local cmd = _let_0_["cmd"]
-      local handle, pid = uv.spawn(cmd, {args = args, env = extend_env({INPUTRC = "/dev/null"}), stdio = {stdin, stdout, stderr}}, client["schedule-wrap"](on_exit))
-      stdout:read_start(client["schedule-wrap"](on_stdout))
-      stderr:read_start(client["schedule-wrap"](on_stderr))
-      local function _2_()
-        return opts["on-success"]()
+      local handle, pid_or_err = uv.spawn(cmd, {args = args, env = extend_env({INPUTRC = "/dev/null"}), stdio = {stdin, stdout, stderr}}, client["schedule-wrap"](on_exit))
+      if handle then
+        stdout:read_start(client["schedule-wrap"](on_stdout))
+        stderr:read_start(client["schedule-wrap"](on_stderr))
+        local function _2_()
+          return opts["on-success"]()
+        end
+        client.schedule(_2_)
+        return a["merge!"](repl, {destroy = destroy, handle = handle, opts = opts, pid = pid_or_err, send = send})
+      else
+        local function _2_()
+          return opts["on-error"](pid_or_err)
+        end
+        client.schedule(_2_)
+        return destroy()
       end
-      client.schedule(_2_)
-      return a["merge!"](repl, {destroy = destroy, handle = handle, opts = opts, pid = pid, send = send})
     end
     v_0_0 = start0
     _0_0["start"] = v_0_0
