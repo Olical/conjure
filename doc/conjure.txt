@@ -417,6 +417,19 @@ Tip: Booleans in Vim Script are written as `v:true` and `v:false`.
             this kicks in if you don't have an nREPL connection yet.
             Default: `"syntaxcomplete#Complete"`
 
+`g:conjure#highlight#enabled`
+            Enable highlighting of evaluated forms. Requires support for the
+            highlight API, so you'll need Neovim 0.5+.
+            Default: `false`
+
+`g:conjure#highlight#group`
+            Which syntax group should the form be highlighted with.
+            Default: `"IncSearch"`
+
+`g:conjure#highlight#timeout`
+            How long should the highlight last in milliseconds.
+            Default: `500`
+
 `g:conjure#log#hud#width`
             Width of the HUD as a percentage of the editor width.
             A float between 0.0 and 1.0.
