@@ -218,6 +218,8 @@ You can disable a mapping entirely by setting it to `v:false` like so.
 These need to be set before you enter a relevant buffer since the mappings are
 defined as you enter a buffer and can't be altered after the fact.
 
+Tip: Booleans in Vim Script are written as `v:true` and `v:false`.
+
 `g:conjure#filetypes`
             A list of filetypes Conjure should be associated with. Conjure
             will then look up which client module to use for this filetype
