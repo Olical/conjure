@@ -19,17 +19,18 @@ end
 local function _1_(...)
   local ok_3f_0_, val_0_ = nil, nil
   local function _1_()
-    return {}
+    return {require("conjure.aniseed.nvim")}
   end
   ok_3f_0_, val_0_ = pcall(_1_)
   if ok_3f_0_ then
-    _0_0["aniseed/local-fns"] = {}
+    _0_0["aniseed/local-fns"] = {require = {nvim = "conjure.aniseed.nvim"}}
     return val_0_
   else
     return print(val_0_)
   end
 end
 local _local_0_ = _1_(...)
+local nvim = _local_0_[1]
 local _2amodule_2a = _0_0
 local _2amodule_name_2a = "conjure.aniseed.env"
 do local _ = ({nil, _0_0, {{}, nil, nil, nil}})[2] end
@@ -46,6 +47,24 @@ do
   local t_0_ = (_0_0)["aniseed/locals"]
   t_0_["state"] = v_0_
   state = v_0_
+end
+local quiet_require = nil
+do
+  local v_0_ = nil
+  local function quiet_require0(m)
+    local ok_3f, err = nil, nil
+    local function _2_()
+      return require(m)
+    end
+    ok_3f, err = pcall(_2_)
+    if (not ok_3f and not err:find(("module '" .. m .. "' not found"))) then
+      return nvim.ex.echoerr(err)
+    end
+  end
+  v_0_ = quiet_require0
+  local t_0_ = (_0_0)["aniseed/locals"]
+  t_0_["quiet-require"] = v_0_
+  quiet_require = v_0_
 end
 local init = nil
 do
@@ -68,7 +87,7 @@ do
         end
         compile.glob("**/*.fnl", (config_dir .. (opts0.input or "/fnl")), (config_dir .. (opts0.output or "/lua")), opts0)
       end
-      return require((opts0.module or "init"))
+      return quiet_require((opts0.module or "init"))
     end
     v_0_0 = init0
     _0_0["init"] = v_0_0

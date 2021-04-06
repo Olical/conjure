@@ -373,7 +373,7 @@
     :all-fn "run-all-tests"
     :ns-fn "run-tests"
     :single-fn "test-vars"
-    :call-suffix ""
+    :default-call-suffix ""
     :name-prefix "[(resolve '"
     :name-suffix ")]"}
    :kaocha
@@ -381,7 +381,7 @@
     :all-fn "run-all"
     :ns-fn "run"
     :single-fn "run"
-    :call-suffix "{:kaocha/color? false}"
+    :default-call-suffix "{:kaocha/color? false}"
     :name-prefix "#'"
     :name-suffix ""}})
 
@@ -399,7 +399,8 @@
       [(.. (test-cfg :namespace) "/"
            (test-cfg (.. fn-config-name "-fn")))
        ...])
-    (test-cfg :call-suffix)
+    (or (cfg [:test :call_suffix])
+        (test-cfg :default-call-suffix))
     ")"))
 
 (defn run-all-tests []

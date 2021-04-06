@@ -41,7 +41,8 @@
 
       :test
       {:current_form_names ["deftest"]
-       :runner "clojure"}
+       :runner "clojure"
+       :call_suffix nil}
 
       :mapping
       {:disconnect "cd"

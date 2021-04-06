@@ -216,6 +216,22 @@ All configuration can be set as described in |conjure-configuration|.
             More can be added through contributions where required.
             Default: `"clojure"`
 
+`g:conjure#client#clojure#nrepl#test#call_suffix`
+            Overrides the string appended to the end of the test runner
+            function calls. This isn't used by default for the `clojure` test
+            runner, for `kaocha` this is how you can override the
+            configuration map.
+
+            For `koacha` the default is `"{:kaocha/color? false}"`, you can
+            replace this to change the configuration file:
+            >
+              "{:kaocha/color? false, :config-file \"tests.local.edn\""}
+<
+            This string is inserted into the code as is, so you can insert
+            Clojure code to add conditional logic (feel free to get creative).
+
+            Default: `nil`
+
 `g:conjure#client#clojure#nrepl#mapping#disconnect`
             Disconnect from the current nREPL server.
             Default: `cd`

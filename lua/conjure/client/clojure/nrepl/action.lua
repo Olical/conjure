@@ -791,7 +791,7 @@ do
 end
 local test_runners = nil
 do
-  local v_0_ = {clojure = {["all-fn"] = "run-all-tests", ["call-suffix"] = "", ["name-prefix"] = "[(resolve '", ["name-suffix"] = ")]", ["ns-fn"] = "run-tests", ["single-fn"] = "test-vars", namespace = "clojure.test"}, kaocha = {["all-fn"] = "run-all", ["call-suffix"] = "{:kaocha/color? false}", ["name-prefix"] = "#'", ["name-suffix"] = "", ["ns-fn"] = "run", ["single-fn"] = "run", namespace = "kaocha.repl"}}
+  local v_0_ = {clojure = {["all-fn"] = "run-all-tests", ["default-call-suffix"] = "", ["name-prefix"] = "[(resolve '", ["name-suffix"] = ")]", ["ns-fn"] = "run-tests", ["single-fn"] = "test-vars", namespace = "clojure.test"}, kaocha = {["all-fn"] = "run-all", ["default-call-suffix"] = "{:kaocha/color? false}", ["name-prefix"] = "#'", ["name-suffix"] = "", ["ns-fn"] = "run", ["single-fn"] = "run", namespace = "kaocha.repl"}}
   local t_0_ = (_0_0)["aniseed/locals"]
   t_0_["test-runners"] = v_0_
   test_runners = v_0_
@@ -812,7 +812,7 @@ local test_runner_code = nil
 do
   local v_0_ = nil
   local function test_runner_code0(fn_config_name, ...)
-    return ("(require '" .. test_cfg("namespace") .. ")" .. "(" .. str.join(" ", {(test_cfg("namespace") .. "/" .. test_cfg((fn_config_name .. "-fn"))), ...}) .. test_cfg("call-suffix") .. ")")
+    return ("(require '" .. test_cfg("namespace") .. ")" .. "(" .. str.join(" ", {(test_cfg("namespace") .. "/" .. test_cfg((fn_config_name .. "-fn"))), ...}) .. (cfg({"test", "call_suffix"}) or test_cfg("default-call-suffix")) .. ")")
   end
   v_0_ = test_runner_code0
   local t_0_ = (_0_0)["aniseed/locals"]
