@@ -390,9 +390,11 @@
     (or (a.get-in test-runners [runner k])
         (error (str.join ["No test-runners configuration for " runner " / " k])))))
 
+(defn- require-test-runner []
+  (require-ns (test-cfg :namespace)))
+
 (defn- test-runner-code [fn-config-name ...]
   (..
-    "(require '" (test-cfg :namespace) ")"
     "("
     (str.join
       " "
@@ -407,6 +409,7 @@
   (try-ensure-conn
     (fn []
       (log.append ["; run-all-tests"] {:break? true})
+      (require-test-runner)
       (server.eval
         {:code (test-runner-code :all)}
         #(ui.display-result
@@ -420,6 +423,7 @@
       (when ns
         (log.append [(.. "; run-ns-tests: " ns)]
                     {:break? true})
+        (require-test-runner)
         (server.eval
           {:code (test-runner-code :ns (.. "'" ns))}
           #(ui.display-result
@@ -462,6 +466,7 @@
             (when test-name
               (log.append [(.. "; run-current-test: " test-name)]
                           {:break? true})
+              (require-test-runner)
               (server.eval
                 {:code (test-runner-code
                          :single
@@ -471,8 +476,8 @@
                  :context (extract.context)}
                 (nrepl.with-all-msgs-fn
                   (fn [msgs]
-                    (if (and (= 3 (a.count msgs))
-                             (= "nil" (a.get (a.second msgs) :value)))
+                    (if (and (= 2 (a.count msgs))
+                             (= "nil" (a.get (a.first msgs) :value)))
                       (log.append ["; Success!"])
                       (a.run! #(ui.display-result
                                  $1

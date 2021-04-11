@@ -808,11 +808,22 @@ do
   t_0_["test-cfg"] = v_0_
   test_cfg = v_0_
 end
+local require_test_runner = nil
+do
+  local v_0_ = nil
+  local function require_test_runner0()
+    return require_ns(test_cfg("namespace"))
+  end
+  v_0_ = require_test_runner0
+  local t_0_ = (_0_0)["aniseed/locals"]
+  t_0_["require-test-runner"] = v_0_
+  require_test_runner = v_0_
+end
 local test_runner_code = nil
 do
   local v_0_ = nil
   local function test_runner_code0(fn_config_name, ...)
-    return ("(require '" .. test_cfg("namespace") .. ")" .. "(" .. str.join(" ", {(test_cfg("namespace") .. "/" .. test_cfg((fn_config_name .. "-fn"))), ...}) .. (cfg({"test", "call_suffix"}) or test_cfg("default-call-suffix")) .. ")")
+    return ("(" .. str.join(" ", {(test_cfg("namespace") .. "/" .. test_cfg((fn_config_name .. "-fn"))), ...}) .. (cfg({"test", "call_suffix"}) or test_cfg("default-call-suffix")) .. ")")
   end
   v_0_ = test_runner_code0
   local t_0_ = (_0_0)["aniseed/locals"]
@@ -827,6 +838,7 @@ do
     local function run_all_tests0()
       local function _2_()
         log.append({"; run-all-tests"}, {["break?"] = true})
+        require_test_runner()
         local function _3_(_241)
           return ui["display-result"](_241, {["ignore-nil?"] = true, ["simple-out?"] = true})
         end
@@ -849,6 +861,7 @@ do
     local function _2_()
       if ns then
         log.append({("; run-ns-tests: " .. ns)}, {["break?"] = true})
+        require_test_runner()
         local function _3_(_241)
           return ui["display-result"](_241, {["ignore-nil?"] = true, ["simple-out?"] = true})
         end
@@ -942,8 +955,9 @@ do
           local test_name = extract_test_name_from_form(form.content)
           if test_name then
             log.append({("; run-current-test: " .. test_name)}, {["break?"] = true})
+            require_test_runner()
             local function _3_(msgs)
-              if ((3 == a.count(msgs)) and ("nil" == a.get(a.second(msgs), "value"))) then
+              if ((2 == a.count(msgs)) and ("nil" == a.get(a.first(msgs), "value"))) then
                 return log.append({"; Success!"})
               else
                 local function _4_(_241)
