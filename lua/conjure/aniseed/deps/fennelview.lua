@@ -94,7 +94,7 @@ local function table_indent(t, indent, id)
   end
   return (indent + opener_length)
 end
-local pp = {}
+local pp = nil
 local function concat_table_lines(elements, options, multiline_3f, indent, table_type, prefix)
   local indent_str = ("\n" .. string.rep(" ", indent))
   local open = nil
@@ -149,7 +149,7 @@ local function pp_associative(t, kv, options, indent, key_3f)
     else
       prefix = ""
     end
-    local elements = nil
+    local items = nil
     do
       local tbl_0_ = {}
       for _, _6_0 in pairs(kv) do
@@ -158,16 +158,16 @@ local function pp_associative(t, kv, options, indent, key_3f)
         local v = _7_[2]
         local _8_
         do
-          local k0 = pp.pp(k, options, (indent0 + 1), true)
-          local v0 = pp.pp(v, options, (indent0 + slength(k0) + 1))
+          local k0 = pp(k, options, (indent0 + 1), true)
+          local v0 = pp(v, options, (indent0 + slength(k0) + 1))
           multiline_3f = (multiline_3f or k0:find("\n") or v0:find("\n"))
           _8_ = (k0 .. " " .. v0)
         end
         tbl_0_[(#tbl_0_ + 1)] = _8_
       end
-      elements = tbl_0_
+      items = tbl_0_
     end
-    return concat_table_lines(elements, options, multiline_3f, indent0, "table", prefix)
+    return concat_table_lines(items, options, multiline_3f, indent0, "table", prefix)
   end
 end
 local function pp_sequence(t, kv, options, indent)
@@ -187,7 +187,7 @@ local function pp_sequence(t, kv, options, indent)
     else
       prefix = ""
     end
-    local elements = nil
+    local items = nil
     do
       local tbl_0_ = {}
       for _, _3_0 in pairs(kv) do
@@ -196,15 +196,15 @@ local function pp_sequence(t, kv, options, indent)
         local v = _4_[2]
         local _5_
         do
-          local v0 = pp.pp(v, options, indent0)
+          local v0 = pp(v, options, indent0)
           multiline_3f = (multiline_3f or v0:find("\n"))
           _5_ = v0
         end
         tbl_0_[(#tbl_0_ + 1)] = _5_
       end
-      elements = tbl_0_
+      items = tbl_0_
     end
-    return concat_table_lines(elements, options, multiline_3f, indent0, "seq", prefix)
+    return concat_table_lines(items, options, multiline_3f, indent0, "seq", prefix)
   end
 end
 local function concat_lines(lines, options, indent, force_multi_line_3f)
@@ -246,7 +246,7 @@ local function pp_metamethod(t, metamethod, options, indent)
     end
     options["visible-cycle?"] = _2_
     _ = nil
-    local lines, force_multi_line_3f = metamethod(t, pp.pp, options, indent)
+    local lines, force_multi_line_3f = metamethod(t, pp, options, indent)
     options["visible-cycle?"] = nil
     local _3_0 = type(lines)
     if (_3_0 == "string") then
@@ -255,7 +255,7 @@ local function pp_metamethod(t, metamethod, options, indent)
       return concat_lines(lines, options, indent, force_multi_line_3f)
     else
       local _0 = _3_0
-      return error("Error: __fennelview metamethod must return a table of lines")
+      return error("__fennelview metamethod must return a table of lines")
     end
   end
 end
@@ -311,10 +311,24 @@ local function number__3estring(n)
   return _2_0
 end
 local function colon_string_3f(s)
-  return s:find("^[-%w?\\^_!$%&*+./@|<=>]+$")
+  return s:find("^[-%w?^_!$%&*+./@|<=>]+$")
+end
+local function pp_string(str, options, indent)
+  local escs = nil
+  local _2_
+  if (options["escape-newlines?"] and (#str < (options["line-length"] - indent))) then
+    _2_ = "\\n"
+  else
+    _2_ = "\n"
+  end
+  local function _4_(_241, _242)
+    return ("\\%03d"):format(_242:byte())
+  end
+  escs = setmetatable({["\""] = "\\\"", ["\11"] = "\\v", ["\12"] = "\\f", ["\13"] = "\\r", ["\7"] = "\\a", ["\8"] = "\\b", ["\9"] = "\\t", ["\\"] = "\\\\", ["\n"] = _2_}, {__index = _4_})
+  return ("\"" .. str:gsub("[%c\\\"]", escs) .. "\"")
 end
 local function make_options(t, options)
-  local defaults = {["detect-cycles?"] = true, ["empty-as-sequence?"] = false, ["line-length"] = 80, ["metamethod?"] = true, ["one-line?"] = false, ["utf8?"] = true, depth = 128}
+  local defaults = {["detect-cycles?"] = true, ["empty-as-sequence?"] = false, ["escape-newlines?"] = false, ["line-length"] = 80, ["metamethod?"] = true, ["one-line?"] = false, ["prefer-colon?"] = false, ["utf8?"] = true, depth = 128}
   local overrides = {appearances = count_table_appearances(t, {}), level = 0, seen = {len = 0}}
   for k, v in pairs((options or {})) do
     defaults[k] = v
@@ -324,42 +338,45 @@ local function make_options(t, options)
   end
   return defaults
 end
-pp.pp = function(x, options, indent, key_3f)
+local function _2_(x, options, indent, colon_3f)
   local indent0 = (indent or 0)
   local options0 = (options or make_options(x))
   local tv = type(x)
-  local function _3_()
-    local _2_0 = getmetatable(x)
-    if _2_0 then
-      return _2_0.__fennelview
+  local function _4_()
+    local _3_0 = getmetatable(x)
+    if _3_0 then
+      return _3_0.__fennelview
     else
-      return _2_0
+      return _3_0
     end
   end
-  if ((tv == "table") or ((tv == "userdata") and _3_())) then
+  if ((tv == "table") or ((tv == "userdata") and _4_())) then
     return pp_table(x, options0, indent0)
   elseif (tv == "number") then
     return number__3estring(x)
-  elseif ((tv == "string") and colon_string_3f(x) and ((key_3f ~= nil) or options0["prefer-colon?"])) then
-    return (":" .. x)
-  elseif (tv == "string") then
-    local _4_0 = nil
+  else
     local function _5_()
-      if options0["escape-newlines?"] then
-        return "\\n"
+      if (colon_3f ~= nil) then
+        return colon_3f
+      elseif ("function" == type(options0["prefer-colon?"])) then
+        return options0["prefer-colon?"](x)
       else
-        return "\n"
+        return options0["prefer-colon?"]
       end
     end
-    _4_0 = string.format("%q", x):gsub("\\\n", _5_())
-    return _4_0
-  elseif ((tv == "boolean") or (tv == "nil")) then
-    return tostring(x)
-  else
-    return ("#<" .. tostring(x) .. ">")
+    if ((tv == "string") and colon_string_3f(x) and _5_()) then
+      return (":" .. x)
+    elseif (tv == "string") then
+      return pp_string(x, options0, indent0)
+    elseif ((tv == "boolean") or (tv == "nil")) then
+      return tostring(x)
+    else
+      return ("#<" .. tostring(x) .. ">")
+    end
   end
 end
+pp = _2_
 local function view(x, options)
-  return pp.pp(x, make_options(x, options), 0)
+  return pp(x, make_options(x, options), 0)
 end
 return view

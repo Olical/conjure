@@ -1,7 +1,7 @@
-local _0_0 = nil
+local _0_0
 do
   local name_0_ = "conjure.buffer"
-  local module_0_ = nil
+  local module_0_
   do
     local x_0_ = package.loaded[name_0_]
     if ("table" == type(x_0_)) then
@@ -37,11 +37,11 @@ local text = _local_0_[4]
 local _2amodule_2a = _0_0
 local _2amodule_name_2a = "conjure.buffer"
 do local _ = ({nil, _0_0, {{}, nil, nil, nil}})[2] end
-local unlist = nil
+local unlist
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function unlist0(buf)
       return nvim.buf_set_option(buf, "buflisted", false)
     end
@@ -53,11 +53,11 @@ do
   t_0_["unlist"] = v_0_
   unlist = v_0_
 end
-local resolve = nil
+local resolve
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function resolve0(buf_name)
       return nvim.buf_get_name(nvim.fn.bufnr(buf_name))
     end
@@ -69,11 +69,11 @@ do
   t_0_["resolve"] = v_0_
   resolve = v_0_
 end
-local upsert_hidden = nil
+local upsert_hidden
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function upsert_hidden0(buf_name, new_buf_fn)
       local buf = nvim.fn.bufnr(buf_name)
       if (-1 == buf) then
@@ -98,11 +98,11 @@ do
   t_0_["upsert-hidden"] = v_0_
   upsert_hidden = v_0_
 end
-local empty_3f = nil
+local empty_3f
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function empty_3f0(buf)
       return ((nvim.buf_line_count(buf) <= 1) and (0 == a.count(a.first(nvim.buf_get_lines(buf, 0, -1, false)))))
     end
@@ -114,11 +114,11 @@ do
   t_0_["empty?"] = v_0_
   empty_3f = v_0_
 end
-local replace_range = nil
+local replace_range
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function replace_range0(buf, range, s)
       local start_line = a.dec(a["get-in"](range, {"start", 1}))
       local end_line = a["get-in"](range, {"end", 1})
@@ -146,9 +146,9 @@ do
   t_0_["replace-range"] = v_0_
   replace_range = v_0_
 end
-local take_while = nil
+local take_while
 do
-  local v_0_ = nil
+  local v_0_
   local function take_while0(f, xs)
     local acc = {}
     local done_3f = false
@@ -167,11 +167,11 @@ do
   t_0_["take-while"] = v_0_
   take_while = v_0_
 end
-local append_prefixed_line = nil
+local append_prefixed_line
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function append_prefixed_line0(buf, _2_0, prefix, body)
       local _arg_0_ = _2_0
       local tl = _arg_0_[1]
@@ -182,8 +182,8 @@ do
       local lines = {(table.unpack or unpack)(_let_0_, 2)}
       local to_append = text["prefixed-lines"](body, prefix, {})
       if head_line:find(prefix, tc) then
-        local function _3_(_4_0)
-          local _arg_1_ = _4_0
+        local function _4_(_3_0)
+          local _arg_1_ = _3_0
           local n = _arg_1_[1]
           local line = _arg_1_[2]
           if text["starts-with"](line, prefix) then
@@ -192,7 +192,7 @@ do
             return false
           end
         end
-        local _let_1_ = (a.last(take_while(a.identity, a.map(_3_, a["kv-pairs"](lines)))) or {tl0, a.concat({head_line}, to_append)})
+        local _let_1_ = (a.last(take_while(a.identity, a.map(_4_, a["kv-pairs"](lines)))) or {tl0, a.concat({head_line}, to_append)})
         local new_tl = _let_1_[1]
         local lines0 = _let_1_[2]
         return nvim.buf_set_lines(buf, new_tl, a.inc(new_tl), false, lines0)

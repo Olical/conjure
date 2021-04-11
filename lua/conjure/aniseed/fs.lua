@@ -1,7 +1,7 @@
-local _0_0 = nil
+local _0_0
 do
   local name_0_ = "conjure.aniseed.fs"
-  local module_0_ = nil
+  local module_0_
   do
     local x_0_ = package.loaded[name_0_]
     if ("table" == type(x_0_)) then
@@ -34,11 +34,11 @@ local nvim = _local_0_[1]
 local _2amodule_2a = _0_0
 local _2amodule_name_2a = "conjure.aniseed.fs"
 do local _ = ({nil, _0_0, {{}, nil, nil, nil}})[2] end
-local basename = nil
+local basename
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function basename0(path)
       return nvim.fn.fnamemodify(path, ":h")
     end
@@ -50,11 +50,11 @@ do
   t_0_["basename"] = v_0_
   basename = v_0_
 end
-local mkdirp = nil
+local mkdirp
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function mkdirp0(dir)
       return nvim.fn.mkdir(dir, "p")
     end

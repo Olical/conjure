@@ -1,7 +1,7 @@
-local _0_0 = nil
+local _0_0
 do
   local name_0_ = "conjure.client.fennel.aniseed"
-  local module_0_ = nil
+  local module_0_
   do
     local x_0_ = package.loaded[name_0_]
     if ("table" == type(x_0_)) then
@@ -43,9 +43,9 @@ local text = _local_0_[9]
 local _2amodule_2a = _0_0
 local _2amodule_name_2a = "conjure.client.fennel.aniseed"
 do local _ = ({nil, _0_0, {{}, nil, nil, nil}})[2] end
-local buf_suffix = nil
+local buf_suffix
 do
-  local v_0_ = nil
+  local v_0_
   do
     local v_0_0 = ".fnl"
     _0_0["buf-suffix"] = v_0_0
@@ -55,9 +55,9 @@ do
   t_0_["buf-suffix"] = v_0_
   buf_suffix = v_0_
 end
-local context_pattern = nil
+local context_pattern
 do
-  local v_0_ = nil
+  local v_0_
   do
     local v_0_0 = "%(%s*module%s+(.-)[%s){]"
     _0_0["context-pattern"] = v_0_0
@@ -67,9 +67,9 @@ do
   t_0_["context-pattern"] = v_0_
   context_pattern = v_0_
 end
-local comment_prefix = nil
+local comment_prefix
 do
-  local v_0_ = nil
+  local v_0_
   do
     local v_0_0 = "; "
     _0_0["comment-prefix"] = v_0_0
@@ -80,23 +80,23 @@ do
   comment_prefix = v_0_
 end
 config.merge({client = {fennel = {aniseed = {aniseed_module_prefix = "conjure.aniseed.", mapping = {run_all_tests = "ta", run_buf_tests = "tt"}, use_metadata = true}}}})
-local cfg = nil
+local cfg
 do
   local v_0_ = config["get-in-fn"]({"client", "fennel", "aniseed"})
   local t_0_ = (_0_0)["aniseed/locals"]
   t_0_["cfg"] = v_0_
   cfg = v_0_
 end
-local ani_aliases = nil
+local ani_aliases
 do
   local v_0_ = {nu = "nvim.util"}
   local t_0_ = (_0_0)["aniseed/locals"]
   t_0_["ani-aliases"] = v_0_
   ani_aliases = v_0_
 end
-local ani = nil
+local ani
 do
-  local v_0_ = nil
+  local v_0_
   local function ani0(mod_name, f_name)
     local mod_name0 = a.get(ani_aliases, mod_name, mod_name)
     local mod = require((cfg({"aniseed_module_prefix"}) .. mod_name0))
@@ -111,9 +111,9 @@ do
   t_0_["ani"] = v_0_
   ani = v_0_
 end
-local anic = nil
+local anic
 do
-  local v_0_ = nil
+  local v_0_
   local function anic0(mod, f_name, ...)
     return ani(mod, f_name)(...)
   end
@@ -122,17 +122,17 @@ do
   t_0_["anic"] = v_0_
   anic = v_0_
 end
-local display_result = nil
+local display_result
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function display_result0(opts)
       if opts then
         local _let_0_ = opts
         local ok_3f = _let_0_["ok?"]
         local results = _let_0_["results"]
-        local result_str = nil
+        local result_str
         if ok_3f then
           if a["empty?"](results) then
             result_str = "nil"
@@ -172,15 +172,15 @@ do
   t_0_["display-result"] = v_0_
   display_result = v_0_
 end
-local eval_str = nil
+local eval_str
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function eval_str0(opts)
       local function _2_()
         local code = (("(module " .. (opts.context or "aniseed.user") .. ") ") .. opts.code .. "\n")
-        local out = nil
+        local out
         local function _3_()
           if cfg({"use_metadata"}) then
             package.loaded.fennel = ani("fennel")
@@ -208,11 +208,11 @@ do
   t_0_["eval-str"] = v_0_
   eval_str = v_0_
 end
-local doc_str = nil
+local doc_str
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function doc_str0(opts)
       a.assoc(opts, "code", ("(doc " .. opts.code .. ")"))
       return eval_str(opts)
@@ -225,11 +225,11 @@ do
   t_0_["doc-str"] = v_0_
   doc_str = v_0_
 end
-local eval_file = nil
+local eval_file
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function eval_file0(opts)
       opts.code = a.slurp(opts["file-path"])
       if opts.code then
@@ -244,9 +244,9 @@ do
   t_0_["eval-file"] = v_0_
   eval_file = v_0_
 end
-local wrapped_test = nil
+local wrapped_test
 do
-  local v_0_ = nil
+  local v_0_
   local function wrapped_test0(req_lines, f)
     log.append(req_lines, {["break?"] = true})
     local res = anic("nu", "with-out-str", f)
@@ -263,11 +263,11 @@ do
   t_0_["wrapped-test"] = v_0_
   wrapped_test = v_0_
 end
-local run_buf_tests = nil
+local run_buf_tests
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function run_buf_tests0()
       local c = extract.context()
       if c then
@@ -285,11 +285,11 @@ do
   t_0_["run-buf-tests"] = v_0_
   run_buf_tests = v_0_
 end
-local run_all_tests = nil
+local run_all_tests
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function run_all_tests0()
       return wrapped_test({"; run-all-tests"}, ani("test", "run-all"))
     end
@@ -301,11 +301,11 @@ do
   t_0_["run-all-tests"] = v_0_
   run_all_tests = v_0_
 end
-local on_filetype = nil
+local on_filetype
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function on_filetype0()
       mapping.buf("n", "FnlRunBufTests", cfg({"mapping", "run_buf_tests"}), _2amodule_name_2a, "run-buf-tests")
       return mapping.buf("n", "FnlRunAllTests", cfg({"mapping", "run_all_tests"}), _2amodule_name_2a, "run-all-tests")
@@ -318,20 +318,20 @@ do
   t_0_["on-filetype"] = v_0_
   on_filetype = v_0_
 end
-local value__3ecompletions = nil
+local value__3ecompletions
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function value__3ecompletions0(x)
       if ("table" == type(x)) then
-        local function _2_(_3_0)
-          local _arg_0_ = _3_0
+        local function _3_(_2_0)
+          local _arg_0_ = _2_0
           local k = _arg_0_[1]
           local v = _arg_0_[2]
           return {info = nil, kind = type(v), menu = nil, word = k}
         end
-        return a.map(_2_, a["kv-pairs"](x))
+        return a.map(_3_, a["kv-pairs"](x))
       end
     end
     v_0_0 = value__3ecompletions0
@@ -342,20 +342,20 @@ do
   t_0_["value->completions"] = v_0_
   value__3ecompletions = v_0_
 end
-local completions = nil
+local completions
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function completions0(opts)
-      local code = nil
+      local code
       if not str["blank?"](opts.prefix) then
         code = ("((. (require :" .. _2amodule_name_2a .. ") :value->completions) " .. (opts.prefix):gsub(".$", "") .. ")")
       else
       code = nil
       end
       local mods = value__3ecompletions(package.loaded)
-      local locals = nil
+      local locals
       do
         local ok_3f, m = nil, nil
         local function _3_()
@@ -368,7 +368,7 @@ do
           locals = mods
         end
       end
-      local result_fn = nil
+      local result_fn
       local function _3_(results)
         local xs = a.first(results)
         local function _4_()

@@ -1,7 +1,7 @@
-local _0_0 = nil
+local _0_0
 do
   local name_0_ = "conjure.remote.netrepl"
-  local module_0_ = nil
+  local module_0_
   do
     local x_0_ = package.loaded[name_0_]
     if ("table" == type(x_0_)) then
@@ -38,15 +38,15 @@ local trn = _local_0_[5]
 local _2amodule_2a = _0_0
 local _2amodule_name_2a = "conjure.remote.netrepl"
 do local _ = ({nil, _0_0, {{}, nil, nil, nil}})[2] end
-local send = nil
+local send
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function send0(conn, msg, cb)
       log.dbg("send", msg)
       table.insert(conn.queue, 1, (cb or false))
-      do end (conn.sock):write(trn.encode(msg))
+      ; (conn.sock):write(trn.encode(msg))
       return nil
     end
     v_0_0 = send0
@@ -57,11 +57,11 @@ do
   t_0_["send"] = v_0_
   send = v_0_
 end
-local connect = nil
+local connect
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function connect0(opts)
       local conn = {decode = trn.decoder(), queue = {}}
       local function handle_message(err, chunk)
@@ -82,7 +82,7 @@ do
         if err then
           return opts["on-failure"](err)
         else
-          do end (conn.sock):read_start(client["schedule-wrap"](handle_message))
+          (conn.sock):read_start(client["schedule-wrap"](handle_message))
           return opts["on-success"]()
         end
       end

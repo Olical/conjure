@@ -1,7 +1,7 @@
-local _0_0 = nil
+local _0_0
 do
   local name_0_ = "conjure.aniseed.fennel"
-  local module_0_ = nil
+  local module_0_
   do
     local x_0_ = package.loaded[name_0_]
     if ("table" == type(x_0_)) then
@@ -35,11 +35,11 @@ local nvim = _local_0_[2]
 local _2amodule_2a = _0_0
 local _2amodule_name_2a = "conjure.aniseed.fennel"
 do local _ = ({nil, _0_0, {{}, nil, nil, nil}})[2] end
-local add_path = nil
+local add_path
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function add_path0(path)
       fennel.path = (fennel.path .. ";" .. path)
       return nil
@@ -52,11 +52,11 @@ do
   t_0_["add-path"] = v_0_
   add_path = v_0_
 end
-local sync_rtp = nil
+local sync_rtp
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function sync_rtp0()
       local fnl_suffix = "/fnl/?.fnl"
       local rtp = nvim.o.runtimepath

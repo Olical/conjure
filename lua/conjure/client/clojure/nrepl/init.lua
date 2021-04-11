@@ -1,7 +1,7 @@
-local _0_0 = nil
+local _0_0
 do
   local name_0_ = "conjure.client.clojure.nrepl"
-  local module_0_ = nil
+  local module_0_
   do
     local x_0_ = package.loaded[name_0_]
     if ("table" == type(x_0_)) then
@@ -44,9 +44,9 @@ local parse = _local_0_[9]
 local _2amodule_2a = _0_0
 local _2amodule_name_2a = "conjure.client.clojure.nrepl"
 do local _ = ({nil, _0_0, {{}, nil, nil, nil}})[2] end
-local buf_suffix = nil
+local buf_suffix
 do
-  local v_0_ = nil
+  local v_0_
   do
     local v_0_0 = ".cljc"
     _0_0["buf-suffix"] = v_0_0
@@ -56,9 +56,9 @@ do
   t_0_["buf-suffix"] = v_0_
   buf_suffix = v_0_
 end
-local comment_prefix = nil
+local comment_prefix
 do
-  local v_0_ = nil
+  local v_0_
   do
     local v_0_0 = "; "
     _0_0["comment-prefix"] = v_0_0
@@ -68,7 +68,7 @@ do
   t_0_["comment-prefix"] = v_0_
   comment_prefix = v_0_
 end
-local cfg = nil
+local cfg
 do
   local v_0_ = config["get-in-fn"]({"client", "clojure", "nrepl"})
   local t_0_ = (_0_0)["aniseed/locals"]
@@ -76,11 +76,11 @@ do
   cfg = v_0_
 end
 config.merge({client = {clojure = {nrepl = {completion = {cljs = {use_suitable = true}, with_context = false}, connection = {default_host = "localhost", port_files = {".nrepl-port", ".shadow-cljs/nrepl.port"}}, eval = {auto_require = true, pretty_print = true, print_function = "conjure.internal/pprint", print_options = {length = 500, level = 50}, print_quota = nil}, interrupt = {sample_limit = 0.3}, mapping = {connect_port_file = "cf", disconnect = "cd", interrupt = "ei", last_exception = "ve", refresh_all = "ra", refresh_changed = "rr", refresh_clear = "rc", result_1 = "v1", result_2 = "v2", result_3 = "v3", run_all_tests = "ta", run_alternate_ns_tests = "tN", run_current_ns_tests = "tn", run_current_test = "tc", session_clone = "sc", session_close = "sq", session_close_all = "sQ", session_fresh = "sf", session_list = "sl", session_next = "sn", session_prev = "sp", session_select = "ss", view_source = "vs"}, refresh = {after = nil, before = nil, dirs = nil}, test = {call_suffix = nil, current_form_names = {"deftest"}, runner = "clojure"}}}}})
-local context = nil
+local context
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function context0(header)
       local _2_0 = header
       if _2_0 then
@@ -112,11 +112,11 @@ do
   t_0_["context"] = v_0_
   context = v_0_
 end
-local eval_file = nil
+local eval_file
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function eval_file0(opts)
       return action["eval-file"](opts)
     end
@@ -128,11 +128,11 @@ do
   t_0_["eval-file"] = v_0_
   eval_file = v_0_
 end
-local eval_str = nil
+local eval_str
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function eval_str0(opts)
       return action["eval-str"](opts)
     end
@@ -144,11 +144,11 @@ do
   t_0_["eval-str"] = v_0_
   eval_str = v_0_
 end
-local doc_str = nil
+local doc_str
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function doc_str0(opts)
       return action["doc-str"](opts)
     end
@@ -160,11 +160,11 @@ do
   t_0_["doc-str"] = v_0_
   doc_str = v_0_
 end
-local def_str = nil
+local def_str
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function def_str0(opts)
       return action["def-str"](opts)
     end
@@ -176,11 +176,11 @@ do
   t_0_["def-str"] = v_0_
   def_str = v_0_
 end
-local completions = nil
+local completions
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function completions0(opts)
       return action.completions(opts)
     end
@@ -192,11 +192,11 @@ do
   t_0_["completions"] = v_0_
   completions = v_0_
 end
-local connect = nil
+local connect
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function connect0(opts)
       return action["connect-host-port"](opts)
     end
@@ -208,11 +208,11 @@ do
   t_0_["connect"] = v_0_
   connect = v_0_
 end
-local on_filetype = nil
+local on_filetype
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function on_filetype0()
       mapping.buf("n", "CljDisconnect", cfg({"mapping", "disconnect"}), "conjure.client.clojure.nrepl.server", "disconnect")
       mapping.buf("n", "CljConnectPortFile", cfg({"mapping", "connect_port_file"}), "conjure.client.clojure.nrepl.action", "connect-port-file")
@@ -251,11 +251,11 @@ do
   t_0_["on-filetype"] = v_0_
   on_filetype = v_0_
 end
-local on_load = nil
+local on_load
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function on_load0()
       return action["connect-port-file"]()
     end
@@ -267,11 +267,11 @@ do
   t_0_["on-load"] = v_0_
   on_load = v_0_
 end
-local on_exit = nil
+local on_exit
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function on_exit0()
       return server.disconnect()
     end

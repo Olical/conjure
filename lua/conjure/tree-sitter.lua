@@ -1,7 +1,7 @@
-local _0_0 = nil
+local _0_0
 do
   local name_0_ = "conjure.tree-sitter"
-  local module_0_ = nil
+  local module_0_
   do
     local x_0_ = package.loaded[name_0_]
     if ("table" == type(x_0_)) then
@@ -37,9 +37,9 @@ local str = _local_0_[4]
 local _2amodule_2a = _0_0
 local _2amodule_name_2a = "conjure.tree-sitter"
 do local _ = ({nil, _0_0, {{}, nil, nil, nil}})[2] end
-local ts = nil
+local ts
 do
-  local v_0_ = nil
+  local v_0_
   do
     local ok_3f, x = nil, nil
     local function _2_()
@@ -56,11 +56,11 @@ do
   t_0_["ts"] = v_0_
   ts = v_0_
 end
-local enabled_3f = nil
+local enabled_3f
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function enabled_3f0()
       local function _2_()
         local ok_3f, _ = pcall(vim.treesitter.get_parser)
@@ -76,11 +76,11 @@ do
   t_0_["enabled?"] = v_0_
   enabled_3f = v_0_
 end
-local node__3estr = nil
+local node__3estr
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function node__3estr0(node)
       if node then
         return str.join("\n", ts.get_node_text(node))
@@ -94,11 +94,11 @@ do
   t_0_["node->str"] = v_0_
   node__3estr = v_0_
 end
-local parent = nil
+local parent
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function parent0(node)
       if node then
         return node:parent()
@@ -112,11 +112,11 @@ do
   t_0_["parent"] = v_0_
   parent = v_0_
 end
-local document_3f = nil
+local document_3f
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function document_3f0(node)
       return not parent(node)
     end
@@ -128,11 +128,11 @@ do
   t_0_["document?"] = v_0_
   document_3f = v_0_
 end
-local range = nil
+local range
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function range0(node)
       if node then
         local sr, sc, er, ec = node:range()
@@ -147,11 +147,11 @@ do
   t_0_["range"] = v_0_
   range = v_0_
 end
-local get_root = nil
+local get_root
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function get_root0(node)
       local node0 = (node or ts.get_node_at_cursor())
       local p1 = parent(node0)
@@ -170,11 +170,11 @@ do
   t_0_["get-root"] = v_0_
   get_root = v_0_
 end
-local leaf_3f = nil
+local leaf_3f
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function leaf_3f0(node)
       if node then
         return (0 == node:child_count())
@@ -188,11 +188,11 @@ do
   t_0_["leaf?"] = v_0_
   leaf_3f = v_0_
 end
-local get_leaf = nil
+local get_leaf
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function get_leaf0(node)
       local node0 = (node or ts.get_node_at_cursor())
       if leaf_3f(node0) then
@@ -207,11 +207,11 @@ do
   t_0_["get-leaf"] = v_0_
   get_leaf = v_0_
 end
-local get_form = nil
+local get_form
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function get_form0(node)
       local node0 = (node or ts.get_node_at_cursor())
       if (document_3f(node0) or (false == client["optional-call"]("form-node?", node0))) then

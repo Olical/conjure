@@ -1,7 +1,7 @@
-local _0_0 = nil
+local _0_0
 do
   local name_0_ = "conjure.aniseed.compile"
-  local module_0_ = nil
+  local module_0_
   do
     local x_0_ = package.loaded[name_0_]
     if ("table" == type(x_0_)) then
@@ -37,11 +37,11 @@ local nvim = _local_0_[4]
 local _2amodule_2a = _0_0
 local _2amodule_name_2a = "conjure.aniseed.compile"
 do local _ = ({nil, _0_0, {{}, nil, nil, nil}})[2] end
-local macros_prefix = nil
+local macros_prefix
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function macros_prefix0(code)
       local macros_module = "conjure.aniseed.macros"
       return ("(require-macros \"" .. macros_module .. "\")\n" .. code)
@@ -54,11 +54,11 @@ do
   t_0_["macros-prefix"] = v_0_
   macros_prefix = v_0_
 end
-local str = nil
+local str
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function str0(code, opts)
       local function _2_()
         return fennel.compileString(macros_prefix(code), a.merge({["compiler-env"] = _G}, opts))
@@ -73,11 +73,11 @@ do
   t_0_["str"] = v_0_
   str = v_0_
 end
-local file = nil
+local file
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function file0(src, dest, opts)
       if ((a["table?"](opts) and opts.force) or (nvim.fn.getftime(src) > nvim.fn.getftime(dest))) then
         local code = a.slurp(src)
@@ -100,14 +100,14 @@ do
   t_0_["file"] = v_0_
   file = v_0_
 end
-local glob = nil
+local glob
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function glob0(src_expr, src_dir, dest_dir, opts)
       local src_dir_len = a.inc(string.len(src_dir))
-      local src_paths = nil
+      local src_paths
       local function _2_(path)
         return string.sub(path, src_dir_len)
       end

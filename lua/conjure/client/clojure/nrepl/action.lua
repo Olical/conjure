@@ -1,7 +1,7 @@
-local _0_0 = nil
+local _0_0
 do
   local name_0_ = "conjure.client.clojure.nrepl.action"
-  local module_0_ = nil
+  local module_0_
   do
     local x_0_ = package.loaded[name_0_]
     if ("table" == type(x_0_)) then
@@ -49,9 +49,9 @@ local nrepl = _local_0_[9]
 local _2amodule_2a = _0_0
 local _2amodule_name_2a = "conjure.client.clojure.nrepl.action"
 do local _ = ({nil, _0_0, {{}, nil, nil, nil}})[2] end
-local require_ns = nil
+local require_ns
 do
-  local v_0_ = nil
+  local v_0_
   local function require_ns0(ns)
     if ns then
       local function _2_()
@@ -64,18 +64,18 @@ do
   t_0_["require-ns"] = v_0_
   require_ns = v_0_
 end
-local cfg = nil
+local cfg
 do
   local v_0_ = config["get-in-fn"]({"client", "clojure", "nrepl"})
   local t_0_ = (_0_0)["aniseed/locals"]
   t_0_["cfg"] = v_0_
   cfg = v_0_
 end
-local passive_ns_require = nil
+local passive_ns_require
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function passive_ns_require0()
       if (cfg({"eval", "auto_require"}) and server["connected?"]()) then
         return require_ns(extract.context())
@@ -89,13 +89,13 @@ do
   t_0_["passive-ns-require"] = v_0_
   passive_ns_require = v_0_
 end
-local connect_port_file = nil
+local connect_port_file
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function connect_port_file0(opts)
-      local port = nil
+      local port
       do
         local _2_0 = cfg({"connection", "port_files"})
         if _2_0 then
@@ -139,9 +139,9 @@ do
   t_0_["connect-port-file"] = v_0_
   connect_port_file = v_0_
 end
-local try_ensure_conn = nil
+local try_ensure_conn
 do
-  local v_0_ = nil
+  local v_0_
   local function try_ensure_conn0(cb)
     if not server["connected?"]() then
       return connect_port_file({["silent?"] = true, cb = cb})
@@ -156,16 +156,16 @@ do
   t_0_["try-ensure-conn"] = v_0_
   try_ensure_conn = v_0_
 end
-local connect_host_port = nil
+local connect_host_port
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function connect_host_port0(opts)
       if (not opts.host and not opts.port) then
         return connect_port_file()
       else
-        local parsed_port = nil
+        local parsed_port
         if ("string" == type(opts.port)) then
           parsed_port = tonumber(opts.port)
         else
@@ -186,9 +186,9 @@ do
   t_0_["connect-host-port"] = v_0_
   connect_host_port = v_0_
 end
-local eval_cb_fn = nil
+local eval_cb_fn
 do
-  local v_0_ = nil
+  local v_0_
   local function eval_cb_fn0(opts)
     local function _2_(resp)
       if (a.get(opts, "on-result") and a.get(resp, "value")) then
@@ -210,11 +210,11 @@ do
   t_0_["eval-cb-fn"] = v_0_
   eval_cb_fn = v_0_
 end
-local eval_str = nil
+local eval_str
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function eval_str0(opts)
       local function _2_()
         local function _3_(conn)
@@ -238,9 +238,9 @@ do
   t_0_["eval-str"] = v_0_
   eval_str = v_0_
 end
-local with_info = nil
+local with_info
 do
-  local v_0_ = nil
+  local v_0_
   local function with_info0(opts, f)
     local function _2_(conn)
       local function _3_(msg)
@@ -260,9 +260,9 @@ do
   t_0_["with-info"] = v_0_
   with_info = v_0_
 end
-local java_info__3elines = nil
+local java_info__3elines
 do
-  local v_0_ = nil
+  local v_0_
   local function java_info__3elines0(_2_0)
     local _arg_0_ = _2_0
     local arglists_str = _arg_0_["arglists-str"]
@@ -292,11 +292,11 @@ do
   t_0_["java-info->lines"] = v_0_
   java_info__3elines = v_0_
 end
-local doc_str = nil
+local doc_str
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function doc_str0(opts)
       local function _2_()
         require_ns("clojure.repl")
@@ -337,9 +337,9 @@ do
   t_0_["doc-str"] = v_0_
   doc_str = v_0_
 end
-local nrepl__3envim_path = nil
+local nrepl__3envim_path
 do
-  local v_0_ = nil
+  local v_0_
   local function nrepl__3envim_path0(path)
     if text["starts-with"](path, "jar:file:") then
       local function _2_(zip, file)
@@ -360,11 +360,11 @@ do
   t_0_["nrepl->nvim-path"] = v_0_
   nrepl__3envim_path = v_0_
 end
-local def_str = nil
+local def_str
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function def_str0(opts)
       local function _2_()
         local function _3_(info)
@@ -405,11 +405,11 @@ do
   t_0_["def-str"] = v_0_
   def_str = v_0_
 end
-local eval_file = nil
+local eval_file
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function eval_file0(opts)
       local function _2_()
         return server.eval(a.assoc(opts, "code", ("(#?(:cljs cljs.core/load-file" .. " :default clojure.core/load-file)" .. " \"" .. opts["file-path"] .. "\")")), eval_cb_fn(opts))
@@ -424,22 +424,22 @@ do
   t_0_["eval-file"] = v_0_
   eval_file = v_0_
 end
-local interrupt = nil
+local interrupt
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function interrupt0()
       local function _2_()
         local function _3_(conn)
-          local msgs = nil
+          local msgs
           local function _4_(msg)
             return ("eval" == msg.msg.op)
           end
           msgs = a.filter(_4_, a.vals(conn.msgs))
-          local order_66 = nil
-          local function _5_(_6_0)
-            local _arg_0_ = _6_0
+          local order_66
+          local function _6_(_5_0)
+            local _arg_0_ = _5_0
             local code = _arg_0_["code"]
             local id = _arg_0_["id"]
             local session = _arg_0_["session"]
@@ -456,7 +456,7 @@ do
             end
             return server["enrich-session-id"](session, _7_)
           end
-          order_66 = _5_
+          order_66 = _6_
           if a["empty?"](msgs) then
             return order_66({session = conn.session})
           else
@@ -479,9 +479,9 @@ do
   t_0_["interrupt"] = v_0_
   interrupt = v_0_
 end
-local eval_str_fn = nil
+local eval_str_fn
 do
-  local v_0_ = nil
+  local v_0_
   local function eval_str_fn0(code)
     local function _2_()
       return nvim.ex.ConjureEval(code)
@@ -493,9 +493,9 @@ do
   t_0_["eval-str-fn"] = v_0_
   eval_str_fn = v_0_
 end
-local last_exception = nil
+local last_exception
 do
-  local v_0_ = nil
+  local v_0_
   do
     local v_0_0 = eval_str_fn("*e")
     _0_0["last-exception"] = v_0_0
@@ -505,9 +505,9 @@ do
   t_0_["last-exception"] = v_0_
   last_exception = v_0_
 end
-local result_1 = nil
+local result_1
 do
-  local v_0_ = nil
+  local v_0_
   do
     local v_0_0 = eval_str_fn("*1")
     _0_0["result-1"] = v_0_0
@@ -517,9 +517,9 @@ do
   t_0_["result-1"] = v_0_
   result_1 = v_0_
 end
-local result_2 = nil
+local result_2
 do
-  local v_0_ = nil
+  local v_0_
   do
     local v_0_0 = eval_str_fn("*2")
     _0_0["result-2"] = v_0_0
@@ -529,9 +529,9 @@ do
   t_0_["result-2"] = v_0_
   result_2 = v_0_
 end
-local result_3 = nil
+local result_3
 do
-  local v_0_ = nil
+  local v_0_
   do
     local v_0_0 = eval_str_fn("*3")
     _0_0["result-3"] = v_0_0
@@ -541,11 +541,11 @@ do
   t_0_["result-3"] = v_0_
   result_3 = v_0_
 end
-local view_source = nil
+local view_source
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function view_source0()
       local function _2_()
         local word = a.get(extract.word(), "content")
@@ -568,11 +568,11 @@ do
   t_0_["view-source"] = v_0_
   view_source = v_0_
 end
-local clone_current_session = nil
+local clone_current_session
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function clone_current_session0()
       local function _2_()
         local function _3_(conn)
@@ -590,11 +590,11 @@ do
   t_0_["clone-current-session"] = v_0_
   clone_current_session = v_0_
 end
-local clone_fresh_session = nil
+local clone_fresh_session
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function clone_fresh_session0()
       local function _2_()
         local function _3_(conn)
@@ -612,11 +612,11 @@ do
   t_0_["clone-fresh-session"] = v_0_
   clone_fresh_session = v_0_
 end
-local close_current_session = nil
+local close_current_session
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function close_current_session0()
       local function _2_()
         local function _3_(conn)
@@ -642,11 +642,11 @@ do
   t_0_["close-current-session"] = v_0_
   close_current_session = v_0_
 end
-local display_sessions = nil
+local display_sessions
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function display_sessions0(cb)
       local function _2_()
         local function _3_(sessions)
@@ -664,11 +664,11 @@ do
   t_0_["display-sessions"] = v_0_
   display_sessions = v_0_
 end
-local close_all_sessions = nil
+local close_all_sessions
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function close_all_sessions0()
       local function _2_()
         local function _3_(sessions)
@@ -688,9 +688,9 @@ do
   t_0_["close-all-sessions"] = v_0_
   close_all_sessions = v_0_
 end
-local cycle_session = nil
+local cycle_session
 do
-  local v_0_ = nil
+  local v_0_
   local function cycle_session0(f)
     local function _2_()
       local function _3_(conn)
@@ -716,11 +716,11 @@ do
   t_0_["cycle-session"] = v_0_
   cycle_session = v_0_
 end
-local next_session = nil
+local next_session
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function next_session0()
       local function _2_(current, node)
         return (current == a.get(ll.val(ll.prev(node)), "id"))
@@ -735,11 +735,11 @@ do
   t_0_["next-session"] = v_0_
   next_session = v_0_
 end
-local prev_session = nil
+local prev_session
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function prev_session0()
       local function _2_(current, node)
         return (current == a.get(ll.val(ll.next(node)), "id"))
@@ -754,11 +754,11 @@ do
   t_0_["prev-session"] = v_0_
   prev_session = v_0_
 end
-local select_session_interactive = nil
+local select_session_interactive
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function select_session_interactive0()
       local function _2_()
         local function _3_(sessions)
@@ -789,16 +789,16 @@ do
   t_0_["select-session-interactive"] = v_0_
   select_session_interactive = v_0_
 end
-local test_runners = nil
+local test_runners
 do
   local v_0_ = {clojure = {["all-fn"] = "run-all-tests", ["default-call-suffix"] = "", ["name-prefix"] = "[(resolve '", ["name-suffix"] = ")]", ["ns-fn"] = "run-tests", ["single-fn"] = "test-vars", namespace = "clojure.test"}, kaocha = {["all-fn"] = "run-all", ["default-call-suffix"] = "{:kaocha/color? false}", ["name-prefix"] = "#'", ["name-suffix"] = "", ["ns-fn"] = "run", ["single-fn"] = "run", namespace = "kaocha.repl"}}
   local t_0_ = (_0_0)["aniseed/locals"]
   t_0_["test-runners"] = v_0_
   test_runners = v_0_
 end
-local test_cfg = nil
+local test_cfg
 do
-  local v_0_ = nil
+  local v_0_
   local function test_cfg0(k)
     local runner = cfg({"test", "runner"})
     return (a["get-in"](test_runners, {runner, k}) or error(str.join({"No test-runners configuration for ", runner, " / ", k})))
@@ -808,9 +808,9 @@ do
   t_0_["test-cfg"] = v_0_
   test_cfg = v_0_
 end
-local require_test_runner = nil
+local require_test_runner
 do
-  local v_0_ = nil
+  local v_0_
   local function require_test_runner0()
     return require_ns(test_cfg("namespace"))
   end
@@ -819,9 +819,9 @@ do
   t_0_["require-test-runner"] = v_0_
   require_test_runner = v_0_
 end
-local test_runner_code = nil
+local test_runner_code
 do
-  local v_0_ = nil
+  local v_0_
   local function test_runner_code0(fn_config_name, ...)
     return ("(" .. str.join(" ", {(test_cfg("namespace") .. "/" .. test_cfg((fn_config_name .. "-fn"))), ...}) .. (cfg({"test", "call_suffix"}) or test_cfg("default-call-suffix")) .. ")")
   end
@@ -830,11 +830,11 @@ do
   t_0_["test-runner-code"] = v_0_
   test_runner_code = v_0_
 end
-local run_all_tests = nil
+local run_all_tests
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function run_all_tests0()
       local function _2_()
         log.append({"; run-all-tests"}, {["break?"] = true})
@@ -854,9 +854,9 @@ do
   t_0_["run-all-tests"] = v_0_
   run_all_tests = v_0_
 end
-local run_ns_tests = nil
+local run_ns_tests
 do
-  local v_0_ = nil
+  local v_0_
   local function run_ns_tests0(ns)
     local function _2_()
       if ns then
@@ -875,11 +875,11 @@ do
   t_0_["run-ns-tests"] = v_0_
   run_ns_tests = v_0_
 end
-local run_current_ns_tests = nil
+local run_current_ns_tests
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function run_current_ns_tests0()
       return run_ns_tests(extract.context())
     end
@@ -891,11 +891,11 @@ do
   t_0_["run-current-ns-tests"] = v_0_
   run_current_ns_tests = v_0_
 end
-local run_alternate_ns_tests = nil
+local run_alternate_ns_tests
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function run_alternate_ns_tests0()
       local current_ns = extract.context()
       local function _2_()
@@ -915,11 +915,11 @@ do
   t_0_["run-alternate-ns-tests"] = v_0_
   run_alternate_ns_tests = v_0_
 end
-local extract_test_name_from_form = nil
+local extract_test_name_from_form
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function extract_test_name_from_form0(form)
       local seen_deftest_3f = false
       local function _2_(part)
@@ -943,11 +943,11 @@ do
   t_0_["extract-test-name-from-form"] = v_0_
   extract_test_name_from_form = v_0_
 end
-local run_current_test = nil
+local run_current_test
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function run_current_test0()
       local function _2_()
         local form = extract.form({["root?"] = true})
@@ -980,9 +980,9 @@ do
   t_0_["run-current-test"] = v_0_
   run_current_test = v_0_
 end
-local refresh_impl = nil
+local refresh_impl
 do
-  local v_0_ = nil
+  local v_0_
   local function refresh_impl0(op)
     local function _2_(conn)
       local function _3_(msg)
@@ -1007,11 +1007,11 @@ do
   t_0_["refresh-impl"] = v_0_
   refresh_impl = v_0_
 end
-local refresh_changed = nil
+local refresh_changed
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function refresh_changed0()
       local function _2_()
         log.append({"; Refreshing changed namespaces"}, {["break?"] = true})
@@ -1027,11 +1027,11 @@ do
   t_0_["refresh-changed"] = v_0_
   refresh_changed = v_0_
 end
-local refresh_all = nil
+local refresh_all
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function refresh_all0()
       local function _2_()
         log.append({"; Refreshing all namespaces"}, {["break?"] = true})
@@ -1047,11 +1047,11 @@ do
   t_0_["refresh-all"] = v_0_
   refresh_all = v_0_
 end
-local refresh_clear = nil
+local refresh_clear
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function refresh_clear0()
       local function _2_()
         log.append({"; Clearing refresh cache"}, {["break?"] = true})
@@ -1073,11 +1073,11 @@ do
   t_0_["refresh-clear"] = v_0_
   refresh_clear = v_0_
 end
-local shadow_select = nil
+local shadow_select
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function shadow_select0(build)
       local function _2_()
         local function _3_(conn)
@@ -1097,11 +1097,11 @@ do
   t_0_["shadow-select"] = v_0_
   shadow_select = v_0_
 end
-local piggieback = nil
+local piggieback
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function piggieback0(code)
       local function _2_()
         local function _3_(conn)
@@ -1122,9 +1122,9 @@ do
   t_0_["piggieback"] = v_0_
   piggieback = v_0_
 end
-local clojure__3evim_completion = nil
+local clojure__3evim_completion
 do
-  local v_0_ = nil
+  local v_0_
   local function clojure__3evim_completion0(_2_0)
     local _arg_0_ = _2_0
     local arglists = _arg_0_["arglists"]
@@ -1150,9 +1150,9 @@ do
   t_0_["clojure->vim-completion"] = v_0_
   clojure__3evim_completion = v_0_
 end
-local extract_completion_context = nil
+local extract_completion_context
 do
-  local v_0_ = nil
+  local v_0_
   local function extract_completion_context0(prefix)
     local root_form = extract.form({["root?"] = true})
     if root_form then
@@ -1165,7 +1165,7 @@ do
       local col = _let_1_[2]
       local lrow = (row - a["get-in"](range, {"start", 1}))
       local line_index = a.inc(lrow)
-      local lcol = nil
+      local lcol
       if (lrow == 0) then
         lcol = (col - a["get-in"](range, {"start", 2}))
       else
@@ -1181,9 +1181,9 @@ do
   t_0_["extract-completion-context"] = v_0_
   extract_completion_context = v_0_
 end
-local enhanced_cljs_completion_3f = nil
+local enhanced_cljs_completion_3f
 do
-  local v_0_ = nil
+  local v_0_
   local function enhanced_cljs_completion_3f0()
     return cfg({"completion", "cljs", "use_suitable"})
   end
@@ -1192,11 +1192,11 @@ do
   t_0_["enhanced-cljs-completion?"] = v_0_
   enhanced_cljs_completion_3f = v_0_
 end
-local completions = nil
+local completions
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function completions0(opts)
       local function _2_(conn)
         local _3_
@@ -1226,11 +1226,11 @@ do
   t_0_["completions"] = v_0_
   completions = v_0_
 end
-local out_subscribe = nil
+local out_subscribe
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function out_subscribe0()
       try_ensure_conn()
       log.append({"; Subscribing to out"}, {["break?"] = true})
@@ -1247,11 +1247,11 @@ do
   t_0_["out-subscribe"] = v_0_
   out_subscribe = v_0_
 end
-local out_unsubscribe = nil
+local out_unsubscribe
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function out_unsubscribe0()
       try_ensure_conn()
       log.append({"; Unsubscribing from out"}, {["break?"] = true})

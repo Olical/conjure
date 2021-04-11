@@ -1,7 +1,7 @@
-local _0_0 = nil
+local _0_0
 do
   local name_0_ = "conjure.event"
-  local module_0_ = nil
+  local module_0_
   do
     local x_0_ = package.loaded[name_0_]
     if ("table" == type(x_0_)) then
@@ -38,11 +38,11 @@ local text = _local_0_[5]
 local _2amodule_2a = _0_0
 local _2amodule_name_2a = "conjure.event"
 do local _ = ({nil, _0_0, {{}, nil, nil, nil}})[2] end
-local emit = nil
+local emit
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function emit0(...)
       do
         local names = a.map(text["upper-first"], {...})

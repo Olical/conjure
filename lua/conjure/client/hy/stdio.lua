@@ -1,7 +1,7 @@
-local _0_0 = nil
+local _0_0
 do
   local name_0_ = "conjure.client.hy.stdio"
-  local module_0_ = nil
+  local module_0_
   do
     local x_0_ = package.loaded[name_0_]
     if ("table" == type(x_0_)) then
@@ -44,16 +44,16 @@ local _2amodule_2a = _0_0
 local _2amodule_name_2a = "conjure.client.hy.stdio"
 do local _ = ({nil, _0_0, {{nil}, nil, nil, nil}})[2] end
 config.merge({client = {hy = {stdio = {command = "hy --repl-output-fn=hy.contrib.hy-repr.hy-repr", mapping = {interrupt = "ei", start = "cs", stop = "cS"}, prompt_pattern = "=> "}}}})
-local cfg = nil
+local cfg
 do
   local v_0_ = config["get-in-fn"]({"client", "hy", "stdio"})
   local t_0_ = (_0_0)["aniseed/locals"]
   t_0_["cfg"] = v_0_
   cfg = v_0_
 end
-local state = nil
+local state
 do
-  local v_0_ = nil
+  local v_0_
   local function _2_()
     return {repl = nil}
   end
@@ -62,9 +62,9 @@ do
   t_0_["state"] = v_0_
   state = v_0_
 end
-local buf_suffix = nil
+local buf_suffix
 do
-  local v_0_ = nil
+  local v_0_
   do
     local v_0_0 = ".hy"
     _0_0["buf-suffix"] = v_0_0
@@ -74,9 +74,9 @@ do
   t_0_["buf-suffix"] = v_0_
   buf_suffix = v_0_
 end
-local comment_prefix = nil
+local comment_prefix
 do
-  local v_0_ = nil
+  local v_0_
   do
     local v_0_0 = "; "
     _0_0["comment-prefix"] = v_0_0
@@ -86,9 +86,9 @@ do
   t_0_["comment-prefix"] = v_0_
   comment_prefix = v_0_
 end
-local with_repl_or_warn = nil
+local with_repl_or_warn
 do
-  local v_0_ = nil
+  local v_0_
   local function with_repl_or_warn0(f, opts)
     local repl = state("repl")
     if repl then
@@ -102,11 +102,11 @@ do
   t_0_["with-repl-or-warn"] = v_0_
   with_repl_or_warn = v_0_
 end
-local display_result = nil
+local display_result
 do
-  local v_0_ = nil
+  local v_0_
   local function display_result0(msg)
-    local prefix = nil
+    local prefix
     local _2_
     if msg.err then
       _2_ = "(err)"
@@ -127,9 +127,9 @@ do
   t_0_["display-result"] = v_0_
   display_result = v_0_
 end
-local prep_code = nil
+local prep_code
 do
-  local v_0_ = nil
+  local v_0_
   local function prep_code0(s)
     return (s .. "\n")
   end
@@ -138,17 +138,17 @@ do
   t_0_["prep-code"] = v_0_
   prep_code = v_0_
 end
-local eval_str = nil
+local eval_str
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function eval_str0(opts)
       local last_value = nil
       local function _2_(repl)
         local function _3_(msg)
           log.dbg("msg", msg)
-          local msgs = nil
+          local msgs
           local function _4_(_241)
             return not ("" == _241)
           end
@@ -174,11 +174,11 @@ do
   t_0_["eval-str"] = v_0_
   eval_str = v_0_
 end
-local eval_file = nil
+local eval_file
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function eval_file0(opts)
       return log.append({(comment_prefix .. "Not implemented")})
     end
@@ -190,13 +190,13 @@ do
   t_0_["eval-file"] = v_0_
   eval_file = v_0_
 end
-local doc_str = nil
+local doc_str
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function doc_str0(opts)
-      local obj = nil
+      local obj
       if ("." == string.sub(opts.code, 1, 1)) then
         obj = extract.prompt("Specify object or module: ")
       else
@@ -227,9 +227,9 @@ do
   t_0_["doc-str"] = v_0_
   doc_str = v_0_
 end
-local display_repl_status = nil
+local display_repl_status
 do
-  local v_0_ = nil
+  local v_0_
   local function display_repl_status0(status)
     local repl = state("repl")
     if repl then
@@ -241,11 +241,11 @@ do
   t_0_["display-repl-status"] = v_0_
   display_repl_status = v_0_
 end
-local stop = nil
+local stop
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function stop0()
       local repl = state("repl")
       if repl then
@@ -262,11 +262,11 @@ do
   t_0_["stop"] = v_0_
   stop = v_0_
 end
-local start = nil
+local start
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function start0()
       if state("repl") then
         return log.append({(comment_prefix .. "Can't start, REPL is already running."), (comment_prefix .. "Stop the REPL with " .. config["get-in"]({"mapping", "prefix"}) .. cfg({"mapping", "stop"}))}, {["break?"] = true})
@@ -304,11 +304,11 @@ do
   t_0_["start"] = v_0_
   start = v_0_
 end
-local on_load = nil
+local on_load
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function on_load0()
       return start()
     end
@@ -320,11 +320,11 @@ do
   t_0_["on-load"] = v_0_
   on_load = v_0_
 end
-local on_exit = nil
+local on_exit
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function on_exit0()
       return stop()
     end
@@ -336,11 +336,11 @@ do
   t_0_["on-exit"] = v_0_
   on_exit = v_0_
 end
-local interrupt = nil
+local interrupt
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function interrupt0()
       log.dbg("sending interrupt message", "")
       local function _2_(repl)
@@ -357,11 +357,11 @@ do
   t_0_["interrupt"] = v_0_
   interrupt = v_0_
 end
-local on_filetype = nil
+local on_filetype
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function on_filetype0()
       mapping.buf("n", "HyStart", cfg({"mapping", "start"}), _2amodule_name_2a, "start")
       mapping.buf("n", "HyStop", cfg({"mapping", "stop"}), _2amodule_name_2a, "stop")

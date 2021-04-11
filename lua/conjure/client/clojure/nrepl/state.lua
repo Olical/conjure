@@ -1,7 +1,7 @@
-local _0_0 = nil
+local _0_0
 do
   local name_0_ = "conjure.client.clojure.nrepl.state"
-  local module_0_ = nil
+  local module_0_
   do
     local x_0_ = package.loaded[name_0_]
     if ("table" == type(x_0_)) then
@@ -34,11 +34,11 @@ local client = _local_0_[1]
 local _2amodule_2a = _0_0
 local _2amodule_name_2a = "conjure.client.clojure.nrepl.state"
 do local _ = ({nil, _0_0, {{}, nil, nil, nil}})[2] end
-local get = nil
+local get
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function _2_()
       return {["join-next"] = {key = nil}, conn = nil}
     end

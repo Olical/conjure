@@ -1,7 +1,7 @@
-local _0_0 = nil
+local _0_0
 do
   local name_0_ = "conjure.aniseed.eval"
-  local module_0_ = nil
+  local module_0_
   do
     local x_0_ = package.loaded[name_0_]
     if ("table" == type(x_0_)) then
@@ -38,11 +38,11 @@ local nvim = _local_0_[5]
 local _2amodule_2a = _0_0
 local _2amodule_name_2a = "conjure.aniseed.eval"
 do local _ = ({nil, _0_0, {{}, nil, nil, nil}})[2] end
-local str = nil
+local str
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function str0(code, opts)
       local function _2_()
         return fennel.eval(compile["macros-prefix"](code), a.merge({["compiler-env"] = _G}, opts))

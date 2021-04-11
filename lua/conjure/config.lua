@@ -1,7 +1,7 @@
-local _0_0 = nil
+local _0_0
 do
   local name_0_ = "conjure.config"
-  local module_0_ = nil
+  local module_0_
   do
     local x_0_ = package.loaded[name_0_]
     if ("table" == type(x_0_)) then
@@ -36,9 +36,9 @@ local str = _local_0_[3]
 local _2amodule_2a = _0_0
 local _2amodule_name_2a = "conjure.config"
 do local _ = ({nil, _0_0, {{}, nil, nil, nil}})[2] end
-local ks__3evar = nil
+local ks__3evar
 do
-  local v_0_ = nil
+  local v_0_
   local function ks__3evar0(ks)
     return ("conjure#" .. str.join("#", ks))
   end
@@ -47,11 +47,11 @@ do
   t_0_["ks->var"] = v_0_
   ks__3evar = v_0_
 end
-local get_in = nil
+local get_in
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function get_in0(ks)
       local v = a.get(nvim.g, ks__3evar(ks))
       if (a["table?"](v) and a.get(v, vim.type_idx) and a.get(v, vim.val_idx)) then
@@ -68,11 +68,11 @@ do
   t_0_["get-in"] = v_0_
   get_in = v_0_
 end
-local filetypes = nil
+local filetypes
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function filetypes0()
       return get_in({"filetypes"})
     end
@@ -84,11 +84,11 @@ do
   t_0_["filetypes"] = v_0_
   filetypes = v_0_
 end
-local get_in_fn = nil
+local get_in_fn
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function get_in_fn0(prefix_ks)
       local function _2_(ks)
         return get_in(a.concat(prefix_ks, ks))
@@ -103,11 +103,11 @@ do
   t_0_["get-in-fn"] = v_0_
   get_in_fn = v_0_
 end
-local assoc_in = nil
+local assoc_in
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function assoc_in0(ks, v)
       a.assoc(nvim.g, ks__3evar(ks), v)
       return v
@@ -120,16 +120,16 @@ do
   t_0_["assoc-in"] = v_0_
   assoc_in = v_0_
 end
-local merge = nil
+local merge
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function merge0(tbl, opts, ks)
       local ks0 = (ks or {})
       local opts0 = (opts or {})
-      local function _2_(_3_0)
-        local _arg_0_ = _3_0
+      local function _3_(_2_0)
+        local _arg_0_ = _2_0
         local k = _arg_0_[1]
         local v = _arg_0_[2]
         local ks1 = a.concat(ks0, {k})
@@ -142,7 +142,7 @@ do
           end
         end
       end
-      a["run!"](_2_, a["kv-pairs"](tbl))
+      a["run!"](_3_, a["kv-pairs"](tbl))
       return nil
     end
     v_0_0 = merge0

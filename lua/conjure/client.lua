@@ -1,7 +1,7 @@
-local _0_0 = nil
+local _0_0
 do
   local name_0_ = "conjure.client"
-  local module_0_ = nil
+  local module_0_
   do
     local x_0_ = package.loaded[name_0_]
     if ("table" == type(x_0_)) then
@@ -39,11 +39,11 @@ local str = _local_0_[6]
 local _2amodule_2a = _0_0
 local _2amodule_name_2a = "conjure.client"
 do local _ = ({nil, _0_0, {{}, nil, nil, nil}})[2] end
-local state_key = nil
+local state_key
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function _2_()
       return "default"
     end
@@ -55,18 +55,18 @@ do
   t_0_["state-key"] = v_0_
   state_key = v_0_
 end
-local state = nil
+local state
 do
   local v_0_ = (((_0_0)["aniseed/locals"]).state or {["state-key-set?"] = false})
   local t_0_ = (_0_0)["aniseed/locals"]
   t_0_["state"] = v_0_
   state = v_0_
 end
-local set_state_key_21 = nil
+local set_state_key_21
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function set_state_key_210(new_key)
       state["state-key-set?"] = true
       local function _2_()
@@ -82,11 +82,11 @@ do
   t_0_["set-state-key!"] = v_0_
   set_state_key_21 = v_0_
 end
-local multiple_states_3f = nil
+local multiple_states_3f
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function multiple_states_3f0()
       return state["state-key-set?"]
     end
@@ -98,11 +98,11 @@ do
   t_0_["multiple-states?"] = v_0_
   multiple_states_3f = v_0_
 end
-local new_state = nil
+local new_state
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function new_state0(init_fn)
       local key__3estate = {}
       local function _2_(...)
@@ -128,16 +128,16 @@ do
   t_0_["new-state"] = v_0_
   new_state = v_0_
 end
-local loaded = nil
+local loaded
 do
   local v_0_ = (((_0_0)["aniseed/locals"]).loaded or {})
   local t_0_ = (_0_0)["aniseed/locals"]
   t_0_["loaded"] = v_0_
   loaded = v_0_
 end
-local load_module = nil
+local load_module
 do
-  local v_0_ = nil
+  local v_0_
   local function load_module0(ft, name)
     local ok_3f, result = nil, nil
     local function _2_()
@@ -161,9 +161,9 @@ do
   t_0_["load-module"] = v_0_
   load_module = v_0_
 end
-local filetype = nil
+local filetype
 do
-  local v_0_ = nil
+  local v_0_
   local function _2_()
     return nvim.bo.filetype
   end
@@ -172,9 +172,9 @@ do
   t_0_["filetype"] = v_0_
   filetype = v_0_
 end
-local extension = nil
+local extension
 do
-  local v_0_ = nil
+  local v_0_
   local function _2_()
     return nvim.fn.expand("%:e")
   end
@@ -183,11 +183,11 @@ do
   t_0_["extension"] = v_0_
   extension = v_0_
 end
-local with_filetype = nil
+local with_filetype
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function with_filetype0(ft, f, ...)
       local function _2_()
         return nil
@@ -205,11 +205,11 @@ do
   t_0_["with-filetype"] = v_0_
   with_filetype = v_0_
 end
-local wrap = nil
+local wrap
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function wrap0(f, ...)
       local opts = {[filetype] = a.constantly(filetype()), [state_key] = a.constantly(state_key())}
       local args = {...}
@@ -230,11 +230,11 @@ do
   t_0_["wrap"] = v_0_
   wrap = v_0_
 end
-local schedule_wrap = nil
+local schedule_wrap
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function schedule_wrap0(f, ...)
       return wrap(vim.schedule_wrap(f), ...)
     end
@@ -246,11 +246,11 @@ do
   t_0_["schedule-wrap"] = v_0_
   schedule_wrap = v_0_
 end
-local schedule = nil
+local schedule
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function schedule0(f, ...)
       return vim.schedule(wrap(f, ...))
     end
@@ -262,13 +262,13 @@ do
   t_0_["schedule"] = v_0_
   schedule = v_0_
 end
-local current_client_module_name = nil
+local current_client_module_name
 do
-  local v_0_ = nil
+  local v_0_
   local function current_client_module_name0()
     local result = {["module-name"] = nil, extension = extension(), filetype = filetype()}
     do
-      local fts = nil
+      local fts
       if result.filetype then
         fts = str.split(result.filetype, "%.")
       else
@@ -295,11 +295,11 @@ do
   t_0_["current-client-module-name"] = v_0_
   current_client_module_name = v_0_
 end
-local current = nil
+local current
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function current0()
       local _let_0_ = current_client_module_name()
       local extension0 = _let_0_["extension"]
@@ -317,11 +317,11 @@ do
   t_0_["current"] = v_0_
   current = v_0_
 end
-local get = nil
+local get
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function get0(...)
       return a["get-in"](current(), {...})
     end
@@ -333,11 +333,11 @@ do
   t_0_["get"] = v_0_
   get = v_0_
 end
-local call = nil
+local call
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function call0(fn_name, ...)
       local f = get(fn_name)
       if f then
@@ -354,11 +354,11 @@ do
   t_0_["call"] = v_0_
   call = v_0_
 end
-local optional_call = nil
+local optional_call
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function optional_call0(fn_name, ...)
       local f = get(fn_name)
       if f then
@@ -373,18 +373,18 @@ do
   t_0_["optional-call"] = v_0_
   optional_call = v_0_
 end
-local each_loaded_client = nil
+local each_loaded_client
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function each_loaded_client0(f)
-      local function _2_(_3_0)
-        local _arg_0_ = _3_0
+      local function _3_(_2_0)
+        local _arg_0_ = _2_0
         local filetype0 = _arg_0_["filetype"]
         return with_filetype(filetype0, f)
       end
-      return a["run!"](_2_, a.vals(loaded))
+      return a["run!"](_3_, a.vals(loaded))
     end
     v_0_0 = each_loaded_client0
     _0_0["each-loaded-client"] = v_0_0

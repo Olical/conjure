@@ -1,7 +1,7 @@
-local _0_0 = nil
+local _0_0
 do
   local name_0_ = "conjure.client.janet.netrepl"
-  local module_0_ = nil
+  local module_0_
   do
     local x_0_ = package.loaded[name_0_]
     if ("table" == type(x_0_)) then
@@ -42,9 +42,9 @@ local text = _local_0_[9]
 local _2amodule_2a = _0_0
 local _2amodule_name_2a = "conjure.client.janet.netrepl"
 do local _ = ({nil, _0_0, {{}, nil, nil, nil}})[2] end
-local buf_suffix = nil
+local buf_suffix
 do
-  local v_0_ = nil
+  local v_0_
   do
     local v_0_0 = ".janet"
     _0_0["buf-suffix"] = v_0_0
@@ -54,9 +54,9 @@ do
   t_0_["buf-suffix"] = v_0_
   buf_suffix = v_0_
 end
-local comment_prefix = nil
+local comment_prefix
 do
-  local v_0_ = nil
+  local v_0_
   do
     local v_0_0 = "# "
     _0_0["comment-prefix"] = v_0_0
@@ -67,9 +67,9 @@ do
   comment_prefix = v_0_
 end
 config.merge({client = {janet = {netrepl = {connection = {default_host = "127.0.0.1", default_port = "9365"}, mapping = {connect = "cc", disconnect = "cd"}}}}})
-local state = nil
+local state
 do
-  local v_0_ = nil
+  local v_0_
   local function _2_()
     return {conn = nil}
   end
@@ -78,9 +78,9 @@ do
   t_0_["state"] = v_0_
   state = v_0_
 end
-local with_conn_or_warn = nil
+local with_conn_or_warn
 do
-  local v_0_ = nil
+  local v_0_
   local function with_conn_or_warn0(f, opts)
     local conn = state("conn")
     if conn then
@@ -94,9 +94,9 @@ do
   t_0_["with-conn-or-warn"] = v_0_
   with_conn_or_warn = v_0_
 end
-local connected_3f = nil
+local connected_3f
 do
-  local v_0_ = nil
+  local v_0_
   local function connected_3f0()
     if state("conn") then
       return true
@@ -109,9 +109,9 @@ do
   t_0_["connected?"] = v_0_
   connected_3f = v_0_
 end
-local display_conn_status = nil
+local display_conn_status
 do
-  local v_0_ = nil
+  local v_0_
   local function display_conn_status0(status)
     local function _2_(conn)
       return log.append({("# " .. conn.host .. ":" .. conn.port .. " (" .. status .. ")")}, {["break?"] = true})
@@ -123,11 +123,11 @@ do
   t_0_["display-conn-status"] = v_0_
   display_conn_status = v_0_
 end
-local disconnect = nil
+local disconnect
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function disconnect0()
       local function _2_(conn)
         conn.destroy()
@@ -144,9 +144,9 @@ do
   t_0_["disconnect"] = v_0_
   disconnect = v_0_
 end
-local send = nil
+local send
 do
-  local v_0_ = nil
+  local v_0_
   local function send0(msg, cb)
     local function _2_(conn)
       return remote.send(conn, msg, cb)
@@ -158,11 +158,11 @@ do
   t_0_["send"] = v_0_
   send = v_0_
 end
-local connect = nil
+local connect
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function connect0(opts)
       local opts0 = (opts or {})
       local host = (opts0.host or config["get-in"]({"client", "janet", "netrepl", "connection", "default_host"}))
@@ -194,9 +194,9 @@ do
   t_0_["connect"] = v_0_
   connect = v_0_
 end
-local try_ensure_conn = nil
+local try_ensure_conn
 do
-  local v_0_ = nil
+  local v_0_
   local function try_ensure_conn0()
     if not connected_3f() then
       return connect({["silent?"] = true})
@@ -207,11 +207,11 @@ do
   t_0_["try-ensure-conn"] = v_0_
   try_ensure_conn = v_0_
 end
-local eval_str = nil
+local eval_str
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function eval_str0(opts)
       try_ensure_conn()
       local function _2_(msg)
@@ -233,11 +233,11 @@ do
   t_0_["eval-str"] = v_0_
   eval_str = v_0_
 end
-local doc_str = nil
+local doc_str
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function doc_str0(opts)
       try_ensure_conn()
       local function _2_(_241)
@@ -253,11 +253,11 @@ do
   t_0_["doc-str"] = v_0_
   doc_str = v_0_
 end
-local eval_file = nil
+local eval_file
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function eval_file0(opts)
       try_ensure_conn()
       return eval_str(a.assoc(opts, "code", ("(do (dofile \"" .. opts["file-path"] .. "\" :env (fiber/getenv (fiber/current))) nil)")))
@@ -270,11 +270,11 @@ do
   t_0_["eval-file"] = v_0_
   eval_file = v_0_
 end
-local on_filetype = nil
+local on_filetype
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function on_filetype0()
       mapping.buf("n", "JanetDisconnect", config["get-in"]({"client", "janet", "netrepl", "mapping", "disconnect"}), "conjure.client.janet.netrepl", "disconnect")
       return mapping.buf("n", "JanetConnect", config["get-in"]({"client", "janet", "netrepl", "mapping", "connect"}), "conjure.client.janet.netrepl", "connect")
@@ -287,11 +287,11 @@ do
   t_0_["on-filetype"] = v_0_
   on_filetype = v_0_
 end
-local on_load = nil
+local on_load
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function on_load0()
       return connect({})
     end
@@ -303,11 +303,11 @@ do
   t_0_["on-load"] = v_0_
   on_load = v_0_
 end
-local on_exit = nil
+local on_exit
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function on_exit0()
       return disconnect()
     end

@@ -1,7 +1,7 @@
-local _0_0 = nil
+local _0_0
 do
   local name_0_ = "conjure.remote.stdio"
-  local module_0_ = nil
+  local module_0_
   do
     local x_0_ = package.loaded[name_0_]
     if ("table" == type(x_0_)) then
@@ -38,16 +38,16 @@ local str = _local_0_[5]
 local _2amodule_2a = _0_0
 local _2amodule_name_2a = "conjure.remote.stdio"
 do local _ = ({nil, _0_0, {{}, nil, nil, nil}})[2] end
-local uv = nil
+local uv
 do
   local v_0_ = vim.loop
   local t_0_ = (_0_0)["aniseed/locals"]
   t_0_["uv"] = v_0_
   uv = v_0_
 end
-local parse_prompt = nil
+local parse_prompt
 do
-  local v_0_ = nil
+  local v_0_
   local function parse_prompt0(s, pat)
     if s:find(pat) then
       return true, s:gsub(pat, "")
@@ -60,11 +60,11 @@ do
   t_0_["parse-prompt"] = v_0_
   parse_prompt = v_0_
 end
-local parse_cmd = nil
+local parse_cmd
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function parse_cmd0(x)
       if a["table?"](x) then
         return {args = a.rest(x), cmd = a.first(x)}
@@ -80,28 +80,28 @@ do
   t_0_["parse-cmd"] = v_0_
   parse_cmd = v_0_
 end
-local extend_env = nil
+local extend_env
 do
-  local v_0_ = nil
+  local v_0_
   local function extend_env0(vars)
-    local function _2_(_3_0)
-      local _arg_0_ = _3_0
+    local function _3_(_2_0)
+      local _arg_0_ = _2_0
       local k = _arg_0_[1]
       local v = _arg_0_[2]
       return (k .. "=" .. v)
     end
-    return a.map(_2_, a["kv-pairs"](a.merge(nvim.fn.environ(), vars)))
+    return a.map(_3_, a["kv-pairs"](a.merge(nvim.fn.environ(), vars)))
   end
   v_0_ = extend_env0
   local t_0_ = (_0_0)["aniseed/locals"]
   t_0_["extend-env"] = v_0_
   extend_env = v_0_
 end
-local start = nil
+local start
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function start0(opts)
       local stdin = uv.new_pipe(false)
       local stdout = uv.new_pipe(false)

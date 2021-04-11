@@ -1,7 +1,7 @@
-local _0_0 = nil
+local _0_0
 do
   local name_0_ = "conjure.remote.nrepl"
-  local module_0_ = nil
+  local module_0_
   do
     local x_0_ = package.loaded[name_0_]
     if ("table" == type(x_0_)) then
@@ -41,11 +41,11 @@ local uuid = _local_0_[8]
 local _2amodule_2a = _0_0
 local _2amodule_name_2a = "conjure.remote.nrepl"
 do local _ = ({nil, _0_0, {{}, nil, nil, nil}})[2] end
-local with_all_msgs_fn = nil
+local with_all_msgs_fn
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function with_all_msgs_fn0(cb)
       local acc = {}
       local function _2_(msg)
@@ -64,11 +64,11 @@ do
   t_0_["with-all-msgs-fn"] = v_0_
   with_all_msgs_fn = v_0_
 end
-local connect = nil
+local connect
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function connect0(opts)
       local state = {["awaiting-process?"] = false, ["message-queue"] = {}, bc = bencode.new(), msgs = {}}
       local conn = {session = nil, state = state}
@@ -92,7 +92,7 @@ do
         local function _3_()
         end
         a["assoc-in"](state, {"msgs", msg_id}, {["sent-at"] = os.time(), cb = (cb or _3_), msg = msg})
-        do end (conn.sock):write(bencode.encode(msg))
+        ; (conn.sock):write(bencode.encode(msg))
         return nil
       end
       local function process_message(err, chunk)
@@ -148,7 +148,7 @@ do
           if err then
             return opts["on-failure"](err)
           else
-            do end (conn.sock):read_start(client.wrap(enqueue_message))
+            (conn.sock):read_start(client.wrap(enqueue_message))
             return opts["on-success"]()
           end
         end

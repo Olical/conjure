@@ -1,7 +1,7 @@
-local _0_0 = nil
+local _0_0
 do
   local name_0_ = "conjure.bridge"
-  local module_0_ = nil
+  local module_0_
   do
     local x_0_ = package.loaded[name_0_]
     if ("table" == type(x_0_)) then
@@ -33,11 +33,11 @@ local _local_0_ = _1_(...)
 local _2amodule_2a = _0_0
 local _2amodule_name_2a = "conjure.bridge"
 do local _ = ({nil, _0_0, {{}, nil, nil, nil}})[2] end
-local viml__3elua = nil
+local viml__3elua
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function viml__3elua0(m, f, opts)
       return ("lua require('" .. m .. "')['" .. f .. "'](" .. ((opts and opts.args) or "") .. ")")
     end

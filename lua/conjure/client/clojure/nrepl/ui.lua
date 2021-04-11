@@ -1,7 +1,7 @@
-local _0_0 = nil
+local _0_0
 do
   local name_0_ = "conjure.client.clojure.nrepl.ui"
-  local module_0_ = nil
+  local module_0_
   do
     local x_0_ = package.loaded[name_0_]
     if ("table" == type(x_0_)) then
@@ -38,11 +38,11 @@ local text = _local_0_[5]
 local _2amodule_2a = _0_0
 local _2amodule_name_2a = "conjure.client.clojure.nrepl.ui"
 do local _ = ({nil, _0_0, {{}, nil, nil, nil}})[2] end
-local handle_join_line = nil
+local handle_join_line
 do
-  local v_0_ = nil
+  local v_0_
   local function handle_join_line0(resp)
-    local next_key = nil
+    local next_key
     if resp.out then
       next_key = "out"
     elseif resp.err then
@@ -66,11 +66,11 @@ do
   t_0_["handle-join-line"] = v_0_
   handle_join_line = v_0_
 end
-local display_result = nil
+local display_result
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function display_result0(resp, opts)
       local opts0 = (opts or {})
       local joined_3f = handle_join_line(resp)
@@ -106,15 +106,15 @@ do
   t_0_["display-result"] = v_0_
   display_result = v_0_
 end
-local display_sessions = nil
+local display_sessions
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function display_sessions0(sessions, cb)
       local current = state.get("conn", "session")
-      local function _2_(_3_0)
-        local _arg_0_ = _3_0
+      local function _3_(_2_0)
+        local _arg_0_ = _2_0
         local idx = _arg_0_[1]
         local session = _arg_0_[2]
         local _4_
@@ -125,7 +125,7 @@ do
         end
         return str.join({"; ", _4_, idx, " - ", session.str()})
       end
-      log.append(a.concat({("; Sessions (" .. a.count(sessions) .. "):")}, a["map-indexed"](_2_, sessions)), {["break?"] = true})
+      log.append(a.concat({("; Sessions (" .. a.count(sessions) .. "):")}, a["map-indexed"](_3_, sessions)), {["break?"] = true})
       if cb then
         return cb()
       end

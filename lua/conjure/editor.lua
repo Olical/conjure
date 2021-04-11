@@ -1,7 +1,7 @@
-local _0_0 = nil
+local _0_0
 do
   local name_0_ = "conjure.editor"
-  local module_0_ = nil
+  local module_0_
   do
     local x_0_ = package.loaded[name_0_]
     if ("table" == type(x_0_)) then
@@ -36,9 +36,9 @@ local nvim = _local_0_[3]
 local _2amodule_2a = _0_0
 local _2amodule_name_2a = "conjure.editor"
 do local _ = ({nil, _0_0, {{}, nil, nil, nil}})[2] end
-local percent_fn = nil
+local percent_fn
 do
-  local v_0_ = nil
+  local v_0_
   local function percent_fn0(total_fn)
     local function _2_(pc)
       return math.floor(((total_fn() / 100) * (pc * 100)))
@@ -50,11 +50,11 @@ do
   t_0_["percent-fn"] = v_0_
   percent_fn = v_0_
 end
-local width = nil
+local width
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function width0()
       return nvim.o.columns
     end
@@ -66,11 +66,11 @@ do
   t_0_["width"] = v_0_
   width = v_0_
 end
-local height = nil
+local height
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function height0()
       return nvim.o.lines
     end
@@ -82,9 +82,9 @@ do
   t_0_["height"] = v_0_
   height = v_0_
 end
-local percent_width = nil
+local percent_width
 do
-  local v_0_ = nil
+  local v_0_
   do
     local v_0_0 = percent_fn(width)
     _0_0["percent-width"] = v_0_0
@@ -94,9 +94,9 @@ do
   t_0_["percent-width"] = v_0_
   percent_width = v_0_
 end
-local percent_height = nil
+local percent_height
 do
-  local v_0_ = nil
+  local v_0_
   do
     local v_0_0 = percent_fn(height)
     _0_0["percent-height"] = v_0_0
@@ -106,11 +106,11 @@ do
   t_0_["percent-height"] = v_0_
   percent_height = v_0_
 end
-local cursor_left = nil
+local cursor_left
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function cursor_left0()
       return nvim.fn.screencol()
     end
@@ -122,11 +122,11 @@ do
   t_0_["cursor-left"] = v_0_
   cursor_left = v_0_
 end
-local cursor_top = nil
+local cursor_top
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function cursor_top0()
       return nvim.fn.screenrow()
     end
@@ -138,11 +138,11 @@ do
   t_0_["cursor-top"] = v_0_
   cursor_top = v_0_
 end
-local go_to = nil
+local go_to
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function go_to0(path_or_win, line, column)
       if a["string?"](path_or_win) then
         nvim.ex.edit(fs["localise-path"](path_or_win))
@@ -163,11 +163,11 @@ do
   t_0_["go-to"] = v_0_
   go_to = v_0_
 end
-local go_to_mark = nil
+local go_to_mark
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function go_to_mark0(m)
       return nvim.ex.normal_(("`" .. m))
     end
@@ -179,11 +179,11 @@ do
   t_0_["go-to-mark"] = v_0_
   go_to_mark = v_0_
 end
-local go_back = nil
+local go_back
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function go_back0()
       return nvim.ex.normal_(nvim.replace_termcodes("<c-o>", true, false, true))
     end
@@ -195,11 +195,11 @@ do
   t_0_["go-back"] = v_0_
   go_back = v_0_
 end
-local has_filetype_3f = nil
+local has_filetype_3f
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function has_filetype_3f0(ft)
       local function _2_(_241)
         return (ft == _241)

@@ -1,7 +1,7 @@
-local _0_0 = nil
+local _0_0
 do
   local name_0_ = "conjure.remote.socket"
-  local module_0_ = nil
+  local module_0_
   do
     local x_0_ = package.loaded[name_0_]
     if ("table" == type(x_0_)) then
@@ -39,16 +39,16 @@ local text = _local_0_[6]
 local _2amodule_2a = _0_0
 local _2amodule_name_2a = "conjure.remote.socket"
 do local _ = ({nil, _0_0, {{}, nil, nil, nil}})[2] end
-local uv = nil
+local uv
 do
   local v_0_ = vim.loop
   local t_0_ = (_0_0)["aniseed/locals"]
   t_0_["uv"] = v_0_
   uv = v_0_
 end
-local strip_unprintable = nil
+local strip_unprintable
 do
-  local v_0_ = nil
+  local v_0_
   local function strip_unprintable0(s)
     return string.gsub(text["strip-ansi-escape-sequences"](s), "[\1\2]", "")
   end
@@ -57,11 +57,11 @@ do
   t_0_["strip-unprintable"] = v_0_
   strip_unprintable = v_0_
 end
-local start = nil
+local start
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function start0(opts)
       local repl_pipe = uv.new_pipe(true)
       local repl = {buffer = "", current = nil, queue = {}, status = "pending"}

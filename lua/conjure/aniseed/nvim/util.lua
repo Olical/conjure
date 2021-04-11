@@ -1,7 +1,7 @@
-local _0_0 = nil
+local _0_0
 do
   local name_0_ = "conjure.aniseed.nvim.util"
-  local module_0_ = nil
+  local module_0_
   do
     local x_0_ = package.loaded[name_0_]
     if ("table" == type(x_0_)) then
@@ -34,11 +34,11 @@ local nvim = _local_0_[1]
 local _2amodule_2a = _0_0
 local _2amodule_name_2a = "conjure.aniseed.nvim.util"
 do local _ = ({nil, _0_0, {{}, nil, nil, nil}})[2] end
-local normal = nil
+local normal
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function normal0(keys)
       return nvim.ex.silent(("exe \"normal! " .. keys .. "\""))
     end
@@ -50,11 +50,11 @@ do
   t_0_["normal"] = v_0_
   normal = v_0_
 end
-local fn_bridge = nil
+local fn_bridge
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function fn_bridge0(viml_name, mod, lua_name, opts)
       local _let_0_ = (opts or {})
       local range = _let_0_["range"]
@@ -87,11 +87,11 @@ do
   t_0_["fn-bridge"] = v_0_
   fn_bridge = v_0_
 end
-local with_out_str = nil
+local with_out_str
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function with_out_str0(f)
       nvim.ex.redir("=> g:aniseed_nvim_util_out_str")
       do

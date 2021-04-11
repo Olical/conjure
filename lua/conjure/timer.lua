@@ -1,7 +1,7 @@
-local _0_0 = nil
+local _0_0
 do
   local name_0_ = "conjure.timer"
-  local module_0_ = nil
+  local module_0_
   do
     local x_0_ = package.loaded[name_0_]
     if ("table" == type(x_0_)) then
@@ -35,11 +35,11 @@ local nvim = _local_0_[2]
 local _2amodule_2a = _0_0
 local _2amodule_name_2a = "conjure.timer"
 do local _ = ({nil, _0_0, {{}, nil, nil, nil}})[2] end
-local defer = nil
+local defer
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function defer0(f, ms)
       local t = vim.loop.new_timer()
       t:start(ms, 0, vim.schedule_wrap(f))
@@ -53,11 +53,11 @@ do
   t_0_["defer"] = v_0_
   defer = v_0_
 end
-local destroy = nil
+local destroy
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function destroy0(t)
       if t then
         t:stop()

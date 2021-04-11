@@ -1,7 +1,7 @@
-local _0_0 = nil
+local _0_0
 do
   local name_0_ = "conjure.aniseed.string"
-  local module_0_ = nil
+  local module_0_
   do
     local x_0_ = package.loaded[name_0_]
     if ("table" == type(x_0_)) then
@@ -34,11 +34,11 @@ local a = _local_0_[1]
 local _2amodule_2a = _0_0
 local _2amodule_name_2a = "conjure.aniseed.string"
 do local _ = ({nil, _0_0, {{}, nil, nil, nil}})[2] end
-local join = nil
+local join
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function join0(...)
       local args = {...}
       local function _2_(...)
@@ -56,7 +56,7 @@ do
       if (len > 0) then
         for i = 1, len do
           local x = xs[i]
-          local _3_0 = nil
+          local _3_0
           if ("string" == type(x)) then
             _3_0 = x
           elseif (nil == x) then
@@ -80,11 +80,11 @@ do
   t_0_["join"] = v_0_
   join = v_0_
 end
-local split = nil
+local split
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function split0(s, pat)
       local done_3f = false
       local acc = {}
@@ -109,11 +109,11 @@ do
   t_0_["split"] = v_0_
   split = v_0_
 end
-local blank_3f = nil
+local blank_3f
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function blank_3f0(s)
       return (a["empty?"](s) or not string.find(s, "[^%s]"))
     end
@@ -125,11 +125,11 @@ do
   t_0_["blank?"] = v_0_
   blank_3f = v_0_
 end
-local triml = nil
+local triml
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function triml0(s)
       return string.gsub(s, "^%s*(.-)", "%1")
     end
@@ -141,11 +141,11 @@ do
   t_0_["triml"] = v_0_
   triml = v_0_
 end
-local trimr = nil
+local trimr
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function trimr0(s)
       return string.gsub(s, "(.-)%s*$", "%1")
     end
@@ -157,11 +157,11 @@ do
   t_0_["trimr"] = v_0_
   trimr = v_0_
 end
-local trim = nil
+local trim
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function trim0(s)
       return string.gsub(s, "^%s*(.-)%s*$", "%1")
     end

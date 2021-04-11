@@ -1,7 +1,7 @@
-local _0_0 = nil
+local _0_0
 do
   local name_0_ = "conjure.log"
-  local module_0_ = nil
+  local module_0_
   do
     local x_0_ = package.loaded[name_0_]
     if ("table" == type(x_0_)) then
@@ -44,16 +44,16 @@ local text = _local_0_[9]
 local _2amodule_2a = _0_0
 local _2amodule_name_2a = "conjure.log"
 do local _ = ({nil, _0_0, {{}, nil, nil, nil}})[2] end
-local state = nil
+local state
 do
   local v_0_ = (((_0_0)["aniseed/locals"]).state or {hud = {id = nil, timer = nil}})
   local t_0_ = (_0_0)["aniseed/locals"]
   t_0_["state"] = v_0_
   state = v_0_
 end
-local _break = nil
+local _break
 do
-  local v_0_ = nil
+  local v_0_
   local function _break0()
     return (client.get("comment-prefix") .. string.rep("-", config["get-in"]({"log", "break_length"})))
   end
@@ -62,9 +62,9 @@ do
   t_0_["break"] = v_0_
   _break = v_0_
 end
-local state_key_header = nil
+local state_key_header
 do
-  local v_0_ = nil
+  local v_0_
   local function state_key_header0()
     return (client.get("comment-prefix") .. "State: " .. client["state-key"]())
   end
@@ -73,9 +73,9 @@ do
   t_0_["state-key-header"] = v_0_
   state_key_header = v_0_
 end
-local log_buf_name = nil
+local log_buf_name
 do
-  local v_0_ = nil
+  local v_0_
   local function log_buf_name0()
     return ("conjure-log-" .. nvim.fn.getpid() .. client.get("buf-suffix"))
   end
@@ -84,11 +84,11 @@ do
   t_0_["log-buf-name"] = v_0_
   log_buf_name = v_0_
 end
-local log_buf_3f = nil
+local log_buf_3f
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function log_buf_3f0(name)
       return name:match((log_buf_name() .. "$"))
     end
@@ -100,9 +100,9 @@ do
   t_0_["log-buf?"] = v_0_
   log_buf_3f = v_0_
 end
-local on_new_log_buf = nil
+local on_new_log_buf
 do
-  local v_0_ = nil
+  local v_0_
   local function on_new_log_buf0(buf)
     return nvim.buf_set_lines(buf, 0, -1, false, {(client.get("comment-prefix") .. "Sponsored by @" .. a.get(sponsors, a.inc(math.floor(a.rand(a.dec(a.count(sponsors)))))) .. " \226\157\164")})
   end
@@ -111,9 +111,9 @@ do
   t_0_["on-new-log-buf"] = v_0_
   on_new_log_buf = v_0_
 end
-local upsert_buf = nil
+local upsert_buf
 do
-  local v_0_ = nil
+  local v_0_
   local function upsert_buf0()
     return buffer["upsert-hidden"](log_buf_name(), on_new_log_buf)
   end
@@ -122,11 +122,11 @@ do
   t_0_["upsert-buf"] = v_0_
   upsert_buf = v_0_
 end
-local clear_close_hud_passive_timer = nil
+local clear_close_hud_passive_timer
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function clear_close_hud_passive_timer0()
       return a["update-in"](state, {"hud", "timer"}, timer.destroy)
     end
@@ -138,11 +138,11 @@ do
   t_0_["clear-close-hud-passive-timer"] = v_0_
   clear_close_hud_passive_timer = v_0_
 end
-local close_hud = nil
+local close_hud
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function close_hud0()
       clear_close_hud_passive_timer()
       if state.hud.id then
@@ -159,11 +159,11 @@ do
   t_0_["close-hud"] = v_0_
   close_hud = v_0_
 end
-local close_hud_passive = nil
+local close_hud_passive
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function close_hud_passive0()
       if state.hud.id then
         local original_timer_id = state.hud["timer-id"]
@@ -185,27 +185,27 @@ do
   t_0_["close-hud-passive"] = v_0_
   close_hud_passive = v_0_
 end
-local break_lines = nil
+local break_lines
 do
-  local v_0_ = nil
+  local v_0_
   local function break_lines0(buf)
     local break_str = _break()
-    local function _2_(_3_0)
-      local _arg_0_ = _3_0
+    local function _3_(_2_0)
+      local _arg_0_ = _2_0
       local n = _arg_0_[1]
       local s = _arg_0_[2]
       return (s == break_str)
     end
-    return a.map(a.first, a.filter(_2_, a["kv-pairs"](nvim.buf_get_lines(buf, 0, -1, false))))
+    return a.map(a.first, a.filter(_3_, a["kv-pairs"](nvim.buf_get_lines(buf, 0, -1, false))))
   end
   v_0_ = break_lines0
   local t_0_ = (_0_0)["aniseed/locals"]
   t_0_["break-lines"] = v_0_
   break_lines = v_0_
 end
-local set_win_opts_21 = nil
+local set_win_opts_21
 do
-  local v_0_ = nil
+  local v_0_
   local function set_win_opts_210(win)
     local function _2_()
       if config["get-in"]({"log", "wrap"}) then
@@ -224,9 +224,9 @@ do
   t_0_["set-win-opts!"] = v_0_
   set_win_opts_21 = v_0_
 end
-local in_box_3f = nil
+local in_box_3f
 do
-  local v_0_ = nil
+  local v_0_
   local function in_box_3f0(box, pos)
     return ((pos.x >= box.x1) and (pos.x <= box.x2) and (pos.y >= box.y1) and (pos.y <= box.y2))
   end
@@ -235,9 +235,9 @@ do
   t_0_["in-box?"] = v_0_
   in_box_3f = v_0_
 end
-local flip_anchor = nil
+local flip_anchor
 do
-  local v_0_ = nil
+  local v_0_
   local function flip_anchor0(anchor, n)
     local chars = {anchor:sub(1, 1), anchor:sub(2)}
     local flip = {E = "W", N = "S", S = "N", W = "E"}
@@ -251,9 +251,9 @@ do
   t_0_["flip-anchor"] = v_0_
   flip_anchor = v_0_
 end
-local pad_box = nil
+local pad_box
 do
-  local v_0_ = nil
+  local v_0_
   local function pad_box0(box, padding)
     local function _2_(_241)
       return (_241 - padding.x)
@@ -274,16 +274,16 @@ do
   t_0_["pad-box"] = v_0_
   pad_box = v_0_
 end
-local hud_window_pos = nil
+local hud_window_pos
 do
-  local v_0_ = nil
+  local v_0_
   local function hud_window_pos0(anchor, size, rec_3f)
     local north = 0
     local west = 0
     local south = (editor.height() - 2)
     local east = editor.width()
     local padding_percent = config["get-in"]({"log", "hud", "overlap_padding"})
-    local pos = nil
+    local pos
     local _2_
     if ("NE" == anchor) then
       _2_ = {box = {x1 = (east - size.width), x2 = east, y1 = north, y2 = (north + size.height)}, col = east, row = north}
@@ -316,9 +316,9 @@ do
   t_0_["hud-window-pos"] = v_0_
   hud_window_pos = v_0_
 end
-local display_hud = nil
+local display_hud
 do
-  local v_0_ = nil
+  local v_0_
   local function display_hud0()
     if config["get-in"]({"log", "hud", "enabled"}) then
       clear_close_hud_passive_timer()
@@ -350,9 +350,9 @@ do
   t_0_["display-hud"] = v_0_
   display_hud = v_0_
 end
-local win_visible_3f = nil
+local win_visible_3f
 do
-  local v_0_ = nil
+  local v_0_
   local function win_visible_3f0(win)
     return (nvim.fn.tabpagenr() == a.first(nvim.fn.win_id2tabwin(win)))
   end
@@ -361,9 +361,9 @@ do
   t_0_["win-visible?"] = v_0_
   win_visible_3f = v_0_
 end
-local with_buf_wins = nil
+local with_buf_wins
 do
-  local v_0_ = nil
+  local v_0_
   local function with_buf_wins0(buf, f)
     local function _2_(win)
       if (buf == nvim.win_get_buf(win)) then
@@ -377,9 +377,9 @@ do
   t_0_["with-buf-wins"] = v_0_
   with_buf_wins = v_0_
 end
-local win_botline = nil
+local win_botline
 do
-  local v_0_ = nil
+  local v_0_
   local function win_botline0(win)
     return a.get(a.first(nvim.fn.getwininfo(win)), "botline")
   end
@@ -388,14 +388,14 @@ do
   t_0_["win-botline"] = v_0_
   win_botline = v_0_
 end
-local trim = nil
+local trim
 do
-  local v_0_ = nil
+  local v_0_
   local function trim0(buf)
     local line_count = nvim.buf_line_count(buf)
     if (line_count > config["get-in"]({"log", "trim", "at"})) then
       local target_line_count = (line_count - config["get-in"]({"log", "trim", "to"}))
-      local break_line = nil
+      local break_line
       local function _2_(line)
         if (line >= target_line_count) then
           return line
@@ -421,11 +421,11 @@ do
   t_0_["trim"] = v_0_
   trim = v_0_
 end
-local last_line = nil
+local last_line
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function last_line0(buf, extra_offset)
       return a.first(nvim.buf_get_lines((buf or upsert_buf()), (-2 + (extra_offset or 0)), -1, false))
     end
@@ -437,23 +437,23 @@ do
   t_0_["last-line"] = v_0_
   last_line = v_0_
 end
-local append = nil
+local append
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function append0(lines, opts)
       local line_count = a.count(lines)
       if (line_count > 0) then
         local visible_scrolling_log_3f = false
         local buf = upsert_buf()
         local join_first_3f = a.get(opts, "join-first?")
-        local lines0 = nil
+        local lines0
         local function _2_(s)
           return s:gsub("\n", "\226\134\181")
         end
         lines0 = a.map(_2_, lines)
-        local lines1 = nil
+        local lines1
         if (line_count <= config["get-in"]({"log", "strip_ansi_escape_sequences_line_limit"})) then
           lines1 = a.map(text["strip-ansi-escape-sequences"], lines0)
         else
@@ -461,14 +461,14 @@ do
         end
         local comment_prefix = client.get("comment-prefix")
         local fold_marker_end = str.join({comment_prefix, config["get-in"]({"log", "fold", "marker", "end"})})
-        local lines2 = nil
+        local lines2
         if (not a.get(opts, "break?") and not join_first_3f and config["get-in"]({"log", "fold", "enabled"}) and (a.count(lines1) >= config["get-in"]({"log", "fold", "lines"}))) then
           lines2 = a.concat({str.join({comment_prefix, config["get-in"]({"log", "fold", "marker", "start"}), " ", text["left-sample"](str.join("\n", lines1), editor["percent-width"](config["get-in"]({"preview", "sample_limit"})))})}, lines1, {fold_marker_end})
         else
           lines2 = lines1
         end
         local last_fold_3f = (fold_marker_end == last_line(buf))
-        local lines3 = nil
+        local lines3
         if a.get(opts, "break?") then
           local _5_
           if client["multiple-states?"]() then
@@ -542,9 +542,9 @@ do
   t_0_["append"] = v_0_
   append = v_0_
 end
-local create_win = nil
+local create_win
 do
-  local v_0_ = nil
+  local v_0_
   local function create_win0(cmd)
     local buf = upsert_buf()
     local _2_
@@ -563,11 +563,11 @@ do
   t_0_["create-win"] = v_0_
   create_win = v_0_
 end
-local split = nil
+local split
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function split0()
       return create_win("split")
     end
@@ -579,11 +579,11 @@ do
   t_0_["split"] = v_0_
   split = v_0_
 end
-local vsplit = nil
+local vsplit
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function vsplit0()
       return create_win("vsplit")
     end
@@ -595,11 +595,11 @@ do
   t_0_["vsplit"] = v_0_
   vsplit = v_0_
 end
-local tab = nil
+local tab
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function tab0()
       return create_win("tabnew")
     end
@@ -611,11 +611,11 @@ do
   t_0_["tab"] = v_0_
   tab = v_0_
 end
-local close_visible = nil
+local close_visible
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function close_visible0()
       local buf = upsert_buf()
       close_hud()
@@ -635,11 +635,11 @@ do
   t_0_["close-visible"] = v_0_
   close_visible = v_0_
 end
-local dbg = nil
+local dbg
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function dbg0(desc, ...)
       if config["get-in"]({"debug"}) then
         append(a.concat({(client.get("comment-prefix") .. "debug: " .. desc)}, text["split-lines"](a["pr-str"](...))))
@@ -654,11 +654,11 @@ do
   t_0_["dbg"] = v_0_
   dbg = v_0_
 end
-local reset_soft = nil
+local reset_soft
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function reset_soft0()
       return on_new_log_buf(upsert_buf())
     end
@@ -670,11 +670,11 @@ do
   t_0_["reset-soft"] = v_0_
   reset_soft = v_0_
 end
-local reset_hard = nil
+local reset_hard
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function reset_hard0()
       return nvim.ex.bwipeout_(upsert_buf())
     end

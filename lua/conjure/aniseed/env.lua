@@ -1,7 +1,7 @@
-local _0_0 = nil
+local _0_0
 do
   local name_0_ = "conjure.aniseed.env"
-  local module_0_ = nil
+  local module_0_
   do
     local x_0_ = package.loaded[name_0_]
     if ("table" == type(x_0_)) then
@@ -34,23 +34,23 @@ local nvim = _local_0_[1]
 local _2amodule_2a = _0_0
 local _2amodule_name_2a = "conjure.aniseed.env"
 do local _ = ({nil, _0_0, {{}, nil, nil, nil}})[2] end
-local config_dir = nil
+local config_dir
 do
   local v_0_ = vim.api.nvim_call_function("stdpath", {"config"})
   local t_0_ = (_0_0)["aniseed/locals"]
   t_0_["config-dir"] = v_0_
   config_dir = v_0_
 end
-local state = nil
+local state
 do
   local v_0_ = (((_0_0)["aniseed/locals"]).state or {["path-added?"] = false})
   local t_0_ = (_0_0)["aniseed/locals"]
   t_0_["state"] = v_0_
   state = v_0_
 end
-local quiet_require = nil
+local quiet_require
 do
-  local v_0_ = nil
+  local v_0_
   local function quiet_require0(m)
     local ok_3f, err = nil, nil
     local function _2_()
@@ -66,13 +66,13 @@ do
   t_0_["quiet-require"] = v_0_
   quiet_require = v_0_
 end
-local init = nil
+local init
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function init0(opts)
-      local opts0 = nil
+      local opts0
       if ("table" == type(opts)) then
         opts0 = opts
       else

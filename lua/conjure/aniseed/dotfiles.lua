@@ -1,7 +1,7 @@
-local _0_0 = nil
+local _0_0
 do
   local name_0_ = "conjure.aniseed.dotfiles"
-  local module_0_ = nil
+  local module_0_
   do
     local x_0_ = package.loaded[name_0_]
     if ("table" == type(x_0_)) then
@@ -37,7 +37,7 @@ local _2amodule_2a = _0_0
 local _2amodule_name_2a = "conjure.aniseed.dotfiles"
 do local _ = ({nil, _0_0, {{}, nil, nil, nil}})[2] end
 nvim.out_write("Warning: aniseed.dotfiles is deprecated, see :help aniseed-dotfiles\n")
-local config_dir = nil
+local config_dir
 do
   local v_0_ = nvim.fn.stdpath("config")
   local t_0_ = (_0_0)["aniseed/locals"]

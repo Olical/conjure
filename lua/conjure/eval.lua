@@ -1,7 +1,7 @@
-local _0_0 = nil
+local _0_0
 do
   local name_0_ = "conjure.eval"
-  local module_0_ = nil
+  local module_0_
   do
     local x_0_ = package.loaded[name_0_]
     if ("table" == type(x_0_)) then
@@ -48,9 +48,9 @@ local inline = _local_0_[9]
 local _2amodule_2a = _0_0
 local _2amodule_name_2a = "conjure.eval"
 do local _ = ({nil, _0_0, {{}, nil, nil, nil}})[2] end
-local preview = nil
+local preview
 do
-  local v_0_ = nil
+  local v_0_
   local function preview0(opts)
     local sample_limit = editor["percent-width"](config["get-in"]({"preview", "sample_limit"}))
     local function _2_()
@@ -67,9 +67,9 @@ do
   t_0_["preview"] = v_0_
   preview = v_0_
 end
-local display_request = nil
+local display_request
 do
-  local v_0_ = nil
+  local v_0_
   local function display_request0(opts)
     return log.append({opts.preview}, a.merge(opts, {["break?"] = true}))
   end
@@ -78,9 +78,9 @@ do
   t_0_["display-request"] = v_0_
   display_request = v_0_
 end
-local highlight_range = nil
+local highlight_range
 do
-  local v_0_ = nil
+  local v_0_
   local function highlight_range0(range)
     if (config["get-in"]({"highlight", "enabled"}) and vim.highlight) then
       local bufnr = (range.bufnr or nvim.buf.nr())
@@ -102,9 +102,9 @@ do
   t_0_["highlight-range"] = v_0_
   highlight_range = v_0_
 end
-local with_last_result_hook = nil
+local with_last_result_hook
 do
-  local v_0_ = nil
+  local v_0_
   local function with_last_result_hook0(opts)
     local buf = nvim.win_get_buf(0)
     local line = a.dec(a.first(nvim.win_get_cursor(0)))
@@ -127,11 +127,11 @@ do
   t_0_["with-last-result-hook"] = v_0_
   with_last_result_hook = v_0_
 end
-local file = nil
+local file
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function file0()
       event.emit("eval", "file")
       local opts = {["file-path"] = fs["localise-path"](extract["file-path"]()), action = "eval", origin = "file"}
@@ -147,9 +147,9 @@ do
   t_0_["file"] = v_0_
   file = v_0_
 end
-local assoc_context = nil
+local assoc_context
 do
-  local v_0_ = nil
+  local v_0_
   local function assoc_context0(opts)
     opts.context = (nvim.b["conjure#context"] or extract.context())
     return opts
@@ -159,9 +159,9 @@ do
   t_0_["assoc-context"] = v_0_
   assoc_context = v_0_
 end
-local client_exec_fn = nil
+local client_exec_fn
 do
-  local v_0_ = nil
+  local v_0_
   local function client_exec_fn0(action, f_name, base_opts)
     local function _2_(opts)
       local opts0 = a.merge(opts, base_opts, {["file-path"] = extract["file-path"](), action = action})
@@ -179,11 +179,11 @@ do
   t_0_["client-exec-fn"] = v_0_
   client_exec_fn = v_0_
 end
-local eval_str = nil
+local eval_str
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function eval_str0(opts)
       highlight_range(opts.range)
       event.emit("eval", "str")
@@ -205,11 +205,11 @@ do
   t_0_["eval-str"] = v_0_
   eval_str = v_0_
 end
-local wrap_emit = nil
+local wrap_emit
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function wrap_emit0(name, f)
       local function _2_(...)
         event.emit(name)
@@ -225,25 +225,25 @@ do
   t_0_["wrap-emit"] = v_0_
   wrap_emit = v_0_
 end
-local doc_str = nil
+local doc_str
 do
   local v_0_ = wrap_emit("doc", client_exec_fn("doc", "doc-str"))
   local t_0_ = (_0_0)["aniseed/locals"]
   t_0_["doc-str"] = v_0_
   doc_str = v_0_
 end
-local def_str = nil
+local def_str
 do
   local v_0_ = wrap_emit("def", client_exec_fn("def", "def-str", {["suppress-hud?"] = true}))
   local t_0_ = (_0_0)["aniseed/locals"]
   t_0_["def-str"] = v_0_
   def_str = v_0_
 end
-local current_form = nil
+local current_form
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function current_form0(extra_opts)
       local form = extract.form({})
       if form then
@@ -262,11 +262,11 @@ do
   t_0_["current-form"] = v_0_
   current_form = v_0_
 end
-local replace_form = nil
+local replace_form
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function replace_form0()
       local buf = nvim.win_get_buf(0)
       local win = nvim.tabpage_get_win(0)
@@ -291,11 +291,11 @@ do
   t_0_["replace-form"] = v_0_
   replace_form = v_0_
 end
-local root_form = nil
+local root_form
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function root_form0()
       local form = extract.form({["root?"] = true})
       if form then
@@ -313,11 +313,11 @@ do
   t_0_["root-form"] = v_0_
   root_form = v_0_
 end
-local marked_form = nil
+local marked_form
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function marked_form0(mark)
       local comment_prefix = client.get("comment-prefix")
       local mark0 = (mark or extract["prompt-char"]())
@@ -342,9 +342,9 @@ do
   t_0_["marked-form"] = v_0_
   marked_form = v_0_
 end
-local insert_result_comment = nil
+local insert_result_comment
 do
-  local v_0_ = nil
+  local v_0_
   local function insert_result_comment0(tag, input)
     local buf = nvim.win_get_buf(0)
     local comment_prefix = (config["get-in"]({"eval", "comment_prefix"}) or client.get("comment-prefix"))
@@ -364,11 +364,11 @@ do
   t_0_["insert-result-comment"] = v_0_
   insert_result_comment = v_0_
 end
-local comment_current_form = nil
+local comment_current_form
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function comment_current_form0()
       return insert_result_comment("current-form", extract.form({}))
     end
@@ -380,11 +380,11 @@ do
   t_0_["comment-current-form"] = v_0_
   comment_current_form = v_0_
 end
-local comment_root_form = nil
+local comment_root_form
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function comment_root_form0()
       return insert_result_comment("root-form", extract.form({["root?"] = true}))
     end
@@ -396,11 +396,11 @@ do
   t_0_["comment-root-form"] = v_0_
   comment_root_form = v_0_
 end
-local comment_word = nil
+local comment_word
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function comment_word0()
       return insert_result_comment("word", extract.word())
     end
@@ -412,11 +412,11 @@ do
   t_0_["comment-word"] = v_0_
   comment_word = v_0_
 end
-local word = nil
+local word
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function word0()
       local _let_0_ = extract.word()
       local content = _let_0_["content"]
@@ -433,11 +433,11 @@ do
   t_0_["word"] = v_0_
   word = v_0_
 end
-local doc_word = nil
+local doc_word
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function doc_word0()
       local _let_0_ = extract.word()
       local content = _let_0_["content"]
@@ -454,11 +454,11 @@ do
   t_0_["doc-word"] = v_0_
   doc_word = v_0_
 end
-local def_word = nil
+local def_word
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function def_word0()
       local _let_0_ = extract.word()
       local content = _let_0_["content"]
@@ -475,11 +475,11 @@ do
   t_0_["def-word"] = v_0_
   def_word = v_0_
 end
-local buf = nil
+local buf
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function buf0()
       local _let_0_ = extract.buf()
       local content = _let_0_["content"]
@@ -494,11 +494,11 @@ do
   t_0_["buf"] = v_0_
   buf = v_0_
 end
-local command = nil
+local command
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function command0(code)
       return eval_str({code = code, origin = "command"})
     end
@@ -510,11 +510,11 @@ do
   t_0_["command"] = v_0_
   command = v_0_
 end
-local range = nil
+local range
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function range0(start, _end)
       local _let_0_ = extract.range(start, _end)
       local content = _let_0_["content"]
@@ -529,11 +529,11 @@ do
   t_0_["range"] = v_0_
   range = v_0_
 end
-local selection = nil
+local selection
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function selection0(kind)
       local _let_0_ = extract.selection({["visual?"] = not kind, kind = (kind or nvim.fn.visualmode())})
       local content = _let_0_["content"]
@@ -548,9 +548,9 @@ do
   t_0_["selection"] = v_0_
   selection = v_0_
 end
-local wrap_completion_result = nil
+local wrap_completion_result
 do
-  local v_0_ = nil
+  local v_0_
   local function wrap_completion_result0(result)
     if a["string?"](result) then
       return {word = result}
@@ -563,11 +563,11 @@ do
   t_0_["wrap-completion-result"] = v_0_
   wrap_completion_result = v_0_
 end
-local completions = nil
+local completions
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function completions0(prefix, cb)
       local function cb_wrap(results)
         local function _3_()
@@ -594,11 +594,11 @@ do
   t_0_["completions"] = v_0_
   completions = v_0_
 end
-local completions_promise = nil
+local completions_promise
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function completions_promise0(prefix)
       local p = promise.new()
       completions(prefix, promise["deliver-fn"](p))
@@ -612,11 +612,11 @@ do
   t_0_["completions-promise"] = v_0_
   completions_promise = v_0_
 end
-local completions_sync = nil
+local completions_sync
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function completions_sync0(prefix)
       local p = completions_promise(prefix)
       promise.await(p)

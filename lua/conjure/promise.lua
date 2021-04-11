@@ -1,7 +1,7 @@
-local _0_0 = nil
+local _0_0
 do
   local name_0_ = "conjure.promise"
-  local module_0_ = nil
+  local module_0_
   do
     local x_0_ = package.loaded[name_0_]
     if ("table" == type(x_0_)) then
@@ -36,18 +36,18 @@ local uuid = _local_0_[3]
 local _2amodule_2a = _0_0
 local _2amodule_name_2a = "conjure.promise"
 do local _ = ({nil, _0_0, {{}, nil, nil, nil}})[2] end
-local state = nil
+local state
 do
   local v_0_ = (((_0_0)["aniseed/locals"]).state or {})
   local t_0_ = (_0_0)["aniseed/locals"]
   t_0_["state"] = v_0_
   state = v_0_
 end
-local new = nil
+local new
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function new0()
       local id = uuid.v4()
       a.assoc(state, id, {["done?"] = false, id = id, val = nil})
@@ -61,11 +61,11 @@ do
   t_0_["new"] = v_0_
   new = v_0_
 end
-local done_3f = nil
+local done_3f
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function done_3f0(id)
       return a["get-in"](state, {id, "done?"})
     end
@@ -77,11 +77,11 @@ do
   t_0_["done?"] = v_0_
   done_3f = v_0_
 end
-local deliver = nil
+local deliver
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function deliver0(id, val)
       if (false == done_3f(id)) then
         a["assoc-in"](state, {id, "val"}, val)
@@ -97,11 +97,11 @@ do
   t_0_["deliver"] = v_0_
   deliver = v_0_
 end
-local deliver_fn = nil
+local deliver_fn
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function deliver_fn0(id)
       local function _2_(_241)
         return deliver(id, _241)
@@ -116,11 +116,11 @@ do
   t_0_["deliver-fn"] = v_0_
   deliver_fn = v_0_
 end
-local close = nil
+local close
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function close0(id)
       local val = a["get-in"](state, {id, "val"})
       a.assoc(state, id, nil)
@@ -134,11 +134,11 @@ do
   t_0_["close"] = v_0_
   close = v_0_
 end
-local await = nil
+local await
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function await0(id, opts)
       return nvim.fn.wait(a.get(opts, "timeout", 10000), ("luaeval(\"require('conjure.promise')['done?']('" .. id .. "')\")"), a.get(opts, "interval", 50))
     end

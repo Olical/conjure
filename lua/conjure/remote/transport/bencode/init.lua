@@ -1,7 +1,7 @@
-local _0_0 = nil
+local _0_0
 do
   local name_0_ = "conjure.remote.transport.bencode"
-  local module_0_ = nil
+  local module_0_
   do
     local x_0_ = package.loaded[name_0_]
     if ("table" == type(x_0_)) then
@@ -35,11 +35,11 @@ local impl = _local_0_[2]
 local _2amodule_2a = _0_0
 local _2amodule_name_2a = "conjure.remote.transport.bencode"
 do local _ = ({nil, _0_0, {{}, nil, nil, nil}})[2] end
-local new = nil
+local new
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function new0()
       return {data = ""}
     end
@@ -51,11 +51,11 @@ do
   t_0_["new"] = v_0_
   new = v_0_
 end
-local decode_all = nil
+local decode_all
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function decode_all0(bs, part)
       local progress = 1
       local end_3f = false
@@ -81,11 +81,11 @@ do
   t_0_["decode-all"] = v_0_
   decode_all = v_0_
 end
-local encode = nil
+local encode
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function encode0(...)
       return impl.encode(...)
     end

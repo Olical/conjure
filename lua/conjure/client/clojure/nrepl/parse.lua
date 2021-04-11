@@ -1,7 +1,7 @@
-local _0_0 = nil
+local _0_0
 do
   local name_0_ = "conjure.client.clojure.nrepl.parse"
-  local module_0_ = nil
+  local module_0_
   do
     local x_0_ = package.loaded[name_0_]
     if ("table" == type(x_0_)) then
@@ -33,11 +33,11 @@ local _local_0_ = _1_(...)
 local _2amodule_2a = _0_0
 local _2amodule_name_2a = "conjure.client.clojure.nrepl.parse"
 do local _ = ({nil, _0_0, {{}, nil, nil, nil}})[2] end
-local strip_meta = nil
+local strip_meta
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function strip_meta0(s)
       local _2_0 = s
       if _2_0 then

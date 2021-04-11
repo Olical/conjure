@@ -1,7 +1,7 @@
-local _0_0 = nil
+local _0_0
 do
   local name_0_ = "conjure.net"
-  local module_0_ = nil
+  local module_0_
   do
     local x_0_ = package.loaded[name_0_]
     if ("table" == type(x_0_)) then
@@ -36,11 +36,11 @@ local nvim = _local_0_[3]
 local _2amodule_2a = _0_0
 local _2amodule_name_2a = "conjure.net"
 do local _ = ({nil, _0_0, {{nil}, nil, nil, nil}})[2] end
-local resolve = nil
+local resolve
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function resolve0(host)
       if (host == "::") then
         return host
@@ -59,16 +59,16 @@ do
   t_0_["resolve"] = v_0_
   resolve = v_0_
 end
-local state = nil
+local state
 do
   local v_0_ = (((_0_0)["aniseed/locals"]).state or {["sock-drawer"] = {}})
   local t_0_ = (_0_0)["aniseed/locals"]
   t_0_["state"] = v_0_
   state = v_0_
 end
-local destroy_sock = nil
+local destroy_sock
 do
-  local v_0_ = nil
+  local v_0_
   local function destroy_sock0(sock)
     if not sock:is_closing() then
       sock:read_stop()
@@ -86,11 +86,11 @@ do
   t_0_["destroy-sock"] = v_0_
   destroy_sock = v_0_
 end
-local connect = nil
+local connect
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function connect0(_2_0)
       local _arg_0_ = _2_0
       local cb = _arg_0_["cb"]
@@ -113,11 +113,11 @@ do
   t_0_["connect"] = v_0_
   connect = v_0_
 end
-local destroy_all_socks = nil
+local destroy_all_socks
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function destroy_all_socks0()
       return a["run!"](destroy_sock, state["sock-drawer"])
     end

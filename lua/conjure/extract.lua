@@ -1,7 +1,7 @@
-local _0_0 = nil
+local _0_0
 do
   local name_0_ = "conjure.extract"
-  local module_0_ = nil
+  local module_0_
   do
     local x_0_ = package.loaded[name_0_]
     if ("table" == type(x_0_)) then
@@ -40,9 +40,9 @@ local ts = _local_0_[7]
 local _2amodule_2a = _0_0
 local _2amodule_name_2a = "conjure.extract"
 do local _ = ({nil, _0_0, {{}, nil, nil, nil}})[2] end
-local read_range = nil
+local read_range
 do
-  local v_0_ = nil
+  local v_0_
   local function read_range0(_2_0, _3_0)
     local _arg_0_ = _2_0
     local srow = _arg_0_[1]
@@ -64,9 +64,9 @@ do
   t_0_["read-range"] = v_0_
   read_range = v_0_
 end
-local current_char = nil
+local current_char
 do
-  local v_0_ = nil
+  local v_0_
   local function current_char0()
     local _let_0_ = nvim.win_get_cursor(0)
     local row = _let_0_[1]
@@ -81,9 +81,9 @@ do
   t_0_["current-char"] = v_0_
   current_char = v_0_
 end
-local nil_pos_3f = nil
+local nil_pos_3f
 do
-  local v_0_ = nil
+  local v_0_
   local function nil_pos_3f0(pos)
     return (not pos or (0 == unpack(pos)))
   end
@@ -92,11 +92,11 @@ do
   t_0_["nil-pos?"] = v_0_
   nil_pos_3f = v_0_
 end
-local skip_match_3f = nil
+local skip_match_3f
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function skip_match_3f0()
       local _let_0_ = nvim.win_get_cursor(0)
       local row = _let_0_[1]
@@ -121,9 +121,9 @@ do
   t_0_["skip-match?"] = v_0_
   skip_match_3f = v_0_
 end
-local form_2a = nil
+local form_2a
 do
-  local v_0_ = nil
+  local v_0_
   local function form_2a0(_2_0, _3_0)
     local _arg_0_ = _2_0
     local start_char = _arg_0_[1]
@@ -131,7 +131,7 @@ do
     local escape_3f = _arg_0_[3]
     local _arg_1_ = _3_0
     local root_3f = _arg_1_["root?"]
-    local flags = nil
+    local flags
     local function _4_()
       if root_3f then
         return "r"
@@ -142,19 +142,19 @@ do
     flags = ("Wnz" .. _4_())
     local cursor_char = current_char()
     local skip_match_3f_viml = "luaeval(\"require('conjure.extract')['skip-match?']()\")"
-    local safe_start_char = nil
+    local safe_start_char
     if escape_3f then
       safe_start_char = ("\\" .. start_char)
     else
       safe_start_char = start_char
     end
-    local safe_end_char = nil
+    local safe_end_char
     if escape_3f then
       safe_end_char = ("\\" .. end_char)
     else
       safe_end_char = end_char
     end
-    local start = nil
+    local start
     local function _7_()
       if (cursor_char == start_char) then
         return "c"
@@ -163,7 +163,7 @@ do
       end
     end
     start = nvim.fn.searchpairpos(safe_start_char, "", safe_end_char, (flags .. "b" .. _7_()), skip_match_3f_viml)
-    local _end = nil
+    local _end
     local function _8_()
       if (cursor_char == end_char) then
         return "c"
@@ -181,9 +181,9 @@ do
   t_0_["form*"] = v_0_
   form_2a = v_0_
 end
-local range_distance = nil
+local range_distance
 do
-  local v_0_ = nil
+  local v_0_
   local function range_distance0(range)
     local _let_0_ = range.start
     local sl = _let_0_[1]
@@ -198,9 +198,9 @@ do
   t_0_["range-distance"] = v_0_
   range_distance = v_0_
 end
-local distance_gt = nil
+local distance_gt
 do
-  local v_0_ = nil
+  local v_0_
   local function distance_gt0(_2_0, _3_0)
     local _arg_0_ = _2_0
     local al = _arg_0_[1]
@@ -215,14 +215,14 @@ do
   t_0_["distance-gt"] = v_0_
   distance_gt = v_0_
 end
-local form = nil
+local form
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function form0(opts)
       if ts["enabled?"]() then
-        local node = nil
+        local node
         if opts["root?"] then
           node = ts["get-root"]()
         else
@@ -232,7 +232,7 @@ do
           return {content = ts["node->str"](node), range = ts.range(node)}
         end
       else
-        local forms = nil
+        local forms
         local function _2_(_241)
           return form_2a(_241, opts)
         end
@@ -256,11 +256,11 @@ do
   t_0_["form"] = v_0_
   form = v_0_
 end
-local word = nil
+local word
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function word0()
       return {content = nvim.fn.expand("<cword>"), range = {["end"] = nvim.win_get_cursor(0), start = nvim.win_get_cursor(0)}}
     end
@@ -272,11 +272,11 @@ do
   t_0_["word"] = v_0_
   word = v_0_
 end
-local file_path = nil
+local file_path
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function file_path0()
       return nvim.fn.expand("%:p")
     end
@@ -288,9 +288,9 @@ do
   t_0_["file-path"] = v_0_
   file_path = v_0_
 end
-local buf_last_line_length = nil
+local buf_last_line_length
 do
-  local v_0_ = nil
+  local v_0_
   local function buf_last_line_length0(buf)
     return a.count(a.first(nvim.buf_get_lines(buf, a.dec(nvim.buf_line_count(buf)), -1, false)))
   end
@@ -299,11 +299,11 @@ do
   t_0_["buf-last-line-length"] = v_0_
   buf_last_line_length = v_0_
 end
-local range = nil
+local range
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function range0(start, _end)
       return {content = str.join("\n", nvim.buf_get_lines(0, start, _end, false)), range = {["end"] = {_end, buf_last_line_length(0)}, start = {a.inc(start), 0}}}
     end
@@ -315,11 +315,11 @@ do
   t_0_["range"] = v_0_
   range = v_0_
 end
-local buf = nil
+local buf
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function buf0()
       return range(0, -1)
     end
@@ -331,9 +331,9 @@ do
   t_0_["buf"] = v_0_
   buf = v_0_
 end
-local getpos = nil
+local getpos
 do
-  local v_0_ = nil
+  local v_0_
   local function getpos0(expr)
     local _let_0_ = nvim.fn.getpos(expr)
     local _ = _let_0_[1]
@@ -347,11 +347,11 @@ do
   t_0_["getpos"] = v_0_
   getpos = v_0_
 end
-local selection = nil
+local selection
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function selection0(_2_0)
       local _arg_0_ = _2_0
       local kind = _arg_0_["kind"]
@@ -381,14 +381,14 @@ do
   t_0_["selection"] = v_0_
   selection = v_0_
 end
-local context = nil
+local context
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function context0()
       local pat = client.get("context-pattern")
-      local f = nil
+      local f
       if pat then
         local function _2_(_241)
           return string.match(_241, pat)
@@ -409,11 +409,11 @@ do
   t_0_["context"] = v_0_
   context = v_0_
 end
-local prompt = nil
+local prompt
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function prompt0(prefix)
       local ok_3f, val = nil, nil
       local function _2_()
@@ -432,11 +432,11 @@ do
   t_0_["prompt"] = v_0_
   prompt = v_0_
 end
-local prompt_char = nil
+local prompt_char
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function prompt_char0()
       return nvim.fn.nr2char(nvim.fn.getchar())
     end

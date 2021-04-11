@@ -1,7 +1,7 @@
-local _0_0 = nil
+local _0_0
 do
   local name_0_ = "conjure.dynamic"
-  local module_0_ = nil
+  local module_0_
   do
     local x_0_ = package.loaded[name_0_]
     if ("table" == type(x_0_)) then
@@ -34,16 +34,16 @@ local a = _local_0_[1]
 local _2amodule_2a = _0_0
 local _2amodule_name_2a = "conjure.dynamic"
 do local _ = ({nil, _0_0, {{}, nil, nil, nil}})[2] end
-local get_stack_key = nil
+local get_stack_key
 do
   local v_0_ = "conjure.dynamic/get-stack"
   local t_0_ = (_0_0)["aniseed/locals"]
   t_0_["get-stack-key"] = v_0_
   get_stack_key = v_0_
 end
-local assert_value_function_21 = nil
+local assert_value_function_21
 do
-  local v_0_ = nil
+  local v_0_
   local function assert_value_function_210(value)
     if ("function" ~= type(value)) then
       return error("conjure.dynamic values must always be wrapped in a function")
@@ -54,11 +54,11 @@ do
   t_0_["assert-value-function!"] = v_0_
   assert_value_function_21 = v_0_
 end
-local new = nil
+local new
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function new0(base_value)
       assert_value_function_21(base_value)
       local stack = {base_value}
@@ -79,29 +79,29 @@ do
   t_0_["new"] = v_0_
   new = v_0_
 end
-local run_binds_21 = nil
+local run_binds_21
 do
-  local v_0_ = nil
+  local v_0_
   local function run_binds_210(f, binds)
-    local function _2_(_3_0)
-      local _arg_0_ = _3_0
+    local function _3_(_2_0)
+      local _arg_0_ = _2_0
       local dyn = _arg_0_[1]
       local new_value = _arg_0_[2]
       assert_value_function_21(new_value)
       return f(dyn(get_stack_key), new_value)
     end
-    return a["map-indexed"](_2_, binds)
+    return a["map-indexed"](_3_, binds)
   end
   v_0_ = run_binds_210
   local t_0_ = (_0_0)["aniseed/locals"]
   t_0_["run-binds!"] = v_0_
   run_binds_21 = v_0_
 end
-local bind = nil
+local bind
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function bind0(binds, f, ...)
       run_binds_21(table.insert, binds)
       local ok_3f, result = pcall(f, ...)
@@ -123,11 +123,11 @@ do
   t_0_["bind"] = v_0_
   bind = v_0_
 end
-local set_21 = nil
+local set_21
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function set_210(dyn, new_value)
       assert_value_function_21(new_value)
       do
@@ -145,11 +145,11 @@ do
   t_0_["set!"] = v_0_
   set_21 = v_0_
 end
-local set_root_21 = nil
+local set_root_21
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function set_root_210(dyn, new_value)
       assert_value_function_21(new_value)
       a.assoc(dyn(get_stack_key), 1, new_value)

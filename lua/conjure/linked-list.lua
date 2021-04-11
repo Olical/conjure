@@ -1,7 +1,7 @@
-local _0_0 = nil
+local _0_0
 do
   local name_0_ = "conjure.linked-list"
-  local module_0_ = nil
+  local module_0_
   do
     local x_0_ = package.loaded[name_0_]
     if ("table" == type(x_0_)) then
@@ -34,11 +34,11 @@ local a = _local_0_[1]
 local _2amodule_2a = _0_0
 local _2amodule_name_2a = "conjure.linked-list"
 do local _ = ({nil, _0_0, {{}, nil, nil, nil}})[2] end
-local create = nil
+local create
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function create0(xs, prev)
       if not a["empty?"](xs) then
         local rest = a.rest(xs)
@@ -56,11 +56,11 @@ do
   t_0_["create"] = v_0_
   create = v_0_
 end
-local val = nil
+local val
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function val0(l)
       local _2_0 = l
       if _2_0 then
@@ -77,11 +77,11 @@ do
   t_0_["val"] = v_0_
   val = v_0_
 end
-local next = nil
+local next
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function next0(l)
       local _2_0 = l
       if _2_0 then
@@ -98,11 +98,11 @@ do
   t_0_["next"] = v_0_
   next = v_0_
 end
-local prev = nil
+local prev
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function prev0(l)
       local _2_0 = l
       if _2_0 then
@@ -119,11 +119,11 @@ do
   t_0_["prev"] = v_0_
   prev = v_0_
 end
-local first = nil
+local first
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function first0(l)
       local c = l
       while prev(c) do
@@ -139,11 +139,11 @@ do
   t_0_["first"] = v_0_
   first = v_0_
 end
-local last = nil
+local last
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function last0(l)
       local c = l
       while next(c) do
@@ -159,11 +159,11 @@ do
   t_0_["last"] = v_0_
   last = v_0_
 end
-local _until = nil
+local _until
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function _until0(f, l)
       local c = l
       local r = false
@@ -186,11 +186,11 @@ do
   t_0_["until"] = v_0_
   _until = v_0_
 end
-local cycle = nil
+local cycle
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function cycle0(l)
       local start = first(l)
       local _end = last(l)

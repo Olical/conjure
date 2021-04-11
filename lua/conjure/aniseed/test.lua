@@ -1,7 +1,7 @@
-local _0_0 = nil
+local _0_0
 do
   local name_0_ = "conjure.aniseed.test"
-  local module_0_ = nil
+  local module_0_
   do
     local x_0_ = package.loaded[name_0_]
     if ("table" == type(x_0_)) then
@@ -36,11 +36,11 @@ local str = _local_0_[3]
 local _2amodule_2a = _0_0
 local _2amodule_name_2a = "conjure.aniseed.test"
 do local _ = ({nil, _0_0, {{}, nil, nil, nil}})[2] end
-local ok_3f = nil
+local ok_3f
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function ok_3f0(_2_0)
       local _arg_0_ = _2_0
       local tests = _arg_0_["tests"]
@@ -55,11 +55,11 @@ do
   t_0_["ok?"] = v_0_
   ok_3f = v_0_
 end
-local display_results = nil
+local display_results
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function display_results0(results, prefix)
       do
         local _let_0_ = results
@@ -85,11 +85,11 @@ do
   t_0_["display-results"] = v_0_
   display_results = v_0_
 end
-local run = nil
+local run
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function run0(mod_name)
       local mod = package.loaded[mod_name]
       local tests = (a["table?"](mod) and mod["aniseed/tests"])
@@ -100,7 +100,7 @@ do
           a.update(results, "tests", a.inc)
           do
             local prefix = ("[" .. mod_name .. "/" .. label .. "]")
-            local fail = nil
+            local fail
             local function _2_(desc, ...)
               test_failed = true
               local function _3_(...)
@@ -113,17 +113,17 @@ do
               return a.println((str.join({prefix, " ", ...}) .. _3_(...)))
             end
             fail = _2_
-            local begin = nil
+            local begin
             local function _3_()
               return a.update(results, "assertions", a.inc)
             end
             begin = _3_
-            local pass = nil
+            local pass
             local function _4_()
               return a.update(results, "assertions-passed", a.inc)
             end
             pass = _4_
-            local t = nil
+            local t
             local function _5_(e, r, desc)
               begin()
               if (e == r) then
@@ -176,11 +176,11 @@ do
   t_0_["run"] = v_0_
   run = v_0_
 end
-local run_all = nil
+local run_all
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function run_all0()
       local function _2_(totals, results)
         for k, v in pairs(results) do
@@ -198,11 +198,11 @@ do
   t_0_["run-all"] = v_0_
   run_all = v_0_
 end
-local suite = nil
+local suite
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function suite0()
       local function _2_(path)
         return require(string.gsub(string.match(path, "^test/fnl/(.-).fnl$"), "/", "."))

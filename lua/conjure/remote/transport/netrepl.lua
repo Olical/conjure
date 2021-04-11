@@ -1,7 +1,7 @@
-local _0_0 = nil
+local _0_0
 do
   local name_0_ = "conjure.remote.transport.netrepl"
-  local module_0_ = nil
+  local module_0_
   do
     local x_0_ = package.loaded[name_0_]
     if ("table" == type(x_0_)) then
@@ -36,11 +36,11 @@ local str = _local_0_[3]
 local _2amodule_2a = _0_0
 local _2amodule_name_2a = "conjure.remote.transport.netrepl"
 do local _ = ({nil, _0_0, {{}, nil, nil, nil}})[2] end
-local encode = nil
+local encode
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function encode0(msg)
       local n = a.count(msg)
       return (string.char(bit.band(n, 255), bit.band(bit.rshift(n, 8), 255), bit.band(bit.rshift(n, 16), 255), bit.band(bit.rshift(n, 24), 255)) .. msg)
@@ -53,9 +53,9 @@ do
   t_0_["encode"] = v_0_
   encode = v_0_
 end
-local split = nil
+local split
 do
-  local v_0_ = nil
+  local v_0_
   local function split0(chunk)
     local b0, b1, b2, b3 = string.byte(chunk, 1, 4)
     return bit.bor(bit.band(b0, 255), bit.lshift(bit.band(b1, 255), 8), bit.lshift(bit.band(b2, 255), 16), bit.lshift(bit.band(b3, 255), 24)), string.sub(chunk, 5)
@@ -65,11 +65,11 @@ do
   t_0_["split"] = v_0_
   split = v_0_
 end
-local decoder = nil
+local decoder
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function decoder0()
       local awaiting = nil
       local buffer = ""

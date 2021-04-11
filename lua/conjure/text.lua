@@ -1,7 +1,7 @@
-local _0_0 = nil
+local _0_0
 do
   local name_0_ = "conjure.text"
-  local module_0_ = nil
+  local module_0_
   do
     local x_0_ = package.loaded[name_0_]
     if ("table" == type(x_0_)) then
@@ -35,11 +35,11 @@ local str = _local_0_[2]
 local _2amodule_2a = _0_0
 local _2amodule_name_2a = "conjure.text"
 do local _ = ({nil, _0_0, {{}, nil, nil, nil}})[2] end
-local trailing_newline_3f = nil
+local trailing_newline_3f
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function trailing_newline_3f0(s)
       return ("\n" == string.sub(s, -1))
     end
@@ -51,11 +51,11 @@ do
   t_0_["trailing-newline?"] = v_0_
   trailing_newline_3f = v_0_
 end
-local trim_last_newline = nil
+local trim_last_newline
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function trim_last_newline0(s)
       if trailing_newline_3f(s) then
         return string.sub(s, 1, -2)
@@ -71,11 +71,11 @@ do
   t_0_["trim-last-newline"] = v_0_
   trim_last_newline = v_0_
 end
-local left_sample = nil
+local left_sample
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function left_sample0(s, limit)
       local flat = str.trim(string.gsub(string.gsub(s, "\n", " "), "%s+", " "))
       if (limit >= a.count(flat)) then
@@ -92,11 +92,11 @@ do
   t_0_["left-sample"] = v_0_
   left_sample = v_0_
 end
-local right_sample = nil
+local right_sample
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function right_sample0(s, limit)
       return string.reverse(left_sample(string.reverse(s), limit))
     end
@@ -108,11 +108,11 @@ do
   t_0_["right-sample"] = v_0_
   right_sample = v_0_
 end
-local split_lines = nil
+local split_lines
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function split_lines0(s)
       return str.split(s, "\n")
     end
@@ -124,14 +124,14 @@ do
   t_0_["split-lines"] = v_0_
   split_lines = v_0_
 end
-local prefixed_lines = nil
+local prefixed_lines
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function prefixed_lines0(s, prefix, opts)
-      local function _2_(_3_0)
-        local _arg_0_ = _3_0
+      local function _3_(_2_0)
+        local _arg_0_ = _2_0
         local n = _arg_0_[1]
         local line = _arg_0_[2]
         if ((1 == n) and a.get(opts, "skip-first?")) then
@@ -140,7 +140,7 @@ do
           return (prefix .. line)
         end
       end
-      return a["map-indexed"](_2_, split_lines(s))
+      return a["map-indexed"](_3_, split_lines(s))
     end
     v_0_0 = prefixed_lines0
     _0_0["prefixed-lines"] = v_0_0
@@ -150,11 +150,11 @@ do
   t_0_["prefixed-lines"] = v_0_
   prefixed_lines = v_0_
 end
-local starts_with = nil
+local starts_with
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function starts_with0(str0, start)
       return (string.sub(str0, 1, a.count(start)) == start)
     end
@@ -166,11 +166,11 @@ do
   t_0_["starts-with"] = v_0_
   starts_with = v_0_
 end
-local ends_with = nil
+local ends_with
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function ends_with0(str0, _end)
       return ((_end == "") or (_end == string.sub(str0, ( - a.count(_end)))))
     end
@@ -182,11 +182,11 @@ do
   t_0_["ends-with"] = v_0_
   ends_with = v_0_
 end
-local strip_ansi_escape_sequences = nil
+local strip_ansi_escape_sequences
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function strip_ansi_escape_sequences0(s)
       return string.gsub(string.gsub(string.gsub(string.gsub(string.gsub(s, "\27%[%d+;%d+;%d+;%d+;%d+m", ""), "\27%[%d+;%d+;%d+;%d+m", ""), "\27%[%d+;%d+;%d+m", ""), "\27%[%d+;%d+m", ""), "\27%[%d+m", "")
     end
@@ -198,11 +198,11 @@ do
   t_0_["strip-ansi-escape-sequences"] = v_0_
   strip_ansi_escape_sequences = v_0_
 end
-local chars = nil
+local chars
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function chars0(s)
       local res = {}
       if s then
@@ -220,11 +220,11 @@ do
   t_0_["chars"] = v_0_
   chars = v_0_
 end
-local upper_first = nil
+local upper_first
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function upper_first0(s)
       if s then
         return s:gsub("^%l", string.upper)

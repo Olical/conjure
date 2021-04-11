@@ -1,7 +1,7 @@
-local _0_0 = nil
+local _0_0
 do
   local name_0_ = "conjure.mapping"
-  local module_0_ = nil
+  local module_0_
   do
     local x_0_ = package.loaded[name_0_]
     if ("table" == type(x_0_)) then
@@ -43,9 +43,9 @@ local nvim = _local_0_[9]
 local _2amodule_2a = _0_0
 local _2amodule_name_2a = "conjure.mapping"
 do local _ = ({nil, _0_0, {{nil}, nil, nil, nil}})[2] end
-local cfg = nil
+local cfg
 do
-  local v_0_ = nil
+  local v_0_
   local function cfg0(k)
     return config["get-in"]({"mapping", k})
   end
@@ -54,9 +54,9 @@ do
   t_0_["cfg"] = v_0_
   cfg = v_0_
 end
-local vim_repeat = nil
+local vim_repeat
 do
-  local v_0_ = nil
+  local v_0_
   local function vim_repeat0(mapping)
     return ("repeat#set(\"" .. nvim.fn.escape(mapping, "\"") .. "\", 1)")
   end
@@ -65,11 +65,11 @@ do
   t_0_["vim-repeat"] = v_0_
   vim_repeat = v_0_
 end
-local buf = nil
+local buf
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function buf0(mode_or_opts, cmd_suffix, keys, ...)
       if keys then
         local function _2_(...)
@@ -83,7 +83,7 @@ do
         local mode = _let_0_[1]
         local opts = _let_0_[2]
         local args = {...}
-        local mapping = nil
+        local mapping
         if a["string?"](keys) then
           mapping = (cfg("prefix") .. keys)
         else
@@ -117,14 +117,14 @@ do
   t_0_["buf"] = v_0_
   buf = v_0_
 end
-local eval_marked_form = nil
+local eval_marked_form
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function eval_marked_form0()
       local mark = eval["marked-form"]()
-      local mapping = nil
+      local mapping
       local function _2_(m)
         return ((":ConjureEvalMarkedForm<CR>" == m.rhs) and m.lhs)
       end
@@ -141,11 +141,11 @@ do
   t_0_["eval-marked-form"] = v_0_
   eval_marked_form = v_0_
 end
-local on_filetype = nil
+local on_filetype
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function on_filetype0()
       buf("n", "LogSplit", cfg("log_split"), "conjure.log", "split")
       buf("n", "LogVSplit", cfg("log_vsplit"), "conjure.log", "vsplit")
@@ -183,11 +183,11 @@ do
   t_0_["on-filetype"] = v_0_
   on_filetype = v_0_
 end
-local on_exit = nil
+local on_exit
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function on_exit0()
       local function _2_()
         return client["optional-call"]("on-exit")
@@ -202,11 +202,11 @@ do
   t_0_["on-exit"] = v_0_
   on_exit = v_0_
 end
-local on_quit = nil
+local on_quit
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function on_quit0()
       return log["close-hud"]()
     end
@@ -218,11 +218,11 @@ do
   t_0_["on-quit"] = v_0_
   on_quit = v_0_
 end
-local init = nil
+local init
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function init0(filetypes)
       nvim.ex.augroup("conjure_init_filetypes")
       nvim.ex.autocmd_()
@@ -244,11 +244,11 @@ do
   t_0_["init"] = v_0_
   init = v_0_
 end
-local eval_ranged_command = nil
+local eval_ranged_command
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function eval_ranged_command0(start, _end, code)
       if ("" == code) then
         return eval.range(a.dec(start), _end)
@@ -264,11 +264,11 @@ do
   t_0_["eval-ranged-command"] = v_0_
   eval_ranged_command = v_0_
 end
-local connect_command = nil
+local connect_command
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function connect_command0(...)
       local args = {...}
       local function _2_(...)
@@ -288,11 +288,11 @@ do
   t_0_["connect-command"] = v_0_
   connect_command = v_0_
 end
-local client_state_command = nil
+local client_state_command
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function client_state_command0(state_key)
       if state_key then
         return client["set-state-key!"](state_key)
@@ -308,11 +308,11 @@ do
   t_0_["client-state-command"] = v_0_
   client_state_command = v_0_
 end
-local omnifunc = nil
+local omnifunc
 do
-  local v_0_ = nil
+  local v_0_
   do
-    local v_0_0 = nil
+    local v_0_0
     local function omnifunc0(find_start_3f, base)
       if find_start_3f then
         local _let_0_ = nvim.win_get_cursor(0)
