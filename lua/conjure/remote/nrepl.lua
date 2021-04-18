@@ -1,35 +1,10 @@
 local _0_0
 do
-  local name_0_ = "conjure.remote.nrepl"
-  local module_0_
-  do
-    local x_0_ = package.loaded[name_0_]
-    if ("table" == type(x_0_)) then
-      module_0_ = x_0_
-    else
-      module_0_ = {}
-    end
-  end
-  module_0_["aniseed/module"] = name_0_
-  module_0_["aniseed/locals"] = ((module_0_)["aniseed/locals"] or {})
-  module_0_["aniseed/local-fns"] = ((module_0_)["aniseed/local-fns"] or {})
-  package.loaded[name_0_] = module_0_
+  local module_0_ = {}
+  package.loaded["conjure.remote.nrepl"] = module_0_
   _0_0 = module_0_
 end
-local function _1_(...)
-  local ok_3f_0_, val_0_ = nil, nil
-  local function _1_()
-    return {require("conjure.aniseed.core"), require("conjure.remote.transport.bencode"), require("conjure.client"), require("conjure.extract"), require("conjure.log"), require("conjure.net"), require("conjure.timer"), require("conjure.uuid")}
-  end
-  ok_3f_0_, val_0_ = pcall(_1_)
-  if ok_3f_0_ then
-    _0_0["aniseed/local-fns"] = {require = {a = "conjure.aniseed.core", bencode = "conjure.remote.transport.bencode", client = "conjure.client", extract = "conjure.extract", log = "conjure.log", net = "conjure.net", timer = "conjure.timer", uuid = "conjure.uuid"}}
-    return val_0_
-  else
-    return print(val_0_)
-  end
-end
-local _local_0_ = _1_(...)
+local _local_0_ = {require("conjure.aniseed.core"), require("conjure.remote.transport.bencode"), require("conjure.client"), require("conjure.extract"), require("conjure.log"), require("conjure.net"), require("conjure.timer"), require("conjure.uuid")}
 local a = _local_0_[1]
 local bencode = _local_0_[2]
 local client = _local_0_[3]
@@ -44,125 +19,113 @@ do local _ = ({nil, _0_0, {{}, nil, nil, nil}})[2] end
 local with_all_msgs_fn
 do
   local v_0_
-  do
-    local v_0_0
-    local function with_all_msgs_fn0(cb)
-      local acc = {}
-      local function _2_(msg)
-        table.insert(acc, msg)
-        if msg.status.done then
-          return cb(acc)
-        end
+  local function with_all_msgs_fn0(cb)
+    local acc = {}
+    local function _1_(msg)
+      table.insert(acc, msg)
+      if msg.status.done then
+        return cb(acc)
       end
-      return _2_
     end
-    v_0_0 = with_all_msgs_fn0
-    _0_0["with-all-msgs-fn"] = v_0_0
-    v_0_ = v_0_0
+    return _1_
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
-  t_0_["with-all-msgs-fn"] = v_0_
+  v_0_ = with_all_msgs_fn0
+  _0_0["with-all-msgs-fn"] = v_0_
   with_all_msgs_fn = v_0_
 end
 local connect
 do
   local v_0_
-  do
-    local v_0_0
-    local function connect0(opts)
-      local state = {["awaiting-process?"] = false, ["message-queue"] = {}, bc = bencode.new(), msgs = {}}
-      local conn = {session = nil, state = state}
-      local function enrich_status(msg)
-        local ks = a.get(msg, "status")
-        local status = {}
-        local function _2_(k)
-          return a.assoc(status, k, true)
-        end
-        a["run!"](_2_, ks)
-        a.assoc(msg, "status", status)
-        return msg
+  local function connect0(opts)
+    local state = {["awaiting-process?"] = false, ["message-queue"] = {}, bc = bencode.new(), msgs = {}}
+    local conn = {session = nil, state = state}
+    local function enrich_status(msg)
+      local ks = a.get(msg, "status")
+      local status = {}
+      local function _1_(k)
+        return a.assoc(status, k, true)
       end
-      local function send(msg, cb)
-        local msg_id = uuid.v4()
-        a.assoc(msg, "id", msg_id)
-        if (not msg.session and conn.session) then
-          a.assoc(msg, "session", conn.session)
-        end
-        log.dbg("send", msg)
-        local function _3_()
-        end
-        a["assoc-in"](state, {"msgs", msg_id}, {["sent-at"] = os.time(), cb = (cb or _3_), msg = msg})
-        ; (conn.sock):write(bencode.encode(msg))
-        return nil
-      end
-      local function process_message(err, chunk)
-        if err then
-          return opts["on-error"](err)
-        elseif not chunk then
-          return opts["on-error"]()
-        else
-          local function _2_(msg)
-            log.dbg("receive", msg)
-            enrich_status(msg)
-            if msg.status["need-input"] then
-              local function _3_()
-                return send({op = "stdin", session = msg.session, stdin = ((extract.prompt("Input required: ") or "") .. "\n")})
-              end
-              client.schedule(_3_)
-            end
-            do
-              local cb = a["get-in"](state, {"msgs", msg.id, "cb"}, opts["default-callback"])
-              local ok_3f, err0 = pcall(cb, msg)
-              if not ok_3f then
-                opts["on-error"](err0)
-              end
-            end
-            if msg.status.done then
-              a["assoc-in"](state, {"msgs", msg.id}, nil)
-            end
-            return opts["on-message"](msg)
-          end
-          return a["run!"](_2_, bencode["decode-all"](state.bc, chunk))
-        end
-      end
-      local function process_message_queue()
-        state["awaiting-process?"] = false
-        if not a["empty?"](state["message-queue"]) then
-          local msgs = state["message-queue"]
-          state["message-queue"] = {}
-          local function _2_(args)
-            return process_message(unpack(args))
-          end
-          return a["run!"](_2_, msgs)
-        end
-      end
-      local function enqueue_message(...)
-        table.insert(state["message-queue"], {...})
-        if not state["awaiting-process?"] then
-          state["awaiting-process?"] = true
-          return client.schedule(process_message_queue)
-        end
-      end
-      local function handle_connect_fn()
-        local function _2_(err)
-          if err then
-            return opts["on-failure"](err)
-          else
-            (conn.sock):read_start(client.wrap(enqueue_message))
-            return opts["on-success"]()
-          end
-        end
-        return client["schedule-wrap"](_2_)
-      end
-      conn = a["merge!"](conn, {send = send}, net.connect({cb = handle_connect_fn(), host = opts.host, port = opts.port}))
-      return conn
+      a["run!"](_1_, ks)
+      a.assoc(msg, "status", status)
+      return msg
     end
-    v_0_0 = connect0
-    _0_0["connect"] = v_0_0
-    v_0_ = v_0_0
+    local function send(msg, cb)
+      local msg_id = uuid.v4()
+      a.assoc(msg, "id", msg_id)
+      if (not msg.session and conn.session) then
+        a.assoc(msg, "session", conn.session)
+      end
+      log.dbg("send", msg)
+      local function _2_()
+      end
+      a["assoc-in"](state, {"msgs", msg_id}, {["sent-at"] = os.time(), cb = (cb or _2_), msg = msg})
+      ; (conn.sock):write(bencode.encode(msg))
+      return nil
+    end
+    local function process_message(err, chunk)
+      if err then
+        return opts["on-error"](err)
+      elseif not chunk then
+        return opts["on-error"]()
+      else
+        local function _1_(msg)
+          log.dbg("receive", msg)
+          enrich_status(msg)
+          if msg.status["need-input"] then
+            local function _2_()
+              return send({op = "stdin", session = msg.session, stdin = ((extract.prompt("Input required: ") or "") .. "\n")})
+            end
+            client.schedule(_2_)
+          end
+          do
+            local cb = a["get-in"](state, {"msgs", msg.id, "cb"}, opts["default-callback"])
+            local ok_3f, err0 = pcall(cb, msg)
+            if not ok_3f then
+              opts["on-error"](err0)
+            end
+          end
+          if msg.status.done then
+            a["assoc-in"](state, {"msgs", msg.id}, nil)
+          end
+          return opts["on-message"](msg)
+        end
+        return a["run!"](_1_, bencode["decode-all"](state.bc, chunk))
+      end
+    end
+    local function process_message_queue()
+      state["awaiting-process?"] = false
+      if not a["empty?"](state["message-queue"]) then
+        local msgs = state["message-queue"]
+        state["message-queue"] = {}
+        local function _1_(args)
+          return process_message(unpack(args))
+        end
+        return a["run!"](_1_, msgs)
+      end
+    end
+    local function enqueue_message(...)
+      table.insert(state["message-queue"], {...})
+      if not state["awaiting-process?"] then
+        state["awaiting-process?"] = true
+        return client.schedule(process_message_queue)
+      end
+    end
+    local function handle_connect_fn()
+      local function _1_(err)
+        if err then
+          return opts["on-failure"](err)
+        else
+          (conn.sock):read_start(client.wrap(enqueue_message))
+          return opts["on-success"]()
+        end
+      end
+      return client["schedule-wrap"](_1_)
+    end
+    conn = a["merge!"](conn, {send = send}, net.connect({cb = handle_connect_fn(), host = opts.host, port = opts.port}))
+    return conn
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
-  t_0_["connect"] = v_0_
+  v_0_ = connect0
+  _0_0["connect"] = v_0_
   connect = v_0_
 end
 return nil

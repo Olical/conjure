@@ -3,6 +3,10 @@
 
 ;; Automatically loaded through require-macros for all Aniseed based evaluations.
 
+;; When ANISEED_LIGHT is set we use minimal module code.
+;; This can't be interacted with directly but it's smaller and faster to load.
+(local light? (not= nil (os.getenv "ANISEED_LIGHT")))
+
 (local module-sym (gensym))
 
 (fn sorted-each [f x]
@@ -17,85 +21,115 @@
       (f k v))))
 
 (fn module [name new-local-fns initial-mod]
-  `(-> [(local ,module-sym
-          (let [name# ,(tostring name)
-                module# (let [x# (. package.loaded name#)]
-                          (if (= :table (type x#))
-                            x#
-                            ,(or initial-mod {})))]
-            (tset module# :aniseed/module name#)
-            (tset module# :aniseed/locals (or (. module# :aniseed/locals) {}))
-            (tset module# :aniseed/local-fns (or (. module# :aniseed/local-fns) {}))
-            (tset package.loaded name# module#)
-            module#))
+  (fn process-local-fns [local-fns aliases vals effects]
+    (when new-local-fns
+      (each [action binds (pairs new-local-fns)]
+        (let [action-str (tostring action)
+              current (or (. local-fns action-str) {})]
+          (tset local-fns action-str current)
+          (each [alias module (pairs binds)]
+            (if (= :number (type alias))
+              (tset current (tostring module) true)
+              (tset current (tostring alias) (tostring module)))))))
 
-        ,module-sym
+    (sorted-each
+      (fn [action binds]
+        (sorted-each
+          (fn [alias-or-val val]
+            (if (= true val)
 
-        ,(let [aliases []
-               vals []
-               effects []
-               pkg (let [x (. package.loaded (tostring name))]
-                     (when (= :table (type x))
-                       x))
-               locals (-?> pkg (. :aniseed/locals))
-               local-fns (or (and (not new-local-fns)
-                                  (-?> pkg (. :aniseed/local-fns)))
-                             {})]
+              ;; {require-macros [bar]}
+              (table.insert effects `(,(sym action) ,alias-or-val))
 
-           (when new-local-fns
-             (each [action binds (pairs new-local-fns)]
-               (let [action-str (tostring action)
-                     current (or (. local-fns action-str) {})]
-                 (tset local-fns action-str current)
-                 (each [alias module (pairs binds)]
-                   (if (= :number (type alias))
-                     (tset current (tostring module) true)
-                     (tset current (tostring alias) (tostring module)))))))
+              ;; {require {foo bar}}
+              (do
+                (table.insert aliases (sym alias-or-val))
+                (table.insert vals `(,(sym action) ,val)))))
 
-           (sorted-each
-             (fn [action binds]
+          binds))
+      local-fns))
+
+  (if light?
+    `(-> [(local ,module-sym
+            (let [module# ,(or initial-mod {})]
+              (tset package.loaded ,(tostring name) module#)
+              module#))
+
+          ,module-sym
+
+          ,(let [aliases []
+                 vals []
+                 effects []
+                 pkg (let [x (. package.loaded (tostring name))]
+                       (when (= :table (type x))
+                         x))
+                 local-fns {}]
+
+             (process-local-fns local-fns aliases vals effects)
+
+             `[,effects
+               (local ,aliases ,vals)
+               (local ,(sym "*module*") ,module-sym)
+               (local ,(sym "*module-name*") ,(tostring name))])]
+         (. 2))
+
+    ;; Normal, full version...
+    `(-> [(local ,module-sym
+            (let [name# ,(tostring name)
+                  module# (let [x# (. package.loaded name#)]
+                            (if (= :table (type x#))
+                              x#
+                              ,(or initial-mod {})))]
+              (tset module# :aniseed/module name#)
+              (tset module# :aniseed/locals (or (. module# :aniseed/locals) {}))
+              (tset module# :aniseed/local-fns (or (. module# :aniseed/local-fns) {}))
+              (tset package.loaded name# module#)
+              module#))
+
+          ,module-sym
+
+          ,(let [aliases []
+                 vals []
+                 effects []
+                 pkg (let [x (. package.loaded (tostring name))]
+                       (when (= :table (type x))
+                         x))
+                 locals (-?> pkg (. :aniseed/locals))
+                 local-fns (or (and (not new-local-fns)
+                                    (-?> pkg (. :aniseed/local-fns)))
+                               {})]
+
+             (process-local-fns local-fns aliases vals effects)
+
+             (when locals
                (sorted-each
-                 (fn [alias-or-val val]
-                   (if (= true val)
+                 (fn [alias val]
+                   (table.insert aliases (sym alias))
+                   (table.insert vals `(-> ,module-sym (. :aniseed/locals) (. ,alias))))
+                 locals))
 
-                     ;; {require-macros [bar]}
-                     (table.insert effects `(,(sym action) ,alias-or-val))
-
-                     ;; {require {foo bar}}
+             `[,effects
+               (local ,aliases
+                 (let [(ok?# val#)
+                       (pcall
+                         (fn [] ,vals))]
+                   (if ok?#
                      (do
-                       (table.insert aliases (sym alias-or-val))
-                       (table.insert vals `(,(sym action) ,val)))))
-
-                 binds))
-             local-fns)
-
-           (when locals
-             (sorted-each
-               (fn [alias val]
-                 (table.insert aliases (sym alias))
-                 (table.insert vals `(-> ,module-sym (. :aniseed/locals) (. ,alias))))
-               locals))
-
-           `[,effects
-             (local ,aliases
-               (let [(ok?# val#)
-                     (pcall
-                       (fn [] ,vals))]
-                 (if ok?#
-                   (do
-                     (tset ,module-sym :aniseed/local-fns ,local-fns)
-                     val#)
-                   (print val#))))
-             (local ,(sym "*module*") ,module-sym)
-             (local ,(sym "*module-name*") ,(tostring name))])]
-       (. 2)))
+                       (tset ,module-sym :aniseed/local-fns ,local-fns)
+                       val#)
+                     (print val#))))
+               (local ,(sym "*module*") ,module-sym)
+               (local ,(sym "*module-name*") ,(tostring name))])]
+         (. 2))))
 
 (fn def- [name value]
-  `(local ,name
-     (let [v# ,value
-           t# (. ,module-sym :aniseed/locals)]
-       (tset t# ,(tostring name) v#)
-       v#)))
+  (if light?
+    `(local ,name ,value)
+    `(local ,name
+       (let [v# ,value
+             t# (. ,module-sym :aniseed/locals)]
+         (tset t# ,(tostring name) v#)
+         v#))))
 
 (fn def [name value]
   `(def- ,name
@@ -105,25 +139,33 @@
          v#))))
 
 (fn defn- [name ...]
-  `(def- ,name (fn ,name ,...)))
+  (if light?
+    `(fn ,name ,...)
+    `(def- ,name (fn ,name ,...))))
 
 (fn defn [name ...]
   `(def ,name (fn ,name ,...)))
 
 (fn defonce- [name value]
-  `(def- ,name
-     (or (. (. ,module-sym :aniseed/locals) ,(tostring name))
-         ,value)))
+  (if light?
+    `(def- ,name ,value)
+    `(def- ,name
+       (or (. (. ,module-sym :aniseed/locals) ,(tostring name))
+           ,value))))
 
 (fn defonce [name value]
-  `(def ,name
-     (or (. ,module-sym ,(tostring name))
-         ,value)))
+  (if light?
+    `(def ,name ,value)
+    `(def ,name
+       (or (. ,module-sym ,(tostring name))
+           ,value))))
 
 (fn deftest [name ...]
-  `(let [tests# (or (. ,module-sym :aniseed/tests) {})]
-     (tset tests# ,(tostring name) (fn [,(sym :t)] ,...))
-     (tset ,module-sym :aniseed/tests tests#)))
+  (if light?
+    (error "deftest does not support ANISEED_LIGHT")
+    `(let [tests# (or (. ,module-sym :aniseed/tests) {})]
+       (tset tests# ,(tostring name) (fn [,(sym :t)] ,...))
+       (tset ,module-sym :aniseed/tests tests#))))
 
 (fn time [...]
   `(let [start# (vim.loop.hrtime)
