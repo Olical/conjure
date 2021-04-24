@@ -587,6 +587,32 @@ do
   t_0_["pr-str"] = v_0_
   pr_str = v_0_
 end
+local str
+do
+  local v_0_
+  do
+    local v_0_0
+    local function str0(...)
+      local function _2_(acc, s)
+        return (acc .. s)
+      end
+      local function _3_(s)
+        if string_3f(s) then
+          return s
+        else
+          return pr_str(s)
+        end
+      end
+      return reduce(_2_, "", map(_3_, {...}))
+    end
+    v_0_0 = str0
+    _0_0["str"] = v_0_0
+    v_0_ = v_0_0
+  end
+  local t_0_ = (_0_0)["aniseed/locals"]
+  t_0_["str"] = v_0_
+  str = v_0_
+end
 local println
 do
   local v_0_
