@@ -29,7 +29,7 @@
   (when (not (editor.has-filetype? :fennel))
     (nvim.echo
       "Warning: No Fennel filetype found, falling back to Clojure syntax."
-      "Install https://github.com/Olical/fennel.vim for better Fennel support.")
+      "Install https://github.com/Olical/aniseed for better Fennel support.")
     (set nvim.g.conjure#filetype#clojure nvim.g.conjure#filetype#fennel)
     (nvim.ex.augroup :conjure_school_filetype)
     (nvim.ex.autocmd_)
