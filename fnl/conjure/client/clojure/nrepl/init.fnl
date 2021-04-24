@@ -1,15 +1,15 @@
 (module conjure.client.clojure.nrepl
-  {require {nvim conjure.aniseed.nvim
-            a conjure.aniseed.core
-            mapping conjure.mapping
-            bridge conjure.bridge
-            eval conjure.eval
-            str conjure.aniseed.string
-            config conjure.config
-            action conjure.client.clojure.nrepl.action
-            server conjure.client.clojure.nrepl.server
-            parse conjure.client.clojure.nrepl.parse
-            client conjure.client}})
+  {autoload {nvim conjure.aniseed.nvim
+             a conjure.aniseed.core
+             mapping conjure.mapping
+             bridge conjure.bridge
+             eval conjure.eval
+             str conjure.aniseed.string
+             config conjure.config
+             action conjure.client.clojure.nrepl.action
+             server conjure.client.clojure.nrepl.server
+             parse conjure.client.clojure.nrepl.parse
+             client conjure.client}})
 
 (def buf-suffix ".cljc")
 (def comment-prefix "; ")

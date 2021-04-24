@@ -1,13 +1,13 @@
 (module conjure.client.janet.netrepl
-  {require {a conjure.aniseed.core
-            nvim conjure.aniseed.nvim
-            bridge conjure.bridge
-            mapping conjure.mapping
-            text conjure.text
-            log conjure.log
-            config conjure.config
-            client conjure.client
-            remote conjure.remote.netrepl}})
+  {autoload {a conjure.aniseed.core
+             nvim conjure.aniseed.nvim
+             bridge conjure.bridge
+             mapping conjure.mapping
+             text conjure.text
+             log conjure.log
+             config conjure.config
+             client conjure.client
+             remote conjure.remote.netrepl}})
 
 (def buf-suffix ".janet")
 (def comment-prefix "# ")

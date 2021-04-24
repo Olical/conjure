@@ -1,5 +1,5 @@
 (module conjure.client.clojure.nrepl.state
-  {require {client conjure.client}})
+  {autoload {client conjure.client}})
 
 (defonce get
   (client.new-state

@@ -1,14 +1,14 @@
 (module conjure.client.fennel.aniseed
-  {require {nvim conjure.aniseed.nvim
-            a conjure.aniseed.core
-            str conjure.aniseed.string
-            view conjure.aniseed.view
-            client conjure.client
-            mapping conjure.mapping
-            text conjure.text
-            log conjure.log
-            config conjure.config
-            extract conjure.extract}})
+  {autoload {nvim conjure.aniseed.nvim
+             a conjure.aniseed.core
+             str conjure.aniseed.string
+             view conjure.aniseed.view
+             client conjure.client
+             mapping conjure.mapping
+             text conjure.text
+             log conjure.log
+             config conjure.config
+             extract conjure.extract}})
 
 (def buf-suffix ".fnl")
 (def context-pattern "%(%s*module%s+(.-)[%s){]")

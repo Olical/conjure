@@ -1,6 +1,6 @@
 (module conjure.timer
-  {require {a conjure.aniseed.core
-            nvim conjure.aniseed.nvim}})
+  {autoload {a conjure.aniseed.core
+             nvim conjure.aniseed.nvim}})
 
 (defn defer [f ms]
   (let [t (vim.loop.new_timer)]

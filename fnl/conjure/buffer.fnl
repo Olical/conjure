@@ -1,8 +1,8 @@
 (module conjure.buffer
-  {require {nvim conjure.aniseed.nvim
-            a conjure.aniseed.core
-            str conjure.aniseed.string
-            text conjure.text}})
+  {autoload {nvim conjure.aniseed.nvim
+             a conjure.aniseed.core
+             str conjure.aniseed.string
+             text conjure.text}})
 
 (defn unlist [buf]
   "The buflisted attribute is reset when a new window is opened. Since the

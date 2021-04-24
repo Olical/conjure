@@ -1,5 +1,5 @@
 (module conjure.linked-list
-  {require {a conjure.aniseed.core}})
+  {autoload {a conjure.aniseed.core}})
 
 (defn create [xs prev]
   (when (not (a.empty? xs))

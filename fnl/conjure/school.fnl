@@ -1,10 +1,10 @@
 (module conjure.school
-  {require {nvim conjure.aniseed.nvim
-            buffer conjure.buffer
-            config conjure.config
-            editor conjure.editor
-            str conjure.aniseed.string
-            a conjure.aniseed.core}})
+  {autoload {nvim conjure.aniseed.nvim
+             buffer conjure.buffer
+             config conjure.config
+             editor conjure.editor
+             str conjure.aniseed.string
+             a conjure.aniseed.core}})
 
 (def- buf-name "conjure-school.fnl")
 
@@ -42,7 +42,7 @@
     (append
       (a.concat
         ["(module user.conjure-school"
-         "  {require {school conjure.school}})"
+         "  {autoload {school conjure.school}})"
          ""
          ";; Welcome to Conjure school!"
          ";; Grab yourself a nice beverage and let's get evaluating. I hope you enjoy!"

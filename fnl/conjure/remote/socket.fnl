@@ -1,10 +1,10 @@
 (module conjure.remote.socket
-  {require {a conjure.aniseed.core
-            nvim conjure.aniseed.nvim
-            str conjure.aniseed.string
-            client conjure.client
-            text conjure.text
-            log conjure.log}})
+  {autoload {a conjure.aniseed.core
+             nvim conjure.aniseed.nvim
+             str conjure.aniseed.string
+             client conjure.client
+             text conjure.text
+             log conjure.log}})
 
 (def- uv vim.loop)
 

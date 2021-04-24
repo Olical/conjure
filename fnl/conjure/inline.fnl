@@ -1,6 +1,6 @@
 (module conjure.inline
-  {require {a conjure.aniseed.core
-            nvim conjure.aniseed.nvim}})
+  {autoload {a conjure.aniseed.core
+             nvim conjure.aniseed.nvim}})
 
 (defonce ns-id (nvim.create_namespace *module-name*))
 

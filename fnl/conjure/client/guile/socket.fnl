@@ -1,14 +1,14 @@
 (module conjure.client.guile.socket
-  {require {a conjure.aniseed.core
-            str conjure.aniseed.string
-            nvim conjure.aniseed.nvim
-            socket conjure.remote.socket
-            config conjure.config
-            text conjure.text
-            mapping conjure.mapping
-            client conjure.client
-            log conjure.log
-            extract conjure.extract}
+  {autoload {a conjure.aniseed.core
+             str conjure.aniseed.string
+             nvim conjure.aniseed.nvim
+             socket conjure.remote.socket
+             config conjure.config
+             text conjure.text
+             mapping conjure.mapping
+             client conjure.client
+             log conjure.log
+             extract conjure.extract}
    require-macros [conjure.macros]})
 
 (config.merge

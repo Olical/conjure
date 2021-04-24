@@ -1,8 +1,8 @@
 (module conjure.tree-sitter
-  {require {a conjure.aniseed.core
-            str conjure.aniseed.string
-            client conjure.client
-            config conjure.config}})
+  {autoload {a conjure.aniseed.core
+             str conjure.aniseed.string
+             client conjure.client
+             config conjure.config}})
 
 ;; From https://github.com/savq/conjure-julia <3
 

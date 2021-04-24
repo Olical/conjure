@@ -1,7 +1,7 @@
 (module conjure.promise
-  {require {a conjure.aniseed.core
-            nvim conjure.aniseed.nvim
-            uuid conjure.uuid}})
+  {autoload {a conjure.aniseed.core
+             nvim conjure.aniseed.nvim
+             uuid conjure.uuid}})
 
 (defonce- state {})
 

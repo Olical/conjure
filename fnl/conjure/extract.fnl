@@ -1,11 +1,11 @@
 (module conjure.extract
-  {require {a conjure.aniseed.core
-            nvim conjure.aniseed.nvim
-            nu conjure.aniseed.nvim.util
-            str conjure.aniseed.string
-            config conjure.config
-            client conjure.client
-            ts conjure.tree-sitter}})
+  {autoload {a conjure.aniseed.core
+             nvim conjure.aniseed.nvim
+             nu conjure.aniseed.nvim.util
+             str conjure.aniseed.string
+             config conjure.config
+             client conjure.client
+             ts conjure.tree-sitter}})
 
 (defn- read-range [[srow scol] [erow ecol]]
   (let [lines (nvim.buf_get_lines

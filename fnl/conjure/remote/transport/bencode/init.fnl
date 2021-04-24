@@ -1,6 +1,6 @@
 (module conjure.remote.transport.bencode
-  {require {impl conjure.remote.transport.bencode.impl
-            a conjure.aniseed.core}})
+  {autoload {impl conjure.remote.transport.bencode.impl
+             a conjure.aniseed.core}})
 
 (defn new []
   {:data ""})

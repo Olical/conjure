@@ -1,7 +1,7 @@
 (module conjure.remote.transport.netrepl
-  {require {bit bit
-            a conjure.aniseed.core
-            str conjure.aniseed.string}})
+  {autoload {bit bit
+             a conjure.aniseed.core
+             str conjure.aniseed.string}})
 
 (defn encode [msg]
   (let [n (a.count msg)]

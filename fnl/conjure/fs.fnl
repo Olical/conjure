@@ -1,8 +1,8 @@
 (module conjure.fs
-  {require {nvim conjure.aniseed.nvim
-            a conjure.aniseed.core
-            str conjure.aniseed.string
-            config conjure.config}})
+  {autoload {nvim conjure.aniseed.nvim
+             a conjure.aniseed.core
+             str conjure.aniseed.string
+             config conjure.config}})
 
 (defn- env [k]
   (let [v (nvim.fn.getenv k)]

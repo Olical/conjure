@@ -1,5 +1,5 @@
 (module conjure.dynamic
-  {require {a conjure.aniseed.core}})
+  {autoload {a conjure.aniseed.core}})
 
 (def- get-stack-key :conjure.dynamic/get-stack)
 

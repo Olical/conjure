@@ -1,15 +1,15 @@
 (module conjure.log
-  {require {a conjure.aniseed.core
-            nvim conjure.aniseed.nvim
-            str conjure.aniseed.string
-            buffer conjure.buffer
-            client conjure.client
-            config conjure.config
-            view conjure.aniseed.view
-            text conjure.text
-            editor conjure.editor
-            timer conjure.timer
-            sponsors conjure.sponsors}})
+  {autoload {a conjure.aniseed.core
+             nvim conjure.aniseed.nvim
+             str conjure.aniseed.string
+             buffer conjure.buffer
+             client conjure.client
+             config conjure.config
+             view conjure.aniseed.view
+             text conjure.text
+             editor conjure.editor
+             timer conjure.timer
+             sponsors conjure.sponsors}})
 
 (defonce- state
   {:hud {:id nil

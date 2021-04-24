@@ -1,5 +1,5 @@
 (module conjure.uuid
-  {require {a conjure.aniseed.core}})
+  {autoload {a conjure.aniseed.core}})
 
 ;; Adapted from https://gist.github.com/jrus/3197011
 

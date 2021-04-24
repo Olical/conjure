@@ -1,7 +1,7 @@
 (module conjure.editor
-  {require {a conjure.aniseed.core
-            nvim conjure.aniseed.nvim
-            fs conjure.fs}})
+  {autoload {a conjure.aniseed.core
+             nvim conjure.aniseed.nvim
+             fs conjure.fs}})
 
 (defn- percent-fn [total-fn]
   (fn [pc]

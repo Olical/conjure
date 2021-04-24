@@ -1,9 +1,9 @@
 (module conjure.remote.stdio
-  {require {a conjure.aniseed.core
-            nvim conjure.aniseed.nvim
-            str conjure.aniseed.string
-            client conjure.client
-            log conjure.log}})
+  {autoload {a conjure.aniseed.core
+             nvim conjure.aniseed.nvim
+             str conjure.aniseed.string
+             client conjure.client
+             log conjure.log}})
 
 (def- uv vim.loop)
 

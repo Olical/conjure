@@ -1,20 +1,20 @@
 (module conjure.client.clojure.nrepl.action
-  {require {text conjure.text
-            extract conjure.extract
-            editor conjure.editor
-            ll conjure.linked-list
-            log conjure.log
-            fs conjure.fs
-            eval conjure.aniseed.eval
-            str conjure.aniseed.string
-            nvim conjure.aniseed.nvim
-            view conjure.aniseed.view
-            config conjure.config
-            server conjure.client.clojure.nrepl.server
-            ui conjure.client.clojure.nrepl.ui
-            parse conjure.client.clojure.nrepl.parse
-            a conjure.aniseed.core
-            nrepl conjure.remote.nrepl}})
+  {autoload {text conjure.text
+             extract conjure.extract
+             editor conjure.editor
+             ll conjure.linked-list
+             log conjure.log
+             fs conjure.fs
+             eval conjure.aniseed.eval
+             str conjure.aniseed.string
+             nvim conjure.aniseed.nvim
+             view conjure.aniseed.view
+             config conjure.config
+             server conjure.client.clojure.nrepl.server
+             ui conjure.client.clojure.nrepl.ui
+             parse conjure.client.clojure.nrepl.parse
+             a conjure.aniseed.core
+             nrepl conjure.remote.nrepl}})
 
 (defn- require-ns [ns]
   (when ns

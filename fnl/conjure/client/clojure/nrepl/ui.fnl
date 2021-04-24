@@ -1,9 +1,9 @@
 (module conjure.client.clojure.nrepl.ui
-  {require {log conjure.log
-            text conjure.text
-            a conjure.aniseed.core
-            str conjure.aniseed.string
-            state conjure.client.clojure.nrepl.state}})
+  {autoload {log conjure.log
+             text conjure.text
+             a conjure.aniseed.core
+             str conjure.aniseed.string
+             state conjure.client.clojure.nrepl.state}})
 
 (defn- handle-join-line [resp]
   (let [next-key (if resp.out :out resp.err :err)

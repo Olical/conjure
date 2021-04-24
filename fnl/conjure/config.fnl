@@ -1,7 +1,7 @@
 (module conjure.config
-  {require {nvim conjure.aniseed.nvim
-            a conjure.aniseed.core
-            str conjure.aniseed.string}})
+  {autoload {nvim conjure.aniseed.nvim
+             a conjure.aniseed.core
+             str conjure.aniseed.string}})
 
 (defn- ks->var [ks]
   (.. "conjure#" (str.join "#" ks)))

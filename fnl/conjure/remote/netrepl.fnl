@@ -1,5 +1,5 @@
 (module conjure.remote.netrepl
-  {require {a conjure.aniseed.core
+  {autoload {a conjure.aniseed.core
             net conjure.net
             log conjure.log
             client conjure.client

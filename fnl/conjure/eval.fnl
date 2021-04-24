@@ -1,19 +1,19 @@
 (module conjure.eval
-  {require {a conjure.aniseed.core
-            nvim conjure.aniseed.nvim
-            extract conjure.extract
-            client conjure.client
-            text conjure.text
-            fs conjure.fs
-            timer conjure.timer
-            config conjure.config
-            promise conjure.promise
-            editor conjure.editor
-            buffer conjure.buffer
-            inline conjure.inline
-            uuid conjure.uuid
-            log conjure.log
-            event conjure.event}})
+  {autoload {a conjure.aniseed.core
+             nvim conjure.aniseed.nvim
+             extract conjure.extract
+             client conjure.client
+             text conjure.text
+             fs conjure.fs
+             timer conjure.timer
+             config conjure.config
+             promise conjure.promise
+             editor conjure.editor
+             buffer conjure.buffer
+             inline conjure.inline
+             uuid conjure.uuid
+             log conjure.log
+             event conjure.event}})
 
 (defn- preview [opts]
   (let [sample-limit (editor.percent-width

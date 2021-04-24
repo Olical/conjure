@@ -1,13 +1,13 @@
 (module conjure.client.clojure.nrepl.server
-  {require {a conjure.aniseed.core
-            uuid conjure.uuid
-            timer conjure.timer
-            log conjure.log
-            str conjure.aniseed.string
-            config conjure.config
-            ui conjure.client.clojure.nrepl.ui
-            state conjure.client.clojure.nrepl.state
-            nrepl conjure.remote.nrepl}})
+  {autoload {a conjure.aniseed.core
+             uuid conjure.uuid
+             timer conjure.timer
+             log conjure.log
+             str conjure.aniseed.string
+             config conjure.config
+             ui conjure.client.clojure.nrepl.ui
+             state conjure.client.clojure.nrepl.state
+             nrepl conjure.remote.nrepl}})
 
 (defn with-conn-or-warn [f opts]
   (let [conn (state.get :conn)]

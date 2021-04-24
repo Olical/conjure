@@ -1,10 +1,10 @@
 (module conjure.client
-  {require {a conjure.aniseed.core
-            nvim conjure.aniseed.nvim
-            fennel conjure.aniseed.fennel
-            str conjure.aniseed.string
-            config conjure.config
-            dyn conjure.dynamic}})
+  {autoload {a conjure.aniseed.core
+             nvim conjure.aniseed.nvim
+             fennel conjure.aniseed.fennel
+             str conjure.aniseed.string
+             config conjure.config
+             dyn conjure.dynamic}})
 
 (defonce state-key (dyn.new #(do :default)))
 

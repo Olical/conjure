@@ -1,14 +1,14 @@
 (module conjure.mapping
-  {require {nvim conjure.aniseed.nvim
-            a conjure.aniseed.core
-            str conjure.aniseed.string
-            config conjure.config
-            extract conjure.extract
-            log conjure.log
-            client conjure.client
-            eval conjure.eval
-            bridge conjure.bridge
-            fennel conjure.aniseed.fennel}
+  {autoload {nvim conjure.aniseed.nvim
+             a conjure.aniseed.core
+             str conjure.aniseed.string
+             config conjure.config
+             extract conjure.extract
+             log conjure.log
+             client conjure.client
+             eval conjure.eval
+             bridge conjure.bridge
+             fennel conjure.aniseed.fennel}
    require-macros [conjure.macros]})
 
 (defn- cfg [k]

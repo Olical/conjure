@@ -1,7 +1,7 @@
 (module conjure.net
-  {require {a conjure.aniseed.core
-            nvim conjure.aniseed.nvim
-            bridge conjure.bridge}
+  {autoload {a conjure.aniseed.core
+             nvim conjure.aniseed.nvim
+             bridge conjure.bridge}
    require-macros [conjure.macros]})
 
 (defn resolve [host]

@@ -1,12 +1,12 @@
 (module conjure.client.scheme.stdio
-  {require {a conjure.aniseed.core
-            str conjure.aniseed.string
-            nvim conjure.aniseed.nvim
-            stdio conjure.remote.stdio
-            config conjure.config
-            mapping conjure.mapping
-            client conjure.client
-            log conjure.log}
+  {autoload {a conjure.aniseed.core
+             str conjure.aniseed.string
+             nvim conjure.aniseed.nvim
+             stdio conjure.remote.stdio
+             config conjure.config
+             mapping conjure.mapping
+             client conjure.client
+             log conjure.log}
    require-macros [conjure.macros]})
 
 (config.merge

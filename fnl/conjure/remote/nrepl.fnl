@@ -1,12 +1,12 @@
 (module conjure.remote.nrepl
-  {require {a conjure.aniseed.core
-            net conjure.net
-            timer conjure.timer
-            uuid conjure.uuid
-            log conjure.log
-            client conjure.client
-            extract conjure.extract
-            bencode conjure.remote.transport.bencode}})
+  {autoload {a conjure.aniseed.core
+             net conjure.net
+             timer conjure.timer
+             uuid conjure.uuid
+             log conjure.log
+             client conjure.client
+             extract conjure.extract
+             bencode conjure.remote.transport.bencode}})
 
 (defn with-all-msgs-fn [cb]
   (let [acc []]
