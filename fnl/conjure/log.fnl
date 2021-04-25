@@ -8,8 +8,8 @@
              view conjure.aniseed.view
              text conjure.text
              editor conjure.editor
-             timer conjure.timer
-             sponsors conjure.sponsors}})
+             timer conjure.timer}
+   require {sponsors conjure.sponsors}})
 
 (defonce- state
   {:hud {:id nil

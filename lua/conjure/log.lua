@@ -20,11 +20,11 @@ local autoload = (require("conjure.aniseed.autoload")).autoload
 local function _1_(...)
   local ok_3f_0_, val_0_ = nil, nil
   local function _1_()
-    return {autoload("conjure.aniseed.core"), autoload("conjure.buffer"), autoload("conjure.client"), autoload("conjure.config"), autoload("conjure.editor"), autoload("conjure.aniseed.nvim"), autoload("conjure.sponsors"), autoload("conjure.aniseed.string"), autoload("conjure.text"), autoload("conjure.timer"), autoload("conjure.aniseed.view")}
+    return {autoload("conjure.aniseed.core"), autoload("conjure.buffer"), autoload("conjure.client"), autoload("conjure.config"), autoload("conjure.editor"), autoload("conjure.aniseed.nvim"), autoload("conjure.aniseed.string"), autoload("conjure.text"), autoload("conjure.timer"), autoload("conjure.aniseed.view"), require("conjure.sponsors")}
   end
   ok_3f_0_, val_0_ = pcall(_1_)
   if ok_3f_0_ then
-    _0_0["aniseed/local-fns"] = {autoload = {a = "conjure.aniseed.core", buffer = "conjure.buffer", client = "conjure.client", config = "conjure.config", editor = "conjure.editor", nvim = "conjure.aniseed.nvim", sponsors = "conjure.sponsors", str = "conjure.aniseed.string", text = "conjure.text", timer = "conjure.timer", view = "conjure.aniseed.view"}}
+    _0_0["aniseed/local-fns"] = {autoload = {a = "conjure.aniseed.core", buffer = "conjure.buffer", client = "conjure.client", config = "conjure.config", editor = "conjure.editor", nvim = "conjure.aniseed.nvim", str = "conjure.aniseed.string", text = "conjure.text", timer = "conjure.timer", view = "conjure.aniseed.view"}, require = {sponsors = "conjure.sponsors"}}
     return val_0_
   else
     return print(val_0_)
@@ -32,16 +32,16 @@ local function _1_(...)
 end
 local _local_0_ = _1_(...)
 local a = _local_0_[1]
-local timer = _local_0_[10]
-local view = _local_0_[11]
+local view = _local_0_[10]
+local sponsors = _local_0_[11]
 local buffer = _local_0_[2]
 local client = _local_0_[3]
 local config = _local_0_[4]
 local editor = _local_0_[5]
 local nvim = _local_0_[6]
-local sponsors = _local_0_[7]
-local str = _local_0_[8]
-local text = _local_0_[9]
+local str = _local_0_[7]
+local text = _local_0_[8]
+local timer = _local_0_[9]
 local _2amodule_2a = _0_0
 local _2amodule_name_2a = "conjure.log"
 do local _ = ({nil, _0_0, nil, {{}, nil, nil, nil}})[2] end
