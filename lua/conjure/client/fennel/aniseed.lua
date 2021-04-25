@@ -16,7 +16,7 @@ do
   package.loaded[name_0_] = module_0_
   _0_0 = module_0_
 end
-local autoload = (require("aniseed.autoload")).autoload
+local autoload = (require("conjure.aniseed.autoload")).autoload
 local function _1_(...)
   local ok_3f_0_, val_0_ = nil, nil
   local function _1_()
@@ -180,7 +180,7 @@ do
     local v_0_0
     local function eval_str0(opts)
       local function _2_()
-        local code = (("(module " .. (opts.context or "aniseed.user") .. ") ") .. opts.code .. "\n")
+        local code = (("(module " .. (opts.context or "conjure.aniseed.user") .. ") ") .. opts.code .. "\n")
         local out
         local function _3_()
           if cfg({"use_metadata"}) then
