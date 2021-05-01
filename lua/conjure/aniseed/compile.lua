@@ -61,10 +61,14 @@ do
   do
     local v_0_0
     local function str0(code, opts)
-      local function _2_()
-        return fennel.compileString(macros_prefix(code), a.merge({["compiler-env"] = _G}, opts))
+      if (opts and opts["on-pre-compile"]) then
+        opts["on-compile"]()
       end
-      return xpcall(_2_, fennel.traceback)
+      local fnl = fennel.impl()
+      local function _3_()
+        return fnl.compileString(macros_prefix(code), a.merge({["compiler-env"] = _G}, opts))
+      end
+      return xpcall(_3_, fnl.traceback)
     end
     v_0_0 = str0
     _0_0["str"] = v_0_0

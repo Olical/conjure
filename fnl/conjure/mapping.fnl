@@ -7,8 +7,7 @@
              log conjure.log
              client conjure.client
              eval conjure.eval
-             bridge conjure.bridge
-             fennel conjure.aniseed.fennel}
+             bridge conjure.bridge}
    require-macros [conjure.macros]})
 
 (defn- cfg [k]

@@ -33,10 +33,11 @@
 (defonce- loaded {})
 
 (defn- load-module [ft name]
-  (let [(ok? result) (xpcall
+  (let [fnl (fennel.impl)
+        (ok? result) (xpcall
                        (fn []
                          (require name))
-                       fennel.traceback)]
+                       fnl.traceback)]
 
     (when (and ok? (a.nil? (a.get loaded name)))
       (a.assoc loaded name

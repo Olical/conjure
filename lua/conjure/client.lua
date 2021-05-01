@@ -140,11 +140,12 @@ local load_module
 do
   local v_0_
   local function load_module0(ft, name)
+    local fnl = fennel.impl()
     local ok_3f, result = nil, nil
     local function _2_()
       return require(name)
     end
-    ok_3f, result = xpcall(_2_, fennel.traceback)
+    ok_3f, result = xpcall(_2_, fnl.traceback)
     if (ok_3f and a["nil?"](a.get(loaded, name))) then
       a.assoc(loaded, name, {["module-name"] = name, filetype = ft, module = result})
       if (result["on-load"] and not nvim.wo.diff) then
