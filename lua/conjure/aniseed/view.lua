@@ -1,3 +1,4 @@
+local _2afile_2a = "fnl/aniseed/view.fnl"
 local _0_0
 do
   local name_0_ = "conjure.aniseed.view"

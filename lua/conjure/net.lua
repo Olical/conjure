@@ -1,3 +1,4 @@
+local _2afile_2a = "fnl/conjure/net.fnl"
 local _0_0
 do
   local name_0_ = "conjure.net"

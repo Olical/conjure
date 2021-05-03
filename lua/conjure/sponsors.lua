@@ -1,1 +1,2 @@
+local _2afile_2a = "fnl/conjure/sponsors.fnl"
 return {"aleksandersumowski", "Aljendro", "alloy-d", "anthony-khong", "BerkeleyTrue", "campbellr", "dharrigan", "emilaasa", "frenchy64", "jkrasnay", "ketansrivastav", "lucaslollobrigida", "mamapitufo", "martinklepsch", "Olical", "pyrmont", "rafaeldelboni", "rgm", "thiru", "valsen", "victorb", "zhming0"}

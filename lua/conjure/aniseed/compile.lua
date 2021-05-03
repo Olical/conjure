@@ -1,3 +1,4 @@
+local _2afile_2a = "fnl/aniseed/compile.fnl"
 local _0_0
 do
   local name_0_ = "conjure.aniseed.compile"
@@ -43,9 +44,24 @@ do
   local v_0_
   do
     local v_0_0
-    local function macros_prefix0(code)
+    local function macros_prefix0(code, opts)
       local macros_module = "conjure.aniseed.macros"
-      return ("(require-macros \"" .. macros_module .. "\")\n" .. code)
+      local filename
+      do
+        local _2_0 = a.get(opts, "filename")
+        if _2_0 then
+          filename = string.gsub(_2_0, (nvim.fn.getcwd() .. "/"), "")
+        else
+          filename = _2_0
+        end
+      end
+      local _3_
+      if filename then
+        _3_ = ("\"" .. filename .. "\"")
+      else
+        _3_ = "nil"
+      end
+      return ("(local *file* " .. _3_ .. ")" .. "(require-macros \"" .. macros_module .. "\")\n" .. code)
     end
     v_0_0 = macros_prefix0
     _0_0["macros-prefix"] = v_0_0
@@ -61,12 +77,13 @@ do
   do
     local v_0_0
     local function str0(code, opts)
-      if (opts and opts["on-pre-compile"]) then
-        opts["on-compile"]()
-      end
       local fnl = fennel.impl()
+      local on_pre_compile = a.get(opts, "on-pre-compile")
+      if on_pre_compile then
+        on_pre_compile()
+      end
       local function _3_()
-        return fnl.compileString(macros_prefix(code), a.merge({["compiler-env"] = _G}, opts))
+        return fnl.compileString(macros_prefix(code, opts), a.merge({allowedGlobals = false}, opts))
       end
       return xpcall(_3_, fnl.traceback)
     end

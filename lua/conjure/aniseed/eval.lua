@@ -1,3 +1,4 @@
+local _2afile_2a = "fnl/aniseed/eval.fnl"
 local _0_0
 do
   local name_0_ = "conjure.aniseed.eval"
@@ -47,7 +48,7 @@ do
     local function str0(code, opts)
       local fnl = fennel.impl()
       local function _2_()
-        return fnl.eval(compile["macros-prefix"](code), a.merge({["compiler-env"] = _G}, opts))
+        return fnl.eval(compile["macros-prefix"](code, opts), a.merge({["compiler-env"] = _G}, opts))
       end
       return xpcall(_2_, fnl.traceback)
     end

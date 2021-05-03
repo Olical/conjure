@@ -1,3 +1,4 @@
+local _2afile_2a = "fnl/conjure/client/clojure/nrepl/init.fnl"
 local _0_0
 do
   local name_0_ = "conjure.client.clojure.nrepl"
