@@ -79,8 +79,8 @@
 
 (defn context [header]
   (-?> header
-       (string.match "%(%s*ns%s+([^)]*)")
        (parse.strip-meta)
+       (string.match "%(%s*ns%s+([^)]*)")
        (str.split "%s+")
        (a.first)))
 

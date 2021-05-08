@@ -86,9 +86,9 @@ do
     local function context0(header)
       local _2_0 = header
       if _2_0 then
-        local _3_0 = string.match(_2_0, "%(%s*ns%s+([^)]*)")
+        local _3_0 = parse["strip-meta"](_2_0)
         if _3_0 then
-          local _4_0 = parse["strip-meta"](_3_0)
+          local _4_0 = string.match(_3_0, "%(%s*ns%s+([^)]*)")
           if _4_0 then
             local _5_0 = str.split(_4_0, "%s+")
             if _5_0 then
