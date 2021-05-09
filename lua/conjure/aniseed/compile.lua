@@ -78,14 +78,10 @@ do
     local v_0_0
     local function str0(code, opts)
       local fnl = fennel.impl()
-      local on_pre_compile = a.get(opts, "on-pre-compile")
-      if on_pre_compile then
-        on_pre_compile()
-      end
-      local function _3_()
+      local function _2_()
         return fnl.compileString(macros_prefix(code, opts), a.merge({allowedGlobals = false}, opts))
       end
-      return xpcall(_3_, fnl.traceback)
+      return xpcall(_2_, fnl.traceback)
     end
     v_0_0 = str0
     _0_0["str"] = v_0_0
@@ -100,18 +96,16 @@ do
   local v_0_
   do
     local v_0_0
-    local function file0(src, dest, opts)
-      if ((a["table?"](opts) and opts.force) or (nvim.fn.getftime(src) > nvim.fn.getftime(dest))) then
-        local code = a.slurp(src)
-        local _2_0, _3_0 = str(code, {filename = src})
-        if ((_2_0 == false) and (nil ~= _3_0)) then
-          local err = _3_0
-          return nvim.err_writeln(err)
-        elseif ((_2_0 == true) and (nil ~= _3_0)) then
-          local result = _3_0
-          fs.mkdirp(fs.basename(dest))
-          return a.spit(dest, result)
-        end
+    local function file0(src, dest)
+      local code = a.slurp(src)
+      local _2_0, _3_0 = str(code, {filename = src})
+      if ((_2_0 == false) and (nil ~= _3_0)) then
+        local err = _3_0
+        return nvim.err_writeln(err)
+      elseif ((_2_0 == true) and (nil ~= _3_0)) then
+        local result = _3_0
+        fs.mkdirp(fs.basename(dest))
+        return a.spit(dest, result)
       end
     end
     v_0_0 = file0
@@ -127,16 +121,12 @@ do
   local v_0_
   do
     local v_0_0
-    local function glob0(src_expr, src_dir, dest_dir, opts)
-      local src_dir_len = a.inc(string.len(src_dir))
-      local src_paths
-      local function _2_(path)
-        return string.sub(path, src_dir_len)
-      end
-      src_paths = a.map(_2_, nvim.fn.globpath(src_dir, src_expr, true, true))
-      for _, path in ipairs(src_paths) do
-        if (a.get(opts, "include-macros-suffix?") or not string.match(path, "macros.fnl$")) then
-          file((src_dir .. path), string.gsub((dest_dir .. path), ".fnl$", ".lua"), opts)
+    local function glob0(src_expr, src_dir, dest_dir)
+      for _, path in ipairs(fs.relglob(src_dir, src_expr)) do
+        if fs["macro-file-path?"](path) then
+          a.spit((dest_dir .. path), a.slurp((src_dir .. path)))
+        else
+          file((src_dir .. path), string.gsub((dest_dir .. path), ".fnl$", ".lua"))
         end
       end
       return nil
