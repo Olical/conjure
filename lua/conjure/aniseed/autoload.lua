@@ -41,13 +41,13 @@ do
   do
     local v_0_0
     local function autoload1(name)
-      local res = {["conjure.aniseed.autoload/enabled?"] = true, ["conjure.aniseed.autoload/module"] = false}
+      local res = {["aniseed/autoload-enabled?"] = true, ["aniseed/autoload-module"] = false}
       local function ensure()
-        if res["conjure.aniseed.autoload/module"] then
-          return res["conjure.aniseed.autoload/module"]
+        if res["aniseed/autoload-module"] then
+          return res["aniseed/autoload-module"]
         else
           local m = require(name)
-          res["conjure.aniseed.autoload/module"] = m
+          res["aniseed/autoload-module"] = m
           return m
         end
       end

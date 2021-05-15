@@ -113,13 +113,21 @@
 
 (defn value->completions [x]
   (when (= :table (type x))
-    (a.map
-      (fn [[k v]]
-        {:word k
-         :kind (type v)
-         :menu nil
-         :info nil})
-      (a.kv-pairs x))))
+    (->> (if (. x :aniseed/autoload-enabled?)
+           (do
+             (. x :trick-aniseed-into-loading-the-module)
+             (. x :aniseed/autoload-module))
+           x)
+         (a.kv-pairs)
+         (a.filter
+           (fn [[k v]]
+             (not (text.starts-with k "aniseed/"))))
+         (a.map
+           (fn [[k v]]
+             {:word k
+              :kind (type v)
+              :menu nil
+              :info nil})))))
 
 (defn completions [opts]
   (let [code (when (not (str.blank? opts.prefix))
@@ -131,6 +139,7 @@
                    (a.concat
                      (value->completions (a.get m :aniseed/locals))
                      (value->completions (a.get-in m [:aniseed/local-fns :require]))
+                     (value->completions (a.get-in m [:aniseed/local-fns :autoload]))
                      mods)
                    mods))
         result-fn

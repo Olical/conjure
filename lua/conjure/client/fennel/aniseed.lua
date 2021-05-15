@@ -333,7 +333,21 @@ do
           local v = _arg_0_[2]
           return {info = nil, kind = type(v), menu = nil, word = k}
         end
-        return a.map(_3_, a["kv-pairs"](x))
+        local function _5_(_4_0)
+          local _arg_0_ = _4_0
+          local k = _arg_0_[1]
+          local v = _arg_0_[2]
+          return not text["starts-with"](k, "aniseed/")
+        end
+        local function _6_()
+          if x["aniseed/autoload-enabled?"] then
+            do local _ = x["trick-aniseed-into-loading-the-module"] end
+            return x["aniseed/autoload-module"]
+          else
+            return x
+          end
+        end
+        return a.map(_3_, a.filter(_5_, a["kv-pairs"](_6_())))
       end
     end
     v_0_0 = value__3ecompletions0
@@ -365,7 +379,7 @@ do
         end
         ok_3f, m = (opts.context and pcall(_3_))
         if ok_3f then
-          locals = a.concat(value__3ecompletions(a.get(m, "aniseed/locals")), value__3ecompletions(a["get-in"](m, {"aniseed/local-fns", "require"})), mods)
+          locals = a.concat(value__3ecompletions(a.get(m, "aniseed/locals")), value__3ecompletions(a["get-in"](m, {"aniseed/local-fns", "require"})), value__3ecompletions(a["get-in"](m, {"aniseed/local-fns", "autoload"})), mods)
         else
           locals = mods
         end
