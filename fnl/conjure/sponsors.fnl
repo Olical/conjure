@@ -6,6 +6,7 @@
 "anthony-khong"
 "BerkeleyTrue"
 "campbellr"
+"daveyarwood"
 "dharrigan"
 "emilaasa"
 "frenchy64"
