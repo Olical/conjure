@@ -97,27 +97,30 @@ do
   do
     local v_0_0
     local function connect_port_file0(opts)
-      local port
-      do
+      local function _3_()
         local _2_0 = cfg({"connection", "port_files"})
         if _2_0 then
-          local _3_0 = a.map(fs["resolve-above"], _2_0)
-          if _3_0 then
-            local _4_0 = a.some(a.slurp, _3_0)
-            if _4_0 then
-              port = tonumber(_4_0)
-            else
-              port = _4_0
+          local _4_0 = a.map(fs["resolve-above"], _2_0)
+          if _4_0 then
+            local function _5_(path)
+              local port = a.slurp(path)
+              if port then
+                return {path, tonumber(port)}
+              end
             end
+            return a.some(_5_, _4_0)
           else
-            port = _3_0
+            return _4_0
           end
         else
-          port = _2_0
+          return _2_0
         end
       end
+      local _let_0_ = _3_()
+      local path = _let_0_[1]
+      local port = _let_0_[2]
       if port then
-        local function _3_()
+        local function _4_()
           do
             local cb = a.get(opts, "cb")
             if cb then
@@ -126,7 +129,7 @@ do
           end
           return passive_ns_require()
         end
-        return server.connect({cb = _3_, host = cfg({"connection", "default_host"}), port = port})
+        return server.connect({cb = _4_, host = cfg({"connection", "default_host"}), port = port, port_file_path = path})
       else
         if not a.get(opts, "silent?") then
           return log.append({"; No nREPL port file found"}, {["break?"] = true})

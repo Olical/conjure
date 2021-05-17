@@ -32,7 +32,10 @@
 (defn- display-conn-status [status]
   (with-conn-or-warn
     (fn [conn]
-      (log.append [(.. "; " conn.host ":" conn.port " (" status ")")]
+      (log.append [(str.join
+                     ["; " conn.host ":" conn.port " (" status ")"
+                      (when conn.port_file_path
+                        (.. ": " conn.port_file_path ""))])]
                   {:break? true}))))
 
 (defn disconnect []
@@ -209,7 +212,7 @@
             (opts.else)))))
     opts))
 
-(defn connect [{: host : port : cb}]
+(defn connect [{: host : port : cb : port_file_path}]
   (when (state.get :conn)
     (disconnect))
 
@@ -250,4 +253,5 @@
          (fn [result]
            (ui.display-result result))})
 
-      {:seen-ns {}})))
+      {:seen-ns {}
+       :port_file_path port_file_path})))

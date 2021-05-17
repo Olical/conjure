@@ -114,7 +114,12 @@ do
   local v_0_
   local function display_conn_status0(status)
     local function _2_(conn)
-      return log.append({("; " .. conn.host .. ":" .. conn.port .. " (" .. status .. ")")}, {["break?"] = true})
+      local function _3_()
+        if conn.port_file_path then
+          return (": " .. conn.port_file_path .. "")
+        end
+      end
+      return log.append({str.join({"; ", conn.host, ":", conn.port, " (", status, ")", _3_()})}, {["break?"] = true})
     end
     return with_conn_or_warn(_2_)
   end
@@ -465,6 +470,7 @@ do
       local cb = _arg_0_["cb"]
       local host = _arg_0_["host"]
       local port = _arg_0_["port"]
+      local port_file_path = _arg_0_["port_file_path"]
       if state.get("conn") then
         disconnect()
       end
@@ -497,7 +503,7 @@ do
         assume_or_create_session()
         return eval_preamble(cb)
       end
-      return a.assoc(state.get(), "conn", a["merge!"](nrepl.connect({["default-callback"] = _4_, ["on-error"] = _5_, ["on-failure"] = _6_, ["on-message"] = _7_, ["on-success"] = _8_, host = host, port = port}), {["seen-ns"] = {}}))
+      return a.assoc(state.get(), "conn", a["merge!"](nrepl.connect({["default-callback"] = _4_, ["on-error"] = _5_, ["on-failure"] = _6_, ["on-message"] = _7_, ["on-success"] = _8_, host = host, port = port}), {["seen-ns"] = {}, port_file_path = port_file_path}))
     end
     v_0_0 = connect0
     _0_0["connect"] = v_0_0
