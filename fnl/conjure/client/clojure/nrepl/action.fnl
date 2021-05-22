@@ -39,7 +39,7 @@
                     (when port
                       {:path path
                        :port (tonumber port)})))))]
-    (if port
+    (if resolved
       (server.connect
         {:host (cfg [:connection :default_host])
          :port_file_path (?. resolved :path)

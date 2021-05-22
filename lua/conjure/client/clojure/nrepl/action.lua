@@ -117,7 +117,7 @@ do
           resolved = _2_
         end
       end
-      if port then
+      if resolved then
         local function _3_()
           do
             local cb = a.get(opts, "cb")
