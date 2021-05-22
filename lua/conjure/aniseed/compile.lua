@@ -1,5 +1,5 @@
 local _2afile_2a = "fnl/aniseed/compile.fnl"
-local _0_0
+local _0_
 do
   local name_0_ = "conjure.aniseed.compile"
   local module_0_
@@ -15,7 +15,7 @@ do
   module_0_["aniseed/locals"] = ((module_0_)["aniseed/locals"] or {})
   module_0_["aniseed/local-fns"] = ((module_0_)["aniseed/local-fns"] or {})
   package.loaded[name_0_] = module_0_
-  _0_0 = module_0_
+  _0_ = module_0_
 end
 local autoload = (require("conjure.aniseed.autoload")).autoload
 local function _1_(...)
@@ -25,7 +25,7 @@ local function _1_(...)
   end
   ok_3f_0_, val_0_ = pcall(_1_)
   if ok_3f_0_ then
-    _0_0["aniseed/local-fns"] = {autoload = {a = "conjure.aniseed.core", fennel = "conjure.aniseed.fennel", fs = "conjure.aniseed.fs", nvim = "conjure.aniseed.nvim"}}
+    _0_["aniseed/local-fns"] = {autoload = {a = "conjure.aniseed.core", fennel = "conjure.aniseed.fennel", fs = "conjure.aniseed.fs", nvim = "conjure.aniseed.nvim"}}
     return val_0_
   else
     return print(val_0_)
@@ -36,9 +36,9 @@ local a = _local_0_[1]
 local fennel = _local_0_[2]
 local fs = _local_0_[3]
 local nvim = _local_0_[4]
-local _2amodule_2a = _0_0
+local _2amodule_2a = _0_
 local _2amodule_name_2a = "conjure.aniseed.compile"
-do local _ = ({nil, _0_0, nil, {{}, nil, nil, nil}})[2] end
+do local _ = ({nil, _0_, nil, {{}, nil, nil, nil}})[2] end
 local macros_prefix
 do
   local v_0_
@@ -48,11 +48,11 @@ do
       local macros_module = "conjure.aniseed.macros"
       local filename
       do
-        local _2_0 = a.get(opts, "filename")
-        if _2_0 then
-          filename = string.gsub(_2_0, (nvim.fn.getcwd() .. "/"), "")
+        local _2_ = a.get(opts, "filename")
+        if _2_ then
+          filename = string.gsub(_2_, (nvim.fn.getcwd() .. "/"), "")
         else
-          filename = _2_0
+          filename = _2_
         end
       end
       local _3_
@@ -64,10 +64,10 @@ do
       return ("(local *file* " .. _3_ .. ")" .. "(require-macros \"" .. macros_module .. "\")\n" .. code)
     end
     v_0_0 = macros_prefix0
-    _0_0["macros-prefix"] = v_0_0
+    _0_["macros-prefix"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["macros-prefix"] = v_0_
   macros_prefix = v_0_
 end
@@ -84,10 +84,10 @@ do
       return xpcall(_2_, fnl.traceback)
     end
     v_0_0 = str0
-    _0_0["str"] = v_0_0
+    _0_["str"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["str"] = v_0_
   str = v_0_
 end
@@ -98,21 +98,21 @@ do
     local v_0_0
     local function file0(src, dest)
       local code = a.slurp(src)
-      local _2_0, _3_0 = str(code, {filename = src})
-      if ((_2_0 == false) and (nil ~= _3_0)) then
-        local err = _3_0
+      local _2_, _3_ = str(code, {filename = src})
+      if ((_2_ == false) and (nil ~= _3_)) then
+        local err = _3_
         return nvim.err_writeln(err)
-      elseif ((_2_0 == true) and (nil ~= _3_0)) then
-        local result = _3_0
+      elseif ((_2_ == true) and (nil ~= _3_)) then
+        local result = _3_
         fs.mkdirp(fs.basename(dest))
         return a.spit(dest, result)
       end
     end
     v_0_0 = file0
-    _0_0["file"] = v_0_0
+    _0_["file"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["file"] = v_0_
   file = v_0_
 end
@@ -132,10 +132,10 @@ do
       return nil
     end
     v_0_0 = glob0
-    _0_0["glob"] = v_0_0
+    _0_["glob"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["glob"] = v_0_
   glob = v_0_
 end

@@ -1,5 +1,5 @@
 local _2afile_2a = "fnl/conjure/client/fennel/stdio.fnl"
-local _0_0
+local _0_
 do
   local name_0_ = "conjure.client.fennel.stdio"
   local module_0_
@@ -15,7 +15,7 @@ do
   module_0_["aniseed/locals"] = ((module_0_)["aniseed/locals"] or {})
   module_0_["aniseed/local-fns"] = ((module_0_)["aniseed/local-fns"] or {})
   package.loaded[name_0_] = module_0_
-  _0_0 = module_0_
+  _0_ = module_0_
 end
 local autoload = (require("conjure.aniseed.autoload")).autoload
 local function _1_(...)
@@ -25,7 +25,7 @@ local function _1_(...)
   end
   ok_3f_0_, val_0_ = pcall(_1_)
   if ok_3f_0_ then
-    _0_0["aniseed/local-fns"] = {["require-macros"] = {["conjure.macros"] = true}, autoload = {a = "conjure.aniseed.core", client = "conjure.client", config = "conjure.config", log = "conjure.log", mapping = "conjure.mapping", nvim = "conjure.aniseed.nvim", stdio = "conjure.remote.stdio", str = "conjure.aniseed.string", text = "conjure.text"}}
+    _0_["aniseed/local-fns"] = {["require-macros"] = {["conjure.macros"] = true}, autoload = {a = "conjure.aniseed.core", client = "conjure.client", config = "conjure.config", log = "conjure.log", mapping = "conjure.mapping", nvim = "conjure.aniseed.nvim", stdio = "conjure.remote.stdio", str = "conjure.aniseed.string", text = "conjure.text"}}
     return val_0_
   else
     return print(val_0_)
@@ -41,14 +41,14 @@ local nvim = _local_0_[6]
 local stdio = _local_0_[7]
 local str = _local_0_[8]
 local text = _local_0_[9]
-local _2amodule_2a = _0_0
+local _2amodule_2a = _0_
 local _2amodule_name_2a = "conjure.client.fennel.stdio"
-do local _ = ({nil, _0_0, nil, {{nil}, nil, nil, nil}})[2] end
+do local _ = ({nil, _0_, nil, {{nil}, nil, nil, nil}})[2] end
 config.merge({client = {fennel = {stdio = {command = "fennel", mapping = {eval_reload = "eF", start = "cs", stop = "cS"}, prompt_pattern = ">> "}}}})
 local cfg
 do
   local v_0_ = config["get-in-fn"]({"client", "fennel", "stdio"})
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["cfg"] = v_0_
   cfg = v_0_
 end
@@ -58,8 +58,8 @@ do
   local function _2_()
     return {repl = nil}
   end
-  v_0_ = (((_0_0)["aniseed/locals"]).state or client["new-state"](_2_))
-  local t_0_ = (_0_0)["aniseed/locals"]
+  v_0_ = (((_0_)["aniseed/locals"]).state or client["new-state"](_2_))
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["state"] = v_0_
   state = v_0_
 end
@@ -68,10 +68,10 @@ do
   local v_0_
   do
     local v_0_0 = ".fnl"
-    _0_0["buf-suffix"] = v_0_0
+    _0_["buf-suffix"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["buf-suffix"] = v_0_
   buf_suffix = v_0_
 end
@@ -80,10 +80,10 @@ do
   local v_0_
   do
     local v_0_0 = "; "
-    _0_0["comment-prefix"] = v_0_0
+    _0_["comment-prefix"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["comment-prefix"] = v_0_
   comment_prefix = v_0_
 end
@@ -99,7 +99,7 @@ do
     end
   end
   v_0_ = with_repl_or_warn0
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["with-repl-or-warn"] = v_0_
   with_repl_or_warn = v_0_
 end
@@ -110,7 +110,7 @@ do
     return str.split((msg.out or msg.err), "\n")
   end
   v_0_ = format_message0
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["format-message"] = v_0_
   format_message = v_0_
 end
@@ -124,7 +124,7 @@ do
     return log.append(a.filter(_2_, format_message(msg)))
   end
   v_0_ = display_result0
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["display-result"] = v_0_
   display_result = v_0_
 end
@@ -154,10 +154,10 @@ do
       return with_repl_or_warn(_2_)
     end
     v_0_0 = eval_str0
-    _0_0["eval-str"] = v_0_0
+    _0_["eval-str"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["eval-str"] = v_0_
   eval_str = v_0_
 end
@@ -170,10 +170,10 @@ do
       return eval_str(a.assoc(opts, "code", a.slurp(opts["file-path"])))
     end
     v_0_0 = eval_file0
-    _0_0["eval-file"] = v_0_0
+    _0_["eval-file"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["eval-file"] = v_0_
   eval_file = v_0_
 end
@@ -189,10 +189,10 @@ do
       return eval_str({["file-path"] = file_path, action = "eval", code = (",reload " .. module_path), origin = "reload"})
     end
     v_0_0 = eval_reload0
-    _0_0["eval-reload"] = v_0_0
+    _0_["eval-reload"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["eval-reload"] = v_0_
   eval_reload = v_0_
 end
@@ -208,10 +208,10 @@ do
       return eval_str(a.update(opts, "code", _2_))
     end
     v_0_0 = doc_str0
-    _0_0["doc-str"] = v_0_0
+    _0_["doc-str"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["doc-str"] = v_0_
   doc_str = v_0_
 end
@@ -225,7 +225,7 @@ do
     end
   end
   v_0_ = display_repl_status0
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["display-repl-status"] = v_0_
   display_repl_status = v_0_
 end
@@ -243,10 +243,10 @@ do
       end
     end
     v_0_0 = stop0
-    _0_0["stop"] = v_0_0
+    _0_["stop"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["stop"] = v_0_
   stop = v_0_
 end
@@ -281,10 +281,10 @@ do
       end
     end
     v_0_0 = start0
-    _0_0["start"] = v_0_0
+    _0_["start"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["start"] = v_0_
   start = v_0_
 end
@@ -297,10 +297,10 @@ do
       return start()
     end
     v_0_0 = on_load0
-    _0_0["on-load"] = v_0_0
+    _0_["on-load"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["on-load"] = v_0_
   on_load = v_0_
 end
@@ -313,10 +313,10 @@ do
       return stop()
     end
     v_0_0 = on_exit0
-    _0_0["on-exit"] = v_0_0
+    _0_["on-exit"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["on-exit"] = v_0_
   on_exit = v_0_
 end
@@ -331,10 +331,10 @@ do
       return mapping.buf("n", "FnlEvalReload", cfg({"mapping", "eval_reload"}), _2amodule_name_2a, "eval-reload")
     end
     v_0_0 = on_filetype0
-    _0_0["on-filetype"] = v_0_0
+    _0_["on-filetype"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["on-filetype"] = v_0_
   on_filetype = v_0_
 end

@@ -1,5 +1,5 @@
 local _2afile_2a = "fnl/conjure/client/clojure/nrepl/action.fnl"
-local _0_0
+local _0_
 do
   local name_0_ = "conjure.client.clojure.nrepl.action"
   local module_0_
@@ -15,7 +15,7 @@ do
   module_0_["aniseed/locals"] = ((module_0_)["aniseed/locals"] or {})
   module_0_["aniseed/local-fns"] = ((module_0_)["aniseed/local-fns"] or {})
   package.loaded[name_0_] = module_0_
-  _0_0 = module_0_
+  _0_ = module_0_
 end
 local autoload = (require("conjure.aniseed.autoload")).autoload
 local function _1_(...)
@@ -25,7 +25,7 @@ local function _1_(...)
   end
   ok_3f_0_, val_0_ = pcall(_1_)
   if ok_3f_0_ then
-    _0_0["aniseed/local-fns"] = {autoload = {a = "conjure.aniseed.core", config = "conjure.config", editor = "conjure.editor", eval = "conjure.aniseed.eval", extract = "conjure.extract", fs = "conjure.fs", ll = "conjure.linked-list", log = "conjure.log", nrepl = "conjure.remote.nrepl", nvim = "conjure.aniseed.nvim", parse = "conjure.client.clojure.nrepl.parse", server = "conjure.client.clojure.nrepl.server", str = "conjure.aniseed.string", text = "conjure.text", ui = "conjure.client.clojure.nrepl.ui", view = "conjure.aniseed.view"}}
+    _0_["aniseed/local-fns"] = {autoload = {a = "conjure.aniseed.core", config = "conjure.config", editor = "conjure.editor", eval = "conjure.aniseed.eval", extract = "conjure.extract", fs = "conjure.fs", ll = "conjure.linked-list", log = "conjure.log", nrepl = "conjure.remote.nrepl", nvim = "conjure.aniseed.nvim", parse = "conjure.client.clojure.nrepl.parse", server = "conjure.client.clojure.nrepl.server", str = "conjure.aniseed.string", text = "conjure.text", ui = "conjure.client.clojure.nrepl.ui", view = "conjure.aniseed.view"}}
     return val_0_
   else
     return print(val_0_)
@@ -48,9 +48,9 @@ local fs = _local_0_[6]
 local ll = _local_0_[7]
 local log = _local_0_[8]
 local nrepl = _local_0_[9]
-local _2amodule_2a = _0_0
+local _2amodule_2a = _0_
 local _2amodule_name_2a = "conjure.client.clojure.nrepl.action"
-do local _ = ({nil, _0_0, nil, {{}, nil, nil, nil}})[2] end
+do local _ = ({nil, _0_, nil, {{}, nil, nil, nil}})[2] end
 local require_ns
 do
   local v_0_
@@ -62,14 +62,14 @@ do
     end
   end
   v_0_ = require_ns0
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["require-ns"] = v_0_
   require_ns = v_0_
 end
 local cfg
 do
   local v_0_ = config["get-in-fn"]({"client", "clojure", "nrepl"})
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["cfg"] = v_0_
   cfg = v_0_
 end
@@ -84,10 +84,10 @@ do
       end
     end
     v_0_0 = passive_ns_require0
-    _0_0["passive-ns-require"] = v_0_0
+    _0_["passive-ns-require"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["passive-ns-require"] = v_0_
   passive_ns_require = v_0_
 end
@@ -97,30 +97,28 @@ do
   do
     local v_0_0
     local function connect_port_file0(opts)
-      local function _3_()
-        local _2_0 = cfg({"connection", "port_files"})
-        if _2_0 then
-          local _4_0 = a.map(fs["resolve-above"], _2_0)
-          if _4_0 then
-            local function _5_(path)
+      local resolved
+      do
+        local _2_ = cfg({"connection", "port_files"})
+        if _2_ then
+          local _3_ = a.map(fs["resolve-above"], _2_)
+          if _3_ then
+            local function _4_(path)
               local port = a.slurp(path)
               if port then
-                return {path, tonumber(port)}
+                return {path = path, port = tonumber(port)}
               end
             end
-            return a.some(_5_, _4_0)
+            resolved = a.some(_4_, _3_)
           else
-            return _4_0
+            resolved = _3_
           end
         else
-          return _2_0
+          resolved = _2_
         end
       end
-      local _let_0_ = _3_()
-      local path = _let_0_[1]
-      local port = _let_0_[2]
       if port then
-        local function _4_()
+        local function _3_()
           do
             local cb = a.get(opts, "cb")
             if cb then
@@ -129,7 +127,23 @@ do
           end
           return passive_ns_require()
         end
-        return server.connect({cb = _4_, host = cfg({"connection", "default_host"}), port = port, port_file_path = path})
+        local _4_
+        do
+          local t_0_ = resolved
+          if (nil ~= t_0_) then
+            t_0_ = (t_0_).port
+          end
+          _4_ = t_0_
+        end
+        local _5_
+        do
+          local t_1_ = resolved
+          if (nil ~= t_1_) then
+            t_1_ = (t_1_).path
+          end
+          _5_ = t_1_
+        end
+        return server.connect({cb = _3_, host = cfg({"connection", "default_host"}), port = _4_, port_file_path = _5_})
       else
         if not a.get(opts, "silent?") then
           return log.append({"; No nREPL port file found"}, {["break?"] = true})
@@ -137,10 +151,10 @@ do
       end
     end
     v_0_0 = connect_port_file0
-    _0_0["connect-port-file"] = v_0_0
+    _0_["connect-port-file"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["connect-port-file"] = v_0_
   connect_port_file = v_0_
 end
@@ -157,7 +171,7 @@ do
     end
   end
   v_0_ = try_ensure_conn0
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["try-ensure-conn"] = v_0_
   try_ensure_conn = v_0_
 end
@@ -184,10 +198,10 @@ do
       end
     end
     v_0_0 = connect_host_port0
-    _0_0["connect-host-port"] = v_0_0
+    _0_["connect-host-port"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["connect-host-port"] = v_0_
   connect_host_port = v_0_
 end
@@ -211,7 +225,7 @@ do
     return _2_
   end
   v_0_ = eval_cb_fn0
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["eval-cb-fn"] = v_0_
   eval_cb_fn = v_0_
 end
@@ -236,10 +250,10 @@ do
       return try_ensure_conn(_2_)
     end
     v_0_0 = eval_str0
-    _0_0["eval-str"] = v_0_0
+    _0_["eval-str"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["eval-str"] = v_0_
   eval_str = v_0_
 end
@@ -261,15 +275,15 @@ do
     return server["with-conn-and-op-or-warn"]("info", _2_)
   end
   v_0_ = with_info0
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["with-info"] = v_0_
   with_info = v_0_
 end
 local java_info__3elines
 do
   local v_0_
-  local function java_info__3elines0(_2_0)
-    local _arg_0_ = _2_0
+  local function java_info__3elines0(_2_)
+    local _arg_0_ = _2_
     local arglists_str = _arg_0_["arglists-str"]
     local class = _arg_0_["class"]
     local javadoc = _arg_0_["javadoc"]
@@ -293,7 +307,7 @@ do
     return a.concat({str.join(a.concat({"; ", class}, _3_()))}, _4_, _6_())
   end
   v_0_ = java_info__3elines0
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["java-info->lines"] = v_0_
   java_info__3elines = v_0_
 end
@@ -335,10 +349,10 @@ do
       return try_ensure_conn(_2_)
     end
     v_0_0 = doc_str0
-    _0_0["doc-str"] = v_0_0
+    _0_["doc-str"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["doc-str"] = v_0_
   doc_str = v_0_
 end
@@ -361,7 +375,7 @@ do
     end
   end
   v_0_ = nrepl__3envim_path0
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["nrepl->nvim-path"] = v_0_
   nrepl__3envim_path = v_0_
 end
@@ -403,10 +417,10 @@ do
       return try_ensure_conn(_2_)
     end
     v_0_0 = def_str0
-    _0_0["def-str"] = v_0_0
+    _0_["def-str"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["def-str"] = v_0_
   def_str = v_0_
 end
@@ -422,10 +436,10 @@ do
       return try_ensure_conn(_2_)
     end
     v_0_0 = eval_file0
-    _0_0["eval-file"] = v_0_0
+    _0_["eval-file"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["eval-file"] = v_0_
   eval_file = v_0_
 end
@@ -443,8 +457,8 @@ do
           end
           msgs = a.filter(_4_, a.vals(conn.msgs))
           local order_66
-          local function _6_(_5_0)
-            local _arg_0_ = _5_0
+          local function _6_(_5_)
+            local _arg_0_ = _5_
             local code = _arg_0_["code"]
             local id = _arg_0_["id"]
             local session = _arg_0_["session"]
@@ -477,10 +491,10 @@ do
       return try_ensure_conn(_2_)
     end
     v_0_0 = interrupt0
-    _0_0["interrupt"] = v_0_0
+    _0_["interrupt"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["interrupt"] = v_0_
   interrupt = v_0_
 end
@@ -494,7 +508,7 @@ do
     return _2_
   end
   v_0_ = eval_str_fn0
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["eval-str-fn"] = v_0_
   eval_str_fn = v_0_
 end
@@ -503,10 +517,10 @@ do
   local v_0_
   do
     local v_0_0 = eval_str_fn("*e")
-    _0_0["last-exception"] = v_0_0
+    _0_["last-exception"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["last-exception"] = v_0_
   last_exception = v_0_
 end
@@ -515,10 +529,10 @@ do
   local v_0_
   do
     local v_0_0 = eval_str_fn("*1")
-    _0_0["result-1"] = v_0_0
+    _0_["result-1"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["result-1"] = v_0_
   result_1 = v_0_
 end
@@ -527,10 +541,10 @@ do
   local v_0_
   do
     local v_0_0 = eval_str_fn("*2")
-    _0_0["result-2"] = v_0_0
+    _0_["result-2"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["result-2"] = v_0_
   result_2 = v_0_
 end
@@ -539,10 +553,10 @@ do
   local v_0_
   do
     local v_0_0 = eval_str_fn("*3")
-    _0_0["result-3"] = v_0_0
+    _0_["result-3"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["result-3"] = v_0_
   result_3 = v_0_
 end
@@ -566,10 +580,10 @@ do
       return try_ensure_conn(_2_)
     end
     v_0_0 = view_source0
-    _0_0["view-source"] = v_0_0
+    _0_["view-source"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["view-source"] = v_0_
   view_source = v_0_
 end
@@ -588,10 +602,10 @@ do
       return try_ensure_conn(_2_)
     end
     v_0_0 = clone_current_session0
-    _0_0["clone-current-session"] = v_0_0
+    _0_["clone-current-session"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["clone-current-session"] = v_0_
   clone_current_session = v_0_
 end
@@ -610,10 +624,10 @@ do
       return try_ensure_conn(_2_)
     end
     v_0_0 = clone_fresh_session0
-    _0_0["clone-fresh-session"] = v_0_0
+    _0_["clone-fresh-session"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["clone-fresh-session"] = v_0_
   clone_fresh_session = v_0_
 end
@@ -640,10 +654,10 @@ do
       return try_ensure_conn(_2_)
     end
     v_0_0 = close_current_session0
-    _0_0["close-current-session"] = v_0_0
+    _0_["close-current-session"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["close-current-session"] = v_0_
   close_current_session = v_0_
 end
@@ -662,10 +676,10 @@ do
       return try_ensure_conn(_2_)
     end
     v_0_0 = display_sessions0
-    _0_0["display-sessions"] = v_0_0
+    _0_["display-sessions"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["display-sessions"] = v_0_
   display_sessions = v_0_
 end
@@ -686,10 +700,10 @@ do
       return try_ensure_conn(_2_)
     end
     v_0_0 = close_all_sessions0
-    _0_0["close-all-sessions"] = v_0_0
+    _0_["close-all-sessions"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["close-all-sessions"] = v_0_
   close_all_sessions = v_0_
 end
@@ -717,7 +731,7 @@ do
     return try_ensure_conn(_2_)
   end
   v_0_ = cycle_session0
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["cycle-session"] = v_0_
   cycle_session = v_0_
 end
@@ -733,10 +747,10 @@ do
       return cycle_session(_2_)
     end
     v_0_0 = next_session0
-    _0_0["next-session"] = v_0_0
+    _0_["next-session"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["next-session"] = v_0_
   next_session = v_0_
 end
@@ -752,10 +766,10 @@ do
       return cycle_session(_2_)
     end
     v_0_0 = prev_session0
-    _0_0["prev-session"] = v_0_0
+    _0_["prev-session"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["prev-session"] = v_0_
   prev_session = v_0_
 end
@@ -787,17 +801,17 @@ do
       return try_ensure_conn(_2_)
     end
     v_0_0 = select_session_interactive0
-    _0_0["select-session-interactive"] = v_0_0
+    _0_["select-session-interactive"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["select-session-interactive"] = v_0_
   select_session_interactive = v_0_
 end
 local test_runners
 do
   local v_0_ = {clojure = {["all-fn"] = "run-all-tests", ["default-call-suffix"] = "", ["name-prefix"] = "[(resolve '", ["name-suffix"] = ")]", ["ns-fn"] = "run-tests", ["single-fn"] = "test-vars", namespace = "clojure.test"}, kaocha = {["all-fn"] = "run-all", ["default-call-suffix"] = "{:kaocha/color? false}", ["name-prefix"] = "#'", ["name-suffix"] = "", ["ns-fn"] = "run", ["single-fn"] = "run", namespace = "kaocha.repl"}}
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["test-runners"] = v_0_
   test_runners = v_0_
 end
@@ -809,7 +823,7 @@ do
     return (a["get-in"](test_runners, {runner, k}) or error(str.join({"No test-runners configuration for ", runner, " / ", k})))
   end
   v_0_ = test_cfg0
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["test-cfg"] = v_0_
   test_cfg = v_0_
 end
@@ -820,7 +834,7 @@ do
     return require_ns(test_cfg("namespace"))
   end
   v_0_ = require_test_runner0
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["require-test-runner"] = v_0_
   require_test_runner = v_0_
 end
@@ -831,7 +845,7 @@ do
     return ("(" .. str.join(" ", {(test_cfg("namespace") .. "/" .. test_cfg((fn_config_name .. "-fn"))), ...}) .. (cfg({"test", "call_suffix"}) or test_cfg("default-call-suffix")) .. ")")
   end
   v_0_ = test_runner_code0
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["test-runner-code"] = v_0_
   test_runner_code = v_0_
 end
@@ -852,10 +866,10 @@ do
       return try_ensure_conn(_2_)
     end
     v_0_0 = run_all_tests0
-    _0_0["run-all-tests"] = v_0_0
+    _0_["run-all-tests"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["run-all-tests"] = v_0_
   run_all_tests = v_0_
 end
@@ -876,7 +890,7 @@ do
     return try_ensure_conn(_2_)
   end
   v_0_ = run_ns_tests0
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["run-ns-tests"] = v_0_
   run_ns_tests = v_0_
 end
@@ -889,10 +903,10 @@ do
       return run_ns_tests(extract.context())
     end
     v_0_0 = run_current_ns_tests0
-    _0_0["run-current-ns-tests"] = v_0_0
+    _0_["run-current-ns-tests"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["run-current-ns-tests"] = v_0_
   run_current_ns_tests = v_0_
 end
@@ -913,10 +927,10 @@ do
       return run_ns_tests(_2_())
     end
     v_0_0 = run_alternate_ns_tests0
-    _0_0["run-alternate-ns-tests"] = v_0_0
+    _0_["run-alternate-ns-tests"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["run-alternate-ns-tests"] = v_0_
   run_alternate_ns_tests = v_0_
 end
@@ -941,10 +955,10 @@ do
       return a.some(_2_, str.split(parse["strip-meta"](form), "%s+"))
     end
     v_0_0 = extract_test_name_from_form0
-    _0_0["extract-test-name-from-form"] = v_0_0
+    _0_["extract-test-name-from-form"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["extract-test-name-from-form"] = v_0_
   extract_test_name_from_form = v_0_
 end
@@ -978,10 +992,10 @@ do
       return try_ensure_conn(_2_)
     end
     v_0_0 = run_current_test0
-    _0_0["run-current-test"] = v_0_0
+    _0_["run-current-test"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["run-current-test"] = v_0_
   run_current_test = v_0_
 end
@@ -1008,7 +1022,7 @@ do
     return server["with-conn-and-op-or-warn"](op, _2_)
   end
   v_0_ = refresh_impl0
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["refresh-impl"] = v_0_
   refresh_impl = v_0_
 end
@@ -1025,10 +1039,10 @@ do
       return try_ensure_conn(_2_)
     end
     v_0_0 = refresh_changed0
-    _0_0["refresh-changed"] = v_0_0
+    _0_["refresh-changed"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["refresh-changed"] = v_0_
   refresh_changed = v_0_
 end
@@ -1045,10 +1059,10 @@ do
       return try_ensure_conn(_2_)
     end
     v_0_0 = refresh_all0
-    _0_0["refresh-all"] = v_0_0
+    _0_["refresh-all"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["refresh-all"] = v_0_
   refresh_all = v_0_
 end
@@ -1071,10 +1085,10 @@ do
       return try_ensure_conn(_2_)
     end
     v_0_0 = refresh_clear0
-    _0_0["refresh-clear"] = v_0_0
+    _0_["refresh-clear"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["refresh-clear"] = v_0_
   refresh_clear = v_0_
 end
@@ -1095,10 +1109,10 @@ do
       return try_ensure_conn(_2_)
     end
     v_0_0 = shadow_select0
-    _0_0["shadow-select"] = v_0_0
+    _0_["shadow-select"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["shadow-select"] = v_0_
   shadow_select = v_0_
 end
@@ -1120,18 +1134,18 @@ do
       return try_ensure_conn(_2_)
     end
     v_0_0 = piggieback0
-    _0_0["piggieback"] = v_0_0
+    _0_["piggieback"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["piggieback"] = v_0_
   piggieback = v_0_
 end
 local clojure__3evim_completion
 do
   local v_0_
-  local function clojure__3evim_completion0(_2_0)
-    local _arg_0_ = _2_0
+  local function clojure__3evim_completion0(_2_)
+    local _arg_0_ = _2_
     local arglists = _arg_0_["arglists"]
     local word = _arg_0_["candidate"]
     local info = _arg_0_["doc"]
@@ -1151,7 +1165,7 @@ do
     return {info = info, kind = _3_, menu = table.concat({ns, _5_()}, " "), word = word}
   end
   v_0_ = clojure__3evim_completion0
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["clojure->vim-completion"] = v_0_
   clojure__3evim_completion = v_0_
 end
@@ -1182,7 +1196,7 @@ do
     end
   end
   v_0_ = extract_completion_context0
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["extract-completion-context"] = v_0_
   extract_completion_context = v_0_
 end
@@ -1193,7 +1207,7 @@ do
     return cfg({"completion", "cljs", "use_suitable"})
   end
   v_0_ = enhanced_cljs_completion_3f0
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["enhanced-cljs-completion?"] = v_0_
   enhanced_cljs_completion_3f = v_0_
 end
@@ -1224,10 +1238,10 @@ do
       return server["with-conn-and-op-or-warn"]("complete", _2_, {["else"] = opts.cb, ["silent?"] = true})
     end
     v_0_0 = completions0
-    _0_0["completions"] = v_0_0
+    _0_["completions"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["completions"] = v_0_
   completions = v_0_
 end
@@ -1245,10 +1259,10 @@ do
       return server["with-conn-and-op-or-warn"]("out-subscribe", _2_)
     end
     v_0_0 = out_subscribe0
-    _0_0["out-subscribe"] = v_0_0
+    _0_["out-subscribe"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["out-subscribe"] = v_0_
   out_subscribe = v_0_
 end
@@ -1266,10 +1280,10 @@ do
       return server["with-conn-and-op-or-warn"]("out-unsubscribe", _2_)
     end
     v_0_0 = out_unsubscribe0
-    _0_0["out-unsubscribe"] = v_0_0
+    _0_["out-unsubscribe"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["out-unsubscribe"] = v_0_
   out_unsubscribe = v_0_
 end

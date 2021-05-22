@@ -1,5 +1,5 @@
 local _2afile_2a = "fnl/conjure/client.fnl"
-local _0_0
+local _0_
 do
   local name_0_ = "conjure.client"
   local module_0_
@@ -15,7 +15,7 @@ do
   module_0_["aniseed/locals"] = ((module_0_)["aniseed/locals"] or {})
   module_0_["aniseed/local-fns"] = ((module_0_)["aniseed/local-fns"] or {})
   package.loaded[name_0_] = module_0_
-  _0_0 = module_0_
+  _0_ = module_0_
 end
 local autoload = (require("conjure.aniseed.autoload")).autoload
 local function _1_(...)
@@ -25,7 +25,7 @@ local function _1_(...)
   end
   ok_3f_0_, val_0_ = pcall(_1_)
   if ok_3f_0_ then
-    _0_0["aniseed/local-fns"] = {autoload = {a = "conjure.aniseed.core", config = "conjure.config", dyn = "conjure.dynamic", fennel = "conjure.aniseed.fennel", nvim = "conjure.aniseed.nvim", str = "conjure.aniseed.string"}}
+    _0_["aniseed/local-fns"] = {autoload = {a = "conjure.aniseed.core", config = "conjure.config", dyn = "conjure.dynamic", fennel = "conjure.aniseed.fennel", nvim = "conjure.aniseed.nvim", str = "conjure.aniseed.string"}}
     return val_0_
   else
     return print(val_0_)
@@ -38,9 +38,9 @@ local dyn = _local_0_[3]
 local fennel = _local_0_[4]
 local nvim = _local_0_[5]
 local str = _local_0_[6]
-local _2amodule_2a = _0_0
+local _2amodule_2a = _0_
 local _2amodule_name_2a = "conjure.client"
-do local _ = ({nil, _0_0, nil, {{}, nil, nil, nil}})[2] end
+do local _ = ({nil, _0_, nil, {{}, nil, nil, nil}})[2] end
 local state_key
 do
   local v_0_
@@ -49,18 +49,18 @@ do
     local function _2_()
       return "default"
     end
-    v_0_0 = ((_0_0)["state-key"] or dyn.new(_2_))
-    _0_0["state-key"] = v_0_0
+    v_0_0 = ((_0_)["state-key"] or dyn.new(_2_))
+    _0_["state-key"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["state-key"] = v_0_
   state_key = v_0_
 end
 local state
 do
-  local v_0_ = (((_0_0)["aniseed/locals"]).state or {["state-key-set?"] = false})
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local v_0_ = (((_0_)["aniseed/locals"]).state or {["state-key-set?"] = false})
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["state"] = v_0_
   state = v_0_
 end
@@ -77,10 +77,10 @@ do
       return dyn["set-root!"](state_key, _2_)
     end
     v_0_0 = set_state_key_210
-    _0_0["set-state-key!"] = v_0_0
+    _0_["set-state-key!"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["set-state-key!"] = v_0_
   set_state_key_21 = v_0_
 end
@@ -93,10 +93,10 @@ do
       return state["state-key-set?"]
     end
     v_0_0 = multiple_states_3f0
-    _0_0["multiple-states?"] = v_0_0
+    _0_["multiple-states?"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["multiple-states?"] = v_0_
   multiple_states_3f = v_0_
 end
@@ -123,17 +123,17 @@ do
       return _2_
     end
     v_0_0 = new_state0
-    _0_0["new-state"] = v_0_0
+    _0_["new-state"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["new-state"] = v_0_
   new_state = v_0_
 end
 local loaded
 do
-  local v_0_ = (((_0_0)["aniseed/locals"]).loaded or {})
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local v_0_ = (((_0_)["aniseed/locals"]).loaded or {})
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["loaded"] = v_0_
   loaded = v_0_
 end
@@ -160,7 +160,7 @@ do
     end
   end
   v_0_ = load_module0
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["load-module"] = v_0_
   load_module = v_0_
 end
@@ -171,7 +171,7 @@ do
     return nvim.bo.filetype
   end
   v_0_ = dyn.new(_2_)
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["filetype"] = v_0_
   filetype = v_0_
 end
@@ -182,7 +182,7 @@ do
     return nvim.fn.expand("%:e")
   end
   v_0_ = dyn.new(_2_)
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["extension"] = v_0_
   extension = v_0_
 end
@@ -201,10 +201,10 @@ do
       return dyn.bind({[extension] = _2_, [filetype] = _3_}, f, ...)
     end
     v_0_0 = with_filetype0
-    _0_0["with-filetype"] = v_0_0
+    _0_["with-filetype"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["with-filetype"] = v_0_
   with_filetype = v_0_
 end
@@ -226,10 +226,10 @@ do
       return _2_
     end
     v_0_0 = wrap0
-    _0_0["wrap"] = v_0_0
+    _0_["wrap"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["wrap"] = v_0_
   wrap = v_0_
 end
@@ -242,10 +242,10 @@ do
       return wrap(vim.schedule_wrap(f), ...)
     end
     v_0_0 = schedule_wrap0
-    _0_0["schedule-wrap"] = v_0_0
+    _0_["schedule-wrap"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["schedule-wrap"] = v_0_
   schedule_wrap = v_0_
 end
@@ -258,10 +258,10 @@ do
       return vim.schedule(wrap(f, ...))
     end
     v_0_0 = schedule0
-    _0_0["schedule"] = v_0_0
+    _0_["schedule"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["schedule"] = v_0_
   schedule = v_0_
 end
@@ -294,7 +294,7 @@ do
     return result
   end
   v_0_ = current_client_module_name0
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["current-client-module-name"] = v_0_
   current_client_module_name = v_0_
 end
@@ -313,10 +313,10 @@ do
       end
     end
     v_0_0 = current0
-    _0_0["current"] = v_0_0
+    _0_["current"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["current"] = v_0_
   current = v_0_
 end
@@ -329,10 +329,10 @@ do
       return a["get-in"](current(), {...})
     end
     v_0_0 = get0
-    _0_0["get"] = v_0_0
+    _0_["get"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["get"] = v_0_
   get = v_0_
 end
@@ -350,10 +350,10 @@ do
       end
     end
     v_0_0 = call0
-    _0_0["call"] = v_0_0
+    _0_["call"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["call"] = v_0_
   call = v_0_
 end
@@ -369,10 +369,10 @@ do
       end
     end
     v_0_0 = optional_call0
-    _0_0["optional-call"] = v_0_0
+    _0_["optional-call"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["optional-call"] = v_0_
   optional_call = v_0_
 end
@@ -382,18 +382,18 @@ do
   do
     local v_0_0
     local function each_loaded_client0(f)
-      local function _3_(_2_0)
-        local _arg_0_ = _2_0
+      local function _3_(_2_)
+        local _arg_0_ = _2_
         local filetype0 = _arg_0_["filetype"]
         return with_filetype(filetype0, f)
       end
       return a["run!"](_3_, a.vals(loaded))
     end
     v_0_0 = each_loaded_client0
-    _0_0["each-loaded-client"] = v_0_0
+    _0_["each-loaded-client"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["each-loaded-client"] = v_0_
   each_loaded_client = v_0_
 end

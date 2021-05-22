@@ -1,5 +1,5 @@
 local _2afile_2a = "fnl/conjure/promise.fnl"
-local _0_0
+local _0_
 do
   local name_0_ = "conjure.promise"
   local module_0_
@@ -15,7 +15,7 @@ do
   module_0_["aniseed/locals"] = ((module_0_)["aniseed/locals"] or {})
   module_0_["aniseed/local-fns"] = ((module_0_)["aniseed/local-fns"] or {})
   package.loaded[name_0_] = module_0_
-  _0_0 = module_0_
+  _0_ = module_0_
 end
 local autoload = (require("conjure.aniseed.autoload")).autoload
 local function _1_(...)
@@ -25,7 +25,7 @@ local function _1_(...)
   end
   ok_3f_0_, val_0_ = pcall(_1_)
   if ok_3f_0_ then
-    _0_0["aniseed/local-fns"] = {autoload = {a = "conjure.aniseed.core", nvim = "conjure.aniseed.nvim", uuid = "conjure.uuid"}}
+    _0_["aniseed/local-fns"] = {autoload = {a = "conjure.aniseed.core", nvim = "conjure.aniseed.nvim", uuid = "conjure.uuid"}}
     return val_0_
   else
     return print(val_0_)
@@ -35,13 +35,13 @@ local _local_0_ = _1_(...)
 local a = _local_0_[1]
 local nvim = _local_0_[2]
 local uuid = _local_0_[3]
-local _2amodule_2a = _0_0
+local _2amodule_2a = _0_
 local _2amodule_name_2a = "conjure.promise"
-do local _ = ({nil, _0_0, nil, {{}, nil, nil, nil}})[2] end
+do local _ = ({nil, _0_, nil, {{}, nil, nil, nil}})[2] end
 local state
 do
-  local v_0_ = (((_0_0)["aniseed/locals"]).state or {})
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local v_0_ = (((_0_)["aniseed/locals"]).state or {})
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["state"] = v_0_
   state = v_0_
 end
@@ -56,10 +56,10 @@ do
       return id
     end
     v_0_0 = new0
-    _0_0["new"] = v_0_0
+    _0_["new"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["new"] = v_0_
   new = v_0_
 end
@@ -72,10 +72,10 @@ do
       return a["get-in"](state, {id, "done?"})
     end
     v_0_0 = done_3f0
-    _0_0["done?"] = v_0_0
+    _0_["done?"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["done?"] = v_0_
   done_3f = v_0_
 end
@@ -92,10 +92,10 @@ do
       return nil
     end
     v_0_0 = deliver0
-    _0_0["deliver"] = v_0_0
+    _0_["deliver"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["deliver"] = v_0_
   deliver = v_0_
 end
@@ -111,10 +111,10 @@ do
       return _2_
     end
     v_0_0 = deliver_fn0
-    _0_0["deliver-fn"] = v_0_0
+    _0_["deliver-fn"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["deliver-fn"] = v_0_
   deliver_fn = v_0_
 end
@@ -129,10 +129,10 @@ do
       return val
     end
     v_0_0 = close0
-    _0_0["close"] = v_0_0
+    _0_["close"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["close"] = v_0_
   close = v_0_
 end
@@ -145,10 +145,10 @@ do
       return nvim.fn.wait(a.get(opts, "timeout", 10000), ("luaeval(\"require('conjure.promise')['done?']('" .. id .. "')\")"), a.get(opts, "interval", 50))
     end
     v_0_0 = await0
-    _0_0["await"] = v_0_0
+    _0_["await"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["await"] = v_0_
   await = v_0_
 end

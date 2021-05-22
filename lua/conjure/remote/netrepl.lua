@@ -1,5 +1,5 @@
 local _2afile_2a = "fnl/conjure/remote/netrepl.fnl"
-local _0_0
+local _0_
 do
   local name_0_ = "conjure.remote.netrepl"
   local module_0_
@@ -15,7 +15,7 @@ do
   module_0_["aniseed/locals"] = ((module_0_)["aniseed/locals"] or {})
   module_0_["aniseed/local-fns"] = ((module_0_)["aniseed/local-fns"] or {})
   package.loaded[name_0_] = module_0_
-  _0_0 = module_0_
+  _0_ = module_0_
 end
 local autoload = (require("conjure.aniseed.autoload")).autoload
 local function _1_(...)
@@ -25,7 +25,7 @@ local function _1_(...)
   end
   ok_3f_0_, val_0_ = pcall(_1_)
   if ok_3f_0_ then
-    _0_0["aniseed/local-fns"] = {autoload = {a = "conjure.aniseed.core", client = "conjure.client", log = "conjure.log", net = "conjure.net", trn = "conjure.remote.transport.netrepl"}}
+    _0_["aniseed/local-fns"] = {autoload = {a = "conjure.aniseed.core", client = "conjure.client", log = "conjure.log", net = "conjure.net", trn = "conjure.remote.transport.netrepl"}}
     return val_0_
   else
     return print(val_0_)
@@ -37,9 +37,9 @@ local client = _local_0_[2]
 local log = _local_0_[3]
 local net = _local_0_[4]
 local trn = _local_0_[5]
-local _2amodule_2a = _0_0
+local _2amodule_2a = _0_
 local _2amodule_name_2a = "conjure.remote.netrepl"
-do local _ = ({nil, _0_0, nil, {{}, nil, nil, nil}})[2] end
+do local _ = ({nil, _0_, nil, {{}, nil, nil, nil}})[2] end
 local send
 do
   local v_0_
@@ -48,14 +48,14 @@ do
     local function send0(conn, msg, cb)
       log.dbg("send", msg)
       table.insert(conn.queue, 1, (cb or false))
-      ; (conn.sock):write(trn.encode(msg))
+      do end (conn.sock):write(trn.encode(msg))
       return nil
     end
     v_0_0 = send0
-    _0_0["send"] = v_0_0
+    _0_["send"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["send"] = v_0_
   send = v_0_
 end
@@ -84,7 +84,7 @@ do
         if err then
           return opts["on-failure"](err)
         else
-          (conn.sock):read_start(client["schedule-wrap"](handle_message))
+          do end (conn.sock):read_start(client["schedule-wrap"](handle_message))
           return opts["on-success"]()
         end
       end
@@ -93,10 +93,10 @@ do
       return conn
     end
     v_0_0 = connect0
-    _0_0["connect"] = v_0_0
+    _0_["connect"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["connect"] = v_0_
   connect = v_0_
 end

@@ -1,5 +1,5 @@
 local _2afile_2a = "fnl/conjure/client/janet/netrepl.fnl"
-local _0_0
+local _0_
 do
   local name_0_ = "conjure.client.janet.netrepl"
   local module_0_
@@ -15,7 +15,7 @@ do
   module_0_["aniseed/locals"] = ((module_0_)["aniseed/locals"] or {})
   module_0_["aniseed/local-fns"] = ((module_0_)["aniseed/local-fns"] or {})
   package.loaded[name_0_] = module_0_
-  _0_0 = module_0_
+  _0_ = module_0_
 end
 local autoload = (require("conjure.aniseed.autoload")).autoload
 local function _1_(...)
@@ -25,7 +25,7 @@ local function _1_(...)
   end
   ok_3f_0_, val_0_ = pcall(_1_)
   if ok_3f_0_ then
-    _0_0["aniseed/local-fns"] = {autoload = {a = "conjure.aniseed.core", bridge = "conjure.bridge", client = "conjure.client", config = "conjure.config", log = "conjure.log", mapping = "conjure.mapping", nvim = "conjure.aniseed.nvim", remote = "conjure.remote.netrepl", text = "conjure.text"}}
+    _0_["aniseed/local-fns"] = {autoload = {a = "conjure.aniseed.core", bridge = "conjure.bridge", client = "conjure.client", config = "conjure.config", log = "conjure.log", mapping = "conjure.mapping", nvim = "conjure.aniseed.nvim", remote = "conjure.remote.netrepl", text = "conjure.text"}}
     return val_0_
   else
     return print(val_0_)
@@ -41,18 +41,18 @@ local mapping = _local_0_[6]
 local nvim = _local_0_[7]
 local remote = _local_0_[8]
 local text = _local_0_[9]
-local _2amodule_2a = _0_0
+local _2amodule_2a = _0_
 local _2amodule_name_2a = "conjure.client.janet.netrepl"
-do local _ = ({nil, _0_0, nil, {{}, nil, nil, nil}})[2] end
+do local _ = ({nil, _0_, nil, {{}, nil, nil, nil}})[2] end
 local buf_suffix
 do
   local v_0_
   do
     local v_0_0 = ".janet"
-    _0_0["buf-suffix"] = v_0_0
+    _0_["buf-suffix"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["buf-suffix"] = v_0_
   buf_suffix = v_0_
 end
@@ -61,10 +61,10 @@ do
   local v_0_
   do
     local v_0_0 = "# "
-    _0_0["comment-prefix"] = v_0_0
+    _0_["comment-prefix"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["comment-prefix"] = v_0_
   comment_prefix = v_0_
 end
@@ -75,8 +75,8 @@ do
   local function _2_()
     return {conn = nil}
   end
-  v_0_ = (((_0_0)["aniseed/locals"]).state or client["new-state"](_2_))
-  local t_0_ = (_0_0)["aniseed/locals"]
+  v_0_ = (((_0_)["aniseed/locals"]).state or client["new-state"](_2_))
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["state"] = v_0_
   state = v_0_
 end
@@ -92,7 +92,7 @@ do
     end
   end
   v_0_ = with_conn_or_warn0
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["with-conn-or-warn"] = v_0_
   with_conn_or_warn = v_0_
 end
@@ -107,7 +107,7 @@ do
     end
   end
   v_0_ = connected_3f0
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["connected?"] = v_0_
   connected_3f = v_0_
 end
@@ -121,7 +121,7 @@ do
     return with_conn_or_warn(_2_)
   end
   v_0_ = display_conn_status0
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["display-conn-status"] = v_0_
   display_conn_status = v_0_
 end
@@ -139,10 +139,10 @@ do
       return with_conn_or_warn(_2_)
     end
     v_0_0 = disconnect0
-    _0_0["disconnect"] = v_0_0
+    _0_["disconnect"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["disconnect"] = v_0_
   disconnect = v_0_
 end
@@ -156,7 +156,7 @@ do
     return with_conn_or_warn(_2_)
   end
   v_0_ = send0
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["send"] = v_0_
   send = v_0_
 end
@@ -189,10 +189,10 @@ do
       return a.assoc(state(), "conn", remote.connect({["on-error"] = _3_, ["on-failure"] = _4_, ["on-success"] = _5_, host = host, port = port}))
     end
     v_0_0 = connect0
-    _0_0["connect"] = v_0_0
+    _0_["connect"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["connect"] = v_0_
   connect = v_0_
 end
@@ -205,7 +205,7 @@ do
     end
   end
   v_0_ = try_ensure_conn0
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["try-ensure-conn"] = v_0_
   try_ensure_conn = v_0_
 end
@@ -228,10 +228,10 @@ do
       return send((opts.code .. "\n"), _2_)
     end
     v_0_0 = eval_str0
-    _0_0["eval-str"] = v_0_0
+    _0_["eval-str"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["eval-str"] = v_0_
   eval_str = v_0_
 end
@@ -248,10 +248,10 @@ do
       return eval_str(a.update(opts, "code", _2_))
     end
     v_0_0 = doc_str0
-    _0_0["doc-str"] = v_0_0
+    _0_["doc-str"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["doc-str"] = v_0_
   doc_str = v_0_
 end
@@ -265,10 +265,10 @@ do
       return eval_str(a.assoc(opts, "code", ("(do (dofile \"" .. opts["file-path"] .. "\" :env (fiber/getenv (fiber/current))) nil)")))
     end
     v_0_0 = eval_file0
-    _0_0["eval-file"] = v_0_0
+    _0_["eval-file"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["eval-file"] = v_0_
   eval_file = v_0_
 end
@@ -282,10 +282,10 @@ do
       return mapping.buf("n", "JanetConnect", config["get-in"]({"client", "janet", "netrepl", "mapping", "connect"}), "conjure.client.janet.netrepl", "connect")
     end
     v_0_0 = on_filetype0
-    _0_0["on-filetype"] = v_0_0
+    _0_["on-filetype"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["on-filetype"] = v_0_
   on_filetype = v_0_
 end
@@ -298,10 +298,10 @@ do
       return connect({})
     end
     v_0_0 = on_load0
-    _0_0["on-load"] = v_0_0
+    _0_["on-load"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["on-load"] = v_0_
   on_load = v_0_
 end
@@ -314,10 +314,10 @@ do
       return disconnect()
     end
     v_0_0 = on_exit0
-    _0_0["on-exit"] = v_0_0
+    _0_["on-exit"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["on-exit"] = v_0_
   on_exit = v_0_
 end

@@ -1,5 +1,5 @@
 local _2afile_2a = "fnl/conjure/client/clojure/nrepl/init.fnl"
-local _0_0
+local _0_
 do
   local name_0_ = "conjure.client.clojure.nrepl"
   local module_0_
@@ -15,7 +15,7 @@ do
   module_0_["aniseed/locals"] = ((module_0_)["aniseed/locals"] or {})
   module_0_["aniseed/local-fns"] = ((module_0_)["aniseed/local-fns"] or {})
   package.loaded[name_0_] = module_0_
-  _0_0 = module_0_
+  _0_ = module_0_
 end
 local autoload = (require("conjure.aniseed.autoload")).autoload
 local function _1_(...)
@@ -25,7 +25,7 @@ local function _1_(...)
   end
   ok_3f_0_, val_0_ = pcall(_1_)
   if ok_3f_0_ then
-    _0_0["aniseed/local-fns"] = {autoload = {a = "conjure.aniseed.core", action = "conjure.client.clojure.nrepl.action", bridge = "conjure.bridge", client = "conjure.client", config = "conjure.config", eval = "conjure.eval", mapping = "conjure.mapping", nvim = "conjure.aniseed.nvim", parse = "conjure.client.clojure.nrepl.parse", server = "conjure.client.clojure.nrepl.server", str = "conjure.aniseed.string"}}
+    _0_["aniseed/local-fns"] = {autoload = {a = "conjure.aniseed.core", action = "conjure.client.clojure.nrepl.action", bridge = "conjure.bridge", client = "conjure.client", config = "conjure.config", eval = "conjure.eval", mapping = "conjure.mapping", nvim = "conjure.aniseed.nvim", parse = "conjure.client.clojure.nrepl.parse", server = "conjure.client.clojure.nrepl.server", str = "conjure.aniseed.string"}}
     return val_0_
   else
     return print(val_0_)
@@ -43,18 +43,18 @@ local eval = _local_0_[6]
 local mapping = _local_0_[7]
 local nvim = _local_0_[8]
 local parse = _local_0_[9]
-local _2amodule_2a = _0_0
+local _2amodule_2a = _0_
 local _2amodule_name_2a = "conjure.client.clojure.nrepl"
-do local _ = ({nil, _0_0, nil, {{}, nil, nil, nil}})[2] end
+do local _ = ({nil, _0_, nil, {{}, nil, nil, nil}})[2] end
 local buf_suffix
 do
   local v_0_
   do
     local v_0_0 = ".cljc"
-    _0_0["buf-suffix"] = v_0_0
+    _0_["buf-suffix"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["buf-suffix"] = v_0_
   buf_suffix = v_0_
 end
@@ -63,17 +63,17 @@ do
   local v_0_
   do
     local v_0_0 = "; "
-    _0_0["comment-prefix"] = v_0_0
+    _0_["comment-prefix"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["comment-prefix"] = v_0_
   comment_prefix = v_0_
 end
 local cfg
 do
   local v_0_ = config["get-in-fn"]({"client", "clojure", "nrepl"})
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["cfg"] = v_0_
   cfg = v_0_
 end
@@ -84,33 +84,33 @@ do
   do
     local v_0_0
     local function context0(header)
-      local _2_0 = header
-      if _2_0 then
-        local _3_0 = parse["strip-meta"](_2_0)
-        if _3_0 then
-          local _4_0 = string.match(_3_0, "%(%s*ns%s+([^)]*)")
-          if _4_0 then
-            local _5_0 = str.split(_4_0, "%s+")
-            if _5_0 then
-              return a.first(_5_0)
+      local _2_ = header
+      if _2_ then
+        local _3_ = parse["strip-meta"](_2_)
+        if _3_ then
+          local _4_ = string.match(_3_, "%(%s*ns%s+([^)]*)")
+          if _4_ then
+            local _5_ = str.split(_4_, "%s+")
+            if _5_ then
+              return a.first(_5_)
             else
-              return _5_0
+              return _5_
             end
           else
-            return _4_0
+            return _4_
           end
         else
-          return _3_0
+          return _3_
         end
       else
-        return _2_0
+        return _2_
       end
     end
     v_0_0 = context0
-    _0_0["context"] = v_0_0
+    _0_["context"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["context"] = v_0_
   context = v_0_
 end
@@ -123,10 +123,10 @@ do
       return action["eval-file"](opts)
     end
     v_0_0 = eval_file0
-    _0_0["eval-file"] = v_0_0
+    _0_["eval-file"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["eval-file"] = v_0_
   eval_file = v_0_
 end
@@ -139,10 +139,10 @@ do
       return action["eval-str"](opts)
     end
     v_0_0 = eval_str0
-    _0_0["eval-str"] = v_0_0
+    _0_["eval-str"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["eval-str"] = v_0_
   eval_str = v_0_
 end
@@ -155,10 +155,10 @@ do
       return action["doc-str"](opts)
     end
     v_0_0 = doc_str0
-    _0_0["doc-str"] = v_0_0
+    _0_["doc-str"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["doc-str"] = v_0_
   doc_str = v_0_
 end
@@ -171,10 +171,10 @@ do
       return action["def-str"](opts)
     end
     v_0_0 = def_str0
-    _0_0["def-str"] = v_0_0
+    _0_["def-str"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["def-str"] = v_0_
   def_str = v_0_
 end
@@ -187,10 +187,10 @@ do
       return action.completions(opts)
     end
     v_0_0 = completions0
-    _0_0["completions"] = v_0_0
+    _0_["completions"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["completions"] = v_0_
   completions = v_0_
 end
@@ -203,10 +203,10 @@ do
       return action["connect-host-port"](opts)
     end
     v_0_0 = connect0
-    _0_0["connect"] = v_0_0
+    _0_["connect"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["connect"] = v_0_
   connect = v_0_
 end
@@ -246,10 +246,10 @@ do
       return action["passive-ns-require"]()
     end
     v_0_0 = on_filetype0
-    _0_0["on-filetype"] = v_0_0
+    _0_["on-filetype"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["on-filetype"] = v_0_
   on_filetype = v_0_
 end
@@ -262,10 +262,10 @@ do
       return action["connect-port-file"]()
     end
     v_0_0 = on_load0
-    _0_0["on-load"] = v_0_0
+    _0_["on-load"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["on-load"] = v_0_
   on_load = v_0_
 end
@@ -278,10 +278,10 @@ do
       return server.disconnect()
     end
     v_0_0 = on_exit0
-    _0_0["on-exit"] = v_0_0
+    _0_["on-exit"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["on-exit"] = v_0_
   on_exit = v_0_
 end

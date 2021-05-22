@@ -1,5 +1,5 @@
 local _2afile_2a = "fnl/conjure/inline.fnl"
-local _0_0
+local _0_
 do
   local name_0_ = "conjure.inline"
   local module_0_
@@ -15,7 +15,7 @@ do
   module_0_["aniseed/locals"] = ((module_0_)["aniseed/locals"] or {})
   module_0_["aniseed/local-fns"] = ((module_0_)["aniseed/local-fns"] or {})
   package.loaded[name_0_] = module_0_
-  _0_0 = module_0_
+  _0_ = module_0_
 end
 local autoload = (require("conjure.aniseed.autoload")).autoload
 local function _1_(...)
@@ -25,7 +25,7 @@ local function _1_(...)
   end
   ok_3f_0_, val_0_ = pcall(_1_)
   if ok_3f_0_ then
-    _0_0["aniseed/local-fns"] = {autoload = {a = "conjure.aniseed.core", nvim = "conjure.aniseed.nvim"}}
+    _0_["aniseed/local-fns"] = {autoload = {a = "conjure.aniseed.core", nvim = "conjure.aniseed.nvim"}}
     return val_0_
   else
     return print(val_0_)
@@ -34,18 +34,18 @@ end
 local _local_0_ = _1_(...)
 local a = _local_0_[1]
 local nvim = _local_0_[2]
-local _2amodule_2a = _0_0
+local _2amodule_2a = _0_
 local _2amodule_name_2a = "conjure.inline"
-do local _ = ({nil, _0_0, nil, {{}, nil, nil, nil}})[2] end
+do local _ = ({nil, _0_, nil, {{}, nil, nil, nil}})[2] end
 local ns_id
 do
   local v_0_
   do
-    local v_0_0 = ((_0_0)["ns-id"] or nvim.create_namespace(_2amodule_name_2a))
-    _0_0["ns-id"] = v_0_0
+    local v_0_0 = ((_0_)["ns-id"] or nvim.create_namespace(_2amodule_name_2a))
+    _0_["ns-id"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["ns-id"] = v_0_
   ns_id = v_0_
 end
@@ -62,10 +62,10 @@ do
       end
     end
     v_0_0 = sanitise_text0
-    _0_0["sanitise-text"] = v_0_0
+    _0_["sanitise-text"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["sanitise-text"] = v_0_
   sanitise_text = v_0_
 end
@@ -81,10 +81,10 @@ do
       return pcall(_2_)
     end
     v_0_0 = display0
-    _0_0["display"] = v_0_0
+    _0_["display"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["display"] = v_0_
   display = v_0_
 end
@@ -100,10 +100,10 @@ do
       return pcall(_2_)
     end
     v_0_0 = clear0
-    _0_0["clear"] = v_0_0
+    _0_["clear"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["clear"] = v_0_
   clear = v_0_
 end

@@ -1,5 +1,5 @@
 local _2afile_2a = "fnl/conjure/fs.fnl"
-local _0_0
+local _0_
 do
   local name_0_ = "conjure.fs"
   local module_0_
@@ -15,7 +15,7 @@ do
   module_0_["aniseed/locals"] = ((module_0_)["aniseed/locals"] or {})
   module_0_["aniseed/local-fns"] = ((module_0_)["aniseed/local-fns"] or {})
   package.loaded[name_0_] = module_0_
-  _0_0 = module_0_
+  _0_ = module_0_
 end
 local autoload = (require("conjure.aniseed.autoload")).autoload
 local function _1_(...)
@@ -25,7 +25,7 @@ local function _1_(...)
   end
   ok_3f_0_, val_0_ = pcall(_1_)
   if ok_3f_0_ then
-    _0_0["aniseed/local-fns"] = {autoload = {a = "conjure.aniseed.core", config = "conjure.config", nvim = "conjure.aniseed.nvim", str = "conjure.aniseed.string"}}
+    _0_["aniseed/local-fns"] = {autoload = {a = "conjure.aniseed.core", config = "conjure.config", nvim = "conjure.aniseed.nvim", str = "conjure.aniseed.string"}}
     return val_0_
   else
     return print(val_0_)
@@ -36,9 +36,9 @@ local a = _local_0_[1]
 local config = _local_0_[2]
 local nvim = _local_0_[3]
 local str = _local_0_[4]
-local _2amodule_2a = _0_0
+local _2amodule_2a = _0_
 local _2amodule_name_2a = "conjure.fs"
-do local _ = ({nil, _0_0, nil, {{}, nil, nil, nil}})[2] end
+do local _ = ({nil, _0_, nil, {{}, nil, nil, nil}})[2] end
 local env
 do
   local v_0_
@@ -49,7 +49,7 @@ do
     end
   end
   v_0_ = env0
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["env"] = v_0_
   env = v_0_
 end
@@ -62,10 +62,10 @@ do
       return ((env("XDG_CONFIG_HOME") or (env("HOME") .. "/.config")) .. "/conjure")
     end
     v_0_0 = config_dir0
-    _0_0["config-dir"] = v_0_0
+    _0_["config-dir"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["config-dir"] = v_0_
   config_dir = v_0_
 end
@@ -81,10 +81,10 @@ do
       end
     end
     v_0_0 = findfile0
-    _0_0["findfile"] = v_0_0
+    _0_["findfile"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["findfile"] = v_0_
   findfile = v_0_
 end
@@ -97,10 +97,10 @@ do
       return (findfile(name, ".;") or findfile(name, (nvim.fn.getcwd() .. ";")) or findfile(name, (config_dir() .. ";")))
     end
     v_0_0 = resolve_above0
-    _0_0["resolve-above"] = v_0_0
+    _0_["resolve-above"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["resolve-above"] = v_0_
   resolve_above = v_0_
 end
@@ -113,10 +113,10 @@ do
       return (1 == nvim.fn.filereadable(path))
     end
     v_0_0 = file_readable_3f0
-    _0_0["file-readable?"] = v_0_0
+    _0_["file-readable?"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["file-readable?"] = v_0_
   file_readable_3f = v_0_
 end
@@ -132,10 +132,10 @@ do
       return a.filter(_2_, str.split(path, "/"))
     end
     v_0_0 = split_path0
-    _0_0["split-path"] = v_0_0
+    _0_["split-path"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["split-path"] = v_0_
   split_path = v_0_
 end
@@ -148,10 +148,10 @@ do
       return str.join("/", a.concat(parts))
     end
     v_0_0 = join_path0
-    _0_0["join-path"] = v_0_0
+    _0_["join-path"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["join-path"] = v_0_
   join_path = v_0_
 end
@@ -175,10 +175,10 @@ do
       return loop(split_path(path))
     end
     v_0_0 = resolve_relative_to0
-    _0_0["resolve-relative-to"] = v_0_0
+    _0_["resolve-relative-to"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["resolve-relative-to"] = v_0_
   resolve_relative_to = v_0_
 end
@@ -196,10 +196,10 @@ do
       end
     end
     v_0_0 = resolve_relative0
-    _0_0["resolve-relative"] = v_0_0
+    _0_["resolve-relative"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["resolve-relative"] = v_0_
   resolve_relative = v_0_
 end
@@ -209,8 +209,8 @@ do
   do
     local v_0_0
     local function apply_path_subs0(path, path_subs)
-      local function _3_(path0, _2_0)
-        local _arg_0_ = _2_0
+      local function _3_(path0, _2_)
+        local _arg_0_ = _2_
         local pat = _arg_0_[1]
         local rep = _arg_0_[2]
         return path0:gsub(pat, rep)
@@ -218,10 +218,10 @@ do
       return a.reduce(_3_, path, a["kv-pairs"](path_subs))
     end
     v_0_0 = apply_path_subs0
-    _0_0["apply-path-subs"] = v_0_0
+    _0_["apply-path-subs"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["apply-path-subs"] = v_0_
   apply_path_subs = v_0_
 end
@@ -234,10 +234,10 @@ do
       return resolve_relative(apply_path_subs(path, config["get-in"]({"path_subs"})))
     end
     v_0_0 = localise_path0
-    _0_0["localise-path"] = v_0_0
+    _0_["localise-path"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["localise-path"] = v_0_
   localise_path = v_0_
 end

@@ -1,5 +1,5 @@
 local _2afile_2a = "fnl/conjure/log.fnl"
-local _0_0
+local _0_
 do
   local name_0_ = "conjure.log"
   local module_0_
@@ -15,7 +15,7 @@ do
   module_0_["aniseed/locals"] = ((module_0_)["aniseed/locals"] or {})
   module_0_["aniseed/local-fns"] = ((module_0_)["aniseed/local-fns"] or {})
   package.loaded[name_0_] = module_0_
-  _0_0 = module_0_
+  _0_ = module_0_
 end
 local autoload = (require("conjure.aniseed.autoload")).autoload
 local function _1_(...)
@@ -25,7 +25,7 @@ local function _1_(...)
   end
   ok_3f_0_, val_0_ = pcall(_1_)
   if ok_3f_0_ then
-    _0_0["aniseed/local-fns"] = {autoload = {a = "conjure.aniseed.core", buffer = "conjure.buffer", client = "conjure.client", config = "conjure.config", editor = "conjure.editor", nvim = "conjure.aniseed.nvim", str = "conjure.aniseed.string", text = "conjure.text", timer = "conjure.timer", view = "conjure.aniseed.view"}, require = {sponsors = "conjure.sponsors"}}
+    _0_["aniseed/local-fns"] = {autoload = {a = "conjure.aniseed.core", buffer = "conjure.buffer", client = "conjure.client", config = "conjure.config", editor = "conjure.editor", nvim = "conjure.aniseed.nvim", str = "conjure.aniseed.string", text = "conjure.text", timer = "conjure.timer", view = "conjure.aniseed.view"}, require = {sponsors = "conjure.sponsors"}}
     return val_0_
   else
     return print(val_0_)
@@ -43,13 +43,13 @@ local nvim = _local_0_[6]
 local str = _local_0_[7]
 local text = _local_0_[8]
 local timer = _local_0_[9]
-local _2amodule_2a = _0_0
+local _2amodule_2a = _0_
 local _2amodule_name_2a = "conjure.log"
-do local _ = ({nil, _0_0, nil, {{}, nil, nil, nil}})[2] end
+do local _ = ({nil, _0_, nil, {{}, nil, nil, nil}})[2] end
 local state
 do
-  local v_0_ = (((_0_0)["aniseed/locals"]).state or {hud = {id = nil, timer = nil}})
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local v_0_ = (((_0_)["aniseed/locals"]).state or {hud = {id = nil, timer = nil}})
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["state"] = v_0_
   state = v_0_
 end
@@ -60,7 +60,7 @@ do
     return (client.get("comment-prefix") .. string.rep("-", config["get-in"]({"log", "break_length"})))
   end
   v_0_ = _break0
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["break"] = v_0_
   _break = v_0_
 end
@@ -71,7 +71,7 @@ do
     return (client.get("comment-prefix") .. "State: " .. client["state-key"]())
   end
   v_0_ = state_key_header0
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["state-key-header"] = v_0_
   state_key_header = v_0_
 end
@@ -82,7 +82,7 @@ do
     return ("conjure-log-" .. nvim.fn.getpid() .. client.get("buf-suffix"))
   end
   v_0_ = log_buf_name0
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["log-buf-name"] = v_0_
   log_buf_name = v_0_
 end
@@ -95,10 +95,10 @@ do
       return name:match((log_buf_name() .. "$"))
     end
     v_0_0 = log_buf_3f0
-    _0_0["log-buf?"] = v_0_0
+    _0_["log-buf?"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["log-buf?"] = v_0_
   log_buf_3f = v_0_
 end
@@ -109,7 +109,7 @@ do
     return nvim.buf_set_lines(buf, 0, -1, false, {(client.get("comment-prefix") .. "Sponsored by @" .. a.get(sponsors, a.inc(math.floor(a.rand(a.dec(a.count(sponsors)))))) .. " \226\157\164")})
   end
   v_0_ = on_new_log_buf0
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["on-new-log-buf"] = v_0_
   on_new_log_buf = v_0_
 end
@@ -120,7 +120,7 @@ do
     return buffer["upsert-hidden"](log_buf_name(), on_new_log_buf)
   end
   v_0_ = upsert_buf0
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["upsert-buf"] = v_0_
   upsert_buf = v_0_
 end
@@ -133,10 +133,10 @@ do
       return a["update-in"](state, {"hud", "timer"}, timer.destroy)
     end
     v_0_0 = clear_close_hud_passive_timer0
-    _0_0["clear-close-hud-passive-timer"] = v_0_0
+    _0_["clear-close-hud-passive-timer"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["clear-close-hud-passive-timer"] = v_0_
   clear_close_hud_passive_timer = v_0_
 end
@@ -154,10 +154,10 @@ do
       end
     end
     v_0_0 = close_hud0
-    _0_0["close-hud"] = v_0_0
+    _0_["close-hud"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["close-hud"] = v_0_
   close_hud = v_0_
 end
@@ -180,10 +180,10 @@ do
       end
     end
     v_0_0 = close_hud_passive0
-    _0_0["close-hud-passive"] = v_0_0
+    _0_["close-hud-passive"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["close-hud-passive"] = v_0_
   close_hud_passive = v_0_
 end
@@ -192,8 +192,8 @@ do
   local v_0_
   local function break_lines0(buf)
     local break_str = _break()
-    local function _3_(_2_0)
-      local _arg_0_ = _2_0
+    local function _3_(_2_)
+      local _arg_0_ = _2_
       local n = _arg_0_[1]
       local s = _arg_0_[2]
       return (s == break_str)
@@ -201,7 +201,7 @@ do
     return a.map(a.first, a.filter(_3_, a["kv-pairs"](nvim.buf_get_lines(buf, 0, -1, false))))
   end
   v_0_ = break_lines0
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["break-lines"] = v_0_
   break_lines = v_0_
 end
@@ -222,7 +222,7 @@ do
     return nvim.win_set_option(win, "foldlevel", 0)
   end
   v_0_ = set_win_opts_210
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["set-win-opts!"] = v_0_
   set_win_opts_21 = v_0_
 end
@@ -233,7 +233,7 @@ do
     return ((pos.x >= box.x1) and (pos.x <= box.x2) and (pos.y >= box.y1) and (pos.y <= box.y2))
   end
   v_0_ = in_box_3f0
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["in-box?"] = v_0_
   in_box_3f = v_0_
 end
@@ -249,7 +249,7 @@ do
     return str.join(a.update(chars, n, _2_))
   end
   v_0_ = flip_anchor0
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["flip-anchor"] = v_0_
   flip_anchor = v_0_
 end
@@ -272,7 +272,7 @@ do
     return a.update(a.update(a.update(a.update(box, "x1", _2_), "y1", _3_), "x2", _4_), "y2", _5_)
   end
   v_0_ = pad_box0
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["pad-box"] = v_0_
   pad_box = v_0_
 end
@@ -314,7 +314,7 @@ do
     end
   end
   v_0_ = hud_window_pos0
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["hud-window-pos"] = v_0_
   hud_window_pos = v_0_
 end
@@ -348,7 +348,7 @@ do
     end
   end
   v_0_ = display_hud0
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["display-hud"] = v_0_
   display_hud = v_0_
 end
@@ -359,7 +359,7 @@ do
     return (nvim.fn.tabpagenr() == a.first(nvim.fn.win_id2tabwin(win)))
   end
   v_0_ = win_visible_3f0
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["win-visible?"] = v_0_
   win_visible_3f = v_0_
 end
@@ -375,7 +375,7 @@ do
     return a["run!"](_2_, nvim.list_wins())
   end
   v_0_ = with_buf_wins0
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["with-buf-wins"] = v_0_
   with_buf_wins = v_0_
 end
@@ -386,7 +386,7 @@ do
     return a.get(a.first(nvim.fn.getwininfo(win)), "botline")
   end
   v_0_ = win_botline0
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["win-botline"] = v_0_
   win_botline = v_0_
 end
@@ -419,7 +419,7 @@ do
     end
   end
   v_0_ = trim0
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["trim"] = v_0_
   trim = v_0_
 end
@@ -432,10 +432,10 @@ do
       return a.first(nvim.buf_get_lines((buf or upsert_buf()), (-2 + (extra_offset or 0)), -1, false))
     end
     v_0_0 = last_line0
-    _0_0["last-line"] = v_0_0
+    _0_["last-line"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["last-line"] = v_0_
   last_line = v_0_
 end
@@ -537,10 +537,10 @@ do
       end
     end
     v_0_0 = append0
-    _0_0["append"] = v_0_0
+    _0_["append"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["append"] = v_0_
   append = v_0_
 end
@@ -561,7 +561,7 @@ do
     return buffer.unlist(buf)
   end
   v_0_ = create_win0
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["create-win"] = v_0_
   create_win = v_0_
 end
@@ -574,10 +574,10 @@ do
       return create_win("split")
     end
     v_0_0 = split0
-    _0_0["split"] = v_0_0
+    _0_["split"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["split"] = v_0_
   split = v_0_
 end
@@ -590,10 +590,10 @@ do
       return create_win("vsplit")
     end
     v_0_0 = vsplit0
-    _0_0["vsplit"] = v_0_0
+    _0_["vsplit"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["vsplit"] = v_0_
   vsplit = v_0_
 end
@@ -606,10 +606,10 @@ do
       return create_win("tabnew")
     end
     v_0_0 = tab0
-    _0_0["tab"] = v_0_0
+    _0_["tab"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["tab"] = v_0_
   tab = v_0_
 end
@@ -630,10 +630,10 @@ do
       return a["run!"](_2_, a.filter(_3_, nvim.tabpage_list_wins(0)))
     end
     v_0_0 = close_visible0
-    _0_0["close-visible"] = v_0_0
+    _0_["close-visible"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["close-visible"] = v_0_
   close_visible = v_0_
 end
@@ -649,10 +649,10 @@ do
       return ...
     end
     v_0_0 = dbg0
-    _0_0["dbg"] = v_0_0
+    _0_["dbg"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["dbg"] = v_0_
   dbg = v_0_
 end
@@ -665,10 +665,10 @@ do
       return on_new_log_buf(upsert_buf())
     end
     v_0_0 = reset_soft0
-    _0_0["reset-soft"] = v_0_0
+    _0_["reset-soft"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["reset-soft"] = v_0_
   reset_soft = v_0_
 end
@@ -681,10 +681,10 @@ do
       return nvim.ex.bwipeout_(upsert_buf())
     end
     v_0_0 = reset_hard0
-    _0_0["reset-hard"] = v_0_0
+    _0_["reset-hard"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["reset-hard"] = v_0_
   reset_hard = v_0_
 end

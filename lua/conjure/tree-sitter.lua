@@ -1,5 +1,5 @@
 local _2afile_2a = "fnl/conjure/tree-sitter.fnl"
-local _0_0
+local _0_
 do
   local name_0_ = "conjure.tree-sitter"
   local module_0_
@@ -15,7 +15,7 @@ do
   module_0_["aniseed/locals"] = ((module_0_)["aniseed/locals"] or {})
   module_0_["aniseed/local-fns"] = ((module_0_)["aniseed/local-fns"] or {})
   package.loaded[name_0_] = module_0_
-  _0_0 = module_0_
+  _0_ = module_0_
 end
 local autoload = (require("conjure.aniseed.autoload")).autoload
 local function _1_(...)
@@ -25,7 +25,7 @@ local function _1_(...)
   end
   ok_3f_0_, val_0_ = pcall(_1_)
   if ok_3f_0_ then
-    _0_0["aniseed/local-fns"] = {autoload = {a = "conjure.aniseed.core", client = "conjure.client", config = "conjure.config", str = "conjure.aniseed.string"}}
+    _0_["aniseed/local-fns"] = {autoload = {a = "conjure.aniseed.core", client = "conjure.client", config = "conjure.config", str = "conjure.aniseed.string"}}
     return val_0_
   else
     return print(val_0_)
@@ -36,9 +36,9 @@ local a = _local_0_[1]
 local client = _local_0_[2]
 local config = _local_0_[3]
 local str = _local_0_[4]
-local _2amodule_2a = _0_0
+local _2amodule_2a = _0_
 local _2amodule_name_2a = "conjure.tree-sitter"
-do local _ = ({nil, _0_0, nil, {{}, nil, nil, nil}})[2] end
+do local _ = ({nil, _0_, nil, {{}, nil, nil, nil}})[2] end
 local ts
 do
   local v_0_
@@ -54,7 +54,7 @@ do
     v_0_ = nil
     end
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["ts"] = v_0_
   ts = v_0_
 end
@@ -71,10 +71,10 @@ do
       return (("table" == type(ts)) and config["get-in"]({"extract", "tree_sitter", "enabled"}) and _2_())
     end
     v_0_0 = enabled_3f0
-    _0_0["enabled?"] = v_0_0
+    _0_["enabled?"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["enabled?"] = v_0_
   enabled_3f = v_0_
 end
@@ -89,10 +89,10 @@ do
       end
     end
     v_0_0 = node__3estr0
-    _0_0["node->str"] = v_0_0
+    _0_["node->str"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["node->str"] = v_0_
   node__3estr = v_0_
 end
@@ -107,10 +107,10 @@ do
       end
     end
     v_0_0 = parent0
-    _0_0["parent"] = v_0_0
+    _0_["parent"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["parent"] = v_0_
   parent = v_0_
 end
@@ -123,10 +123,10 @@ do
       return not parent(node)
     end
     v_0_0 = document_3f0
-    _0_0["document?"] = v_0_0
+    _0_["document?"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["document?"] = v_0_
   document_3f = v_0_
 end
@@ -142,10 +142,10 @@ do
       end
     end
     v_0_0 = range0
-    _0_0["range"] = v_0_0
+    _0_["range"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["range"] = v_0_
   range = v_0_
 end
@@ -165,10 +165,10 @@ do
       end
     end
     v_0_0 = get_root0
-    _0_0["get-root"] = v_0_0
+    _0_["get-root"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["get-root"] = v_0_
   get_root = v_0_
 end
@@ -183,10 +183,10 @@ do
       end
     end
     v_0_0 = leaf_3f0
-    _0_0["leaf?"] = v_0_0
+    _0_["leaf?"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["leaf?"] = v_0_
   leaf_3f = v_0_
 end
@@ -202,10 +202,10 @@ do
       end
     end
     v_0_0 = get_leaf0
-    _0_0["get-leaf"] = v_0_0
+    _0_["get-leaf"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["get-leaf"] = v_0_
   get_leaf = v_0_
 end
@@ -225,10 +225,10 @@ do
       end
     end
     v_0_0 = get_form0
-    _0_0["get-form"] = v_0_0
+    _0_["get-form"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["get-form"] = v_0_
   get_form = v_0_
 end

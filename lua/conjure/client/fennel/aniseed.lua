@@ -1,5 +1,5 @@
 local _2afile_2a = "fnl/conjure/client/fennel/aniseed.fnl"
-local _0_0
+local _0_
 do
   local name_0_ = "conjure.client.fennel.aniseed"
   local module_0_
@@ -15,7 +15,7 @@ do
   module_0_["aniseed/locals"] = ((module_0_)["aniseed/locals"] or {})
   module_0_["aniseed/local-fns"] = ((module_0_)["aniseed/local-fns"] or {})
   package.loaded[name_0_] = module_0_
-  _0_0 = module_0_
+  _0_ = module_0_
 end
 local autoload = (require("conjure.aniseed.autoload")).autoload
 local function _1_(...)
@@ -25,7 +25,7 @@ local function _1_(...)
   end
   ok_3f_0_, val_0_ = pcall(_1_)
   if ok_3f_0_ then
-    _0_0["aniseed/local-fns"] = {autoload = {a = "conjure.aniseed.core", client = "conjure.client", config = "conjure.config", extract = "conjure.extract", log = "conjure.log", mapping = "conjure.mapping", nvim = "conjure.aniseed.nvim", str = "conjure.aniseed.string", text = "conjure.text", view = "conjure.aniseed.view"}}
+    _0_["aniseed/local-fns"] = {autoload = {a = "conjure.aniseed.core", client = "conjure.client", config = "conjure.config", extract = "conjure.extract", log = "conjure.log", mapping = "conjure.mapping", nvim = "conjure.aniseed.nvim", str = "conjure.aniseed.string", text = "conjure.text", view = "conjure.aniseed.view"}}
     return val_0_
   else
     return print(val_0_)
@@ -42,18 +42,18 @@ local mapping = _local_0_[6]
 local nvim = _local_0_[7]
 local str = _local_0_[8]
 local text = _local_0_[9]
-local _2amodule_2a = _0_0
+local _2amodule_2a = _0_
 local _2amodule_name_2a = "conjure.client.fennel.aniseed"
-do local _ = ({nil, _0_0, nil, {{}, nil, nil, nil}})[2] end
+do local _ = ({nil, _0_, nil, {{}, nil, nil, nil}})[2] end
 local buf_suffix
 do
   local v_0_
   do
     local v_0_0 = ".fnl"
-    _0_0["buf-suffix"] = v_0_0
+    _0_["buf-suffix"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["buf-suffix"] = v_0_
   buf_suffix = v_0_
 end
@@ -62,10 +62,10 @@ do
   local v_0_
   do
     local v_0_0 = "%(%s*module%s+(.-)[%s){]"
-    _0_0["context-pattern"] = v_0_0
+    _0_["context-pattern"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["context-pattern"] = v_0_
   context_pattern = v_0_
 end
@@ -74,10 +74,10 @@ do
   local v_0_
   do
     local v_0_0 = "; "
-    _0_0["comment-prefix"] = v_0_0
+    _0_["comment-prefix"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["comment-prefix"] = v_0_
   comment_prefix = v_0_
 end
@@ -85,14 +85,14 @@ config.merge({client = {fennel = {aniseed = {aniseed_module_prefix = "conjure.an
 local cfg
 do
   local v_0_ = config["get-in-fn"]({"client", "fennel", "aniseed"})
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["cfg"] = v_0_
   cfg = v_0_
 end
 local ani_aliases
 do
   local v_0_ = {nu = "nvim.util"}
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["ani-aliases"] = v_0_
   ani_aliases = v_0_
 end
@@ -109,7 +109,7 @@ do
     end
   end
   v_0_ = ani0
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["ani"] = v_0_
   ani = v_0_
 end
@@ -120,7 +120,7 @@ do
     return ani(mod, f_name)(...)
   end
   v_0_ = anic0
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["anic"] = v_0_
   anic = v_0_
 end
@@ -167,10 +167,10 @@ do
       end
     end
     v_0_0 = display_result0
-    _0_0["display-result"] = v_0_0
+    _0_["display-result"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["display-result"] = v_0_
   display_result = v_0_
 end
@@ -203,10 +203,10 @@ do
       return client.wrap(_2_)()
     end
     v_0_0 = eval_str0
-    _0_0["eval-str"] = v_0_0
+    _0_["eval-str"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["eval-str"] = v_0_
   eval_str = v_0_
 end
@@ -220,10 +220,10 @@ do
       return eval_str(opts)
     end
     v_0_0 = doc_str0
-    _0_0["doc-str"] = v_0_0
+    _0_["doc-str"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["doc-str"] = v_0_
   doc_str = v_0_
 end
@@ -239,10 +239,10 @@ do
       end
     end
     v_0_0 = eval_file0
-    _0_0["eval-file"] = v_0_0
+    _0_["eval-file"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["eval-file"] = v_0_
   eval_file = v_0_
 end
@@ -261,7 +261,7 @@ do
     return log.append(text["prefixed-lines"](_2_, "; "))
   end
   v_0_ = wrapped_test0
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["wrapped-test"] = v_0_
   wrapped_test = v_0_
 end
@@ -280,10 +280,10 @@ do
       end
     end
     v_0_0 = run_buf_tests0
-    _0_0["run-buf-tests"] = v_0_0
+    _0_["run-buf-tests"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["run-buf-tests"] = v_0_
   run_buf_tests = v_0_
 end
@@ -296,10 +296,10 @@ do
       return wrapped_test({"; run-all-tests"}, ani("test", "run-all"))
     end
     v_0_0 = run_all_tests0
-    _0_0["run-all-tests"] = v_0_0
+    _0_["run-all-tests"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["run-all-tests"] = v_0_
   run_all_tests = v_0_
 end
@@ -313,10 +313,10 @@ do
       return mapping.buf("n", "FnlRunAllTests", cfg({"mapping", "run_all_tests"}), _2amodule_name_2a, "run-all-tests")
     end
     v_0_0 = on_filetype0
-    _0_0["on-filetype"] = v_0_0
+    _0_["on-filetype"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["on-filetype"] = v_0_
   on_filetype = v_0_
 end
@@ -327,14 +327,14 @@ do
     local v_0_0
     local function value__3ecompletions0(x)
       if ("table" == type(x)) then
-        local function _3_(_2_0)
-          local _arg_0_ = _2_0
+        local function _3_(_2_)
+          local _arg_0_ = _2_
           local k = _arg_0_[1]
           local v = _arg_0_[2]
           return {info = nil, kind = type(v), menu = nil, word = k}
         end
-        local function _5_(_4_0)
-          local _arg_0_ = _4_0
+        local function _5_(_4_)
+          local _arg_0_ = _4_
           local k = _arg_0_[1]
           local v = _arg_0_[2]
           return not text["starts-with"](k, "aniseed/")
@@ -351,10 +351,10 @@ do
       end
     end
     v_0_0 = value__3ecompletions0
-    _0_0["value->completions"] = v_0_0
+    _0_["value->completions"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["value->completions"] = v_0_
   value__3ecompletions = v_0_
 end
@@ -417,10 +417,10 @@ do
       end
     end
     v_0_0 = completions0
-    _0_0["completions"] = v_0_0
+    _0_["completions"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["completions"] = v_0_
   completions = v_0_
 end

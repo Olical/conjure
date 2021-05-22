@@ -1,5 +1,5 @@
 local _2afile_2a = "fnl/conjure/school.fnl"
-local _0_0
+local _0_
 do
   local name_0_ = "conjure.school"
   local module_0_
@@ -15,7 +15,7 @@ do
   module_0_["aniseed/locals"] = ((module_0_)["aniseed/locals"] or {})
   module_0_["aniseed/local-fns"] = ((module_0_)["aniseed/local-fns"] or {})
   package.loaded[name_0_] = module_0_
-  _0_0 = module_0_
+  _0_ = module_0_
 end
 local autoload = (require("conjure.aniseed.autoload")).autoload
 local function _1_(...)
@@ -25,7 +25,7 @@ local function _1_(...)
   end
   ok_3f_0_, val_0_ = pcall(_1_)
   if ok_3f_0_ then
-    _0_0["aniseed/local-fns"] = {autoload = {a = "conjure.aniseed.core", buffer = "conjure.buffer", config = "conjure.config", editor = "conjure.editor", nvim = "conjure.aniseed.nvim", str = "conjure.aniseed.string"}}
+    _0_["aniseed/local-fns"] = {autoload = {a = "conjure.aniseed.core", buffer = "conjure.buffer", config = "conjure.config", editor = "conjure.editor", nvim = "conjure.aniseed.nvim", str = "conjure.aniseed.string"}}
     return val_0_
   else
     return print(val_0_)
@@ -38,13 +38,13 @@ local config = _local_0_[3]
 local editor = _local_0_[4]
 local nvim = _local_0_[5]
 local str = _local_0_[6]
-local _2amodule_2a = _0_0
+local _2amodule_2a = _0_
 local _2amodule_name_2a = "conjure.school"
-do local _ = ({nil, _0_0, nil, {{}, nil, nil, nil}})[2] end
+do local _ = ({nil, _0_, nil, {{}, nil, nil, nil}})[2] end
 local buf_name
 do
   local v_0_ = "conjure-school.fnl"
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["buf-name"] = v_0_
   buf_name = v_0_
 end
@@ -55,7 +55,7 @@ do
     return buffer["upsert-hidden"](buf_name)
   end
   v_0_ = upsert_buf0
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["upsert-buf"] = v_0_
   upsert_buf = v_0_
 end
@@ -73,7 +73,7 @@ do
     return nvim.buf_set_lines(buf, _2_, -1, false, lines)
   end
   v_0_ = append0
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["append"] = v_0_
   append = v_0_
 end
@@ -84,7 +84,7 @@ do
     return (config["get-in"]({"mapping", "prefix"}) .. config["get-in"]({"mapping", m}))
   end
   v_0_ = map_str0
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["map-str"] = v_0_
   map_str = v_0_
 end
@@ -95,7 +95,7 @@ do
     return ("Lesson [" .. n .. "/7] complete!")
   end
   v_0_ = progress0
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["progress"] = v_0_
   progress = v_0_
 end
@@ -131,10 +131,10 @@ do
       return append(a.concat({"(module user.conjure-school", "  {autoload {school conjure.school}})", "", ";; Welcome to Conjure school!", ";; Grab yourself a nice beverage and let's get evaluating. I hope you enjoy!", "", ";; This language is Fennel, it's quite similar to Clojure.", ";; Conjure is written in Fennel, it's compiled to Lua and executed inside Neovim itself.", ";; This means we can work with a Lisp without installing or running anything else.", "", ";; Note: Some colorschemes will make the HUD unreadable, see here for more: https://git.io/JJ1Hl", "", ";; Let's learn how to evaluate it using Conjure's assortment of mappings.", ";; You can learn how to change these mappings with :help conjure-mappings", "", (";; Let's begin by evaluating the whole buffer using " .. map_str("eval_buf"))}, _3_, {"(school.lesson-1)"}))
     end
     v_0_0 = start0
-    _0_0["start"] = v_0_0
+    _0_["start"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["start"] = v_0_
   start = v_0_
 end
@@ -148,10 +148,10 @@ do
       return progress(1)
     end
     v_0_0 = lesson_10
-    _0_0["lesson-1"] = v_0_0
+    _0_["lesson-1"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["lesson-1"] = v_0_
   lesson_1 = v_0_
 end
@@ -165,10 +165,10 @@ do
       return progress(2)
     end
     v_0_0 = lesson_20
-    _0_0["lesson-2"] = v_0_0
+    _0_["lesson-2"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["lesson-2"] = v_0_
   lesson_2 = v_0_
 end
@@ -182,10 +182,10 @@ do
       return progress(3)
     end
     v_0_0 = lesson_30
-    _0_0["lesson-3"] = v_0_0
+    _0_["lesson-3"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["lesson-3"] = v_0_
   lesson_3 = v_0_
 end
@@ -199,10 +199,10 @@ do
       return progress(4)
     end
     v_0_0 = lesson_40
-    _0_0["lesson-4"] = v_0_0
+    _0_["lesson-4"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["lesson-4"] = v_0_
   lesson_4 = v_0_
 end
@@ -211,10 +211,10 @@ do
   local v_0_
   do
     local v_0_0 = "This is the contents of school.lesson-5-message!"
-    _0_0["lesson-5-message"] = v_0_0
+    _0_["lesson-5-message"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["lesson-5-message"] = v_0_
   lesson_5_message = v_0_
 end
@@ -228,10 +228,10 @@ do
       return progress(5)
     end
     v_0_0 = lesson_50
-    _0_0["lesson-5"] = v_0_0
+    _0_["lesson-5"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["lesson-5"] = v_0_
   lesson_5 = v_0_
 end
@@ -240,10 +240,10 @@ do
   local v_0_
   do
     local v_0_0 = "This is the contents of school.lesson-6-message!"
-    _0_0["lesson-6-message"] = v_0_0
+    _0_["lesson-6-message"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["lesson-6-message"] = v_0_
   lesson_6_message = v_0_
 end
@@ -257,10 +257,10 @@ do
       return progress(6)
     end
     v_0_0 = lesson_60
-    _0_0["lesson-6"] = v_0_0
+    _0_["lesson-6"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["lesson-6"] = v_0_
   lesson_6 = v_0_
 end
@@ -274,10 +274,10 @@ do
       return progress(7)
     end
     v_0_0 = lesson_70
-    _0_0["lesson-7"] = v_0_0
+    _0_["lesson-7"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["lesson-7"] = v_0_
   lesson_7 = v_0_
 end

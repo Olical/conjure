@@ -1,5 +1,5 @@
 local _2afile_2a = "fnl/conjure/remote/nrepl.fnl"
-local _0_0
+local _0_
 do
   local name_0_ = "conjure.remote.nrepl"
   local module_0_
@@ -15,7 +15,7 @@ do
   module_0_["aniseed/locals"] = ((module_0_)["aniseed/locals"] or {})
   module_0_["aniseed/local-fns"] = ((module_0_)["aniseed/local-fns"] or {})
   package.loaded[name_0_] = module_0_
-  _0_0 = module_0_
+  _0_ = module_0_
 end
 local autoload = (require("conjure.aniseed.autoload")).autoload
 local function _1_(...)
@@ -25,7 +25,7 @@ local function _1_(...)
   end
   ok_3f_0_, val_0_ = pcall(_1_)
   if ok_3f_0_ then
-    _0_0["aniseed/local-fns"] = {autoload = {a = "conjure.aniseed.core", bencode = "conjure.remote.transport.bencode", client = "conjure.client", extract = "conjure.extract", log = "conjure.log", net = "conjure.net", timer = "conjure.timer", uuid = "conjure.uuid"}}
+    _0_["aniseed/local-fns"] = {autoload = {a = "conjure.aniseed.core", bencode = "conjure.remote.transport.bencode", client = "conjure.client", extract = "conjure.extract", log = "conjure.log", net = "conjure.net", timer = "conjure.timer", uuid = "conjure.uuid"}}
     return val_0_
   else
     return print(val_0_)
@@ -40,9 +40,9 @@ local log = _local_0_[5]
 local net = _local_0_[6]
 local timer = _local_0_[7]
 local uuid = _local_0_[8]
-local _2amodule_2a = _0_0
+local _2amodule_2a = _0_
 local _2amodule_name_2a = "conjure.remote.nrepl"
-do local _ = ({nil, _0_0, nil, {{}, nil, nil, nil}})[2] end
+do local _ = ({nil, _0_, nil, {{}, nil, nil, nil}})[2] end
 local with_all_msgs_fn
 do
   local v_0_
@@ -59,10 +59,10 @@ do
       return _2_
     end
     v_0_0 = with_all_msgs_fn0
-    _0_0["with-all-msgs-fn"] = v_0_0
+    _0_["with-all-msgs-fn"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["with-all-msgs-fn"] = v_0_
   with_all_msgs_fn = v_0_
 end
@@ -94,7 +94,7 @@ do
         local function _3_()
         end
         a["assoc-in"](state, {"msgs", msg_id}, {["sent-at"] = os.time(), cb = (cb or _3_), msg = msg})
-        ; (conn.sock):write(bencode.encode(msg))
+        do end (conn.sock):write(bencode.encode(msg))
         return nil
       end
       local function process_message(err, chunk)
@@ -150,7 +150,7 @@ do
           if err then
             return opts["on-failure"](err)
           else
-            (conn.sock):read_start(client.wrap(enqueue_message))
+            do end (conn.sock):read_start(client.wrap(enqueue_message))
             return opts["on-success"]()
           end
         end
@@ -160,10 +160,10 @@ do
       return conn
     end
     v_0_0 = connect0
-    _0_0["connect"] = v_0_0
+    _0_["connect"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["connect"] = v_0_
   connect = v_0_
 end

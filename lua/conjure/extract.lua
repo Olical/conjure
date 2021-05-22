@@ -1,5 +1,5 @@
 local _2afile_2a = "fnl/conjure/extract.fnl"
-local _0_0
+local _0_
 do
   local name_0_ = "conjure.extract"
   local module_0_
@@ -15,7 +15,7 @@ do
   module_0_["aniseed/locals"] = ((module_0_)["aniseed/locals"] or {})
   module_0_["aniseed/local-fns"] = ((module_0_)["aniseed/local-fns"] or {})
   package.loaded[name_0_] = module_0_
-  _0_0 = module_0_
+  _0_ = module_0_
 end
 local autoload = (require("conjure.aniseed.autoload")).autoload
 local function _1_(...)
@@ -25,7 +25,7 @@ local function _1_(...)
   end
   ok_3f_0_, val_0_ = pcall(_1_)
   if ok_3f_0_ then
-    _0_0["aniseed/local-fns"] = {autoload = {a = "conjure.aniseed.core", client = "conjure.client", config = "conjure.config", nu = "conjure.aniseed.nvim.util", nvim = "conjure.aniseed.nvim", str = "conjure.aniseed.string", ts = "conjure.tree-sitter"}}
+    _0_["aniseed/local-fns"] = {autoload = {a = "conjure.aniseed.core", client = "conjure.client", config = "conjure.config", nu = "conjure.aniseed.nvim.util", nvim = "conjure.aniseed.nvim", str = "conjure.aniseed.string", ts = "conjure.tree-sitter"}}
     return val_0_
   else
     return print(val_0_)
@@ -39,17 +39,17 @@ local nu = _local_0_[4]
 local nvim = _local_0_[5]
 local str = _local_0_[6]
 local ts = _local_0_[7]
-local _2amodule_2a = _0_0
+local _2amodule_2a = _0_
 local _2amodule_name_2a = "conjure.extract"
-do local _ = ({nil, _0_0, nil, {{}, nil, nil, nil}})[2] end
+do local _ = ({nil, _0_, nil, {{}, nil, nil, nil}})[2] end
 local read_range
 do
   local v_0_
-  local function read_range0(_2_0, _3_0)
-    local _arg_0_ = _2_0
+  local function read_range0(_2_, _3_)
+    local _arg_0_ = _2_
     local srow = _arg_0_[1]
     local scol = _arg_0_[2]
-    local _arg_1_ = _3_0
+    local _arg_1_ = _3_
     local erow = _arg_1_[1]
     local ecol = _arg_1_[2]
     local lines = nvim.buf_get_lines(0, (srow - 1), erow, false)
@@ -62,7 +62,7 @@ do
     return str.join("\n", a.update(a.update(lines, #lines, _4_), 1, _5_))
   end
   v_0_ = read_range0
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["read-range"] = v_0_
   read_range = v_0_
 end
@@ -79,7 +79,7 @@ do
     return string.sub(line, char, char)
   end
   v_0_ = current_char0
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["current-char"] = v_0_
   current_char = v_0_
 end
@@ -90,7 +90,7 @@ do
     return (not pos or (0 == unpack(pos)))
   end
   v_0_ = nil_pos_3f0
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["nil-pos?"] = v_0_
   nil_pos_3f = v_0_
 end
@@ -116,22 +116,22 @@ do
       end
     end
     v_0_0 = skip_match_3f0
-    _0_0["skip-match?"] = v_0_0
+    _0_["skip-match?"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["skip-match?"] = v_0_
   skip_match_3f = v_0_
 end
 local form_2a
 do
   local v_0_
-  local function form_2a0(_2_0, _3_0)
-    local _arg_0_ = _2_0
+  local function form_2a0(_2_, _3_)
+    local _arg_0_ = _2_
     local start_char = _arg_0_[1]
     local end_char = _arg_0_[2]
     local escape_3f = _arg_0_[3]
-    local _arg_1_ = _3_0
+    local _arg_1_ = _3_
     local root_3f = _arg_1_["root?"]
     local flags
     local function _4_()
@@ -179,7 +179,7 @@ do
     end
   end
   v_0_ = form_2a0
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["form*"] = v_0_
   form_2a = v_0_
 end
@@ -196,24 +196,24 @@ do
     return {(sl - el), (sc - ec)}
   end
   v_0_ = range_distance0
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["range-distance"] = v_0_
   range_distance = v_0_
 end
 local distance_gt
 do
   local v_0_
-  local function distance_gt0(_2_0, _3_0)
-    local _arg_0_ = _2_0
+  local function distance_gt0(_2_, _3_)
+    local _arg_0_ = _2_
     local al = _arg_0_[1]
     local ac = _arg_0_[2]
-    local _arg_1_ = _3_0
+    local _arg_1_ = _3_
     local bl = _arg_1_[1]
     local bc = _arg_1_[2]
     return ((al > bl) or ((al == bl) and (ac > bc)))
   end
   v_0_ = distance_gt0
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["distance-gt"] = v_0_
   distance_gt = v_0_
 end
@@ -251,10 +251,10 @@ do
       end
     end
     v_0_0 = form0
-    _0_0["form"] = v_0_0
+    _0_["form"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["form"] = v_0_
   form = v_0_
 end
@@ -267,10 +267,10 @@ do
       return {content = nvim.fn.expand("<cword>"), range = {["end"] = nvim.win_get_cursor(0), start = nvim.win_get_cursor(0)}}
     end
     v_0_0 = word0
-    _0_0["word"] = v_0_0
+    _0_["word"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["word"] = v_0_
   word = v_0_
 end
@@ -283,10 +283,10 @@ do
       return nvim.fn.expand("%:p")
     end
     v_0_0 = file_path0
-    _0_0["file-path"] = v_0_0
+    _0_["file-path"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["file-path"] = v_0_
   file_path = v_0_
 end
@@ -297,7 +297,7 @@ do
     return a.count(a.first(nvim.buf_get_lines(buf, a.dec(nvim.buf_line_count(buf)), -1, false)))
   end
   v_0_ = buf_last_line_length0
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["buf-last-line-length"] = v_0_
   buf_last_line_length = v_0_
 end
@@ -310,10 +310,10 @@ do
       return {content = str.join("\n", nvim.buf_get_lines(0, start, _end, false)), range = {["end"] = {_end, buf_last_line_length(0)}, start = {a.inc(start), 0}}}
     end
     v_0_0 = range0
-    _0_0["range"] = v_0_0
+    _0_["range"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["range"] = v_0_
   range = v_0_
 end
@@ -326,10 +326,10 @@ do
       return range(0, -1)
     end
     v_0_0 = buf0
-    _0_0["buf"] = v_0_0
+    _0_["buf"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["buf"] = v_0_
   buf = v_0_
 end
@@ -345,7 +345,7 @@ do
     return {start, a.dec(_end)}
   end
   v_0_ = getpos0
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["getpos"] = v_0_
   getpos = v_0_
 end
@@ -354,8 +354,8 @@ do
   local v_0_
   do
     local v_0_0
-    local function selection0(_2_0)
-      local _arg_0_ = _2_0
+    local function selection0(_2_)
+      local _arg_0_ = _2_
       local kind = _arg_0_["kind"]
       local visual_3f = _arg_0_["visual?"]
       local sel_backup = nvim.o.selection
@@ -376,10 +376,10 @@ do
       return {content = content, range = {["end"] = getpos("'>"), start = getpos("'<")}}
     end
     v_0_0 = selection0
-    _0_0["selection"] = v_0_0
+    _0_["selection"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["selection"] = v_0_
   selection = v_0_
 end
@@ -404,10 +404,10 @@ do
       end
     end
     v_0_0 = context0
-    _0_0["context"] = v_0_0
+    _0_["context"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["context"] = v_0_
   context = v_0_
 end
@@ -427,10 +427,10 @@ do
       end
     end
     v_0_0 = prompt0
-    _0_0["prompt"] = v_0_0
+    _0_["prompt"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["prompt"] = v_0_
   prompt = v_0_
 end
@@ -443,10 +443,10 @@ do
       return nvim.fn.nr2char(nvim.fn.getchar())
     end
     v_0_0 = prompt_char0
-    _0_0["prompt-char"] = v_0_0
+    _0_["prompt-char"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["prompt-char"] = v_0_
   prompt_char = v_0_
 end

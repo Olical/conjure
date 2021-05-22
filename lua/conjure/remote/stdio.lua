@@ -1,5 +1,5 @@
 local _2afile_2a = "fnl/conjure/remote/stdio.fnl"
-local _0_0
+local _0_
 do
   local name_0_ = "conjure.remote.stdio"
   local module_0_
@@ -15,7 +15,7 @@ do
   module_0_["aniseed/locals"] = ((module_0_)["aniseed/locals"] or {})
   module_0_["aniseed/local-fns"] = ((module_0_)["aniseed/local-fns"] or {})
   package.loaded[name_0_] = module_0_
-  _0_0 = module_0_
+  _0_ = module_0_
 end
 local autoload = (require("conjure.aniseed.autoload")).autoload
 local function _1_(...)
@@ -25,7 +25,7 @@ local function _1_(...)
   end
   ok_3f_0_, val_0_ = pcall(_1_)
   if ok_3f_0_ then
-    _0_0["aniseed/local-fns"] = {autoload = {a = "conjure.aniseed.core", client = "conjure.client", log = "conjure.log", nvim = "conjure.aniseed.nvim", str = "conjure.aniseed.string"}}
+    _0_["aniseed/local-fns"] = {autoload = {a = "conjure.aniseed.core", client = "conjure.client", log = "conjure.log", nvim = "conjure.aniseed.nvim", str = "conjure.aniseed.string"}}
     return val_0_
   else
     return print(val_0_)
@@ -37,13 +37,13 @@ local client = _local_0_[2]
 local log = _local_0_[3]
 local nvim = _local_0_[4]
 local str = _local_0_[5]
-local _2amodule_2a = _0_0
+local _2amodule_2a = _0_
 local _2amodule_name_2a = "conjure.remote.stdio"
-do local _ = ({nil, _0_0, nil, {{}, nil, nil, nil}})[2] end
+do local _ = ({nil, _0_, nil, {{}, nil, nil, nil}})[2] end
 local uv
 do
   local v_0_ = vim.loop
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["uv"] = v_0_
   uv = v_0_
 end
@@ -58,7 +58,7 @@ do
     end
   end
   v_0_ = parse_prompt0
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["parse-prompt"] = v_0_
   parse_prompt = v_0_
 end
@@ -75,10 +75,10 @@ do
       end
     end
     v_0_0 = parse_cmd0
-    _0_0["parse-cmd"] = v_0_0
+    _0_["parse-cmd"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["parse-cmd"] = v_0_
   parse_cmd = v_0_
 end
@@ -86,8 +86,8 @@ local extend_env
 do
   local v_0_
   local function extend_env0(vars)
-    local function _3_(_2_0)
-      local _arg_0_ = _2_0
+    local function _3_(_2_)
+      local _arg_0_ = _2_
       local k = _arg_0_[1]
       local v = _arg_0_[2]
       return (k .. "=" .. v)
@@ -95,7 +95,7 @@ do
     return a.map(_3_, a["kv-pairs"](a.merge(nvim.fn.environ(), vars)))
   end
   v_0_ = extend_env0
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["extend-env"] = v_0_
   extend_env = v_0_
 end
@@ -222,10 +222,10 @@ do
       end
     end
     v_0_0 = start0
-    _0_0["start"] = v_0_0
+    _0_["start"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["start"] = v_0_
   start = v_0_
 end

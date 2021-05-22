@@ -1,5 +1,5 @@
 local _2afile_2a = "fnl/conjure/config.fnl"
-local _0_0
+local _0_
 do
   local name_0_ = "conjure.config"
   local module_0_
@@ -15,7 +15,7 @@ do
   module_0_["aniseed/locals"] = ((module_0_)["aniseed/locals"] or {})
   module_0_["aniseed/local-fns"] = ((module_0_)["aniseed/local-fns"] or {})
   package.loaded[name_0_] = module_0_
-  _0_0 = module_0_
+  _0_ = module_0_
 end
 local autoload = (require("conjure.aniseed.autoload")).autoload
 local function _1_(...)
@@ -25,7 +25,7 @@ local function _1_(...)
   end
   ok_3f_0_, val_0_ = pcall(_1_)
   if ok_3f_0_ then
-    _0_0["aniseed/local-fns"] = {autoload = {a = "conjure.aniseed.core", nvim = "conjure.aniseed.nvim", str = "conjure.aniseed.string"}}
+    _0_["aniseed/local-fns"] = {autoload = {a = "conjure.aniseed.core", nvim = "conjure.aniseed.nvim", str = "conjure.aniseed.string"}}
     return val_0_
   else
     return print(val_0_)
@@ -35,9 +35,9 @@ local _local_0_ = _1_(...)
 local a = _local_0_[1]
 local nvim = _local_0_[2]
 local str = _local_0_[3]
-local _2amodule_2a = _0_0
+local _2amodule_2a = _0_
 local _2amodule_name_2a = "conjure.config"
-do local _ = ({nil, _0_0, nil, {{}, nil, nil, nil}})[2] end
+do local _ = ({nil, _0_, nil, {{}, nil, nil, nil}})[2] end
 local ks__3evar
 do
   local v_0_
@@ -45,7 +45,7 @@ do
     return ("conjure#" .. str.join("#", ks))
   end
   v_0_ = ks__3evar0
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["ks->var"] = v_0_
   ks__3evar = v_0_
 end
@@ -63,10 +63,10 @@ do
       end
     end
     v_0_0 = get_in0
-    _0_0["get-in"] = v_0_0
+    _0_["get-in"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["get-in"] = v_0_
   get_in = v_0_
 end
@@ -79,10 +79,10 @@ do
       return get_in({"filetypes"})
     end
     v_0_0 = filetypes0
-    _0_0["filetypes"] = v_0_0
+    _0_["filetypes"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["filetypes"] = v_0_
   filetypes = v_0_
 end
@@ -98,10 +98,10 @@ do
       return _2_
     end
     v_0_0 = get_in_fn0
-    _0_0["get-in-fn"] = v_0_0
+    _0_["get-in-fn"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["get-in-fn"] = v_0_
   get_in_fn = v_0_
 end
@@ -115,10 +115,10 @@ do
       return v
     end
     v_0_0 = assoc_in0
-    _0_0["assoc-in"] = v_0_0
+    _0_["assoc-in"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["assoc-in"] = v_0_
   assoc_in = v_0_
 end
@@ -130,8 +130,8 @@ do
     local function merge0(tbl, opts, ks)
       local ks0 = (ks or {})
       local opts0 = (opts or {})
-      local function _3_(_2_0)
-        local _arg_0_ = _2_0
+      local function _3_(_2_)
+        local _arg_0_ = _2_
         local k = _arg_0_[1]
         local v = _arg_0_[2]
         local ks1 = a.concat(ks0, {k})
@@ -148,10 +148,10 @@ do
       return nil
     end
     v_0_0 = merge0
-    _0_0["merge"] = v_0_0
+    _0_["merge"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["merge"] = v_0_
   merge = v_0_
 end

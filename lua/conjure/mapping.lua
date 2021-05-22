@@ -1,5 +1,5 @@
 local _2afile_2a = "fnl/conjure/mapping.fnl"
-local _0_0
+local _0_
 do
   local name_0_ = "conjure.mapping"
   local module_0_
@@ -15,7 +15,7 @@ do
   module_0_["aniseed/locals"] = ((module_0_)["aniseed/locals"] or {})
   module_0_["aniseed/local-fns"] = ((module_0_)["aniseed/local-fns"] or {})
   package.loaded[name_0_] = module_0_
-  _0_0 = module_0_
+  _0_ = module_0_
 end
 local autoload = (require("conjure.aniseed.autoload")).autoload
 local function _1_(...)
@@ -25,7 +25,7 @@ local function _1_(...)
   end
   ok_3f_0_, val_0_ = pcall(_1_)
   if ok_3f_0_ then
-    _0_0["aniseed/local-fns"] = {["require-macros"] = {["conjure.macros"] = true}, autoload = {a = "conjure.aniseed.core", bridge = "conjure.bridge", client = "conjure.client", config = "conjure.config", eval = "conjure.eval", extract = "conjure.extract", log = "conjure.log", nvim = "conjure.aniseed.nvim", str = "conjure.aniseed.string"}}
+    _0_["aniseed/local-fns"] = {["require-macros"] = {["conjure.macros"] = true}, autoload = {a = "conjure.aniseed.core", bridge = "conjure.bridge", client = "conjure.client", config = "conjure.config", eval = "conjure.eval", extract = "conjure.extract", log = "conjure.log", nvim = "conjure.aniseed.nvim", str = "conjure.aniseed.string"}}
     return val_0_
   else
     return print(val_0_)
@@ -41,9 +41,9 @@ local extract = _local_0_[6]
 local log = _local_0_[7]
 local nvim = _local_0_[8]
 local str = _local_0_[9]
-local _2amodule_2a = _0_0
+local _2amodule_2a = _0_
 local _2amodule_name_2a = "conjure.mapping"
-do local _ = ({nil, _0_0, nil, {{nil}, nil, nil, nil}})[2] end
+do local _ = ({nil, _0_, nil, {{nil}, nil, nil, nil}})[2] end
 local cfg
 do
   local v_0_
@@ -51,7 +51,7 @@ do
     return config["get-in"]({"mapping", k})
   end
   v_0_ = cfg0
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["cfg"] = v_0_
   cfg = v_0_
 end
@@ -62,7 +62,7 @@ do
     return ("repeat#set(\"" .. nvim.fn.escape(mapping, "\"") .. "\", 1)")
   end
   v_0_ = vim_repeat0
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["vim-repeat"] = v_0_
   vim_repeat = v_0_
 end
@@ -111,10 +111,10 @@ do
       end
     end
     v_0_0 = buf0
-    _0_0["buf"] = v_0_0
+    _0_["buf"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["buf"] = v_0_
   buf = v_0_
 end
@@ -135,10 +135,10 @@ do
       end
     end
     v_0_0 = eval_marked_form0
-    _0_0["eval-marked-form"] = v_0_0
+    _0_["eval-marked-form"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["eval-marked-form"] = v_0_
   eval_marked_form = v_0_
 end
@@ -177,10 +177,10 @@ do
       return client["optional-call"]("on-filetype")
     end
     v_0_0 = on_filetype0
-    _0_0["on-filetype"] = v_0_0
+    _0_["on-filetype"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["on-filetype"] = v_0_
   on_filetype = v_0_
 end
@@ -196,10 +196,10 @@ do
       return client["each-loaded-client"](_2_)
     end
     v_0_0 = on_exit0
-    _0_0["on-exit"] = v_0_0
+    _0_["on-exit"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["on-exit"] = v_0_
   on_exit = v_0_
 end
@@ -212,10 +212,10 @@ do
       return log["close-hud"]()
     end
     v_0_0 = on_quit0
-    _0_0["on-quit"] = v_0_0
+    _0_["on-quit"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["on-quit"] = v_0_
   on_quit = v_0_
 end
@@ -238,10 +238,10 @@ do
       return nvim.ex.augroup("END")
     end
     v_0_0 = init0
-    _0_0["init"] = v_0_0
+    _0_["init"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["init"] = v_0_
   init = v_0_
 end
@@ -258,10 +258,10 @@ do
       end
     end
     v_0_0 = eval_ranged_command0
-    _0_0["eval-ranged-command"] = v_0_0
+    _0_["eval-ranged-command"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["eval-ranged-command"] = v_0_
   eval_ranged_command = v_0_
 end
@@ -282,10 +282,10 @@ do
       return client.call("connect", _2_(...))
     end
     v_0_0 = connect_command0
-    _0_0["connect-command"] = v_0_0
+    _0_["connect-command"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["connect-command"] = v_0_
   connect_command = v_0_
 end
@@ -302,10 +302,10 @@ do
       end
     end
     v_0_0 = client_state_command0
-    _0_0["client-state-command"] = v_0_0
+    _0_["client-state-command"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["client-state-command"] = v_0_
   client_state_command = v_0_
 end
@@ -327,10 +327,10 @@ do
       end
     end
     v_0_0 = omnifunc0
-    _0_0["omnifunc"] = v_0_0
+    _0_["omnifunc"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["omnifunc"] = v_0_
   omnifunc = v_0_
 end

@@ -1,5 +1,5 @@
 local _2afile_2a = "fnl/conjure/client/clojure/nrepl/ui.fnl"
-local _0_0
+local _0_
 do
   local name_0_ = "conjure.client.clojure.nrepl.ui"
   local module_0_
@@ -15,7 +15,7 @@ do
   module_0_["aniseed/locals"] = ((module_0_)["aniseed/locals"] or {})
   module_0_["aniseed/local-fns"] = ((module_0_)["aniseed/local-fns"] or {})
   package.loaded[name_0_] = module_0_
-  _0_0 = module_0_
+  _0_ = module_0_
 end
 local autoload = (require("conjure.aniseed.autoload")).autoload
 local function _1_(...)
@@ -25,7 +25,7 @@ local function _1_(...)
   end
   ok_3f_0_, val_0_ = pcall(_1_)
   if ok_3f_0_ then
-    _0_0["aniseed/local-fns"] = {autoload = {a = "conjure.aniseed.core", log = "conjure.log", state = "conjure.client.clojure.nrepl.state", str = "conjure.aniseed.string", text = "conjure.text"}}
+    _0_["aniseed/local-fns"] = {autoload = {a = "conjure.aniseed.core", log = "conjure.log", state = "conjure.client.clojure.nrepl.state", str = "conjure.aniseed.string", text = "conjure.text"}}
     return val_0_
   else
     return print(val_0_)
@@ -37,9 +37,9 @@ local log = _local_0_[2]
 local state = _local_0_[3]
 local str = _local_0_[4]
 local text = _local_0_[5]
-local _2amodule_2a = _0_0
+local _2amodule_2a = _0_
 local _2amodule_name_2a = "conjure.client.clojure.nrepl.ui"
-do local _ = ({nil, _0_0, nil, {{}, nil, nil, nil}})[2] end
+do local _ = ({nil, _0_, nil, {{}, nil, nil, nil}})[2] end
 local handle_join_line
 do
   local v_0_
@@ -64,7 +64,7 @@ do
     return (next_key and (key == next_key))
   end
   v_0_ = handle_join_line0
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["handle-join-line"] = v_0_
   handle_join_line = v_0_
 end
@@ -101,10 +101,10 @@ do
       return log.append(_2_, {["join-first?"] = joined_3f})
     end
     v_0_0 = display_result0
-    _0_0["display-result"] = v_0_0
+    _0_["display-result"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["display-result"] = v_0_
   display_result = v_0_
 end
@@ -115,8 +115,8 @@ do
     local v_0_0
     local function display_sessions0(sessions, cb)
       local current = state.get("conn", "session")
-      local function _3_(_2_0)
-        local _arg_0_ = _2_0
+      local function _3_(_2_)
+        local _arg_0_ = _2_
         local idx = _arg_0_[1]
         local session = _arg_0_[2]
         local _4_
@@ -133,10 +133,10 @@ do
       end
     end
     v_0_0 = display_sessions0
-    _0_0["display-sessions"] = v_0_0
+    _0_["display-sessions"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["display-sessions"] = v_0_
   display_sessions = v_0_
 end

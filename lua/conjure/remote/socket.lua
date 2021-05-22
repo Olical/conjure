@@ -1,5 +1,5 @@
 local _2afile_2a = "fnl/conjure/remote/socket.fnl"
-local _0_0
+local _0_
 do
   local name_0_ = "conjure.remote.socket"
   local module_0_
@@ -15,7 +15,7 @@ do
   module_0_["aniseed/locals"] = ((module_0_)["aniseed/locals"] or {})
   module_0_["aniseed/local-fns"] = ((module_0_)["aniseed/local-fns"] or {})
   package.loaded[name_0_] = module_0_
-  _0_0 = module_0_
+  _0_ = module_0_
 end
 local autoload = (require("conjure.aniseed.autoload")).autoload
 local function _1_(...)
@@ -25,7 +25,7 @@ local function _1_(...)
   end
   ok_3f_0_, val_0_ = pcall(_1_)
   if ok_3f_0_ then
-    _0_0["aniseed/local-fns"] = {autoload = {a = "conjure.aniseed.core", client = "conjure.client", log = "conjure.log", nvim = "conjure.aniseed.nvim", str = "conjure.aniseed.string", text = "conjure.text"}}
+    _0_["aniseed/local-fns"] = {autoload = {a = "conjure.aniseed.core", client = "conjure.client", log = "conjure.log", nvim = "conjure.aniseed.nvim", str = "conjure.aniseed.string", text = "conjure.text"}}
     return val_0_
   else
     return print(val_0_)
@@ -38,13 +38,13 @@ local log = _local_0_[3]
 local nvim = _local_0_[4]
 local str = _local_0_[5]
 local text = _local_0_[6]
-local _2amodule_2a = _0_0
+local _2amodule_2a = _0_
 local _2amodule_name_2a = "conjure.remote.socket"
-do local _ = ({nil, _0_0, nil, {{}, nil, nil, nil}})[2] end
+do local _ = ({nil, _0_, nil, {{}, nil, nil, nil}})[2] end
 local uv
 do
   local v_0_ = vim.loop
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["uv"] = v_0_
   uv = v_0_
 end
@@ -55,7 +55,7 @@ do
     return string.gsub(text["strip-ansi-escape-sequences"](s), "[\1\2]", "")
   end
   v_0_ = strip_unprintable0
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["strip-unprintable"] = v_0_
   strip_unprintable = v_0_
 end
@@ -154,10 +154,10 @@ do
       return a["merge!"](repl, {destroy = destroy, opts = opts, send = send})
     end
     v_0_0 = start0
-    _0_0["start"] = v_0_0
+    _0_["start"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["start"] = v_0_
   start = v_0_
 end

@@ -1,5 +1,5 @@
 local _2afile_2a = "fnl/conjure/dynamic.fnl"
-local _0_0
+local _0_
 do
   local name_0_ = "conjure.dynamic"
   local module_0_
@@ -15,7 +15,7 @@ do
   module_0_["aniseed/locals"] = ((module_0_)["aniseed/locals"] or {})
   module_0_["aniseed/local-fns"] = ((module_0_)["aniseed/local-fns"] or {})
   package.loaded[name_0_] = module_0_
-  _0_0 = module_0_
+  _0_ = module_0_
 end
 local autoload = (require("conjure.aniseed.autoload")).autoload
 local function _1_(...)
@@ -25,7 +25,7 @@ local function _1_(...)
   end
   ok_3f_0_, val_0_ = pcall(_1_)
   if ok_3f_0_ then
-    _0_0["aniseed/local-fns"] = {autoload = {a = "conjure.aniseed.core"}}
+    _0_["aniseed/local-fns"] = {autoload = {a = "conjure.aniseed.core"}}
     return val_0_
   else
     return print(val_0_)
@@ -33,13 +33,13 @@ local function _1_(...)
 end
 local _local_0_ = _1_(...)
 local a = _local_0_[1]
-local _2amodule_2a = _0_0
+local _2amodule_2a = _0_
 local _2amodule_name_2a = "conjure.dynamic"
-do local _ = ({nil, _0_0, nil, {{}, nil, nil, nil}})[2] end
+do local _ = ({nil, _0_, nil, {{}, nil, nil, nil}})[2] end
 local get_stack_key
 do
   local v_0_ = "conjure.dynamic/get-stack"
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["get-stack-key"] = v_0_
   get_stack_key = v_0_
 end
@@ -52,7 +52,7 @@ do
     end
   end
   v_0_ = assert_value_function_210
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["assert-value-function!"] = v_0_
   assert_value_function_21 = v_0_
 end
@@ -74,10 +74,10 @@ do
       return _2_
     end
     v_0_0 = new0
-    _0_0["new"] = v_0_0
+    _0_["new"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["new"] = v_0_
   new = v_0_
 end
@@ -85,8 +85,8 @@ local run_binds_21
 do
   local v_0_
   local function run_binds_210(f, binds)
-    local function _3_(_2_0)
-      local _arg_0_ = _2_0
+    local function _3_(_2_)
+      local _arg_0_ = _2_
       local dyn = _arg_0_[1]
       local new_value = _arg_0_[2]
       assert_value_function_21(new_value)
@@ -95,7 +95,7 @@ do
     return a["map-indexed"](_3_, binds)
   end
   v_0_ = run_binds_210
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["run-binds!"] = v_0_
   run_binds_21 = v_0_
 end
@@ -118,10 +118,10 @@ do
       end
     end
     v_0_0 = bind0
-    _0_0["bind"] = v_0_0
+    _0_["bind"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["bind"] = v_0_
   bind = v_0_
 end
@@ -140,10 +140,10 @@ do
       return nil
     end
     v_0_0 = set_210
-    _0_0["set!"] = v_0_0
+    _0_["set!"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["set!"] = v_0_
   set_21 = v_0_
 end
@@ -158,10 +158,10 @@ do
       return nil
     end
     v_0_0 = set_root_210
-    _0_0["set-root!"] = v_0_0
+    _0_["set-root!"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["set-root!"] = v_0_
   set_root_21 = v_0_
 end

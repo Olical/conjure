@@ -1,5 +1,5 @@
 local _2afile_2a = "fnl/aniseed/nvim.fnl"
-local _0_0
+local _0_
 do
   local name_0_ = "conjure.aniseed.nvim"
   local module_0_
@@ -15,7 +15,7 @@ do
   module_0_["aniseed/locals"] = ((module_0_)["aniseed/locals"] or {})
   module_0_["aniseed/local-fns"] = ((module_0_)["aniseed/local-fns"] or {})
   package.loaded[name_0_] = module_0_
-  _0_0 = module_0_
+  _0_ = module_0_
 end
 local autoload = (require("conjure.aniseed.autoload")).autoload
 local function _1_(...)
@@ -25,13 +25,13 @@ local function _1_(...)
   end
   ok_3f_0_, val_0_ = pcall(_1_)
   if ok_3f_0_ then
-    _0_0["aniseed/local-fns"] = {}
+    _0_["aniseed/local-fns"] = {}
     return val_0_
   else
     return print(val_0_)
   end
 end
 local _local_0_ = _1_(...)
-local _2amodule_2a = _0_0
+local _2amodule_2a = _0_
 local _2amodule_name_2a = "conjure.aniseed.nvim"
-return ({nil, _0_0, nil, {{}, nil, nil, nil}})[2]
+return ({nil, _0_, nil, {{}, nil, nil, nil}})[2]

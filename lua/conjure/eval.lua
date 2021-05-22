@@ -1,5 +1,5 @@
 local _2afile_2a = "fnl/conjure/eval.fnl"
-local _0_0
+local _0_
 do
   local name_0_ = "conjure.eval"
   local module_0_
@@ -15,7 +15,7 @@ do
   module_0_["aniseed/locals"] = ((module_0_)["aniseed/locals"] or {})
   module_0_["aniseed/local-fns"] = ((module_0_)["aniseed/local-fns"] or {})
   package.loaded[name_0_] = module_0_
-  _0_0 = module_0_
+  _0_ = module_0_
 end
 local autoload = (require("conjure.aniseed.autoload")).autoload
 local function _1_(...)
@@ -25,7 +25,7 @@ local function _1_(...)
   end
   ok_3f_0_, val_0_ = pcall(_1_)
   if ok_3f_0_ then
-    _0_0["aniseed/local-fns"] = {autoload = {a = "conjure.aniseed.core", buffer = "conjure.buffer", client = "conjure.client", config = "conjure.config", editor = "conjure.editor", event = "conjure.event", extract = "conjure.extract", fs = "conjure.fs", inline = "conjure.inline", log = "conjure.log", nvim = "conjure.aniseed.nvim", promise = "conjure.promise", text = "conjure.text", timer = "conjure.timer", uuid = "conjure.uuid"}}
+    _0_["aniseed/local-fns"] = {autoload = {a = "conjure.aniseed.core", buffer = "conjure.buffer", client = "conjure.client", config = "conjure.config", editor = "conjure.editor", event = "conjure.event", extract = "conjure.extract", fs = "conjure.fs", inline = "conjure.inline", log = "conjure.log", nvim = "conjure.aniseed.nvim", promise = "conjure.promise", text = "conjure.text", timer = "conjure.timer", uuid = "conjure.uuid"}}
     return val_0_
   else
     return print(val_0_)
@@ -47,9 +47,9 @@ local event = _local_0_[6]
 local extract = _local_0_[7]
 local fs = _local_0_[8]
 local inline = _local_0_[9]
-local _2amodule_2a = _0_0
+local _2amodule_2a = _0_
 local _2amodule_name_2a = "conjure.eval"
-do local _ = ({nil, _0_0, nil, {{}, nil, nil, nil}})[2] end
+do local _ = ({nil, _0_, nil, {{}, nil, nil, nil}})[2] end
 local preview
 do
   local v_0_
@@ -65,7 +65,7 @@ do
     return (client.get("comment-prefix") .. opts.action .. " (" .. opts.origin .. "): " .. _2_())
   end
   v_0_ = preview0
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["preview"] = v_0_
   preview = v_0_
 end
@@ -76,7 +76,7 @@ do
     return log.append({opts.preview}, a.merge(opts, {["break?"] = true}))
   end
   v_0_ = display_request0
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["display-request"] = v_0_
   display_request = v_0_
 end
@@ -100,7 +100,7 @@ do
     end
   end
   v_0_ = highlight_range0
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["highlight-range"] = v_0_
   highlight_range = v_0_
 end
@@ -125,7 +125,7 @@ do
     return a.update(opts, "on-result", _2_)
   end
   v_0_ = with_last_result_hook0
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["with-last-result-hook"] = v_0_
   with_last_result_hook = v_0_
 end
@@ -142,10 +142,10 @@ do
       return client.call("eval-file", with_last_result_hook(opts))
     end
     v_0_0 = file0
-    _0_0["file"] = v_0_0
+    _0_["file"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["file"] = v_0_
   file = v_0_
 end
@@ -157,7 +157,7 @@ do
     return opts
   end
   v_0_ = assoc_context0
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["assoc-context"] = v_0_
   assoc_context = v_0_
 end
@@ -177,7 +177,7 @@ do
     return _2_
   end
   v_0_ = client_exec_fn0
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["client-exec-fn"] = v_0_
   client_exec_fn = v_0_
 end
@@ -200,10 +200,10 @@ do
       return nil
     end
     v_0_0 = eval_str0
-    _0_0["eval-str"] = v_0_0
+    _0_["eval-str"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["eval-str"] = v_0_
   eval_str = v_0_
 end
@@ -220,24 +220,24 @@ do
       return _2_
     end
     v_0_0 = wrap_emit0
-    _0_0["wrap-emit"] = v_0_0
+    _0_["wrap-emit"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["wrap-emit"] = v_0_
   wrap_emit = v_0_
 end
 local doc_str
 do
   local v_0_ = wrap_emit("doc", client_exec_fn("doc", "doc-str"))
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["doc-str"] = v_0_
   doc_str = v_0_
 end
 local def_str
 do
   local v_0_ = wrap_emit("def", client_exec_fn("def", "def-str", {["suppress-hud?"] = true}))
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["def-str"] = v_0_
   def_str = v_0_
 end
@@ -257,10 +257,10 @@ do
       end
     end
     v_0_0 = current_form0
-    _0_0["current-form"] = v_0_0
+    _0_["current-form"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["current-form"] = v_0_
   current_form = v_0_
 end
@@ -286,10 +286,10 @@ do
       end
     end
     v_0_0 = replace_form0
-    _0_0["replace-form"] = v_0_0
+    _0_["replace-form"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["replace-form"] = v_0_
   replace_form = v_0_
 end
@@ -308,10 +308,10 @@ do
       end
     end
     v_0_0 = root_form0
-    _0_0["root-form"] = v_0_0
+    _0_["root-form"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["root-form"] = v_0_
   root_form = v_0_
 end
@@ -337,10 +337,10 @@ do
       return mark0
     end
     v_0_0 = marked_form0
-    _0_0["marked-form"] = v_0_0
+    _0_["marked-form"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["marked-form"] = v_0_
   marked_form = v_0_
 end
@@ -362,7 +362,7 @@ do
     end
   end
   v_0_ = insert_result_comment0
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["insert-result-comment"] = v_0_
   insert_result_comment = v_0_
 end
@@ -375,10 +375,10 @@ do
       return insert_result_comment("current-form", extract.form({}))
     end
     v_0_0 = comment_current_form0
-    _0_0["comment-current-form"] = v_0_0
+    _0_["comment-current-form"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["comment-current-form"] = v_0_
   comment_current_form = v_0_
 end
@@ -391,10 +391,10 @@ do
       return insert_result_comment("root-form", extract.form({["root?"] = true}))
     end
     v_0_0 = comment_root_form0
-    _0_0["comment-root-form"] = v_0_0
+    _0_["comment-root-form"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["comment-root-form"] = v_0_
   comment_root_form = v_0_
 end
@@ -407,10 +407,10 @@ do
       return insert_result_comment("word", extract.word())
     end
     v_0_0 = comment_word0
-    _0_0["comment-word"] = v_0_0
+    _0_["comment-word"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["comment-word"] = v_0_
   comment_word = v_0_
 end
@@ -428,10 +428,10 @@ do
       end
     end
     v_0_0 = word0
-    _0_0["word"] = v_0_0
+    _0_["word"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["word"] = v_0_
   word = v_0_
 end
@@ -449,10 +449,10 @@ do
       end
     end
     v_0_0 = doc_word0
-    _0_0["doc-word"] = v_0_0
+    _0_["doc-word"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["doc-word"] = v_0_
   doc_word = v_0_
 end
@@ -470,10 +470,10 @@ do
       end
     end
     v_0_0 = def_word0
-    _0_0["def-word"] = v_0_0
+    _0_["def-word"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["def-word"] = v_0_
   def_word = v_0_
 end
@@ -489,10 +489,10 @@ do
       return eval_str({code = content, origin = "buf", range = range})
     end
     v_0_0 = buf0
-    _0_0["buf"] = v_0_0
+    _0_["buf"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["buf"] = v_0_
   buf = v_0_
 end
@@ -505,10 +505,10 @@ do
       return eval_str({code = code, origin = "command"})
     end
     v_0_0 = command0
-    _0_0["command"] = v_0_0
+    _0_["command"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["command"] = v_0_
   command = v_0_
 end
@@ -524,10 +524,10 @@ do
       return eval_str({code = content, origin = "range", range = range1})
     end
     v_0_0 = range0
-    _0_0["range"] = v_0_0
+    _0_["range"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["range"] = v_0_
   range = v_0_
 end
@@ -543,10 +543,10 @@ do
       return eval_str({code = content, origin = "selection", range = range0})
     end
     v_0_0 = selection0
-    _0_0["selection"] = v_0_0
+    _0_["selection"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["selection"] = v_0_
   selection = v_0_
 end
@@ -561,7 +561,7 @@ do
     end
   end
   v_0_ = wrap_completion_result0
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["wrap-completion-result"] = v_0_
   wrap_completion_result = v_0_
 end
@@ -573,11 +573,11 @@ do
     local function completions0(prefix, cb)
       local function cb_wrap(results)
         local function _3_()
-          local _2_0 = config["get-in"]({"completion", "fallback"})
-          if _2_0 then
-            return nvim.call_function(_2_0, {0, prefix})
+          local _2_ = config["get-in"]({"completion", "fallback"})
+          if _2_ then
+            return nvim.call_function(_2_, {0, prefix})
           else
-            return _2_0
+            return _2_
           end
         end
         return cb(a.map(wrap_completion_result, (results or _3_())))
@@ -589,10 +589,10 @@ do
       end
     end
     v_0_0 = completions0
-    _0_0["completions"] = v_0_0
+    _0_["completions"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["completions"] = v_0_
   completions = v_0_
 end
@@ -607,10 +607,10 @@ do
       return p
     end
     v_0_0 = completions_promise0
-    _0_0["completions-promise"] = v_0_0
+    _0_["completions-promise"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["completions-promise"] = v_0_
   completions_promise = v_0_
 end
@@ -625,10 +625,10 @@ do
       return promise.close(p)
     end
     v_0_0 = completions_sync0
-    _0_0["completions-sync"] = v_0_0
+    _0_["completions-sync"] = v_0_0
     v_0_ = v_0_0
   end
-  local t_0_ = (_0_0)["aniseed/locals"]
+  local t_0_ = (_0_)["aniseed/locals"]
   t_0_["completions-sync"] = v_0_
   completions_sync = v_0_
 end
