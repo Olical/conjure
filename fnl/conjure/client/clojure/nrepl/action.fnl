@@ -30,19 +30,20 @@
     (require-ns (extract.context))))
 
 (defn connect-port-file [opts]
-  (let [[path port]
+  (let [resolved
         (-?>> (cfg [:connection :port_files])
               (a.map fs.resolve-above)
               (a.some
                 (fn [path]
                   (let [port (a.slurp path)]
                     (when port
-                      [path (tonumber port)])))))]
+                      {:path path
+                       :port (tonumber port)})))))]
     (if port
       (server.connect
         {:host (cfg [:connection :default_host])
-         :port_file_path path
-         :port port
+         :port_file_path (?. resolved :path)
+         :port (?. resolved :port)
          :cb (fn []
                (let [cb (a.get opts :cb)]
                  (when cb
