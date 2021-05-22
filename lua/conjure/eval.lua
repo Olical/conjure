@@ -181,6 +181,26 @@ do
   t_0_["client-exec-fn"] = v_0_
   client_exec_fn = v_0_
 end
+local apply_gsubs
+do
+  local v_0_
+  local function apply_gsubs0(code)
+    if code then
+      local function _3_(code0, _2_)
+        local _arg_0_ = _2_
+        local pat = _arg_0_[1]
+        local rep = _arg_0_[2]
+        print(code0, pat, rep)
+        return string.gsub(code0, pat, rep)
+      end
+      return a.reduce(_3_, code, a.vals(nvim.g["conjure#eval#gsubs"]))
+    end
+  end
+  v_0_ = apply_gsubs0
+  local t_0_ = (_0_)["aniseed/locals"]
+  t_0_["apply-gsubs"] = v_0_
+  apply_gsubs = v_0_
+end
 local eval_str
 do
   local v_0_
@@ -189,6 +209,7 @@ do
     local function eval_str0(opts)
       highlight_range(opts.range)
       event.emit("eval", "str")
+      a.update(opts, "code", apply_gsubs)
       local function _2_()
         if opts["passive?"] then
           return opts

@@ -97,9 +97,19 @@
         (display-request opts))
       (client.call f-name opts))))
 
+(defn- apply-gsubs [code]
+  (when code
+    (a.reduce
+      (fn [code [pat rep]]
+        (print code pat rep)
+        (string.gsub code pat rep))
+      code
+      (a.vals nvim.g.conjure#eval#gsubs))))
+
 (defn eval-str [opts]
   (highlight-range opts.range)
   (event.emit :eval :str)
+  (a.update opts :code apply-gsubs)
   ((client-exec-fn :eval :eval-str)
    (if opts.passive?
      opts

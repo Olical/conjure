@@ -313,6 +313,24 @@ Tip: Booleans in Vim Script are written as `v:true` and `v:false`.
             space!).
             Default: `nil` (whatever comment character the language uses)
 
+`g:conjure#eval#gsubs`
+            Lua `string.gsub` modifications to make to code before it's
+            evaluated. For example, the following will mean you can evaluate
+            `comment` forms as `do` forms.
+            >
+              let g:conjure#eval#gsubs = {'do-comment': ['^%(comment[%s%c]', '(do ']}
+<
+            The first value in the list is a Lua pattern to match against and
+            the second is the replacement value. When using the root form eval
+            within a comment form Conjure will now execute all forms contained
+            within it.
+
+            The keys of your value pairs are purely for documentation, they're
+            not used in the actual execution (but they could be used to aid
+            debugging in the future).
+
+            More on Lua patterns: https://www.lua.org/pil/20.2.html
+
 `g:conjure#mapping#prefix`
             The key that proceeds most mappings.
             Default: `"<localleader>"`
