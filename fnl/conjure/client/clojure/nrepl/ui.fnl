@@ -1,9 +1,12 @@
 (module conjure.client.clojure.nrepl.ui
   {autoload {log conjure.log
              text conjure.text
+             config conjure.config
              a conjure.aniseed.core
              str conjure.aniseed.string
              state conjure.client.clojure.nrepl.state}})
+
+(def- cfg (config.get-in-fn [:client :clojure :nrepl]))
 
 (defn- handle-join-line [resp]
   (let [next-key (if resp.out :out resp.err :err)
@@ -26,7 +29,7 @@
           (text.trim-last-newline resp.out)
           (if
             opts.simple-out? "; "
-            opts.raw-out? ""
+            (or opts.raw-out? (cfg [:eval :raw_out])) ""
             "; (out) ")
           {:skip-first? joined?})
 

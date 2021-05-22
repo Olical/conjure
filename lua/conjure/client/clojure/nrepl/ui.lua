@@ -21,11 +21,11 @@ local autoload = (require("conjure.aniseed.autoload")).autoload
 local function _1_(...)
   local ok_3f_0_, val_0_ = nil, nil
   local function _1_()
-    return {autoload("conjure.aniseed.core"), autoload("conjure.log"), autoload("conjure.client.clojure.nrepl.state"), autoload("conjure.aniseed.string"), autoload("conjure.text")}
+    return {autoload("conjure.aniseed.core"), autoload("conjure.config"), autoload("conjure.log"), autoload("conjure.client.clojure.nrepl.state"), autoload("conjure.aniseed.string"), autoload("conjure.text")}
   end
   ok_3f_0_, val_0_ = pcall(_1_)
   if ok_3f_0_ then
-    _0_["aniseed/local-fns"] = {autoload = {a = "conjure.aniseed.core", log = "conjure.log", state = "conjure.client.clojure.nrepl.state", str = "conjure.aniseed.string", text = "conjure.text"}}
+    _0_["aniseed/local-fns"] = {autoload = {a = "conjure.aniseed.core", config = "conjure.config", log = "conjure.log", state = "conjure.client.clojure.nrepl.state", str = "conjure.aniseed.string", text = "conjure.text"}}
     return val_0_
   else
     return print(val_0_)
@@ -33,13 +33,21 @@ local function _1_(...)
 end
 local _local_0_ = _1_(...)
 local a = _local_0_[1]
-local log = _local_0_[2]
-local state = _local_0_[3]
-local str = _local_0_[4]
-local text = _local_0_[5]
+local config = _local_0_[2]
+local log = _local_0_[3]
+local state = _local_0_[4]
+local str = _local_0_[5]
+local text = _local_0_[6]
 local _2amodule_2a = _0_
 local _2amodule_name_2a = "conjure.client.clojure.nrepl.ui"
 do local _ = ({nil, _0_, nil, {{}, nil, nil, nil}})[2] end
+local cfg
+do
+  local v_0_ = config["get-in-fn"]({"client", "clojure", "nrepl"})
+  local t_0_ = (_0_)["aniseed/locals"]
+  t_0_["cfg"] = v_0_
+  cfg = v_0_
+end
 local handle_join_line
 do
   local v_0_
@@ -81,7 +89,7 @@ do
         local _3_
         if opts0["simple-out?"] then
           _3_ = "; "
-        elseif opts0["raw-out?"] then
+        elseif (opts0["raw-out?"] or cfg({"eval", "raw_out"})) then
           _3_ = ""
         else
           _3_ = "; (out) "

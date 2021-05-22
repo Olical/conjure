@@ -25,6 +25,7 @@
 
       :eval
       {:pretty_print true
+       :raw_out false
        :auto_require true
        :print_quota nil
        :print_function :conjure.internal/pprint
@@ -73,6 +74,7 @@
        :refresh_changed "rr"
        :refresh_all "ra"
        :refresh_clear "rc"}
+
       :completion
       {:cljs {:use_suitable true}
        :with_context false}}}}})
