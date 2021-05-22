@@ -325,9 +325,11 @@ Tip: Booleans in Vim Script are written as `v:true` and `v:false`.
             within a comment form Conjure will now execute all forms contained
             within it.
 
-            The keys of your value pairs are purely for documentation, they're
-            not used in the actual execution (but they could be used to aid
-            debugging in the future).
+            The keys of your value pairs are purely for documentation, you'll
+            only see them in error messages if something goes wrong. If a
+            pattern throws an error for some reason Conjure will still proceed
+            with the evaluation (without the substitution) but will log the
+            error.
 
             More on Lua patterns: https://www.lua.org/pil/20.2.html
 

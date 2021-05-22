@@ -21,11 +21,11 @@ local autoload = (require("conjure.aniseed.autoload")).autoload
 local function _1_(...)
   local ok_3f_0_, val_0_ = nil, nil
   local function _1_()
-    return {autoload("conjure.aniseed.core"), autoload("conjure.buffer"), autoload("conjure.client"), autoload("conjure.config"), autoload("conjure.editor"), autoload("conjure.event"), autoload("conjure.extract"), autoload("conjure.fs"), autoload("conjure.inline"), autoload("conjure.log"), autoload("conjure.aniseed.nvim"), autoload("conjure.promise"), autoload("conjure.text"), autoload("conjure.timer"), autoload("conjure.uuid")}
+    return {autoload("conjure.aniseed.core"), autoload("conjure.buffer"), autoload("conjure.client"), autoload("conjure.config"), autoload("conjure.editor"), autoload("conjure.event"), autoload("conjure.extract"), autoload("conjure.fs"), autoload("conjure.inline"), autoload("conjure.log"), autoload("conjure.aniseed.nvim"), autoload("conjure.promise"), autoload("conjure.aniseed.string"), autoload("conjure.text"), autoload("conjure.timer"), autoload("conjure.uuid")}
   end
   ok_3f_0_, val_0_ = pcall(_1_)
   if ok_3f_0_ then
-    _0_["aniseed/local-fns"] = {autoload = {a = "conjure.aniseed.core", buffer = "conjure.buffer", client = "conjure.client", config = "conjure.config", editor = "conjure.editor", event = "conjure.event", extract = "conjure.extract", fs = "conjure.fs", inline = "conjure.inline", log = "conjure.log", nvim = "conjure.aniseed.nvim", promise = "conjure.promise", text = "conjure.text", timer = "conjure.timer", uuid = "conjure.uuid"}}
+    _0_["aniseed/local-fns"] = {autoload = {a = "conjure.aniseed.core", buffer = "conjure.buffer", client = "conjure.client", config = "conjure.config", editor = "conjure.editor", event = "conjure.event", extract = "conjure.extract", fs = "conjure.fs", inline = "conjure.inline", log = "conjure.log", nvim = "conjure.aniseed.nvim", promise = "conjure.promise", str = "conjure.aniseed.string", text = "conjure.text", timer = "conjure.timer", uuid = "conjure.uuid"}}
     return val_0_
   else
     return print(val_0_)
@@ -36,9 +36,10 @@ local a = _local_0_[1]
 local log = _local_0_[10]
 local nvim = _local_0_[11]
 local promise = _local_0_[12]
-local text = _local_0_[13]
-local timer = _local_0_[14]
-local uuid = _local_0_[15]
+local str = _local_0_[13]
+local text = _local_0_[14]
+local timer = _local_0_[15]
+local uuid = _local_0_[16]
 local buffer = _local_0_[2]
 local client = _local_0_[3]
 local config = _local_0_[4]
@@ -188,12 +189,19 @@ do
     if code then
       local function _3_(code0, _2_)
         local _arg_0_ = _2_
-        local pat = _arg_0_[1]
-        local rep = _arg_0_[2]
-        print(code0, pat, rep)
-        return string.gsub(code0, pat, rep)
+        local name = _arg_0_[1]
+        local _arg_1_ = _arg_0_[2]
+        local pat = _arg_1_[1]
+        local rep = _arg_1_[2]
+        local ok_3f, val_or_err = pcall(string.gsub, code0, pat, rep)
+        if ok_3f then
+          return val_or_err
+        else
+          nvim.err_writeln(str.join({"Error from g:conjure#eval#gsubs: ", name, " - ", val_or_err}))
+          return code0
+        end
       end
-      return a.reduce(_3_, code, a.vals(nvim.g["conjure#eval#gsubs"]))
+      return a.reduce(_3_, code, a["kv-pairs"](nvim.g["conjure#eval#gsubs"]))
     end
   end
   v_0_ = apply_gsubs0

@@ -1,5 +1,6 @@
 (module conjure.eval
   {autoload {a conjure.aniseed.core
+             str conjure.aniseed.string
              nvim conjure.aniseed.nvim
              extract conjure.extract
              client conjure.client
@@ -100,11 +101,16 @@
 (defn- apply-gsubs [code]
   (when code
     (a.reduce
-      (fn [code [pat rep]]
-        (print code pat rep)
-        (string.gsub code pat rep))
+      (fn [code [name [pat rep]]]
+        (let [(ok? val-or-err) (pcall string.gsub code pat rep)]
+          (if ok?
+            val-or-err
+            (do
+              (nvim.err_writeln
+                (str.join ["Error from g:conjure#eval#gsubs: " name " - " val-or-err]))
+              code))))
       code
-      (a.vals nvim.g.conjure#eval#gsubs))))
+      (a.kv-pairs nvim.g.conjure#eval#gsubs))))
 
 (defn eval-str [opts]
   (highlight-range opts.range)
