@@ -29,7 +29,7 @@
     (when (running? proc)
       (a.assoc proc :running? false)
       (tset state.jobs proc.job-id nil)
-      (pcall nvim.buf_delete (. proc :buf) {:force true})
+      (pcall nvim.buf_delete proc.buf {:force true})
       (let [on-exit (a.get-in proc [:opts :on-exit])]
         (when on-exit
           (on-exit proc))))))

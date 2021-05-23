@@ -18,7 +18,7 @@
          "it starts out as running")
     (t.= false (process.running? nil)
          "the running check handles nils")
-    (t.= 1 (nvim.fn.bufexists (. sh :buf))
+    (t.= 1 (nvim.fn.bufexists sh.buf)
          "a buffer is created for the terminal / process")
     (t.= sh (process.stop sh)
          "stopping returns the process table")
@@ -26,7 +26,7 @@
          "stopping is idempotent")
     (t.= false (process.running? sh)
          "now it's not running")
-    (t.= 0 (nvim.fn.bufexists (. sh :buf))
+    (t.= 0 (nvim.fn.bufexists sh.buf)
          "the buffer should also be deleted")))
 
 (deftest on-exit-hook
