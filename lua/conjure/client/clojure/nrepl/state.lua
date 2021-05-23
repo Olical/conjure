@@ -42,7 +42,7 @@ do
   do
     local v_0_0
     local function _2_()
-      return {["join-next"] = {key = nil}, conn = nil}
+      return {["auto-repl-proc"] = nil, ["join-next"] = {key = nil}, conn = nil}
     end
     v_0_0 = ((_0_).get or client["new-state"](_2_))
     _0_["get"] = v_0_0

@@ -21,7 +21,10 @@
     {:nrepl
      {:connection
       {:default_host "localhost"
-       :port_files [".nrepl-port" ".shadow-cljs/nrepl.port"]}
+       :port_files [".nrepl-port" ".shadow-cljs/nrepl.port"]
+       :auto_repl {:enabled true
+                   :cmd "bb nrepl-server localhost:8794"
+                   :port_file ".nrepl-port" :port "8794"}}
 
       :eval
       {:pretty_print true
@@ -29,8 +32,7 @@
        :auto_require true
        :print_quota nil
        :print_function :conjure.internal/pprint
-       :print_options {:length 500
-                       :level 50}}
+       :print_options {:length 500 :level 50}}
 
       :interrupt
       {:sample_limit 0.3}
@@ -182,4 +184,5 @@
   (action.connect-port-file))
 
 (defn on-exit []
+  (action.delete-auto-repl-port-file)
   (server.disconnect))

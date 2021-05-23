@@ -143,6 +143,31 @@ All configuration can be set as described in |conjure-configuration|.
             file in there to always have a default port to attempt.
             Default: `[".nrepl-port" ".shadow-cljs/nrepl.port"]`
 
+`g:conjure#client#clojure#nrepl#connection#auto_repl#enabled`
+            Start the "auto-repl" process when Conjure tries to connect to an
+            existing nREPL and can't find any candidates. Useful for getting
+            into some sort of REPL environment quickly without having to
+            manage external processes.
+            Default: `true`
+
+`g:conjure#client#clojure#nrepl#connection#auto_repl#cmd`
+            The command to execute when starting the auto-repl. By default we
+            start a Babashka nREPL server on port `8794` but only if you have
+            it installed. https://babashka.org/
+
+            This can be configured to start any kind of nREPL automatically
+            when required. Be sure to either unset the port file configuration
+            (if the nREPL will manage the file for you) or configure it for
+            your chosen port number.
+            Default: `"bb nrepl-server localhost:8794"`
+
+`g:conjure#client#clojure#nrepl#connection#auto_repl#port_file`
+`g:conjure#client#clojure#nrepl#connection#auto_repl#port`
+            When both set, the port will be written to the port file when the
+            auto-repl starts up. It'll also be deleted on exit if the port
+            contained within the file is still the same as the auto-repl port.
+            Default: `".nrepl-port"`, `"8794"`
+
 `g:conjure#client#clojure#nrepl#eval#pretty_print`
             Should results be pretty printed by the nREPL server.
             Relies on `clojure.pprint/write`.

@@ -21,11 +21,11 @@ local autoload = (require("conjure.aniseed.autoload")).autoload
 local function _1_(...)
   local ok_3f_0_, val_0_ = nil, nil
   local function _1_()
-    return {autoload("conjure.aniseed.core"), autoload("conjure.config"), autoload("conjure.editor"), autoload("conjure.aniseed.eval"), autoload("conjure.extract"), autoload("conjure.fs"), autoload("conjure.linked-list"), autoload("conjure.log"), autoload("conjure.remote.nrepl"), autoload("conjure.aniseed.nvim"), autoload("conjure.client.clojure.nrepl.parse"), autoload("conjure.client.clojure.nrepl.server"), autoload("conjure.aniseed.string"), autoload("conjure.text"), autoload("conjure.client.clojure.nrepl.ui"), autoload("conjure.aniseed.view")}
+    return {autoload("conjure.aniseed.core"), autoload("conjure.client"), autoload("conjure.config"), autoload("conjure.editor"), autoload("conjure.aniseed.eval"), autoload("conjure.extract"), autoload("conjure.fs"), autoload("conjure.linked-list"), autoload("conjure.log"), autoload("conjure.remote.nrepl"), autoload("conjure.aniseed.nvim"), autoload("conjure.client.clojure.nrepl.parse"), autoload("conjure.process"), autoload("conjure.client.clojure.nrepl.server"), autoload("conjure.client.clojure.nrepl.state"), autoload("conjure.aniseed.string"), autoload("conjure.text"), autoload("conjure.client.clojure.nrepl.ui"), autoload("conjure.aniseed.view")}
   end
   ok_3f_0_, val_0_ = pcall(_1_)
   if ok_3f_0_ then
-    _0_["aniseed/local-fns"] = {autoload = {a = "conjure.aniseed.core", config = "conjure.config", editor = "conjure.editor", eval = "conjure.aniseed.eval", extract = "conjure.extract", fs = "conjure.fs", ll = "conjure.linked-list", log = "conjure.log", nrepl = "conjure.remote.nrepl", nvim = "conjure.aniseed.nvim", parse = "conjure.client.clojure.nrepl.parse", server = "conjure.client.clojure.nrepl.server", str = "conjure.aniseed.string", text = "conjure.text", ui = "conjure.client.clojure.nrepl.ui", view = "conjure.aniseed.view"}}
+    _0_["aniseed/local-fns"] = {autoload = {a = "conjure.aniseed.core", client = "conjure.client", config = "conjure.config", editor = "conjure.editor", eval = "conjure.aniseed.eval", extract = "conjure.extract", fs = "conjure.fs", ll = "conjure.linked-list", log = "conjure.log", nrepl = "conjure.remote.nrepl", nvim = "conjure.aniseed.nvim", parse = "conjure.client.clojure.nrepl.parse", process = "conjure.process", server = "conjure.client.clojure.nrepl.server", state = "conjure.client.clojure.nrepl.state", str = "conjure.aniseed.string", text = "conjure.text", ui = "conjure.client.clojure.nrepl.ui", view = "conjure.aniseed.view"}}
     return val_0_
   else
     return print(val_0_)
@@ -33,21 +33,24 @@ local function _1_(...)
 end
 local _local_0_ = _1_(...)
 local a = _local_0_[1]
-local nvim = _local_0_[10]
-local parse = _local_0_[11]
-local server = _local_0_[12]
-local str = _local_0_[13]
-local text = _local_0_[14]
-local ui = _local_0_[15]
-local view = _local_0_[16]
-local config = _local_0_[2]
-local editor = _local_0_[3]
-local eval = _local_0_[4]
-local extract = _local_0_[5]
-local fs = _local_0_[6]
-local ll = _local_0_[7]
-local log = _local_0_[8]
-local nrepl = _local_0_[9]
+local nrepl = _local_0_[10]
+local nvim = _local_0_[11]
+local parse = _local_0_[12]
+local process = _local_0_[13]
+local server = _local_0_[14]
+local state = _local_0_[15]
+local str = _local_0_[16]
+local text = _local_0_[17]
+local ui = _local_0_[18]
+local view = _local_0_[19]
+local client = _local_0_[2]
+local config = _local_0_[3]
+local editor = _local_0_[4]
+local eval = _local_0_[5]
+local extract = _local_0_[6]
+local fs = _local_0_[7]
+local ll = _local_0_[8]
+local log = _local_0_[9]
 local _2amodule_2a = _0_
 local _2amodule_name_2a = "conjure.client.clojure.nrepl.action"
 do local _ = ({nil, _0_, nil, {{}, nil, nil, nil}})[2] end
@@ -90,6 +93,49 @@ do
   local t_0_ = (_0_)["aniseed/locals"]
   t_0_["passive-ns-require"] = v_0_
   passive_ns_require = v_0_
+end
+local delete_auto_repl_port_file
+do
+  local v_0_
+  do
+    local v_0_0
+    local function delete_auto_repl_port_file0()
+      local port_file = cfg({"connection", "auto_repl", "port_file"})
+      local port = cfg({"connection", "auto_repl", "port"})
+      if (port_file and port and (a.slurp(port_file) == port)) then
+        return nvim.fn.delete(port_file)
+      end
+    end
+    v_0_0 = delete_auto_repl_port_file0
+    _0_["delete-auto-repl-port-file"] = v_0_0
+    v_0_ = v_0_0
+  end
+  local t_0_ = (_0_)["aniseed/locals"]
+  t_0_["delete-auto-repl-port-file"] = v_0_
+  delete_auto_repl_port_file = v_0_
+end
+local upsert_auto_repl_proc
+do
+  local v_0_
+  local function upsert_auto_repl_proc0()
+    local cmd = cfg({"connection", "auto_repl", "cmd"})
+    local port_file = cfg({"connection", "auto_repl", "port_file"})
+    local port = cfg({"connection", "auto_repl", "port"})
+    local enabled_3f = cfg({"connection", "auto_repl", "enabled"})
+    if (enabled_3f and not process["running?"](state.get("auto-repl-proc")) and process["executable?"](cmd)) then
+      local proc = process.execute(cmd, {["on-exit"] = client.wrap(delete_auto_repl_port_file)})
+      a.assoc(state.get(), "auto-repl-proc", proc)
+      if (port_file and port) then
+        a.spit(port_file, port)
+      end
+      log.append({("; Starting auto-repl: " .. cmd)})
+      return proc
+    end
+  end
+  v_0_ = upsert_auto_repl_proc0
+  local t_0_ = (_0_)["aniseed/locals"]
+  t_0_["upsert-auto-repl-proc"] = v_0_
+  upsert_auto_repl_proc = v_0_
 end
 local connect_port_file
 do
@@ -146,7 +192,8 @@ do
         return server.connect({cb = _3_, host = cfg({"connection", "default_host"}), port = _4_, port_file_path = _5_})
       else
         if not a.get(opts, "silent?") then
-          return log.append({"; No nREPL port file found"}, {["break?"] = true})
+          log.append({"; No nREPL port file found"}, {["break?"] = true})
+          return upsert_auto_repl_proc()
         end
       end
     end

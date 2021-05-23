@@ -21,11 +21,11 @@ local autoload = (require("conjure.aniseed.autoload")).autoload
 local function _1_(...)
   local ok_3f_0_, val_0_ = nil, nil
   local function _1_()
-    return {autoload("conjure.aniseed.core"), autoload("conjure.aniseed.nvim")}
+    return {autoload("conjure.aniseed.core"), autoload("conjure.aniseed.nvim"), autoload("conjure.aniseed.string")}
   end
   ok_3f_0_, val_0_ = pcall(_1_)
   if ok_3f_0_ then
-    _0_["aniseed/local-fns"] = {autoload = {a = "conjure.aniseed.core", nvim = "conjure.aniseed.nvim"}}
+    _0_["aniseed/local-fns"] = {autoload = {a = "conjure.aniseed.core", nvim = "conjure.aniseed.nvim", str = "conjure.aniseed.string"}}
     return val_0_
   else
     return print(val_0_)
@@ -34,6 +34,7 @@ end
 local _local_0_ = _1_(...)
 local a = _local_0_[1]
 local nvim = _local_0_[2]
+local str = _local_0_[3]
 local _2amodule_2a = _0_
 local _2amodule_name_2a = "conjure.process"
 do local _ = ({nil, _0_, nil, {{}, nil, nil, nil}})[2] end
@@ -42,8 +43,8 @@ do
   local v_0_
   do
     local v_0_0
-    local function executable_3f0(name)
-      return (1 == nvim.fn.executable(name))
+    local function executable_3f0(cmd)
+      return (1 == nvim.fn.executable(a.first(str.split(cmd, "%s+"))))
     end
     v_0_0 = executable_3f0
     _0_["executable?"] = v_0_0
@@ -53,14 +54,18 @@ do
   t_0_["executable?"] = v_0_
   executable_3f = v_0_
 end
--- (executable? bb) (executable? nope-this-doesnt)
+-- (executable? bb) (executable? bb nrepl-server) (executable? nope-this-doesnt)
 local running_3f
 do
   local v_0_
   do
     local v_0_0
     local function running_3f0(proc)
-      return proc["running?"]
+      if proc then
+        return proc["running?"]
+      else
+        return false
+      end
     end
     v_0_0 = running_3f0
     _0_["running?"] = v_0_0
@@ -76,7 +81,11 @@ do
   local function on_exit0(proc)
     if running_3f(proc) then
       a.assoc(proc, "running?", false)
-      return pcall(nvim.buf_delete, proc.buf, {force = true})
+      pcall(nvim.buf_delete, proc.buf, {force = true})
+      local on_exit1 = a["get-in"](proc, {"opts", "on-exit"})
+      if on_exit1 then
+        return on_exit1(proc)
+      end
     end
   end
   v_0_ = on_exit0
@@ -89,23 +98,24 @@ do
   local v_0_
   do
     local v_0_0
-    local function execute0(cmd)
+    local function execute0(cmd, opts)
       local win = nvim.tabpage_get_win(0)
       local original_buf = nvim.win_get_buf(win)
       local term_buf = nvim.create_buf(true, true)
-      local res = {["running?"] = true, buf = term_buf, cmd = cmd}
-      local opts
-      local function _2_()
-        return on_exit(res)
-      end
-      opts = {on_exit = _2_}
-      nvim.win_set_buf(win, term_buf)
-      local job_id = nvim.fn.termopen(cmd, opts)
+      local res = {["running?"] = true, buf = term_buf, cmd = cmd, opts = opts}
+      local job_id
       do
-        local _3_ = job_id
-        if (_3_ == 0) then
+        nvim.win_set_buf(win, term_buf)
+        local function _2_()
+          return on_exit(res)
+        end
+        job_id = nvim.fn.termopen(cmd, {on_exit = _2_})
+      end
+      do
+        local _2_ = job_id
+        if (_2_ == 0) then
           error("invalid arguments or job table full")
-        elseif (_3_ == -1) then
+        elseif (_2_ == -1) then
           error(("'" .. cmd .. "' is not executable"))
         end
       end

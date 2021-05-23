@@ -5,4 +5,5 @@
   (client.new-state
     (fn []
       {:conn nil
+       :auto-repl-proc nil
        :join-next {:key nil}})))
