@@ -61,4 +61,25 @@ do
   t_0_["strip-meta"] = v_0_
   strip_meta = v_0_
 end
+local strip_comments
+do
+  local v_0_
+  do
+    local v_0_0
+    local function strip_comments0(s)
+      local _2_ = s
+      if _2_ then
+        return string.gsub(_2_, ";.-[\n$]", "")
+      else
+        return _2_
+      end
+    end
+    v_0_0 = strip_comments0
+    _0_["strip-comments"] = v_0_0
+    v_0_ = v_0_0
+  end
+  local t_0_ = (_0_)["aniseed/locals"]
+  t_0_["strip-comments"] = v_0_
+  strip_comments = v_0_
+end
 return nil

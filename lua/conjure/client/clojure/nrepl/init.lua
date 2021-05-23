@@ -88,11 +88,16 @@ do
       if _2_ then
         local _3_ = parse["strip-meta"](_2_)
         if _3_ then
-          local _4_ = string.match(_3_, "%(%s*ns%s+([^)]*)")
+          local _4_ = parse["strip-comments"](_3_)
           if _4_ then
-            local _5_ = str.split(_4_, "%s+")
+            local _5_ = string.match(_4_, "%(%s*ns%s+([^)]*)")
             if _5_ then
-              return a.first(_5_)
+              local _6_ = str.split(_5_, "%s+")
+              if _6_ then
+                return a.first(_6_)
+              else
+                return _6_
+              end
             else
               return _5_
             end

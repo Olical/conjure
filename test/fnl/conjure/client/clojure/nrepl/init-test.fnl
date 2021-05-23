@@ -9,5 +9,11 @@
   (t.= "foo" (clj.context "(ns ^:bar foo baz") "short meta missing closing paren")
   (t.= "foo" (clj.context "(ns ^{:bar true} foo baz)") "long meta")
   (t.= "foo" (clj.context "(ns \n^{:bar true} foo\n \"some docs\"\n baz") "newlines and docs")
+
+  ;; https://github.com/Olical/conjure/issues/204
   (t.= "foo" (clj.context "(ns ^{:clj-kondo/config {:lint-as '{my-awesome/defn-like-macro clojure.core/defn}}} foo)"))
-  (t.= "foo" (clj.context "(ns ^{:clj-kondo/config {:lint-as (quote {my-awesome/defn-like-macro clojure.core/defn})}} foo)")))
+  (t.= "foo" (clj.context "(ns ^{:clj-kondo/config {:lint-as (quote {my-awesome/defn-like-macro clojure.core/defn})}} foo)"))
+
+  ;; https://github.com/Olical/conjure/issues/207
+  (t.= "foo" (clj.context "(ns ;)\n  foo)"))
+  (t.= "foo" (clj.context "(ns ^{:doc \"...... (....) (..)))...\"}\n  foo)")))
