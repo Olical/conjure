@@ -54,7 +54,6 @@ do
   t_0_["executable?"] = v_0_
   executable_3f = v_0_
 end
--- (executable? bb) (executable? bb nrepl-server) (executable? nope-this-doesnt)
 local running_3f
 do
   local v_0_
@@ -75,24 +74,39 @@ do
   t_0_["running?"] = v_0_
   running_3f = v_0_
 end
+local state
+do
+  local v_0_ = (((_0_)["aniseed/locals"]).state or {jobs = {}})
+  local t_0_ = (_0_)["aniseed/locals"]
+  t_0_["state"] = v_0_
+  state = v_0_
+end
 local on_exit
 do
   local v_0_
-  local function on_exit0(proc)
-    if running_3f(proc) then
-      a.assoc(proc, "running?", false)
-      pcall(nvim.buf_delete, proc.buf, {force = true})
-      local on_exit1 = a["get-in"](proc, {"opts", "on-exit"})
-      if on_exit1 then
-        return on_exit1(proc)
+  do
+    local v_0_0
+    local function on_exit0(job_id)
+      local proc = state.jobs[job_id]
+      if running_3f(proc) then
+        a.assoc(proc, "running?", false)
+        state.jobs[proc["job-id"]] = nil
+        pcall(nvim.buf_delete, proc.buf, {force = true})
+        local on_exit1 = a["get-in"](proc, {"opts", "on-exit"})
+        if on_exit1 then
+          return on_exit1(proc)
+        end
       end
     end
+    v_0_0 = on_exit0
+    _0_["on-exit"] = v_0_0
+    v_0_ = v_0_0
   end
-  v_0_ = on_exit0
   local t_0_ = (_0_)["aniseed/locals"]
   t_0_["on-exit"] = v_0_
   on_exit = v_0_
 end
+nvim.ex.function_(str.join("\n", {"ConjureProcessOnExit(...)", "call luaeval(\"require('conjure.process')['on-exit'](unpack(_A))\", a:000)", "endfunction"}))
 local execute
 do
   local v_0_
@@ -102,14 +116,11 @@ do
       local win = nvim.tabpage_get_win(0)
       local original_buf = nvim.win_get_buf(win)
       local term_buf = nvim.create_buf(true, true)
-      local res = {["running?"] = true, buf = term_buf, cmd = cmd, opts = opts}
+      local proc = {["running?"] = true, buf = term_buf, cmd = cmd, opts = opts}
       local job_id
       do
         nvim.win_set_buf(win, term_buf)
-        local function _2_()
-          return on_exit(res)
-        end
-        job_id = nvim.fn.termopen(cmd, {on_exit = _2_})
+        job_id = nvim.fn.termopen(cmd, {on_exit = "ConjureProcessOnExit"})
       end
       do
         local _2_ = job_id
@@ -120,7 +131,8 @@ do
         end
       end
       nvim.win_set_buf(win, original_buf)
-      return a.assoc(res, "job-id", job_id)
+      state.jobs[job_id] = proc
+      return a.assoc(proc, "job-id", job_id)
     end
     v_0_0 = execute0
     _0_["execute"] = v_0_0
@@ -138,7 +150,7 @@ do
     local function stop0(proc)
       if running_3f(proc) then
         nvim.fn.jobstop(proc["job-id"])
-        on_exit(proc)
+        on_exit(proc["job-id"])
       end
       return proc
     end
@@ -150,5 +162,4 @@ do
   t_0_["stop"] = v_0_
   stop = v_0_
 end
--- (def bb (execute bb nrepl-server)) (stop bb)
 return nil
