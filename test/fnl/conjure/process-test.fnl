@@ -25,9 +25,7 @@
     (t.= sh (process.stop sh)
          "stopping is idempotent")
     (t.= false (process.running? sh)
-         "now it's not running")
-    (t.= 0 (nvim.fn.bufexists sh.buf)
-         "the buffer should also be deleted")))
+         "now it's not running")))
 
 (deftest on-exit-hook
   (let [state {:args nil}
