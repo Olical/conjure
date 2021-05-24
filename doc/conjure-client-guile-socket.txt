@@ -51,14 +51,17 @@ CONFIGURATION                      *conjure-client-guile-socket-configuration*
 All configuration can be set as described in |conjure-configuration|.
 
 
+                                 *g:conjure#client#guile#socket#mapping#start*
 `g:conjure#client#guile#socket#mapping#start`
             Connect to Guile REPL
             Default: `"cs"`
 
+                                  *g:conjure#client#guile#socket#mapping#stop*
 `g:conjure#client#guile#socket#mapping#stop`
             Disconnect from Guile REPL
             Default: `"cS"`
 
+                                      *g:conjure#client#guile#socket#pipename*
 `g:conjure#client#guile#socket#pipename`
             Default path to your Guile socket used when connecting. Guile
             requires this path to be absolute!

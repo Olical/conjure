@@ -49,14 +49,17 @@ open a buffer.
 
 I've also included some commands since they're related to the mappings.
 
+                                                              *:ConjureSchool*
 :ConjureSchool           Start the interactive tutorial which will walk you
                          through the workflow and mappings Conjure provides.
 
+                                                                *:ConjureEval*
 :ConjureEval [code]      Evaluates the given code in the current buffer's
                          language and context. Accepts a range so
                          `:%ConjureEval` would evaluate the entire buffer,
                          this also works with visual selections.
 
+                                                             *:ConjureConnect*
 :ConjureConnect [host] [port]
                          Connect to the given host and port. Both arguments
                          tend to be optional but this can vary depending on
@@ -66,6 +69,7 @@ I've also included some commands since they're related to the mappings.
                          `:ConjureConnect 5678`
                          `:ConjureConnect staging.my-app.com 5678`
 
+                                                         *:ConjureClientState*
 :ConjureClientState [state-key]
                          Get or set (if an argument is provided) the current
                          client state key. This defaults to `default` and can
@@ -220,6 +224,7 @@ defined as you enter a buffer and can't be altered after the fact.
 
 Tip: Booleans in Vim Script are written as `v:true` and `v:false`.
 
+                                                         *g:conjure#filetypes*
 `g:conjure#filetypes`
             A list of filetypes Conjure should be associated with. Conjure
             will then look up which client module to use for this filetype
@@ -233,11 +238,13 @@ Tip: Booleans in Vim Script are written as `v:true` and `v:false`.
 
             Default: `["clojure", "fennel", "janet", "racket", "scheme"]`
 
+                                                  *g:conjure#filetype#clojure*
 `g:conjure#filetype#clojure`
             Client to use for `clojure` buffers.
             Help: |conjure-client-clojure-nrepl|
             Default: `"conjure.client.clojure.nrepl"`
 
+                                                   *g:conjure#filetype#fennel*
 `g:conjure#filetype#fennel`
             Client to use for `fennel` buffers. Conjure also ships with an
             alternative `"conjure.client.fennel.stdio"` client which allows
@@ -246,16 +253,19 @@ Tip: Booleans in Vim Script are written as `v:true` and `v:false`.
             Help: |conjure-client-fennel-aniseed|, |conjure-client-fennel-stdio|
             Default: `"conjure.client.fennel.aniseed"`
 
+                                                    *g:conjure#filetype#janet*
 `g:conjure#filetype#janet`
             Client to use for `janet` buffers.
             Help: |conjure-client-janet-netrepl|
             Default: `"conjure.client.janet.netrepl"`
 
+                                                       *g:conjure#filetype#hy*
 `g:conjure#filetype#hy`
             Client to use for `hy` buffers.
             Help: |conjure-client-hy-stdio|
             Default: `"conjure.client.hy.stdio"`
 
+                                                   *g:conjure#filetype#scheme*
 `g:conjure#filetype#scheme`
             Client to use for `scheme` buffers. You can use Guile over a
             socket file instead by setting this to
@@ -263,11 +273,13 @@ Tip: Booleans in Vim Script are written as `v:true` and `v:false`.
             Help: |conjure-client-scheme-stdio|, |conjure-client-guile-socket|
             Default: `"conjure.client.scheme.stdio"`
 
+                                                   *g:conjure#filetype#racket*
 `g:conjure#filetype#racket`
             Client to use for `racket` buffers.
             Help: |conjure-client-racket-stdio|
             Default: `"conjure.client.racket.stdio"`
 
+                                      *g:conjure#filetype_suffixes#[filetype]*
 `g:conjure#filetype_suffixes#[filetype]`
             If a client is loading when it shouldn't we can configure that
             filetype to match a specific set of file extensions. This is
@@ -276,18 +288,21 @@ Tip: Booleans in Vim Script are written as `v:true` and `v:false`.
             difficult to determine which client we should use.
             Default: `nil`
 
+                                          *g:conjure#filetype_suffixes#racket*
 `g:conjure#filetype_suffixes#racket`
             Racket filetype support cycles between the `scheme` and `racket`
             filetypes at times, this list restricts the Racket client to the
             right paths as well as filetypes.
             Default: `["rkt"]`
 
+                                          *g:conjure#filetype_suffixes#scheme*
 `g:conjure#filetype_suffixes#scheme`
             We don't want the Scheme client to activate for Racket or Guile
             buffers, which both sometimes flick their filetype to `scheme`
             just to try and confuse us. But we're ready for it!
             Default: `["scm"]`
 
+                                              *g:conjure#eval#result_register*
 `g:conjure#eval#result_register`
             Every evaluation captures the result and places it in a Neovim
             register for you to use however you want. By default, if you
@@ -299,12 +314,14 @@ Tip: Booleans in Vim Script are written as `v:true` and `v:false`.
              * `"_"` the black hole when you don't want this at all.
             Default: `"c"`
 
+                                               *g:conjure#eval#inline_results*
 `g:conjure#eval#inline_results`
             Displays the results of evaluations inline as virtual text at the
             end of the line where the evaluation was initiated.
             Example: `(+ 10 20) => 30`
             Default: `true`
 
+                                               *g:conjure#eval#comment_prefix*
 `g:conjure#eval#comment_prefix`
             The comment prefix to use for "eval and insert result as comment"
             mappings. Defaults to whatever comment character (normally
@@ -313,6 +330,7 @@ Tip: Booleans in Vim Script are written as `v:true` and `v:false`.
             space!).
             Default: `nil` (whatever comment character the language uses)
 
+                                                        *g:conjure#eval#gsubs*
 `g:conjure#eval#gsubs`
             Lua `string.gsub` modifications to make to code before it's
             evaluated. For example, the following will mean you can evaluate
@@ -333,103 +351,127 @@ Tip: Booleans in Vim Script are written as `v:true` and `v:false`.
 
             More on Lua patterns: https://www.lua.org/pil/20.2.html
 
+                                                    *g:conjure#mapping#prefix*
 `g:conjure#mapping#prefix`
             The key that proceeds most mappings.
             Default: `"<localleader>"`
 
+                                                 *g:conjure#mapping#log_split*
 `g:conjure#mapping#log_split`
             Opens the log in a horizontal split.
             Default: `"ls"`
 
+                                                *g:conjure#mapping#log_vsplit*
 `g:conjure#mapping#log_vsplit`
             Opens the log in a vertical split.
             Default: `"lv"`
 
+                                                   *g:conjure#mapping#log_tab*
 `g:conjure#mapping#log_tab`
             Opens the log in a new tab.
             Default: `"lt"`
 
+                                            *g:conjure#mapping#log_reset_soft*
 `g:conjure#mapping#log_reset_soft`
             Soft reset the log buffer by wiping the contents.
             Default: `"lr"`
 
+                                            *g:conjure#mapping#log_reset_hard*
 `g:conjure#mapping#log_reset_hard`
             Hard reset the log buffer by deleting the entire buffer.
             Default: `"lR"`
 
+                                         *g:conjure#mapping#log_close_visible*
 `g:conjure#mapping#log_close_visible`
             Close all visible log windows.
             Default: `"lq"`
 
+                                         *g:conjure#mapping#eval_current_form*
 `g:conjure#mapping#eval_current_form`
             Evaluates the form under the cursor.
             Default: `"ee"`
 
+                                 *g:conjure#mapping#eval_comment_current_form*
 `g:conjure#mapping#eval_comment_current_form`
             Evaluates the form under the cursor and inserts the result as a
             comment.
             Default: `"ece"`
 
+                                            *g:conjure#mapping#eval_root_form*
 `g:conjure#mapping#eval_root_form`
             Evaluates the root form under the cursor.
             Default: `"er"`
 
+                                    *g:conjure#mapping#eval_comment_root_form*
 `g:conjure#mapping#eval_comment_root_form`
             Evaluates the root form under the cursor and inserts the result as
             a comment.
             Default: `"ecr"`
 
+                                                 *g:conjure#mapping#eval_word*
 `g:conjure#mapping#eval_word`
             Evaluates the word under the cursor.
             Default: `"ew"`
 
+                                         *g:conjure#mapping#eval_comment_word*
 `g:conjure#mapping#eval_comment_word`
             Evaluates the word under the cursor and inserts the result as a
             comment.
             Default: `"ecw"`
 
+                                         *g:conjure#mapping#eval_replace_form*
 `g:conjure#mapping#eval_replace_form`
             Evaluates the form under the cursor and replace with the result.
             Default: `"e!"`
 
+                                          *g:conjure#mapping#eval_marked_form*
 `g:conjure#mapping#eval_marked_form`
             Evaluates the form at the marks location.
             Default: `"em"`
 
+                                         *g:conjure#mapping#eval_comment_form*
 `g:conjure#mapping#eval_comment_form`
             Evaluates the form under the cursor and displays the result as a
             comment at the end of the current line or below the current line.
             Default: `"ec"`
 
+                                                 *g:conjure#mapping#eval_file*
 `g:conjure#mapping#eval_file`
             Evaluates the file from disk.
             Default: `"ef"`
 
+                                                  *g:conjure#mapping#eval_buf*
 `g:conjure#mapping#eval_buf`
             Evaluates the buffer from memory.
             Default: `"eb"`
 
+                                               *g:conjure#mapping#eval_visual*
 `g:conjure#mapping#eval_visual`
             Evaluates the visual selection.
             Default: `"E"`
 
+                                               *g:conjure#mapping#eval_motion*
 `g:conjure#mapping#eval_motion`
             Evaluates the following motion.
             Default: `"E"`
 
+                                                  *g:conjure#mapping#def_word*
 `g:conjure#mapping#def_word`
             Goes to the definition of the word under the cursor.
             Default: `"gd"`
 
+                                                  *g:conjure#mapping#doc_word*
 `g:conjure#mapping#doc_word`
             Looks up documentation for the word under the cursor.
             Default: `["K"]`
 
+                                               *g:conjure#completion#omnifunc*
 `g:conjure#completion#omnifunc`
             |omnifunc| to set for supported Conjure clients. No omnicompletion
             will be provided if you set this to `nil`.
             Default: `"ConjureOmnifunc"`
 
+                                               *g:conjure#completion#fallback*
 `g:conjure#completion#fallback`
             |omnifunc| to use if the client isn't returning completions,
             requires `completion#omnifunc` to be set to `"ConjureOmnifunc"`. For
@@ -437,39 +479,47 @@ Tip: Booleans in Vim Script are written as `v:true` and `v:false`.
             this kicks in if you don't have an nREPL connection yet.
             Default: `"syntaxcomplete#Complete"`
 
+                                                 *g:conjure#highlight#enabled*
 `g:conjure#highlight#enabled`
             Enable highlighting of evaluated forms. Requires support for the
             highlight API, so you'll need Neovim 0.5+.
             Default: `false`
 
+                                                   *g:conjure#highlight#group*
 `g:conjure#highlight#group`
             Which syntax group should the form be highlighted with.
             Default: `"IncSearch"`
 
+                                                 *g:conjure#highlight#timeout*
 `g:conjure#highlight#timeout`
             How long should the highlight last in milliseconds.
             Default: `500`
 
+                                                     *g:conjure#log#hud#width*
 `g:conjure#log#hud#width`
             Width of the HUD as a percentage of the editor width.
             A float between 0.0 and 1.0.
             Default: `0.42`
 
+                                                    *g:conjure#log#hud#height*
 `g:conjure#log#hud#height`
             Height of the HUD as a percentage of the editor height.
             A float between 0.0 and 1.0.
             Default: `0.3`
 
+                                                   *g:conjure#log#hud#enabled*
 `g:conjure#log#hud#enabled`
             Should the HUD be displayed at all.
             Default: `true`
 
+                                       *g:conjure#log#hud#passive_close_delay*
 `g:conjure#log#hud#passive_close_delay`
             Delay to introduce (in milliseconds) when closing the HUD
             passively such as after you move the cursor. Set it to `0` to
             disable the mechanic entirely and close instantly.
             Default: `0`
 
+                                           *g:conjure#log#hud#overlap_padding*
 `g:conjure#log#hud#overlap_padding`
             Extra space checked around the HUD window for the cursor. If it's
             within this padded boundary (too close to the HUD) it'll move to
@@ -477,6 +527,7 @@ Tip: Booleans in Vim Script are written as `v:true` and `v:false`.
             A float between 0.0 and 1.0.
             Default: `0.1`
 
+                                                    *g:conjure#log#hud#anchor*
 `g:conjure#log#hud#anchor`
             Preferred corner position for the HUD. This is not guaranteed, it
             will try to move out of the way to avoid covering your cursor and
@@ -485,24 +536,29 @@ Tip: Booleans in Vim Script are written as `v:true` and `v:false`.
             window width HUD at the bottom of the screen.
             Default: `"NE"`
 
+                                                      *g:conjure#log#botright*
 `g:conjure#log#botright`
             Force the log to always open at the bottom or far right of the
             editor, taking up the full width or height respectively.
             Default: `false`
 
+                                                  *g:conjure#log#break_length*
 `g:conjure#log#break_length`
             Length of the break comment (`; ---------...`) between log results
             in characters. Used in trimming to avoid cutting forms in half.
             Default: `80`
 
+                                                       *g:conjure#log#trim#at*
 `g:conjure#log#trim#at`
             Trim the log once the line count passes the value.
             Default: `10000`
 
+                                                       *g:conjure#log#trim#to*
 `g:conjure#log#trim#to`
             Trim the log down to this many lines when it gets too long.
             Default: `7000`
 
+                        *g:conjure#log#strip_ansi_escape_sequences_line_limit*
 `g:conjure#log#strip_ansi_escape_sequences_line_limit`
             If the chunk of text being appended to the log is less than this
             many lines in length, strip all ANSI escape sequences from it. If
@@ -513,26 +569,32 @@ Tip: Booleans in Vim Script are written as `v:true` and `v:false`.
             doesn't contain escape sequences) from slowing down your log.
             Default: `100`
 
+                                                          *g:conjure#log#wrap*
 `g:conjure#log#wrap`
             Enable line wrapping in the HUD and log.
             Default: `false`
 
+                                                  *g:conjure#log#fold#enabled*
 `g:conjure#log#fold#enabled`
             Enable or disable folding of results.
             Default: `false`
 
+                                                    *g:conjure#log#fold#lines*
 `g:conjure#log#fold#lines`
             Fold results that have a line count >= this value.
             Default: `10`
 
+                                             *g:conjure#log#fold#marker#start*
 `g:conjure#log#fold#marker#start`
             Marker to use to represent the start of a log fold.
             Default: `"~~~%{"`
 
+                                               *g:conjure#log#fold#marker#end*
 `g:conjure#log#fold#marker#end`
             Marker to use to represent the end of a log fold.
             Default: `"}%~~~"`
 
+                                      *g:conjure#extract#context_header_lines*
 `g:conjure#extract#context_header_lines`
             How many lines of the file should be checked for a context
             (namespace name) such as `(module foo.bar)` or `(ns foo.bar)`
@@ -543,6 +605,7 @@ Tip: Booleans in Vim Script are written as `v:true` and `v:false`.
             can override it by setting `b:conjure#context`.
             Default: `24`
 
+                                                *g:conjure#extract#form_pairs*
 `g:conjure#extract#form_pairs`
             Character pairs to search for when evaluating forms. The closest
             matching pair is used when evaluating the current form but the
@@ -552,6 +615,7 @@ Tip: Booleans in Vim Script are written as `v:true` and `v:false`.
             enable escaping for use in |searchpairpos()|.
             Default: `[["(" ")"] ["{" "}"] ["[" "]" true]]`
 
+                                       *g:conjure#extract#tree_sitter#enabled*
 `g:conjure#extract#tree_sitter#enabled`
             Enable tree-sitter support for extracting code from the buffer.
             This is used by non-Lisp clients to find the appropriate chunk of
@@ -570,6 +634,7 @@ Tip: Booleans in Vim Script are written as `v:true` and `v:false`.
 
             Default: `false`
 
+                                              *g:conjure#preview#sample_limit*
 `g:conjure#preview#sample_limit`
             Most evaluation actions create a line in the log buffer with a
             preview of the code that was evaluated as a reminder. This setting
@@ -580,6 +645,7 @@ Tip: Booleans in Vim Script are written as `v:true` and `v:false`.
             A float between 0.0 and 1.0.
             Default: `0.3`
 
+                                                *g:conjure#relative_file_root*
 `g:conjure#relative_file_root`
             If set, Conjure will attempt to resolve absolute file paths to a
             relative path based on this value. This means you can evaluate
@@ -598,6 +664,7 @@ Tip: Booleans in Vim Script are written as `v:true` and `v:false`.
 
             Default: `undefined`
 
+                                                         *g:conjure#path_subs*
 `g:conjure#path_subs`
             If set Conjure will modify paths on "go to definition" as well as
             "eval file". The path will be substituted using Lua's
@@ -618,10 +685,12 @@ Tip: Booleans in Vim Script are written as `v:true` and `v:false`.
 
             Default: `undefined`
 
+                                                             *g:conjure#debug*
 `g:conjure#debug`
             Display debug information in any client you're using.
             Default: `false`
 
+                                                           *b:conjure#context*
 `b:conjure#context`
             Override the context name for a specific buffer, preventing
             Conjure from attempting to extract it from the first few lines
@@ -681,19 +750,24 @@ If there's an event you need and think would be a good general fit for the
 project, feel free to raise an issue to discuss it (and potentially submit a
 pull request if we agree!).
 
+                                                                 *ConjureEval*
 `ConjureEval`
             After an evaluation of any kind.
 
+                                                             *ConjureEvalFile*
 `ConjureEvalFile`
             After an evaluation of a file from disk.
 
+                                                              *ConjureEvalStr*
 `ConjureEvalStr`
             After an evaluation of an arbitrary string (from evaluating a
             form, buffer, range, command etc).
 
+                                                                  *ConjureDoc*
 `ConjureDoc`
             After requesting documentation.
 
+                                                                  *ConjureDef*
 `ConjureDef`
             After requesting definition lookup.
 

@@ -50,23 +50,28 @@ CONFIGURATION                      *conjure-client-fennel-stdio-configuration*
 All configuration can be set as described in |conjure-configuration|.
 
 
+                                 *g:conjure#client#fennel#stdio#mapping#start*
 `g:conjure#client#fennel#stdio#mapping#start`
             Start the Fennel REPL if it's not running already.
             Default: `"cs"`
 
+                                  *g:conjure#client#fennel#stdio#mapping#stop*
 `g:conjure#client#fennel#stdio#mapping#stop`
             Stop any existing Fennel REPL.
             Default: `"cS"`
 
+                           *g:conjure#client#fennel#stdio#mapping#eval_reload*
 `g:conjure#client#fennel#stdio#mapping#eval_reload`
             Reload the current file.
             Default: `"eF"`
 
+                                       *g:conjure#client#fennel#stdio#command*
 `g:conjure#client#fennel#stdio#command`
             Command used to start the Fennel REPL, you can modify this to add
             arguments or change the command entirely.
             Default: `"fennel"`
 
+                                *g:conjure#client#fennel#stdio#prompt_pattern*
 `g:conjure#client#fennel#stdio#prompt_pattern`
             Lua pattern to identify a new REPL prompt. This match signals to
             Conjure that the previous evaluation is complete and we're ready

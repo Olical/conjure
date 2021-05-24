@@ -74,6 +74,7 @@ CONFIGURATION                    *conjure-client-fennel-aniseed-configuration*
 
 All configuration can be set as described in |conjure-configuration|.
 
+                       *g:conjure#client#fennel#aniseed#aniseed_module_prefix*
 `g:conjure#client#fennel#aniseed#aniseed_module_prefix`
             Prefix to put in front of all Aniseed modules Conjure relies on.
             This is set to use Conjure's internal copy of Aniseed by default
@@ -82,6 +83,7 @@ All configuration can be set as described in |conjure-configuration|.
             within your project.
             Default: `"conjure.aniseed."`
 
+                                *g:conjure#client#fennel#aniseed#use_metadata*
 `g:conjure#client#fennel#aniseed#use_metadata`
             Enables metadata during evaluation which can provide some
             documentation lookup with Conjure's documentation mapping.
@@ -89,10 +91,12 @@ All configuration can be set as described in |conjure-configuration|.
             Conjure is intended to be used during development.
             Default: `true`
 
+                       *g:conjure#client#fennel#aniseed#mapping#run_buf_tests*
 `g:conjure#client#fennel#aniseed#mapping#run_buf_tests`
             Run all tests within your current module.
             Default: `"tt"`
 
+                       *g:conjure#client#fennel#aniseed#mapping#run_all_tests*
 `g:conjure#client#fennel#aniseed#mapping#run_all_tests`
             Run all loaded tests.
             Default: `"ta"`
