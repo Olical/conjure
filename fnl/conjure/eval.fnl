@@ -32,7 +32,8 @@
 
 (defn- highlight-range [range]
   (when (and (config.get-in [:highlight :enabled])
-             vim.highlight)
+             vim.highlight
+             range)
     (let [bufnr (or (. range :bufnr) (nvim.buf.nr))
           namespace (vim.api.nvim_create_namespace "conjure_highlight")
           hl_start {1 (- (. range.start 1) 1)

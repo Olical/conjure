@@ -89,7 +89,7 @@ local highlight_range
 do
   local v_0_
   local function highlight_range0(range)
-    if (config["get-in"]({"highlight", "enabled"}) and vim.highlight) then
+    if (config["get-in"]({"highlight", "enabled"}) and vim.highlight and range) then
       local bufnr = (range.bufnr or nvim.buf.nr())
       local namespace = vim.api.nvim_create_namespace("conjure_highlight")
       local hl_start = {(range.start[1] - 1), range.start[2]}
