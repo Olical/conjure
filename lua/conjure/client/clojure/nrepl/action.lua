@@ -126,8 +126,9 @@ do
     local port_file = cfg({"connection", "auto_repl", "port_file"})
     local port = cfg({"connection", "auto_repl", "port"})
     local enabled_3f = cfg({"connection", "auto_repl", "enabled"})
+    local hidden_3f = cfg({"connection", "auto_repl", "hidden"})
     if (enabled_3f and not process["running?"](state.get("auto-repl-proc")) and process["executable?"](cmd)) then
-      local proc = process.execute(cmd, {["on-exit"] = client.wrap(delete_auto_repl_port_file)})
+      local proc = process.execute(cmd, {["hidden?"] = hidden_3f, ["on-exit"] = client.wrap(delete_auto_repl_port_file)})
       a.assoc(state.get(), "auto-repl-proc", proc)
       if (port_file and port) then
         a.spit(port_file, port)

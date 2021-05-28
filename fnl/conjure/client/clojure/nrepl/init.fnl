@@ -23,6 +23,7 @@
       {:default_host "localhost"
        :port_files [".nrepl-port" ".shadow-cljs/nrepl.port"]
        :auto_repl {:enabled true
+                   :hidden false
                    :cmd "bb nrepl-server localhost:8794"
                    :port_file ".nrepl-port" :port "8794"}}
 

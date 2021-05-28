@@ -43,7 +43,8 @@
   (let [cmd (cfg [:connection :auto_repl :cmd])
         port-file (cfg [:connection :auto_repl :port_file])
         port (cfg [:connection :auto_repl :port])
-        enabled? (cfg [:connection :auto_repl :enabled])]
+        enabled? (cfg [:connection :auto_repl :enabled])
+        hidden? (cfg [:connection :auto_repl :hidden])]
 
     (when (and enabled?
                (not (process.running? (state.get :auto-repl-proc)))
@@ -51,7 +52,8 @@
 
       (let [proc (process.execute
                    cmd
-                   {:on-exit (client.wrap
+                   {:hidden? hidden?
+                    :on-exit (client.wrap
                                delete-auto-repl-port-file)})]
 
         (a.assoc (state.get) :auto-repl-proc proc)

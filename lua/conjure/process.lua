@@ -119,7 +119,16 @@ do
     local function execute0(cmd, opts)
       local win = nvim.tabpage_get_win(0)
       local original_buf = nvim.win_get_buf(win)
-      local term_buf = nvim.create_buf(true, true)
+      local term_buf
+      local _3_
+      do
+        local t_0_ = opts
+        if (nil ~= t_0_) then
+          t_0_ = (t_0_)["hidden?"]
+        end
+        _3_ = t_0_
+      end
+      term_buf = nvim.create_buf(not _3_, true)
       local proc = {["running?"] = true, buf = term_buf, cmd = cmd, opts = opts}
       local job_id
       do
@@ -127,10 +136,10 @@ do
         job_id = nvim.fn.termopen(cmd, {on_exit = "ConjureProcessOnExit"})
       end
       do
-        local _3_ = job_id
-        if (_3_ == 0) then
+        local _4_ = job_id
+        if (_4_ == 0) then
           error("invalid arguments or job table full")
-        elseif (_3_ == -1) then
+        elseif (_4_ == -1) then
           error(("'" .. cmd .. "' is not executable"))
         end
       end

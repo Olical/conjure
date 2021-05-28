@@ -157,6 +157,15 @@ All configuration can be set as described in |conjure-configuration|.
             manage external processes.
             Default: `true`
 
+                 *g:conjure#client#clojure#nrepl#connection#auto_repl#hidden*
+`g:conjure#client#clojure#nrepl#connection#auto_repl#hidden`
+            If your workflow is sensitive to open buffers you may notice that
+            the auto REPL opens a new terminal buffer for you to interact with
+            (or kill!) where required. If you don't need to interact with it,
+            ever, and want your buffer list as clean as possible you can set
+            this to true to hide it.
+            Default: `false`
+
                      *g:conjure#client#clojure#nrepl#connection#auto_repl#cmd*
 `g:conjure#client#clojure#nrepl#connection#auto_repl#cmd`
             The command to execute when starting the auto-repl. By default we

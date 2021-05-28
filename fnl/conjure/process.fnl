@@ -51,7 +51,7 @@
 (defn execute [cmd opts]
   (let [win (nvim.tabpage_get_win 0)
         original-buf (nvim.win_get_buf win)
-        term-buf (nvim.create_buf true true)
+        term-buf (nvim.create_buf (not (?. opts :hidden?)) true)
         proc {:cmd cmd :buf term-buf
               :running? true
               :opts opts}
