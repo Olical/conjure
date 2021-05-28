@@ -17,13 +17,17 @@ do
   do end (package.loaded)[name_0_] = module_0_
   _0_ = module_0_
 end
-local autoload = (require("conjure.aniseed.autoload")).autoload
+local autoload
 local function _1_(...)
+  return (require("conjure.aniseed.autoload")).autoload(...)
+end
+autoload = _1_
+local function _2_(...)
   local ok_3f_0_, val_0_ = nil, nil
-  local function _1_()
+  local function _2_()
     return {autoload("conjure.client")}
   end
-  ok_3f_0_, val_0_ = pcall(_1_)
+  ok_3f_0_, val_0_ = pcall(_2_)
   if ok_3f_0_ then
     _0_["aniseed/local-fns"] = {autoload = {client = "conjure.client"}}
     return val_0_
@@ -31,7 +35,7 @@ local function _1_(...)
     return print(val_0_)
   end
 end
-local _local_0_ = _1_(...)
+local _local_0_ = _2_(...)
 local client = _local_0_[1]
 local _2amodule_2a = _0_
 local _2amodule_name_2a = "conjure.client.clojure.nrepl.state"
@@ -41,10 +45,10 @@ do
   local v_0_
   do
     local v_0_0
-    local function _2_()
+    local function _3_()
       return {["auto-repl-proc"] = nil, ["join-next"] = {key = nil}, conn = nil}
     end
-    v_0_0 = ((_0_).get or client["new-state"](_2_))
+    v_0_0 = ((_0_).get or client["new-state"](_3_))
     do end (_0_)["get"] = v_0_0
     v_0_ = v_0_0
   end

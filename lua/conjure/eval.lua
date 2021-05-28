@@ -17,13 +17,17 @@ do
   do end (package.loaded)[name_0_] = module_0_
   _0_ = module_0_
 end
-local autoload = (require("conjure.aniseed.autoload")).autoload
+local autoload
 local function _1_(...)
+  return (require("conjure.aniseed.autoload")).autoload(...)
+end
+autoload = _1_
+local function _2_(...)
   local ok_3f_0_, val_0_ = nil, nil
-  local function _1_()
+  local function _2_()
     return {autoload("conjure.aniseed.core"), autoload("conjure.buffer"), autoload("conjure.client"), autoload("conjure.config"), autoload("conjure.editor"), autoload("conjure.event"), autoload("conjure.extract"), autoload("conjure.fs"), autoload("conjure.inline"), autoload("conjure.log"), autoload("conjure.aniseed.nvim"), autoload("conjure.promise"), autoload("conjure.aniseed.string"), autoload("conjure.text"), autoload("conjure.timer"), autoload("conjure.uuid")}
   end
-  ok_3f_0_, val_0_ = pcall(_1_)
+  ok_3f_0_, val_0_ = pcall(_2_)
   if ok_3f_0_ then
     _0_["aniseed/local-fns"] = {autoload = {a = "conjure.aniseed.core", buffer = "conjure.buffer", client = "conjure.client", config = "conjure.config", editor = "conjure.editor", event = "conjure.event", extract = "conjure.extract", fs = "conjure.fs", inline = "conjure.inline", log = "conjure.log", nvim = "conjure.aniseed.nvim", promise = "conjure.promise", str = "conjure.aniseed.string", text = "conjure.text", timer = "conjure.timer", uuid = "conjure.uuid"}}
     return val_0_
@@ -31,7 +35,7 @@ local function _1_(...)
     return print(val_0_)
   end
 end
-local _local_0_ = _1_(...)
+local _local_0_ = _2_(...)
 local a = _local_0_[1]
 local log = _local_0_[10]
 local nvim = _local_0_[11]
@@ -56,14 +60,14 @@ do
   local v_0_
   local function preview0(opts)
     local sample_limit = editor["percent-width"](config["get-in"]({"preview", "sample_limit"}))
-    local function _2_()
+    local function _3_()
       if (("file" == opts.origin) or ("buf" == opts.origin)) then
         return text["right-sample"](opts["file-path"], sample_limit)
       else
         return text["left-sample"](opts.code, sample_limit)
       end
     end
-    return (client.get("comment-prefix") .. opts.action .. " (" .. opts.origin .. "): " .. _2_())
+    return (client.get("comment-prefix") .. opts.action .. " (" .. opts.origin .. "): " .. _3_())
   end
   v_0_ = preview0
   local t_0_ = (_0_)["aniseed/locals"]
@@ -91,13 +95,13 @@ do
       local hl_start = {(range.start[1] - 1), range.start[2]}
       local hl_end = {((range["end"])[1] - 1), (range["end"])[2]}
       vim.highlight.range(bufnr, namespace, config["get-in"]({"highlight", "group"}), hl_start, hl_end, "v", true)
-      local function _2_()
-        local function _3_()
+      local function _3_()
+        local function _4_()
           return vim.api.nvim_buf_clear_namespace(bufnr, namespace, 0, -1)
         end
-        return pcall(_3_)
+        return pcall(_4_)
       end
-      return timer.defer(_2_, config["get-in"]({"highlight", "timeout"}))
+      return timer.defer(_3_, config["get-in"]({"highlight", "timeout"}))
     end
   end
   v_0_ = highlight_range0
@@ -111,8 +115,8 @@ do
   local function with_last_result_hook0(opts)
     local buf = nvim.win_get_buf(0)
     local line = a.dec(a.first(nvim.win_get_cursor(0)))
-    local function _2_(f)
-      local function _3_(result)
+    local function _3_(f)
+      local function _4_(result)
         nvim.fn.setreg(config["get-in"]({"eval", "result_register"}), result)
         if config["get-in"]({"eval", "inline_results"}) then
           inline.display({buf = buf, line = line, text = ("=> " .. result)})
@@ -121,9 +125,9 @@ do
           return f(result)
         end
       end
-      return _3_
+      return _4_
     end
-    return a.update(opts, "on-result", _2_)
+    return a.update(opts, "on-result", _3_)
   end
   v_0_ = with_last_result_hook0
   local t_0_ = (_0_)["aniseed/locals"]
@@ -166,7 +170,7 @@ local client_exec_fn
 do
   local v_0_
   local function client_exec_fn0(action, f_name, base_opts)
-    local function _2_(opts)
+    local function _3_(opts)
       local opts0 = a.merge(opts, base_opts, {["file-path"] = extract["file-path"](), action = action})
       assoc_context(opts0)
       opts0.preview = preview(opts0)
@@ -175,7 +179,7 @@ do
       end
       return client.call(f_name, opts0)
     end
-    return _2_
+    return _3_
   end
   v_0_ = client_exec_fn0
   local t_0_ = (_0_)["aniseed/locals"]
@@ -187,8 +191,8 @@ do
   local v_0_
   local function apply_gsubs0(code)
     if code then
-      local function _3_(code0, _2_)
-        local _arg_0_ = _2_
+      local function _4_(code0, _3_)
+        local _arg_0_ = _3_
         local name = _arg_0_[1]
         local _arg_1_ = _arg_0_[2]
         local pat = _arg_1_[1]
@@ -201,7 +205,7 @@ do
           return code0
         end
       end
-      return a.reduce(_3_, code, a["kv-pairs"](nvim.g["conjure#eval#gsubs"]))
+      return a.reduce(_4_, code, a["kv-pairs"](nvim.g["conjure#eval#gsubs"]))
     end
   end
   v_0_ = apply_gsubs0
@@ -218,14 +222,14 @@ do
       highlight_range(opts.range)
       event.emit("eval", "str")
       a.update(opts, "code", apply_gsubs)
-      local function _2_()
+      local function _3_()
         if opts["passive?"] then
           return opts
         else
           return with_last_result_hook(opts)
         end
       end
-      client_exec_fn("eval", "eval-str")(_2_())
+      client_exec_fn("eval", "eval-str")(_3_())
       return nil
     end
     v_0_0 = eval_str0
@@ -242,11 +246,11 @@ do
   do
     local v_0_0
     local function wrap_emit0(name, f)
-      local function _2_(...)
+      local function _3_(...)
         event.emit(name)
         return f(...)
       end
-      return _2_
+      return _3_
     end
     v_0_0 = wrap_emit0
     _0_["wrap-emit"] = v_0_0
@@ -306,11 +310,11 @@ do
         local _let_0_ = form
         local content = _let_0_["content"]
         local range = _let_0_["range"]
-        local function _2_(result)
+        local function _3_(result)
           buffer["replace-range"](buf, range, result)
           return editor["go-to"](win, a["get-in"](range, {"start", 1}), a.inc(a["get-in"](range, {"start", 2})))
         end
-        eval_str({["on-result"] = _2_, ["suppress-hud?"] = true, code = content, origin = "replace-form", range = range})
+        eval_str({["on-result"] = _3_, ["suppress-hud?"] = true, code = content, origin = "replace-form", range = range})
         return form
       end
     end
@@ -353,10 +357,10 @@ do
       local comment_prefix = client.get("comment-prefix")
       local mark0 = (mark or extract["prompt-char"]())
       local ok_3f, err = nil, nil
-      local function _2_()
+      local function _3_()
         return editor["go-to-mark"](mark0)
       end
-      ok_3f, err = pcall(_2_)
+      ok_3f, err = pcall(_3_)
       if ok_3f then
         current_form({origin = ("marked-form [" .. mark0 .. "]")})
         editor["go-back"]()
@@ -383,10 +387,10 @@ do
       local _let_0_ = input
       local content = _let_0_["content"]
       local range = _let_0_["range"]
-      local function _2_(result)
+      local function _3_(result)
         return buffer["append-prefixed-line"](buf, range["end"], comment_prefix, result)
       end
-      eval_str({["on-result"] = _2_, ["suppress-hud?"] = true, code = content, origin = ("comment-" .. tag), range = range})
+      eval_str({["on-result"] = _3_, ["suppress-hud?"] = true, code = content, origin = ("comment-" .. tag), range = range})
       return input
     end
   end
@@ -601,15 +605,15 @@ do
     local v_0_0
     local function completions0(prefix, cb)
       local function cb_wrap(results)
-        local function _3_()
-          local _2_ = config["get-in"]({"completion", "fallback"})
-          if _2_ then
-            return nvim.call_function(_2_, {0, prefix})
+        local function _4_()
+          local _3_ = config["get-in"]({"completion", "fallback"})
+          if _3_ then
+            return nvim.call_function(_3_, {0, prefix})
           else
-            return _2_
+            return _3_
           end
         end
-        return cb(a.map(wrap_completion_result, (results or _3_())))
+        return cb(a.map(wrap_completion_result, (results or _4_())))
       end
       if ("function" == type(client.get("completions"))) then
         return client.call("completions", assoc_context({cb = cb_wrap, prefix = prefix}))

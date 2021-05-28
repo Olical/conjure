@@ -17,13 +17,17 @@ do
   do end (package.loaded)[name_0_] = module_0_
   _0_ = module_0_
 end
-local autoload = (require("conjure.aniseed.autoload")).autoload
+local autoload
 local function _1_(...)
+  return (require("conjure.aniseed.autoload")).autoload(...)
+end
+autoload = _1_
+local function _2_(...)
   local ok_3f_0_, val_0_ = nil, nil
-  local function _1_()
+  local function _2_()
     return {autoload("conjure.aniseed.core"), autoload("conjure.aniseed.nvim"), autoload("conjure.aniseed.string")}
   end
-  ok_3f_0_, val_0_ = pcall(_1_)
+  ok_3f_0_, val_0_ = pcall(_2_)
   if ok_3f_0_ then
     _0_["aniseed/local-fns"] = {autoload = {a = "conjure.aniseed.core", nvim = "conjure.aniseed.nvim", str = "conjure.aniseed.string"}}
     return val_0_
@@ -31,7 +35,7 @@ local function _1_(...)
     return print(val_0_)
   end
 end
-local _local_0_ = _1_(...)
+local _local_0_ = _2_(...)
 local a = _local_0_[1]
 local nvim = _local_0_[2]
 local str = _local_0_[3]
@@ -43,8 +47,8 @@ do
   local v_0_
   do
     local v_0_0
-    local function ok_3f0(_2_)
-      local _arg_0_ = _2_
+    local function ok_3f0(_3_)
+      local _arg_0_ = _3_
       local tests = _arg_0_["tests"]
       local tests_passed = _arg_0_["tests-passed"]
       return (tests == tests_passed)
@@ -69,13 +73,13 @@ do
         local assertions_passed = _let_0_["assertions-passed"]
         local tests = _let_0_["tests"]
         local tests_passed = _let_0_["tests-passed"]
-        local _2_
+        local _3_
         if ok_3f(results) then
-          _2_ = "OK"
+          _3_ = "OK"
         else
-          _2_ = "FAILED"
+          _3_ = "FAILED"
         end
-        a.println((prefix .. " " .. _2_ .. " " .. tests_passed .. "/" .. tests .. " tests and " .. assertions_passed .. "/" .. assertions .. " assertions passed"))
+        a.println((prefix .. " " .. _3_ .. " " .. tests_passed .. "/" .. tests .. " tests and " .. assertions_passed .. "/" .. assertions .. " assertions passed"))
       end
       return results
     end
@@ -103,30 +107,30 @@ do
           do
             local prefix = ("[" .. mod_name .. "/" .. label .. "]")
             local fail
-            local function _2_(desc, ...)
+            local function _3_(desc, ...)
               test_failed = true
-              local function _3_(...)
+              local function _4_(...)
                 if desc then
                   return (" (" .. desc .. ")")
                 else
                   return ""
                 end
               end
-              return a.println((str.join({prefix, " ", ...}) .. _3_(...)))
+              return a.println((str.join({prefix, " ", ...}) .. _4_(...)))
             end
-            fail = _2_
+            fail = _3_
             local begin
-            local function _3_()
+            local function _4_()
               return a.update(results, "assertions", a.inc)
             end
-            begin = _3_
+            begin = _4_
             local pass
-            local function _4_()
+            local function _5_()
               return a.update(results, "assertions-passed", a.inc)
             end
-            pass = _4_
+            pass = _5_
             local t
-            local function _5_(e, r, desc)
+            local function _6_(e, r, desc)
               begin()
               if (e == r) then
                 return pass()
@@ -134,7 +138,7 @@ do
                 return fail(desc, "Expected '", a["pr-str"](e), "' but received '", a["pr-str"](r), "'")
               end
             end
-            local function _6_(r, desc)
+            local function _7_(r, desc)
               begin()
               if r then
                 return pass()
@@ -142,7 +146,7 @@ do
                 return fail(desc, "Expected truthy result but received '", a["pr-str"](r), "'")
               end
             end
-            local function _7_(e, r, desc)
+            local function _8_(e, r, desc)
               begin()
               local se = a["pr-str"](e)
               local sr = a["pr-str"](r)
@@ -152,14 +156,14 @@ do
                 return fail(desc, "Expected (with pr) '", se, "' but received '", sr, "'")
               end
             end
-            t = {["="] = _5_, ["ok?"] = _6_, ["pr="] = _7_}
-            local _8_, _9_ = nil, nil
-            local function _10_()
+            t = {["="] = _6_, ["ok?"] = _7_, ["pr="] = _8_}
+            local _9_, _10_ = nil, nil
+            local function _11_()
               return f(t)
             end
-            _8_, _9_ = pcall(_10_)
-            if ((_8_ == false) and (nil ~= _9_)) then
-              local err = _9_
+            _9_, _10_ = pcall(_11_)
+            if ((_9_ == false) and (nil ~= _10_)) then
+              local err = _10_
               fail("Exception: ", err)
             end
           end
@@ -184,13 +188,13 @@ do
   do
     local v_0_0
     local function run_all0()
-      local function _2_(totals, results)
+      local function _3_(totals, results)
         for k, v in pairs(results) do
           totals[k] = (v + totals[k])
         end
         return totals
       end
-      return display_results(a.reduce(_2_, {["assertions-passed"] = 0, ["tests-passed"] = 0, assertions = 0, tests = 0}, a.filter(a["table?"], a.map(run, a.keys(package.loaded)))), "[total]")
+      return display_results(a.reduce(_3_, {["assertions-passed"] = 0, ["tests-passed"] = 0, assertions = 0, tests = 0}, a.filter(a["table?"], a.map(run, a.keys(package.loaded)))), "[total]")
     end
     v_0_0 = run_all0
     _0_["run-all"] = v_0_0
@@ -206,10 +210,10 @@ do
   do
     local v_0_0
     local function suite0()
-      local function _2_(path)
+      local function _3_(path)
         return require(string.gsub(string.match(path, "^test/fnl/(.-).fnl$"), "/", "."))
       end
-      a["run!"](_2_, nvim.fn.globpath("test/fnl", "**/*-test.fnl", false, true))
+      a["run!"](_3_, nvim.fn.globpath("test/fnl", "**/*-test.fnl", false, true))
       if ok_3f(run_all()) then
         return nvim.ex.q()
       else

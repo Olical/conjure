@@ -17,13 +17,17 @@ do
   do end (package.loaded)[name_0_] = module_0_
   _0_ = module_0_
 end
-local autoload = (require("conjure.aniseed.autoload")).autoload
+local autoload
 local function _1_(...)
+  return (require("conjure.aniseed.autoload")).autoload(...)
+end
+autoload = _1_
+local function _2_(...)
   local ok_3f_0_, val_0_ = nil, nil
-  local function _1_()
+  local function _2_()
     return {autoload("conjure.aniseed.core"), autoload("conjure.aniseed.nvim")}
   end
-  ok_3f_0_, val_0_ = pcall(_1_)
+  ok_3f_0_, val_0_ = pcall(_2_)
   if ok_3f_0_ then
     _0_["aniseed/local-fns"] = {autoload = {a = "conjure.aniseed.core", nvim = "conjure.aniseed.nvim"}}
     return val_0_
@@ -31,7 +35,7 @@ local function _1_(...)
     return print(val_0_)
   end
 end
-local _local_0_ = _1_(...)
+local _local_0_ = _2_(...)
 local a = _local_0_[1]
 local nvim = _local_0_[2]
 local _2amodule_2a = _0_
@@ -76,10 +80,10 @@ do
     local v_0_0
     local function relglob0(dir, expr)
       local dir_len = a.inc(string.len(dir))
-      local function _2_(_241)
+      local function _3_(_241)
         return string.sub(_241, dir_len)
       end
-      return a.map(_2_, nvim.fn.globpath(dir, expr, true, true))
+      return a.map(_3_, nvim.fn.globpath(dir, expr, true, true))
     end
     v_0_0 = relglob0
     _0_["relglob"] = v_0_0

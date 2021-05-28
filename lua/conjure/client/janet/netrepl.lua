@@ -17,13 +17,17 @@ do
   do end (package.loaded)[name_0_] = module_0_
   _0_ = module_0_
 end
-local autoload = (require("conjure.aniseed.autoload")).autoload
+local autoload
 local function _1_(...)
+  return (require("conjure.aniseed.autoload")).autoload(...)
+end
+autoload = _1_
+local function _2_(...)
   local ok_3f_0_, val_0_ = nil, nil
-  local function _1_()
+  local function _2_()
     return {autoload("conjure.aniseed.core"), autoload("conjure.bridge"), autoload("conjure.client"), autoload("conjure.config"), autoload("conjure.log"), autoload("conjure.mapping"), autoload("conjure.aniseed.nvim"), autoload("conjure.remote.netrepl"), autoload("conjure.text")}
   end
-  ok_3f_0_, val_0_ = pcall(_1_)
+  ok_3f_0_, val_0_ = pcall(_2_)
   if ok_3f_0_ then
     _0_["aniseed/local-fns"] = {autoload = {a = "conjure.aniseed.core", bridge = "conjure.bridge", client = "conjure.client", config = "conjure.config", log = "conjure.log", mapping = "conjure.mapping", nvim = "conjure.aniseed.nvim", remote = "conjure.remote.netrepl", text = "conjure.text"}}
     return val_0_
@@ -31,7 +35,7 @@ local function _1_(...)
     return print(val_0_)
   end
 end
-local _local_0_ = _1_(...)
+local _local_0_ = _2_(...)
 local a = _local_0_[1]
 local bridge = _local_0_[2]
 local client = _local_0_[3]
@@ -72,10 +76,10 @@ config.merge({client = {janet = {netrepl = {connection = {default_host = "127.0.
 local state
 do
   local v_0_
-  local function _2_()
+  local function _3_()
     return {conn = nil}
   end
-  v_0_ = (((_0_)["aniseed/locals"]).state or client["new-state"](_2_))
+  v_0_ = ((_0_)["aniseed/locals"].state or client["new-state"](_3_))
   local t_0_ = (_0_)["aniseed/locals"]
   t_0_["state"] = v_0_
   state = v_0_
@@ -115,10 +119,10 @@ local display_conn_status
 do
   local v_0_
   local function display_conn_status0(status)
-    local function _2_(conn)
+    local function _3_(conn)
       return log.append({("# " .. conn.host .. ":" .. conn.port .. " (" .. status .. ")")}, {["break?"] = true})
     end
-    return with_conn_or_warn(_2_)
+    return with_conn_or_warn(_3_)
   end
   v_0_ = display_conn_status0
   local t_0_ = (_0_)["aniseed/locals"]
@@ -131,12 +135,12 @@ do
   do
     local v_0_0
     local function disconnect0()
-      local function _2_(conn)
+      local function _3_(conn)
         conn.destroy()
         display_conn_status("disconnected")
         return a.assoc(state(), "conn", nil)
       end
-      return with_conn_or_warn(_2_)
+      return with_conn_or_warn(_3_)
     end
     v_0_0 = disconnect0
     _0_["disconnect"] = v_0_0
@@ -150,10 +154,10 @@ local send
 do
   local v_0_
   local function send0(msg, cb)
-    local function _2_(conn)
+    local function _3_(conn)
       return remote.send(conn, msg, cb)
     end
-    return with_conn_or_warn(_2_)
+    return with_conn_or_warn(_3_)
   end
   v_0_ = send0
   local t_0_ = (_0_)["aniseed/locals"]
@@ -172,21 +176,21 @@ do
       if state("conn") then
         disconnect()
       end
-      local function _3_(err)
+      local function _4_(err)
         if err then
           return display_conn_status(err)
         else
           return disconnect()
         end
       end
-      local function _4_(err)
+      local function _5_(err)
         display_conn_status(err)
         return disconnect()
       end
-      local function _5_()
+      local function _6_()
         return display_conn_status("connected")
       end
-      return a.assoc(state(), "conn", remote.connect({["on-error"] = _3_, ["on-failure"] = _4_, ["on-success"] = _5_, host = host, port = port}))
+      return a.assoc(state(), "conn", remote.connect({["on-error"] = _4_, ["on-failure"] = _5_, ["on-success"] = _6_, host = host, port = port}))
     end
     v_0_0 = connect0
     _0_["connect"] = v_0_0
@@ -216,7 +220,7 @@ do
     local v_0_0
     local function eval_str0(opts)
       try_ensure_conn()
-      local function _2_(msg)
+      local function _3_(msg)
         local clean = text["trim-last-newline"](msg)
         if opts["on-result"] then
           opts["on-result"](text["strip-ansi-escape-sequences"](clean))
@@ -225,7 +229,7 @@ do
           return log.append(text["split-lines"](clean))
         end
       end
-      return send((opts.code .. "\n"), _2_)
+      return send((opts.code .. "\n"), _3_)
     end
     v_0_0 = eval_str0
     _0_["eval-str"] = v_0_0
@@ -242,10 +246,10 @@ do
     local v_0_0
     local function doc_str0(opts)
       try_ensure_conn()
-      local function _2_(_241)
+      local function _3_(_241)
         return ("(doc " .. _241 .. ")")
       end
-      return eval_str(a.update(opts, "code", _2_))
+      return eval_str(a.update(opts, "code", _3_))
     end
     v_0_0 = doc_str0
     _0_["doc-str"] = v_0_0

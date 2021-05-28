@@ -17,13 +17,17 @@ do
   do end (package.loaded)[name_0_] = module_0_
   _0_ = module_0_
 end
-local autoload = (require("conjure.aniseed.autoload")).autoload
+local autoload
 local function _1_(...)
+  return (require("conjure.aniseed.autoload")).autoload(...)
+end
+autoload = _1_
+local function _2_(...)
   local ok_3f_0_, val_0_ = nil, nil
-  local function _1_()
+  local function _2_()
     return {autoload("conjure.aniseed.core"), autoload("conjure.client"), autoload("conjure.config"), autoload("conjure.extract"), autoload("conjure.log"), autoload("conjure.mapping"), autoload("conjure.aniseed.nvim"), autoload("conjure.remote.socket"), autoload("conjure.aniseed.string"), autoload("conjure.text")}
   end
-  ok_3f_0_, val_0_ = pcall(_1_)
+  ok_3f_0_, val_0_ = pcall(_2_)
   if ok_3f_0_ then
     _0_["aniseed/local-fns"] = {["require-macros"] = {["conjure.macros"] = true}, autoload = {a = "conjure.aniseed.core", client = "conjure.client", config = "conjure.config", extract = "conjure.extract", log = "conjure.log", mapping = "conjure.mapping", nvim = "conjure.aniseed.nvim", socket = "conjure.remote.socket", str = "conjure.aniseed.string", text = "conjure.text"}}
     return val_0_
@@ -31,7 +35,7 @@ local function _1_(...)
     return print(val_0_)
   end
 end
-local _local_0_ = _1_(...)
+local _local_0_ = _2_(...)
 local a = _local_0_[1]
 local text = _local_0_[10]
 local client = _local_0_[2]
@@ -56,10 +60,10 @@ end
 local state
 do
   local v_0_
-  local function _2_()
+  local function _3_()
     return {repl = nil}
   end
-  v_0_ = (((_0_)["aniseed/locals"]).state or client["new-state"](_2_))
+  v_0_ = ((_0_)["aniseed/locals"].state or client["new-state"](_3_))
   local t_0_ = (_0_)["aniseed/locals"]
   t_0_["state"] = v_0_
   state = v_0_
@@ -137,10 +141,10 @@ local display_result
 do
   local v_0_
   local function display_result0(msg)
-    local function _2_(_241)
+    local function _3_(_241)
       return ("" ~= _241)
     end
-    return log.append(a.filter(_2_, format_message(msg)))
+    return log.append(a.filter(_3_, format_message(msg)))
   end
   v_0_ = display_result0
   local t_0_ = (_0_)["aniseed/locals"]
@@ -167,27 +171,27 @@ do
   do
     local v_0_0
     local function eval_str0(opts)
-      local function _2_(repl)
-        local _3_ = opts.code
-        if _3_ then
-          local _4_ = clean_input_code(_3_)
-          if _4_ then
-            local function _5_(msgs)
+      local function _3_(repl)
+        local _4_ = opts.code
+        if _4_ then
+          local _5_ = clean_input_code(_4_)
+          if _5_ then
+            local function _6_(msgs)
               if ((1 == a.count(msgs)) and ("" == a["get-in"](msgs, {1, "out"}))) then
                 a["assoc-in"](msgs, {1, "out"}, (comment_prefix .. "Empty result"))
               end
               opts["on-result"](str.join("\n", format_message(a.last(msgs))))
               return a["run!"](display_result, msgs)
             end
-            return repl.send(_4_, _5_, {["batch?"] = true})
+            return repl.send(_5_, _6_, {["batch?"] = true})
           else
-            return _4_
+            return _5_
           end
         else
-          return _3_
+          return _4_
         end
       end
-      return with_repl_or_warn(_2_)
+      return with_repl_or_warn(_3_)
     end
     v_0_0 = eval_str0
     _0_["eval-str"] = v_0_0
@@ -219,10 +223,10 @@ do
   do
     local v_0_0
     local function doc_str0(opts)
-      local function _2_(_241)
+      local function _3_(_241)
         return ("(procedure-documentation " .. _241 .. ")")
       end
-      return eval_str(a.update(opts, "code", _2_))
+      return eval_str(a.update(opts, "code", _3_))
     end
     v_0_0 = doc_str0
     _0_["doc-str"] = v_0_0
@@ -238,25 +242,25 @@ do
   local function display_repl_status0()
     local repl = state("repl")
     if repl then
-      local _2_
+      local _3_
       do
         local pipename = a["get-in"](repl, {"opts", "pipename"})
         if pipename then
-          _2_ = (pipename .. " ")
-        else
-          _2_ = ""
-        end
-      end
-      local _3_
-      do
-        local err = a.get(repl, "err")
-        if err then
-          _3_ = (" " .. err)
+          _3_ = (pipename .. " ")
         else
           _3_ = ""
         end
       end
-      return log.append({(comment_prefix .. _2_ .. "(" .. repl.status .. _3_ .. ")")}, {["break?"] = true})
+      local _4_
+      do
+        local err = a.get(repl, "err")
+        if err then
+          _4_ = (" " .. err)
+        else
+          _4_ = ""
+        end
+      end
+      return log.append({(comment_prefix .. _3_ .. "(" .. repl.status .. _4_ .. ")")}, {["break?"] = true})
     end
   end
   v_0_ = display_repl_status0
@@ -315,9 +319,9 @@ do
       local repl = state("repl")
       local c = extract.context()
       if (repl and ("connected" == repl.status)) then
-        local function _2_()
+        local function _3_()
         end
-        return repl.send((",m " .. (c or "(guile-user)") .. "\n"), _2_)
+        return repl.send((",m " .. (c or "(guile-user)") .. "\n"), _3_)
       end
     end
     v_0_0 = enter0
@@ -339,17 +343,17 @@ do
       if ("string" ~= type(pipename)) then
         return log.append({(comment_prefix .. "g:conjure#client#guile#socket#pipename is not specified"), (comment_prefix .. "Please set it to the name of your Guile REPL pipe or pass it to :ConjureConnect [pipename]")})
       else
-        local function _2_(msg, repl)
+        local function _3_(msg, repl)
           display_result(msg)
-          local function _3_()
+          local function _4_()
           end
-          return repl.send(",q\n", _3_)
+          return repl.send(",q\n", _4_)
         end
-        local function _3_()
+        local function _4_()
           display_repl_status()
           return enter()
         end
-        return a.assoc(state(), "repl", socket.start({["on-close"] = disconnect, ["on-error"] = _2_, ["on-failure"] = disconnect, ["on-stray-output"] = display_result, ["on-success"] = _3_, ["parse-output"] = parse_guile_result, pipename = pipename}))
+        return a.assoc(state(), "repl", socket.start({["on-close"] = disconnect, ["on-error"] = _3_, ["on-failure"] = disconnect, ["on-stray-output"] = display_result, ["on-success"] = _4_, ["parse-output"] = parse_guile_result, pipename = pipename}))
       end
     end
     v_0_0 = connect0

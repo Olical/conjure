@@ -17,13 +17,17 @@ do
   do end (package.loaded)[name_0_] = module_0_
   _0_ = module_0_
 end
-local autoload = (require("conjure.aniseed.autoload")).autoload
+local autoload
 local function _1_(...)
+  return (require("conjure.aniseed.autoload")).autoload(...)
+end
+autoload = _1_
+local function _2_(...)
   local ok_3f_0_, val_0_ = nil, nil
-  local function _1_()
+  local function _2_()
     return {autoload("conjure.aniseed.core")}
   end
-  ok_3f_0_, val_0_ = pcall(_1_)
+  ok_3f_0_, val_0_ = pcall(_2_)
   if ok_3f_0_ then
     _0_["aniseed/local-fns"] = {autoload = {a = "conjure.aniseed.core"}}
     return val_0_
@@ -31,7 +35,7 @@ local function _1_(...)
     return print(val_0_)
   end
 end
-local _local_0_ = _1_(...)
+local _local_0_ = _2_(...)
 local a = _local_0_[1]
 local _2amodule_2a = _0_
 local _2amodule_name_2a = "conjure.aniseed.string"
@@ -43,14 +47,14 @@ do
     local v_0_0
     local function join0(...)
       local args = {...}
-      local function _2_(...)
+      local function _3_(...)
         if (2 == a.count(args)) then
           return args
         else
           return {"", a.first(args)}
         end
       end
-      local _let_0_ = _2_(...)
+      local _let_0_ = _3_(...)
       local sep = _let_0_[1]
       local xs = _let_0_[2]
       local len = a.count(xs)
@@ -58,16 +62,16 @@ do
       if (len > 0) then
         for i = 1, len do
           local x = xs[i]
-          local _3_
+          local _4_
           if ("string" == type(x)) then
-            _3_ = x
+            _4_ = x
           elseif (nil == x) then
-            _3_ = x
+            _4_ = x
           else
-            _3_ = a["pr-str"](x)
+            _4_ = a["pr-str"](x)
           end
-          if _3_ then
-            table.insert(result, _3_)
+          if _4_ then
+            table.insert(result, _4_)
           else
           end
         end

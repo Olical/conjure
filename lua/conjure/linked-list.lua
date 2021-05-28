@@ -17,13 +17,17 @@ do
   do end (package.loaded)[name_0_] = module_0_
   _0_ = module_0_
 end
-local autoload = (require("conjure.aniseed.autoload")).autoload
+local autoload
 local function _1_(...)
+  return (require("conjure.aniseed.autoload")).autoload(...)
+end
+autoload = _1_
+local function _2_(...)
   local ok_3f_0_, val_0_ = nil, nil
-  local function _1_()
+  local function _2_()
     return {autoload("conjure.aniseed.core")}
   end
-  ok_3f_0_, val_0_ = pcall(_1_)
+  ok_3f_0_, val_0_ = pcall(_2_)
   if ok_3f_0_ then
     _0_["aniseed/local-fns"] = {autoload = {a = "conjure.aniseed.core"}}
     return val_0_
@@ -31,7 +35,7 @@ local function _1_(...)
     return print(val_0_)
   end
 end
-local _local_0_ = _1_(...)
+local _local_0_ = _2_(...)
 local a = _local_0_[1]
 local _2amodule_2a = _0_
 local _2amodule_name_2a = "conjure.linked-list"
@@ -64,11 +68,11 @@ do
   do
     local v_0_0
     local function val0(l)
-      local _2_ = l
-      if _2_ then
-        return a.get(_2_, "val")
+      local _3_ = l
+      if _3_ then
+        return a.get(_3_, "val")
       else
-        return _2_
+        return _3_
       end
     end
     v_0_0 = val0
@@ -85,11 +89,11 @@ do
   do
     local v_0_0
     local function next0(l)
-      local _2_ = l
-      if _2_ then
-        return a.get(_2_, "next")
+      local _3_ = l
+      if _3_ then
+        return a.get(_3_, "next")
       else
-        return _2_
+        return _3_
       end
     end
     v_0_0 = next0
@@ -106,11 +110,11 @@ do
   do
     local v_0_0
     local function prev0(l)
-      local _2_ = l
-      if _2_ then
-        return a.get(_2_, "prev")
+      local _3_ = l
+      if _3_ then
+        return a.get(_3_, "prev")
       else
-        return _2_
+        return _3_
       end
     end
     v_0_0 = prev0

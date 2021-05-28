@@ -17,13 +17,17 @@ do
   do end (package.loaded)[name_0_] = module_0_
   _0_ = module_0_
 end
-local autoload = (require("conjure.aniseed.autoload")).autoload
+local autoload
 local function _1_(...)
+  return (require("conjure.aniseed.autoload")).autoload(...)
+end
+autoload = _1_
+local function _2_(...)
   local ok_3f_0_, val_0_ = nil, nil
-  local function _1_()
+  local function _2_()
     return {autoload("conjure.aniseed.core"), autoload("conjure.config"), autoload("conjure.dynamic"), autoload("conjure.aniseed.fennel"), autoload("conjure.aniseed.nvim"), autoload("conjure.aniseed.string")}
   end
-  ok_3f_0_, val_0_ = pcall(_1_)
+  ok_3f_0_, val_0_ = pcall(_2_)
   if ok_3f_0_ then
     _0_["aniseed/local-fns"] = {autoload = {a = "conjure.aniseed.core", config = "conjure.config", dyn = "conjure.dynamic", fennel = "conjure.aniseed.fennel", nvim = "conjure.aniseed.nvim", str = "conjure.aniseed.string"}}
     return val_0_
@@ -31,7 +35,7 @@ local function _1_(...)
     return print(val_0_)
   end
 end
-local _local_0_ = _1_(...)
+local _local_0_ = _2_(...)
 local a = _local_0_[1]
 local config = _local_0_[2]
 local dyn = _local_0_[3]
@@ -46,10 +50,10 @@ do
   local v_0_
   do
     local v_0_0
-    local function _2_()
+    local function _3_()
       return "default"
     end
-    v_0_0 = ((_0_)["state-key"] or dyn.new(_2_))
+    v_0_0 = ((_0_)["state-key"] or dyn.new(_3_))
     do end (_0_)["state-key"] = v_0_0
     v_0_ = v_0_0
   end
@@ -59,7 +63,7 @@ do
 end
 local state
 do
-  local v_0_ = (((_0_)["aniseed/locals"]).state or {["state-key-set?"] = false})
+  local v_0_ = ((_0_)["aniseed/locals"].state or {["state-key-set?"] = false})
   local t_0_ = (_0_)["aniseed/locals"]
   t_0_["state"] = v_0_
   state = v_0_
@@ -71,10 +75,10 @@ do
     local v_0_0
     local function set_state_key_210(new_key)
       state["state-key-set?"] = true
-      local function _2_()
+      local function _3_()
         return new_key
       end
-      return dyn["set-root!"](state_key, _2_)
+      return dyn["set-root!"](state_key, _3_)
     end
     v_0_0 = set_state_key_210
     _0_["set-state-key!"] = v_0_0
@@ -107,20 +111,20 @@ do
     local v_0_0
     local function new_state0(init_fn)
       local key__3estate = {}
-      local function _2_(...)
+      local function _3_(...)
         local key = state_key()
         local state0 = a.get(key__3estate, key)
-        local _3_
+        local _4_
         if (nil == state0) then
           local new_state1 = init_fn()
           a.assoc(key__3estate, key, new_state1)
-          _3_ = new_state1
+          _4_ = new_state1
         else
-          _3_ = state0
+          _4_ = state0
         end
-        return a["get-in"](_3_, {...})
+        return a["get-in"](_4_, {...})
       end
-      return _2_
+      return _3_
     end
     v_0_0 = new_state0
     _0_["new-state"] = v_0_0
@@ -132,7 +136,7 @@ do
 end
 local loaded
 do
-  local v_0_ = (((_0_)["aniseed/locals"]).loaded or {})
+  local v_0_ = ((_0_)["aniseed/locals"].loaded or {})
   local t_0_ = (_0_)["aniseed/locals"]
   t_0_["loaded"] = v_0_
   loaded = v_0_
@@ -143,10 +147,10 @@ do
   local function load_module0(ft, name)
     local fnl = fennel.impl()
     local ok_3f, result = nil, nil
-    local function _2_()
+    local function _3_()
       return require(name)
     end
-    ok_3f, result = xpcall(_2_, fnl.traceback)
+    ok_3f, result = xpcall(_3_, fnl.traceback)
     if (ok_3f and a["nil?"](a.get(loaded, name))) then
       a.assoc(loaded, name, {["module-name"] = name, filetype = ft, module = result})
       if (result["on-load"] and not nvim.wo.diff) then
@@ -167,10 +171,10 @@ end
 local filetype
 do
   local v_0_
-  local function _2_()
+  local function _3_()
     return nvim.bo.filetype
   end
-  v_0_ = dyn.new(_2_)
+  v_0_ = dyn.new(_3_)
   local t_0_ = (_0_)["aniseed/locals"]
   t_0_["filetype"] = v_0_
   filetype = v_0_
@@ -178,10 +182,10 @@ end
 local extension
 do
   local v_0_
-  local function _2_()
+  local function _3_()
     return nvim.fn.expand("%:e")
   end
-  v_0_ = dyn.new(_2_)
+  v_0_ = dyn.new(_3_)
   local t_0_ = (_0_)["aniseed/locals"]
   t_0_["extension"] = v_0_
   extension = v_0_
@@ -192,13 +196,13 @@ do
   do
     local v_0_0
     local function with_filetype0(ft, f, ...)
-      local function _2_()
+      local function _3_()
         return nil
       end
-      local function _3_()
+      local function _4_()
         return ft
       end
-      return dyn.bind({[extension] = _2_, [filetype] = _3_}, f, ...)
+      return dyn.bind({[extension] = _3_, [filetype] = _4_}, f, ...)
     end
     v_0_0 = with_filetype0
     _0_["with-filetype"] = v_0_0
@@ -216,14 +220,14 @@ do
     local function wrap0(f, ...)
       local opts = {[filetype] = a.constantly(filetype()), [state_key] = a.constantly(state_key())}
       local args = {...}
-      local function _2_(...)
+      local function _3_(...)
         if (0 ~= a.count(args)) then
           return dyn.bind(opts, f, unpack(args), ...)
         else
           return dyn.bind(opts, f, ...)
         end
       end
-      return _2_
+      return _3_
     end
     v_0_0 = wrap0
     _0_["wrap"] = v_0_0
@@ -282,10 +286,10 @@ do
           local ft_part = fts[i]
           local module_name = config["get-in"]({"filetype", ft_part})
           local suffixes = config["get-in"]({"filetype_suffixes", ft_part})
-          local function _3_(_241)
+          local function _4_(_241)
             return (result.extension == _241)
           end
-          if (not result["module-name"] and module_name and (not suffixes or not result.extension or a.some(_3_, suffixes))) then
+          if (not result["module-name"] and module_name and (not suffixes or not result.extension or a.some(_4_, suffixes))) then
             result["module-name"] = module_name
           end
         end
@@ -382,12 +386,12 @@ do
   do
     local v_0_0
     local function each_loaded_client0(f)
-      local function _3_(_2_)
-        local _arg_0_ = _2_
+      local function _4_(_3_)
+        local _arg_0_ = _3_
         local filetype0 = _arg_0_["filetype"]
         return with_filetype(filetype0, f)
       end
-      return a["run!"](_3_, a.vals(loaded))
+      return a["run!"](_4_, a.vals(loaded))
     end
     v_0_0 = each_loaded_client0
     _0_["each-loaded-client"] = v_0_0

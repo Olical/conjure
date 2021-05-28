@@ -17,13 +17,17 @@ do
   do end (package.loaded)[name_0_] = module_0_
   _0_ = module_0_
 end
-local autoload = (require("conjure.aniseed.autoload")).autoload
+local autoload
 local function _1_(...)
+  return (require("conjure.aniseed.autoload")).autoload(...)
+end
+autoload = _1_
+local function _2_(...)
   local ok_3f_0_, val_0_ = nil, nil
-  local function _1_()
+  local function _2_()
     return {autoload("conjure.aniseed.core"), autoload("conjure.client.clojure.nrepl.action"), autoload("conjure.bridge"), autoload("conjure.client"), autoload("conjure.config"), autoload("conjure.eval"), autoload("conjure.mapping"), autoload("conjure.aniseed.nvim"), autoload("conjure.client.clojure.nrepl.parse"), autoload("conjure.client.clojure.nrepl.server"), autoload("conjure.aniseed.string")}
   end
-  ok_3f_0_, val_0_ = pcall(_1_)
+  ok_3f_0_, val_0_ = pcall(_2_)
   if ok_3f_0_ then
     _0_["aniseed/local-fns"] = {autoload = {a = "conjure.aniseed.core", action = "conjure.client.clojure.nrepl.action", bridge = "conjure.bridge", client = "conjure.client", config = "conjure.config", eval = "conjure.eval", mapping = "conjure.mapping", nvim = "conjure.aniseed.nvim", parse = "conjure.client.clojure.nrepl.parse", server = "conjure.client.clojure.nrepl.server", str = "conjure.aniseed.string"}}
     return val_0_
@@ -31,7 +35,7 @@ local function _1_(...)
     return print(val_0_)
   end
 end
-local _local_0_ = _1_(...)
+local _local_0_ = _2_(...)
 local a = _local_0_[1]
 local server = _local_0_[10]
 local str = _local_0_[11]
@@ -84,31 +88,31 @@ do
   do
     local v_0_0
     local function context0(header)
-      local _2_ = header
-      if _2_ then
-        local _3_ = parse["strip-meta"](_2_)
-        if _3_ then
-          local _4_ = parse["strip-comments"](_3_)
-          if _4_ then
-            local _5_ = string.match(_4_, "%(%s*ns%s+([^)]*)")
-            if _5_ then
-              local _6_ = str.split(_5_, "%s+")
-              if _6_ then
-                return a.first(_6_)
+      local _3_ = header
+      if _3_ then
+        local _4_ = parse["strip-meta"](_3_)
+        if _4_ then
+          local _5_ = parse["strip-comments"](_4_)
+          if _5_ then
+            local _6_ = string.match(_5_, "%(%s*ns%s+([^)]*)")
+            if _6_ then
+              local _7_ = str.split(_6_, "%s+")
+              if _7_ then
+                return a.first(_7_)
               else
-                return _6_
+                return _7_
               end
             else
-              return _5_
+              return _6_
             end
           else
-            return _4_
+            return _5_
           end
         else
-          return _3_
+          return _4_
         end
       else
-        return _2_
+        return _3_
       end
     end
     v_0_0 = context0

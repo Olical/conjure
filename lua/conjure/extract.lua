@@ -17,13 +17,17 @@ do
   do end (package.loaded)[name_0_] = module_0_
   _0_ = module_0_
 end
-local autoload = (require("conjure.aniseed.autoload")).autoload
+local autoload
 local function _1_(...)
+  return (require("conjure.aniseed.autoload")).autoload(...)
+end
+autoload = _1_
+local function _2_(...)
   local ok_3f_0_, val_0_ = nil, nil
-  local function _1_()
+  local function _2_()
     return {autoload("conjure.aniseed.core"), autoload("conjure.client"), autoload("conjure.config"), autoload("conjure.aniseed.nvim.util"), autoload("conjure.aniseed.nvim"), autoload("conjure.aniseed.string"), autoload("conjure.tree-sitter")}
   end
-  ok_3f_0_, val_0_ = pcall(_1_)
+  ok_3f_0_, val_0_ = pcall(_2_)
   if ok_3f_0_ then
     _0_["aniseed/local-fns"] = {autoload = {a = "conjure.aniseed.core", client = "conjure.client", config = "conjure.config", nu = "conjure.aniseed.nvim.util", nvim = "conjure.aniseed.nvim", str = "conjure.aniseed.string", ts = "conjure.tree-sitter"}}
     return val_0_
@@ -31,7 +35,7 @@ local function _1_(...)
     return print(val_0_)
   end
 end
-local _local_0_ = _1_(...)
+local _local_0_ = _2_(...)
 local a = _local_0_[1]
 local client = _local_0_[2]
 local config = _local_0_[3]
@@ -45,21 +49,21 @@ do local _ = ({nil, _0_, nil, {{}, nil, nil, nil}})[2] end
 local read_range
 do
   local v_0_
-  local function read_range0(_2_, _3_)
-    local _arg_0_ = _2_
+  local function read_range0(_3_, _4_)
+    local _arg_0_ = _3_
     local srow = _arg_0_[1]
     local scol = _arg_0_[2]
-    local _arg_1_ = _3_
+    local _arg_1_ = _4_
     local erow = _arg_1_[1]
     local ecol = _arg_1_[2]
     local lines = nvim.buf_get_lines(0, (srow - 1), erow, false)
-    local function _4_(s)
+    local function _5_(s)
       return string.sub(s, 0, ecol)
     end
-    local function _5_(s)
+    local function _6_(s)
       return string.sub(s, scol)
     end
-    return str.join("\n", a.update(a.update(lines, #lines, _4_), 1, _5_))
+    return str.join("\n", a.update(a.update(lines, #lines, _5_), 1, _6_))
   end
   v_0_ = read_range0
   local t_0_ = (_0_)["aniseed/locals"]
@@ -105,11 +109,11 @@ do
       local col = _let_0_[2]
       local stack = nvim.fn.synstack(row, a.inc(col))
       local stack_size = #stack
-      local function _2_()
+      local function _3_()
         local name = nvim.fn.synIDattr(stack[stack_size], "name")
         return (name:find("Comment$") or name:find("String$") or name:find("Regexp%?$"))
       end
-      if ("number" == type(((stack_size > 0) and _2_()))) then
+      if ("number" == type(((stack_size > 0) and _3_()))) then
         return 1
       else
         return 0
@@ -126,22 +130,22 @@ end
 local form_2a
 do
   local v_0_
-  local function form_2a0(_2_, _3_)
-    local _arg_0_ = _2_
+  local function form_2a0(_3_, _4_)
+    local _arg_0_ = _3_
     local start_char = _arg_0_[1]
     local end_char = _arg_0_[2]
     local escape_3f = _arg_0_[3]
-    local _arg_1_ = _3_
+    local _arg_1_ = _4_
     local root_3f = _arg_1_["root?"]
     local flags
-    local function _4_()
+    local function _5_()
       if root_3f then
         return "r"
       else
         return ""
       end
     end
-    flags = ("Wnz" .. _4_())
+    flags = ("Wnz" .. _5_())
     local cursor_char = current_char()
     local skip_match_3f_viml = "luaeval(\"require('conjure.extract')['skip-match?']()\")"
     local safe_start_char
@@ -157,23 +161,23 @@ do
       safe_end_char = end_char
     end
     local start
-    local function _7_()
+    local function _8_()
       if (cursor_char == start_char) then
         return "c"
       else
         return ""
       end
     end
-    start = nvim.fn.searchpairpos(safe_start_char, "", safe_end_char, (flags .. "b" .. _7_()), skip_match_3f_viml)
+    start = nvim.fn.searchpairpos(safe_start_char, "", safe_end_char, (flags .. "b" .. _8_()), skip_match_3f_viml)
     local _end
-    local function _8_()
+    local function _9_()
       if (cursor_char == end_char) then
         return "c"
       else
         return ""
       end
     end
-    _end = nvim.fn.searchpairpos(safe_start_char, "", safe_end_char, (flags .. _8_()), skip_match_3f_viml)
+    _end = nvim.fn.searchpairpos(safe_start_char, "", safe_end_char, (flags .. _9_()), skip_match_3f_viml)
     if (not nil_pos_3f(start) and not nil_pos_3f(_end)) then
       return {content = read_range(start, _end), range = {["end"] = a.update(_end, 2, a.dec), start = a.update(start, 2, a.dec)}}
     end
@@ -203,11 +207,11 @@ end
 local distance_gt
 do
   local v_0_
-  local function distance_gt0(_2_, _3_)
-    local _arg_0_ = _2_
+  local function distance_gt0(_3_, _4_)
+    local _arg_0_ = _3_
     local al = _arg_0_[1]
     local ac = _arg_0_[2]
-    local _arg_1_ = _3_
+    local _arg_1_ = _4_
     local bl = _arg_1_[1]
     local bc = _arg_1_[2]
     return ((al > bl) or ((al == bl) and (ac > bc)))
@@ -235,14 +239,14 @@ do
         end
       else
         local forms
-        local function _2_(_241)
+        local function _3_(_241)
           return form_2a(_241, opts)
         end
-        forms = a.filter(a["table?"], a.map(_2_, config["get-in"]({"extract", "form_pairs"})))
-        local function _3_(_241, _242)
+        forms = a.filter(a["table?"], a.map(_3_, config["get-in"]({"extract", "form_pairs"})))
+        local function _4_(_241, _242)
           return distance_gt(range_distance(_241.range), range_distance(_242.range))
         end
-        table.sort(forms, _3_)
+        table.sort(forms, _4_)
         if opts["root?"] then
           return a.last(forms)
         else
@@ -354,8 +358,8 @@ do
   local v_0_
   do
     local v_0_0
-    local function selection0(_2_)
-      local _arg_0_ = _2_
+    local function selection0(_3_)
+      local _arg_0_ = _3_
       local kind = _arg_0_["kind"]
       local visual_3f = _arg_0_["visual?"]
       local sel_backup = nvim.o.selection
@@ -392,10 +396,10 @@ do
       local pat = client.get("context-pattern")
       local f
       if pat then
-        local function _2_(_241)
+        local function _3_(_241)
           return string.match(_241, pat)
         end
-        f = _2_
+        f = _3_
       else
         f = client.get("context")
       end
@@ -418,10 +422,10 @@ do
     local v_0_0
     local function prompt0(prefix)
       local ok_3f, val = nil, nil
-      local function _2_()
+      local function _3_()
         return nvim.fn.input((prefix or ""))
       end
-      ok_3f, val = pcall(_2_)
+      ok_3f, val = pcall(_3_)
       if ok_3f then
         return val
       end

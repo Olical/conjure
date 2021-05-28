@@ -17,13 +17,17 @@ do
   do end (package.loaded)[name_0_] = module_0_
   _0_ = module_0_
 end
-local autoload = (require("conjure.aniseed.autoload")).autoload
+local autoload
 local function _1_(...)
+  return (require("conjure.aniseed.autoload")).autoload(...)
+end
+autoload = _1_
+local function _2_(...)
   local ok_3f_0_, val_0_ = nil, nil
-  local function _1_()
+  local function _2_()
     return {autoload("conjure.aniseed.core"), autoload("conjure.client"), autoload("conjure.config"), autoload("conjure.extract"), autoload("conjure.log"), autoload("conjure.mapping"), autoload("conjure.aniseed.nvim"), autoload("conjure.aniseed.string"), autoload("conjure.text"), autoload("conjure.aniseed.view")}
   end
-  ok_3f_0_, val_0_ = pcall(_1_)
+  ok_3f_0_, val_0_ = pcall(_2_)
   if ok_3f_0_ then
     _0_["aniseed/local-fns"] = {autoload = {a = "conjure.aniseed.core", client = "conjure.client", config = "conjure.config", extract = "conjure.extract", log = "conjure.log", mapping = "conjure.mapping", nvim = "conjure.aniseed.nvim", str = "conjure.aniseed.string", text = "conjure.text", view = "conjure.aniseed.view"}}
     return val_0_
@@ -31,7 +35,7 @@ local function _1_(...)
     return print(val_0_)
   end
 end
-local _local_0_ = _1_(...)
+local _local_0_ = _2_(...)
 local a = _local_0_[1]
 local view = _local_0_[10]
 local client = _local_0_[2]
@@ -146,17 +150,17 @@ do
         end
         local result_lines = str.split(result_str, "\n")
         if not opts["passive?"] then
-          local function _3_()
+          local function _4_()
             if ok_3f then
               return result_lines
             else
-              local function _3_(_241)
+              local function _4_(_241)
                 return ("; " .. _241)
               end
-              return a.map(_3_, result_lines)
+              return a.map(_4_, result_lines)
             end
           end
-          log.append(_3_())
+          log.append(_4_())
         end
         if opts["on-result-raw"] then
           opts["on-result-raw"](results)
@@ -180,10 +184,10 @@ do
   do
     local v_0_0
     local function eval_str0(opts)
-      local function _2_()
+      local function _3_()
         local code = (("(module " .. (opts.context or "conjure.aniseed.user") .. ") ") .. opts.code .. "\n")
         local out
-        local function _3_()
+        local function _4_()
           if cfg({"use_metadata"}) then
             package.loaded.fennel = ani("fennel")
           end
@@ -194,13 +198,13 @@ do
           opts.results = results
           return nil
         end
-        out = anic("nu", "with-out-str", _3_)
+        out = anic("nu", "with-out-str", _4_)
         if not a["empty?"](out) then
           log.append(text["prefixed-lines"](text["trim-last-newline"](out), "; (out) "))
         end
         return display_result(opts)
       end
-      return client.wrap(_2_)()
+      return client.wrap(_3_)()
     end
     v_0_0 = eval_str0
     _0_["eval-str"] = v_0_0
@@ -252,13 +256,13 @@ do
   local function wrapped_test0(req_lines, f)
     log.append(req_lines, {["break?"] = true})
     local res = anic("nu", "with-out-str", f)
-    local _2_
+    local _3_
     if ("" == res) then
-      _2_ = "No results."
+      _3_ = "No results."
     else
-      _2_ = res
+      _3_ = res
     end
-    return log.append(text["prefixed-lines"](_2_, "; "))
+    return log.append(text["prefixed-lines"](_3_, "; "))
   end
   v_0_ = wrapped_test0
   local t_0_ = (_0_)["aniseed/locals"]
@@ -273,10 +277,10 @@ do
     local function run_buf_tests0()
       local c = extract.context()
       if c then
-        local function _2_()
+        local function _3_()
           return anic("test", "run", c)
         end
-        return wrapped_test({("; run-buf-tests (" .. c .. ")")}, _2_)
+        return wrapped_test({("; run-buf-tests (" .. c .. ")")}, _3_)
       end
     end
     v_0_0 = run_buf_tests0
@@ -327,19 +331,19 @@ do
     local v_0_0
     local function value__3ecompletions0(x)
       if ("table" == type(x)) then
-        local function _3_(_2_)
-          local _arg_0_ = _2_
+        local function _4_(_3_)
+          local _arg_0_ = _3_
           local k = _arg_0_[1]
           local v = _arg_0_[2]
           return {info = nil, kind = type(v), menu = nil, word = k}
         end
-        local function _5_(_4_)
-          local _arg_0_ = _4_
+        local function _6_(_5_)
+          local _arg_0_ = _5_
           local k = _arg_0_[1]
           local v = _arg_0_[2]
           return not text["starts-with"](k, "aniseed/")
         end
-        local function _6_()
+        local function _7_()
           if x["aniseed/autoload-enabled?"] then
             do local _ = x["trick-aniseed-into-loading-the-module"] end
             return x["aniseed/autoload-module"]
@@ -347,7 +351,7 @@ do
             return x
           end
         end
-        return a.map(_3_, a.filter(_5_, a["kv-pairs"](_6_())))
+        return a.map(_4_, a.filter(_6_, a["kv-pairs"](_7_())))
       end
     end
     v_0_0 = value__3ecompletions0
@@ -374,10 +378,10 @@ do
       local locals
       do
         local ok_3f, m = nil, nil
-        local function _3_()
+        local function _4_()
           return require(opts.context)
         end
-        ok_3f, m = (opts.context and pcall(_3_))
+        ok_3f, m = (opts.context and pcall(_4_))
         if ok_3f then
           locals = a.concat(value__3ecompletions(a.get(m, "aniseed/locals")), value__3ecompletions(a["get-in"](m, {"aniseed/local-fns", "require"})), value__3ecompletions(a["get-in"](m, {"aniseed/local-fns", "autoload"})), mods)
         else
@@ -385,30 +389,30 @@ do
         end
       end
       local result_fn
-      local function _3_(results)
+      local function _4_(results)
         local xs = a.first(results)
-        local function _4_()
+        local function _5_()
           if ("table" == type(xs)) then
-            local function _4_(x)
-              local function _5_(_241)
+            local function _5_(x)
+              local function _6_(_241)
                 return (opts.prefix .. _241)
               end
-              return a.update(x, "word", _5_)
+              return a.update(x, "word", _6_)
             end
-            return a.concat(a.map(_4_, xs), locals)
+            return a.concat(a.map(_5_, xs), locals)
           else
             return locals
           end
         end
-        return opts.cb(_4_())
+        return opts.cb(_5_())
       end
-      result_fn = _3_
+      result_fn = _4_
       local _, ok_3f = nil, nil
       if code then
-        local function _4_()
+        local function _5_()
           return eval_str({["on-result-raw"] = result_fn, ["passive?"] = true, code = code, context = opts.context})
         end
-        _, ok_3f = pcall(_4_)
+        _, ok_3f = pcall(_5_)
       else
       _, ok_3f = nil
       end

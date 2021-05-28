@@ -17,13 +17,17 @@ do
   do end (package.loaded)[name_0_] = module_0_
   _0_ = module_0_
 end
-local autoload = (require("conjure.aniseed.autoload")).autoload
+local autoload
 local function _1_(...)
+  return (require("conjure.aniseed.autoload")).autoload(...)
+end
+autoload = _1_
+local function _2_(...)
   local ok_3f_0_, val_0_ = nil, nil
-  local function _1_()
+  local function _2_()
     return {autoload("conjure.aniseed.view")}
   end
-  ok_3f_0_, val_0_ = pcall(_1_)
+  ok_3f_0_, val_0_ = pcall(_2_)
   if ok_3f_0_ then
     _0_["aniseed/local-fns"] = {autoload = {view = "conjure.aniseed.view"}}
     return val_0_
@@ -31,7 +35,7 @@ local function _1_(...)
     return print(val_0_)
   end
 end
-local _local_0_ = _1_(...)
+local _local_0_ = _2_(...)
 local view = _local_0_[1]
 local _2amodule_2a = _0_
 local _2amodule_name_2a = "conjure.aniseed.core"
@@ -354,12 +358,12 @@ do
     local v_0_0
     local function filter0(f, xs)
       local result = {}
-      local function _2_(x)
+      local function _3_(x)
         if f(x) then
           return table.insert(result, x)
         end
       end
-      run_21(_2_, xs)
+      run_21(_3_, xs)
       return result
     end
     v_0_0 = filter0
@@ -377,18 +381,18 @@ do
     local v_0_0
     local function map0(f, xs)
       local result = {}
-      local function _2_(x)
+      local function _3_(x)
         local mapped = f(x)
-        local function _3_()
+        local function _4_()
           if (0 == select("#", mapped)) then
             return nil
           else
             return mapped
           end
         end
-        return table.insert(result, _3_())
+        return table.insert(result, _4_())
       end
-      run_21(_2_, xs)
+      run_21(_3_, xs)
       return result
     end
     v_0_0 = map0
@@ -438,11 +442,11 @@ do
     local v_0_0
     local function reduce0(f, init, xs)
       local result = init
-      local function _2_(x)
+      local function _3_(x)
         result = f(result, x)
         return nil
       end
-      run_21(_2_, xs)
+      run_21(_3_, xs)
       return result
     end
     v_0_0 = reduce0
@@ -485,13 +489,13 @@ do
     local v_0_0
     local function butlast0(xs)
       local total = count(xs)
-      local function _3_(_2_)
-        local _arg_0_ = _2_
+      local function _4_(_3_)
+        local _arg_0_ = _3_
         local n = _arg_0_[1]
         local v = _arg_0_[2]
         return (n ~= total)
       end
-      return map(second, filter(_3_, kv_pairs(xs)))
+      return map(second, filter(_4_, kv_pairs(xs)))
     end
     v_0_0 = butlast0
     _0_["butlast"] = v_0_0
@@ -507,13 +511,13 @@ do
   do
     local v_0_0
     local function rest0(xs)
-      local function _3_(_2_)
-        local _arg_0_ = _2_
+      local function _4_(_3_)
+        local _arg_0_ = _3_
         local n = _arg_0_[1]
         local v = _arg_0_[2]
         return (n ~= 1)
       end
-      return map(second, filter(_3_, kv_pairs(xs)))
+      return map(second, filter(_4_, kv_pairs(xs)))
     end
     v_0_0 = rest0
     _0_["rest"] = v_0_0
@@ -530,13 +534,13 @@ do
     local v_0_0
     local function concat0(...)
       local result = {}
-      local function _2_(xs)
-        local function _3_(x)
+      local function _3_(xs)
+        local function _4_(x)
           return table.insert(result, x)
         end
-        return run_21(_3_, xs)
+        return run_21(_4_, xs)
       end
-      run_21(_2_, {...})
+      run_21(_3_, {...})
       return result
     end
     v_0_0 = concat0
@@ -570,10 +574,10 @@ do
     local v_0_0
     local function pr_str0(...)
       local s
-      local function _2_(x)
+      local function _3_(x)
         return view.serialise(x, {["one-line"] = true})
       end
-      s = table.concat(map(_2_, {...}), " ")
+      s = table.concat(map(_3_, {...}), " ")
       if (nil_3f(s) or ("" == s)) then
         return "nil"
       else
@@ -594,17 +598,17 @@ do
   do
     local v_0_0
     local function str0(...)
-      local function _2_(acc, s)
+      local function _3_(acc, s)
         return (acc .. s)
       end
-      local function _3_(s)
+      local function _4_(s)
         if string_3f(s) then
           return s
         else
           return pr_str(s)
         end
       end
-      return reduce(_2_, "", map(_3_, {...}))
+      return reduce(_3_, "", map(_4_, {...}))
     end
     v_0_0 = str0
     _0_["str"] = v_0_0
@@ -620,11 +624,11 @@ do
   do
     local v_0_0
     local function println0(...)
-      local function _2_(acc, s)
+      local function _3_(acc, s)
         return (acc .. s)
       end
-      local function _4_(_3_)
-        local _arg_0_ = _3_
+      local function _5_(_4_)
+        local _arg_0_ = _4_
         local i = _arg_0_[1]
         local s = _arg_0_[2]
         if (1 == i) then
@@ -633,14 +637,14 @@ do
           return (" " .. s)
         end
       end
-      local function _5_(s)
+      local function _6_(s)
         if string_3f(s) then
           return s
         else
           return pr_str(s)
         end
       end
-      return print(reduce(_2_, "", map_indexed(_4_, map(_5_, {...}))))
+      return print(reduce(_3_, "", map_indexed(_5_, map(_6_, {...}))))
     end
     v_0_0 = println0
     _0_["println"] = v_0_0
@@ -672,12 +676,12 @@ do
   do
     local v_0_0
     local function slurp0(path, silent_3f)
-      local _2_, _3_ = io.open(path, "r")
-      if ((_2_ == nil) and (nil ~= _3_)) then
-        local msg = _3_
+      local _3_, _4_ = io.open(path, "r")
+      if ((_3_ == nil) and (nil ~= _4_)) then
+        local msg = _4_
         return nil
-      elseif (nil ~= _2_) then
-        local f = _2_
+      elseif (nil ~= _3_) then
+        local f = _3_
         local content = f:read("*all")
         f:close()
         return content
@@ -697,12 +701,12 @@ do
   do
     local v_0_0
     local function spit0(path, content)
-      local _2_, _3_ = io.open(path, "w")
-      if ((_2_ == nil) and (nil ~= _3_)) then
-        local msg = _3_
+      local _3_, _4_ = io.open(path, "w")
+      if ((_3_ == nil) and (nil ~= _4_)) then
+        local msg = _4_
         return error(("Could not open file: " .. msg))
-      elseif (nil ~= _2_) then
-        local f = _2_
+      elseif (nil ~= _3_) then
+        local f = _3_
         f:write(content)
         f:close()
         return nil
@@ -722,7 +726,7 @@ do
   do
     local v_0_0
     local function merge_210(base, ...)
-      local function _2_(acc, m)
+      local function _3_(acc, m)
         if m then
           for k, v in pairs(m) do
             acc[k] = v
@@ -730,7 +734,7 @@ do
         end
         return acc
       end
-      return reduce(_2_, (base or {}), {...})
+      return reduce(_3_, (base or {}), {...})
     end
     v_0_0 = merge_210
     _0_["merge!"] = v_0_0
@@ -763,13 +767,13 @@ do
     local v_0_0
     local function select_keys0(t, ks)
       if (t and ks) then
-        local function _2_(acc, k)
+        local function _3_(acc, k)
           if k then
             acc[k] = t[k]
           end
           return acc
         end
-        return reduce(_2_, {}, ks)
+        return reduce(_3_, {}, ks)
       else
         return {}
       end
@@ -820,12 +824,12 @@ do
     local v_0_0
     local function get_in0(t, ks, d)
       local res
-      local function _2_(acc, k)
+      local function _3_(acc, k)
         if table_3f(acc) then
           return get(acc, k)
         end
       end
-      res = reduce(_2_, t, ks)
+      res = reduce(_3_, t, ks)
       if nil_3f(res) then
         return d
       else
@@ -880,7 +884,7 @@ do
       local path = butlast(ks)
       local final = last(ks)
       local t0 = (t or {})
-      local function _2_(acc, k)
+      local function _3_(acc, k)
         local step = get(acc, k)
         if nil_3f(step) then
           return get(assoc(acc, k, {}), k)
@@ -888,7 +892,7 @@ do
           return step
         end
       end
-      assoc(reduce(_2_, t0, path), final, v)
+      assoc(reduce(_3_, t0, path), final, v)
       return t0
     end
     v_0_0 = assoc_in0
@@ -937,10 +941,10 @@ do
   do
     local v_0_0
     local function constantly0(v)
-      local function _2_()
+      local function _3_()
         return v
       end
-      return _2_
+      return _3_
     end
     v_0_0 = constantly0
     _0_["constantly"] = v_0_0

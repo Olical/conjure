@@ -17,13 +17,17 @@ do
   do end (package.loaded)[name_0_] = module_0_
   _0_ = module_0_
 end
-local autoload = (require("conjure.aniseed.autoload")).autoload
+local autoload
 local function _1_(...)
+  return (require("conjure.aniseed.autoload")).autoload(...)
+end
+autoload = _1_
+local function _2_(...)
   local ok_3f_0_, val_0_ = nil, nil
-  local function _1_()
+  local function _2_()
     return {autoload("conjure.aniseed.core"), autoload("conjure.client"), autoload("conjure.log"), autoload("conjure.aniseed.nvim"), autoload("conjure.aniseed.string"), autoload("conjure.text")}
   end
-  ok_3f_0_, val_0_ = pcall(_1_)
+  ok_3f_0_, val_0_ = pcall(_2_)
   if ok_3f_0_ then
     _0_["aniseed/local-fns"] = {autoload = {a = "conjure.aniseed.core", client = "conjure.client", log = "conjure.log", nvim = "conjure.aniseed.nvim", str = "conjure.aniseed.string", text = "conjure.text"}}
     return val_0_
@@ -31,7 +35,7 @@ local function _1_(...)
     return print(val_0_)
   end
 end
-local _local_0_ = _1_(...)
+local _local_0_ = _2_(...)
 local a = _local_0_[1]
 local client = _local_0_[2]
 local log = _local_0_[3]
@@ -68,10 +72,10 @@ do
       local repl_pipe = uv.new_pipe(true)
       local repl = {buffer = "", current = nil, queue = {}, status = "pending"}
       local function destroy()
-        local function _2_()
+        local function _3_()
           return repl_pipe:shutdown()
         end
-        pcall(_2_)
+        pcall(_3_)
         return nil
       end
       local function next_in_queue()
@@ -96,10 +100,10 @@ do
           end
           if done_3f then
             if cb then
-              local function _3_()
+              local function _4_()
                 return cb({["done?"] = done_3f, out = result})
               end
-              pcall(_3_)
+              pcall(_4_)
             end
             a.assoc(repl, "current", nil)
             a.assoc(repl, "buffer", "")
@@ -118,36 +122,36 @@ do
         end
       end
       local function send(code, cb, opts0)
-        local _2_
+        local _3_
         if a.get(opts0, "batch?") then
           local msgs = {}
-          local function _4_(msg)
+          local function _5_(msg)
             table.insert(msgs, msg)
             if msg["done?"] then
               return cb(msgs)
             end
           end
-          _2_ = _4_
+          _3_ = _5_
         else
-          _2_ = cb
+          _3_ = cb
         end
-        table.insert(repl.queue, {cb = _2_, code = code})
+        table.insert(repl.queue, {cb = _3_, code = code})
         next_in_queue()
         return nil
       end
       if opts.pipename then
-        local function _2_(err)
+        local function _3_(err)
           if err then
             return opts["on-failure"](a["merge!"](repl, {err = err, status = "failed"}))
           else
             opts["on-success"](a.assoc(repl, "status", "connected"))
-            local function _3_(err0, chunk)
+            local function _4_(err0, chunk)
               return on_output(err0, chunk)
             end
-            return repl_pipe:read_start(client["schedule-wrap"](_3_))
+            return repl_pipe:read_start(client["schedule-wrap"](_4_))
           end
         end
-        uv.pipe_connect(repl_pipe, opts.pipename, client["schedule-wrap"](_2_))
+        uv.pipe_connect(repl_pipe, opts.pipename, client["schedule-wrap"](_3_))
       else
         nvim.err_writeln((_2amodule_name_2a .. ": No pipename specified"))
       end

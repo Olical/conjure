@@ -17,13 +17,17 @@ do
   do end (package.loaded)[name_0_] = module_0_
   _0_ = module_0_
 end
-local autoload = (require("conjure.aniseed.autoload")).autoload
+local autoload
 local function _1_(...)
+  return (require("conjure.aniseed.autoload")).autoload(...)
+end
+autoload = _1_
+local function _2_(...)
   local ok_3f_0_, val_0_ = nil, nil
-  local function _1_()
+  local function _2_()
     return {}
   end
-  ok_3f_0_, val_0_ = pcall(_1_)
+  ok_3f_0_, val_0_ = pcall(_2_)
   if ok_3f_0_ then
     _0_["aniseed/local-fns"] = {}
     return val_0_
@@ -31,7 +35,7 @@ local function _1_(...)
     return print(val_0_)
   end
 end
-local _local_0_ = _1_(...)
+local _local_0_ = _2_(...)
 local _2amodule_2a = _0_
 local _2amodule_name_2a = "conjure.aniseed.autoload"
 do local _ = ({nil, _0_, nil, {{}, nil, nil, nil}})[2] end
@@ -51,14 +55,17 @@ do
           return m
         end
       end
-      local function _2_(t, k)
+      local function _3_(t, ...)
+        return ensure()(...)
+      end
+      local function _4_(t, k)
         return ensure()[k]
       end
-      local function _3_(t, k, v)
+      local function _5_(t, k, v)
         ensure()[k] = v
         return nil
       end
-      return setmetatable(res, {__index = _2_, __newindex = _3_})
+      return setmetatable(res, {__call = _3_, __index = _4_, __newindex = _5_})
     end
     v_0_0 = autoload1
     _0_["autoload"] = v_0_0

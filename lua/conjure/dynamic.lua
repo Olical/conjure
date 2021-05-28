@@ -17,13 +17,17 @@ do
   do end (package.loaded)[name_0_] = module_0_
   _0_ = module_0_
 end
-local autoload = (require("conjure.aniseed.autoload")).autoload
+local autoload
 local function _1_(...)
+  return (require("conjure.aniseed.autoload")).autoload(...)
+end
+autoload = _1_
+local function _2_(...)
   local ok_3f_0_, val_0_ = nil, nil
-  local function _1_()
+  local function _2_()
     return {autoload("conjure.aniseed.core")}
   end
-  ok_3f_0_, val_0_ = pcall(_1_)
+  ok_3f_0_, val_0_ = pcall(_2_)
   if ok_3f_0_ then
     _0_["aniseed/local-fns"] = {autoload = {a = "conjure.aniseed.core"}}
     return val_0_
@@ -31,7 +35,7 @@ local function _1_(...)
     return print(val_0_)
   end
 end
-local _local_0_ = _1_(...)
+local _local_0_ = _2_(...)
 local a = _local_0_[1]
 local _2amodule_2a = _0_
 local _2amodule_name_2a = "conjure.dynamic"
@@ -64,14 +68,14 @@ do
     local function new0(base_value)
       assert_value_function_21(base_value)
       local stack = {base_value}
-      local function _2_(x, ...)
+      local function _3_(x, ...)
         if (get_stack_key == x) then
           return stack
         else
           return a.last(stack)(x, ...)
         end
       end
-      return _2_
+      return _3_
     end
     v_0_0 = new0
     _0_["new"] = v_0_0
@@ -85,14 +89,14 @@ local run_binds_21
 do
   local v_0_
   local function run_binds_210(f, binds)
-    local function _3_(_2_)
-      local _arg_0_ = _2_
+    local function _4_(_3_)
+      local _arg_0_ = _3_
       local dyn = _arg_0_[1]
       local new_value = _arg_0_[2]
       assert_value_function_21(new_value)
       return f(dyn(get_stack_key), new_value)
     end
-    return a["map-indexed"](_3_, binds)
+    return a["map-indexed"](_4_, binds)
   end
   v_0_ = run_binds_210
   local t_0_ = (_0_)["aniseed/locals"]
@@ -107,10 +111,10 @@ do
     local function bind0(binds, f, ...)
       run_binds_21(table.insert, binds)
       local ok_3f, result = pcall(f, ...)
-      local function _2_(_241)
+      local function _3_(_241)
         return table.remove(_241)
       end
-      run_binds_21(_2_, binds)
+      run_binds_21(_3_, binds)
       if ok_3f then
         return result
       else

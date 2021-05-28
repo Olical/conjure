@@ -17,13 +17,17 @@ do
   do end (package.loaded)[name_0_] = module_0_
   _0_ = module_0_
 end
-local autoload = (require("conjure.aniseed.autoload")).autoload
+local autoload
 local function _1_(...)
+  return (require("conjure.aniseed.autoload")).autoload(...)
+end
+autoload = _1_
+local function _2_(...)
   local ok_3f_0_, val_0_ = nil, nil
-  local function _1_()
+  local function _2_()
     return {require("conjure.aniseed.core"), require("conjure.aniseed.string")}
   end
-  ok_3f_0_, val_0_ = pcall(_1_)
+  ok_3f_0_, val_0_ = pcall(_2_)
   if ok_3f_0_ then
     _0_["aniseed/local-fns"] = {require = {a = "conjure.aniseed.core", str = "conjure.aniseed.string"}}
     return val_0_
@@ -31,7 +35,7 @@ local function _1_(...)
     return print(val_0_)
   end
 end
-local _local_0_ = _1_(...)
+local _local_0_ = _2_(...)
 local a = _local_0_[1]
 local str = _local_0_[2]
 local _2amodule_2a = _0_
@@ -132,8 +136,8 @@ do
   do
     local v_0_0
     local function prefixed_lines0(s, prefix, opts)
-      local function _3_(_2_)
-        local _arg_0_ = _2_
+      local function _4_(_3_)
+        local _arg_0_ = _3_
         local n = _arg_0_[1]
         local line = _arg_0_[2]
         if ((1 == n) and a.get(opts, "skip-first?")) then
@@ -142,7 +146,7 @@ do
           return (prefix .. line)
         end
       end
-      return a["map-indexed"](_3_, split_lines(s))
+      return a["map-indexed"](_4_, split_lines(s))
     end
     v_0_0 = prefixed_lines0
     _0_["prefixed-lines"] = v_0_0

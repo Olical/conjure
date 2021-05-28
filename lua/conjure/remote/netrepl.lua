@@ -17,13 +17,17 @@ do
   do end (package.loaded)[name_0_] = module_0_
   _0_ = module_0_
 end
-local autoload = (require("conjure.aniseed.autoload")).autoload
+local autoload
 local function _1_(...)
+  return (require("conjure.aniseed.autoload")).autoload(...)
+end
+autoload = _1_
+local function _2_(...)
   local ok_3f_0_, val_0_ = nil, nil
-  local function _1_()
+  local function _2_()
     return {autoload("conjure.aniseed.core"), autoload("conjure.client"), autoload("conjure.log"), autoload("conjure.net"), autoload("conjure.remote.transport.netrepl")}
   end
-  ok_3f_0_, val_0_ = pcall(_1_)
+  ok_3f_0_, val_0_ = pcall(_2_)
   if ok_3f_0_ then
     _0_["aniseed/local-fns"] = {autoload = {a = "conjure.aniseed.core", client = "conjure.client", log = "conjure.log", net = "conjure.net", trn = "conjure.remote.transport.netrepl"}}
     return val_0_
@@ -31,7 +35,7 @@ local function _1_(...)
     return print(val_0_)
   end
 end
-local _local_0_ = _1_(...)
+local _local_0_ = _2_(...)
 local a = _local_0_[1]
 local client = _local_0_[2]
 local log = _local_0_[3]
@@ -70,17 +74,17 @@ do
         if (err or not chunk) then
           return opts["on-error"](err)
         else
-          local function _2_(msg)
+          local function _3_(msg)
             log.dbg("receive", msg)
             local cb = table.remove(conn.queue)
             if cb then
               return cb(msg)
             end
           end
-          return a["run!"](_2_, conn.decode(chunk))
+          return a["run!"](_3_, conn.decode(chunk))
         end
       end
-      local function _2_(err)
+      local function _3_(err)
         if err then
           return opts["on-failure"](err)
         else
@@ -88,7 +92,7 @@ do
           return opts["on-success"]()
         end
       end
-      conn = a.merge(conn, net.connect({cb = client["schedule-wrap"](_2_), host = opts.host, port = opts.port}))
+      conn = a.merge(conn, net.connect({cb = client["schedule-wrap"](_3_), host = opts.host, port = opts.port}))
       send(conn, (opts.name or "Conjure"))
       return conn
     end

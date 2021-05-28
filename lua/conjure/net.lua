@@ -17,13 +17,17 @@ do
   do end (package.loaded)[name_0_] = module_0_
   _0_ = module_0_
 end
-local autoload = (require("conjure.aniseed.autoload")).autoload
+local autoload
 local function _1_(...)
+  return (require("conjure.aniseed.autoload")).autoload(...)
+end
+autoload = _1_
+local function _2_(...)
   local ok_3f_0_, val_0_ = nil, nil
-  local function _1_()
+  local function _2_()
     return {autoload("conjure.aniseed.core"), autoload("conjure.bridge"), autoload("conjure.aniseed.nvim")}
   end
-  ok_3f_0_, val_0_ = pcall(_1_)
+  ok_3f_0_, val_0_ = pcall(_2_)
   if ok_3f_0_ then
     _0_["aniseed/local-fns"] = {["require-macros"] = {["conjure.macros"] = true}, autoload = {a = "conjure.aniseed.core", bridge = "conjure.bridge", nvim = "conjure.aniseed.nvim"}}
     return val_0_
@@ -31,7 +35,7 @@ local function _1_(...)
     return print(val_0_)
   end
 end
-local _local_0_ = _1_(...)
+local _local_0_ = _2_(...)
 local a = _local_0_[1]
 local bridge = _local_0_[2]
 local nvim = _local_0_[3]
@@ -47,10 +51,10 @@ do
       if (host == "::") then
         return host
       else
-        local function _2_(_241)
+        local function _3_(_241)
           return ("inet" == a.get(_241, "family"))
         end
-        return a.get(a.first(a.filter(_2_, vim.loop.getaddrinfo(host))), "addr")
+        return a.get(a.first(a.filter(_3_, vim.loop.getaddrinfo(host))), "addr")
       end
     end
     v_0_0 = resolve0
@@ -63,7 +67,7 @@ do
 end
 local state
 do
-  local v_0_ = (((_0_)["aniseed/locals"]).state or {["sock-drawer"] = {}})
+  local v_0_ = ((_0_)["aniseed/locals"].state or {["sock-drawer"] = {}})
   local t_0_ = (_0_)["aniseed/locals"]
   t_0_["state"] = v_0_
   state = v_0_
@@ -77,10 +81,10 @@ do
       sock:shutdown()
       sock:close()
     end
-    local function _3_(_241)
+    local function _4_(_241)
       return (sock ~= _241)
     end
-    state["sock-drawer"] = a.filter(_3_, state["sock-drawer"])
+    state["sock-drawer"] = a.filter(_4_, state["sock-drawer"])
     return nil
   end
   v_0_ = destroy_sock0
@@ -93,8 +97,8 @@ do
   local v_0_
   do
     local v_0_0
-    local function connect0(_2_)
-      local _arg_0_ = _2_
+    local function connect0(_3_)
+      local _arg_0_ = _3_
       local cb = _arg_0_["cb"]
       local host = _arg_0_["host"]
       local port = _arg_0_["port"]
@@ -102,10 +106,10 @@ do
       local resolved_host = resolve(host)
       sock:connect(resolved_host, port, cb)
       table.insert(state["sock-drawer"], sock)
-      local function _3_()
+      local function _4_()
         return destroy_sock(sock)
       end
-      return {["resolved-host"] = resolved_host, destroy = _3_, host = host, port = port, sock = sock}
+      return {["resolved-host"] = resolved_host, destroy = _4_, host = host, port = port, sock = sock}
     end
     v_0_0 = connect0
     _0_["connect"] = v_0_0

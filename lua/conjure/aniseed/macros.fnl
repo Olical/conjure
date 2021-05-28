@@ -31,7 +31,9 @@
 
         ,module-sym
 
-        (local ,(sym :autoload) (. (require :aniseed.autoload) :autoload))
+        ;; Meta! Autoload the autoload function, so it's only loaded when used.
+        (local ,(sym :autoload)
+          (fn [...] ((. (require :aniseed.autoload) :autoload) ...)))
 
         ,(let [aliases []
                vals []
@@ -41,7 +43,7 @@
                        x))
                locals (-?> pkg (. :aniseed/locals))
                local-fns (or (and (not new-local-fns)
-                                  (-?> pkg (. :aniseed/local-fns)))
+                                  (?. pkg :aniseed/local-fns))
                              {})]
 
            (when new-local-fns
@@ -75,7 +77,7 @@
              (sorted-each
                (fn [alias val]
                  (table.insert aliases (sym alias))
-                 (table.insert vals `(-> ,module-sym (. :aniseed/locals) (. ,alias))))
+                 (table.insert vals `(. ,module-sym :aniseed/locals ,alias)))
                locals))
 
            `[,effects
@@ -114,7 +116,7 @@
 
 (fn defonce- [name value]
   `(def- ,name
-     (or (. (. ,module-sym :aniseed/locals) ,(tostring name))
+     (or (. ,module-sym :aniseed/locals ,(tostring name))
          ,value)))
 
 (fn defonce [name value]

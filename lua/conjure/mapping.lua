@@ -17,13 +17,17 @@ do
   do end (package.loaded)[name_0_] = module_0_
   _0_ = module_0_
 end
-local autoload = (require("conjure.aniseed.autoload")).autoload
+local autoload
 local function _1_(...)
+  return (require("conjure.aniseed.autoload")).autoload(...)
+end
+autoload = _1_
+local function _2_(...)
   local ok_3f_0_, val_0_ = nil, nil
-  local function _1_()
+  local function _2_()
     return {autoload("conjure.aniseed.core"), autoload("conjure.bridge"), autoload("conjure.client"), autoload("conjure.config"), autoload("conjure.eval"), autoload("conjure.extract"), autoload("conjure.log"), autoload("conjure.aniseed.nvim"), autoload("conjure.aniseed.string")}
   end
-  ok_3f_0_, val_0_ = pcall(_1_)
+  ok_3f_0_, val_0_ = pcall(_2_)
   if ok_3f_0_ then
     _0_["aniseed/local-fns"] = {["require-macros"] = {["conjure.macros"] = true}, autoload = {a = "conjure.aniseed.core", bridge = "conjure.bridge", client = "conjure.client", config = "conjure.config", eval = "conjure.eval", extract = "conjure.extract", log = "conjure.log", nvim = "conjure.aniseed.nvim", str = "conjure.aniseed.string"}}
     return val_0_
@@ -31,7 +35,7 @@ local function _1_(...)
     return print(val_0_)
   end
 end
-local _local_0_ = _1_(...)
+local _local_0_ = _2_(...)
 local a = _local_0_[1]
 local bridge = _local_0_[2]
 local client = _local_0_[3]
@@ -73,14 +77,14 @@ do
     local v_0_0
     local function buf0(mode_or_opts, cmd_suffix, keys, ...)
       if keys then
-        local function _2_(...)
+        local function _3_(...)
           if ("table" == type(mode_or_opts)) then
             return {a.get(mode_or_opts, "mode"), mode_or_opts}
           else
             return {mode_or_opts, {}}
           end
         end
-        local _let_0_ = _2_(...)
+        local _let_0_ = _3_(...)
         local mode = _let_0_[1]
         local opts = _let_0_[2]
         local args = {...}
@@ -94,20 +98,20 @@ do
         if cmd then
           nvim.ex.command_(("-range " .. cmd), bridge["viml->lua"](unpack(args)))
         end
-        local _5_
+        local _6_
         if cmd then
-          local function _6_(...)
+          local function _7_(...)
             if (false ~= a.get(opts, "repeat?")) then
               return (":silent! call " .. vim_repeat(mapping) .. "<cr>")
             else
               return ""
             end
           end
-          _5_ = (":" .. cmd .. "<cr>" .. _6_(...))
+          _6_ = (":" .. cmd .. "<cr>" .. _7_(...))
         else
-          _5_ = unpack(args)
+          _6_ = unpack(args)
         end
-        return nvim.buf_set_keymap(0, mode, mapping, _5_, {noremap = true, silent = true})
+        return nvim.buf_set_keymap(0, mode, mapping, _6_, {noremap = true, silent = true})
       end
     end
     v_0_0 = buf0
@@ -126,10 +130,10 @@ do
     local function eval_marked_form0()
       local mark = eval["marked-form"]()
       local mapping
-      local function _2_(m)
+      local function _3_(m)
         return ((":ConjureEvalMarkedForm<CR>" == m.rhs) and m.lhs)
       end
-      mapping = a.some(_2_, nvim.buf_get_keymap(0, "n"))
+      mapping = a.some(_3_, nvim.buf_get_keymap(0, "n"))
       if (mark and mapping) then
         return nvim.ex.silent_("call", vim_repeat((mapping .. mark)))
       end
@@ -190,10 +194,10 @@ do
   do
     local v_0_0
     local function on_exit0()
-      local function _2_()
+      local function _3_()
         return client["optional-call"]("on-exit")
       end
-      return client["each-loaded-client"](_2_)
+      return client["each-loaded-client"](_3_)
     end
     v_0_0 = on_exit0
     _0_["on-exit"] = v_0_0
@@ -272,14 +276,14 @@ do
     local v_0_0
     local function connect_command0(...)
       local args = {...}
-      local function _2_(...)
+      local function _3_(...)
         if (1 == a.count(args)) then
           return {port = a.first(args)}
         else
           return {host = a.first(args), port = a.second(args)}
         end
       end
-      return client.call("connect", _2_(...))
+      return client.call("connect", _3_(...))
     end
     v_0_0 = connect_command0
     _0_["connect-command"] = v_0_0

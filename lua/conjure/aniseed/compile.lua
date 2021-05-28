@@ -17,13 +17,17 @@ do
   do end (package.loaded)[name_0_] = module_0_
   _0_ = module_0_
 end
-local autoload = (require("conjure.aniseed.autoload")).autoload
+local autoload
 local function _1_(...)
+  return (require("conjure.aniseed.autoload")).autoload(...)
+end
+autoload = _1_
+local function _2_(...)
   local ok_3f_0_, val_0_ = nil, nil
-  local function _1_()
+  local function _2_()
     return {autoload("conjure.aniseed.core"), autoload("conjure.aniseed.fennel"), autoload("conjure.aniseed.fs"), autoload("conjure.aniseed.nvim")}
   end
-  ok_3f_0_, val_0_ = pcall(_1_)
+  ok_3f_0_, val_0_ = pcall(_2_)
   if ok_3f_0_ then
     _0_["aniseed/local-fns"] = {autoload = {a = "conjure.aniseed.core", fennel = "conjure.aniseed.fennel", fs = "conjure.aniseed.fs", nvim = "conjure.aniseed.nvim"}}
     return val_0_
@@ -31,7 +35,7 @@ local function _1_(...)
     return print(val_0_)
   end
 end
-local _local_0_ = _1_(...)
+local _local_0_ = _2_(...)
 local a = _local_0_[1]
 local fennel = _local_0_[2]
 local fs = _local_0_[3]
@@ -48,20 +52,20 @@ do
       local macros_module = "conjure.aniseed.macros"
       local filename
       do
-        local _2_ = a.get(opts, "filename")
-        if _2_ then
-          filename = string.gsub(_2_, (nvim.fn.getcwd() .. "/"), "")
+        local _3_ = a.get(opts, "filename")
+        if _3_ then
+          filename = string.gsub(_3_, (nvim.fn.getcwd() .. "/"), "")
         else
-          filename = _2_
+          filename = _3_
         end
       end
-      local _3_
+      local _4_
       if filename then
-        _3_ = ("\"" .. filename .. "\"")
+        _4_ = ("\"" .. filename .. "\"")
       else
-        _3_ = "nil"
+        _4_ = "nil"
       end
-      return ("(local *file* " .. _3_ .. ")" .. "(require-macros \"" .. macros_module .. "\")\n" .. code)
+      return ("(local *file* " .. _4_ .. ")" .. "(require-macros \"" .. macros_module .. "\")\n" .. code)
     end
     v_0_0 = macros_prefix0
     _0_["macros-prefix"] = v_0_0
@@ -78,10 +82,10 @@ do
     local v_0_0
     local function str0(code, opts)
       local fnl = fennel.impl()
-      local function _2_()
+      local function _3_()
         return fnl.compileString(macros_prefix(code, opts), a.merge({allowedGlobals = false}, opts))
       end
-      return xpcall(_2_, fnl.traceback)
+      return xpcall(_3_, fnl.traceback)
     end
     v_0_0 = str0
     _0_["str"] = v_0_0
@@ -98,12 +102,12 @@ do
     local v_0_0
     local function file0(src, dest)
       local code = a.slurp(src)
-      local _2_, _3_ = str(code, {filename = src})
-      if ((_2_ == false) and (nil ~= _3_)) then
-        local err = _3_
+      local _3_, _4_ = str(code, {filename = src})
+      if ((_3_ == false) and (nil ~= _4_)) then
+        local err = _4_
         return nvim.err_writeln(err)
-      elseif ((_2_ == true) and (nil ~= _3_)) then
-        local result = _3_
+      elseif ((_3_ == true) and (nil ~= _4_)) then
+        local result = _4_
         fs.mkdirp(fs.basename(dest))
         return a.spit(dest, result)
       end

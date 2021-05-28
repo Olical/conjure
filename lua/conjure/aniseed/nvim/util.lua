@@ -17,13 +17,17 @@ do
   do end (package.loaded)[name_0_] = module_0_
   _0_ = module_0_
 end
-local autoload = (require("conjure.aniseed.autoload")).autoload
+local autoload
 local function _1_(...)
+  return (require("conjure.aniseed.autoload")).autoload(...)
+end
+autoload = _1_
+local function _2_(...)
   local ok_3f_0_, val_0_ = nil, nil
-  local function _1_()
+  local function _2_()
     return {autoload("conjure.aniseed.nvim")}
   end
-  ok_3f_0_, val_0_ = pcall(_1_)
+  ok_3f_0_, val_0_ = pcall(_2_)
   if ok_3f_0_ then
     _0_["aniseed/local-fns"] = {autoload = {nvim = "conjure.aniseed.nvim"}}
     return val_0_
@@ -31,7 +35,7 @@ local function _1_(...)
     return print(val_0_)
   end
 end
-local _local_0_ = _1_(...)
+local _local_0_ = _2_(...)
 local nvim = _local_0_[1]
 local _2amodule_2a = _0_
 local _2amodule_name_2a = "conjure.aniseed.nvim.util"
@@ -61,25 +65,25 @@ do
       local _let_0_ = (opts or {})
       local range = _let_0_["range"]
       local _return = _let_0_["return"]
-      local _2_
+      local _3_
       if range then
-        _2_ = " range"
+        _3_ = " range"
       else
-        _2_ = ""
+        _3_ = ""
       end
-      local _4_
+      local _5_
       if (_return ~= false) then
-        _4_ = "return"
+        _5_ = "return"
       else
-        _4_ = "call"
+        _5_ = "call"
       end
-      local _6_
+      local _7_
       if range then
-        _6_ = "\" . a:firstline . \", \" . a:lastline . \", "
+        _7_ = "\" . a:firstline . \", \" . a:lastline . \", "
       else
-        _6_ = ""
+        _7_ = ""
       end
-      return nvim.ex.function_((viml_name .. "(...)" .. _2_ .. "\n          " .. _4_ .. " luaeval(\"require('" .. mod .. "')['" .. lua_name .. "'](" .. _6_ .. "unpack(_A))\", a:000)\n          endfunction"))
+      return nvim.ex.function_((viml_name .. "(...)" .. _3_ .. "\n          " .. _5_ .. " luaeval(\"require('" .. mod .. "')['" .. lua_name .. "'](" .. _7_ .. "unpack(_A))\", a:000)\n          endfunction"))
     end
     v_0_0 = fn_bridge0
     _0_["fn-bridge"] = v_0_0

@@ -17,13 +17,17 @@ do
   do end (package.loaded)[name_0_] = module_0_
   _0_ = module_0_
 end
-local autoload = (require("conjure.aniseed.autoload")).autoload
+local autoload
 local function _1_(...)
+  return (require("conjure.aniseed.autoload")).autoload(...)
+end
+autoload = _1_
+local function _2_(...)
   local ok_3f_0_, val_0_ = nil, nil
-  local function _1_()
+  local function _2_()
     return {autoload("conjure.aniseed.core"), autoload("conjure.client"), autoload("conjure.config"), autoload("conjure.log"), autoload("conjure.mapping"), autoload("conjure.aniseed.nvim"), autoload("conjure.remote.stdio"), autoload("conjure.aniseed.string")}
   end
-  ok_3f_0_, val_0_ = pcall(_1_)
+  ok_3f_0_, val_0_ = pcall(_2_)
   if ok_3f_0_ then
     _0_["aniseed/local-fns"] = {["require-macros"] = {["conjure.macros"] = true}, autoload = {a = "conjure.aniseed.core", client = "conjure.client", config = "conjure.config", log = "conjure.log", mapping = "conjure.mapping", nvim = "conjure.aniseed.nvim", stdio = "conjure.remote.stdio", str = "conjure.aniseed.string"}}
     return val_0_
@@ -31,7 +35,7 @@ local function _1_(...)
     return print(val_0_)
   end
 end
-local _local_0_ = _1_(...)
+local _local_0_ = _2_(...)
 local a = _local_0_[1]
 local client = _local_0_[2]
 local config = _local_0_[3]
@@ -54,10 +58,10 @@ end
 local state
 do
   local v_0_
-  local function _2_()
+  local function _3_()
     return {repl = nil}
   end
-  v_0_ = (((_0_)["aniseed/locals"]).state or client["new-state"](_2_))
+  v_0_ = ((_0_)["aniseed/locals"].state or client["new-state"](_3_))
   local t_0_ = (_0_)["aniseed/locals"]
   t_0_["state"] = v_0_
   state = v_0_
@@ -108,10 +112,10 @@ do
   do
     local v_0_0
     local function unbatch0(msgs)
-      local function _2_(_241)
+      local function _3_(_241)
         return (a.get(_241, "out") or a.get(_241, "err"))
       end
-      return {out = str.join("", a.map(_2_, msgs))}
+      return {out = str.join("", a.map(_3_, msgs))}
     end
     v_0_0 = unbatch0
     _0_["unbatch"] = v_0_0
@@ -127,14 +131,14 @@ do
   do
     local v_0_0
     local function format_msg0(msg)
-      local function _2_(_241)
+      local function _3_(_241)
         if string.match(_241, "^;Value: ") then
           return string.gsub(_241, "^;Value: ", "")
         else
           return (comment_prefix .. "(out) " .. _241)
         end
       end
-      return a.map(_2_, str.split(string.gsub(string.gsub(a.get(msg, "out"), "^%s*", ""), "%s+%d+%s*$", ""), "\n"))
+      return a.map(_3_, str.split(string.gsub(string.gsub(a.get(msg, "out"), "^%s*", ""), "%s+%d+%s*$", ""), "\n"))
     end
     v_0_0 = format_msg0
     _0_["format-msg"] = v_0_0
@@ -150,15 +154,15 @@ do
   do
     local v_0_0
     local function eval_str0(opts)
-      local function _2_(repl)
-        local function _3_(msgs)
+      local function _3_(repl)
+        local function _4_(msgs)
           local msgs0 = format_msg(unbatch(msgs))
           opts["on-result"](a.last(msgs0))
           return log.append(msgs0)
         end
-        return repl.send((opts.code .. "\n"), _3_, {["batch?"] = true})
+        return repl.send((opts.code .. "\n"), _4_, {["batch?"] = true})
       end
-      return with_repl_or_warn(_2_)
+      return with_repl_or_warn(_3_)
     end
     v_0_0 = eval_str0
     _0_["eval-str"] = v_0_0
@@ -225,10 +229,10 @@ do
       if state("repl") then
         return log.append({(comment_prefix .. "Can't start, REPL is already running."), (comment_prefix .. "Stop the REPL with " .. config["get-in"]({"mapping", "prefix"}) .. cfg({"mapping", "stop"}))}, {["break?"] = true})
       else
-        local function _2_(err)
+        local function _3_(err)
           return display_repl_status(err)
         end
-        local function _3_(code, signal)
+        local function _4_(code, signal)
           if (("number" == type(code)) and (code > 0)) then
             log.append({(comment_prefix .. "process exited with code " .. code)})
           end
@@ -237,13 +241,13 @@ do
           end
           return stop()
         end
-        local function _4_(msg)
+        local function _5_(msg)
           return log.append(format_msg(msg))
         end
-        local function _5_()
+        local function _6_()
           return display_repl_status("started")
         end
-        return a.assoc(state(), "repl", stdio.start({["on-error"] = _2_, ["on-exit"] = _3_, ["on-stray-output"] = _4_, ["on-success"] = _5_, ["prompt-pattern"] = cfg({"prompt_pattern"}), cmd = cfg({"command"})}))
+        return a.assoc(state(), "repl", stdio.start({["on-error"] = _3_, ["on-exit"] = _4_, ["on-stray-output"] = _5_, ["on-success"] = _6_, ["prompt-pattern"] = cfg({"prompt_pattern"}), cmd = cfg({"command"})}))
       end
     end
     v_0_0 = start0

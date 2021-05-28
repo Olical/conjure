@@ -17,13 +17,17 @@ do
   do end (package.loaded)[name_0_] = module_0_
   _0_ = module_0_
 end
-local autoload = (require("conjure.aniseed.autoload")).autoload
+local autoload
 local function _1_(...)
+  return (require("conjure.aniseed.autoload")).autoload(...)
+end
+autoload = _1_
+local function _2_(...)
   local ok_3f_0_, val_0_ = nil, nil
-  local function _1_()
+  local function _2_()
     return {autoload("conjure.aniseed.core"), autoload("conjure.fs"), autoload("conjure.aniseed.nvim")}
   end
-  ok_3f_0_, val_0_ = pcall(_1_)
+  ok_3f_0_, val_0_ = pcall(_2_)
   if ok_3f_0_ then
     _0_["aniseed/local-fns"] = {autoload = {a = "conjure.aniseed.core", fs = "conjure.fs", nvim = "conjure.aniseed.nvim"}}
     return val_0_
@@ -31,7 +35,7 @@ local function _1_(...)
     return print(val_0_)
   end
 end
-local _local_0_ = _1_(...)
+local _local_0_ = _2_(...)
 local a = _local_0_[1]
 local fs = _local_0_[2]
 local nvim = _local_0_[3]
@@ -42,10 +46,10 @@ local percent_fn
 do
   local v_0_
   local function percent_fn0(total_fn)
-    local function _2_(pc)
+    local function _3_(pc)
       return math.floor(((total_fn() / 100) * (pc * 100)))
     end
-    return _2_
+    return _3_
   end
   v_0_ = percent_fn0
   local t_0_ = (_0_)["aniseed/locals"]
@@ -149,13 +153,13 @@ do
       if a["string?"](path_or_win) then
         nvim.ex.edit(fs["localise-path"](path_or_win))
       end
-      local _3_
+      local _4_
       if ("number" == type(path_or_win)) then
-        _3_ = path_or_win
+        _4_ = path_or_win
       else
-        _3_ = 0
+        _4_ = 0
       end
-      return nvim.win_set_cursor(_3_, {line, a.dec(column)})
+      return nvim.win_set_cursor(_4_, {line, a.dec(column)})
     end
     v_0_0 = go_to0
     _0_["go-to"] = v_0_0
@@ -203,10 +207,10 @@ do
   do
     local v_0_0
     local function has_filetype_3f0(ft)
-      local function _2_(_241)
+      local function _3_(_241)
         return (ft == _241)
       end
-      return a.some(_2_, nvim.fn.getcompletion(ft, "filetype"))
+      return a.some(_3_, nvim.fn.getcompletion(ft, "filetype"))
     end
     v_0_0 = has_filetype_3f0
     _0_["has-filetype?"] = v_0_0
