@@ -111,3 +111,15 @@
               :content "(inc\n ;)\n 5)"}
              (extract.form {:root? true})
              "skips the comment paren with root form"))))
+
+(deftest escaped-parens-in-forms
+  ;; https://github.com/Olical/conjure/issues/209
+  (buffer.with-buf
+    ["(str \\))"]
+    (fn [at]
+      (at [1 0])
+      (t.pr= {:range {:start [1 0]
+                      :end [1 7]}
+              :content "(str \\))"}
+             (extract.form {})
+             "escaped parens are skipped over"))))

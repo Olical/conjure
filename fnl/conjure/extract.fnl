@@ -35,13 +35,22 @@
   (let [[row col] (nvim.win_get_cursor 0)
         stack (nvim.fn.synstack row (a.inc col))
         stack-size (length stack)]
-    (if (= :number
-           (type
-             (and (> stack-size 0)
-                  (let [name (nvim.fn.synIDattr (. stack stack-size) :name)]
-                    (or (name:find "Comment$")
-                        (name:find "String$")
-                        (name:find "Regexp%?$"))))))
+    (if (or
+          ;; Are we in a comment, string or regular expression?
+          (= :number
+             (type
+               (and (> stack-size 0)
+                    (let [name (nvim.fn.synIDattr (. stack stack-size) :name)]
+                      (or (name:find "Comment$")
+                          (name:find "String$")
+                          (name:find "Regexp%?$"))))))
+
+          ;; Is the character escaped?
+          ;; https://github.com/Olical/conjure/issues/209
+          (= "\\" (-> (nvim.buf_get_lines
+                        (nvim.win_get_buf 0) (- row 1) row false)
+                      (a.first)
+                      (string.sub col col))))
       1
       0)))
 

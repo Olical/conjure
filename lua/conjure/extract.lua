@@ -113,7 +113,7 @@ do
         local name = nvim.fn.synIDattr(stack[stack_size], "name")
         return (name:find("Comment$") or name:find("String$") or name:find("Regexp%?$"))
       end
-      if ("number" == type(((stack_size > 0) and _3_()))) then
+      if (("number" == type(((stack_size > 0) and _3_()))) or ("\\" == string.sub(a.first(nvim.buf_get_lines(nvim.win_get_buf(0), (row - 1), row, false)), col, col))) then
         return 1
       else
         return 0
