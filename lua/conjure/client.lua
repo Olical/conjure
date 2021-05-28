@@ -13,8 +13,8 @@ do
   end
   module_0_["aniseed/module"] = name_0_
   module_0_["aniseed/locals"] = ((module_0_)["aniseed/locals"] or {})
-  module_0_["aniseed/local-fns"] = ((module_0_)["aniseed/local-fns"] or {})
-  package.loaded[name_0_] = module_0_
+  do end (module_0_)["aniseed/local-fns"] = ((module_0_)["aniseed/local-fns"] or {})
+  do end (package.loaded)[name_0_] = module_0_
   _0_ = module_0_
 end
 local autoload = (require("conjure.aniseed.autoload")).autoload
@@ -50,7 +50,7 @@ do
       return "default"
     end
     v_0_0 = ((_0_)["state-key"] or dyn.new(_2_))
-    _0_["state-key"] = v_0_0
+    do end (_0_)["state-key"] = v_0_0
     v_0_ = v_0_0
   end
   local t_0_ = (_0_)["aniseed/locals"]

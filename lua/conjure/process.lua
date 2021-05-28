@@ -13,8 +13,8 @@ do
   end
   module_0_["aniseed/module"] = name_0_
   module_0_["aniseed/locals"] = ((module_0_)["aniseed/locals"] or {})
-  module_0_["aniseed/local-fns"] = ((module_0_)["aniseed/local-fns"] or {})
-  package.loaded[name_0_] = module_0_
+  do end (module_0_)["aniseed/local-fns"] = ((module_0_)["aniseed/local-fns"] or {})
+  do end (package.loaded)[name_0_] = module_0_
   _0_ = module_0_
 end
 local autoload = (require("conjure.aniseed.autoload")).autoload
@@ -90,7 +90,7 @@ do
       local proc = state.jobs[job_id]
       if running_3f(proc) then
         a.assoc(proc, "running?", false)
-        state.jobs[proc["job-id"]] = nil
+        do end (state.jobs)[proc["job-id"]] = nil
         pcall(nvim.buf_delete, proc.buf, {force = true})
         local on_exit1 = a["get-in"](proc, {"opts", "on-exit"})
         if on_exit1 then
@@ -131,7 +131,7 @@ do
         end
       end
       nvim.win_set_buf(win, original_buf)
-      state.jobs[job_id] = proc
+      do end (state.jobs)[job_id] = proc
       return a.assoc(proc, "job-id", job_id)
     end
     v_0_0 = execute0

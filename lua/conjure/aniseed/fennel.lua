@@ -13,8 +13,8 @@ do
   end
   module_0_["aniseed/module"] = name_0_
   module_0_["aniseed/locals"] = ((module_0_)["aniseed/locals"] or {})
-  module_0_["aniseed/local-fns"] = ((module_0_)["aniseed/local-fns"] or {})
-  package.loaded[name_0_] = module_0_
+  do end (module_0_)["aniseed/local-fns"] = ((module_0_)["aniseed/local-fns"] or {})
+  do end (package.loaded)[name_0_] = module_0_
   _0_ = module_0_
 end
 local autoload = (require("conjure.aniseed.autoload")).autoload
@@ -46,7 +46,7 @@ do
       local rtp = nvim.o.runtimepath
       local fnl_path = (rtp:gsub(",", (fnl_suffix .. ";")) .. fnl_suffix)
       local lua_path = fnl_path:gsub("/fnl/", "/lua/")
-      compiler["path"] = (fnl_path .. ";" .. lua_path)
+      do end (compiler)["path"] = (fnl_path .. ";" .. lua_path)
       return nil
     end
     v_0_0 = sync_rtp0
@@ -92,7 +92,7 @@ do
     local v_0_0
     local function add_path0(path)
       local fnl = impl()
-      fnl["path"] = (fnl.path .. ";" .. path)
+      do end (fnl)["path"] = (fnl.path .. ";" .. path)
       return nil
     end
     v_0_0 = add_path0

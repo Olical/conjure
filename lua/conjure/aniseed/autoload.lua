@@ -13,8 +13,8 @@ do
   end
   module_0_["aniseed/module"] = name_0_
   module_0_["aniseed/locals"] = ((module_0_)["aniseed/locals"] or {})
-  module_0_["aniseed/local-fns"] = ((module_0_)["aniseed/local-fns"] or {})
-  package.loaded[name_0_] = module_0_
+  do end (module_0_)["aniseed/local-fns"] = ((module_0_)["aniseed/local-fns"] or {})
+  do end (package.loaded)[name_0_] = module_0_
   _0_ = module_0_
 end
 local autoload = (require("conjure.aniseed.autoload")).autoload
@@ -47,7 +47,7 @@ do
           return res["aniseed/autoload-module"]
         else
           local m = require(name)
-          res["aniseed/autoload-module"] = m
+          do end (res)["aniseed/autoload-module"] = m
           return m
         end
       end

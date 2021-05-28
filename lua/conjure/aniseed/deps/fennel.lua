@@ -761,8 +761,8 @@ package.preload["conjure.aniseed.fennel.specials"] = package.preload["conjure.an
       end
     end
   end
-  local function doc_special(name, arglist, docstring)
-    compiler.metadata[SPECIALS[name]] = {["fnl/arglist"] = arglist, ["fnl/docstring"] = docstring}
+  local function doc_special(name, arglist, docstring, body_form_3f)
+    compiler.metadata[SPECIALS[name]] = {["fnl/arglist"] = arglist, ["fnl/body-form?"] = body_form_3f, ["fnl/docstring"] = docstring}
     return nil
   end
   local function compile_do(ast, scope, parent, start)
@@ -824,7 +824,7 @@ package.preload["conjure.aniseed.fennel.specials"] = package.preload["conjure.an
       return compile_body(nil, true, utils.expr((fname .. "(" .. fargs .. ")"), "statement"))
     end
   end
-  doc_special("do", {"..."}, "Evaluate multiple forms; return last value.")
+  doc_special("do", {"..."}, "Evaluate multiple forms; return last value.", true)
   SPECIALS.values = function(ast, scope, parent)
     local len = #ast
     local exprs = {}
@@ -962,7 +962,7 @@ package.preload["conjure.aniseed.fennel.specials"] = package.preload["conjure.an
       return compile_anonymous_fn(ast, f_scope, f_chunk, parent, index0, arg_name_list, arg_list, docstring, scope)
     end
   end
-  doc_special("fn", {"name?", "args", "docstring?", "..."}, "Function syntax. May optionally include a name and docstring.\nIf a name is provided, the function will be bound in the current scope.\nWhen called with the wrong number of args, excess args will be discarded\nand lacking args will be nil, use lambda for arity-checked functions.")
+  doc_special("fn", {"name?", "args", "docstring?", "..."}, "Function syntax. May optionally include a name and docstring.\nIf a name is provided, the function will be bound in the current scope.\nWhen called with the wrong number of args, excess args will be discarded\nand lacking args will be nil, use lambda for arity-checked functions.", true)
   SPECIALS.lua = function(ast, _, parent)
     compiler.assert(((#ast == 2) or (#ast == 3)), "expected 1 or 2 arguments", ast)
     if (ast[2] ~= nil) then
@@ -1061,7 +1061,24 @@ package.preload["conjure.aniseed.fennel.specials"] = package.preload["conjure.an
     end
     return SPECIALS["do"](ast, scope, parent, opts, 3, sub_chunk, sub_scope, pre_syms)
   end
-  doc_special("let", {"[name1 val1 ... nameN valN]", "..."}, "Introduces a new scope in which a given set of local bindings are used.")
+  doc_special("let", {"[name1 val1 ... nameN valN]", "..."}, "Introduces a new scope in which a given set of local bindings are used.", true)
+  local function get_prev_line(parent)
+    if ("table" == type(parent)) then
+      return get_prev_line((parent.leaf or parent[#parent]))
+    else
+      return (parent or "")
+    end
+  end
+  local function disambiguate_3f(rootstr, parent)
+    local function _1_()
+      local _0_0 = get_prev_line(parent)
+      if (nil ~= _0_0) then
+        local prev_line = _0_0
+        return prev_line:match("%)$")
+      end
+    end
+    return (rootstr:match("^{") or _1_())
+  end
   SPECIALS.tset = function(ast, scope, parent)
     compiler.assert((#ast > 3), "expected table, key, and value arguments", ast)
     local root = compiler.compile1(ast[2], scope, parent, {nval = 1})[1]
@@ -1074,12 +1091,12 @@ package.preload["conjure.aniseed.fennel.specials"] = package.preload["conjure.an
     local value = compiler.compile1(ast[#ast], scope, parent, {nval = 1})[1]
     local rootstr = tostring(root)
     local fmtstr = nil
-    if rootstr:match("^{") then
+    if disambiguate_3f(rootstr, parent) then
       fmtstr = "do end (%s)[%s] = %s"
     else
       fmtstr = "%s[%s] = %s"
     end
-    return compiler.emit(parent, fmtstr:format(tostring(root), table.concat(keys, "]["), tostring(value)), ast)
+    return compiler.emit(parent, fmtstr:format(rootstr, table.concat(keys, "]["), tostring(value)), ast)
   end
   doc_special("tset", {"tbl", "key1", "...", "keyN", "val"}, "Set the value of a table field. Can take additional keys to set\nnested values, but all parents must contain an existing table.")
   local function calculate_target(scope, opts)
@@ -1231,7 +1248,7 @@ package.preload["conjure.aniseed.fennel.specials"] = package.preload["conjure.an
     compiler.emit(parent, chunk, ast)
     return compiler.emit(parent, "end", ast)
   end
-  doc_special("each", {"[key value (iterator)]", "..."}, "Runs the body once for each set of values provided by the given iterator.\nMost commonly used with ipairs for sequential tables or pairs for  undefined\norder, but can be used with any iterator.")
+  doc_special("each", {"[key value (iterator)]", "..."}, "Runs the body once for each set of values provided by the given iterator.\nMost commonly used with ipairs for sequential tables or pairs for  undefined\norder, but can be used with any iterator.", true)
   local function while_2a(ast, scope, parent)
     local len1 = #parent
     local condition = compiler.compile1(ast[2], scope, parent, {nval = 1})[1]
@@ -1252,7 +1269,7 @@ package.preload["conjure.aniseed.fennel.specials"] = package.preload["conjure.an
     return compiler.emit(parent, "end", ast)
   end
   SPECIALS["while"] = while_2a
-  doc_special("while", {"condition", "..."}, "The classic while loop. Evaluates body until a condition is non-truthy.")
+  doc_special("while", {"condition", "..."}, "The classic while loop. Evaluates body until a condition is non-truthy.", true)
   local function for_2a(ast, scope, parent)
     local ranges = compiler.assert(utils["table?"](ast[2]), "expected binding table", ast)
     local until_condition = remove_until_condition(ast[2])
@@ -1272,7 +1289,7 @@ package.preload["conjure.aniseed.fennel.specials"] = package.preload["conjure.an
     return compiler.emit(parent, "end", ast)
   end
   SPECIALS["for"] = for_2a
-  doc_special("for", {"[index start stop step?]", "..."}, "Numeric loop construct.\nEvaluates body once for each value between start and stop (inclusive).")
+  doc_special("for", {"[index start stop step?]", "..."}, "Numeric loop construct.\nEvaluates body once for each value between start and stop (inclusive).", true)
   local function native_method_call(ast, _scope, _parent, target, args)
     local _0_ = ast
     local _ = _0_[1]
@@ -1334,7 +1351,7 @@ package.preload["conjure.aniseed.fennel.specials"] = package.preload["conjure.an
     end
     return compiler.emit(parent, ("-- " .. table.concat(els, " ")), ast)
   end
-  doc_special("comment", {"..."}, "Comment which will be emitted in Lua output.")
+  doc_special("comment", {"..."}, "Comment which will be emitted in Lua output.", true)
   local function hashfn_max_used(f_scope, i, max)
     local max0 = nil
     if f_scope.symmeta[("$" .. i)].used then
@@ -1860,7 +1877,7 @@ package.preload["conjure.aniseed.fennel.specials"] = package.preload["conjure.an
     ast[1] = old_first
     return val
   end
-  doc_special("eval-compiler", {"..."}, "Evaluate the body at compile-time. Use the macro system instead if possible.")
+  doc_special("eval-compiler", {"..."}, "Evaluate the body at compile-time. Use the macro system instead if possible.", true)
   return {["current-global-names"] = current_global_names, ["load-code"] = load_code, ["macro-loaded"] = macro_loaded, ["macro-searchers"] = macro_searchers, ["make-compiler-env"] = make_compiler_env, ["make-searcher"] = make_searcher, ["search-module"] = search_module, ["wrap-env"] = wrap_env, doc = doc_2a}
 end
 package.preload["conjure.aniseed.fennel.compiler"] = package.preload["conjure.aniseed.fennel.compiler"] or function(...)
@@ -2642,7 +2659,9 @@ package.preload["conjure.aniseed.fennel.compiler"] = package.preload["conjure.an
       compile_top_target(left_names)
       if declaration then
         for _, sym in ipairs(left) do
-          scope.symmeta[utils.deref(sym)] = {var = isvar}
+          if utils["sym?"](sym) then
+            scope.symmeta[utils.deref(sym)] = {var = isvar}
+          end
         end
       end
       for _, pair in utils.stablepairs(tables) do
@@ -3271,8 +3290,13 @@ package.preload["conjure.aniseed.fennel.parser"] = package.preload["conjure.anis
         table.remove(stack)
         local raw = string.char(unpack(chars))
         local formatted = raw:gsub("[\7-\13]", escape_char)
-        local load_fn = (rawget(_G, "loadstring") or load)(("return " .. formatted))
-        return dispatch(load_fn())
+        local _1_0 = (rawget(_G, "loadstring") or load)(("return " .. formatted))
+        if (nil ~= _1_0) then
+          local load_fn = _1_0
+          return dispatch(load_fn())
+        elseif (_1_0 == nil) then
+          return parse_error(("Invalid string: " .. raw))
+        end
       end
       local function parse_prefix(b)
         table.insert(stack, {bytestart = byteindex, filename = filename, line = line, prefix = prefixes[b]})
@@ -3465,7 +3489,7 @@ package.preload["conjure.aniseed.fennel.utils"] = package.preload["conjure.anise
     if (_0_0 == x) then
       return true
     elseif (_0_0 == nil) then
-      return false
+      return nil
     else
       local _ = _0_0
       return member_3f(x, tbl, ((n or 1) + 1))
@@ -3715,7 +3739,32 @@ local function dofile_2a(filename, options, ...)
   opts.filename = filename
   return eval(source, opts, ...)
 end
-local mod = {["comment?"] = utils["comment?"], ["compile-stream"] = compiler["compile-stream"], ["compile-string"] = compiler["compile-string"], ["list?"] = utils["list?"], ["load-code"] = specials["load-code"], ["macro-loaded"] = specials["macro-loaded"], ["macro-searchers"] = specials["macro-searchers"], ["make-searcher"] = specials["make-searcher"], ["search-module"] = specials["search-module"], ["sequence?"] = utils["sequence?"], ["string-stream"] = parser["string-stream"], ["sym-char?"] = parser["sym-char?"], ["sym?"] = utils["sym?"], comment = utils.comment, compile = compiler.compile, compile1 = compiler.compile1, compileStream = compiler["compile-stream"], compileString = compiler["compile-string"], doc = specials.doc, dofile = dofile_2a, eval = eval, gensym = compiler.gensym, granulate = parser.granulate, list = utils.list, loadCode = specials["load-code"], macroLoaded = specials["macro-loaded"], makeSearcher = specials["make-searcher"], make_searcher = specials["make-searcher"], mangle = compiler["global-mangling"], metadata = compiler.metadata, parser = parser.parser, path = utils.path, repl = repl, scope = compiler["make-scope"], searchModule = specials["search-module"], searcher = specials["make-searcher"](), sequence = utils.sequence, stringStream = parser["string-stream"], sym = utils.sym, traceback = compiler.traceback, unmangle = compiler["global-unmangling"], varg = utils.varg, version = "0.9.2", view = view}
+local function syntax()
+  local body_3f = {"when", "with-open", "collect", "icollect", "lambda", "\206\187", "macro", "match"}
+  local binding_3f = {"collect", "icollect", "each", "for", "let", "with-open"}
+  local out = {}
+  for k, v in pairs(compiler.scopes.global.specials) do
+    local metadata = (compiler.metadata[v] or {})
+    out[k] = {["binding-form?"] = utils["member?"](binding_3f, k), ["body-form?"] = metadata["fnl/body-form?"], ["special?"] = true}
+  end
+  for k, v in pairs(compiler.scopes.global.macros) do
+    out[k] = {["binding-form?"] = utils["member?"](binding_3f, k), ["body-form?"] = utils["member?"](body_3f, k), ["macro?"] = true}
+  end
+  for k, v in pairs(_G) do
+    local _0_0 = type(v)
+    if (_0_0 == "function") then
+      out[k] = {["global?"] = true}
+    elseif (_0_0 == "table") then
+      for k2, v2 in pairs(v) do
+        if ("function" == type(v2)) then
+          out[(k .. "." .. k2)] = {["function?"] = true}
+        end
+      end
+    end
+  end
+  return out
+end
+local mod = {["comment?"] = utils["comment?"], ["compile-stream"] = compiler["compile-stream"], ["compile-string"] = compiler["compile-string"], ["list?"] = utils["list?"], ["load-code"] = specials["load-code"], ["macro-loaded"] = specials["macro-loaded"], ["macro-searchers"] = specials["macro-searchers"], ["make-searcher"] = specials["make-searcher"], ["search-module"] = specials["search-module"], ["sequence?"] = utils["sequence?"], ["string-stream"] = parser["string-stream"], ["sym-char?"] = parser["sym-char?"], ["sym?"] = utils["sym?"], comment = utils.comment, compile = compiler.compile, compile1 = compiler.compile1, compileStream = compiler["compile-stream"], compileString = compiler["compile-string"], doc = specials.doc, dofile = dofile_2a, eval = eval, gensym = compiler.gensym, granulate = parser.granulate, list = utils.list, loadCode = specials["load-code"], macroLoaded = specials["macro-loaded"], makeSearcher = specials["make-searcher"], make_searcher = specials["make-searcher"], mangle = compiler["global-mangling"], metadata = compiler.metadata, parser = parser.parser, path = utils.path, repl = repl, scope = compiler["make-scope"], searchModule = specials["search-module"], searcher = specials["make-searcher"](), sequence = utils.sequence, stringStream = parser["string-stream"], sym = utils.sym, syntax = syntax, traceback = compiler.traceback, unmangle = compiler["global-unmangling"], varg = utils.varg, version = "0.9.3-dev", view = view}
 utils["fennel-module"] = mod
 do
   local builtin_macros = [===[;; This module contains all the built-in Fennel macros. Unlike all the other
