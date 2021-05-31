@@ -45,7 +45,7 @@ local _2amodule_name_2a = "conjure.aniseed.env"
 do local _ = ({nil, _0_, nil, {{}, nil, nil, nil}})[2] end
 local config_dir
 do
-  local v_0_ = nvim.fn.stdpath("config")
+  local v_0_ = string.gsub(nvim.fn.stdpath("config"), "\\", "/")
   local t_0_ = (_0_)["aniseed/locals"]
   t_0_["config-dir"] = v_0_
   config_dir = v_0_
