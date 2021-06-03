@@ -42,7 +42,7 @@
     (append
       (a.concat
         ["(module user.conjure-school"
-         "  {autoload {school conjure.school}})"
+         "  {require {school conjure.school}})"
          ""
          ";; Welcome to Conjure school!"
          ";; Grab yourself a nice beverage and let's get evaluating. I hope you enjoy!"
