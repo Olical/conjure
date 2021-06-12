@@ -77,6 +77,10 @@
         (Thread/sleep 500)
         (println "BAR")))
 
+  ;; Evaluating a string containing a null throws in Conjure.
+  ;; https://github.com/Olical/conjure/issues/212
+  (do "\0")
+
   (tap> :foo)
 
   (run!
