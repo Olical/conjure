@@ -108,6 +108,10 @@
       (next-in-queue)
       nil)
 
+    (fn send-signal [signal]
+      (uv.process_kill repl.handle signal)
+      nil)
+
     (let [{: cmd : args} (parse-cmd opts.cmd)
           (handle pid-or-err)
           (uv.spawn cmd {:stdio [stdin stdout stderr]
@@ -129,6 +133,7 @@
              :pid pid-or-err
              :send send
              :opts opts
+             :send-signal send-signal
              :destroy destroy}))
         (do
           (client.schedule #(opts.on-error pid-or-err))

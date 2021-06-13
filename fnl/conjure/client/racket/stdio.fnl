@@ -15,7 +15,8 @@
    {:racket
     {:stdio
      {:mapping {:start "cs"
-                :stop "cS"}
+                :stop "cS"
+                :interrupt "ei"}
       :command "racket"
       :prompt_pattern "\n?[\"%w%-./_]*> "}}}})
 
@@ -64,6 +65,15 @@
           (opts.on-result (str.join "\n" (format-message (a.last msgs))))
           (a.run! display-result msgs))
         {:batch? true}))))
+
+(defn interrupt []
+  (with-repl-or-warn
+    (fn [repl]
+      (log.append ["; Sending interrupt signal."] {:break? true})
+
+      ;; SIGINT C-c
+      ;; https://github.com/Olical/conjure/issues/213
+      (repl.send-signal 2))))
 
 (defn eval-file [opts]
   (eval-str (a.assoc opts :code (.. ",require-reloadable " opts.file-path))))
@@ -135,7 +145,8 @@
 
 (defn on-filetype []
   (mapping.buf :n :RktStart (cfg [:mapping :start]) *module-name* :start)
-  (mapping.buf :n :RktStop (cfg [:mapping :stop]) *module-name* :stop))
+  (mapping.buf :n :RktStop (cfg [:mapping :stop]) *module-name* :stop)
+  (mapping.buf :n :RktInterrupt (cfg [:mapping :interrupt]) *module-name* :interrupt))
 
 (defn on-exit []
   (stop))

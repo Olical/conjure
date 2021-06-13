@@ -205,6 +205,10 @@ do
         next_in_queue()
         return nil
       end
+      local function send_signal(signal)
+        uv.process_kill(repl.handle, signal)
+        return nil
+      end
       local _let_0_ = parse_cmd(opts.cmd)
       local args = _let_0_["args"]
       local cmd = _let_0_["cmd"]
@@ -216,7 +220,7 @@ do
           return opts["on-success"]()
         end
         client.schedule(_3_)
-        return a["merge!"](repl, {destroy = destroy, handle = handle, opts = opts, pid = pid_or_err, send = send})
+        return a["merge!"](repl, {["send-signal"] = send_signal, destroy = destroy, handle = handle, opts = opts, pid = pid_or_err, send = send})
       else
         local function _3_()
           return opts["on-error"](pid_or_err)

@@ -37,6 +37,9 @@ options relevant to these mappings.
 
 <localleader>cS          Stop any existing Racket REPL.
 
+<localleader>ei          Send an interrupt signal to the REPL. Useful for
+                         hanging processes or unbalanced parenthesis.
+
 ==============================================================================
 CONFIGURATION                      *conjure-client-racket-stdio-configuration*
 
@@ -52,6 +55,12 @@ All configuration can be set as described in |conjure-configuration|.
 `g:conjure#client#racket#stdio#mapping#stop`
             Stop any existing Racket REPL.
             Default: `"cS"`
+
+                             *g:conjure#client#racket#stdio#mapping#interrupt*
+`g:conjure#client#racket#stdio#mapping#interrupt`
+            Send an interrupt signal to the REPL. Useful for hanging processes
+            or unbalanced parenthesis.
+            Default: `"ei"`
 
                                        *g:conjure#client#racket#stdio#command*
 `g:conjure#client#racket#stdio#command`

@@ -48,7 +48,7 @@ local text = _local_0_[9]
 local _2amodule_2a = _0_
 local _2amodule_name_2a = "conjure.client.racket.stdio"
 do local _ = ({nil, _0_, nil, {{nil}, nil, nil, nil}})[2] end
-config.merge({client = {racket = {stdio = {command = "racket", mapping = {start = "cs", stop = "cS"}, prompt_pattern = "\n?[\"%w%-./_]*> "}}}})
+config.merge({client = {racket = {stdio = {command = "racket", mapping = {interrupt = "ei", start = "cs", stop = "cS"}, prompt_pattern = "\n?[\"%w%-./_]*> "}}}})
 local cfg
 do
   local v_0_ = config["get-in-fn"]({"client", "racket", "stdio"})
@@ -188,6 +188,26 @@ do
   local t_0_ = (_0_)["aniseed/locals"]
   t_0_["eval-str"] = v_0_
   eval_str = v_0_
+end
+local interrupt
+do
+  local v_0_
+  do
+    local v_0_0
+    local function interrupt0()
+      local function _3_(repl)
+        log.append({"; Sending interrupt signal."}, {["break?"] = true})
+        return repl["send-signal"](2)
+      end
+      return with_repl_or_warn(_3_)
+    end
+    v_0_0 = interrupt0
+    _0_["interrupt"] = v_0_0
+    v_0_ = v_0_0
+  end
+  local t_0_ = (_0_)["aniseed/locals"]
+  t_0_["interrupt"] = v_0_
+  interrupt = v_0_
 end
 local eval_file
 do
@@ -349,7 +369,8 @@ do
     local v_0_0
     local function on_filetype0()
       mapping.buf("n", "RktStart", cfg({"mapping", "start"}), _2amodule_name_2a, "start")
-      return mapping.buf("n", "RktStop", cfg({"mapping", "stop"}), _2amodule_name_2a, "stop")
+      mapping.buf("n", "RktStop", cfg({"mapping", "stop"}), _2amodule_name_2a, "stop")
+      return mapping.buf("n", "RktInterrupt", cfg({"mapping", "interrupt"}), _2amodule_name_2a, "interrupt")
     end
     v_0_0 = on_filetype0
     _0_["on-filetype"] = v_0_0
