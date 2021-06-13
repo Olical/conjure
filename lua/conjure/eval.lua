@@ -117,7 +117,7 @@ do
     local line = a.dec(a.first(nvim.win_get_cursor(0)))
     local function _3_(f)
       local function _4_(result)
-        nvim.fn.setreg(config["get-in"]({"eval", "result_register"}), result)
+        nvim.fn.setreg(config["get-in"]({"eval", "result_register"}), string.gsub(result, "%z", ""))
         if config["get-in"]({"eval", "inline_results"}) then
           inline.display({buf = buf, line = line, text = ("=> " .. result)})
         end

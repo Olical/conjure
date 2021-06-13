@@ -63,7 +63,14 @@
       opts :on-result
       (fn [f]
         (fn [result]
-          (nvim.fn.setreg (config.get-in [:eval :result_register]) result)
+          (nvim.fn.setreg
+            (config.get-in [:eval :result_register])
+
+            ;; Workaround for https://github.com/Olical/conjure/issues/212
+            ;; The Lua -> VimL boundary does not like null bytes. The strings
+            ;; end up being tables as they cross the boundary!
+            (string.gsub result "%z" ""))
+
           (when (config.get-in [:eval :inline_results])
             (inline.display
               {:buf buf
