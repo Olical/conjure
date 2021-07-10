@@ -14,9 +14,12 @@
   (nvim.buf_get_name (nvim.fn.bufnr buf-name)))
 
 (defn upsert-hidden [buf-name new-buf-fn]
-  (let [buf (nvim.fn.bufnr buf-name)]
-    (if (= -1 buf)
-      (let [buf (nvim.fn.bufadd buf-name)]
+  (let [buf (nvim.fn.bufnr buf-name)
+        loaded? (nvim.buf_is_loaded buf)]
+    (if (or (= -1 buf) (not loaded?))
+      (let [buf (if loaded?
+                  buf
+                  (nvim.fn.bufadd buf-name))]
         (nvim.buf_set_option buf :buftype :nofile)
         (nvim.buf_set_option buf :bufhidden :hide)
         (nvim.buf_set_option buf :swapfile false)
