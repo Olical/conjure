@@ -147,7 +147,7 @@
           size {:width (editor.percent-width (config.get-in [:log :hud :width]))
                 :height (editor.percent-height (config.get-in [:log :hud :height]))}
           pos (hud-window-pos (config.get-in [:log :hud :anchor]) size)
-          border (or nvim.g.conjure#hud#border "single")
+          border (config.get-in [:log :hud :border])
           win-opts
           {:relative :editor
            :row pos.row

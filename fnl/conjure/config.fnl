@@ -111,6 +111,7 @@
           :enabled true
           :passive_close_delay 0
           :overlap_padding 0.1
+          :border :single
           :anchor :NE}
     :botright false
     :break_length 80
