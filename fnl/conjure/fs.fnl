@@ -9,6 +9,15 @@
     (when (and (a.string? v) (not (a.empty? v)))
       v)))
 
+(def path-sep
+  ;; https://github.com/nvim-lua/plenary.nvim/blob/8bae2c1fadc9ed5bfcfb5ecbd0c0c4d7d40cb974/lua/plenary/path.lua#L20-L31
+  (let [os (string.lower jit.os)]
+    (if (or (= :linux os)
+            (= :osx os)
+            (= :bsd os))
+      "/"
+      "\\")))
+
 (defn config-dir []
   "Return $XDG_CONFIG_HOME/conjure.
   Defaulting the config directory to $HOME/.config."
