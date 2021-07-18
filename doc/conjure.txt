@@ -536,6 +536,13 @@ Tip: Booleans in Vim Script are written as `v:true` and `v:false`.
             window width HUD at the bottom of the screen.
             Default: `"NE"`
 
+                                                    *g:conjure#log#hud#border*
+`g:conjure#log#hud#border`
+            Preferred border style for the HUD. Possible values are the same
+            as the `border` parameter in `:h nvim_open_win()`. Set this to
+            `"none"` if you don't want a border.
+            Default: `"single"`
+
                                                       *g:conjure#log#botright*
 `g:conjure#log#botright`
             Force the log to always open at the bottom or far right of the
