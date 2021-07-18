@@ -83,7 +83,7 @@ do
   do
     local v_0_0
     local function config_dir0()
-      return ((env("XDG_CONFIG_HOME") or (env("HOME") .. "/.config")) .. "/conjure")
+      return ((env("XDG_CONFIG_HOME") or (env("HOME") .. path_sep .. ".config")) .. path_sep .. "conjure")
     end
     v_0_0 = config_dir0
     _0_["config-dir"] = v_0_0
@@ -153,7 +153,7 @@ do
       local function _3_(_241)
         return not a["empty?"](_241)
       end
-      return a.filter(_3_, str.split(path, "/"))
+      return a.filter(_3_, str.split(path, path_sep))
     end
     v_0_0 = split_path0
     _0_["split-path"] = v_0_0
@@ -169,7 +169,7 @@ do
   do
     local v_0_0
     local function join_path0(parts)
-      return str.join("/", a.concat(parts))
+      return str.join(path_sep, a.concat(parts))
     end
     v_0_0 = join_path0
     _0_["join-path"] = v_0_0

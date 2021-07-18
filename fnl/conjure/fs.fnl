@@ -22,8 +22,8 @@
   "Return $XDG_CONFIG_HOME/conjure.
   Defaulting the config directory to $HOME/.config."
   (..  (or (env "XDG_CONFIG_HOME")
-           (.. (env "HOME") "/.config"))
-      "/conjure"))
+           (.. (env "HOME") path-sep ".config"))
+      path-sep "conjure"))
 
 (defn findfile [name path]
   "Wrapper around Neovim's findfile() that returns nil
@@ -45,11 +45,11 @@
   (= 1 (nvim.fn.filereadable path)))
 
 (defn split-path [path]
-  (->> (str.split path "/")
+  (->> (str.split path path-sep)
        (a.filter #(not (a.empty? $)))))
 
 (defn join-path [parts]
-  (str.join "/" (a.concat parts)))
+  (str.join path-sep (a.concat parts)))
 
 (defn resolve-relative-to [path root]
   "Successively remove parts of the path until we get to a relative path that
