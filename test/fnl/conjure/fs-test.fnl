@@ -62,6 +62,3 @@
          "/home/ollie/foo"
          {"^(/home/)ollie" "%1olical"})
        "gsub capture group replacement"))
-
-(deftest path-sep
-  (t.= "/" fs.path-sep))

@@ -45,7 +45,7 @@ local _2amodule_name_2a = "conjure.aniseed.env"
 do local _ = ({nil, _0_, nil, {{}, nil, nil, nil}})[2] end
 local config_dir
 do
-  local v_0_ = string.gsub(nvim.fn.stdpath("config"), "\\", "/")
+  local v_0_ = nvim.fn.stdpath("config")
   local t_0_ = (_0_)["aniseed/locals"]
   t_0_["config-dir"] = v_0_
   config_dir = v_0_
@@ -81,9 +81,9 @@ do
         opts0 = {}
       end
       local glob_expr = "**/*.fnl"
-      local fnl_dir = (opts0.input or (config_dir .. "/fnl"))
-      local lua_dir = (opts0.output or (config_dir .. "/lua"))
-      package.path = (package.path .. ";" .. lua_dir .. "/?.lua")
+      local fnl_dir = (opts0.input or (config_dir .. fs["path-sep"] .. "fnl"))
+      local lua_dir = (opts0.output or (config_dir .. fs["path-sep"] .. "lua"))
+      package.path = (package.path .. ";" .. lua_dir .. fs["path-sep"] .. "?.lua")
       local function _4_(path)
         if fs["macro-file-path?"](path) then
           return path
@@ -92,7 +92,7 @@ do
         end
       end
       if (((false ~= opts0.compile) or os.getenv("ANISEED_ENV_COMPILE")) and fs["glob-dir-newer?"](fnl_dir, lua_dir, glob_expr, _4_)) then
-        fennel["add-path"]((fnl_dir .. "/?.fnl"))
+        fennel["add-path"]((fnl_dir .. fs["path-sep"] .. "?.fnl"))
         compile.glob(glob_expr, fnl_dir, lua_dir, opts0)
       end
       return quiet_require((opts0.module or "init"))

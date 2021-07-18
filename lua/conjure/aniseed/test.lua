@@ -25,11 +25,11 @@ autoload = _1_
 local function _2_(...)
   local ok_3f_0_, val_0_ = nil, nil
   local function _2_()
-    return {autoload("conjure.aniseed.core"), autoload("conjure.aniseed.nvim"), autoload("conjure.aniseed.string")}
+    return {autoload("conjure.aniseed.core"), autoload("conjure.aniseed.fs"), autoload("conjure.aniseed.nvim"), autoload("conjure.aniseed.string")}
   end
   ok_3f_0_, val_0_ = pcall(_2_)
   if ok_3f_0_ then
-    _0_["aniseed/local-fns"] = {autoload = {a = "conjure.aniseed.core", nvim = "conjure.aniseed.nvim", str = "conjure.aniseed.string"}}
+    _0_["aniseed/local-fns"] = {autoload = {a = "conjure.aniseed.core", fs = "conjure.aniseed.fs", nvim = "conjure.aniseed.nvim", str = "conjure.aniseed.string"}}
     return val_0_
   else
     return print(val_0_)
@@ -37,8 +37,9 @@ local function _2_(...)
 end
 local _local_0_ = _2_(...)
 local a = _local_0_[1]
-local nvim = _local_0_[2]
-local str = _local_0_[3]
+local fs = _local_0_[2]
+local nvim = _local_0_[3]
+local str = _local_0_[4]
 local _2amodule_2a = _0_
 local _2amodule_name_2a = "conjure.aniseed.test"
 do local _ = ({nil, _0_, nil, {{}, nil, nil, nil}})[2] end
@@ -210,10 +211,13 @@ do
   do
     local v_0_0
     local function suite0()
-      local function _3_(path)
-        return require(string.gsub(string.match(path, "^test/fnl/(.-).fnl$"), "/", "."))
+      do
+        local sep = fs["path-sep"]
+        local function _3_(path)
+          return require(string.gsub(string.match(path, ("^test" .. sep .. "fnl" .. sep .. "(.-).fnl$")), sep, "."))
+        end
+        a["run!"](_3_, nvim.fn.globpath(("test" .. sep .. "fnl"), "**/*-test.fnl", false, true))
       end
-      a["run!"](_3_, nvim.fn.globpath("test/fnl", "**/*-test.fnl", false, true))
       if ok_3f(run_all()) then
         return nvim.ex.q()
       else

@@ -2,6 +2,7 @@
   {autoload {nvim conjure.aniseed.nvim
              a conjure.aniseed.core
              str conjure.aniseed.string
+             afs conjure.aniseed.fs
              config conjure.config}})
 
 (defn- env [k]
@@ -9,21 +10,12 @@
     (when (and (a.string? v) (not (a.empty? v)))
       v)))
 
-(def path-sep
-  ;; https://github.com/nvim-lua/plenary.nvim/blob/8bae2c1fadc9ed5bfcfb5ecbd0c0c4d7d40cb974/lua/plenary/path.lua#L20-L31
-  (let [os (string.lower jit.os)]
-    (if (or (= :linux os)
-            (= :osx os)
-            (= :bsd os))
-      "/"
-      "\\")))
-
 (defn config-dir []
   "Return $XDG_CONFIG_HOME/conjure.
   Defaulting the config directory to $HOME/.config."
   (..  (or (env "XDG_CONFIG_HOME")
-           (.. (env "HOME") path-sep ".config"))
-      path-sep "conjure"))
+           (.. (env "HOME") afs.path-sep ".config"))
+      afs.path-sep "conjure"))
 
 (defn findfile [name path]
   "Wrapper around Neovim's findfile() that returns nil
@@ -45,11 +37,11 @@
   (= 1 (nvim.fn.filereadable path)))
 
 (defn split-path [path]
-  (->> (str.split path path-sep)
+  (->> (str.split path afs.path-sep)
        (a.filter #(not (a.empty? $)))))
 
 (defn join-path [parts]
-  (str.join path-sep (a.concat parts)))
+  (str.join afs.path-sep (a.concat parts)))
 
 (defn resolve-relative-to [path root]
   "Successively remove parts of the path until we get to a relative path that

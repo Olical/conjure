@@ -41,6 +41,26 @@ local nvim = _local_0_[2]
 local _2amodule_2a = _0_
 local _2amodule_name_2a = "conjure.aniseed.fs"
 do local _ = ({nil, _0_, nil, {{}, nil, nil, nil}})[2] end
+local path_sep
+do
+  local v_0_
+  do
+    local v_0_0
+    do
+      local os = string.lower(jit.os)
+      if (("linux" == os) or ("osx" == os) or ("bsd" == os)) then
+        v_0_0 = "/"
+      else
+        v_0_0 = "\\"
+      end
+    end
+    _0_["path-sep"] = v_0_0
+    v_0_ = v_0_0
+  end
+  local t_0_ = (_0_)["aniseed/locals"]
+  t_0_["path-sep"] = v_0_
+  path_sep = v_0_
+end
 local basename
 do
   local v_0_

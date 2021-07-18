@@ -25,18 +25,19 @@ autoload = _1_
 local function _2_(...)
   local ok_3f_0_, val_0_ = nil, nil
   local function _2_()
-    return {autoload("conjure.aniseed.nvim")}
+    return {autoload("conjure.aniseed.fs"), autoload("conjure.aniseed.nvim")}
   end
   ok_3f_0_, val_0_ = pcall(_2_)
   if ok_3f_0_ then
-    _0_["aniseed/local-fns"] = {autoload = {nvim = "conjure.aniseed.nvim"}}
+    _0_["aniseed/local-fns"] = {autoload = {fs = "conjure.aniseed.fs", nvim = "conjure.aniseed.nvim"}}
     return val_0_
   else
     return print(val_0_)
   end
 end
 local _local_0_ = _2_(...)
-local nvim = _local_0_[1]
+local fs = _local_0_[1]
+local nvim = _local_0_[2]
 local _2amodule_2a = _0_
 local _2amodule_name_2a = "conjure.aniseed.fennel"
 do local _ = ({nil, _0_, nil, {{}, nil, nil, nil}})[2] end
@@ -46,10 +47,11 @@ do
   do
     local v_0_0
     local function sync_rtp0(compiler)
-      local fnl_suffix = "/fnl/?.fnl"
+      local sep = fs["path-sep"]
+      local fnl_suffix = (sep .. "fnl" .. sep .. "?.fnl")
       local rtp = nvim.o.runtimepath
       local fnl_path = (rtp:gsub(",", (fnl_suffix .. ";")) .. fnl_suffix)
-      local lua_path = fnl_path:gsub("/fnl/", "/lua/")
+      local lua_path = fnl_path:gsub((sep .. "fnl" .. sep), (sep .. "lua" .. sep))
       do end (compiler)["path"] = (fnl_path .. ";" .. lua_path)
       return nil
     end

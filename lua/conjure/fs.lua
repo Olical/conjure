@@ -25,11 +25,11 @@ autoload = _1_
 local function _2_(...)
   local ok_3f_0_, val_0_ = nil, nil
   local function _2_()
-    return {autoload("conjure.aniseed.core"), autoload("conjure.config"), autoload("conjure.aniseed.nvim"), autoload("conjure.aniseed.string")}
+    return {autoload("conjure.aniseed.core"), autoload("conjure.aniseed.fs"), autoload("conjure.config"), autoload("conjure.aniseed.nvim"), autoload("conjure.aniseed.string")}
   end
   ok_3f_0_, val_0_ = pcall(_2_)
   if ok_3f_0_ then
-    _0_["aniseed/local-fns"] = {autoload = {a = "conjure.aniseed.core", config = "conjure.config", nvim = "conjure.aniseed.nvim", str = "conjure.aniseed.string"}}
+    _0_["aniseed/local-fns"] = {autoload = {a = "conjure.aniseed.core", afs = "conjure.aniseed.fs", config = "conjure.config", nvim = "conjure.aniseed.nvim", str = "conjure.aniseed.string"}}
     return val_0_
   else
     return print(val_0_)
@@ -37,9 +37,10 @@ local function _2_(...)
 end
 local _local_0_ = _2_(...)
 local a = _local_0_[1]
-local config = _local_0_[2]
-local nvim = _local_0_[3]
-local str = _local_0_[4]
+local afs = _local_0_[2]
+local config = _local_0_[3]
+local nvim = _local_0_[4]
+local str = _local_0_[5]
 local _2amodule_2a = _0_
 local _2amodule_name_2a = "conjure.fs"
 do local _ = ({nil, _0_, nil, {{}, nil, nil, nil}})[2] end
@@ -57,33 +58,13 @@ do
   t_0_["env"] = v_0_
   env = v_0_
 end
-local path_sep
-do
-  local v_0_
-  do
-    local v_0_0
-    do
-      local os = string.lower(jit.os)
-      if (("linux" == os) or ("osx" == os) or ("bsd" == os)) then
-        v_0_0 = "/"
-      else
-        v_0_0 = "\\"
-      end
-    end
-    _0_["path-sep"] = v_0_0
-    v_0_ = v_0_0
-  end
-  local t_0_ = (_0_)["aniseed/locals"]
-  t_0_["path-sep"] = v_0_
-  path_sep = v_0_
-end
 local config_dir
 do
   local v_0_
   do
     local v_0_0
     local function config_dir0()
-      return ((env("XDG_CONFIG_HOME") or (env("HOME") .. path_sep .. ".config")) .. path_sep .. "conjure")
+      return ((env("XDG_CONFIG_HOME") or (env("HOME") .. afs["path-sep"] .. ".config")) .. afs["path-sep"] .. "conjure")
     end
     v_0_0 = config_dir0
     _0_["config-dir"] = v_0_0
@@ -153,7 +134,7 @@ do
       local function _3_(_241)
         return not a["empty?"](_241)
       end
-      return a.filter(_3_, str.split(path, path_sep))
+      return a.filter(_3_, str.split(path, afs["path-sep"]))
     end
     v_0_0 = split_path0
     _0_["split-path"] = v_0_0
@@ -169,7 +150,7 @@ do
   do
     local v_0_0
     local function join_path0(parts)
-      return str.join(path_sep, a.concat(parts))
+      return str.join(afs["path-sep"], a.concat(parts))
     end
     v_0_0 = join_path0
     _0_["join-path"] = v_0_0
