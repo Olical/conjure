@@ -61,7 +61,7 @@ do
       end
       local _4_
       if filename then
-        _4_ = ("\"" .. filename .. "\"")
+        _4_ = ("\"" .. string.gsub(filename, "\\", "\\\\") .. "\"")
       else
         _4_ = "nil"
       end
