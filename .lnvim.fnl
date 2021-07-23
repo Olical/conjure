@@ -3,6 +3,7 @@
 
 ; (set nvim.g.conjure#extract#tree_sitter#enabled true)
 ; (set nvim.g.conjure#client#clojure#nrepl#test#runner "kaocha")
+; (set nvim.g.conjure#filetype#fennel "conjure.client.fennel.stdio")
 
 (set package.path (.. package.path ";test/lua/?.lua"))
 (set nvim.g.conjure#eval#gsubs {:do-comment ["^%(comment[%s%c]" "(do "]})
