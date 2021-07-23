@@ -149,16 +149,18 @@
           pos (hud-window-pos (config.get-in [:log :hud :anchor]) size)
           border (config.get-in [:log :hud :border])
           win-opts
-          {:relative :editor
-           :row pos.row
-           :col pos.col
-           :anchor pos.anchor
+          (a.merge
+            {:relative :editor
+             :row pos.row
+             :col pos.col
+             :anchor pos.anchor
 
-           :width size.width
-           :height size.height
-           :focusable false
-           :style :minimal
-           :border border}]
+             :width size.width
+             :height size.height
+             :focusable false
+             :style :minimal}
+            (when (= 1 (nvim.fn.has "nvim-0.5"))
+              {:border border}))]
 
       (when (not (nvim.win_is_valid state.hud.id))
         (close-hud))

@@ -334,7 +334,13 @@ do
       local size = {height = editor["percent-height"](config["get-in"]({"log", "hud", "height"})), width = editor["percent-width"](config["get-in"]({"log", "hud", "width"}))}
       local pos = hud_window_pos(config["get-in"]({"log", "hud", "anchor"}), size)
       local border = config["get-in"]({"log", "hud", "border"})
-      local win_opts = {anchor = pos.anchor, border = border, col = pos.col, focusable = false, height = size.height, relative = "editor", row = pos.row, style = "minimal", width = size.width}
+      local win_opts
+      local function _3_()
+        if (1 == nvim.fn.has("nvim-0.5")) then
+          return {border = border}
+        end
+      end
+      win_opts = a.merge({anchor = pos.anchor, col = pos.col, focusable = false, height = size.height, relative = "editor", row = pos.row, style = "minimal", width = size.width}, _3_())
       if not nvim.win_is_valid(state.hud.id) then
         close_hud()
       end
