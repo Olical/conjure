@@ -22,5 +22,6 @@ in
       unstable.guile
       unstable.racket
       unstable.janet
+      unstable.chicken
     ];
   }
