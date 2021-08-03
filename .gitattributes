@@ -2,5 +2,3 @@ lua/* linguist-generated
 lua/conjure/aniseed linguist-vendored
 lua/conjure/remote/transport/bencode/impl.lua linguist-vendored
 dev/* -linguist-detectable
-*.fnl linguist-detectable
-*.fnl linguist-language=Fennel
