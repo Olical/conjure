@@ -238,6 +238,17 @@ Tip: Booleans in Vim Script are written as `v:true` and `v:false`.
 
             Default: `["clojure", "fennel", "janet", "racket", "scheme"]`
 
+                                                *g:conjure#filetypes_non_lisp*
+`g:conjure#filetypes_non_lisp`
+            Addtional filetypes. It behaves the same with filetypes, but uses
+            `g:conjure#mapping#non_lisp` instead of `g:conjure#mapping`.
+
+            Here are all the affected mappings:
+              `eval_current_form`, `eval_comment_current_form`, `eval_root_form`,
+              `eval_comment_root_form`, `eval_word`, `eval_comment_word`,
+              `eval_replace_form`, `eval_marked_form`, `eval_file`, `eval_buf`,
+              `eval_visual`, `eval_motion`, `def_word`, `doc_word`
+
                                                   *g:conjure#filetype#clojure*
 `g:conjure#filetype#clojure`
             Client to use for `clojure` buffers.
@@ -385,6 +396,10 @@ Tip: Booleans in Vim Script are written as `v:true` and `v:false`.
 `g:conjure#mapping#log_close_visible`
             Close all visible log windows.
             Default: `"lq"`
+
+                                                  *g:conjure#mapping#non_lisp*
+`g:conjure#mapping#non_lisp`
+            Mappings to override the default ones for non-Lisps.
 
                                          *g:conjure#mapping#eval_current_form*
 `g:conjure#mapping#eval_current_form`
