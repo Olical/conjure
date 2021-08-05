@@ -15,7 +15,11 @@
       v)))
 
 (defn filetypes []
-  (get-in [:filetypes]))
+  (a.concat (get-in [:filetypes])
+            (get-in [:filetypes_non_lisp])))
+
+(defn filetypes-non-lisp []
+  (get-in [:filetypes_non_lisp]))
 
 (defn get-in-fn [prefix-ks]
   (fn [ks]
@@ -52,6 +56,7 @@
    :path_subs nil
 
    :filetypes [:clojure :fennel :janet :hy :racket :scheme]
+   :filetypes_non_lisp []
    :filetype {:clojure :conjure.client.clojure.nrepl
               :fennel :conjure.client.fennel.aniseed
               :janet :conjure.client.janet.netrepl
@@ -77,6 +82,8 @@
     :log_reset_soft "lr"
     :log_reset_hard "lR"
 
+    ; These get abadoned if using non_lisp config.
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     :eval_current_form "ee"
     :eval_comment_current_form "ece"
 
@@ -88,12 +95,18 @@
 
     :eval_replace_form "e!"
     :eval_marked_form "em"
+
     :eval_file "ef"
     :eval_buf "eb"
     :eval_visual "E"
     :eval_motion "E"
     :def_word "gd"
-    :doc_word ["K"]}
+    :doc_word ["K"]
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+    :non_lisp {:eval_motion "e"
+               :eval_visual "e"
+               }}
 
    :completion
    {:omnifunc :ConjureOmnifunc

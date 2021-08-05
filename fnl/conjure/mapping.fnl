@@ -60,25 +60,31 @@
   (buf :n :LogResetSoft (cfg :log_reset_soft) :conjure.log :reset-soft)
   (buf :n :LogResetHard (cfg :log_reset_hard) :conjure.log :reset-hard)
 
-  (buf :n nil (cfg :eval_motion) ":set opfunc=ConjureEvalMotion<cr>g@")
+  (let [cfg-smart
+        (if (a.some (fn [ft] (= ft nvim.bo.filetype)) (config.filetypes-non-lisp))
+          (fn [k] (config.get-in [:mapping :non_lisp k]))
+          cfg)]
 
-  (buf :n :EvalCurrentForm (cfg :eval_current_form) :conjure.eval :current-form)
-  (buf :n :EvalCommentCurrentForm (cfg :eval_comment_current_form) :conjure.eval :comment-current-form)
+    (buf :n nil (cfg-smart :eval_motion) ":set opfunc=ConjureEvalMotion<cr>g@")
 
-  (buf :n :EvalRootForm (cfg :eval_root_form) :conjure.eval :root-form)
-  (buf :n :EvalCommentRootForm (cfg :eval_comment_root_form) :conjure.eval :comment-root-form)
+    (buf :n :EvalCurrentForm (cfg-smart :eval_current_form) :conjure.eval :current-form)
+    (buf :n :EvalCommentCurrentForm (cfg-smart :eval_comment_current_form) :conjure.eval :comment-current-form)
 
-  (buf :n :EvalWord (cfg :eval_word) :conjure.eval :word)
-  (buf :n :EvalCommentWord (cfg :eval_comment_word) :conjure.eval :comment-word)
+    (buf :n :EvalRootForm (cfg-smart :eval_root_form) :conjure.eval :root-form)
+    (buf :n :EvalCommentRootForm (cfg-smart :eval_comment_root_form) :conjure.eval :comment-root-form)
 
-  (buf :n :EvalReplaceForm (cfg :eval_replace_form) :conjure.eval :replace-form)
-  (buf {:mode :n :repeat? false} :EvalMarkedForm (cfg :eval_marked_form) :conjure.mapping :eval-marked-form)
-  (buf :n :EvalFile (cfg :eval_file) :conjure.eval :file)
-  (buf :n :EvalBuf (cfg :eval_buf) :conjure.eval :buf)
-  (buf :v :EvalVisual (cfg :eval_visual) :conjure.eval :selection)
+    (buf :n :EvalWord (cfg-smart :eval_word) :conjure.eval :word)
+    (buf :n :EvalCommentWord (cfg-smart :eval_comment_word) :conjure.eval :comment-word)
 
-  (buf :n :DocWord (cfg :doc_word) :conjure.eval :doc-word)
-  (buf :n :DefWord (cfg :def_word) :conjure.eval :def-word)
+    (buf :n :EvalReplaceForm (cfg-smart :eval_replace_form) :conjure.eval :replace-form)
+    (buf {:mode :n :repeat? false} :EvalMarkedForm (cfg-smart :eval_marked_form) :conjure.mapping :eval-marked-form)
+
+    (buf :n :EvalFile (cfg-smart :eval_file) :conjure.eval :file)
+    (buf :n :EvalBuf (cfg-smart :eval_buf) :conjure.eval :buf)
+    (buf :v :EvalVisual (cfg-smart :eval_visual) :conjure.eval :selection)
+
+    (buf :n :DocWord (cfg-smart :doc_word) :conjure.eval :doc-word)
+    (buf :n :DefWord (cfg-smart :def_word) :conjure.eval :def-word))
 
   (let [fn-name (config.get-in [:completion :omnifunc])]
     (when fn-name
