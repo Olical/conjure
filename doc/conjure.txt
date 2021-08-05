@@ -249,6 +249,9 @@ Tip: Booleans in Vim Script are written as `v:true` and `v:false`.
               `eval_replace_form`, `eval_marked_form`, `eval_file`, `eval_buf`,
               `eval_visual`, `eval_motion`, `def_word`, `doc_word`
 
+            In addition, a new mapping is added:
+              `eval_visual_statements`
+
                                                   *g:conjure#filetype#clojure*
 `g:conjure#filetype#clojure`
             Client to use for `clojure` buffers.
@@ -397,10 +400,6 @@ Tip: Booleans in Vim Script are written as `v:true` and `v:false`.
             Close all visible log windows.
             Default: `"lq"`
 
-                                                  *g:conjure#mapping#non_lisp*
-`g:conjure#mapping#non_lisp`
-            Mappings to override the default ones for non-Lisps.
-
                                          *g:conjure#mapping#eval_current_form*
 `g:conjure#mapping#eval_current_form`
             Evaluates the form under the cursor.
@@ -479,6 +478,16 @@ Tip: Booleans in Vim Script are written as `v:true` and `v:false`.
 `g:conjure#mapping#doc_word`
             Looks up documentation for the word under the cursor.
             Default: `["K"]`
+
+                                                  *g:conjure#mapping#non_lisp*
+`g:conjure#mapping#non_lisp`
+            Mappings to override the default ones for non-Lisps.
+
+                           *g:conjure#mapping#non_lisp#eval_visual_statements*
+`g:conjure#mapping#non_lisp#eval_visual_statements`
+            Evaluates the visual selection as statements, this is for the
+            non-expression-based languages.
+            Default: `"f"`
 
                                                *g:conjure#completion#omnifunc*
 `g:conjure#completion#omnifunc`
