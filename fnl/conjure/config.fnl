@@ -105,6 +105,7 @@
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
     :non_lisp {:eval_motion "e"
+               :eval_motion_statements "f"
                :eval_visual "e"
                :eval_visual_statements "f"}}
 

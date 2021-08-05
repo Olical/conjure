@@ -102,6 +102,8 @@ I've also included some commands since they're related to the mappings.
                          buffer, mappings and buffer local settings. This will
                          close any open log windows.
 
+The followings are for Lisps:
+
 <localleader>E           When in visual mode, evaluate the current selection.
 
 <localleader>E[motion]   Evaluate any given motion following this mapping such
@@ -157,6 +159,22 @@ I've also included some commands since they're related to the mappings.
 
 K                        Look up documentation for the word under the cursor.
                          Support for this may vary between languages.
+
+The followings are for non-Lisps:
+
+<localleader>e           When in visual mode, evaluate the current selection
+                         as an expression.
+
+<localleader>e[motion]   Evaluate any given motion following this mapping such
+                         as <localleader>`e2j` to evaluate this line and the
+                         two below it as an expression.
+
+<localleader>f           When in visual mode, evaluate the current selection
+                         as a group of statements.
+
+<localleader>f[motion]   Evaluate any given motion following this mapping such
+                         as <localleader>`f2j` to evaluate this line and the
+                         two below it as a group of statements.
 
 Language clients will provide their own extra mappings on top of these, you
 can find links to their help in |conjure-clients|.
@@ -462,12 +480,12 @@ Tip: Booleans in Vim Script are written as `v:true` and `v:false`.
                                                *g:conjure#mapping#eval_visual*
 `g:conjure#mapping#eval_visual`
             Evaluates the visual selection.
-            Default: `"E"`
+            Default: `"E"` for lisps, "e" for non-Lisps
 
                                                *g:conjure#mapping#eval_motion*
 `g:conjure#mapping#eval_motion`
             Evaluates the following motion.
-            Default: `"E"`
+            Default: `"E"` for Lisps, `"e"` for non-Lisps
 
                                                   *g:conjure#mapping#def_word*
 `g:conjure#mapping#def_word`

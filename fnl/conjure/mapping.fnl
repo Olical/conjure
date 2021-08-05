@@ -85,7 +85,8 @@
 
     ; Non-lisps specific ===========================================================
     (if non-lisp
-      (buf :v :EvalVisualStatements (cfg-smart :eval_visual_statements) :conjure.eval :selection-statements))
+      (buf :v :EvalVisualStatements (cfg-smart :eval_visual_statements) :conjure.eval :selection-statements)
+      (buf :n nil (cfg-smart :eval_motion_statements) ":set opfunc=ConjureEvalStatementsMotion<cr>g@"))
     ;; =============================================================================
 
     (buf :n :DocWord (cfg-smart :doc_word) :conjure.eval :doc-word)
@@ -165,6 +166,13 @@
         "call luaeval(\"require('conjure.eval')['selection'](_A)\", a:kind)"
         "endfunction"]
        (str.join "\n")))
+
+(nvim.ex.function_
+  (->> ["ConjureEvalStatementsMotion(kind)"
+        "call luaeval(\"require('conjure.eval')['selection-statements'](_A)\", a:kind)"
+        "endfunction"]
+       (str.join "\n")))
+
 
 (nvim.ex.function_
   (->> ["ConjureOmnifunc(findstart, base)"
