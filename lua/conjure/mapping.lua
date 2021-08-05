@@ -187,6 +187,8 @@ do
         buf("v", "EvalVisual", cfg_smart("eval_visual"), "conjure.eval", "selection")
         if non_lisp then
           buf("v", "EvalVisualStatements", cfg_smart("eval_visual_statements"), "conjure.eval", "selection-statements")
+        else
+          buf("n", nil, cfg_smart("eval_motion_statements"), ":set opfunc=ConjureEvalStatementsMotion<cr>g@")
         end
         buf("n", "DocWord", cfg_smart("doc_word"), "conjure.eval", "doc-word")
         buf("n", "DefWord", cfg_smart("def_word"), "conjure.eval", "def-word")
@@ -358,6 +360,7 @@ do
   omnifunc = v_0_
 end
 nvim.ex.function_(str.join("\n", {"ConjureEvalMotion(kind)", "call luaeval(\"require('conjure.eval')['selection'](_A)\", a:kind)", "endfunction"}))
+nvim.ex.function_(str.join("\n", {"ConjureEvalStatementsMotion(kind)", "call luaeval(\"require('conjure.eval')['selection-statements'](_A)\", a:kind)", "endfunction"}))
 nvim.ex.function_(str.join("\n", {"ConjureOmnifunc(findstart, base)", "return luaeval(\"require('conjure.mapping')['omnifunc'](_A[1] == 1, _A[2])\", [a:findstart, a:base])", "endfunction"}))
 nvim.ex.command_("-nargs=? -range ConjureEval", bridge["viml->lua"]("conjure.mapping", "eval-ranged-command", {args = "<line1>, <line2>, <q-args>"}))
 nvim.ex.command_("-nargs=* -range -complete=file ConjureConnect", bridge["viml->lua"]("conjure.mapping", "connect-command", {args = "<f-args>"}))
