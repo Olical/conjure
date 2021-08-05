@@ -158,20 +158,34 @@ do
       buf("n", "LogCloseVisible", cfg("log_close_visible"), "conjure.log", "close-visible")
       buf("n", "LogResetSoft", cfg("log_reset_soft"), "conjure.log", "reset-soft")
       buf("n", "LogResetHard", cfg("log_reset_hard"), "conjure.log", "reset-hard")
-      buf("n", nil, cfg("eval_motion"), ":set opfunc=ConjureEvalMotion<cr>g@")
-      buf("n", "EvalCurrentForm", cfg("eval_current_form"), "conjure.eval", "current-form")
-      buf("n", "EvalCommentCurrentForm", cfg("eval_comment_current_form"), "conjure.eval", "comment-current-form")
-      buf("n", "EvalRootForm", cfg("eval_root_form"), "conjure.eval", "root-form")
-      buf("n", "EvalCommentRootForm", cfg("eval_comment_root_form"), "conjure.eval", "comment-root-form")
-      buf("n", "EvalWord", cfg("eval_word"), "conjure.eval", "word")
-      buf("n", "EvalCommentWord", cfg("eval_comment_word"), "conjure.eval", "comment-word")
-      buf("n", "EvalReplaceForm", cfg("eval_replace_form"), "conjure.eval", "replace-form")
-      buf({["repeat?"] = false, mode = "n"}, "EvalMarkedForm", cfg("eval_marked_form"), "conjure.mapping", "eval-marked-form")
-      buf("n", "EvalFile", cfg("eval_file"), "conjure.eval", "file")
-      buf("n", "EvalBuf", cfg("eval_buf"), "conjure.eval", "buf")
-      buf("v", "EvalVisual", cfg("eval_visual"), "conjure.eval", "selection")
-      buf("n", "DocWord", cfg("doc_word"), "conjure.eval", "doc-word")
-      buf("n", "DefWord", cfg("def_word"), "conjure.eval", "def-word")
+      do
+        local cfg_smart
+        local function _3_(ft)
+          return (ft == nvim.bo.filetype)
+        end
+        if a.some(_3_, config["filetypes-non-lisp"]()) then
+          local function _4_(k)
+            return config["get-in"]({"mapping", "non_lisp", k})
+          end
+          cfg_smart = _4_
+        else
+          cfg_smart = cfg
+        end
+        buf("n", nil, cfg_smart("eval_motion"), ":set opfunc=ConjureEvalMotion<cr>g@")
+        buf("n", "EvalCurrentForm", cfg_smart("eval_current_form"), "conjure.eval", "current-form")
+        buf("n", "EvalCommentCurrentForm", cfg_smart("eval_comment_current_form"), "conjure.eval", "comment-current-form")
+        buf("n", "EvalRootForm", cfg_smart("eval_root_form"), "conjure.eval", "root-form")
+        buf("n", "EvalCommentRootForm", cfg_smart("eval_comment_root_form"), "conjure.eval", "comment-root-form")
+        buf("n", "EvalWord", cfg_smart("eval_word"), "conjure.eval", "word")
+        buf("n", "EvalCommentWord", cfg_smart("eval_comment_word"), "conjure.eval", "comment-word")
+        buf("n", "EvalReplaceForm", cfg_smart("eval_replace_form"), "conjure.eval", "replace-form")
+        buf({["repeat?"] = false, mode = "n"}, "EvalMarkedForm", cfg_smart("eval_marked_form"), "conjure.mapping", "eval-marked-form")
+        buf("n", "EvalFile", cfg_smart("eval_file"), "conjure.eval", "file")
+        buf("n", "EvalBuf", cfg_smart("eval_buf"), "conjure.eval", "buf")
+        buf("v", "EvalVisual", cfg_smart("eval_visual"), "conjure.eval", "selection")
+        buf("n", "DocWord", cfg_smart("doc_word"), "conjure.eval", "doc-word")
+        buf("n", "DefWord", cfg_smart("def_word"), "conjure.eval", "def-word")
+      end
       do
         local fn_name = config["get-in"]({"completion", "omnifunc"})
         if fn_name then
