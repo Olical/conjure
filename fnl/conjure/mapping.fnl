@@ -60,10 +60,10 @@
   (buf :n :LogResetSoft (cfg :log_reset_soft) :conjure.log :reset-soft)
   (buf :n :LogResetHard (cfg :log_reset_hard) :conjure.log :reset-hard)
 
-  (let [cfg-smart
-        (if (a.some (fn [ft] (= ft nvim.bo.filetype)) (config.filetypes-non-lisp))
-          (fn [k] (config.get-in [:mapping :non_lisp k]))
-          cfg)]
+  (let [non-lisp (a.some (fn [ft] (= ft nvim.bo.filetype)) (config.filetypes-non-lisp))
+        cfg-smart (if non-lisp
+                    (fn [k] (config.get-in [:mapping :non_lisp k]))
+                    cfg) ]
 
     (buf :n nil (cfg-smart :eval_motion) ":set opfunc=ConjureEvalMotion<cr>g@")
 
@@ -79,13 +79,14 @@
     (buf :n :EvalReplaceForm (cfg-smart :eval_replace_form) :conjure.eval :replace-form)
     (buf {:mode :n :repeat? false} :EvalMarkedForm (cfg-smart :eval_marked_form) :conjure.mapping :eval-marked-form)
 
-    ; Non-lisps specific ===========================================================
-    (buf :v :EvalVisualStatements (cfg-smart :eval_visual_statements) :conjure.eval :selection-statements)
-    ;; =============================================================================
-
     (buf :n :EvalFile (cfg-smart :eval_file) :conjure.eval :file)
     (buf :n :EvalBuf (cfg-smart :eval_buf) :conjure.eval :buf)
     (buf :v :EvalVisual (cfg-smart :eval_visual) :conjure.eval :selection)
+
+    ; Non-lisps specific ===========================================================
+    (if non-lisp
+      (buf :v :EvalVisualStatements (cfg-smart :eval_visual_statements) :conjure.eval :selection-statements))
+    ;; =============================================================================
 
     (buf :n :DocWord (cfg-smart :doc_word) :conjure.eval :doc-word)
     (buf :n :DefWord (cfg-smart :def_word) :conjure.eval :def-word))
