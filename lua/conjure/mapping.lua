@@ -159,11 +159,13 @@ do
       buf("n", "LogResetSoft", cfg("log_reset_soft"), "conjure.log", "reset-soft")
       buf("n", "LogResetHard", cfg("log_reset_hard"), "conjure.log", "reset-hard")
       do
-        local cfg_smart
+        local non_lisp
         local function _3_(ft)
           return (ft == nvim.bo.filetype)
         end
-        if a.some(_3_, config["filetypes-non-lisp"]()) then
+        non_lisp = a.some(_3_, config["filetypes-non-lisp"]())
+        local cfg_smart
+        if non_lisp then
           local function _4_(k)
             return config["get-in"]({"mapping", "non_lisp", k})
           end
@@ -180,10 +182,12 @@ do
         buf("n", "EvalCommentWord", cfg_smart("eval_comment_word"), "conjure.eval", "comment-word")
         buf("n", "EvalReplaceForm", cfg_smart("eval_replace_form"), "conjure.eval", "replace-form")
         buf({["repeat?"] = false, mode = "n"}, "EvalMarkedForm", cfg_smart("eval_marked_form"), "conjure.mapping", "eval-marked-form")
-        buf("v", "EvalVisualStatements", cfg_smart("eval_visual_statements"), "conjure.eval", "selection-statements")
         buf("n", "EvalFile", cfg_smart("eval_file"), "conjure.eval", "file")
         buf("n", "EvalBuf", cfg_smart("eval_buf"), "conjure.eval", "buf")
         buf("v", "EvalVisual", cfg_smart("eval_visual"), "conjure.eval", "selection")
+        if non_lisp then
+          buf("v", "EvalVisualStatements", cfg_smart("eval_visual_statements"), "conjure.eval", "selection-statements")
+        end
         buf("n", "DocWord", cfg_smart("doc_word"), "conjure.eval", "doc-word")
         buf("n", "DefWord", cfg_smart("def_word"), "conjure.eval", "def-word")
       end
