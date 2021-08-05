@@ -84,7 +84,7 @@
     (buf :v :EvalVisual (cfg-smart :eval_visual) :conjure.eval :selection)
 
     ; Non-lisps specific ===========================================================
-    (if non-lisp
+    (when non-lisp
       (buf :v :EvalVisualStatements (cfg-smart :eval_visual_statements) :conjure.eval :selection-statements)
       (buf :n nil (cfg-smart :eval_motion_statements) ":set opfunc=ConjureEvalStatementsMotion<cr>g@"))
     ;; =============================================================================

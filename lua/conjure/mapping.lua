@@ -187,7 +187,6 @@ do
         buf("v", "EvalVisual", cfg_smart("eval_visual"), "conjure.eval", "selection")
         if non_lisp then
           buf("v", "EvalVisualStatements", cfg_smart("eval_visual_statements"), "conjure.eval", "selection-statements")
-        else
           buf("n", nil, cfg_smart("eval_motion_statements"), ":set opfunc=ConjureEvalStatementsMotion<cr>g@")
         end
         buf("n", "DocWord", cfg_smart("doc_word"), "conjure.eval", "doc-word")
