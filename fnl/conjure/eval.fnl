@@ -277,6 +277,17 @@
        :range range
        :origin :selection})))
 
+; Non-lisps specific
+(defn selection-statements [kind]
+  (let [{: content : range}
+        (extract.selection
+          {:kind (or kind (nvim.fn.visualmode))
+           :visual? (not kind)})]
+    (eval-str
+      {:code content
+       :range range
+       :origin :selection-statements})))
+
 (defn- wrap-completion-result [result]
   (if (a.string? result)
     {:word result}

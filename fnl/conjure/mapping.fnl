@@ -79,6 +79,10 @@
     (buf :n :EvalReplaceForm (cfg-smart :eval_replace_form) :conjure.eval :replace-form)
     (buf {:mode :n :repeat? false} :EvalMarkedForm (cfg-smart :eval_marked_form) :conjure.mapping :eval-marked-form)
 
+    ; Non-lisps specific ===========================================================
+    (buf :v :EvalVisualStatements (cfg-smart :eval_visual_statements) :conjure.eval :selection-statements)
+    ;; =============================================================================
+
     (buf :n :EvalFile (cfg-smart :eval_file) :conjure.eval :file)
     (buf :n :EvalBuf (cfg-smart :eval_buf) :conjure.eval :buf)
     (buf :v :EvalVisual (cfg-smart :eval_visual) :conjure.eval :selection)
