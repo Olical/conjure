@@ -180,6 +180,7 @@ do
         buf("n", "EvalCommentWord", cfg_smart("eval_comment_word"), "conjure.eval", "comment-word")
         buf("n", "EvalReplaceForm", cfg_smart("eval_replace_form"), "conjure.eval", "replace-form")
         buf({["repeat?"] = false, mode = "n"}, "EvalMarkedForm", cfg_smart("eval_marked_form"), "conjure.mapping", "eval-marked-form")
+        buf("v", "EvalVisualStatements", cfg_smart("eval_visual_statements"), "conjure.eval", "selection-statements")
         buf("n", "EvalFile", cfg_smart("eval_file"), "conjure.eval", "file")
         buf("n", "EvalBuf", cfg_smart("eval_buf"), "conjure.eval", "buf")
         buf("v", "EvalVisual", cfg_smart("eval_visual"), "conjure.eval", "selection")

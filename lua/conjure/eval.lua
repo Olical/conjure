@@ -583,6 +583,25 @@ do
   t_0_["selection"] = v_0_
   selection = v_0_
 end
+local selection_statements
+do
+  local v_0_
+  do
+    local v_0_0
+    local function selection_statements0(kind)
+      local _let_0_ = extract.selection({["visual?"] = not kind, kind = (kind or nvim.fn.visualmode())})
+      local content = _let_0_["content"]
+      local range0 = _let_0_["range"]
+      return eval_str({code = content, origin = "selection-statements", range = range0})
+    end
+    v_0_0 = selection_statements0
+    _0_["selection-statements"] = v_0_0
+    v_0_ = v_0_0
+  end
+  local t_0_ = (_0_)["aniseed/locals"]
+  t_0_["selection-statements"] = v_0_
+  selection_statements = v_0_
+end
 local wrap_completion_result
 do
   local v_0_
