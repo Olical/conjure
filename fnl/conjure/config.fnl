@@ -106,7 +106,7 @@
 
     :non_lisp {:eval_motion "e"
                :eval_visual "e"
-               }}
+               :eval_visual_statements "f"}}
 
    :completion
    {:omnifunc :ConjureOmnifunc
