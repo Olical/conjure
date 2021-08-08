@@ -1,59 +1,59 @@
 local _2afile_2a = "fnl/conjure/remote/stdio.fnl"
-local _0_
+local _1_
 do
-  local name_0_ = "conjure.remote.stdio"
-  local module_0_
+  local name_4_auto = "conjure.remote.stdio"
+  local module_5_auto
   do
-    local x_0_ = package.loaded[name_0_]
-    if ("table" == type(x_0_)) then
-      module_0_ = x_0_
+    local x_6_auto = _G.package.loaded[name_4_auto]
+    if ("table" == type(x_6_auto)) then
+      module_5_auto = x_6_auto
     else
-      module_0_ = {}
+      module_5_auto = {}
     end
   end
-  module_0_["aniseed/module"] = name_0_
-  module_0_["aniseed/locals"] = ((module_0_)["aniseed/locals"] or {})
-  do end (module_0_)["aniseed/local-fns"] = ((module_0_)["aniseed/local-fns"] or {})
-  do end (package.loaded)[name_0_] = module_0_
-  _0_ = module_0_
+  module_5_auto["aniseed/module"] = name_4_auto
+  module_5_auto["aniseed/locals"] = ((module_5_auto)["aniseed/locals"] or {})
+  do end (module_5_auto)["aniseed/local-fns"] = ((module_5_auto)["aniseed/local-fns"] or {})
+  do end (_G.package.loaded)[name_4_auto] = module_5_auto
+  _1_ = module_5_auto
 end
 local autoload
-local function _1_(...)
+local function _3_(...)
   return (require("conjure.aniseed.autoload")).autoload(...)
 end
-autoload = _1_
-local function _2_(...)
-  local ok_3f_0_, val_0_ = nil, nil
-  local function _2_()
+autoload = _3_
+local function _6_(...)
+  local ok_3f_21_auto, val_22_auto = nil, nil
+  local function _5_()
     return {autoload("conjure.aniseed.core"), autoload("conjure.client"), autoload("conjure.log"), autoload("conjure.aniseed.nvim"), autoload("conjure.aniseed.string")}
   end
-  ok_3f_0_, val_0_ = pcall(_2_)
-  if ok_3f_0_ then
-    _0_["aniseed/local-fns"] = {autoload = {a = "conjure.aniseed.core", client = "conjure.client", log = "conjure.log", nvim = "conjure.aniseed.nvim", str = "conjure.aniseed.string"}}
-    return val_0_
+  ok_3f_21_auto, val_22_auto = pcall(_5_)
+  if ok_3f_21_auto then
+    _1_["aniseed/local-fns"] = {autoload = {a = "conjure.aniseed.core", client = "conjure.client", log = "conjure.log", nvim = "conjure.aniseed.nvim", str = "conjure.aniseed.string"}}
+    return val_22_auto
   else
-    return print(val_0_)
+    return print(val_22_auto)
   end
 end
-local _local_0_ = _2_(...)
-local a = _local_0_[1]
-local client = _local_0_[2]
-local log = _local_0_[3]
-local nvim = _local_0_[4]
-local str = _local_0_[5]
-local _2amodule_2a = _0_
+local _local_4_ = _6_(...)
+local a = _local_4_[1]
+local client = _local_4_[2]
+local log = _local_4_[3]
+local nvim = _local_4_[4]
+local str = _local_4_[5]
+local _2amodule_2a = _1_
 local _2amodule_name_2a = "conjure.remote.stdio"
-do local _ = ({nil, _0_, nil, {{}, nil, nil, nil}})[2] end
+do local _ = ({nil, _1_, nil, {{}, nil, nil, nil}})[2] end
 local uv
 do
-  local v_0_ = vim.loop
-  local t_0_ = (_0_)["aniseed/locals"]
-  t_0_["uv"] = v_0_
-  uv = v_0_
+  local v_23_auto = vim.loop
+  local t_24_auto = (_1_)["aniseed/locals"]
+  t_24_auto["uv"] = v_23_auto
+  uv = v_23_auto
 end
 local parse_prompt
 do
-  local v_0_
+  local v_23_auto
   local function parse_prompt0(s, pat)
     if s:find(pat) then
       return true, s:gsub(pat, "")
@@ -61,16 +61,16 @@ do
       return false, s
     end
   end
-  v_0_ = parse_prompt0
-  local t_0_ = (_0_)["aniseed/locals"]
-  t_0_["parse-prompt"] = v_0_
-  parse_prompt = v_0_
+  v_23_auto = parse_prompt0
+  local t_24_auto = (_1_)["aniseed/locals"]
+  t_24_auto["parse-prompt"] = v_23_auto
+  parse_prompt = v_23_auto
 end
 local parse_cmd
 do
-  local v_0_
+  local v_23_auto
   do
-    local v_0_0
+    local v_25_auto
     local function parse_cmd0(x)
       if a["table?"](x) then
         return {args = a.rest(x), cmd = a.first(x)}
@@ -78,71 +78,71 @@ do
         return parse_cmd0(str.split(x, "%s"))
       end
     end
-    v_0_0 = parse_cmd0
-    _0_["parse-cmd"] = v_0_0
-    v_0_ = v_0_0
+    v_25_auto = parse_cmd0
+    _1_["parse-cmd"] = v_25_auto
+    v_23_auto = v_25_auto
   end
-  local t_0_ = (_0_)["aniseed/locals"]
-  t_0_["parse-cmd"] = v_0_
-  parse_cmd = v_0_
+  local t_24_auto = (_1_)["aniseed/locals"]
+  t_24_auto["parse-cmd"] = v_23_auto
+  parse_cmd = v_23_auto
 end
 local extend_env
 do
-  local v_0_
+  local v_23_auto
   local function extend_env0(vars)
-    local function _4_(_3_)
-      local _arg_0_ = _3_
-      local k = _arg_0_[1]
-      local v = _arg_0_[2]
+    local function _12_(_10_)
+      local _arg_11_ = _10_
+      local k = _arg_11_[1]
+      local v = _arg_11_[2]
       return (k .. "=" .. v)
     end
-    return a.map(_4_, a["kv-pairs"](a.merge(nvim.fn.environ(), vars)))
+    return a.map(_12_, a["kv-pairs"](a.merge(nvim.fn.environ(), vars)))
   end
-  v_0_ = extend_env0
-  local t_0_ = (_0_)["aniseed/locals"]
-  t_0_["extend-env"] = v_0_
-  extend_env = v_0_
+  v_23_auto = extend_env0
+  local t_24_auto = (_1_)["aniseed/locals"]
+  t_24_auto["extend-env"] = v_23_auto
+  extend_env = v_23_auto
 end
 local start
 do
-  local v_0_
+  local v_23_auto
   do
-    local v_0_0
+    local v_25_auto
     local function start0(opts)
       local stdin = uv.new_pipe(false)
       local stdout = uv.new_pipe(false)
       local stderr = uv.new_pipe(false)
       local repl = {current = nil, queue = {}}
       local function destroy()
-        local function _3_()
+        local function _13_()
           return stdout:read_stop()
         end
-        pcall(_3_)
-        local function _4_()
+        pcall(_13_)
+        local function _14_()
           return stderr:read_stop()
         end
-        pcall(_4_)
-        local function _5_()
+        pcall(_14_)
+        local function _15_()
           return stdout:close()
         end
-        pcall(_5_)
-        local function _6_()
+        pcall(_15_)
+        local function _16_()
           return stderr:close()
         end
-        pcall(_6_)
-        local function _7_()
+        pcall(_16_)
+        local function _17_()
           return stdin:close()
         end
-        pcall(_7_)
+        pcall(_17_)
         if repl.handle then
-          local function _8_()
+          local function _18_()
             return uv.process_kill(repl.handle)
           end
-          pcall(_8_)
-          local function _9_()
+          pcall(_18_)
+          local function _19_()
             return (repl.handle):close()
           end
-          pcall(_9_)
+          pcall(_19_)
         end
         return nil
       end
@@ -169,10 +169,10 @@ do
             local done_3f, result = parse_prompt(chunk, opts["prompt-pattern"])
             local cb = a["get-in"](repl, {"current", "cb"}, opts["on-stray-output"])
             if cb then
-              local function _3_()
+              local function _22_()
                 return cb({["done?"] = done_3f, [source] = result})
               end
-              pcall(_3_)
+              pcall(_22_)
             end
             if done_3f then
               a.assoc(repl, "current", nil)
@@ -188,20 +188,20 @@ do
         return on_message("err", err, chunk)
       end
       local function send(code, cb, opts0)
-        local _3_
+        local _27_
         if a.get(opts0, "batch?") then
           local msgs = {}
-          local function _5_(msg)
+          local function _29_(msg)
             table.insert(msgs, msg)
             if msg["done?"] then
               return cb(msgs)
             end
           end
-          _3_ = _5_
+          _27_ = _29_
         else
-          _3_ = cb
+          _27_ = cb
         end
-        table.insert(repl.queue, {cb = _3_, code = code})
+        table.insert(repl.queue, {cb = _27_, code = code})
         next_in_queue()
         return nil
       end
@@ -209,32 +209,32 @@ do
         uv.process_kill(repl.handle, signal)
         return nil
       end
-      local _let_0_ = parse_cmd(opts.cmd)
-      local args = _let_0_["args"]
-      local cmd = _let_0_["cmd"]
+      local _let_32_ = parse_cmd(opts.cmd)
+      local args = _let_32_["args"]
+      local cmd = _let_32_["cmd"]
       local handle, pid_or_err = uv.spawn(cmd, {args = args, env = extend_env({INPUTRC = "/dev/null"}), stdio = {stdin, stdout, stderr}}, client["schedule-wrap"](on_exit))
       if handle then
         stdout:read_start(client["schedule-wrap"](on_stdout))
         stderr:read_start(client["schedule-wrap"](on_stderr))
-        local function _3_()
+        local function _33_()
           return opts["on-success"]()
         end
-        client.schedule(_3_)
+        client.schedule(_33_)
         return a["merge!"](repl, {["send-signal"] = send_signal, destroy = destroy, handle = handle, opts = opts, pid = pid_or_err, send = send})
       else
-        local function _3_()
+        local function _34_()
           return opts["on-error"](pid_or_err)
         end
-        client.schedule(_3_)
+        client.schedule(_34_)
         return destroy()
       end
     end
-    v_0_0 = start0
-    _0_["start"] = v_0_0
-    v_0_ = v_0_0
+    v_25_auto = start0
+    _1_["start"] = v_25_auto
+    v_23_auto = v_25_auto
   end
-  local t_0_ = (_0_)["aniseed/locals"]
-  t_0_["start"] = v_0_
-  start = v_0_
+  local t_24_auto = (_1_)["aniseed/locals"]
+  t_24_auto["start"] = v_23_auto
+  start = v_23_auto
 end
 return nil

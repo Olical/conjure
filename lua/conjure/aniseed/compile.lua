@@ -1,130 +1,130 @@
 local _2afile_2a = "fnl/aniseed/compile.fnl"
-local _0_
+local _1_
 do
-  local name_0_ = "conjure.aniseed.compile"
-  local module_0_
+  local name_4_auto = "conjure.aniseed.compile"
+  local module_5_auto
   do
-    local x_0_ = package.loaded[name_0_]
-    if ("table" == type(x_0_)) then
-      module_0_ = x_0_
+    local x_6_auto = _G.package.loaded[name_4_auto]
+    if ("table" == type(x_6_auto)) then
+      module_5_auto = x_6_auto
     else
-      module_0_ = {}
+      module_5_auto = {}
     end
   end
-  module_0_["aniseed/module"] = name_0_
-  module_0_["aniseed/locals"] = ((module_0_)["aniseed/locals"] or {})
-  do end (module_0_)["aniseed/local-fns"] = ((module_0_)["aniseed/local-fns"] or {})
-  do end (package.loaded)[name_0_] = module_0_
-  _0_ = module_0_
+  module_5_auto["aniseed/module"] = name_4_auto
+  module_5_auto["aniseed/locals"] = ((module_5_auto)["aniseed/locals"] or {})
+  do end (module_5_auto)["aniseed/local-fns"] = ((module_5_auto)["aniseed/local-fns"] or {})
+  do end (_G.package.loaded)[name_4_auto] = module_5_auto
+  _1_ = module_5_auto
 end
 local autoload
-local function _1_(...)
+local function _3_(...)
   return (require("conjure.aniseed.autoload")).autoload(...)
 end
-autoload = _1_
-local function _2_(...)
-  local ok_3f_0_, val_0_ = nil, nil
-  local function _2_()
+autoload = _3_
+local function _6_(...)
+  local ok_3f_21_auto, val_22_auto = nil, nil
+  local function _5_()
     return {autoload("conjure.aniseed.core"), autoload("conjure.aniseed.fennel"), autoload("conjure.aniseed.fs"), autoload("conjure.aniseed.nvim")}
   end
-  ok_3f_0_, val_0_ = pcall(_2_)
-  if ok_3f_0_ then
-    _0_["aniseed/local-fns"] = {autoload = {a = "conjure.aniseed.core", fennel = "conjure.aniseed.fennel", fs = "conjure.aniseed.fs", nvim = "conjure.aniseed.nvim"}}
-    return val_0_
+  ok_3f_21_auto, val_22_auto = pcall(_5_)
+  if ok_3f_21_auto then
+    _1_["aniseed/local-fns"] = {autoload = {a = "conjure.aniseed.core", fennel = "conjure.aniseed.fennel", fs = "conjure.aniseed.fs", nvim = "conjure.aniseed.nvim"}}
+    return val_22_auto
   else
-    return print(val_0_)
+    return print(val_22_auto)
   end
 end
-local _local_0_ = _2_(...)
-local a = _local_0_[1]
-local fennel = _local_0_[2]
-local fs = _local_0_[3]
-local nvim = _local_0_[4]
-local _2amodule_2a = _0_
+local _local_4_ = _6_(...)
+local a = _local_4_[1]
+local fennel = _local_4_[2]
+local fs = _local_4_[3]
+local nvim = _local_4_[4]
+local _2amodule_2a = _1_
 local _2amodule_name_2a = "conjure.aniseed.compile"
-do local _ = ({nil, _0_, nil, {{}, nil, nil, nil}})[2] end
+do local _ = ({nil, _1_, nil, {{}, nil, nil, nil}})[2] end
 local macros_prefix
 do
-  local v_0_
+  local v_23_auto
   do
-    local v_0_0
+    local v_25_auto
     local function macros_prefix0(code, opts)
       local macros_module = "conjure.aniseed.macros"
       local filename
       do
-        local _3_ = a.get(opts, "filename")
-        if _3_ then
-          filename = string.gsub(_3_, (nvim.fn.getcwd() .. fs["path-sep"]), "")
+        local _8_ = a.get(opts, "filename")
+        if _8_ then
+          filename = string.gsub(_8_, (nvim.fn.getcwd() .. fs["path-sep"]), "")
         else
-          filename = _3_
+          filename = _8_
         end
       end
-      local _4_
+      local _10_
       if filename then
-        _4_ = ("\"" .. string.gsub(filename, "\\", "\\\\") .. "\"")
+        _10_ = ("\"" .. string.gsub(filename, "\\", "\\\\") .. "\"")
       else
-        _4_ = "nil"
+        _10_ = "nil"
       end
-      return ("(local *file* " .. _4_ .. ")" .. "(require-macros \"" .. macros_module .. "\")\n" .. code)
+      return ("(local *file* " .. _10_ .. ")" .. "(require-macros \"" .. macros_module .. "\")\n" .. code)
     end
-    v_0_0 = macros_prefix0
-    _0_["macros-prefix"] = v_0_0
-    v_0_ = v_0_0
+    v_25_auto = macros_prefix0
+    _1_["macros-prefix"] = v_25_auto
+    v_23_auto = v_25_auto
   end
-  local t_0_ = (_0_)["aniseed/locals"]
-  t_0_["macros-prefix"] = v_0_
-  macros_prefix = v_0_
+  local t_24_auto = (_1_)["aniseed/locals"]
+  t_24_auto["macros-prefix"] = v_23_auto
+  macros_prefix = v_23_auto
 end
 local str
 do
-  local v_0_
+  local v_23_auto
   do
-    local v_0_0
+    local v_25_auto
     local function str0(code, opts)
       local fnl = fennel.impl()
-      local function _3_()
-        return fnl.compileString(macros_prefix(code, opts), a.merge({allowedGlobals = false}, opts))
+      local function _12_()
+        return fnl.compileString(macros_prefix(code, opts), a.merge({allowedGlobals = false, compilerEnv = _G}, opts))
       end
-      return xpcall(_3_, fnl.traceback)
+      return xpcall(_12_, fnl.traceback)
     end
-    v_0_0 = str0
-    _0_["str"] = v_0_0
-    v_0_ = v_0_0
+    v_25_auto = str0
+    _1_["str"] = v_25_auto
+    v_23_auto = v_25_auto
   end
-  local t_0_ = (_0_)["aniseed/locals"]
-  t_0_["str"] = v_0_
-  str = v_0_
+  local t_24_auto = (_1_)["aniseed/locals"]
+  t_24_auto["str"] = v_23_auto
+  str = v_23_auto
 end
 local file
 do
-  local v_0_
+  local v_23_auto
   do
-    local v_0_0
+    local v_25_auto
     local function file0(src, dest)
       local code = a.slurp(src)
-      local _3_, _4_ = str(code, {filename = src})
-      if ((_3_ == false) and (nil ~= _4_)) then
-        local err = _4_
+      local _13_, _14_ = str(code, {filename = src})
+      if ((_13_ == false) and (nil ~= _14_)) then
+        local err = _14_
         return nvim.err_writeln(err)
-      elseif ((_3_ == true) and (nil ~= _4_)) then
-        local result = _4_
+      elseif ((_13_ == true) and (nil ~= _14_)) then
+        local result = _14_
         fs.mkdirp(fs.basename(dest))
         return a.spit(dest, result)
       end
     end
-    v_0_0 = file0
-    _0_["file"] = v_0_0
-    v_0_ = v_0_0
+    v_25_auto = file0
+    _1_["file"] = v_25_auto
+    v_23_auto = v_25_auto
   end
-  local t_0_ = (_0_)["aniseed/locals"]
-  t_0_["file"] = v_0_
-  file = v_0_
+  local t_24_auto = (_1_)["aniseed/locals"]
+  t_24_auto["file"] = v_23_auto
+  file = v_23_auto
 end
 local glob
 do
-  local v_0_
+  local v_23_auto
   do
-    local v_0_0
+    local v_25_auto
     local function glob0(src_expr, src_dir, dest_dir)
       for _, path in ipairs(fs.relglob(src_dir, src_expr)) do
         if fs["macro-file-path?"](path) then
@@ -135,12 +135,12 @@ do
       end
       return nil
     end
-    v_0_0 = glob0
-    _0_["glob"] = v_0_0
-    v_0_ = v_0_0
+    v_25_auto = glob0
+    _1_["glob"] = v_25_auto
+    v_23_auto = v_25_auto
   end
-  local t_0_ = (_0_)["aniseed/locals"]
-  t_0_["glob"] = v_0_
-  glob = v_0_
+  local t_24_auto = (_1_)["aniseed/locals"]
+  t_24_auto["glob"] = v_23_auto
+  glob = v_23_auto
 end
 return nil

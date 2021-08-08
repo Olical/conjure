@@ -1,229 +1,229 @@
 local _2afile_2a = "fnl/conjure/client/clojure/nrepl/init.fnl"
-local _0_
+local _1_
 do
-  local name_0_ = "conjure.client.clojure.nrepl"
-  local module_0_
+  local name_4_auto = "conjure.client.clojure.nrepl"
+  local module_5_auto
   do
-    local x_0_ = package.loaded[name_0_]
-    if ("table" == type(x_0_)) then
-      module_0_ = x_0_
+    local x_6_auto = _G.package.loaded[name_4_auto]
+    if ("table" == type(x_6_auto)) then
+      module_5_auto = x_6_auto
     else
-      module_0_ = {}
+      module_5_auto = {}
     end
   end
-  module_0_["aniseed/module"] = name_0_
-  module_0_["aniseed/locals"] = ((module_0_)["aniseed/locals"] or {})
-  do end (module_0_)["aniseed/local-fns"] = ((module_0_)["aniseed/local-fns"] or {})
-  do end (package.loaded)[name_0_] = module_0_
-  _0_ = module_0_
+  module_5_auto["aniseed/module"] = name_4_auto
+  module_5_auto["aniseed/locals"] = ((module_5_auto)["aniseed/locals"] or {})
+  do end (module_5_auto)["aniseed/local-fns"] = ((module_5_auto)["aniseed/local-fns"] or {})
+  do end (_G.package.loaded)[name_4_auto] = module_5_auto
+  _1_ = module_5_auto
 end
 local autoload
-local function _1_(...)
+local function _3_(...)
   return (require("conjure.aniseed.autoload")).autoload(...)
 end
-autoload = _1_
-local function _2_(...)
-  local ok_3f_0_, val_0_ = nil, nil
-  local function _2_()
+autoload = _3_
+local function _6_(...)
+  local ok_3f_21_auto, val_22_auto = nil, nil
+  local function _5_()
     return {autoload("conjure.aniseed.core"), autoload("conjure.client.clojure.nrepl.action"), autoload("conjure.bridge"), autoload("conjure.client"), autoload("conjure.config"), autoload("conjure.eval"), autoload("conjure.mapping"), autoload("conjure.aniseed.nvim"), autoload("conjure.client.clojure.nrepl.parse"), autoload("conjure.client.clojure.nrepl.server"), autoload("conjure.aniseed.string")}
   end
-  ok_3f_0_, val_0_ = pcall(_2_)
-  if ok_3f_0_ then
-    _0_["aniseed/local-fns"] = {autoload = {a = "conjure.aniseed.core", action = "conjure.client.clojure.nrepl.action", bridge = "conjure.bridge", client = "conjure.client", config = "conjure.config", eval = "conjure.eval", mapping = "conjure.mapping", nvim = "conjure.aniseed.nvim", parse = "conjure.client.clojure.nrepl.parse", server = "conjure.client.clojure.nrepl.server", str = "conjure.aniseed.string"}}
-    return val_0_
+  ok_3f_21_auto, val_22_auto = pcall(_5_)
+  if ok_3f_21_auto then
+    _1_["aniseed/local-fns"] = {autoload = {a = "conjure.aniseed.core", action = "conjure.client.clojure.nrepl.action", bridge = "conjure.bridge", client = "conjure.client", config = "conjure.config", eval = "conjure.eval", mapping = "conjure.mapping", nvim = "conjure.aniseed.nvim", parse = "conjure.client.clojure.nrepl.parse", server = "conjure.client.clojure.nrepl.server", str = "conjure.aniseed.string"}}
+    return val_22_auto
   else
-    return print(val_0_)
+    return print(val_22_auto)
   end
 end
-local _local_0_ = _2_(...)
-local a = _local_0_[1]
-local server = _local_0_[10]
-local str = _local_0_[11]
-local action = _local_0_[2]
-local bridge = _local_0_[3]
-local client = _local_0_[4]
-local config = _local_0_[5]
-local eval = _local_0_[6]
-local mapping = _local_0_[7]
-local nvim = _local_0_[8]
-local parse = _local_0_[9]
-local _2amodule_2a = _0_
+local _local_4_ = _6_(...)
+local a = _local_4_[1]
+local server = _local_4_[10]
+local str = _local_4_[11]
+local action = _local_4_[2]
+local bridge = _local_4_[3]
+local client = _local_4_[4]
+local config = _local_4_[5]
+local eval = _local_4_[6]
+local mapping = _local_4_[7]
+local nvim = _local_4_[8]
+local parse = _local_4_[9]
+local _2amodule_2a = _1_
 local _2amodule_name_2a = "conjure.client.clojure.nrepl"
-do local _ = ({nil, _0_, nil, {{}, nil, nil, nil}})[2] end
+do local _ = ({nil, _1_, nil, {{}, nil, nil, nil}})[2] end
 local buf_suffix
 do
-  local v_0_
+  local v_23_auto
   do
-    local v_0_0 = ".cljc"
-    _0_["buf-suffix"] = v_0_0
-    v_0_ = v_0_0
+    local v_25_auto = ".cljc"
+    _1_["buf-suffix"] = v_25_auto
+    v_23_auto = v_25_auto
   end
-  local t_0_ = (_0_)["aniseed/locals"]
-  t_0_["buf-suffix"] = v_0_
-  buf_suffix = v_0_
+  local t_24_auto = (_1_)["aniseed/locals"]
+  t_24_auto["buf-suffix"] = v_23_auto
+  buf_suffix = v_23_auto
 end
 local comment_prefix
 do
-  local v_0_
+  local v_23_auto
   do
-    local v_0_0 = "; "
-    _0_["comment-prefix"] = v_0_0
-    v_0_ = v_0_0
+    local v_25_auto = "; "
+    _1_["comment-prefix"] = v_25_auto
+    v_23_auto = v_25_auto
   end
-  local t_0_ = (_0_)["aniseed/locals"]
-  t_0_["comment-prefix"] = v_0_
-  comment_prefix = v_0_
+  local t_24_auto = (_1_)["aniseed/locals"]
+  t_24_auto["comment-prefix"] = v_23_auto
+  comment_prefix = v_23_auto
 end
 local cfg
 do
-  local v_0_ = config["get-in-fn"]({"client", "clojure", "nrepl"})
-  local t_0_ = (_0_)["aniseed/locals"]
-  t_0_["cfg"] = v_0_
-  cfg = v_0_
+  local v_23_auto = config["get-in-fn"]({"client", "clojure", "nrepl"})
+  local t_24_auto = (_1_)["aniseed/locals"]
+  t_24_auto["cfg"] = v_23_auto
+  cfg = v_23_auto
 end
 config.merge({client = {clojure = {nrepl = {completion = {cljs = {use_suitable = true}, with_context = false}, connection = {auto_repl = {cmd = "bb nrepl-server localhost:8794", enabled = true, hidden = false, port = "8794", port_file = ".nrepl-port"}, default_host = "localhost", port_files = {".nrepl-port", ".shadow-cljs/nrepl.port"}}, eval = {auto_require = true, pretty_print = true, print_function = "conjure.internal/pprint", print_options = {length = 500, level = 50}, print_quota = nil, raw_out = false}, interrupt = {sample_limit = 0.3}, mapping = {connect_port_file = "cf", disconnect = "cd", interrupt = "ei", last_exception = "ve", refresh_all = "ra", refresh_changed = "rr", refresh_clear = "rc", result_1 = "v1", result_2 = "v2", result_3 = "v3", run_all_tests = "ta", run_alternate_ns_tests = "tN", run_current_ns_tests = "tn", run_current_test = "tc", session_clone = "sc", session_close = "sq", session_close_all = "sQ", session_fresh = "sf", session_list = "sl", session_next = "sn", session_prev = "sp", session_select = "ss", view_source = "vs"}, refresh = {after = nil, before = nil, dirs = nil}, test = {call_suffix = nil, current_form_names = {"deftest"}, runner = "clojure"}}}}})
 local context
 do
-  local v_0_
+  local v_23_auto
   do
-    local v_0_0
+    local v_25_auto
     local function context0(header)
-      local _3_ = header
-      if _3_ then
-        local _4_ = parse["strip-meta"](_3_)
-        if _4_ then
-          local _5_ = parse["strip-comments"](_4_)
-          if _5_ then
-            local _6_ = string.match(_5_, "%(%s*ns%s+([^)]*)")
-            if _6_ then
-              local _7_ = str.split(_6_, "%s+")
-              if _7_ then
-                return a.first(_7_)
+      local _8_ = header
+      if _8_ then
+        local _9_ = parse["strip-meta"](_8_)
+        if _9_ then
+          local _10_ = parse["strip-comments"](_9_)
+          if _10_ then
+            local _11_ = string.match(_10_, "%(%s*ns%s+([^)]*)")
+            if _11_ then
+              local _12_ = str.split(_11_, "%s+")
+              if _12_ then
+                return a.first(_12_)
               else
-                return _7_
+                return _12_
               end
             else
-              return _6_
+              return _11_
             end
           else
-            return _5_
+            return _10_
           end
         else
-          return _4_
+          return _9_
         end
       else
-        return _3_
+        return _8_
       end
     end
-    v_0_0 = context0
-    _0_["context"] = v_0_0
-    v_0_ = v_0_0
+    v_25_auto = context0
+    _1_["context"] = v_25_auto
+    v_23_auto = v_25_auto
   end
-  local t_0_ = (_0_)["aniseed/locals"]
-  t_0_["context"] = v_0_
-  context = v_0_
+  local t_24_auto = (_1_)["aniseed/locals"]
+  t_24_auto["context"] = v_23_auto
+  context = v_23_auto
 end
 local eval_file
 do
-  local v_0_
+  local v_23_auto
   do
-    local v_0_0
+    local v_25_auto
     local function eval_file0(opts)
       return action["eval-file"](opts)
     end
-    v_0_0 = eval_file0
-    _0_["eval-file"] = v_0_0
-    v_0_ = v_0_0
+    v_25_auto = eval_file0
+    _1_["eval-file"] = v_25_auto
+    v_23_auto = v_25_auto
   end
-  local t_0_ = (_0_)["aniseed/locals"]
-  t_0_["eval-file"] = v_0_
-  eval_file = v_0_
+  local t_24_auto = (_1_)["aniseed/locals"]
+  t_24_auto["eval-file"] = v_23_auto
+  eval_file = v_23_auto
 end
 local eval_str
 do
-  local v_0_
+  local v_23_auto
   do
-    local v_0_0
+    local v_25_auto
     local function eval_str0(opts)
       return action["eval-str"](opts)
     end
-    v_0_0 = eval_str0
-    _0_["eval-str"] = v_0_0
-    v_0_ = v_0_0
+    v_25_auto = eval_str0
+    _1_["eval-str"] = v_25_auto
+    v_23_auto = v_25_auto
   end
-  local t_0_ = (_0_)["aniseed/locals"]
-  t_0_["eval-str"] = v_0_
-  eval_str = v_0_
+  local t_24_auto = (_1_)["aniseed/locals"]
+  t_24_auto["eval-str"] = v_23_auto
+  eval_str = v_23_auto
 end
 local doc_str
 do
-  local v_0_
+  local v_23_auto
   do
-    local v_0_0
+    local v_25_auto
     local function doc_str0(opts)
       return action["doc-str"](opts)
     end
-    v_0_0 = doc_str0
-    _0_["doc-str"] = v_0_0
-    v_0_ = v_0_0
+    v_25_auto = doc_str0
+    _1_["doc-str"] = v_25_auto
+    v_23_auto = v_25_auto
   end
-  local t_0_ = (_0_)["aniseed/locals"]
-  t_0_["doc-str"] = v_0_
-  doc_str = v_0_
+  local t_24_auto = (_1_)["aniseed/locals"]
+  t_24_auto["doc-str"] = v_23_auto
+  doc_str = v_23_auto
 end
 local def_str
 do
-  local v_0_
+  local v_23_auto
   do
-    local v_0_0
+    local v_25_auto
     local function def_str0(opts)
       return action["def-str"](opts)
     end
-    v_0_0 = def_str0
-    _0_["def-str"] = v_0_0
-    v_0_ = v_0_0
+    v_25_auto = def_str0
+    _1_["def-str"] = v_25_auto
+    v_23_auto = v_25_auto
   end
-  local t_0_ = (_0_)["aniseed/locals"]
-  t_0_["def-str"] = v_0_
-  def_str = v_0_
+  local t_24_auto = (_1_)["aniseed/locals"]
+  t_24_auto["def-str"] = v_23_auto
+  def_str = v_23_auto
 end
 local completions
 do
-  local v_0_
+  local v_23_auto
   do
-    local v_0_0
+    local v_25_auto
     local function completions0(opts)
       return action.completions(opts)
     end
-    v_0_0 = completions0
-    _0_["completions"] = v_0_0
-    v_0_ = v_0_0
+    v_25_auto = completions0
+    _1_["completions"] = v_25_auto
+    v_23_auto = v_25_auto
   end
-  local t_0_ = (_0_)["aniseed/locals"]
-  t_0_["completions"] = v_0_
-  completions = v_0_
+  local t_24_auto = (_1_)["aniseed/locals"]
+  t_24_auto["completions"] = v_23_auto
+  completions = v_23_auto
 end
 local connect
 do
-  local v_0_
+  local v_23_auto
   do
-    local v_0_0
+    local v_25_auto
     local function connect0(opts)
       return action["connect-host-port"](opts)
     end
-    v_0_0 = connect0
-    _0_["connect"] = v_0_0
-    v_0_ = v_0_0
+    v_25_auto = connect0
+    _1_["connect"] = v_25_auto
+    v_23_auto = v_25_auto
   end
-  local t_0_ = (_0_)["aniseed/locals"]
-  t_0_["connect"] = v_0_
-  connect = v_0_
+  local t_24_auto = (_1_)["aniseed/locals"]
+  t_24_auto["connect"] = v_23_auto
+  connect = v_23_auto
 end
 local on_filetype
 do
-  local v_0_
+  local v_23_auto
   do
-    local v_0_0
+    local v_25_auto
     local function on_filetype0()
       mapping.buf("n", "CljDisconnect", cfg({"mapping", "disconnect"}), "conjure.client.clojure.nrepl.server", "disconnect")
       mapping.buf("n", "CljConnectPortFile", cfg({"mapping", "connect_port_file"}), "conjure.client.clojure.nrepl.action", "connect-port-file")
@@ -254,45 +254,45 @@ do
       nvim.ex.command_("-nargs=0 -buffer ConjureOutUnsubscribe", bridge["viml->lua"]("conjure.client.clojure.nrepl.action", "out-unsubscribe", {}))
       return action["passive-ns-require"]()
     end
-    v_0_0 = on_filetype0
-    _0_["on-filetype"] = v_0_0
-    v_0_ = v_0_0
+    v_25_auto = on_filetype0
+    _1_["on-filetype"] = v_25_auto
+    v_23_auto = v_25_auto
   end
-  local t_0_ = (_0_)["aniseed/locals"]
-  t_0_["on-filetype"] = v_0_
-  on_filetype = v_0_
+  local t_24_auto = (_1_)["aniseed/locals"]
+  t_24_auto["on-filetype"] = v_23_auto
+  on_filetype = v_23_auto
 end
 local on_load
 do
-  local v_0_
+  local v_23_auto
   do
-    local v_0_0
+    local v_25_auto
     local function on_load0()
       return action["connect-port-file"]()
     end
-    v_0_0 = on_load0
-    _0_["on-load"] = v_0_0
-    v_0_ = v_0_0
+    v_25_auto = on_load0
+    _1_["on-load"] = v_25_auto
+    v_23_auto = v_25_auto
   end
-  local t_0_ = (_0_)["aniseed/locals"]
-  t_0_["on-load"] = v_0_
-  on_load = v_0_
+  local t_24_auto = (_1_)["aniseed/locals"]
+  t_24_auto["on-load"] = v_23_auto
+  on_load = v_23_auto
 end
 local on_exit
 do
-  local v_0_
+  local v_23_auto
   do
-    local v_0_0
+    local v_25_auto
     local function on_exit0()
       action["delete-auto-repl-port-file"]()
       return server.disconnect()
     end
-    v_0_0 = on_exit0
-    _0_["on-exit"] = v_0_0
-    v_0_ = v_0_0
+    v_25_auto = on_exit0
+    _1_["on-exit"] = v_25_auto
+    v_23_auto = v_25_auto
   end
-  local t_0_ = (_0_)["aniseed/locals"]
-  t_0_["on-exit"] = v_0_
-  on_exit = v_0_
+  local t_24_auto = (_1_)["aniseed/locals"]
+  t_24_auto["on-exit"] = v_23_auto
+  on_exit = v_23_auto
 end
 return nil

@@ -1,60 +1,60 @@
 local _2afile_2a = "fnl/conjure/client/clojure/nrepl/ui.fnl"
-local _0_
+local _1_
 do
-  local name_0_ = "conjure.client.clojure.nrepl.ui"
-  local module_0_
+  local name_4_auto = "conjure.client.clojure.nrepl.ui"
+  local module_5_auto
   do
-    local x_0_ = package.loaded[name_0_]
-    if ("table" == type(x_0_)) then
-      module_0_ = x_0_
+    local x_6_auto = _G.package.loaded[name_4_auto]
+    if ("table" == type(x_6_auto)) then
+      module_5_auto = x_6_auto
     else
-      module_0_ = {}
+      module_5_auto = {}
     end
   end
-  module_0_["aniseed/module"] = name_0_
-  module_0_["aniseed/locals"] = ((module_0_)["aniseed/locals"] or {})
-  do end (module_0_)["aniseed/local-fns"] = ((module_0_)["aniseed/local-fns"] or {})
-  do end (package.loaded)[name_0_] = module_0_
-  _0_ = module_0_
+  module_5_auto["aniseed/module"] = name_4_auto
+  module_5_auto["aniseed/locals"] = ((module_5_auto)["aniseed/locals"] or {})
+  do end (module_5_auto)["aniseed/local-fns"] = ((module_5_auto)["aniseed/local-fns"] or {})
+  do end (_G.package.loaded)[name_4_auto] = module_5_auto
+  _1_ = module_5_auto
 end
 local autoload
-local function _1_(...)
+local function _3_(...)
   return (require("conjure.aniseed.autoload")).autoload(...)
 end
-autoload = _1_
-local function _2_(...)
-  local ok_3f_0_, val_0_ = nil, nil
-  local function _2_()
+autoload = _3_
+local function _6_(...)
+  local ok_3f_21_auto, val_22_auto = nil, nil
+  local function _5_()
     return {autoload("conjure.aniseed.core"), autoload("conjure.config"), autoload("conjure.log"), autoload("conjure.client.clojure.nrepl.state"), autoload("conjure.aniseed.string"), autoload("conjure.text")}
   end
-  ok_3f_0_, val_0_ = pcall(_2_)
-  if ok_3f_0_ then
-    _0_["aniseed/local-fns"] = {autoload = {a = "conjure.aniseed.core", config = "conjure.config", log = "conjure.log", state = "conjure.client.clojure.nrepl.state", str = "conjure.aniseed.string", text = "conjure.text"}}
-    return val_0_
+  ok_3f_21_auto, val_22_auto = pcall(_5_)
+  if ok_3f_21_auto then
+    _1_["aniseed/local-fns"] = {autoload = {a = "conjure.aniseed.core", config = "conjure.config", log = "conjure.log", state = "conjure.client.clojure.nrepl.state", str = "conjure.aniseed.string", text = "conjure.text"}}
+    return val_22_auto
   else
-    return print(val_0_)
+    return print(val_22_auto)
   end
 end
-local _local_0_ = _2_(...)
-local a = _local_0_[1]
-local config = _local_0_[2]
-local log = _local_0_[3]
-local state = _local_0_[4]
-local str = _local_0_[5]
-local text = _local_0_[6]
-local _2amodule_2a = _0_
+local _local_4_ = _6_(...)
+local a = _local_4_[1]
+local config = _local_4_[2]
+local log = _local_4_[3]
+local state = _local_4_[4]
+local str = _local_4_[5]
+local text = _local_4_[6]
+local _2amodule_2a = _1_
 local _2amodule_name_2a = "conjure.client.clojure.nrepl.ui"
-do local _ = ({nil, _0_, nil, {{}, nil, nil, nil}})[2] end
+do local _ = ({nil, _1_, nil, {{}, nil, nil, nil}})[2] end
 local cfg
 do
-  local v_0_ = config["get-in-fn"]({"client", "clojure", "nrepl"})
-  local t_0_ = (_0_)["aniseed/locals"]
-  t_0_["cfg"] = v_0_
-  cfg = v_0_
+  local v_23_auto = config["get-in-fn"]({"client", "clojure", "nrepl"})
+  local t_24_auto = (_1_)["aniseed/locals"]
+  t_24_auto["cfg"] = v_23_auto
+  cfg = v_23_auto
 end
 local handle_join_line
 do
-  local v_0_
+  local v_23_auto
   local function handle_join_line0(resp)
     local next_key
     if resp.out then
@@ -66,90 +66,90 @@ do
     end
     local key = state.get("join-next", "key")
     if (next_key or resp.value) then
-      local function _4_()
+      local function _9_()
         if (next_key and not text["trailing-newline?"](a.get(resp, next_key))) then
           return {key = next_key}
         end
       end
-      a.assoc(state.get(), "join-next", _4_())
+      a.assoc(state.get(), "join-next", _9_())
     end
     return (next_key and (key == next_key))
   end
-  v_0_ = handle_join_line0
-  local t_0_ = (_0_)["aniseed/locals"]
-  t_0_["handle-join-line"] = v_0_
-  handle_join_line = v_0_
+  v_23_auto = handle_join_line0
+  local t_24_auto = (_1_)["aniseed/locals"]
+  t_24_auto["handle-join-line"] = v_23_auto
+  handle_join_line = v_23_auto
 end
 local display_result
 do
-  local v_0_
+  local v_23_auto
   do
-    local v_0_0
+    local v_25_auto
     local function display_result0(resp, opts)
       local opts0 = (opts or {})
       local joined_3f = handle_join_line(resp)
-      local _3_
+      local _11_
       if resp.out then
-        local _4_
+        local _12_
         if opts0["simple-out?"] then
-          _4_ = "; "
+          _12_ = "; "
         elseif (opts0["raw-out?"] or cfg({"eval", "raw_out"})) then
-          _4_ = ""
+          _12_ = ""
         else
-          _4_ = "; (out) "
+          _12_ = "; (out) "
         end
-        _3_ = text["prefixed-lines"](text["trim-last-newline"](resp.out), _4_, {["skip-first?"] = joined_3f})
+        _11_ = text["prefixed-lines"](text["trim-last-newline"](resp.out), _12_, {["skip-first?"] = joined_3f})
       elseif resp.err then
-        _3_ = text["prefixed-lines"](text["trim-last-newline"](resp.err), "; (err) ", {["skip-first?"] = joined_3f})
+        _11_ = text["prefixed-lines"](text["trim-last-newline"](resp.err), "; (err) ", {["skip-first?"] = joined_3f})
       elseif resp.value then
         if not (opts0["ignore-nil?"] and ("nil" == resp.value)) then
-          _3_ = text["split-lines"](resp.value)
+          _11_ = text["split-lines"](resp.value)
         else
-        _3_ = nil
+        _11_ = nil
         end
       else
-        _3_ = nil
+        _11_ = nil
       end
-      return log.append(_3_, {["join-first?"] = joined_3f})
+      return log.append(_11_, {["join-first?"] = joined_3f})
     end
-    v_0_0 = display_result0
-    _0_["display-result"] = v_0_0
-    v_0_ = v_0_0
+    v_25_auto = display_result0
+    _1_["display-result"] = v_25_auto
+    v_23_auto = v_25_auto
   end
-  local t_0_ = (_0_)["aniseed/locals"]
-  t_0_["display-result"] = v_0_
-  display_result = v_0_
+  local t_24_auto = (_1_)["aniseed/locals"]
+  t_24_auto["display-result"] = v_23_auto
+  display_result = v_23_auto
 end
 local display_sessions
 do
-  local v_0_
+  local v_23_auto
   do
-    local v_0_0
+    local v_25_auto
     local function display_sessions0(sessions, cb)
       local current = state.get("conn", "session")
-      local function _4_(_3_)
-        local _arg_0_ = _3_
-        local idx = _arg_0_[1]
-        local session = _arg_0_[2]
-        local _5_
+      local function _18_(_16_)
+        local _arg_17_ = _16_
+        local idx = _arg_17_[1]
+        local session = _arg_17_[2]
+        local _19_
         if (current == session.id) then
-          _5_ = ">"
+          _19_ = ">"
         else
-          _5_ = " "
+          _19_ = " "
         end
-        return str.join({"; ", _5_, idx, " - ", session.str()})
+        return str.join({"; ", _19_, idx, " - ", session.str()})
       end
-      log.append(a.concat({("; Sessions (" .. a.count(sessions) .. "):")}, a["map-indexed"](_4_, sessions)), {["break?"] = true})
+      log.append(a.concat({("; Sessions (" .. a.count(sessions) .. "):")}, a["map-indexed"](_18_, sessions)), {["break?"] = true})
       if cb then
         return cb()
       end
     end
-    v_0_0 = display_sessions0
-    _0_["display-sessions"] = v_0_0
-    v_0_ = v_0_0
+    v_25_auto = display_sessions0
+    _1_["display-sessions"] = v_25_auto
+    v_23_auto = v_25_auto
   end
-  local t_0_ = (_0_)["aniseed/locals"]
-  t_0_["display-sessions"] = v_0_
-  display_sessions = v_0_
+  local t_24_auto = (_1_)["aniseed/locals"]
+  t_24_auto["display-sessions"] = v_23_auto
+  display_sessions = v_23_auto
 end
 return nil

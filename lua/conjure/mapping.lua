@@ -1,92 +1,92 @@
 local _2afile_2a = "fnl/conjure/mapping.fnl"
-local _0_
+local _1_
 do
-  local name_0_ = "conjure.mapping"
-  local module_0_
+  local name_4_auto = "conjure.mapping"
+  local module_5_auto
   do
-    local x_0_ = package.loaded[name_0_]
-    if ("table" == type(x_0_)) then
-      module_0_ = x_0_
+    local x_6_auto = _G.package.loaded[name_4_auto]
+    if ("table" == type(x_6_auto)) then
+      module_5_auto = x_6_auto
     else
-      module_0_ = {}
+      module_5_auto = {}
     end
   end
-  module_0_["aniseed/module"] = name_0_
-  module_0_["aniseed/locals"] = ((module_0_)["aniseed/locals"] or {})
-  do end (module_0_)["aniseed/local-fns"] = ((module_0_)["aniseed/local-fns"] or {})
-  do end (package.loaded)[name_0_] = module_0_
-  _0_ = module_0_
+  module_5_auto["aniseed/module"] = name_4_auto
+  module_5_auto["aniseed/locals"] = ((module_5_auto)["aniseed/locals"] or {})
+  do end (module_5_auto)["aniseed/local-fns"] = ((module_5_auto)["aniseed/local-fns"] or {})
+  do end (_G.package.loaded)[name_4_auto] = module_5_auto
+  _1_ = module_5_auto
 end
 local autoload
-local function _1_(...)
+local function _3_(...)
   return (require("conjure.aniseed.autoload")).autoload(...)
 end
-autoload = _1_
-local function _2_(...)
-  local ok_3f_0_, val_0_ = nil, nil
-  local function _2_()
+autoload = _3_
+local function _6_(...)
+  local ok_3f_21_auto, val_22_auto = nil, nil
+  local function _5_()
     return {autoload("conjure.aniseed.core"), autoload("conjure.bridge"), autoload("conjure.client"), autoload("conjure.config"), autoload("conjure.eval"), autoload("conjure.extract"), autoload("conjure.log"), autoload("conjure.aniseed.nvim"), autoload("conjure.aniseed.string")}
   end
-  ok_3f_0_, val_0_ = pcall(_2_)
-  if ok_3f_0_ then
-    _0_["aniseed/local-fns"] = {["require-macros"] = {["conjure.macros"] = true}, autoload = {a = "conjure.aniseed.core", bridge = "conjure.bridge", client = "conjure.client", config = "conjure.config", eval = "conjure.eval", extract = "conjure.extract", log = "conjure.log", nvim = "conjure.aniseed.nvim", str = "conjure.aniseed.string"}}
-    return val_0_
+  ok_3f_21_auto, val_22_auto = pcall(_5_)
+  if ok_3f_21_auto then
+    _1_["aniseed/local-fns"] = {["require-macros"] = {["conjure.macros"] = true}, autoload = {a = "conjure.aniseed.core", bridge = "conjure.bridge", client = "conjure.client", config = "conjure.config", eval = "conjure.eval", extract = "conjure.extract", log = "conjure.log", nvim = "conjure.aniseed.nvim", str = "conjure.aniseed.string"}}
+    return val_22_auto
   else
-    return print(val_0_)
+    return print(val_22_auto)
   end
 end
-local _local_0_ = _2_(...)
-local a = _local_0_[1]
-local bridge = _local_0_[2]
-local client = _local_0_[3]
-local config = _local_0_[4]
-local eval = _local_0_[5]
-local extract = _local_0_[6]
-local log = _local_0_[7]
-local nvim = _local_0_[8]
-local str = _local_0_[9]
-local _2amodule_2a = _0_
+local _local_4_ = _6_(...)
+local a = _local_4_[1]
+local bridge = _local_4_[2]
+local client = _local_4_[3]
+local config = _local_4_[4]
+local eval = _local_4_[5]
+local extract = _local_4_[6]
+local log = _local_4_[7]
+local nvim = _local_4_[8]
+local str = _local_4_[9]
+local _2amodule_2a = _1_
 local _2amodule_name_2a = "conjure.mapping"
-do local _ = ({nil, _0_, nil, {{nil}, nil, nil, nil}})[2] end
+do local _ = ({nil, _1_, nil, {{nil}, nil, nil, nil}})[2] end
 local cfg
 do
-  local v_0_
+  local v_23_auto
   local function cfg0(k)
     return config["get-in"]({"mapping", k})
   end
-  v_0_ = cfg0
-  local t_0_ = (_0_)["aniseed/locals"]
-  t_0_["cfg"] = v_0_
-  cfg = v_0_
+  v_23_auto = cfg0
+  local t_24_auto = (_1_)["aniseed/locals"]
+  t_24_auto["cfg"] = v_23_auto
+  cfg = v_23_auto
 end
 local vim_repeat
 do
-  local v_0_
+  local v_23_auto
   local function vim_repeat0(mapping)
     return ("repeat#set(\"" .. nvim.fn.escape(mapping, "\"") .. "\", 1)")
   end
-  v_0_ = vim_repeat0
-  local t_0_ = (_0_)["aniseed/locals"]
-  t_0_["vim-repeat"] = v_0_
-  vim_repeat = v_0_
+  v_23_auto = vim_repeat0
+  local t_24_auto = (_1_)["aniseed/locals"]
+  t_24_auto["vim-repeat"] = v_23_auto
+  vim_repeat = v_23_auto
 end
 local buf
 do
-  local v_0_
+  local v_23_auto
   do
-    local v_0_0
+    local v_25_auto
     local function buf0(mode_or_opts, cmd_suffix, keys, ...)
       if keys then
-        local function _3_(...)
+        local function _9_(...)
           if ("table" == type(mode_or_opts)) then
             return {a.get(mode_or_opts, "mode"), mode_or_opts}
           else
             return {mode_or_opts, {}}
           end
         end
-        local _let_0_ = _3_(...)
-        local mode = _let_0_[1]
-        local opts = _let_0_[2]
+        local _let_8_ = _9_(...)
+        local mode = _let_8_[1]
+        local opts = _let_8_[2]
         local args = {...}
         local mapping
         if a["string?"](keys) then
@@ -98,59 +98,58 @@ do
         if cmd then
           nvim.ex.command_(("-range " .. cmd), bridge["viml->lua"](unpack(args)))
         end
-        local _6_
+        local _12_
         if cmd then
-          local function _7_(...)
-            if (false ~= a.get(opts, "repeat?")) then
-              return (":silent! call " .. vim_repeat(mapping) .. "<cr>")
-            else
-              return ""
-            end
+          local _13_
+          if (false ~= a.get(opts, "repeat?")) then
+            _13_ = (":silent! call " .. vim_repeat(mapping) .. "<cr>")
+          else
+            _13_ = ""
           end
-          _6_ = (":" .. cmd .. "<cr>" .. _7_(...))
+          _12_ = (":" .. cmd .. "<cr>" .. _13_)
         else
-          _6_ = unpack(args)
+          _12_ = unpack(args)
         end
-        return nvim.buf_set_keymap(0, mode, mapping, _6_, {noremap = true, silent = true})
+        return nvim.buf_set_keymap(0, mode, mapping, _12_, {noremap = true, silent = true})
       end
     end
-    v_0_0 = buf0
-    _0_["buf"] = v_0_0
-    v_0_ = v_0_0
+    v_25_auto = buf0
+    _1_["buf"] = v_25_auto
+    v_23_auto = v_25_auto
   end
-  local t_0_ = (_0_)["aniseed/locals"]
-  t_0_["buf"] = v_0_
-  buf = v_0_
+  local t_24_auto = (_1_)["aniseed/locals"]
+  t_24_auto["buf"] = v_23_auto
+  buf = v_23_auto
 end
 local eval_marked_form
 do
-  local v_0_
+  local v_23_auto
   do
-    local v_0_0
+    local v_25_auto
     local function eval_marked_form0()
       local mark = eval["marked-form"]()
       local mapping
-      local function _3_(m)
+      local function _17_(m)
         return ((":ConjureEvalMarkedForm<CR>" == m.rhs) and m.lhs)
       end
-      mapping = a.some(_3_, nvim.buf_get_keymap(0, "n"))
+      mapping = a.some(_17_, nvim.buf_get_keymap(0, "n"))
       if (mark and mapping) then
         return nvim.ex.silent_("call", vim_repeat((mapping .. mark)))
       end
     end
-    v_0_0 = eval_marked_form0
-    _0_["eval-marked-form"] = v_0_0
-    v_0_ = v_0_0
+    v_25_auto = eval_marked_form0
+    _1_["eval-marked-form"] = v_25_auto
+    v_23_auto = v_25_auto
   end
-  local t_0_ = (_0_)["aniseed/locals"]
-  t_0_["eval-marked-form"] = v_0_
-  eval_marked_form = v_0_
+  local t_24_auto = (_1_)["aniseed/locals"]
+  t_24_auto["eval-marked-form"] = v_23_auto
+  eval_marked_form = v_23_auto
 end
 local on_filetype
 do
-  local v_0_
+  local v_23_auto
   do
-    local v_0_0
+    local v_25_auto
     local function on_filetype0()
       buf("n", "LogSplit", cfg("log_split"), "conjure.log", "split")
       buf("n", "LogVSplit", cfg("log_vsplit"), "conjure.log", "vsplit")
@@ -180,54 +179,54 @@ do
       end
       return client["optional-call"]("on-filetype")
     end
-    v_0_0 = on_filetype0
-    _0_["on-filetype"] = v_0_0
-    v_0_ = v_0_0
+    v_25_auto = on_filetype0
+    _1_["on-filetype"] = v_25_auto
+    v_23_auto = v_25_auto
   end
-  local t_0_ = (_0_)["aniseed/locals"]
-  t_0_["on-filetype"] = v_0_
-  on_filetype = v_0_
+  local t_24_auto = (_1_)["aniseed/locals"]
+  t_24_auto["on-filetype"] = v_23_auto
+  on_filetype = v_23_auto
 end
 local on_exit
 do
-  local v_0_
+  local v_23_auto
   do
-    local v_0_0
+    local v_25_auto
     local function on_exit0()
-      local function _3_()
+      local function _20_()
         return client["optional-call"]("on-exit")
       end
-      return client["each-loaded-client"](_3_)
+      return client["each-loaded-client"](_20_)
     end
-    v_0_0 = on_exit0
-    _0_["on-exit"] = v_0_0
-    v_0_ = v_0_0
+    v_25_auto = on_exit0
+    _1_["on-exit"] = v_25_auto
+    v_23_auto = v_25_auto
   end
-  local t_0_ = (_0_)["aniseed/locals"]
-  t_0_["on-exit"] = v_0_
-  on_exit = v_0_
+  local t_24_auto = (_1_)["aniseed/locals"]
+  t_24_auto["on-exit"] = v_23_auto
+  on_exit = v_23_auto
 end
 local on_quit
 do
-  local v_0_
+  local v_23_auto
   do
-    local v_0_0
+    local v_25_auto
     local function on_quit0()
       return log["close-hud"]()
     end
-    v_0_0 = on_quit0
-    _0_["on-quit"] = v_0_0
-    v_0_ = v_0_0
+    v_25_auto = on_quit0
+    _1_["on-quit"] = v_25_auto
+    v_23_auto = v_25_auto
   end
-  local t_0_ = (_0_)["aniseed/locals"]
-  t_0_["on-quit"] = v_0_
-  on_quit = v_0_
+  local t_24_auto = (_1_)["aniseed/locals"]
+  t_24_auto["on-quit"] = v_23_auto
+  on_quit = v_23_auto
 end
 local init
 do
-  local v_0_
+  local v_23_auto
   do
-    local v_0_0
+    local v_25_auto
     local function init0(filetypes)
       nvim.ex.augroup("conjure_init_filetypes")
       nvim.ex.autocmd_()
@@ -241,19 +240,19 @@ do
       nvim.ex.autocmd("QuitPre", "*", ("lua require('" .. _2amodule_name_2a .. "')['" .. "on-quit" .. "']()"))
       return nvim.ex.augroup("END")
     end
-    v_0_0 = init0
-    _0_["init"] = v_0_0
-    v_0_ = v_0_0
+    v_25_auto = init0
+    _1_["init"] = v_25_auto
+    v_23_auto = v_25_auto
   end
-  local t_0_ = (_0_)["aniseed/locals"]
-  t_0_["init"] = v_0_
-  init = v_0_
+  local t_24_auto = (_1_)["aniseed/locals"]
+  t_24_auto["init"] = v_23_auto
+  init = v_23_auto
 end
 local eval_ranged_command
 do
-  local v_0_
+  local v_23_auto
   do
-    local v_0_0
+    local v_25_auto
     local function eval_ranged_command0(start, _end, code)
       if ("" == code) then
         return eval.range(a.dec(start), _end)
@@ -261,43 +260,43 @@ do
         return eval.command(code)
       end
     end
-    v_0_0 = eval_ranged_command0
-    _0_["eval-ranged-command"] = v_0_0
-    v_0_ = v_0_0
+    v_25_auto = eval_ranged_command0
+    _1_["eval-ranged-command"] = v_25_auto
+    v_23_auto = v_25_auto
   end
-  local t_0_ = (_0_)["aniseed/locals"]
-  t_0_["eval-ranged-command"] = v_0_
-  eval_ranged_command = v_0_
+  local t_24_auto = (_1_)["aniseed/locals"]
+  t_24_auto["eval-ranged-command"] = v_23_auto
+  eval_ranged_command = v_23_auto
 end
 local connect_command
 do
-  local v_0_
+  local v_23_auto
   do
-    local v_0_0
+    local v_25_auto
     local function connect_command0(...)
       local args = {...}
-      local function _3_(...)
+      local function _22_(...)
         if (1 == a.count(args)) then
           return {port = a.first(args)}
         else
           return {host = a.first(args), port = a.second(args)}
         end
       end
-      return client.call("connect", _3_(...))
+      return client.call("connect", _22_(...))
     end
-    v_0_0 = connect_command0
-    _0_["connect-command"] = v_0_0
-    v_0_ = v_0_0
+    v_25_auto = connect_command0
+    _1_["connect-command"] = v_25_auto
+    v_23_auto = v_25_auto
   end
-  local t_0_ = (_0_)["aniseed/locals"]
-  t_0_["connect-command"] = v_0_
-  connect_command = v_0_
+  local t_24_auto = (_1_)["aniseed/locals"]
+  t_24_auto["connect-command"] = v_23_auto
+  connect_command = v_23_auto
 end
 local client_state_command
 do
-  local v_0_
+  local v_23_auto
   do
-    local v_0_0
+    local v_25_auto
     local function client_state_command0(state_key)
       if state_key then
         return client["set-state-key!"](state_key)
@@ -305,38 +304,38 @@ do
         return a.println(client["state-key"]())
       end
     end
-    v_0_0 = client_state_command0
-    _0_["client-state-command"] = v_0_0
-    v_0_ = v_0_0
+    v_25_auto = client_state_command0
+    _1_["client-state-command"] = v_25_auto
+    v_23_auto = v_25_auto
   end
-  local t_0_ = (_0_)["aniseed/locals"]
-  t_0_["client-state-command"] = v_0_
-  client_state_command = v_0_
+  local t_24_auto = (_1_)["aniseed/locals"]
+  t_24_auto["client-state-command"] = v_23_auto
+  client_state_command = v_23_auto
 end
 local omnifunc
 do
-  local v_0_
+  local v_23_auto
   do
-    local v_0_0
+    local v_25_auto
     local function omnifunc0(find_start_3f, base)
       if find_start_3f then
-        local _let_0_ = nvim.win_get_cursor(0)
-        local row = _let_0_[1]
-        local col = _let_0_[2]
-        local _let_1_ = nvim.buf_get_lines(0, a.dec(row), row, false)
-        local line = _let_1_[1]
+        local _let_24_ = nvim.win_get_cursor(0)
+        local row = _let_24_[1]
+        local col = _let_24_[2]
+        local _let_25_ = nvim.buf_get_lines(0, a.dec(row), row, false)
+        local line = _let_25_[1]
         return (col - a.count(nvim.fn.matchstr(string.sub(line, 1, col), "\\k\\+$")))
       else
         return eval["completions-sync"](base)
       end
     end
-    v_0_0 = omnifunc0
-    _0_["omnifunc"] = v_0_0
-    v_0_ = v_0_0
+    v_25_auto = omnifunc0
+    _1_["omnifunc"] = v_25_auto
+    v_23_auto = v_25_auto
   end
-  local t_0_ = (_0_)["aniseed/locals"]
-  t_0_["omnifunc"] = v_0_
-  omnifunc = v_0_
+  local t_24_auto = (_1_)["aniseed/locals"]
+  t_24_auto["omnifunc"] = v_23_auto
+  omnifunc = v_23_auto
 end
 nvim.ex.function_(str.join("\n", {"ConjureEvalMotion(kind)", "call luaeval(\"require('conjure.eval')['selection'](_A)\", a:kind)", "endfunction"}))
 nvim.ex.function_(str.join("\n", {"ConjureOmnifunc(findstart, base)", "return luaeval(\"require('conjure.mapping')['omnifunc'](_A[1] == 1, _A[2])\", [a:findstart, a:base])", "endfunction"}))

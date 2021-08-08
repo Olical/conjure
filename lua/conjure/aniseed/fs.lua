@@ -1,123 +1,123 @@
 local _2afile_2a = "fnl/aniseed/fs.fnl"
-local _0_
+local _1_
 do
-  local name_0_ = "conjure.aniseed.fs"
-  local module_0_
+  local name_4_auto = "conjure.aniseed.fs"
+  local module_5_auto
   do
-    local x_0_ = package.loaded[name_0_]
-    if ("table" == type(x_0_)) then
-      module_0_ = x_0_
+    local x_6_auto = _G.package.loaded[name_4_auto]
+    if ("table" == type(x_6_auto)) then
+      module_5_auto = x_6_auto
     else
-      module_0_ = {}
+      module_5_auto = {}
     end
   end
-  module_0_["aniseed/module"] = name_0_
-  module_0_["aniseed/locals"] = ((module_0_)["aniseed/locals"] or {})
-  do end (module_0_)["aniseed/local-fns"] = ((module_0_)["aniseed/local-fns"] or {})
-  do end (package.loaded)[name_0_] = module_0_
-  _0_ = module_0_
+  module_5_auto["aniseed/module"] = name_4_auto
+  module_5_auto["aniseed/locals"] = ((module_5_auto)["aniseed/locals"] or {})
+  do end (module_5_auto)["aniseed/local-fns"] = ((module_5_auto)["aniseed/local-fns"] or {})
+  do end (_G.package.loaded)[name_4_auto] = module_5_auto
+  _1_ = module_5_auto
 end
 local autoload
-local function _1_(...)
+local function _3_(...)
   return (require("conjure.aniseed.autoload")).autoload(...)
 end
-autoload = _1_
-local function _2_(...)
-  local ok_3f_0_, val_0_ = nil, nil
-  local function _2_()
+autoload = _3_
+local function _6_(...)
+  local ok_3f_21_auto, val_22_auto = nil, nil
+  local function _5_()
     return {autoload("conjure.aniseed.core"), autoload("conjure.aniseed.nvim")}
   end
-  ok_3f_0_, val_0_ = pcall(_2_)
-  if ok_3f_0_ then
-    _0_["aniseed/local-fns"] = {autoload = {a = "conjure.aniseed.core", nvim = "conjure.aniseed.nvim"}}
-    return val_0_
+  ok_3f_21_auto, val_22_auto = pcall(_5_)
+  if ok_3f_21_auto then
+    _1_["aniseed/local-fns"] = {autoload = {a = "conjure.aniseed.core", nvim = "conjure.aniseed.nvim"}}
+    return val_22_auto
   else
-    return print(val_0_)
+    return print(val_22_auto)
   end
 end
-local _local_0_ = _2_(...)
-local a = _local_0_[1]
-local nvim = _local_0_[2]
-local _2amodule_2a = _0_
+local _local_4_ = _6_(...)
+local a = _local_4_[1]
+local nvim = _local_4_[2]
+local _2amodule_2a = _1_
 local _2amodule_name_2a = "conjure.aniseed.fs"
-do local _ = ({nil, _0_, nil, {{}, nil, nil, nil}})[2] end
+do local _ = ({nil, _1_, nil, {{}, nil, nil, nil}})[2] end
 local path_sep
 do
-  local v_0_
+  local v_23_auto
   do
-    local v_0_0
+    local v_25_auto
     do
       local os = string.lower(jit.os)
       if (("linux" == os) or ("osx" == os) or ("bsd" == os)) then
-        v_0_0 = "/"
+        v_25_auto = "/"
       else
-        v_0_0 = "\\"
+        v_25_auto = "\\"
       end
     end
-    _0_["path-sep"] = v_0_0
-    v_0_ = v_0_0
+    _1_["path-sep"] = v_25_auto
+    v_23_auto = v_25_auto
   end
-  local t_0_ = (_0_)["aniseed/locals"]
-  t_0_["path-sep"] = v_0_
-  path_sep = v_0_
+  local t_24_auto = (_1_)["aniseed/locals"]
+  t_24_auto["path-sep"] = v_23_auto
+  path_sep = v_23_auto
 end
 local basename
 do
-  local v_0_
+  local v_23_auto
   do
-    local v_0_0
+    local v_25_auto
     local function basename0(path)
       return nvim.fn.fnamemodify(path, ":h")
     end
-    v_0_0 = basename0
-    _0_["basename"] = v_0_0
-    v_0_ = v_0_0
+    v_25_auto = basename0
+    _1_["basename"] = v_25_auto
+    v_23_auto = v_25_auto
   end
-  local t_0_ = (_0_)["aniseed/locals"]
-  t_0_["basename"] = v_0_
-  basename = v_0_
+  local t_24_auto = (_1_)["aniseed/locals"]
+  t_24_auto["basename"] = v_23_auto
+  basename = v_23_auto
 end
 local mkdirp
 do
-  local v_0_
+  local v_23_auto
   do
-    local v_0_0
+    local v_25_auto
     local function mkdirp0(dir)
       return nvim.fn.mkdir(dir, "p")
     end
-    v_0_0 = mkdirp0
-    _0_["mkdirp"] = v_0_0
-    v_0_ = v_0_0
+    v_25_auto = mkdirp0
+    _1_["mkdirp"] = v_25_auto
+    v_23_auto = v_25_auto
   end
-  local t_0_ = (_0_)["aniseed/locals"]
-  t_0_["mkdirp"] = v_0_
-  mkdirp = v_0_
+  local t_24_auto = (_1_)["aniseed/locals"]
+  t_24_auto["mkdirp"] = v_23_auto
+  mkdirp = v_23_auto
 end
 local relglob
 do
-  local v_0_
+  local v_23_auto
   do
-    local v_0_0
+    local v_25_auto
     local function relglob0(dir, expr)
       local dir_len = a.inc(string.len(dir))
-      local function _3_(_241)
+      local function _9_(_241)
         return string.sub(_241, dir_len)
       end
-      return a.map(_3_, nvim.fn.globpath(dir, expr, true, true))
+      return a.map(_9_, nvim.fn.globpath(dir, expr, true, true))
     end
-    v_0_0 = relglob0
-    _0_["relglob"] = v_0_0
-    v_0_ = v_0_0
+    v_25_auto = relglob0
+    _1_["relglob"] = v_25_auto
+    v_23_auto = v_25_auto
   end
-  local t_0_ = (_0_)["aniseed/locals"]
-  t_0_["relglob"] = v_0_
-  relglob = v_0_
+  local t_24_auto = (_1_)["aniseed/locals"]
+  t_24_auto["relglob"] = v_23_auto
+  relglob = v_23_auto
 end
 local glob_dir_newer_3f
 do
-  local v_0_
+  local v_23_auto
   do
-    local v_0_0
+    local v_25_auto
     local function glob_dir_newer_3f0(a_dir, b_dir, expr, b_dir_path_fn)
       local newer_3f = false
       for _, path in ipairs(relglob(a_dir, expr)) do
@@ -127,28 +127,28 @@ do
       end
       return newer_3f
     end
-    v_0_0 = glob_dir_newer_3f0
-    _0_["glob-dir-newer?"] = v_0_0
-    v_0_ = v_0_0
+    v_25_auto = glob_dir_newer_3f0
+    _1_["glob-dir-newer?"] = v_25_auto
+    v_23_auto = v_25_auto
   end
-  local t_0_ = (_0_)["aniseed/locals"]
-  t_0_["glob-dir-newer?"] = v_0_
-  glob_dir_newer_3f = v_0_
+  local t_24_auto = (_1_)["aniseed/locals"]
+  t_24_auto["glob-dir-newer?"] = v_23_auto
+  glob_dir_newer_3f = v_23_auto
 end
 local macro_file_path_3f
 do
-  local v_0_
+  local v_23_auto
   do
-    local v_0_0
+    local v_25_auto
     local function macro_file_path_3f0(path)
       return string.match(path, "macros.fnl$")
     end
-    v_0_0 = macro_file_path_3f0
-    _0_["macro-file-path?"] = v_0_0
-    v_0_ = v_0_0
+    v_25_auto = macro_file_path_3f0
+    _1_["macro-file-path?"] = v_25_auto
+    v_23_auto = v_25_auto
   end
-  local t_0_ = (_0_)["aniseed/locals"]
-  t_0_["macro-file-path?"] = v_0_
-  macro_file_path_3f = v_0_
+  local t_24_auto = (_1_)["aniseed/locals"]
+  t_24_auto["macro-file-path?"] = v_23_auto
+  macro_file_path_3f = v_23_auto
 end
 return nil
