@@ -120,7 +120,8 @@
                                 ;; Trying to disable custom readline config.
                                 ;; Doesn't work in practice but is probably close?
                                 ;; If you know how, please open a PR!
-                                {:INPUTRC "/dev/null"})}
+                                {:INPUTRC "/dev/null"
+                                 :TERM "dumb"})}
                     (client.schedule-wrap on-exit))]
       (if handle
         (do

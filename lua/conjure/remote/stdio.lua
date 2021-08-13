@@ -212,7 +212,7 @@ do
       local _let_32_ = parse_cmd(opts.cmd)
       local args = _let_32_["args"]
       local cmd = _let_32_["cmd"]
-      local handle, pid_or_err = uv.spawn(cmd, {args = args, env = extend_env({INPUTRC = "/dev/null"}), stdio = {stdin, stdout, stderr}}, client["schedule-wrap"](on_exit))
+      local handle, pid_or_err = uv.spawn(cmd, {args = args, env = extend_env({INPUTRC = "/dev/null", TERM = "dumb"}), stdio = {stdin, stdout, stderr}}, client["schedule-wrap"](on_exit))
       if handle then
         stdout:read_start(client["schedule-wrap"](on_stdout))
         stderr:read_start(client["schedule-wrap"](on_stderr))
