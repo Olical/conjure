@@ -23,5 +23,6 @@ in
       unstable.racket
       unstable.janet
       unstable.chicken
+      unstable.hy
     ];
   }
