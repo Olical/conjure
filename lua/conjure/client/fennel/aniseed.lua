@@ -188,8 +188,8 @@ do
         local code = (("(module " .. (opts.context or "conjure.aniseed.user") .. ") ") .. opts.code .. "\n")
         local out
         local function _19_()
-          if cfg({"use_metadata"}) then
-            package.loaded.fennel = ani("fennel")
+          if (cfg({"use_metadata"}) and not package.loaded.fennel) then
+            package.loaded.fennel = anic("fennel", "impl")
           end
           local _let_21_ = {anic("eval", "str", code, {filename = opts["file-path"], useMetadata = cfg({"use_metadata"})})}
           local ok_3f = _let_21_[1]

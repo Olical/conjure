@@ -64,8 +64,9 @@
                       opts.code "\n")
              out (anic :nu :with-out-str
                        (fn []
-                         (when (cfg [:use_metadata])
-                           (set package.loaded.fennel (ani :fennel)))
+                         (when (and (cfg [:use_metadata])
+                                    (not package.loaded.fennel))
+                           (set package.loaded.fennel (anic :fennel :impl)))
 
                          (let [[ok? & results]
                                [(anic :eval :str code
