@@ -40,6 +40,8 @@
 
 ;; TODO Better error output, pretty gross prefixes right now.
 ;; TODO Handle initial loading of modules when a file is first opened
+;; TODO Are we reusing REPLs?
+;; TODO Disable the global checking in Aniseed that displays errors on startup.
 (defonce- repls {})
 (defn- repl [opts]
   (let [file-path (a.get opts :file-path)
