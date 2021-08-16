@@ -65,7 +65,7 @@ do
       else
         _10_ = "nil"
       end
-      return ("(local *file* " .. _10_ .. ")" .. "(require-macros \"" .. macros_module .. "\")\n" .. code)
+      return ("(local *file* " .. _10_ .. ")" .. "(require-macros \"" .. macros_module .. "\")\n" .. (code or ""))
     end
     v_25_auto = macros_prefix0
     _1_["macros-prefix"] = v_25_auto

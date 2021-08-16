@@ -64,4 +64,42 @@ do
   t_24_auto["str"] = v_23_auto
   str = v_23_auto
 end
+local repl
+do
+  local v_23_auto
+  do
+    local v_25_auto
+    local function repl0(opts)
+      local eval_values = nil
+      local fnl = fennel.impl()
+      local co
+      local function _9_()
+        local function _10_(_241, _242)
+          return error(_242)
+        end
+        local function _11_(_241)
+          eval_values = _241
+          return nil
+        end
+        return fnl.repl(a.merge({onError = _10_, onValues = _11_, readChunk = coroutine.yield}, opts))
+      end
+      co = coroutine.create(_9_)
+      coroutine.resume(co)
+      coroutine.resume(co, compile["macros-prefix"](nil, opts))
+      local function _12_(code)
+        coroutine.resume(co, code)
+        local prev_eval_values = eval_values
+        eval_values = nil
+        return prev_eval_values
+      end
+      return _12_
+    end
+    v_25_auto = repl0
+    _1_["repl"] = v_25_auto
+    v_23_auto = v_25_auto
+  end
+  local t_24_auto = (_1_)["aniseed/locals"]
+  t_24_auto["repl"] = v_23_auto
+  repl = v_23_auto
+end
 return nil
