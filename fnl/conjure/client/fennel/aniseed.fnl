@@ -35,6 +35,8 @@
       (a.get mod f-name)
       mod)))
 
+;; TODO Better error output, pretty gross prefixes right now.
+;; TODO Handle initial loading of modules when a file is first opened
 (defonce- repls {})
 (defn- repl [opts]
   (let [file-path (a.get opts :file-path)
