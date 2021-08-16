@@ -117,6 +117,17 @@ do
   t_24_auto["ani"] = v_23_auto
   ani = v_23_auto
 end
+local anic
+do
+  local v_23_auto
+  local function anic0(mod, f_name, ...)
+    return ani(mod, f_name)(...)
+  end
+  v_23_auto = anic0
+  local t_24_auto = (_1_)["aniseed/locals"]
+  t_24_auto["anic"] = v_23_auto
+  anic = v_23_auto
+end
 local repls
 do
   local v_23_auto = ((_1_)["aniseed/locals"].repls or {})
@@ -139,17 +150,6 @@ do
   local t_24_auto = (_1_)["aniseed/locals"]
   t_24_auto["repl"] = v_23_auto
   repl = v_23_auto
-end
-local anic
-do
-  local v_23_auto
-  local function anic0(mod, f_name, ...)
-    return ani(mod, f_name)(...)
-  end
-  v_23_auto = anic0
-  local t_24_auto = (_1_)["aniseed/locals"]
-  t_24_auto["anic"] = v_23_auto
-  anic = v_23_auto
 end
 local display_result
 do

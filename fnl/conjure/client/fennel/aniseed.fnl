@@ -35,6 +35,9 @@
       (a.get mod f-name)
       mod)))
 
+(defn- anic [mod f-name ...]
+  ((ani mod f-name) ...))
+
 ;; TODO Better error output, pretty gross prefixes right now.
 ;; TODO Handle initial loading of modules when a file is first opened
 (defonce- repls {})
@@ -45,9 +48,6 @@
     (when file-path
       (tset repls file-path repl))
     repl))
-
-(defn- anic [mod f-name ...]
-  ((ani mod f-name) ...))
 
 (defn display-result [opts]
   (when opts
