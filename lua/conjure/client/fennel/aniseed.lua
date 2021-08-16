@@ -117,6 +117,29 @@ do
   t_24_auto["ani"] = v_23_auto
   ani = v_23_auto
 end
+local repls
+do
+  local v_23_auto = ((_1_)["aniseed/locals"].repls or {})
+  local t_24_auto = (_1_)["aniseed/locals"]
+  t_24_auto["repls"] = v_23_auto
+  repls = v_23_auto
+end
+local repl
+do
+  local v_23_auto
+  local function repl0(opts)
+    local file_path = a.get(opts, "file-path")
+    local repl1 = (a.get(repls, file_path) or anic("eval", "repl", opts))
+    if file_path then
+      repls[file_path] = repl1
+    end
+    return repl1
+  end
+  v_23_auto = repl0
+  local t_24_auto = (_1_)["aniseed/locals"]
+  t_24_auto["repl"] = v_23_auto
+  repl = v_23_auto
+end
 local anic
 do
   local v_23_auto
@@ -135,9 +158,9 @@ do
     local v_25_auto
     local function display_result0(opts)
       if opts then
-        local _let_9_ = opts
-        local ok_3f = _let_9_["ok?"]
-        local results = _let_9_["results"]
+        local _let_10_ = opts
+        local ok_3f = _let_10_["ok?"]
+        local results = _let_10_["results"]
         local result_str
         if ok_3f then
           if a["empty?"](results) then
@@ -150,17 +173,17 @@ do
         end
         local result_lines = str.split(result_str, "\n")
         if not opts["passive?"] then
-          local function _13_()
+          local function _14_()
             if ok_3f then
               return result_lines
             else
-              local function _12_(_241)
+              local function _13_(_241)
                 return ("; " .. _241)
               end
-              return a.map(_12_, result_lines)
+              return a.map(_13_, result_lines)
             end
           end
-          log.append(_13_())
+          log.append(_14_())
         end
         if opts["on-result-raw"] then
           opts["on-result-raw"](results)
@@ -178,33 +201,51 @@ do
   t_24_auto["display-result"] = v_23_auto
   display_result = v_23_auto
 end
+local identity
+do
+  local v_23_auto
+  local function identity0(x)
+    return x
+  end
+  v_23_auto = identity0
+  local t_24_auto = (_1_)["aniseed/locals"]
+  t_24_auto["identity"] = v_23_auto
+  identity = v_23_auto
+end
 local eval_str
 do
   local v_23_auto
   do
     local v_25_auto
     local function eval_str0(opts)
-      local function _18_()
+      local function _19_()
         local code = (("(module " .. (opts.context or "conjure.aniseed.user") .. ") ") .. opts.code .. "\n")
         local out
-        local function _19_()
+        local function _20_()
           if (cfg({"use_metadata"}) and not package.loaded.fennel) then
             package.loaded.fennel = anic("fennel", "impl")
           end
-          local _let_21_ = {anic("eval", "str", code, {filename = opts["file-path"], useMetadata = cfg({"use_metadata"})})}
-          local ok_3f = _let_21_[1]
-          local results = {(table.unpack or unpack)(_let_21_, 2)}
-          opts["ok?"] = ok_3f
-          opts.results = results
-          return nil
+          local eval
+          local function _22_(err_type, err, lua_source)
+            opts["ok?"] = false
+            opts.results = {err}
+            return nil
+          end
+          eval = repl({filename = opts["file-path"], onError = _22_, pp = identity, useMetadata = cfg({"use_metadata"})})
+          local results = eval(code)
+          if (nil == opts["ok?"]) then
+            opts["ok?"] = true
+            opts.results = results
+            return nil
+          end
         end
-        out = anic("nu", "with-out-str", _19_)
+        out = anic("nu", "with-out-str", _20_)
         if not a["empty?"](out) then
           log.append(text["prefixed-lines"](text["trim-last-newline"](out), "; (out) "))
         end
         return display_result(opts)
       end
-      return client.wrap(_18_)()
+      return client.wrap(_19_)()
     end
     v_25_auto = eval_str0
     _1_["eval-str"] = v_25_auto
@@ -256,13 +297,13 @@ do
   local function wrapped_test0(req_lines, f)
     log.append(req_lines, {["break?"] = true})
     local res = anic("nu", "with-out-str", f)
-    local _24_
+    local _26_
     if ("" == res) then
-      _24_ = "No results."
+      _26_ = "No results."
     else
-      _24_ = res
+      _26_ = res
     end
-    return log.append(text["prefixed-lines"](_24_, "; "))
+    return log.append(text["prefixed-lines"](_26_, "; "))
   end
   v_23_auto = wrapped_test0
   local t_24_auto = (_1_)["aniseed/locals"]
@@ -277,10 +318,10 @@ do
     local function run_buf_tests0()
       local c = extract.context()
       if c then
-        local function _26_()
+        local function _28_()
           return anic("test", "run", c)
         end
-        return wrapped_test({("; run-buf-tests (" .. c .. ")")}, _26_)
+        return wrapped_test({("; run-buf-tests (" .. c .. ")")}, _28_)
       end
     end
     v_25_auto = run_buf_tests0
@@ -331,19 +372,19 @@ do
     local v_25_auto
     local function value__3ecompletions0(x)
       if ("table" == type(x)) then
-        local function _30_(_28_)
-          local _arg_29_ = _28_
-          local k = _arg_29_[1]
-          local v = _arg_29_[2]
+        local function _32_(_30_)
+          local _arg_31_ = _30_
+          local k = _arg_31_[1]
+          local v = _arg_31_[2]
           return {info = nil, kind = type(v), menu = nil, word = k}
         end
-        local function _33_(_31_)
-          local _arg_32_ = _31_
-          local k = _arg_32_[1]
-          local v = _arg_32_[2]
+        local function _35_(_33_)
+          local _arg_34_ = _33_
+          local k = _arg_34_[1]
+          local v = _arg_34_[2]
           return not text["starts-with"](k, "aniseed/")
         end
-        local function _34_()
+        local function _36_()
           if x["aniseed/autoload-enabled?"] then
             do local _ = x["trick-aniseed-into-loading-the-module"] end
             return x["aniseed/autoload-module"]
@@ -351,7 +392,7 @@ do
             return x
           end
         end
-        return a.map(_30_, a.filter(_33_, a["kv-pairs"](_34_())))
+        return a.map(_32_, a.filter(_35_, a["kv-pairs"](_36_())))
       end
     end
     v_25_auto = value__3ecompletions0
@@ -378,10 +419,10 @@ do
       local locals
       do
         local ok_3f, m = nil, nil
-        local function _37_()
+        local function _39_()
           return require(opts.context)
         end
-        ok_3f, m = (opts.context and pcall(_37_))
+        ok_3f, m = (opts.context and pcall(_39_))
         if ok_3f then
           locals = a.concat(value__3ecompletions(a.get(m, "aniseed/locals")), value__3ecompletions(a["get-in"](m, {"aniseed/local-fns", "require"})), value__3ecompletions(a["get-in"](m, {"aniseed/local-fns", "autoload"})), mods)
         else
@@ -389,30 +430,30 @@ do
         end
       end
       local result_fn
-      local function _39_(results)
+      local function _41_(results)
         local xs = a.first(results)
-        local function _42_()
+        local function _44_()
           if ("table" == type(xs)) then
-            local function _40_(x)
-              local function _41_(_241)
+            local function _42_(x)
+              local function _43_(_241)
                 return (opts.prefix .. _241)
               end
-              return a.update(x, "word", _41_)
+              return a.update(x, "word", _43_)
             end
-            return a.concat(a.map(_40_, xs), locals)
+            return a.concat(a.map(_42_, xs), locals)
           else
             return locals
           end
         end
-        return opts.cb(_42_())
+        return opts.cb(_44_())
       end
-      result_fn = _39_
+      result_fn = _41_
       local _, ok_3f = nil, nil
       if code then
-        local function _43_()
+        local function _45_()
           return eval_str({["on-result-raw"] = result_fn, ["passive?"] = true, code = code, context = opts.context})
         end
-        _, ok_3f = pcall(_43_)
+        _, ok_3f = pcall(_45_)
       else
       _, ok_3f = nil
       end

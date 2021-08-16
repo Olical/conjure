@@ -35,6 +35,15 @@
       (a.get mod f-name)
       mod)))
 
+(defonce- repls {})
+(defn- repl [opts]
+  (let [file-path (a.get opts :file-path)
+        repl (or (a.get repls file-path)
+                 (anic :eval :repl opts))]
+    (when file-path
+      (tset repls file-path repl))
+    repl))
+
 (defn- anic [mod f-name ...]
   ((ani mod f-name) ...))
 
@@ -57,6 +66,9 @@
       (when opts.on-result
         (opts.on-result result-str)))))
 
+(defn- identity [x]
+  x)
+
 (defn eval-str [opts]
   ((client.wrap
      (fn []
@@ -68,12 +80,16 @@
                                     (not package.loaded.fennel))
                            (set package.loaded.fennel (anic :fennel :impl)))
 
-                         (let [[ok? & results]
-                               [(anic :eval :str code
-                                      {:filename opts.file-path
-                                       :useMetadata (cfg [:use_metadata])})]]
-                           (set opts.ok? ok?)
-                           (set opts.results results))))]
+                         (let [eval (repl {:filename opts.file-path
+                                           :pp identity
+                                           :useMetadata (cfg [:use_metadata])
+                                           :onError (fn [err-type err lua-source]
+                                                      (set opts.ok? false)
+                                                      (set opts.results [err]))})
+                               results (eval code)]
+                           (when (= nil opts.ok?)
+                             (set opts.ok? true)
+                             (set opts.results results)))))]
          (when (not (a.empty? out))
            (log.append (text.prefixed-lines (text.trim-last-newline out) "; (out) ")))
          (display-result opts))))))
