@@ -70,9 +70,6 @@
       (when opts.on-result
         (opts.on-result result-str)))))
 
-(defn- identity [x]
-  x)
-
 (defn eval-str [opts]
   ((client.wrap
      (fn []
@@ -85,7 +82,6 @@
                            (set package.loaded.fennel (anic :fennel :impl)))
 
                          (let [eval (repl {:filename opts.file-path
-                                           :pp identity
                                            :useMetadata (cfg [:use_metadata])
                                            :onError (fn [err-type err lua-source]
                                                       (set opts.ok? false)

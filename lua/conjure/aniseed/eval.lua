@@ -52,7 +52,7 @@ do
     local function str0(code, opts)
       local fnl = fennel.impl()
       local function _8_()
-        return fnl.eval(compile["macros-prefix"](code, opts), a.merge({["compiler-env"] = _G}, opts))
+        return fnl.eval(compile["macros-prefix"](code, opts), a.merge({compilerEnv = _G}, opts))
       end
       return xpcall(_8_, fnl.traceback)
     end
@@ -75,13 +75,13 @@ do
       local co
       local function _9_()
         local function _10_(_241, _242)
-          return error(_242)
+          return nvim.err_writeln(_242)
         end
         local function _11_(_241)
           eval_values = _241
           return nil
         end
-        return fnl.repl(a.merge({onError = _10_, onValues = _11_, readChunk = coroutine.yield}, opts))
+        return fnl.repl(a.merge({compilerEnv = _G, onError = _10_, onValues = _11_, pp = a.identity, readChunk = coroutine.yield}, opts))
       end
       co = coroutine.create(_9_)
       coroutine.resume(co)

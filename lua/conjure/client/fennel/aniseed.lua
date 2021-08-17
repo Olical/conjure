@@ -201,17 +201,6 @@ do
   t_24_auto["display-result"] = v_23_auto
   display_result = v_23_auto
 end
-local identity
-do
-  local v_23_auto
-  local function identity0(x)
-    return x
-  end
-  v_23_auto = identity0
-  local t_24_auto = (_1_)["aniseed/locals"]
-  t_24_auto["identity"] = v_23_auto
-  identity = v_23_auto
-end
 local eval_str
 do
   local v_23_auto
@@ -231,7 +220,7 @@ do
             opts.results = {err}
             return nil
           end
-          eval = repl({filename = opts["file-path"], onError = _22_, pp = identity, useMetadata = cfg({"use_metadata"})})
+          eval = repl({filename = opts["file-path"], onError = _22_, useMetadata = cfg({"use_metadata"})})
           local results = eval(code)
           if (nil == opts["ok?"]) then
             opts["ok?"] = true
