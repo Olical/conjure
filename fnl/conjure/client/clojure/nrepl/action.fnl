@@ -184,10 +184,10 @@
                       (a.nil? info)
                       (log.append ["; Nothing found via CIDER's info either"])
 
-                      info.javadoc
+                      (= :table (type info.javadoc))
                       (log.append (java-info->lines info))
 
-                      info.doc
+                      (= :string (type info.doc))
                       (log.append
                         (a.concat
                           [(.. "; " info.ns "/" info.name)
@@ -612,7 +612,8 @@
             (when arglists
               (table.concat arglists " "))]
            " ")
-   :info info
+   :info (when (= :string (type info))
+           info)
    :kind (when (not (a.empty? kind))
            (string.upper
              (string.sub kind 1 1)))})

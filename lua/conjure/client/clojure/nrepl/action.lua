@@ -385,9 +385,9 @@ do
             local function _56_(info)
               if a["nil?"](info) then
                 return log.append({"; Nothing found via CIDER's info either"})
-              elseif info.javadoc then
+              elseif ("table" == type(info.javadoc)) then
                 return log.append(java_info__3elines(info))
-              elseif info.doc then
+              elseif ("string" == type(info.doc)) then
                 return log.append(a.concat({("; " .. info.ns .. "/" .. info.name), ("; (" .. info["arglists-str"] .. ")")}, text["prefixed-lines"](info.doc, "; ")))
               else
                 return log.append(a.concat({"; Unknown result, it may still be helpful"}, text["prefixed-lines"](view.serialise(info), "; ")))
@@ -1203,17 +1203,23 @@ do
     local ns = _arg_138_["ns"]
     local kind = _arg_138_["type"]
     local _139_
-    if not a["empty?"](kind) then
-      _139_ = string.upper(string.sub(kind, 1, 1))
+    if ("string" == type(info)) then
+      _139_ = info
     else
     _139_ = nil
     end
-    local function _141_()
+    local _141_
+    if not a["empty?"](kind) then
+      _141_ = string.upper(string.sub(kind, 1, 1))
+    else
+    _141_ = nil
+    end
+    local function _143_()
       if arglists then
         return table.concat(arglists, " ")
       end
     end
-    return {info = info, kind = _139_, menu = table.concat({ns, _141_()}, " "), word = word}
+    return {info = _139_, kind = _141_, menu = table.concat({ns, _143_()}, " "), word = word}
   end
   v_23_auto = clojure__3evim_completion0
   local t_24_auto = (_1_)["aniseed/locals"]
@@ -1226,13 +1232,13 @@ do
   local function extract_completion_context0(prefix)
     local root_form = extract.form({["root?"] = true})
     if root_form then
-      local _let_142_ = root_form
-      local content = _let_142_["content"]
-      local range = _let_142_["range"]
+      local _let_144_ = root_form
+      local content = _let_144_["content"]
+      local range = _let_144_["range"]
       local lines = text["split-lines"](content)
-      local _let_143_ = nvim.win_get_cursor(0)
-      local row = _let_143_[1]
-      local col = _let_143_[2]
+      local _let_145_ = nvim.win_get_cursor(0)
+      local row = _let_145_[1]
+      local col = _let_145_[2]
       local lrow = (row - a["get-in"](range, {"start", 1}))
       local line_index = a.inc(lrow)
       local lcol
@@ -1268,25 +1274,25 @@ do
   do
     local v_25_auto
     local function completions0(opts)
-      local function _146_(conn)
-        local _147_
-        if enhanced_cljs_completion_3f() then
-          _147_ = "t"
-        else
-        _147_ = nil
-        end
+      local function _148_(conn)
         local _149_
-        if cfg({"completion", "with_context"}) then
-          _149_ = extract_completion_context(opts.prefix)
+        if enhanced_cljs_completion_3f() then
+          _149_ = "t"
         else
         _149_ = nil
         end
-        local function _151_(msgs)
+        local _151_
+        if cfg({"completion", "with_context"}) then
+          _151_ = extract_completion_context(opts.prefix)
+        else
+        _151_ = nil
+        end
+        local function _153_(msgs)
           return opts.cb(a.map(clojure__3evim_completion, a.get(a.last(msgs), "completions")))
         end
-        return server.send({["enhanced-cljs-completion?"] = _147_, ["extra-metadata"] = {"arglists", "doc"}, context = _149_, ns = opts.context, op = "complete", session = conn.session, symbol = opts.prefix}, nrepl["with-all-msgs-fn"](_151_))
+        return server.send({["enhanced-cljs-completion?"] = _149_, ["extra-metadata"] = {"arglists", "doc"}, context = _151_, ns = opts.context, op = "complete", session = conn.session, symbol = opts.prefix}, nrepl["with-all-msgs-fn"](_153_))
       end
-      return server["with-conn-and-op-or-warn"]("complete", _146_, {["else"] = opts.cb, ["silent?"] = true})
+      return server["with-conn-and-op-or-warn"]("complete", _148_, {["else"] = opts.cb, ["silent?"] = true})
     end
     v_25_auto = completions0
     _1_["completions"] = v_25_auto
@@ -1304,10 +1310,10 @@ do
     local function out_subscribe0()
       try_ensure_conn()
       log.append({"; Subscribing to out"}, {["break?"] = true})
-      local function _152_(conn)
+      local function _154_(conn)
         return server.send({op = "out-subscribe"})
       end
-      return server["with-conn-and-op-or-warn"]("out-subscribe", _152_)
+      return server["with-conn-and-op-or-warn"]("out-subscribe", _154_)
     end
     v_25_auto = out_subscribe0
     _1_["out-subscribe"] = v_25_auto
@@ -1325,10 +1331,10 @@ do
     local function out_unsubscribe0()
       try_ensure_conn()
       log.append({"; Unsubscribing from out"}, {["break?"] = true})
-      local function _153_(conn)
+      local function _155_(conn)
         return server.send({op = "out-unsubscribe"})
       end
-      return server["with-conn-and-op-or-warn"]("out-unsubscribe", _153_)
+      return server["with-conn-and-op-or-warn"]("out-unsubscribe", _155_)
     end
     v_25_auto = out_unsubscribe0
     _1_["out-unsubscribe"] = v_25_auto
