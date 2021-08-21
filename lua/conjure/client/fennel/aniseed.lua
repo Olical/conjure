@@ -139,10 +139,10 @@ local repl
 do
   local v_23_auto
   local function repl0(opts)
-    local file_path = a.get(opts, "file-path")
-    local repl1 = (a.get(repls, file_path) or anic("eval", "repl", opts))
-    if file_path then
-      repls[file_path] = repl1
+    local filename = a.get(opts, "filename")
+    local repl1 = (a.get(repls, filename) or anic("eval", "repl", opts))
+    if filename then
+      repls[filename] = repl1
     end
     return repl1
   end
