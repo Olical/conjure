@@ -81,7 +81,7 @@ do
           eval_values = _241
           return nil
         end
-        return fnl.repl(a.merge({compilerEnv = _G, correlate = true, onError = _10_, onValues = _11_, pp = a.identity, readChunk = coroutine.yield, useMetadata = true}, opts))
+        return fnl.repl(a.merge({compilerEnv = _G, onError = _10_, onValues = _11_, pp = a.identity, readChunk = coroutine.yield}, opts))
       end
       co = coroutine.create(_9_)
       coroutine.resume(co)
