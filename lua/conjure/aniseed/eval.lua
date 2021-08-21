@@ -81,11 +81,12 @@ do
           eval_values = _241
           return nil
         end
-        return fnl.repl(a.merge({compilerEnv = _G, onError = _10_, onValues = _11_, pp = a.identity, readChunk = coroutine.yield}, opts))
+        return fnl.repl(a.merge({compilerEnv = _G, correlate = true, onError = _10_, onValues = _11_, pp = a.identity, readChunk = coroutine.yield, useMetadata = true}, opts))
       end
       co = coroutine.create(_9_)
       coroutine.resume(co)
       coroutine.resume(co, compile["macros-prefix"](nil, opts))
+      eval_values = nil
       local function _12_(code)
         coroutine.resume(co, code)
         local prev_eval_values = eval_values

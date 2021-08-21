@@ -140,11 +140,13 @@ do
   local v_23_auto
   local function repl0(opts)
     local filename = a.get(opts, "filename")
-    local repl1 = (a.get(repls, filename) or anic("eval", "repl", opts))
-    if filename then
-      repls[filename] = repl1
+    local function _9_()
+      local repl1 = anic("eval", "repl", opts)
+      repl1(("(module " .. opts.moduleName .. ")\n"))
+      do end (repls)[filename] = repl1
+      return repl1
     end
-    return repl1
+    return (a.get(repls, filename) or _9_())
   end
   v_23_auto = repl0
   local t_24_auto = (_1_)["aniseed/locals"]
@@ -208,7 +210,6 @@ do
     local v_25_auto
     local function eval_str0(opts)
       local function _19_()
-        local code = (("(module " .. (opts.context or "conjure.aniseed.user") .. ") ") .. opts.code .. "\n")
         local out
         local function _20_()
           if (cfg({"use_metadata"}) and not package.loaded.fennel) then
@@ -220,8 +221,8 @@ do
             opts.results = {err}
             return nil
           end
-          eval = repl({filename = opts["file-path"], onError = _22_, useMetadata = cfg({"use_metadata"})})
-          local results = eval(code)
+          eval = repl({filename = opts["file-path"], moduleName = (opts.context or "conjure.aniseed.user"), onError = _22_, useMetadata = cfg({"use_metadata"})})
+          local results = eval((opts.code .. "\n"))
           if (nil == opts["ok?"]) then
             opts["ok?"] = true
             opts.results = results

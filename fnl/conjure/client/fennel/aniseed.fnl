@@ -43,12 +43,12 @@
 ;; TODO Disable the global checking in Aniseed that displays errors on startup.
 (defonce- repls {})
 (defn- repl [opts]
-  (let [filename (a.get opts :filename)
-        repl (or (a.get repls filename)
-                 (anic :eval :repl opts))]
-    (when filename
-      (tset repls filename repl))
-    repl))
+  (let [filename (a.get opts :filename)]
+    (or (a.get repls filename)
+        (let [repl (anic :eval :repl opts)]
+          (repl (.. "(module " opts.moduleName ")\n"))
+          (tset repls filename repl)
+          repl))))
 
 (defn display-result [opts]
   (when opts
@@ -72,20 +72,19 @@
 (defn eval-str [opts]
   ((client.wrap
      (fn []
-       (let [code (.. (.. "(module " (or opts.context "aniseed.user") ") ")
-                      opts.code "\n")
-             out (anic :nu :with-out-str
+       (let [out (anic :nu :with-out-str
                        (fn []
                          (when (and (cfg [:use_metadata])
                                     (not package.loaded.fennel))
                            (set package.loaded.fennel (anic :fennel :impl)))
 
                          (let [eval (repl {:filename opts.file-path
+                                           :moduleName (or opts.context "aniseed.user")
                                            :useMetadata (cfg [:use_metadata])
                                            :onError (fn [err-type err lua-source]
                                                       (set opts.ok? false)
                                                       (set opts.results [err]))})
-                               results (eval code)]
+                               results (eval (.. opts.code "\n"))]
                            (when (= nil opts.ok?)
                              (set opts.ok? true)
                              (set opts.results results)))))]
