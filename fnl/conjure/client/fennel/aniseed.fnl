@@ -41,6 +41,7 @@
 ;; TODO Better error output, pretty gross prefixes right now.
 ;; TODO Handle initial loading of modules when a file is first opened
 ;; TODO Disable the global checking in Aniseed that displays errors on startup.
+;; TODO Fix error on initial eval, looks like :compilerEnv never makes it through?
 (defonce- repls {})
 (defn- repl [opts]
   (let [filename (a.get opts :filename)]
