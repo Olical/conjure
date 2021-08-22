@@ -405,7 +405,7 @@ package.preload["conjure.aniseed.fennel.repl"] = package.preload["conjure.anisee
       else
         if parse_ok_3f then
           do
-            local _4_0, _5_0 = pcall(compiler.compile, x, {["assert-compile"] = opts["assert-compile"], ["parse-error"] = opts["parse-error"], correlate = opts.correlate, moduleName = opts.moduleName, scope = scope, source = src_string, useBitLib = opts.useBitLib, useMetadata = opts.useMetadata})
+            local _4_0, _5_0 = pcall(compiler.compile, x, {["assert-compile"] = opts["assert-compile"], ["parse-error"] = opts["parse-error"], compilerEnv = (opts["compiler-env"] or opts.compilerEnv), correlate = opts.correlate, moduleName = opts.moduleName, scope = scope, source = src_string, useBitLib = opts.useBitLib, useMetadata = opts.useMetadata})
             if ((_4_0 == false) and (nil ~= _5_0)) then
               local msg = _5_0
               clear_stream()
