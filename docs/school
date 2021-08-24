@@ -11,6 +11,9 @@ else
   echo "$PREFIX already exists, no need to download."
 fi
 
-nvim --cmd "set rtp+=$PREFIX/conjure-master" -c "au VimEnter * ++nested ConjureSchool" \
+nvim \
+  --cmd "set rtp+=$PREFIX/conjure-master" \
+  --cmd "source $PREFIX/conjure-master/plugin/conjure.vim" \
+  -c "au VimEnter * ++nested ConjureSchool" \
   && echo "I hope you had a great time! Cleaning up $PREFIX and exiting." \
   && rm -rf $PREFIX
