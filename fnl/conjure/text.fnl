@@ -1,6 +1,6 @@
 (module conjure.text
-  {:require {a conjure.aniseed.core
-             str conjure.aniseed.string}})
+  {require {a conjure.aniseed.core
+            str conjure.aniseed.string}})
 
 (defn trailing-newline? [s]
   (= "\n" (string.sub s -1)))

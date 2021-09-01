@@ -39,9 +39,7 @@
   ((ani mod f-name) ...))
 
 ;; TODO Better error output, pretty gross prefixes right now.
-;; TODO Handle initial loading of modules when a file is first opened
-;; TODO Disable the global checking in Aniseed that displays errors on startup.
-;; TODO Fix error on initial eval, looks like :compilerEnv never makes it through?
+;; TODO Handle initial loading of modules when a file is first opened that doesn't use the macros.
 (defonce- repls {})
 (defn- repl [opts]
   (let [filename (a.get opts :filename)]
@@ -137,7 +135,7 @@
          (a.kv-pairs)
          (a.filter
            (fn [[k v]]
-             (not (text.starts-with k "aniseed/"))))
+             (not= "_LOCALS" k)))
          (a.map
            (fn [[k v]]
              {:word k
@@ -153,9 +151,8 @@
         locals (let [(ok? m) (and opts.context (pcall #(require opts.context)))]
                  (if ok?
                    (a.concat
-                     (value->completions (a.get m :aniseed/locals))
-                     (value->completions (a.get-in m [:aniseed/local-fns :require]))
-                     (value->completions (a.get-in m [:aniseed/local-fns :autoload]))
+                     (value->completions m)
+                     (value->completions (a.get m :_LOCALS))
                      mods)
                    mods))
         result-fn
