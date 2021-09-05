@@ -62,7 +62,6 @@ end
 _2amodule_locals_2a["repl"] = repl
 local function display_result(opts)
   if opts then
-    a.println("===", opts)
     local _let_3_ = opts
     local ok_3f = _let_3_["ok?"]
     local results = _let_3_["results"]
@@ -252,9 +251,3 @@ local function completions(opts)
   end
 end
 _2amodule_2a["completions"] = completions
--- (completions {:cb a.println :context *module-name* :prefix "nvim"}) (eval-str {:code "((. (require :conjure.client.fennel.aniseed) :value->completions) nvim)
-"
- :context "conjure.client.fennel.aniseed"
- :on-result-raw a.println
- :passive? true})
-return nil
