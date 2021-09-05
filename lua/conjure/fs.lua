@@ -11,12 +11,13 @@ do
   _2amodule_locals_2a = (_2amodule_2a)["aniseed/locals"]
 end
 local autoload = (require("conjure.aniseed.autoload")).autoload
-local a, afs, config, nvim, str = autoload("conjure.aniseed.core"), autoload("conjure.aniseed.fs"), autoload("conjure.config"), autoload("conjure.aniseed.nvim"), autoload("conjure.aniseed.string")
+local a, afs, config, nvim, str, text = autoload("conjure.aniseed.core"), autoload("conjure.aniseed.fs"), autoload("conjure.config"), autoload("conjure.aniseed.nvim"), autoload("conjure.aniseed.string"), autoload("conjure.text")
 do end (_2amodule_locals_2a)["a"] = a
 _2amodule_locals_2a["afs"] = afs
 _2amodule_locals_2a["config"] = config
 _2amodule_locals_2a["nvim"] = nvim
 _2amodule_locals_2a["str"] = str
+_2amodule_locals_2a["text"] = text
 local function env(k)
   local v = nvim.fn.getenv(k)
   if (a["string?"](v) and not a["empty?"](v)) then
@@ -92,3 +93,15 @@ local function localise_path(path)
   return resolve_relative(apply_path_subs(path, config["get-in"]({"path_subs"})))
 end
 _2amodule_2a["localise-path"] = localise_path
+local function file_path__3emodule_name(file_path)
+  if file_path then
+    local function _10_(mod_name)
+      local mod_path = string.gsub(mod_name, "%.", afs["path-sep"])
+      if (text["ends-with"](file_path, (mod_path .. ".fnl")) or text["ends-with"](file_path, (mod_path .. "/init.fnl"))) then
+        return mod_name
+      end
+    end
+    return a.some(_10_, a.keys(package.loaded))
+  end
+end
+_2amodule_2a["file-path->module-name"] = file_path__3emodule_name

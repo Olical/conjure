@@ -62,3 +62,19 @@
          "/home/ollie/foo"
          {"^(/home/)ollie" "%1olical"})
        "gsub capture group replacement"))
+
+(def ex-mod "test.foo.bar")
+(def ex-file "/some-big/ol/path/test/foo/bar.fnl")
+(def ex-file2 "/some-big/ol/path/test/foo/bar/init.fnl")
+(def ex-no-file "/some-big/ol/path/test/foo/bar/no/init.fnl")
+
+(deftest file-path->module-name
+  (tset package.loaded ex-mod {:my :module})
+
+  (t.= nil (fs.file-path->module-name nil))
+  (t.= ex-mod (fs.file-path->module-name ex-file))
+  (t.= ex-mod (fs.file-path->module-name ex-file))
+  (t.= ex-mod (fs.file-path->module-name ex-file2))
+  (t.= nil (fs.file-path->module-name ex-no-file))
+
+  (tset package.loaded ex-mod nil))

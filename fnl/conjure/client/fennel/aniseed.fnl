@@ -5,6 +5,7 @@
              view conjure.aniseed.view
              client conjure.client
              mapping conjure.mapping
+             fs conjure.fs
              text conjure.text
              log conjure.log
              config conjure.config
@@ -38,9 +39,16 @@
 (defn- anic [mod f-name ...]
   ((ani mod f-name) ...))
 
-;; TODO Better error output, pretty gross prefixes right now.
-;; TODO Handle initial loading of modules when a file is first opened that doesn't use the macros.
 (defonce- repls {})
+
+(def default-module-name "conjure.user")
+
+(defn module-name [context file-path]
+  (if
+    context context
+    file-path (or (fs.file-path->module-name file-path) default-module-name)
+    default-module-name))
+
 (defn- repl [opts]
   (let [filename (a.get opts :filename)]
     (or (a.get repls filename)
@@ -78,7 +86,7 @@
                            (set package.loaded.fennel (anic :fennel :impl)))
 
                          (let [eval (repl {:filename opts.file-path
-                                           :moduleName (or opts.context "aniseed.user")
+                                           :moduleName (module-name opts.context opts.file-path)
                                            :useMetadata (cfg [:use_metadata])
                                            :onError (fn [err-type err lua-source]
                                                       (set opts.ok? false)
