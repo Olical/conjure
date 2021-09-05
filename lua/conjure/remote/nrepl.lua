@@ -7,8 +7,8 @@ do
 end
 local _2amodule_locals_2a
 do
-  _2amodule_2a["_LOCALS"] = {}
-  _2amodule_locals_2a = (_2amodule_2a)._LOCALS
+  _2amodule_2a["aniseed/locals"] = {}
+  _2amodule_locals_2a = (_2amodule_2a)["aniseed/locals"]
 end
 local autoload = (require("conjure.aniseed.autoload")).autoload
 local a, bencode, client, extract, log, net, timer, uuid = autoload("conjure.aniseed.core"), autoload("conjure.remote.transport.bencode"), autoload("conjure.client"), autoload("conjure.extract"), autoload("conjure.log"), autoload("conjure.net"), autoload("conjure.timer"), autoload("conjure.uuid")

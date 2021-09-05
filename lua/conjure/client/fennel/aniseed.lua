@@ -7,8 +7,8 @@ do
 end
 local _2amodule_locals_2a
 do
-  _2amodule_2a["_LOCALS"] = {}
-  _2amodule_locals_2a = (_2amodule_2a)._LOCALS
+  _2amodule_2a["aniseed/locals"] = {}
+  _2amodule_locals_2a = (_2amodule_2a)["aniseed/locals"]
 end
 local autoload = (require("conjure.aniseed.autoload")).autoload
 local a, client, config, extract, log, mapping, nvim, str, text, view = autoload("conjure.aniseed.core"), autoload("conjure.client"), autoload("conjure.config"), autoload("conjure.extract"), autoload("conjure.log"), autoload("conjure.mapping"), autoload("conjure.aniseed.nvim"), autoload("conjure.aniseed.string"), autoload("conjure.text"), autoload("conjure.aniseed.view")
@@ -183,7 +183,7 @@ local function value__3ecompletions(x)
       local _arg_27_ = _26_
       local k = _arg_27_[1]
       local v = _arg_27_[2]
-      return ("_LOCALS" ~= k)
+      return not text["starts-with"](k, "aniseed/")
     end
     local function _29_()
       if x["aniseed/autoload-enabled?"] then
@@ -213,7 +213,7 @@ local function completions(opts)
     end
     ok_3f, m = (opts.context and pcall(_32_))
     if ok_3f then
-      locals = a.concat(value__3ecompletions(m), value__3ecompletions(a.get(m, "_LOCALS")), mods)
+      locals = a.concat(value__3ecompletions(m), value__3ecompletions(a.get(m, "aniseed/locals")), mods)
     else
       locals = mods
     end

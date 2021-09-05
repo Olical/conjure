@@ -7,8 +7,8 @@ do
 end
 local _2amodule_locals_2a
 do
-  _2amodule_2a["_LOCALS"] = {}
-  _2amodule_locals_2a = (_2amodule_2a)._LOCALS
+  _2amodule_2a["aniseed/locals"] = {}
+  _2amodule_locals_2a = (_2amodule_2a)["aniseed/locals"]
 end
 local autoload = (require("conjure.aniseed.autoload")).autoload
 local a, fs, nvim, str = autoload("conjure.aniseed.core"), autoload("conjure.aniseed.fs"), autoload("conjure.aniseed.nvim"), autoload("conjure.aniseed.string")
@@ -43,7 +43,7 @@ end
 _2amodule_2a["display-results"] = display_results
 local function run(mod_name)
   local mod = _G.package.loaded[mod_name]
-  local tests = (a["table?"](mod) and mod._TESTS)
+  local tests = (a["table?"](mod) and mod["aniseed/tests"])
   if a["table?"](tests) then
     local results = {["assertions-passed"] = 0, ["tests-passed"] = 0, assertions = 0, tests = #tests}
     for label, f in pairs(tests) do

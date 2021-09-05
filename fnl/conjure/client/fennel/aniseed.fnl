@@ -135,7 +135,7 @@
          (a.kv-pairs)
          (a.filter
            (fn [[k v]]
-             (not= "_LOCALS" k)))
+             (not (text.starts-with k "aniseed/"))))
          (a.map
            (fn [[k v]]
              {:word k
@@ -153,7 +153,7 @@
                  (if ok?
                    (a.concat
                      (value->completions m)
-                     (value->completions (a.get m :_LOCALS))
+                     (value->completions (a.get m :aniseed/locals))
                      mods)
                    mods))
         result-fn

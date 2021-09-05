@@ -39,7 +39,7 @@
 (local replace-marker :ANISEED_REPLACE_ME)
 
 ;; We store all locals under this for later splatting.
-(local locals-key :_LOCALS)
+(local locals-key :aniseed/locals)
 
 ;; Various symbols we want to use multiple times.
 ;; Avoids the compiler complaining that we're introducing locals without gensym.
@@ -130,7 +130,7 @@
     ;; Now we can expand any existing locals into the current scope.
     ;; Since this will only happen in interactive evals we can generate messy code.
     (when existing-mod
-      ;; Expand exported values into the current scope, except _LOCALS.
+      ;; Expand exported values into the current scope, except aniseed/locals.
       (sorted-each
         (fn [k v]
           (when (not= k locals-key)
@@ -138,11 +138,11 @@
         existing-mod)
 
       ;; Expand locals into the current scope.
-      (when existing-mod._LOCALS
+      (when (. existing-mod locals-key)
         (sorted-each
           (fn [k v]
             (table.insert result `(local ,(sym k) (. ,mod-locals-sym ,k))))
-          existing-mod._LOCALS)))
+          (. existing-mod locals-key))))
 
     result))
 
@@ -173,9 +173,10 @@
   `(def ,name (or ,name ,value)))
 
 (fn deftest [name ...]
-  `(let [tests# (or (. ,mod-sym :_TESTS) {})]
+  `(let [tests# (or (. ,mod-sym :aniseed/tests
+                       ) {})]
      (tset tests# ,(tostring name) (fn [,(sym :t)] ,...))
-     (tset ,mod-sym :_TESTS tests#)))
+     (tset ,mod-sym :aniseed/tests tests#)))
 
 (fn time [...]
   `(let [start# (vim.loop.hrtime)
