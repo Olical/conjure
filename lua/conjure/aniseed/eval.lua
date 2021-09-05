@@ -48,7 +48,7 @@ local function repl(opts)
       eval_values = clean_values(_241)
       return nil
     end
-    return fnl.repl(a.merge({compilerEnv = _G, onError = _5_, onValues = _6_, pp = a.identity, readChunk = coroutine.yield}, opts))
+    return fnl.repl(a.merge({allowedGlobals = false, compilerEnv = _G, onError = _5_, onValues = _6_, pp = a.identity, readChunk = coroutine.yield}, opts))
   end
   co = coroutine.create(_4_)
   coroutine.resume(co)

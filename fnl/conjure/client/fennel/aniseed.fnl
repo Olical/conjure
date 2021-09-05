@@ -146,7 +146,8 @@
 (defn completions [opts]
   (let [code (when (not (str.blank? opts.prefix))
                (.. "((. (require :" *module-name* ") :value->completions) "
-                   (opts.prefix:gsub ".$" "") ")"))
+                   (string.gsub opts.prefix "%..*$" "")
+                   ")"))
         mods (value->completions package.loaded)
         locals (let [(ok? m) (and opts.context (pcall #(require opts.context)))]
                  (if ok?
@@ -167,7 +168,7 @@
                     xs)
                   locals)
                 locals))))
-        (_ ok?)
+        (ok? err-or-res)
         (when code
           (pcall
             (fn []

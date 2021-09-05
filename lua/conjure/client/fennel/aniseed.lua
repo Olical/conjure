@@ -62,6 +62,7 @@ end
 _2amodule_locals_2a["repl"] = repl
 local function display_result(opts)
   if opts then
+    a.println("===", opts)
     local _let_3_ = opts
     local ok_3f = _let_3_["ok?"]
     local results = _let_3_["results"]
@@ -200,7 +201,7 @@ _2amodule_2a["value->completions"] = value__3ecompletions
 local function completions(opts)
   local code
   if not str["blank?"](opts.prefix) then
-    code = ("((. (require :" .. _2amodule_name_2a .. ") :value->completions) " .. (opts.prefix):gsub(".$", "") .. ")")
+    code = ("((. (require :" .. _2amodule_name_2a .. ") :value->completions) " .. string.gsub(opts.prefix, "%..*$", "") .. ")")
   else
   code = nil
   end
@@ -237,17 +238,23 @@ local function completions(opts)
     return opts.cb(_37_())
   end
   result_fn = _34_
-  local _, ok_3f = nil, nil
+  local ok_3f, err_or_res = nil, nil
   if code then
     local function _38_()
       return eval_str({["on-result-raw"] = result_fn, ["passive?"] = true, code = code, context = opts.context})
     end
-    _, ok_3f = pcall(_38_)
+    ok_3f, err_or_res = pcall(_38_)
   else
-  _, ok_3f = nil
+  ok_3f, err_or_res = nil
   end
   if not ok_3f then
     return opts.cb(locals)
   end
 end
 _2amodule_2a["completions"] = completions
+-- (completions {:cb a.println :context *module-name* :prefix "nvim"}) (eval-str {:code "((. (require :conjure.client.fennel.aniseed) :value->completions) nvim)
+"
+ :context "conjure.client.fennel.aniseed"
+ :on-result-raw a.println
+ :passive? true})
+return nil
