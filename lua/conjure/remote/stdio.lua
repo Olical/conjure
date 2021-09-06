@@ -29,7 +29,7 @@ end
 _2amodule_locals_2a["parse-prompt"] = parse_prompt
 local function parse_cmd(x)
   if a["table?"](x) then
-    return {args = a.rest(x), cmd = a.first(x)}
+    return {cmd = a.first(x), args = a.rest(x)}
   elseif a["string?"](x) then
     return parse_cmd(str.split(x, "%s"))
   end
@@ -49,7 +49,7 @@ local function start(opts)
   local stdin = uv.new_pipe(false)
   local stdout = uv.new_pipe(false)
   local stderr = uv.new_pipe(false)
-  local repl = {current = nil, queue = {}}
+  local repl = {queue = {}, current = nil}
   local function destroy()
     local function _6_()
       return stdout:read_stop()
@@ -107,7 +107,7 @@ local function start(opts)
         local cb = a["get-in"](repl, {"current", "cb"}, opts["on-stray-output"])
         if cb then
           local function _15_()
-            return cb({["done?"] = done_3f, [source] = result})
+            return cb({[source] = result, ["done?"] = done_3f})
           end
           pcall(_15_)
         end
@@ -138,7 +138,7 @@ local function start(opts)
     else
       _20_ = cb
     end
-    table.insert(repl.queue, {cb = _20_, code = code})
+    table.insert(repl.queue, {code = code, cb = _20_})
     next_in_queue()
     return nil
   end
@@ -147,9 +147,9 @@ local function start(opts)
     return nil
   end
   local _let_25_ = parse_cmd(opts.cmd)
-  local args = _let_25_["args"]
   local cmd = _let_25_["cmd"]
-  local handle, pid_or_err = uv.spawn(cmd, {args = args, env = extend_env({INPUTRC = "/dev/null", TERM = "dumb"}), stdio = {stdin, stdout, stderr}}, client["schedule-wrap"](on_exit))
+  local args = _let_25_["args"]
+  local handle, pid_or_err = uv.spawn(cmd, {stdio = {stdin, stdout, stderr}, args = args, env = extend_env({INPUTRC = "/dev/null", TERM = "dumb"})}, client["schedule-wrap"](on_exit))
   if handle then
     stdout:read_start(client["schedule-wrap"](on_stdout))
     stderr:read_start(client["schedule-wrap"](on_stderr))
@@ -157,7 +157,7 @@ local function start(opts)
       return opts["on-success"]()
     end
     client.schedule(_26_)
-    return a["merge!"](repl, {["send-signal"] = send_signal, destroy = destroy, handle = handle, opts = opts, pid = pid_or_err, send = send})
+    return a["merge!"](repl, {handle = handle, pid = pid_or_err, send = send, opts = opts, ["send-signal"] = send_signal, destroy = destroy})
   else
     local function _27_()
       return opts["on-error"](pid_or_err)

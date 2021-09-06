@@ -29,7 +29,7 @@ local context_pattern = "%(%s*module%s+(.-)[%s){]"
 _2amodule_2a["context-pattern"] = context_pattern
 local comment_prefix = "; "
 _2amodule_2a["comment-prefix"] = comment_prefix
-config.merge({client = {fennel = {aniseed = {aniseed_module_prefix = "conjure.aniseed.", mapping = {run_all_tests = "ta", run_buf_tests = "tt"}, use_metadata = true}}}})
+config.merge({client = {fennel = {aniseed = {mapping = {run_buf_tests = "tt", run_all_tests = "ta"}, aniseed_module_prefix = "conjure.aniseed.", use_metadata = true}}}})
 local cfg = config["get-in-fn"]({"client", "fennel", "aniseed"})
 do end (_2amodule_locals_2a)["cfg"] = cfg
 local ani_aliases = {nu = "nvim.util"}
@@ -124,7 +124,7 @@ local function eval_str(opts)
         opts.results = {err}
         return nil
       end
-      eval = repl({filename = opts["file-path"], moduleName = module_name(opts.context, opts["file-path"]), onError = _16_, useMetadata = cfg({"use_metadata"})})
+      eval = repl({filename = opts["file-path"], moduleName = module_name(opts.context, opts["file-path"]), useMetadata = cfg({"use_metadata"}), onError = _16_})
       local results = eval((opts.code .. "\n"))
       if (nil == opts["ok?"]) then
         opts["ok?"] = true
@@ -190,7 +190,7 @@ local function value__3ecompletions(x)
       local _arg_25_ = _24_
       local k = _arg_25_[1]
       local v = _arg_25_[2]
-      return {info = nil, kind = type(v), menu = nil, word = k}
+      return {word = k, kind = type(v), menu = nil, info = nil}
     end
     local function _29_(_27_)
       local _arg_28_ = _27_
@@ -253,7 +253,7 @@ local function completions(opts)
   local ok_3f, err_or_res = nil, nil
   if code then
     local function _39_()
-      return eval_str({["on-result-raw"] = result_fn, ["passive?"] = true, code = code, context = opts.context})
+      return eval_str({context = opts.context, code = code, ["passive?"] = true, ["on-result-raw"] = result_fn})
     end
     ok_3f, err_or_res = pcall(_39_)
   else

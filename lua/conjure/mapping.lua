@@ -55,27 +55,28 @@ local function buf(mode_or_opts, cmd_suffix, keys, ...)
     end
     local _5_
     if cmd then
-      local _6_
-      if (false ~= a.get(opts, "repeat?")) then
-        _6_ = (":silent! call " .. vim_repeat(mapping) .. "<cr>")
-      else
-        _6_ = ""
+      local function _6_(...)
+        if (false ~= a.get(opts, "repeat?")) then
+          return (":silent! call " .. vim_repeat(mapping) .. "<cr>")
+        else
+          return ""
+        end
       end
-      _5_ = (":" .. cmd .. "<cr>" .. _6_)
+      _5_ = (":" .. cmd .. "<cr>" .. _6_(...))
     else
       _5_ = unpack(args)
     end
-    return nvim.buf_set_keymap(0, mode, mapping, _5_, {noremap = true, silent = true})
+    return nvim.buf_set_keymap(0, mode, mapping, _5_, {silent = true, noremap = true})
   end
 end
 _2amodule_2a["buf"] = buf
 local function eval_marked_form()
   local mark = eval["marked-form"]()
   local mapping
-  local function _10_(m)
+  local function _9_(m)
     return ((":ConjureEvalMarkedForm<CR>" == m.rhs) and m.lhs)
   end
-  mapping = a.some(_10_, nvim.buf_get_keymap(0, "n"))
+  mapping = a.some(_9_, nvim.buf_get_keymap(0, "n"))
   if (mark and mapping) then
     return nvim.ex.silent_("call", vim_repeat((mapping .. mark)))
   end
@@ -96,7 +97,7 @@ local function on_filetype()
   buf("n", "EvalWord", cfg("eval_word"), "conjure.eval", "word")
   buf("n", "EvalCommentWord", cfg("eval_comment_word"), "conjure.eval", "comment-word")
   buf("n", "EvalReplaceForm", cfg("eval_replace_form"), "conjure.eval", "replace-form")
-  buf({["repeat?"] = false, mode = "n"}, "EvalMarkedForm", cfg("eval_marked_form"), "conjure.mapping", "eval-marked-form")
+  buf({mode = "n", ["repeat?"] = false}, "EvalMarkedForm", cfg("eval_marked_form"), "conjure.mapping", "eval-marked-form")
   buf("n", "EvalFile", cfg("eval_file"), "conjure.eval", "file")
   buf("n", "EvalBuf", cfg("eval_buf"), "conjure.eval", "buf")
   buf("v", "EvalVisual", cfg("eval_visual"), "conjure.eval", "selection")
@@ -112,10 +113,10 @@ local function on_filetype()
 end
 _2amodule_2a["on-filetype"] = on_filetype
 local function on_exit()
-  local function _13_()
+  local function _12_()
     return client["optional-call"]("on-exit")
   end
-  return client["each-loaded-client"](_13_)
+  return client["each-loaded-client"](_12_)
 end
 _2amodule_2a["on-exit"] = on_exit
 local function on_quit()
@@ -146,14 +147,14 @@ end
 _2amodule_2a["eval-ranged-command"] = eval_ranged_command
 local function connect_command(...)
   local args = {...}
-  local function _15_(...)
+  local function _14_(...)
     if (1 == a.count(args)) then
       return {port = a.first(args)}
     else
       return {host = a.first(args), port = a.second(args)}
     end
   end
-  return client.call("connect", _15_(...))
+  return client.call("connect", _14_(...))
 end
 _2amodule_2a["connect-command"] = connect_command
 local function client_state_command(state_key)
@@ -166,11 +167,11 @@ end
 _2amodule_2a["client-state-command"] = client_state_command
 local function omnifunc(find_start_3f, base)
   if find_start_3f then
-    local _let_17_ = nvim.win_get_cursor(0)
-    local row = _let_17_[1]
-    local col = _let_17_[2]
-    local _let_18_ = nvim.buf_get_lines(0, a.dec(row), row, false)
-    local line = _let_18_[1]
+    local _let_16_ = nvim.win_get_cursor(0)
+    local row = _let_16_[1]
+    local col = _let_16_[2]
+    local _let_17_ = nvim.buf_get_lines(0, a.dec(row), row, false)
+    local line = _let_17_[1]
     return (col - a.count(nvim.fn.matchstr(string.sub(line, 1, col), "\\k\\+$")))
   else
     return eval["completions-sync"](base)

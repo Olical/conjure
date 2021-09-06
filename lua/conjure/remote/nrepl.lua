@@ -32,7 +32,7 @@ local function with_all_msgs_fn(cb)
 end
 _2amodule_2a["with-all-msgs-fn"] = with_all_msgs_fn
 local function connect(opts)
-  local state = {["awaiting-process?"] = false, ["message-queue"] = {}, bc = bencode.new(), msgs = {}}
+  local state = {["message-queue"] = {}, ["awaiting-process?"] = false, bc = bencode.new(), msgs = {}}
   local conn = {session = nil, state = state}
   local function enrich_status(msg)
     local ks = a.get(msg, "status")
@@ -53,7 +53,7 @@ local function connect(opts)
     log.dbg("send", msg)
     local function _5_()
     end
-    a["assoc-in"](state, {"msgs", msg_id}, {["sent-at"] = os.time(), cb = (cb or _5_), msg = msg})
+    a["assoc-in"](state, {"msgs", msg_id}, {msg = msg, cb = (cb or _5_), ["sent-at"] = os.time()})
     do end (conn.sock):write(bencode.encode(msg))
     return nil
   end
@@ -68,7 +68,7 @@ local function connect(opts)
         enrich_status(msg)
         if msg.status["need-input"] then
           local function _7_()
-            return send({op = "stdin", session = msg.session, stdin = ((extract.prompt("Input required: ") or "") .. "\n")})
+            return send({op = "stdin", stdin = ((extract.prompt("Input required: ") or "") .. "\n"), session = msg.session})
           end
           client.schedule(_7_)
         end
@@ -116,7 +116,7 @@ local function connect(opts)
     end
     return client["schedule-wrap"](_15_)
   end
-  conn = a["merge!"](conn, {send = send}, net.connect({cb = handle_connect_fn(), host = opts.host, port = opts.port}))
+  conn = a["merge!"](conn, {send = send}, net.connect({host = opts.host, port = opts.port, cb = handle_connect_fn()}))
   return conn
 end
 _2amodule_2a["connect"] = connect

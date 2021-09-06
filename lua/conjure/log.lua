@@ -107,7 +107,7 @@ end
 _2amodule_locals_2a["in-box?"] = in_box_3f
 local function flip_anchor(anchor, n)
   local chars = {anchor:sub(1, 1), anchor:sub(2)}
-  local flip = {E = "W", N = "S", S = "N", W = "E"}
+  local flip = {N = "S", S = "N", E = "W", W = "E"}
   local function _9_(_241)
     return a.get(flip, _241)
   end
@@ -139,13 +139,13 @@ local function hud_window_pos(anchor, size, rec_3f)
   local pos
   local _14_
   if ("NE" == anchor) then
-    _14_ = {box = {x1 = (east - size.width), x2 = east, y1 = north, y2 = (north + size.height)}, col = east, row = north}
+    _14_ = {row = north, col = east, box = {y1 = north, x1 = (east - size.width), y2 = (north + size.height), x2 = east}}
   elseif ("SE" == anchor) then
-    _14_ = {box = {x1 = (east - size.width), x2 = east, y1 = (south - size.height), y2 = south}, col = east, row = south}
+    _14_ = {row = south, col = east, box = {y1 = (south - size.height), x1 = (east - size.width), y2 = south, x2 = east}}
   elseif ("SW" == anchor) then
-    _14_ = {box = {x1 = west, x2 = (west + size.width), y1 = (south - size.height), y2 = south}, col = west, row = south}
+    _14_ = {row = south, col = west, box = {y1 = (south - size.height), x1 = west, y2 = south, x2 = (west + size.width)}}
   elseif ("NW" == anchor) then
-    _14_ = {box = {x1 = west, x2 = (west + size.width), y1 = north, y2 = (north + size.height)}, col = west, row = north}
+    _14_ = {row = north, col = west, box = {y1 = north, x1 = west, y2 = (north + size.height), x2 = (west + size.width)}}
   else
     nvim.err_writeln("g:conjure#log#hud#anchor must be one of: NE, SE, SW, NW")
     _14_ = hud_window_pos("NE", size)
@@ -171,7 +171,7 @@ local function display_hud()
     local buf = upsert_buf()
     local last_break = a.last(break_lines(buf))
     local line_count = nvim.buf_line_count(buf)
-    local size = {height = editor["percent-height"](config["get-in"]({"log", "hud", "height"})), width = editor["percent-width"](config["get-in"]({"log", "hud", "width"}))}
+    local size = {width = editor["percent-width"](config["get-in"]({"log", "hud", "width"})), height = editor["percent-height"](config["get-in"]({"log", "hud", "height"}))}
     local pos = hud_window_pos(config["get-in"]({"log", "hud", "anchor"}), size)
     local border = config["get-in"]({"log", "hud", "border"})
     local win_opts
@@ -180,7 +180,7 @@ local function display_hud()
         return {border = border}
       end
     end
-    win_opts = a.merge({anchor = pos.anchor, col = pos.col, focusable = false, height = size.height, relative = "editor", row = pos.row, style = "minimal", width = size.width}, _18_())
+    win_opts = a.merge({relative = "editor", row = pos.row, col = pos.col, anchor = pos.anchor, width = size.width, height = size.height, focusable = false, style = "minimal"}, _18_())
     if not nvim.win_is_valid(state.hud.id) then
       close_hud()
     end

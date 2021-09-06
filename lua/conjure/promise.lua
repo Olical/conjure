@@ -19,7 +19,7 @@ local state = (state or {})
 do end (_2amodule_locals_2a)["state"] = state
 local function new()
   local id = uuid.v4()
-  a.assoc(state, id, {["done?"] = false, id = id, val = nil})
+  a.assoc(state, id, {id = id, val = nil, ["done?"] = false})
   return id
 end
 _2amodule_2a["new"] = new

@@ -22,7 +22,7 @@ _2amodule_locals_2a["stdio"] = stdio
 _2amodule_locals_2a["str"] = str
 _2amodule_locals_2a["text"] = text
 _2amodule_locals_2a["_"] = _
-config.merge({client = {racket = {stdio = {command = "racket", mapping = {interrupt = "ei", start = "cs", stop = "cS"}, prompt_pattern = "\n?[\"%w%-./_]*> "}}}})
+config.merge({client = {racket = {stdio = {mapping = {start = "cs", stop = "cS", interrupt = "ei"}, command = "racket", prompt_pattern = "\n?[\"%w%-./_]*> "}}}})
 local cfg = config["get-in-fn"]({"client", "racket", "stdio"})
 do end (_2amodule_locals_2a)["cfg"] = cfg
 local state
@@ -132,10 +132,14 @@ local function start()
   if state("repl") then
     return log.append({"; Can't start, REPL is already running.", ("; Stop the REPL with " .. config["get-in"]({"mapping", "prefix"}) .. cfg({"mapping", "stop"}))}, {["break?"] = true})
   else
-    local function _14_(err)
+    local function _14_()
+      display_repl_status("started")
+      return enter()
+    end
+    local function _15_(err)
       return display_repl_status(err)
     end
-    local function _15_(code, signal)
+    local function _16_(code, signal)
       if (("number" == type(code)) and (code > 0)) then
         log.append({(comment_prefix .. "process exited with code " .. code)})
       end
@@ -144,14 +148,10 @@ local function start()
       end
       return stop()
     end
-    local function _18_(msg)
+    local function _19_(msg)
       return display_result(msg)
     end
-    local function _19_()
-      display_repl_status("started")
-      return enter()
-    end
-    return a.assoc(state(), "repl", stdio.start({["on-error"] = _14_, ["on-exit"] = _15_, ["on-stray-output"] = _18_, ["on-success"] = _19_, ["prompt-pattern"] = cfg({"prompt_pattern"}), cmd = cfg({"command"})}))
+    return a.assoc(state(), "repl", stdio.start({["prompt-pattern"] = cfg({"prompt_pattern"}), cmd = cfg({"command"}), ["on-success"] = _14_, ["on-error"] = _15_, ["on-exit"] = _16_, ["on-stray-output"] = _19_}))
   end
 end
 _2amodule_2a["start"] = start

@@ -26,7 +26,7 @@ end
 _2amodule_locals_2a["strip-unprintable"] = strip_unprintable
 local function start(opts)
   local repl_pipe = uv.new_pipe(true)
-  local repl = {buffer = "", current = nil, queue = {}, status = "pending"}
+  local repl = {status = "pending", queue = {}, current = nil, buffer = ""}
   local function destroy()
     local function _1_()
       return repl_pipe:shutdown()
@@ -52,12 +52,12 @@ local function start(opts)
       local result = _let_3_["result"]
       local cb = a["get-in"](repl, {"current", "cb"}, opts["on-stray-output"])
       if error_3f then
-        opts["on-error"]({["done?"] = done_3f, err = repl.buffer}, repl)
+        opts["on-error"]({err = repl.buffer, ["done?"] = done_3f}, repl)
       end
       if done_3f then
         if cb then
           local function _5_()
-            return cb({["done?"] = done_3f, out = result})
+            return cb({out = result, ["done?"] = done_3f})
           end
           pcall(_5_)
         end
@@ -69,7 +69,7 @@ local function start(opts)
   end
   local function on_output(err, chunk)
     if err then
-      return opts["on-failure"](a["merge!"](repl, {err = err, status = "failed"}))
+      return opts["on-failure"](a["merge!"](repl, {status = "failed", err = err}))
     elseif chunk then
       a.assoc(repl, "buffer", (a.get(repl, "buffer") .. chunk))
       return on_message(strip_unprintable(a.get(repl, "buffer")))
@@ -91,14 +91,14 @@ local function start(opts)
     else
       _10_ = cb
     end
-    table.insert(repl.queue, {cb = _10_, code = code})
+    table.insert(repl.queue, {code = code, cb = _10_})
     next_in_queue()
     return nil
   end
   if opts.pipename then
     local function _15_(err)
       if err then
-        return opts["on-failure"](a["merge!"](repl, {err = err, status = "failed"}))
+        return opts["on-failure"](a["merge!"](repl, {status = "failed", err = err}))
       else
         opts["on-success"](a.assoc(repl, "status", "connected"))
         local function _16_(err0, chunk)
@@ -111,6 +111,6 @@ local function start(opts)
   else
     nvim.err_writeln((_2amodule_name_2a .. ": No pipename specified"))
   end
-  return a["merge!"](repl, {destroy = destroy, opts = opts, send = send})
+  return a["merge!"](repl, {opts = opts, destroy = destroy, send = send})
 end
 _2amodule_2a["start"] = start

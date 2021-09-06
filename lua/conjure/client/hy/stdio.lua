@@ -23,7 +23,7 @@ _2amodule_locals_2a["stdio"] = stdio
 _2amodule_locals_2a["str"] = str
 _2amodule_locals_2a["text"] = text
 _2amodule_locals_2a["_"] = _
-config.merge({client = {hy = {stdio = {command = "hy --repl-output-fn=hy.contrib.hy-repr.hy-repr", mapping = {interrupt = "ei", start = "cs", stop = "cS"}, prompt_pattern = "=> "}}}})
+config.merge({client = {hy = {stdio = {mapping = {start = "cs", stop = "cS", interrupt = "ei"}, command = "hy --repl-output-fn=hy.contrib.hy-repr.hy-repr", prompt_pattern = "=> "}}}})
 local cfg = config["get-in-fn"]({"client", "hy", "stdio"})
 do end (_2amodule_locals_2a)["cfg"] = cfg
 local state
@@ -106,13 +106,14 @@ local function doc_str(opts)
   local code = ("(if (in (mangle '" .. obj0 .. ") --macros--)\n                    (doc " .. obj0 .. ")\n                    (help " .. obj0 .. "))")
   local function _13_(repl)
     local function _14_(msg)
-      local _15_
-      if msg.err then
-        _15_ = "(err) "
-      else
-        _15_ = "(doc) "
+      local function _15_()
+        if msg.err then
+          return "(err) "
+        else
+          return "(doc) "
+        end
       end
-      return log.append(text["prefixed-lines"]((msg.err or msg.out), (comment_prefix .. _15_)))
+      return log.append(text["prefixed-lines"]((msg.err or msg.out), (comment_prefix .. _15_())))
     end
     return repl.send(prep_code(code), _14_)
   end
@@ -139,10 +140,17 @@ local function start()
   if state("repl") then
     return log.append({(comment_prefix .. "Can't start, REPL is already running."), (comment_prefix .. "Stop the REPL with " .. config["get-in"]({"mapping", "prefix"}) .. cfg({"mapping", "stop"}))}, {["break?"] = true})
   else
-    local function _19_(err)
+    local function _18_()
+      display_repl_status("started")
+      local function _19_(repl)
+        return repl.send(prep_code("(import sys) (setv sys.ps2 \"\") (del sys)"))
+      end
+      return with_repl_or_warn(_19_)
+    end
+    local function _20_(err)
       return display_repl_status(err)
     end
-    local function _20_(code, signal)
+    local function _21_(code, signal)
       if (("number" == type(code)) and (code > 0)) then
         log.append({(comment_prefix .. "process exited with code " .. code)})
       end
@@ -151,17 +159,10 @@ local function start()
       end
       return stop()
     end
-    local function _23_(msg)
+    local function _24_(msg)
       return display_result(msg)
     end
-    local function _24_()
-      display_repl_status("started")
-      local function _25_(repl)
-        return repl.send(prep_code("(import sys) (setv sys.ps2 \"\") (del sys)"))
-      end
-      return with_repl_or_warn(_25_)
-    end
-    return a.assoc(state(), "repl", stdio.start({["on-error"] = _19_, ["on-exit"] = _20_, ["on-stray-output"] = _23_, ["on-success"] = _24_, ["prompt-pattern"] = cfg({"prompt_pattern"}), cmd = cfg({"command"})}))
+    return a.assoc(state(), "repl", stdio.start({["prompt-pattern"] = cfg({"prompt_pattern"}), cmd = cfg({"command"}), ["on-success"] = _18_, ["on-error"] = _20_, ["on-exit"] = _21_, ["on-stray-output"] = _24_}))
   end
 end
 _2amodule_2a["start"] = start
@@ -175,11 +176,11 @@ end
 _2amodule_2a["on-exit"] = on_exit
 local function interrupt()
   log.dbg("sending interrupt message", "")
-  local function _27_(repl)
+  local function _26_(repl)
     local uv = vim.loop
     return uv.kill(repl.pid, uv.constants.SIGINT)
   end
-  return with_repl_or_warn(_27_)
+  return with_repl_or_warn(_26_)
 end
 _2amodule_2a["interrupt"] = interrupt
 local function on_filetype()

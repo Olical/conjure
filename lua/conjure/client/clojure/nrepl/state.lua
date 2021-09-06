@@ -15,7 +15,7 @@ local client = autoload("conjure.client")
 do end (_2amodule_locals_2a)["client"] = client
 local get
 local function _1_()
-  return {["auto-repl-proc"] = nil, ["join-next"] = {key = nil}, conn = nil}
+  return {conn = nil, ["auto-repl-proc"] = nil, ["join-next"] = {key = nil}}
 end
 get = (get or client["new-state"](_1_))
 do end (_2amodule_2a)["get"] = get

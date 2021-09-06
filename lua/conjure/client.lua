@@ -66,7 +66,7 @@ local function load_module(ft, name)
   end
   ok_3f, result = xpcall(_7_, fnl.traceback)
   if (ok_3f and a["nil?"](a.get(loaded, name))) then
-    a.assoc(loaded, name, {["module-name"] = name, filetype = ft, module = result})
+    a.assoc(loaded, name, {filetype = ft, ["module-name"] = name, module = result})
     if (result["on-load"] and not nvim.wo.diff) then
       vim.schedule(result["on-load"])
     end
@@ -92,12 +92,12 @@ extension = dyn.new(_12_)
 do end (_2amodule_locals_2a)["extension"] = extension
 local function with_filetype(ft, f, ...)
   local function _13_()
-    return nil
-  end
-  local function _14_()
     return ft
   end
-  return dyn.bind({[extension] = _13_, [filetype] = _14_}, f, ...)
+  local function _14_()
+    return nil
+  end
+  return dyn.bind({[filetype] = _13_, [extension] = _14_}, f, ...)
 end
 _2amodule_2a["with-filetype"] = with_filetype
 local function wrap(f, ...)
@@ -122,7 +122,7 @@ local function schedule(f, ...)
 end
 _2amodule_2a["schedule"] = schedule
 local function current_client_module_name()
-  local result = {["module-name"] = nil, extension = extension(), filetype = filetype()}
+  local result = {filetype = filetype(), extension = extension(), ["module-name"] = nil}
   do
     local fts
     if result.filetype then
@@ -149,9 +149,9 @@ end
 _2amodule_locals_2a["current-client-module-name"] = current_client_module_name
 local function current()
   local _let_21_ = current_client_module_name()
-  local extension0 = _let_21_["extension"]
-  local filetype0 = _let_21_["filetype"]
   local module_name = _let_21_["module-name"]
+  local filetype0 = _let_21_["filetype"]
+  local extension0 = _let_21_["extension"]
   if module_name then
     return load_module(filetype0, module_name)
   end

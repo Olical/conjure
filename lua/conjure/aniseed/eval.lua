@@ -41,14 +41,14 @@ local function repl(opts)
   local fnl = fennel.impl()
   local co
   local function _4_()
-    local function _5_(_241, _242)
-      return nvim.err_writeln(_242)
-    end
-    local function _6_(_241)
+    local function _5_(_241)
       eval_values = clean_values(_241)
       return nil
     end
-    return fnl.repl(a.merge({allowedGlobals = false, compilerEnv = _G, onError = _5_, onValues = _6_, pp = a.identity, readChunk = coroutine.yield}, opts))
+    local function _6_(_241, _242)
+      return nvim.err_writeln(_242)
+    end
+    return fnl.repl(a.merge({compilerEnv = _G, pp = a.identity, readChunk = coroutine.yield, onValues = _5_, onError = _6_}, opts))
   end
   co = coroutine.create(_4_)
   coroutine.resume(co)

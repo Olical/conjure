@@ -48,7 +48,7 @@ local function connect(opts)
       return opts["on-success"]()
     end
   end
-  conn = a.merge(conn, net.connect({cb = client["schedule-wrap"](_4_), host = opts.host, port = opts.port}))
+  conn = a.merge(conn, net.connect({host = opts.host, port = opts.port, cb = client["schedule-wrap"](_4_)}))
   send(conn, (opts.name or "Conjure"))
   return conn
 end

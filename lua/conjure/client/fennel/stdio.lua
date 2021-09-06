@@ -22,7 +22,7 @@ _2amodule_locals_2a["stdio"] = stdio
 _2amodule_locals_2a["str"] = str
 _2amodule_locals_2a["text"] = text
 _2amodule_locals_2a["_"] = _
-config.merge({client = {fennel = {stdio = {command = "fennel", mapping = {eval_reload = "eF", start = "cs", stop = "cS"}, prompt_pattern = ">> "}}}})
+config.merge({client = {fennel = {stdio = {mapping = {start = "cs", stop = "cS", eval_reload = "eF"}, command = "fennel", prompt_pattern = ">> "}}}})
 local cfg = config["get-in-fn"]({"client", "fennel", "stdio"})
 do end (_2amodule_locals_2a)["cfg"] = cfg
 local state
@@ -84,7 +84,7 @@ local function eval_reload()
   local file_path = nvim.fn.expand("%")
   local module_path = nvim.fn.fnamemodify(file_path, ":.:r")
   log.append({(comment_prefix .. ",reload " .. module_path)}, {["break?"] = true})
-  return eval_str({["file-path"] = file_path, action = "eval", code = (",reload " .. module_path), origin = "reload"})
+  return eval_str({action = "eval", origin = "reload", ["file-path"] = file_path, code = (",reload " .. module_path)})
 end
 _2amodule_2a["eval-reload"] = eval_reload
 local function doc_str(opts)
@@ -114,10 +114,13 @@ local function start()
   if state("repl") then
     return log.append({(comment_prefix .. "Can't start, REPL is already running."), (comment_prefix .. "Stop the REPL with " .. config["get-in"]({"mapping", "prefix"}) .. cfg({"mapping", "stop"}))}, {["break?"] = true})
   else
-    local function _12_(err)
+    local function _12_()
+      return display_repl_status("started")
+    end
+    local function _13_(err)
       return display_repl_status(err)
     end
-    local function _13_(code, signal)
+    local function _14_(code, signal)
       if (("number" == type(code)) and (code > 0)) then
         log.append({(comment_prefix .. "process exited with code " .. code)})
       end
@@ -126,13 +129,10 @@ local function start()
       end
       return stop()
     end
-    local function _16_(msg)
+    local function _17_(msg)
       return display_result(msg)
     end
-    local function _17_()
-      return display_repl_status("started")
-    end
-    return a.assoc(state(), "repl", stdio.start({["on-error"] = _12_, ["on-exit"] = _13_, ["on-stray-output"] = _16_, ["on-success"] = _17_, ["prompt-pattern"] = cfg({"prompt_pattern"}), cmd = cfg({"command"})}))
+    return a.assoc(state(), "repl", stdio.start({["prompt-pattern"] = cfg({"prompt_pattern"}), cmd = cfg({"command"}), ["on-success"] = _12_, ["on-error"] = _13_, ["on-exit"] = _14_, ["on-stray-output"] = _17_}))
   end
 end
 _2amodule_2a["start"] = start

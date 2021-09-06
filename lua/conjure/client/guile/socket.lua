@@ -170,17 +170,17 @@ local function connect(opts)
   if ("string" ~= type(pipename)) then
     return log.append({(comment_prefix .. "g:conjure#client#guile#socket#pipename is not specified"), (comment_prefix .. "Please set it to the name of your Guile REPL pipe or pass it to :ConjureConnect [pipename]")})
   else
-    local function _24_(msg, repl)
-      display_result(msg)
-      local function _25_()
-      end
-      return repl.send(",q\n", _25_)
-    end
-    local function _26_()
+    local function _24_()
       display_repl_status()
       return enter()
     end
-    return a.assoc(state(), "repl", socket.start({["on-close"] = disconnect, ["on-error"] = _24_, ["on-failure"] = disconnect, ["on-stray-output"] = display_result, ["on-success"] = _26_, ["parse-output"] = parse_guile_result, pipename = pipename}))
+    local function _25_(msg, repl)
+      display_result(msg)
+      local function _26_()
+      end
+      return repl.send(",q\n", _26_)
+    end
+    return a.assoc(state(), "repl", socket.start({["parse-output"] = parse_guile_result, pipename = pipename, ["on-success"] = _24_, ["on-error"] = _25_, ["on-failure"] = disconnect, ["on-close"] = disconnect, ["on-stray-output"] = display_result}))
   end
 end
 _2amodule_2a["connect"] = connect

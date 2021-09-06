@@ -44,9 +44,9 @@ end
 _2amodule_locals_2a["destroy-sock"] = destroy_sock
 local function connect(_5_)
   local _arg_6_ = _5_
-  local cb = _arg_6_["cb"]
   local host = _arg_6_["host"]
   local port = _arg_6_["port"]
+  local cb = _arg_6_["cb"]
   local sock = vim.loop.new_tcp()
   local resolved_host = resolve(host)
   sock:connect(resolved_host, port, cb)
@@ -54,7 +54,7 @@ local function connect(_5_)
   local function _7_()
     return destroy_sock(sock)
   end
-  return {["resolved-host"] = resolved_host, destroy = _7_, host = host, port = port, sock = sock}
+  return {sock = sock, ["resolved-host"] = resolved_host, destroy = _7_, host = host, port = port}
 end
 _2amodule_2a["connect"] = connect
 local function destroy_all_socks()

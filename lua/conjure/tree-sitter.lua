@@ -57,7 +57,7 @@ _2amodule_2a["document?"] = document_3f
 local function range(node)
   if node then
     local sr, sc, er, ec = node:range()
-    return {["end"] = {a.inc(er), a.dec(ec)}, start = {a.inc(sr), sc}}
+    return {start = {a.inc(sr), sc}, ["end"] = {a.inc(er), a.dec(ec)}}
   end
 end
 _2amodule_2a["range"] = range

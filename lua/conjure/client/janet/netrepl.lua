@@ -80,20 +80,20 @@ local function connect(opts)
     disconnect()
   end
   local function _8_(err)
+    display_conn_status(err)
+    return disconnect()
+  end
+  local function _9_()
+    return display_conn_status("connected")
+  end
+  local function _10_(err)
     if err then
       return display_conn_status(err)
     else
       return disconnect()
     end
   end
-  local function _10_(err)
-    display_conn_status(err)
-    return disconnect()
-  end
-  local function _11_()
-    return display_conn_status("connected")
-  end
-  return a.assoc(state(), "conn", remote.connect({["on-error"] = _8_, ["on-failure"] = _10_, ["on-success"] = _11_, host = host, port = port}))
+  return a.assoc(state(), "conn", remote.connect({host = host, port = port, ["on-failure"] = _8_, ["on-success"] = _9_, ["on-error"] = _10_}))
 end
 _2amodule_2a["connect"] = connect
 local function try_ensure_conn()

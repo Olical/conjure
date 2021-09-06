@@ -21,7 +21,7 @@ _2amodule_locals_2a["nvim"] = nvim
 _2amodule_locals_2a["stdio"] = stdio
 _2amodule_locals_2a["str"] = str
 _2amodule_locals_2a["_"] = _
-config.merge({client = {scheme = {stdio = {command = "mit-scheme", mapping = {start = "cs", stop = "cS"}, prompt_pattern = "[%]e][=r]r?o?r?> "}}}})
+config.merge({client = {scheme = {stdio = {mapping = {start = "cs", stop = "cS"}, command = "mit-scheme", prompt_pattern = "[%]e][=r]r?o?r?> "}}}})
 local cfg = config["get-in-fn"]({"client", "scheme", "stdio"})
 do end (_2amodule_locals_2a)["cfg"] = cfg
 local state
@@ -94,10 +94,13 @@ local function start()
   if state("repl") then
     return log.append({(comment_prefix .. "Can't start, REPL is already running."), (comment_prefix .. "Stop the REPL with " .. config["get-in"]({"mapping", "prefix"}) .. cfg({"mapping", "stop"}))}, {["break?"] = true})
   else
-    local function _9_(err)
+    local function _9_()
+      return display_repl_status("started")
+    end
+    local function _10_(err)
       return display_repl_status(err)
     end
-    local function _10_(code, signal)
+    local function _11_(code, signal)
       if (("number" == type(code)) and (code > 0)) then
         log.append({(comment_prefix .. "process exited with code " .. code)})
       end
@@ -106,13 +109,10 @@ local function start()
       end
       return stop()
     end
-    local function _13_(msg)
+    local function _14_(msg)
       return log.append(format_msg(msg))
     end
-    local function _14_()
-      return display_repl_status("started")
-    end
-    return a.assoc(state(), "repl", stdio.start({["on-error"] = _9_, ["on-exit"] = _10_, ["on-stray-output"] = _13_, ["on-success"] = _14_, ["prompt-pattern"] = cfg({"prompt_pattern"}), cmd = cfg({"command"})}))
+    return a.assoc(state(), "repl", stdio.start({["prompt-pattern"] = cfg({"prompt_pattern"}), cmd = cfg({"command"}), ["on-success"] = _9_, ["on-error"] = _10_, ["on-exit"] = _11_, ["on-stray-output"] = _14_}))
   end
 end
 _2amodule_2a["start"] = start

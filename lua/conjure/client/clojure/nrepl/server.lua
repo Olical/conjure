@@ -82,22 +82,22 @@ end
 _2amodule_2a["assume-session"] = assume_session
 local function eval(opts, cb)
   local function _9_(_)
-    local _10_
-    if config["get-in"]({"client", "clojure", "nrepl", "eval", "pretty_print"}) then
-      _10_ = config["get-in"]({"client", "clojure", "nrepl", "eval", "print_function"})
-    else
-    _10_ = nil
-    end
-    local _13_
+    local _11_
     do
-      local _12_ = a["get-in"](opts, {"range", "start", 2})
-      if _12_ then
-        _13_ = a.inc(_12_)
+      local _10_ = a["get-in"](opts, {"range", "start", 2})
+      if _10_ then
+        _11_ = a.inc(_10_)
       else
-        _13_ = _12_
+        _11_ = _10_
       end
     end
-    return send({["nrepl.middleware.print/buffer-size"] = config["get-in"]({"client", "clojure", "nrepl", "eval", "print_buffer_size"}), ["nrepl.middleware.print/options"] = {associative = 1, length = (config["get-in"]({"client", "clojure", "nrepl", "eval", "print_options", "length"}) or nil), level = (config["get-in"]({"client", "clojure", "nrepl", "eval", "print_options", "level"}) or nil)}, ["nrepl.middleware.print/print"] = _10_, ["nrepl.middleware.print/quota"] = config["get-in"]({"client", "clojure", "nrepl", "eval", "print_quota"}), code = opts.code, column = _13_, file = opts["file-path"], line = a["get-in"](opts, {"range", "start", 1}), ns = opts.context, op = "eval", session = opts.session}, cb)
+    local _13_
+    if config["get-in"]({"client", "clojure", "nrepl", "eval", "pretty_print"}) then
+      _13_ = config["get-in"]({"client", "clojure", "nrepl", "eval", "print_function"})
+    else
+    _13_ = nil
+    end
+    return send({op = "eval", ns = opts.context, code = opts.code, file = opts["file-path"], line = a["get-in"](opts, {"range", "start", 1}), column = _11_, session = opts.session, ["nrepl.middleware.print/options"] = {associative = 1, level = (config["get-in"]({"client", "clojure", "nrepl", "eval", "print_options", "level"}) or nil), length = (config["get-in"]({"client", "clojure", "nrepl", "eval", "print_options", "length"}) or nil)}, ["nrepl.middleware.print/quota"] = config["get-in"]({"client", "clojure", "nrepl", "eval", "print_quota"}), ["nrepl.middleware.print/buffer-size"] = config["get-in"]({"client", "clojure", "nrepl", "eval", "print_buffer_size"}), ["nrepl.middleware.print/print"] = _13_}, cb)
   end
   return with_conn_or_warn(_9_)
 end
@@ -124,7 +124,7 @@ local function pretty_session_type(st)
       return "https://conjure.fun/no-env"
     end
   end
-  return a.get({clj = "Clojure", cljr = "ClojureCLR", cljs = "ClojureScript", timeout = "Timeout", unknown = "Unknown"}, st, _18_())
+  return a.get({clj = "Clojure", cljs = "ClojureScript", cljr = "ClojureCLR", unknown = "Unknown", timeout = "Timeout"}, st, _18_())
 end
 _2amodule_2a["pretty-session-type"] = pretty_session_type
 local function session_type(id, cb)
@@ -147,12 +147,12 @@ local function session_type(id, cb)
     end
     return cb(_22_())
   end
-  return send({code = ("#?(" .. str.join(" ", {":clj 'clj", ":cljs 'cljs", ":cljr 'cljr", ":default 'unknown"}) .. ")"), op = "eval", session = id}, nrepl["with-all-msgs-fn"](_20_))
+  return send({op = "eval", code = ("#?(" .. str.join(" ", {":clj 'clj", ":cljs 'cljs", ":cljr 'cljr", ":default 'unknown"}) .. ")"), session = id}, nrepl["with-all-msgs-fn"](_20_))
 end
 _2amodule_2a["session-type"] = session_type
 local function enrich_session_id(id, cb)
   local function _23_(st)
-    local t = {["pretty-type"] = pretty_session_type(st), id = id, name = uuid.pretty(id), type = st}
+    local t = {id = id, type = st, ["pretty-type"] = pretty_session_type(st), name = uuid.pretty(id)}
     local function _24_()
       return (t.name .. " (" .. t["pretty-type"] .. ")")
     end
@@ -215,7 +215,7 @@ local function eval_preamble(cb)
       return nrepl["with-all-msgs-fn"](cb)
     end
   end
-  return send({code = ("(ns conjure.internal" .. "  (:require [clojure.pprint :as pp]))" .. "(defn pprint [val w opts]" .. "  (apply pp/write val" .. "    (mapcat identity (assoc opts :stream w))))"), op = "eval"}, _35_())
+  return send({op = "eval", code = ("(ns conjure.internal" .. "  (:require [clojure.pprint :as pp]))" .. "(defn pprint [val w opts]" .. "  (apply pp/write val" .. "    (mapcat identity (assoc opts :stream w))))")}, _35_())
 end
 _2amodule_locals_2a["eval-preamble"] = eval_preamble
 local function capture_describe()
@@ -243,26 +243,29 @@ end
 _2amodule_2a["with-conn-and-op-or-warn"] = with_conn_and_op_or_warn
 local function connect(_41_)
   local _arg_42_ = _41_
-  local cb = _arg_42_["cb"]
   local host = _arg_42_["host"]
   local port = _arg_42_["port"]
+  local cb = _arg_42_["cb"]
   local port_file_path = _arg_42_["port_file_path"]
   if state.get("conn") then
     disconnect()
   end
-  local function _44_(result)
-    return ui["display-result"](result)
+  local function _44_(err)
+    display_conn_status(err)
+    return disconnect()
   end
-  local function _45_(err)
+  local function _45_()
+    display_conn_status("connected")
+    capture_describe()
+    assume_or_create_session()
+    return eval_preamble(cb)
+  end
+  local function _46_(err)
     if err then
       return display_conn_status(err)
     else
       return disconnect()
     end
-  end
-  local function _47_(err)
-    display_conn_status(err)
-    return disconnect()
   end
   local function _48_(msg)
     if msg.status["unknown-session"] then
@@ -273,12 +276,9 @@ local function connect(_41_)
       return log.append({("; Namespace not found: " .. msg.ns)})
     end
   end
-  local function _51_()
-    display_conn_status("connected")
-    capture_describe()
-    assume_or_create_session()
-    return eval_preamble(cb)
+  local function _51_(result)
+    return ui["display-result"](result)
   end
-  return a.assoc(state.get(), "conn", a["merge!"](nrepl.connect({["default-callback"] = _44_, ["on-error"] = _45_, ["on-failure"] = _47_, ["on-message"] = _48_, ["on-success"] = _51_, host = host, port = port}), {["seen-ns"] = {}, port_file_path = port_file_path}))
+  return a.assoc(state.get(), "conn", a["merge!"](nrepl.connect({host = host, port = port, ["on-failure"] = _44_, ["on-success"] = _45_, ["on-error"] = _46_, ["on-message"] = _48_, ["default-callback"] = _51_}), {["seen-ns"] = {}, port_file_path = port_file_path}))
 end
 _2amodule_2a["connect"] = connect

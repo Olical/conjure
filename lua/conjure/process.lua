@@ -56,7 +56,7 @@ local function execute(cmd, opts)
     _5_ = t_4_
   end
   term_buf = nvim.create_buf(not _5_, true)
-  local proc = {["running?"] = true, buf = term_buf, cmd = cmd, opts = opts}
+  local proc = {cmd = cmd, buf = term_buf, ["running?"] = true, opts = opts}
   local job_id
   do
     nvim.win_set_buf(win, term_buf)
