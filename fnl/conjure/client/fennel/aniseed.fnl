@@ -49,11 +49,11 @@
     file-path (or (fs.file-path->module-name file-path) default-module-name)
     default-module-name))
 
-(defn- repl [opts]
+(defn repl [opts]
   (let [filename (a.get opts :filename)]
-    (or (a.get repls filename)
+    (or (and (not (a.get opts :fresh?)) (a.get repls filename))
         (let [repl (anic :eval :repl opts)]
-          (repl (.. "(module " opts.moduleName ")\n"))
+          (repl (.. "(module " (a.get opts :moduleName) ")"))
           (tset repls filename repl)
           repl))))
 
@@ -85,14 +85,14 @@
                                     (not package.loaded.fennel))
                            (set package.loaded.fennel (anic :fennel :impl)))
 
-                         (let [eval (repl {:filename opts.file-path
-                                           :moduleName (module-name opts.context opts.file-path)
-                                           :useMetadata (cfg [:use_metadata])
-                                           :onError (fn [err-type err lua-source]
-                                                      (set opts.ok? false)
-                                                      (set opts.results [err]))})
-                               results (eval (.. opts.code "\n"))]
-                           (when (= nil opts.ok?)
+                         (let [eval! (repl {:filename opts.file-path
+                                            :moduleName (module-name opts.context opts.file-path)
+                                            :useMetadata (cfg [:use_metadata])
+                                            :onError (fn [err-type err lua-source]
+                                                       (set opts.ok? false)
+                                                       (set opts.results [err]))})
+                               results (eval! opts.code)]
+                           (when (not= false opts.ok?)
                              (set opts.ok? true)
                              (set opts.results results)))))]
          (when (not (a.empty? out))

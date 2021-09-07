@@ -66,13 +66,13 @@ local function repl(opts)
   local filename = a.get(opts, "filename")
   local function _3_()
     local repl0 = anic("eval", "repl", opts)
-    repl0(("(module " .. opts.moduleName .. ")\n"))
+    repl0(("(module " .. a.get(opts, "moduleName") .. ")"))
     do end (repls)[filename] = repl0
     return repl0
   end
-  return (a.get(repls, filename) or _3_())
+  return ((not a.get(opts, "fresh?") and a.get(repls, filename)) or _3_())
 end
-_2amodule_locals_2a["repl"] = repl
+_2amodule_2a["repl"] = repl
 local function display_result(opts)
   if opts then
     local _let_4_ = opts
@@ -118,15 +118,15 @@ local function eval_str(opts)
       if (cfg({"use_metadata"}) and not package.loaded.fennel) then
         package.loaded.fennel = anic("fennel", "impl")
       end
-      local eval
+      local eval_21
       local function _16_(err_type, err, lua_source)
         opts["ok?"] = false
         opts.results = {err}
         return nil
       end
-      eval = repl({filename = opts["file-path"], moduleName = module_name(opts.context, opts["file-path"]), useMetadata = cfg({"use_metadata"}), onError = _16_})
-      local results = eval((opts.code .. "\n"))
-      if (nil == opts["ok?"]) then
+      eval_21 = repl({filename = opts["file-path"], moduleName = module_name(opts.context, opts["file-path"]), useMetadata = cfg({"use_metadata"}), onError = _16_})
+      local results = eval_21(opts.code)
+      if (false ~= opts["ok?"]) then
         opts["ok?"] = true
         opts.results = results
         return nil

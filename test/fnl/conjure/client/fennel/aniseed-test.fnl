@@ -54,5 +54,8 @@
 
     (bash-repl foo-opts)
     (bash-repl foo-opts)
+    (tset package.loaded foo-opts.moduleName nil)
+
     (bash-repl bar-opts)
-    (bash-repl bar-opts)))
+    (bash-repl bar-opts)
+    (tset package.loaded bar-opts.moduleName nil)))
