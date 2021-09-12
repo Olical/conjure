@@ -125,7 +125,13 @@
                          (let [eval! (repl {:filename opts.file-path
                                             :moduleName (module-name opts.context opts.file-path)
                                             :useMetadata (cfg [:use_metadata])
-                                            :fresh? (or (= :file opts.origin) (= :buf opts.origin))})
+
+                                            ;; Restart the REPL if...
+                                            :fresh? (or ;; We eval an entire file or buffer.
+                                                        (= :file opts.origin) (= :buf opts.origin)
+
+                                                        ;; The user is evaluating the module form.
+                                                        (text.starts-with opts.code (.. "(module " opts.context)))})
                                {: ok? : results} (eval! opts.code)]
                            (set opts.ok? ok?)
                            (set opts.results results))))]
