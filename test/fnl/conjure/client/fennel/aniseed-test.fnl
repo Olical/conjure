@@ -26,31 +26,28 @@
       s)))
 
 (deftest repl
-  (var last-error nil)
-  (let [capture #(set last-error [$1 $2 $3])
-        foo-opts {:filename "foo.fnl"
-                  :moduleName :foo
-                  :onError capture}
+  (let [foo-opts {:filename "foo.fnl"
+                  :moduleName :foo}
         bar-opts {:filename "bar.fnl"
-                  :moduleName :bar
-                  :onError capture}
+                  :moduleName :bar}
         bash-repl (fn [opts]
                     (let [eval! (ani.repl opts)]
-                      (t.pr= [3] (eval! "(+ 1 2)"))
+                      (t.pr= {:ok? true :results [3]} (eval! "(+ 1 2)"))
 
-                      (t.pr= [] (eval! "(local hi 10)"))
-                      (t.pr= [15] (eval! "(+ 5 hi)"))
+                      (t.pr= {:ok? true :results []} (eval! "(local hi 10)"))
+                      (t.pr= {:ok? true :results [15]} (eval! "(+ 5 hi)"))
 
-                      (t.pr= [] (eval! "(def hi2 20)"))
-                      (t.pr= [25] (eval! "(+ 5 hi2)"))
+                      (t.pr= {:ok? true :results []} (eval! "(def hi2 20)"))
+                      (t.pr= {:ok? true :results [25]} (eval! "(+ 5 hi2)"))
 
-                      (t.pr= nil (eval! "(ohno)"))
-                      (t.= "Compile" (a.first last-error))
-                      (t.= (contains? (a.second last-error) "unknown global in strict mode: ohno"))
+                      (let [{: results : ok?} (eval! "(ohno)")]
+                        (t.= false ok?)
+                        (t.= (contains? (a.first results) "unknown global in strict mode: ohno")))
 
-                      (t.= nil (eval! "(())"))
-                      (t.= "Compile" (a.first last-error))
-                      (t.= (contains? (a.second last-error) "expected a function"))))]
+
+                      (let [{: results : ok?} (eval! "(())")]
+                        (t.= false ok?)
+                        (t.= (contains? (a.first results) "expected a function")))))]
 
     (bash-repl foo-opts)
     (bash-repl foo-opts)
@@ -59,3 +56,30 @@
     (bash-repl bar-opts)
     (bash-repl bar-opts)
     (tset package.loaded bar-opts.moduleName nil)))
+
+(deftest eval-str
+  (fn eval! [code]
+    (var result nil)
+    (var raw nil)
+    (ani.eval-str
+      {:code code
+       :context "foo.bar"
+       :passive? true
+       :file-path "foo/bar.fnl"
+       :on-result #(set result $1)
+       :on-result-raw #(set raw $1)})
+    {:result result
+     :raw raw})
+
+  (t.pr= {:raw [30] :result "30"} (eval! "(+ 10 20)"))
+
+  (let [{: raw : result} (eval! "(fn hi [] 10)")]
+    (t.= :function (type (a.first raw)))
+    (t.= (contains? result "#<function: ")))
+
+  (t.pr= {:raw [10] :result "10"} (eval! "(hi)"))
+
+  (let [{: result : raw} (eval! "(ohno)")]
+    (t.= (contains? result "unknown global in strict mode: ohno")))
+
+  (tset package.loaded :foo.bar nil))

@@ -51,20 +51,57 @@
 
 (defn repl [opts]
   (let [filename (a.get opts :filename)]
-    (or (and (not (a.get opts :fresh?)) (a.get repls filename))
-        (let [repl (anic :eval :repl opts)]
+    (or ;; Reuse an existing REPL.
+        (and (not (a.get opts :fresh?)) (a.get repls filename))
+
+        ;; Build a new REPL.
+        (let [;; Shared between the onError function (created at the same time as the REPL).
+              ;; And each individual eval call. This allows us to capture errors from different call stacks.
+              ret {}
+
+              ;; Set up the onError function on the creation of the REPL.
+              ;; Will place any errors in the ret table.
+              _ (tset opts :onError
+                      (fn [err-type err lua-source]
+                        (set ret.ok? false)
+                        (set ret.results [err])))
+
+              ;; Instantiate the raw REPL, we'll wrap this a little first though.
+              eval! (anic :eval :repl opts)
+
+              ;; Build our REPL function.
+              repl (fn [code]
+                     ;; Reset the ret table before running anything.
+                     (set ret.ok? nil)
+                     (set ret.results nil)
+
+                     ;; Run the code, either capturing a result or an error.
+                     ;; If there's no error in ret we can place the results in the ret table.
+                     (let [results (eval! code)]
+                       (when (a.nil? ret.ok?)
+                         (set ret.ok? true)
+                         (set ret.results results))
+                       ;; Finally this good or bad result is returned.
+                       ret))]
+
+          ;; Set up the REPL in the module context.
           (repl (.. "(module " (a.get opts :moduleName) ")"))
+
+          ;; Store the REPL for future reuse.
           (tset repls filename repl)
+
+          ;; Return the new REPL!
           repl))))
 
 (defn display-result [opts]
   (when opts
     (let [{: ok? : results} opts
-          result-str (if ok?
-                       (if (a.empty? results)
-                         "nil"
-                         (str.join "\n" (a.map view.serialise results)))
-                       (a.first results))
+          result-str (or
+                       (if ok?
+                         (when (not (a.empty? results))
+                           (str.join "\n" (a.map view.serialise results)))
+                         (a.first results))
+                       "nil")
           result-lines (str.split result-str "\n")]
       (when (not opts.passive?)
         (log.append
@@ -87,14 +124,10 @@
 
                          (let [eval! (repl {:filename opts.file-path
                                             :moduleName (module-name opts.context opts.file-path)
-                                            :useMetadata (cfg [:use_metadata])
-                                            :onError (fn [err-type err lua-source]
-                                                       (set opts.ok? false)
-                                                       (set opts.results [err]))})
-                               results (eval! opts.code)]
-                           (when (not= false opts.ok?)
-                             (set opts.ok? true)
-                             (set opts.results results)))))]
+                                            :useMetadata (cfg [:use_metadata]) })
+                               {: ok? : results} (eval! opts.code)]
+                           (set opts.ok? ok?)
+                           (set opts.results results))))]
          (when (not (a.empty? out))
            (log.append (text.prefixed-lines (text.trim-last-newline out) "; (out) ")))
          (display-result opts))))))
