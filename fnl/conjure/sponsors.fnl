@@ -11,6 +11,7 @@
 "davidmh"
 "dharrigan"
 "emilaasa"
+"Fedreg"
 "frenchy64"
 "jkrasnay"
 "ketansrivastav"
