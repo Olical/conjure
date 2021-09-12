@@ -24,6 +24,7 @@ local function destroy(t)
   if t then
     t:stop()
     t:close()
+  else
   end
   return nil
 end

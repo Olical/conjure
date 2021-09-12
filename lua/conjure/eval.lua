@@ -58,6 +58,8 @@ local function highlight_range(range)
       return pcall(_3_)
     end
     return timer.defer(_2_, config["get-in"]({"highlight", "timeout"}))
+  else
+    return nil
   end
 end
 _2amodule_locals_2a["highlight-range"] = highlight_range
@@ -69,9 +71,12 @@ local function with_last_result_hook(opts)
       nvim.fn.setreg(config["get-in"]({"eval", "result_register"}), string.gsub(result, "%z", ""))
       if config["get-in"]({"eval", "inline_results"}) then
         inline.display({buf = buf, text = ("=> " .. result), line = line})
+      else
       end
       if f then
         return f(result)
+      else
+        return nil
       end
     end
     return _6_
@@ -99,6 +104,7 @@ local function client_exec_fn(action, f_name, base_opts)
     opts0.preview = preview(opts0)
     if not opts0["passive?"] then
       display_request(opts0)
+    else
     end
     return client.call(f_name, opts0)
   end
@@ -122,6 +128,8 @@ local function apply_gsubs(code)
       end
     end
     return a.reduce(_14_, code, a["kv-pairs"](nvim.g["conjure#eval#gsubs"]))
+  else
+    return nil
   end
 end
 _2amodule_locals_2a["apply-gsubs"] = apply_gsubs
@@ -160,6 +168,8 @@ local function current_form(extra_opts)
     local range = _let_19_["range"]
     eval_str(a.merge({code = content, range = range, origin = "current-form"}, extra_opts))
     return form
+  else
+    return nil
   end
 end
 _2amodule_2a["current-form"] = current_form
@@ -177,6 +187,8 @@ local function replace_form()
     end
     eval_str({code = content, range = range, origin = "replace-form", ["suppress-hud?"] = true, ["on-result"] = _22_})
     return form
+  else
+    return nil
   end
 end
 _2amodule_2a["replace-form"] = replace_form
@@ -187,6 +199,8 @@ local function root_form()
     local content = _let_24_["content"]
     local range = _let_24_["range"]
     return eval_str({code = content, range = range, origin = "root-form"})
+  else
+    return nil
   end
 end
 _2amodule_2a["root-form"] = root_form
@@ -219,6 +233,8 @@ local function insert_result_comment(tag, input)
     end
     eval_str({code = content, range = range, origin = ("comment-" .. tag), ["suppress-hud?"] = true, ["on-result"] = _29_})
     return input
+  else
+    return nil
   end
 end
 _2amodule_locals_2a["insert-result-comment"] = insert_result_comment
@@ -240,6 +256,8 @@ local function word()
   local range = _let_31_["range"]
   if not a["empty?"](content) then
     return eval_str({code = content, range = range, origin = "word"})
+  else
+    return nil
   end
 end
 _2amodule_2a["word"] = word
@@ -249,6 +267,8 @@ local function doc_word()
   local range = _let_33_["range"]
   if not a["empty?"](content) then
     return doc_str({code = content, range = range, origin = "word"})
+  else
+    return nil
   end
 end
 _2amodule_2a["doc-word"] = doc_word
@@ -258,6 +278,8 @@ local function def_word()
   local range = _let_35_["range"]
   if not a["empty?"](content) then
     return def_str({code = content, range = range, origin = "word"})
+  else
+    return nil
   end
 end
 _2amodule_2a["def-word"] = def_word

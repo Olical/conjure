@@ -33,6 +33,7 @@ local function impl()
   if not state["compiler-loaded?"] then
     state["compiler-loaded?"] = true
     sync_rtp(compiler)
+  else
   end
   return compiler
 end

@@ -43,6 +43,7 @@ local function join(...)
       else
       end
     end
+  else
   end
   return table.concat(result, sep)
 end

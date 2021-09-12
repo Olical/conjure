@@ -35,6 +35,7 @@ local function glob_dir_newer_3f(a_dir, b_dir, expr, b_dir_path_fn)
   for _, path in ipairs(relglob(a_dir, expr)) do
     if (nvim.fn.getftime((a_dir .. path)) > nvim.fn.getftime((b_dir .. b_dir_path_fn(path)))) then
       newer_3f = true
+    else
     end
   end
   return newer_3f

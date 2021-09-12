@@ -45,6 +45,7 @@ _2amodule_2a["cursor-top"] = cursor_top
 local function go_to(path_or_win, line, column)
   if a["string?"](path_or_win) then
     nvim.ex.edit(fs["localise-path"](path_or_win))
+  else
   end
   local _3_
   if ("number" == type(path_or_win)) then

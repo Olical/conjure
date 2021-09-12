@@ -78,6 +78,7 @@ local function connect(opts)
   local port = (opts0.port or config["get-in"]({"client", "janet", "netrepl", "connection", "default_port"}))
   if state("conn") then
     disconnect()
+  else
   end
   local function _8_(err)
     display_conn_status(err)
@@ -99,6 +100,8 @@ _2amodule_2a["connect"] = connect
 local function try_ensure_conn()
   if not connected_3f() then
     return connect({["silent?"] = true})
+  else
+    return nil
   end
 end
 _2amodule_locals_2a["try-ensure-conn"] = try_ensure_conn
@@ -108,9 +111,12 @@ local function eval_str(opts)
     local clean = text["trim-last-newline"](msg)
     if opts["on-result"] then
       opts["on-result"](text["strip-ansi-escape-sequences"](clean))
+    else
     end
     if not opts["passive?"] then
       return log.append(text["split-lines"](clean))
+    else
+      return nil
     end
   end
   return send((opts.code .. "\n"), _13_)

@@ -40,6 +40,7 @@ local function upsert_hidden(buf_name, new_buf_fn)
     unlist(buf0)
     if new_buf_fn then
       new_buf_fn(buf0)
+    else
     end
     return buf0
   else

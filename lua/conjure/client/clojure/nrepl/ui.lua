@@ -27,16 +27,19 @@ local function handle_join_line(resp)
   elseif resp.err then
     next_key = "err"
   else
-  next_key = nil
+    next_key = nil
   end
   local key = state.get("join-next", "key")
   if (next_key or resp.value) then
     local function _2_()
       if (next_key and not text["trailing-newline?"](a.get(resp, next_key))) then
         return {key = next_key}
+      else
+        return nil
       end
     end
     a.assoc(state.get(), "join-next", _2_())
+  else
   end
   return (next_key and (key == next_key))
 end
@@ -61,7 +64,7 @@ local function display_result(resp, opts)
     if not (opts0["ignore-nil?"] and ("nil" == resp.value)) then
       _4_ = text["split-lines"](resp.value)
     else
-    _4_ = nil
+      _4_ = nil
     end
   else
     _4_ = nil
@@ -86,6 +89,8 @@ local function display_sessions(sessions, cb)
   log.append(a.concat({("; Sessions (" .. a.count(sessions) .. "):")}, a["map-indexed"](_11_, sessions)), {["break?"] = true})
   if cb then
     return cb()
+  else
+    return nil
   end
 end
 _2amodule_2a["display-sessions"] = display_sessions

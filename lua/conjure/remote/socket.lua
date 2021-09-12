@@ -41,6 +41,8 @@ local function start(opts)
       a.assoc(repl, "current", next_msg)
       log.dbg("send", next_msg.code)
       return repl_pipe:write((next_msg.code .. "\n"))
+    else
+      return nil
     end
   end
   local function on_message(chunk)
@@ -53,6 +55,7 @@ local function start(opts)
       local cb = a["get-in"](repl, {"current", "cb"}, opts["on-stray-output"])
       if error_3f then
         opts["on-error"]({err = repl.buffer, ["done?"] = done_3f}, repl)
+      else
       end
       if done_3f then
         if cb then
@@ -60,11 +63,16 @@ local function start(opts)
             return cb({out = result, ["done?"] = done_3f})
           end
           pcall(_5_)
+        else
         end
         a.assoc(repl, "current", nil)
         a.assoc(repl, "buffer", "")
         return next_in_queue()
+      else
+        return nil
       end
+    else
+      return nil
     end
   end
   local function on_output(err, chunk)
@@ -85,6 +93,8 @@ local function start(opts)
         table.insert(msgs, msg)
         if msg["done?"] then
           return cb(msgs)
+        else
+          return nil
         end
       end
       _10_ = _12_

@@ -60,6 +60,7 @@ local function eval_str(opts)
     local function _5_(msgs)
       if ((1 == a.count(msgs)) and ("" == a["get-in"](msgs, {1, "out"}))) then
         a["assoc-in"](msgs, {1, "out"}, (comment_prefix .. "Empty result."))
+      else
       end
       local msgs0
       local function _7_(_241)
@@ -68,6 +69,7 @@ local function eval_str(opts)
       msgs0 = a.filter(_7_, msgs)
       if opts["on-result"] then
         opts["on-result"](str.join("\n", format_message(a.last(msgs0))))
+      else
       end
       return a["run!"](display_result, msgs0)
     end
@@ -98,6 +100,8 @@ local function display_repl_status(status)
   local repl = state("repl")
   if repl then
     return log.append({(comment_prefix .. a["pr-str"](a["get-in"](repl, {"opts", "cmd"})) .. " (" .. status .. ")")}, {["break?"] = true})
+  else
+    return nil
   end
 end
 _2amodule_locals_2a["display-repl-status"] = display_repl_status
@@ -107,6 +111,8 @@ local function stop()
     repl.destroy()
     display_repl_status("stopped")
     return a.assoc(state(), "repl", nil)
+  else
+    return nil
   end
 end
 _2amodule_2a["stop"] = stop
@@ -123,9 +129,11 @@ local function start()
     local function _14_(code, signal)
       if (("number" == type(code)) and (code > 0)) then
         log.append({(comment_prefix .. "process exited with code " .. code)})
+      else
       end
       if (("number" == type(signal)) and (signal > 0)) then
         log.append({(comment_prefix .. "process exited with signal " .. signal)})
+      else
       end
       return stop()
     end

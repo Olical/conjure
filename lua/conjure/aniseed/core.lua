@@ -47,18 +47,24 @@ _2amodule_2a["empty?"] = empty_3f
 local function first(xs)
   if xs then
     return xs[1]
+  else
+    return nil
   end
 end
 _2amodule_2a["first"] = first
 local function second(xs)
   if xs then
     return xs[2]
+  else
+    return nil
   end
 end
 _2amodule_2a["second"] = second
 local function last(xs)
   if xs then
     return xs[count(xs)]
+  else
+    return nil
   end
 end
 _2amodule_2a["last"] = last
@@ -84,6 +90,7 @@ local function keys(t)
     for k, _ in pairs(t) do
       table.insert(result, k)
     end
+  else
   end
   return result
 end
@@ -94,6 +101,7 @@ local function vals(t)
     for _, v in pairs(t) do
       table.insert(result, v)
     end
+  else
   end
   return result
 end
@@ -104,6 +112,7 @@ local function kv_pairs(t)
     for k, v in pairs(t) do
       table.insert(result, {k, v})
     end
+  else
   end
   return result
 end
@@ -116,7 +125,11 @@ local function run_21(f, xs)
         f(xs[i])
       end
       return nil
+    else
+      return nil
     end
+  else
+    return nil
   end
 end
 _2amodule_2a["run!"] = run_21
@@ -125,6 +138,8 @@ local function filter(f, xs)
   local function _10_(x)
     if f(x) then
       return table.insert(result, x)
+    else
+      return nil
     end
   end
   run_21(_10_, xs)
@@ -173,6 +188,7 @@ local function some(f, xs)
     local candidate = f(xs[n])
     if candidate then
       result = candidate
+    else
     end
     n = inc(n)
   end
@@ -281,6 +297,8 @@ local function slurp(path, silent_3f)
     local content = f:read("*all")
     f:close()
     return content
+  else
+    return nil
   end
 end
 _2amodule_2a["slurp"] = slurp
@@ -294,6 +312,8 @@ local function spit(path, content)
     f:write(content)
     f:close()
     return nil
+  else
+    return nil
   end
 end
 _2amodule_2a["spit"] = spit
@@ -303,6 +323,7 @@ local function merge_21(base, ...)
       for k, v in pairs(m) do
         acc[k] = v
       end
+    else
     end
     return acc
   end
@@ -318,6 +339,7 @@ local function select_keys(t, ks)
     local function _44_(acc, k)
       if k then
         acc[k] = t[k]
+      else
       end
       return acc
     end
@@ -334,10 +356,10 @@ local function get(t, k, d)
     if not nil_3f(val) then
       res = val
     else
-    res = nil
+      res = nil
     end
   else
-  res = nil
+    res = nil
   end
   if nil_3f(res) then
     return d
@@ -351,6 +373,8 @@ local function get_in(t, ks, d)
   local function _50_(acc, k)
     if table_3f(acc) then
       return get(acc, k)
+    else
+      return nil
     end
   end
   res = reduce(_50_, t, ks)
@@ -370,12 +394,15 @@ local function assoc(t, ...)
   local t0 = (t or {})
   if odd_3f(rem) then
     error("assoc expects even number of arguments after table, found odd number")
+  else
   end
   if not nil_3f(k) then
     t0[k] = v
+  else
   end
   if (rem > 0) then
     assoc(t0, unpack(xs))
+  else
   end
   return t0
 end

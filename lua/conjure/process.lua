@@ -38,7 +38,11 @@ local function on_exit(job_id)
     local on_exit0 = a["get-in"](proc, {"opts", "on-exit"})
     if on_exit0 then
       return on_exit0(proc)
+    else
+      return nil
     end
+  else
+    return nil
   end
 end
 _2amodule_2a["on-exit"] = on_exit
@@ -52,6 +56,7 @@ local function execute(cmd, opts)
     local t_4_ = opts
     if (nil ~= t_4_) then
       t_4_ = (t_4_)["hidden?"]
+    else
     end
     _5_ = t_4_
   end
@@ -68,6 +73,7 @@ local function execute(cmd, opts)
       error("invalid arguments or job table full")
     elseif (_7_ == -1) then
       error(("'" .. cmd .. "' is not executable"))
+    else
     end
   end
   nvim.win_set_buf(win, original_buf)
@@ -79,6 +85,7 @@ local function stop(proc)
   if running_3f(proc) then
     nvim.fn.jobstop(proc["job-id"])
     on_exit(proc["job-id"])
+  else
   end
   return proc
 end

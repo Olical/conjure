@@ -58,6 +58,8 @@ local function merge(tbl, opts, ks)
     else
       if (a["nil?"](current) or opts0["overwrite?"]) then
         return assoc_in(ks1, v)
+      else
+        return nil
       end
     end
   end

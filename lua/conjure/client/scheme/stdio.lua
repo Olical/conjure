@@ -87,6 +87,8 @@ local function stop()
     repl.destroy()
     display_repl_status("stopped")
     return a.assoc(state(), "repl", nil)
+  else
+    return nil
   end
 end
 _2amodule_2a["stop"] = stop
@@ -103,9 +105,11 @@ local function start()
     local function _11_(code, signal)
       if (("number" == type(code)) and (code > 0)) then
         log.append({(comment_prefix .. "process exited with code " .. code)})
+      else
       end
       if (("number" == type(signal)) and (signal > 0)) then
         log.append({(comment_prefix .. "process exited with signal " .. signal)})
+      else
       end
       return stop()
     end

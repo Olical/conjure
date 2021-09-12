@@ -26,7 +26,7 @@ do
   if ok_3f then
     ts = x
   else
-  ts = nil
+    ts = nil
   end
 end
 _2amodule_locals_2a["ts"] = ts
@@ -41,12 +41,16 @@ _2amodule_2a["enabled?"] = enabled_3f
 local function node__3estr(node)
   if node then
     return str.join("\n", ts.get_node_text(node))
+  else
+    return nil
   end
 end
 _2amodule_2a["node->str"] = node__3estr
 local function parent(node)
   if node then
     return node:parent()
+  else
+    return nil
   end
 end
 _2amodule_2a["parent"] = parent
@@ -58,6 +62,8 @@ local function range(node)
   if node then
     local sr, sc, er, ec = node:range()
     return {start = {a.inc(sr), sc}, ["end"] = {a.inc(er), a.dec(ec)}}
+  else
+    return nil
   end
 end
 _2amodule_2a["range"] = range
@@ -75,6 +81,8 @@ _2amodule_2a["get-root"] = get_root
 local function leaf_3f(node)
   if node then
     return (0 == node:child_count())
+  else
+    return nil
   end
 end
 _2amodule_2a["leaf?"] = leaf_3f
@@ -82,6 +90,8 @@ local function get_leaf(node)
   local node0 = (node or ts.get_node_at_cursor())
   if leaf_3f(node0) then
     return node0
+  else
+    return nil
   end
 end
 _2amodule_2a["get-leaf"] = get_leaf

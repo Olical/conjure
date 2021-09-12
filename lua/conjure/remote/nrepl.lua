@@ -26,6 +26,8 @@ local function with_all_msgs_fn(cb)
     table.insert(acc, msg)
     if msg.status.done then
       return cb(acc)
+    else
+      return nil
     end
   end
   return _1_
@@ -49,6 +51,7 @@ local function connect(opts)
     a.assoc(msg, "id", msg_id)
     if (not msg.session and conn.session) then
       a.assoc(msg, "session", conn.session)
+    else
     end
     log.dbg("send", msg)
     local function _5_()
@@ -71,16 +74,19 @@ local function connect(opts)
             return send({op = "stdin", stdin = ((extract.prompt("Input required: ") or "") .. "\n"), session = msg.session})
           end
           client.schedule(_7_)
+        else
         end
         do
           local cb = a["get-in"](state, {"msgs", msg.id, "cb"}, opts["default-callback"])
           local ok_3f, err0 = pcall(cb, msg)
           if not ok_3f then
             opts["on-error"](err0)
+          else
           end
         end
         if msg.status.done then
           a["assoc-in"](state, {"msgs", msg.id}, nil)
+        else
         end
         return opts["on-message"](msg)
       end
@@ -96,6 +102,8 @@ local function connect(opts)
         return process_message(unpack(args))
       end
       return a["run!"](_12_, msgs)
+    else
+      return nil
     end
   end
   local function enqueue_message(...)
@@ -103,6 +111,8 @@ local function connect(opts)
     if not state["awaiting-process?"] then
       state["awaiting-process?"] = true
       return client.schedule(process_message_queue)
+    else
+      return nil
     end
   end
   local function handle_connect_fn()

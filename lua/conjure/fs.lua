@@ -22,6 +22,8 @@ local function env(k)
   local v = nvim.fn.getenv(k)
   if (a["string?"](v) and not a["empty?"](v)) then
     return v
+  else
+    return nil
   end
 end
 _2amodule_locals_2a["env"] = env
@@ -33,6 +35,8 @@ local function findfile(name, path)
   local res = nvim.fn.findfile(name, path)
   if not a["empty?"](res) then
     return res
+  else
+    return nil
   end
 end
 _2amodule_2a["findfile"] = findfile
@@ -99,9 +103,13 @@ local function file_path__3emodule_name(file_path)
       local mod_path = string.gsub(mod_name, "%.", afs["path-sep"])
       if (text["ends-with"](file_path, (mod_path .. ".fnl")) or text["ends-with"](file_path, (mod_path .. "/init.fnl"))) then
         return mod_name
+      else
+        return nil
       end
     end
     return a.some(_10_, a.keys(package.loaded))
+  else
+    return nil
   end
 end
 _2amodule_2a["file-path->module-name"] = file_path__3emodule_name

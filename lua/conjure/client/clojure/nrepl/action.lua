@@ -36,6 +36,8 @@ local function require_ns(ns)
     local function _1_()
     end
     return server.eval({code = ("(require '" .. ns .. ")")}, _1_)
+  else
+    return nil
   end
 end
 _2amodule_locals_2a["require-ns"] = require_ns
@@ -44,6 +46,8 @@ do end (_2amodule_locals_2a)["cfg"] = cfg
 local function passive_ns_require()
   if (cfg({"eval", "auto_require"}) and server["connected?"]()) then
     return require_ns(extract.context())
+  else
+    return nil
   end
 end
 _2amodule_2a["passive-ns-require"] = passive_ns_require
@@ -52,6 +56,8 @@ local function delete_auto_repl_port_file()
   local port = cfg({"connection", "auto_repl", "port"})
   if (port_file and port and (a.slurp(port_file) == port)) then
     return nvim.fn.delete(port_file)
+  else
+    return nil
   end
 end
 _2amodule_2a["delete-auto-repl-port-file"] = delete_auto_repl_port_file
@@ -66,9 +72,12 @@ local function upsert_auto_repl_proc()
     a.assoc(state.get(), "auto-repl-proc", proc)
     if (port_file and port) then
       a.spit(port_file, port)
+    else
     end
     log.append({("; Starting auto-repl: " .. cmd)})
     return proc
+  else
+    return nil
   end
 end
 _2amodule_locals_2a["upsert-auto-repl-proc"] = upsert_auto_repl_proc
@@ -83,6 +92,8 @@ local function connect_port_file(opts)
           local port = a.slurp(path)
           if port then
             return {path = path, port = tonumber(port)}
+          else
+            return nil
           end
         end
         resolved = a.some(_9_, _8_)
@@ -99,6 +110,7 @@ local function connect_port_file(opts)
       local t_13_ = resolved
       if (nil ~= t_13_) then
         t_13_ = (t_13_).path
+      else
       end
       _14_ = t_13_
     end
@@ -107,6 +119,7 @@ local function connect_port_file(opts)
       local t_16_ = resolved
       if (nil ~= t_16_) then
         t_16_ = (t_16_).port
+      else
       end
       _17_ = t_16_
     end
@@ -115,6 +128,7 @@ local function connect_port_file(opts)
         local cb = a.get(opts, "cb")
         if cb then
           cb()
+        else
         end
       end
       return passive_ns_require()
@@ -124,6 +138,8 @@ local function connect_port_file(opts)
     if not a.get(opts, "silent?") then
       log.append({"; No nREPL port file found"}, {["break?"] = true})
       return upsert_auto_repl_proc()
+    else
+      return nil
     end
   end
 end
@@ -134,6 +150,8 @@ local function try_ensure_conn(cb)
   else
     if cb then
       return cb()
+    else
+      return nil
     end
   end
 end
@@ -146,7 +164,7 @@ local function connect_host_port(opts)
     if ("string" == type(opts.port)) then
       parsed_port = tonumber(opts.port)
     else
-    parsed_port = nil
+      parsed_port = nil
     end
     if parsed_port then
       return server.connect({host = (opts.host or cfg({"connection", "default_host"})), port = parsed_port, cb = passive_ns_require})
@@ -160,6 +178,7 @@ local function eval_cb_fn(opts)
   local function _28_(resp)
     if (a.get(opts, "on-result") and a.get(resp, "value")) then
       opts["on-result"](resp.value)
+    else
     end
     local cb = a.get(opts, "cb")
     if cb then
@@ -167,6 +186,8 @@ local function eval_cb_fn(opts)
     else
       if not opts["passive?"] then
         return ui["display-result"](resp, opts)
+      else
+        return nil
       end
     end
   end
@@ -181,6 +202,7 @@ local function eval_str(opts)
         end
         server.eval({code = ("(ns " .. opts.context .. ")")}, _34_)
         a["assoc-in"](conn, {"seen-ns", opts.context}, true)
+      else
       end
       return server.eval(opts, eval_cb_fn(opts))
     end
@@ -195,6 +217,8 @@ local function with_info(opts, f)
       local function _38_()
         if not msg.status["no-info"] then
           return msg
+        else
+          return nil
         end
       end
       return f(_38_())
@@ -213,17 +237,21 @@ local function java_info__3elines(_39_)
   local function _41_()
     if member then
       return {"/", member}
+    else
+      return nil
     end
   end
   local _42_
   if not a["empty?"](arglists_str) then
     _42_ = {("; (" .. str.join(" ", text["split-lines"](arglists_str)) .. ")")}
   else
-  _42_ = nil
+    _42_ = nil
   end
   local function _44_()
     if javadoc then
       return {("; " .. javadoc)}
+    else
+      return nil
     end
   end
   return a.concat({str.join(a.concat({"; ", class}, _41_()))}, _42_, _44_())
@@ -294,6 +322,8 @@ local function def_str(opts)
         local function _58_()
           if info.url then
             return ("; " .. info.url)
+          else
+            return nil
           end
         end
         return log.append({"; Can't open source, it's a special form", _58_()})
@@ -386,6 +416,8 @@ local function view_source()
         return ui["display-result"](_241, {["raw-out?"] = true, ["ignore-nil?"] = true})
       end
       return eval_str({code = ("(clojure.repl/source " .. word .. ")"), context = extract.context(), cb = _73_})
+    else
+      return nil
     end
   end
   return try_ensure_conn(_72_)
@@ -545,6 +577,8 @@ local function run_ns_tests(ns)
         return ui["display-result"](_241, {["simple-out?"] = true, ["ignore-nil?"] = true})
       end
       return server.eval({code = test_runner_code("ns", ("'" .. ns))}, _105_)
+    else
+      return nil
     end
   end
   return try_ensure_conn(_104_)
@@ -577,6 +611,8 @@ local function extract_test_name_from_form(form)
       return false
     elseif seen_deftest_3f then
       return part
+    else
+      return nil
     end
   end
   return a.some(_108_, str.split(parse["strip-meta"](form), "%s+"))
@@ -601,7 +637,11 @@ local function run_current_test()
           end
         end
         return server.eval({code = test_runner_code("single", (test_cfg("name-prefix") .. test_name .. test_cfg("name-suffix"))), context = extract.context()}, nrepl["with-all-msgs-fn"](_112_))
+      else
+        return nil
       end
+    else
+      return nil
     end
   end
   return try_ensure_conn(_111_)
@@ -692,19 +732,21 @@ local function clojure__3evim_completion(_129_)
   local function _131_()
     if arglists then
       return table.concat(arglists, " ")
+    else
+      return nil
     end
   end
   local _132_
   if ("string" == type(info)) then
     _132_ = info
   else
-  _132_ = nil
+    _132_ = nil
   end
   local _134_
   if not a["empty?"](kind) then
     _134_ = string.upper(string.sub(kind, 1, 1))
   else
-  _134_ = nil
+    _134_ = nil
   end
   return {word = word, menu = table.concat({ns, _131_()}, " "), info = _132_, kind = _134_}
 end
@@ -730,6 +772,8 @@ local function extract_completion_context(prefix)
     local original = a.get(lines, line_index)
     local spliced = (string.sub(original, 1, lcol) .. "__prefix__" .. string.sub(original, a.inc(lcol)))
     return str.join("\n", a.assoc(lines, line_index, spliced))
+  else
+    return nil
   end
 end
 _2amodule_locals_2a["extract-completion-context"] = extract_completion_context
@@ -743,13 +787,13 @@ local function completions(opts)
     if cfg({"completion", "with_context"}) then
       _141_ = extract_completion_context(opts.prefix)
     else
-    _141_ = nil
+      _141_ = nil
     end
     local _143_
     if enhanced_cljs_completion_3f() then
       _143_ = "t"
     else
-    _143_ = nil
+      _143_ = nil
     end
     local function _145_(msgs)
       return opts.cb(a.map(clojure__3evim_completion, a.get(a.last(msgs), "completions")))

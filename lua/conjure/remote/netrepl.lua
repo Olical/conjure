@@ -35,6 +35,8 @@ local function connect(opts)
         local cb = table.remove(conn.queue)
         if cb then
           return cb(msg)
+        else
+          return nil
         end
       end
       return a["run!"](_1_, conn.decode(chunk))

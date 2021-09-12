@@ -68,6 +68,8 @@ local function clean_input_code(code)
   local clean = str.trim(code)
   if not str["blank?"](clean) then
     return clean
+  else
+    return nil
   end
 end
 _2amodule_locals_2a["clean-input-code"] = clean_input_code
@@ -80,6 +82,7 @@ local function eval_str(opts)
         local function _9_(msgs)
           if ((1 == a.count(msgs)) and ("" == a["get-in"](msgs, {1, "out"}))) then
             a["assoc-in"](msgs, {1, "out"}, (comment_prefix .. "Empty result"))
+          else
           end
           opts["on-result"](str.join("\n", format_message(a.last(msgs))))
           return a["run!"](display_result, msgs)
@@ -128,6 +131,8 @@ local function display_repl_status()
       end
     end
     return log.append({(comment_prefix .. _14_ .. "(" .. repl.status .. _16_ .. ")")}, {["break?"] = true})
+  else
+    return nil
   end
 end
 _2amodule_locals_2a["display-repl-status"] = display_repl_status
@@ -138,6 +143,8 @@ local function disconnect()
     a.assoc(repl, "status", "disconnected")
     display_repl_status()
     return a.assoc(state(), "repl", nil)
+  else
+    return nil
   end
 end
 _2amodule_2a["disconnect"] = disconnect
@@ -161,6 +168,8 @@ local function enter()
     local function _22_()
     end
     return repl.send((",m " .. (c or "(guile-user)") .. "\n"), _22_)
+  else
+    return nil
   end
 end
 _2amodule_2a["enter"] = enter

@@ -18,6 +18,8 @@ _2amodule_locals_2a["get-stack-key"] = get_stack_key
 local function assert_value_function_21(value)
   if ("function" ~= type(value)) then
     return error("conjure.dynamic values must always be wrapped in a function")
+  else
+    return nil
   end
 end
 _2amodule_locals_2a["assert-value-function!"] = assert_value_function_21

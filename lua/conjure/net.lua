@@ -34,6 +34,7 @@ local function destroy_sock(sock)
     sock:read_stop()
     sock:shutdown()
     sock:close()
+  else
   end
   local function _4_(_241)
     return (sock ~= _241)

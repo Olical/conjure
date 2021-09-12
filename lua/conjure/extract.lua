@@ -117,6 +117,8 @@ local function form_2a(_12_, _14_)
   _end = nvim.fn.searchpairpos(safe_start_char, "", safe_end_char, (flags .. _20_()), skip_match_3f_viml)
   if (not nil_pos_3f(start) and not nil_pos_3f(_end)) then
     return {range = {start = a.update(start, 2, a.dec), ["end"] = a.update(_end, 2, a.dec)}, content = read_range(start, _end)}
+  else
+    return nil
   end
 end
 _2amodule_locals_2a["form*"] = form_2a
@@ -150,6 +152,8 @@ local function form(opts)
     end
     if node then
       return {range = ts.range(node), content = ts["node->str"](node)}
+    else
+      return nil
     end
   else
     local forms
@@ -233,6 +237,8 @@ local function context()
   end
   if f then
     return f(str.join("\n", nvim.buf_get_lines(0, 0, config["get-in"]({"extract", "context_header_lines"}), false)))
+  else
+    return nil
   end
 end
 _2amodule_2a["context"] = context
@@ -244,6 +250,8 @@ local function prompt(prefix)
   ok_3f, val = pcall(_41_)
   if ok_3f then
     return val
+  else
+    return nil
   end
 end
 _2amodule_2a["prompt"] = prompt

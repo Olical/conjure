@@ -52,6 +52,7 @@ local function buf(mode_or_opts, cmd_suffix, keys, ...)
     local cmd = (cmd_suffix and ("Conjure" .. cmd_suffix))
     if cmd then
       nvim.ex.command_(("-range " .. cmd), bridge["viml->lua"](unpack(args)))
+    else
     end
     local _5_
     if cmd then
@@ -67,6 +68,8 @@ local function buf(mode_or_opts, cmd_suffix, keys, ...)
       _5_ = unpack(args)
     end
     return nvim.buf_set_keymap(0, mode, mapping, _5_, {silent = true, noremap = true})
+  else
+    return nil
   end
 end
 _2amodule_2a["buf"] = buf
@@ -79,6 +82,8 @@ local function eval_marked_form()
   mapping = a.some(_9_, nvim.buf_get_keymap(0, "n"))
   if (mark and mapping) then
     return nvim.ex.silent_("call", vim_repeat((mapping .. mark)))
+  else
+    return nil
   end
 end
 _2amodule_2a["eval-marked-form"] = eval_marked_form
@@ -107,6 +112,7 @@ local function on_filetype()
     local fn_name = config["get-in"]({"completion", "omnifunc"})
     if fn_name then
       nvim.ex.setlocal(("omnifunc=" .. fn_name))
+    else
     end
   end
   return client["optional-call"]("on-filetype")

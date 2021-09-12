@@ -110,13 +110,17 @@ local function run(mod_name)
         if ((_16_ == false) and (nil ~= _17_)) then
           local err = _17_
           fail("Exception: ", err)
+        else
         end
       end
       if not test_failed then
         a.update(results, "tests-passed", a.inc)
+      else
       end
     end
     return display_results(results, ("[" .. mod_name .. "]"))
+  else
+    return nil
   end
 end
 _2amodule_2a["run"] = run

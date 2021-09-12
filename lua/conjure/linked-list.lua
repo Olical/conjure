@@ -20,6 +20,8 @@ local function create(xs, prev)
     a.assoc(node, "val", a.first(xs))
     a.assoc(node, "prev", prev)
     return a.assoc(node, "next", create(rest, node))
+  else
+    return nil
   end
 end
 _2amodule_2a["create"] = create
@@ -78,6 +80,8 @@ local function _until(f, l)
   end
   if r then
     return c
+  else
+    return nil
   end
 end
 _2amodule_2a["until"] = _until

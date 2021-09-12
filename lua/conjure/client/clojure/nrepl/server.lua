@@ -28,9 +28,12 @@ local function with_conn_or_warn(f, opts)
   else
     if not a.get(opts, "silent?") then
       log.append({"; No connection"})
+    else
     end
     if a.get(opts, "else") then
       return opts["else"]()
+    else
+      return nil
     end
   end
 end
@@ -55,6 +58,8 @@ local function display_conn_status(status)
     local function _7_()
       if conn.port_file_path then
         return (": " .. conn.port_file_path .. "")
+      else
+        return nil
       end
     end
     return log.append({str.join({"; ", conn.host, ":", conn.port, " (", status, ")", _7_()})}, {["break?"] = true})
@@ -95,7 +100,7 @@ local function eval(opts, cb)
     if config["get-in"]({"client", "clojure", "nrepl", "eval", "pretty_print"}) then
       _13_ = config["get-in"]({"client", "clojure", "nrepl", "eval", "print_function"})
     else
-    _13_ = nil
+      _13_ = nil
     end
     return send({op = "eval", ns = opts.context, code = opts.code, file = opts["file-path"], line = a["get-in"](opts, {"range", "start", 1}), column = _11_, session = opts.session, ["nrepl.middleware.print/options"] = {associative = 1, level = (config["get-in"]({"client", "clojure", "nrepl", "eval", "print_options", "level"}) or nil), length = (config["get-in"]({"client", "clojure", "nrepl", "eval", "print_options", "length"}) or nil)}, ["nrepl.middleware.print/quota"] = config["get-in"]({"client", "clojure", "nrepl", "eval", "print_quota"}), ["nrepl.middleware.print/buffer-size"] = config["get-in"]({"client", "clojure", "nrepl", "eval", "print_buffer_size"}), ["nrepl.middleware.print/print"] = _13_}, cb)
   end
@@ -108,6 +113,7 @@ local function with_session_ids(cb)
       local sessions = a.get(msg, "sessions")
       if ("table" == type(sessions)) then
         table.sort(sessions)
+      else
       end
       return cb(sessions)
     end
@@ -143,6 +149,8 @@ local function session_type(id, cb)
     local function _22_()
       if st then
         return str.trim(st)
+      else
+        return nil
       end
     end
     return cb(_22_())
@@ -178,6 +186,8 @@ local function with_sessions(cb)
             end
             table.sort(rich, _28_)
             return cb(rich)
+          else
+            return nil
           end
         end
         return enrich_session_id(id, _27_)
@@ -213,6 +223,8 @@ local function eval_preamble(cb)
   local function _35_()
     if cb then
       return nrepl["with-all-msgs-fn"](cb)
+    else
+      return nil
     end
   end
   return send({op = "eval", code = ("(ns conjure.internal" .. "  (:require [clojure.pprint :as pp]))" .. "(defn pprint [val w opts]" .. "  (apply pp/write val" .. "    (mapcat identity (assoc opts :stream w))))")}, _35_())
@@ -232,9 +244,12 @@ local function with_conn_and_op_or_warn(op, f, opts)
     else
       if not a.get(opts, "silent?") then
         log.append({("; Unsupported operation: " .. op), "; Ensure the CIDER middleware is installed and up to date", "; https://docs.cider.mx/cider-nrepl/usage.html"})
+      else
       end
       if a.get(opts, "else") then
         return opts["else"]()
+      else
+        return nil
       end
     end
   end
@@ -249,6 +264,7 @@ local function connect(_41_)
   local port_file_path = _arg_42_["port_file_path"]
   if state.get("conn") then
     disconnect()
+  else
   end
   local function _44_(err)
     display_conn_status(err)
@@ -271,9 +287,12 @@ local function connect(_41_)
     if msg.status["unknown-session"] then
       log.append({"; Unknown session, correcting"})
       assume_or_create_session()
+    else
     end
     if msg.status["namespace-not-found"] then
       return log.append({("; Namespace not found: " .. msg.ns)})
+    else
+      return nil
     end
   end
   local function _51_(result)

@@ -26,6 +26,8 @@ local function quiet_require(m)
   ok_3f, err = pcall(_1_)
   if (not ok_3f and not err:find(("module '" .. m .. "' not found"))) then
     return nvim.ex.echoerr(err)
+  else
+    return nil
   end
 end
 _2amodule_locals_2a["quiet-require"] = quiet_require
@@ -50,6 +52,7 @@ local function init(opts)
   if (((false ~= opts0.compile) or os.getenv("ANISEED_ENV_COMPILE")) and fs["glob-dir-newer?"](fnl_dir, lua_dir, glob_expr, _4_)) then
     fennel["add-path"]((fnl_dir .. fs["path-sep"] .. "?.fnl"))
     compile.glob(glob_expr, fnl_dir, lua_dir, opts0)
+  else
   end
   return quiet_require((opts0.module or "init"))
 end

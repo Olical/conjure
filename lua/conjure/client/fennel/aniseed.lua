@@ -101,13 +101,19 @@ local function display_result(opts)
         end
       end
       log.append(_8_())
+    else
     end
     if opts["on-result-raw"] then
       opts["on-result-raw"](results)
+    else
     end
     if opts["on-result"] then
       return opts["on-result"](result_str)
+    else
+      return nil
     end
+  else
+    return nil
   end
 end
 _2amodule_2a["display-result"] = display_result
@@ -117,6 +123,7 @@ local function eval_str(opts)
     local function _14_()
       if (cfg({"use_metadata"}) and not package.loaded.fennel) then
         package.loaded.fennel = anic("fennel", "impl")
+      else
       end
       local eval_21
       local function _16_(err_type, err, lua_source)
@@ -130,11 +137,14 @@ local function eval_str(opts)
         opts["ok?"] = true
         opts.results = results
         return nil
+      else
+        return nil
       end
     end
     out = anic("nu", "with-out-str", _14_)
     if not a["empty?"](out) then
       log.append(text["prefixed-lines"](text["trim-last-newline"](out), "; (out) "))
+    else
     end
     return display_result(opts)
   end
@@ -150,6 +160,8 @@ local function eval_file(opts)
   opts.code = a.slurp(opts["file-path"])
   if opts.code then
     return eval_str(opts)
+  else
+    return nil
   end
 end
 _2amodule_2a["eval-file"] = eval_file
@@ -172,6 +184,8 @@ local function run_buf_tests()
       return anic("test", "run", c)
     end
     return wrapped_test({("; run-buf-tests (" .. c .. ")")}, _22_)
+  else
+    return nil
   end
 end
 _2amodule_2a["run-buf-tests"] = run_buf_tests
@@ -207,6 +221,8 @@ local function value__3ecompletions(x)
       end
     end
     return a.map(_26_, a.filter(_29_, a["kv-pairs"](_30_())))
+  else
+    return nil
   end
 end
 _2amodule_2a["value->completions"] = value__3ecompletions
@@ -215,7 +231,7 @@ local function completions(opts)
   if not str["blank?"](opts.prefix) then
     code = ("((. (require :" .. _2amodule_name_2a .. ") :value->completions) " .. string.gsub(opts.prefix, "%..*$", "") .. ")")
   else
-  code = nil
+    code = nil
   end
   local mods = value__3ecompletions(package.loaded)
   local locals
@@ -257,10 +273,12 @@ local function completions(opts)
     end
     ok_3f, err_or_res = pcall(_39_)
   else
-  ok_3f, err_or_res = nil
+    ok_3f, err_or_res = nil
   end
   if not ok_3f then
     return opts.cb(locals)
+  else
+    return nil
   end
 end
 _2amodule_2a["completions"] = completions

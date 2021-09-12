@@ -74,6 +74,7 @@ local function chars(s)
     for c in string.gmatch(s, ".") do
       table.insert(res, c)
     end
+  else
   end
   return res
 end
@@ -81,6 +82,8 @@ _2amodule_2a["chars"] = chars
 local function upper_first(s)
   if s then
     return s:gsub("^%l", string.upper)
+  else
+    return nil
   end
 end
 _2amodule_2a["upper-first"] = upper_first

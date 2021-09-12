@@ -64,6 +64,8 @@ local function file(src, dest)
     local result = _7_
     fs.mkdirp(fs.basename(dest))
     return a.spit(dest, result)
+  else
+    return nil
   end
 end
 _2amodule_2a["file"] = file

@@ -31,6 +31,7 @@ local function deliver(id, val)
   if (false == done_3f(id)) then
     a["assoc-in"](state, {id, "val"}, val)
     a["assoc-in"](state, {id, "done?"}, true)
+  else
   end
   return nil
 end

@@ -83,7 +83,11 @@ local function eval_str(opts)
         log.append({""})
         if opts["on-result"] then
           return opts["on-result"](last_value)
+        else
+          return nil
         end
+      else
+        return nil
       end
     end
     return repl.send(prep_code(opts.code), _8_)
@@ -100,7 +104,7 @@ local function doc_str(opts)
   if ("." == string.sub(opts.code, 1, 1)) then
     obj = extract.prompt("Specify object or module: ")
   else
-  obj = nil
+    obj = nil
   end
   local obj0 = ((obj or "") .. opts.code)
   local code = ("(if (in (mangle '" .. obj0 .. ") --macros--)\n                    (doc " .. obj0 .. ")\n                    (help " .. obj0 .. "))")
@@ -124,6 +128,8 @@ local function display_repl_status(status)
   local repl = state("repl")
   if repl then
     return log.append({(comment_prefix .. a["pr-str"](a["get-in"](repl, {"opts", "cmd"})) .. " (" .. status .. ")")}, {["break?"] = true})
+  else
+    return nil
   end
 end
 _2amodule_locals_2a["display-repl-status"] = display_repl_status
@@ -133,6 +139,8 @@ local function stop()
     repl.destroy()
     display_repl_status("stopped")
     return a.assoc(state(), "repl", nil)
+  else
+    return nil
   end
 end
 _2amodule_2a["stop"] = stop
@@ -153,9 +161,11 @@ local function start()
     local function _21_(code, signal)
       if (("number" == type(code)) and (code > 0)) then
         log.append({(comment_prefix .. "process exited with code " .. code)})
+      else
       end
       if (("number" == type(signal)) and (signal > 0)) then
         log.append({(comment_prefix .. "process exited with signal " .. signal)})
+      else
       end
       return stop()
     end

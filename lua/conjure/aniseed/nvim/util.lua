@@ -51,6 +51,7 @@ local function with_out_str(f)
     nvim.ex.redraw()
     if not ok_3f then
       error(err)
+    else
     end
   end
   return string.gsub(nvim.g.aniseed_nvim_util_out_str, "^(\n?)(.*)$", "%2%1")

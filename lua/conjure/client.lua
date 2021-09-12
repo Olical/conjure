@@ -69,7 +69,9 @@ local function load_module(ft, name)
     a.assoc(loaded, name, {filetype = ft, ["module-name"] = name, module = result})
     if (result["on-load"] and not nvim.wo.diff) then
       vim.schedule(result["on-load"])
+    else
     end
+  else
   end
   if ok_3f then
     return result
@@ -128,7 +130,7 @@ local function current_client_module_name()
     if result.filetype then
       fts = str.split(result.filetype, "%.")
     else
-    fts = nil
+      fts = nil
     end
     if fts then
       for i = a.count(fts), 1, -1 do
@@ -140,8 +142,10 @@ local function current_client_module_name()
         end
         if (not result["module-name"] and module_name and (not suffixes or not result.extension or a.some(_18_, suffixes))) then
           result["module-name"] = module_name
+        else
         end
       end
+    else
     end
   end
   return result
@@ -154,6 +158,8 @@ local function current()
   local extension0 = _let_21_["extension"]
   if module_name then
     return load_module(filetype0, module_name)
+  else
+    return nil
   end
 end
 _2amodule_2a["current"] = current
@@ -174,6 +180,8 @@ local function optional_call(fn_name, ...)
   local f = get(fn_name)
   if f then
     return f(...)
+  else
+    return nil
   end
 end
 _2amodule_2a["optional-call"] = optional_call

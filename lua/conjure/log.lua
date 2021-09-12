@@ -59,6 +59,8 @@ local function close_hud()
     pcall(nvim.win_close, state.hud.id, true)
     state.hud.id = nil
     return nil
+  else
+    return nil
   end
 end
 _2amodule_2a["close-hud"] = close_hud
@@ -71,8 +73,12 @@ local function close_hud_passive()
     else
       if not a["get-in"](state, {"hud", "timer"}) then
         return a["assoc-in"](state, {"hud", "timer"}, timer.defer(close_hud, delay))
+      else
+        return nil
       end
     end
+  else
+    return nil
   end
 end
 _2amodule_2a["close-hud-passive"] = close_hud_passive
@@ -178,11 +184,14 @@ local function display_hud()
     local function _18_()
       if (1 == nvim.fn.has("nvim-0.5")) then
         return {border = border}
+      else
+        return nil
       end
     end
     win_opts = a.merge({relative = "editor", row = pos.row, col = pos.col, anchor = pos.anchor, width = size.width, height = size.height, focusable = false, style = "minimal"}, _18_())
     if not nvim.win_is_valid(state.hud.id) then
       close_hud()
+    else
     end
     if state.hud.id then
       nvim.win_set_buf(state.hud.id, buf)
@@ -196,6 +205,8 @@ local function display_hud()
     else
       return nvim.win_set_cursor(state.hud.id, {line_count, 0})
     end
+  else
+    return nil
   end
 end
 _2amodule_locals_2a["display-hud"] = display_hud
@@ -207,6 +218,8 @@ local function with_buf_wins(buf, f)
   local function _23_(win)
     if (buf == nvim.win_get_buf(win)) then
       return f(win)
+    else
+      return nil
     end
   end
   return a["run!"](_23_, nvim.list_wins())
@@ -224,6 +237,8 @@ local function trim(buf)
     local function _25_(line)
       if (line >= target_line_count) then
         return line
+      else
+        return nil
       end
     end
     break_line = a.some(_25_, break_lines(buf))
@@ -238,7 +253,11 @@ local function trim(buf)
         return nvim.win_set_cursor(win, {row, col})
       end
       return with_buf_wins(buf, _27_)
+    else
+      return nil
     end
+  else
+    return nil
   end
 end
 _2amodule_locals_2a["trim"] = trim
@@ -278,7 +297,7 @@ local function append(lines, opts)
       if client["multiple-states?"]() then
         _34_ = {state_key_header()}
       else
-      _34_ = nil
+        _34_ = nil
       end
       lines3 = a.concat({_break()}, _34_, lines2)
     elseif join_first_3f then
@@ -313,6 +332,7 @@ local function append(lines, opts)
       ok_3f, err = pcall(_39_)
       if not ok_3f then
         error(("Conjure failed to append to log: " .. err .. "\n" .. "Offending lines: " .. a["pr-str"](lines3)))
+      else
       end
     end
     do
@@ -323,9 +343,12 @@ local function append(lines, opts)
         local col = _let_45_[2]
         if ((win ~= state.hud.id) and win_visible_3f(win) and (win_botline(win) >= old_lines)) then
           visible_scrolling_log_3f = true
+        else
         end
         if (row == old_lines) then
           return nvim.win_set_cursor(win, {new_lines, 0})
+        else
+          return nil
         end
       end
       with_buf_wins(buf, _44_)
@@ -336,6 +359,8 @@ local function append(lines, opts)
       close_hud()
     end
     return trim(buf)
+  else
+    return nil
   end
 end
 _2amodule_2a["append"] = append
@@ -380,6 +405,7 @@ _2amodule_2a["close-visible"] = close_visible
 local function dbg(desc, ...)
   if config["get-in"]({"debug"}) then
     append(a.concat({(client.get("comment-prefix") .. "debug: " .. desc)}, text["split-lines"](a["pr-str"](...))))
+  else
   end
   return ...
 end

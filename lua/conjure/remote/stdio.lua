@@ -32,6 +32,8 @@ local function parse_cmd(x)
     return {cmd = a.first(x), args = a.rest(x)}
   elseif a["string?"](x) then
     return parse_cmd(str.split(x, "%s"))
+  else
+    return nil
   end
 end
 _2amodule_2a["parse-cmd"] = parse_cmd
@@ -80,6 +82,7 @@ local function start(opts)
         return (repl.handle):close()
       end
       pcall(_12_)
+    else
     end
     return nil
   end
@@ -94,6 +97,8 @@ local function start(opts)
       a.assoc(repl, "current", next_msg)
       log.dbg("send", next_msg.code)
       return stdin:write(next_msg.code)
+    else
+      return nil
     end
   end
   local function on_message(source, err, chunk)
@@ -110,11 +115,16 @@ local function start(opts)
             return cb({[source] = result, ["done?"] = done_3f})
           end
           pcall(_15_)
+        else
         end
         if done_3f then
           a.assoc(repl, "current", nil)
           return next_in_queue()
+        else
+          return nil
         end
+      else
+        return nil
       end
     end
   end
@@ -132,6 +142,8 @@ local function start(opts)
         table.insert(msgs, msg)
         if msg["done?"] then
           return cb(msgs)
+        else
+          return nil
         end
       end
       _20_ = _22_
