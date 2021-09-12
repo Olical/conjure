@@ -124,7 +124,8 @@
 
                          (let [eval! (repl {:filename opts.file-path
                                             :moduleName (module-name opts.context opts.file-path)
-                                            :useMetadata (cfg [:use_metadata]) })
+                                            :useMetadata (cfg [:use_metadata])
+                                            :fresh? (or (= :file opts.origin) (= :buf opts.origin))})
                                {: ok? : results} (eval! opts.code)]
                            (set opts.ok? ok?)
                            (set opts.results results))))]

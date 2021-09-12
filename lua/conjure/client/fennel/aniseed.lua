@@ -149,7 +149,7 @@ local function eval_str(opts)
         package.loaded.fennel = anic("fennel", "impl")
       else
       end
-      local eval_21 = repl({filename = opts["file-path"], moduleName = module_name(opts.context, opts["file-path"]), useMetadata = cfg({"use_metadata"})})
+      local eval_21 = repl({filename = opts["file-path"], moduleName = module_name(opts.context, opts["file-path"]), useMetadata = cfg({"use_metadata"}), ["fresh?"] = (("file" == opts.origin) or ("buf" == opts.origin))})
       local _let_20_ = eval_21(opts.code)
       local ok_3f = _let_20_["ok?"]
       local results = _let_20_["results"]
