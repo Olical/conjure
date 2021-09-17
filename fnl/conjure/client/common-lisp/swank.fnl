@@ -6,10 +6,10 @@
              text conjure.text
              log conjure.log
              config conjure.config
-             client conjure.client}})
-             ;remote conjure.remote.swank}})
+             client conjure.client
+             remote conjure.remote.swank}})
 
-(def buf-suffic ".lisp")
+(def buf-suffix ".lisp")
 (def comment-prefix "; ")
 
 (config.merge
