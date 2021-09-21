@@ -18,7 +18,6 @@
 "lucaslollobrigida"
 "mamapitufo"
 "martinklepsch"
-"Olical"
 "pyrmont"
 "rafaeldelboni"
 "rbatista"
