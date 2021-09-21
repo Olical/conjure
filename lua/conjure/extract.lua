@@ -84,7 +84,6 @@ local function form_2a(_12_, _14_)
   end
   flags = ("Wnz" .. _16_())
   local cursor_char = current_char()
-  local skip_match_3f_viml = "luaeval(\"require('conjure.extract')['skip-match?']()\")"
   local safe_start_char
   if escape_3f then
     safe_start_char = ("\\" .. start_char)
@@ -105,7 +104,7 @@ local function form_2a(_12_, _14_)
       return ""
     end
   end
-  start = nvim.fn.searchpairpos(safe_start_char, "", safe_end_char, (flags .. "b" .. _19_()), skip_match_3f_viml)
+  start = nvim.fn.searchpairpos(safe_start_char, "", safe_end_char, (flags .. "b" .. _19_()), skip_match_3f)
   local _end
   local function _20_()
     if (cursor_char == end_char) then
@@ -114,7 +113,7 @@ local function form_2a(_12_, _14_)
       return ""
     end
   end
-  _end = nvim.fn.searchpairpos(safe_start_char, "", safe_end_char, (flags .. _20_()), skip_match_3f_viml)
+  _end = nvim.fn.searchpairpos(safe_start_char, "", safe_end_char, (flags .. _20_()), skip_match_3f)
   if (not nil_pos_3f(start) and not nil_pos_3f(_end)) then
     return {range = {start = a.update(start, 2, a.dec), ["end"] = a.update(_end, 2, a.dec)}, content = read_range(start, _end)}
   else
