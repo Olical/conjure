@@ -11,18 +11,26 @@ do
   _2amodule_locals_2a = (_2amodule_2a)["aniseed/locals"]
 end
 local autoload = (require("conjure.aniseed.autoload")).autoload
-local fs, nvim = autoload("conjure.aniseed.fs"), autoload("conjure.aniseed.nvim")
-do end (_2amodule_locals_2a)["fs"] = fs
+local a, fs, nvim, str = autoload("conjure.aniseed.core"), autoload("conjure.aniseed.fs"), autoload("conjure.aniseed.nvim"), autoload("conjure.aniseed.string")
+do end (_2amodule_locals_2a)["a"] = a
+_2amodule_locals_2a["fs"] = fs
 _2amodule_locals_2a["nvim"] = nvim
+_2amodule_locals_2a["str"] = str
 local function sync_rtp(compiler)
-  local sep = fs["path-sep"]
-  local fnl_suffix = (sep .. "fnl" .. sep .. "?.fnl")
-  local rtp = nvim.o.runtimepath
-  local fnl_path = (rtp:gsub(",", (fnl_suffix .. ";")) .. fnl_suffix)
-  local lua_path = fnl_path:gsub((sep .. "fnl" .. sep), (sep .. "lua" .. sep))
-  local full_path = (fnl_path .. ";" .. lua_path)
-  do end (compiler)["path"] = full_path
-  compiler["macro-path"] = full_path
+  local fnl_suffix = (fs["path-sep"] .. "fnl" .. fs["path-sep"] .. "?.fnl")
+  local lua_suffix = (fs["path-sep"] .. "lua" .. fs["path-sep"] .. "?.fnl")
+  local rtps = nvim.list_runtime_paths()
+  local fnl_paths
+  local function _1_(_241)
+    return (_241 .. fnl_suffix)
+  end
+  fnl_paths = a.map(_1_, rtps)
+  local lua_paths
+  local function _2_(_241)
+    return (_241 .. lua_suffix)
+  end
+  lua_paths = a.map(_2_, rtps)
+  do end (compiler)["macro-path"] = str.join(";", a.concat(fnl_paths, lua_paths))
   return nil
 end
 _2amodule_2a["sync-rtp"] = sync_rtp
@@ -40,7 +48,7 @@ end
 _2amodule_2a["impl"] = impl
 local function add_path(path)
   local fnl = impl()
-  do end (fnl)["path"] = (fnl.path .. ";" .. path)
+  do end (fnl)["macro-path"] = (fnl["macro-path"] .. ";" .. path)
   return nil
 end
 _2amodule_2a["add-path"] = add_path

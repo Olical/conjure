@@ -41,15 +41,18 @@ local function init(opts)
   local glob_expr = "**/*.fnl"
   local fnl_dir = nvim.fn.expand((opts0.input or (config_dir .. fs["path-sep"] .. "fnl")))
   local lua_dir = nvim.fn.expand((opts0.output or (config_dir .. fs["path-sep"] .. "lua")))
-  package.path = (package.path .. ";" .. lua_dir .. fs["path-sep"] .. "?.lua")
-  local function _4_(path)
+  if opts0.output then
+    package.path = (package.path .. ";" .. lua_dir .. fs["path-sep"] .. "?.lua")
+  else
+  end
+  local function _5_(path)
     if fs["macro-file-path?"](path) then
       return path
     else
       return string.gsub(path, ".fnl$", ".lua")
     end
   end
-  if (((false ~= opts0.compile) or os.getenv("ANISEED_ENV_COMPILE")) and fs["glob-dir-newer?"](fnl_dir, lua_dir, glob_expr, _4_)) then
+  if (((false ~= opts0.compile) or os.getenv("ANISEED_ENV_COMPILE")) and fs["glob-dir-newer?"](fnl_dir, lua_dir, glob_expr, _5_)) then
     fennel["add-path"]((fnl_dir .. fs["path-sep"] .. "?.fnl"))
     compile.glob(glob_expr, fnl_dir, lua_dir, opts0)
   else
