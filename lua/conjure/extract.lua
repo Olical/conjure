@@ -115,7 +115,7 @@ local function form_2a(_12_, _14_)
   end
   _end = nvim.fn.searchpairpos(safe_start_char, "", safe_end_char, (flags .. _20_()), skip_match_3f)
   if (not nil_pos_3f(start) and not nil_pos_3f(_end)) then
-    return {range = {start = a.update(start, 2, a.dec), ["end"] = a.update(_end, 2, a.dec)}, content = read_range(start, _end)}
+    return {range = {start = {a.first(start), a.dec(a.second(start))}, ["end"] = {a.first(_end), a.dec(a.second(_end))}}, content = read_range(start, _end)}
   else
     return nil
   end

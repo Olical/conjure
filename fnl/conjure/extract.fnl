@@ -85,8 +85,8 @@
 
     (when (and (not (nil-pos? start))
                (not (nil-pos? end)))
-      {:range {:start (a.update start 2 a.dec)
-               :end (a.update end 2 a.dec)}
+      {:range {:start [(a.first start) (a.dec (a.second start))]
+               :end [(a.first end) (a.dec (a.second end))]}
        :content (read-range start end)})))
 
 (defn- range-distance [range]
