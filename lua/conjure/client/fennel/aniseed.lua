@@ -150,7 +150,7 @@ local function eval_str(opts)
       else
       end
       local eval_21 = repl({filename = opts["file-path"], moduleName = module_name(opts.context, opts["file-path"]), useMetadata = cfg({"use_metadata"}), ["fresh?"] = (("file" == opts.origin) or ("buf" == opts.origin) or text["starts-with"](opts.code, ("(module " .. opts.context)))})
-      local _let_20_ = eval_21(opts.code)
+      local _let_20_ = eval_21((opts.code .. "\n"))
       local ok_3f = _let_20_["ok?"]
       local results = _let_20_["results"]
       opts["ok?"] = ok_3f

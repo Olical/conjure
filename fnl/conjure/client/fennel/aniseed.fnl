@@ -132,7 +132,7 @@
 
                                                         ;; The user is evaluating the module form.
                                                         (text.starts-with opts.code (.. "(module " opts.context)))})
-                               {: ok? : results} (eval! opts.code)]
+                               {: ok? : results} (eval! (.. opts.code "\n"))]
                            (set opts.ok? ok?)
                            (set opts.results results))))]
          (when (not (a.empty? out))
