@@ -55,14 +55,14 @@
         (and (not (a.get opts :fresh?)) (a.get repls filename))
 
         ;; Build a new REPL.
-        (let [;; Shared between the onError function (created at the same time as the REPL).
+        (let [;; Shared between the error-handler function (created at the same time as the REPL).
               ;; And each individual eval call. This allows us to capture errors from different call stacks.
               ret {}
 
-              ;; Set up the onError function on the creation of the REPL.
+              ;; Set up the error-handler function on the creation of the REPL.
               ;; Will place any errors in the ret table.
-              _ (tset opts :onError
-                      (fn [err-type err lua-source]
+              _ (tset opts :error-handler
+                      (fn [err]
                         (set ret.ok? false)
                         (set ret.results [err])))
 

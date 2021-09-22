@@ -36,6 +36,10 @@ local function clean_values(vals)
   return a.filter(_2_, vals)
 end
 _2amodule_locals_2a["clean-values"] = clean_values
+local function clean_error(err)
+  return string.gsub(string.gsub(err, "^%b[string .-%b]:%d+: ", ""), "^Compile error in .-:%d+\n%s+", "")
+end
+_2amodule_2a["clean-error"] = clean_error
 local function repl(opts)
   local eval_values = nil
   local fnl = fennel.impl()
@@ -46,7 +50,7 @@ local function repl(opts)
       return nil
     end
     local function _6_(_241, _242)
-      return nvim.err_writeln(_242)
+      return (opts["error-handler"] or nvim.err_writeln)(clean_error(_242))
     end
     return fnl.repl(a.merge({compilerEnv = _G, pp = a.identity, readChunk = coroutine.yield, onValues = _5_, onError = _6_}, opts))
   end

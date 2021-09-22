@@ -67,12 +67,12 @@ local function repl(opts)
   local function _6_()
     local ret = {}
     local _
-    local function _3_(err_type, err, lua_source)
+    local function _3_(err)
       ret["ok?"] = false
       ret.results = {err}
       return nil
     end
-    opts["onError"] = _3_
+    opts["error-handler"] = _3_
     _ = nil
     local eval_21 = anic("eval", "repl", opts)
     local repl0
