@@ -1,4 +1,4 @@
-(module conjure.extract-test
+(module conjure.dynamic-test
   {require {dyn conjure.dynamic}})
 
 (deftest new-and-unbox
