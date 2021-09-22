@@ -131,7 +131,7 @@
                                                         (= :file opts.origin) (= :buf opts.origin)
 
                                                         ;; The user is evaluating the module form.
-                                                        (text.starts-with opts.code (.. "(module " opts.context)))})
+                                                        (text.starts-with opts.code (.. "(module " (or opts.context ""))))})
                                {: ok? : results} (eval! (.. opts.code "\n"))]
                            (set opts.ok? ok?)
                            (set opts.results results))))]
