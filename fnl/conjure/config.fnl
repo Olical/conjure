@@ -48,7 +48,7 @@
     nil))
 
 (merge
-  {:debug false
+  {:debug true
    :relative_file_root nil
    :path_subs nil
 

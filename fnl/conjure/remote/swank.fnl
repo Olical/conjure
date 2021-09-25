@@ -24,19 +24,13 @@
   Returns a connection table containing a `destroy` function."
 
   (var conn
-    {:decode (trn.decoder)
+    {:decode trn.decoder
      :queue []})
 
   (fn handle-message [err chunk]
     (if (or err (not chunk))
       (opts.on-error err)
-      (->> (conn.decode chunk)
-           (a.run!
-             (fn [msg]
-               (log.dbg "receive" msg)
-               (let [cb (table.remove conn.queue)]
-                 (when cb
-                   (cb msg))))))))
+      (conn.decode chunk 0)))
 
   (set conn
        (a.merge
@@ -56,9 +50,10 @@
   ; (send conn (or opts.name "Conjure"))
   conn)
 
-(def c (connect {:host "127.0.0.1"
-                 :port "4005"
-                 :on-failure (fn [err] (a.println "oh no" err))
-                 :on-success (fn [] (a.println "Yay!"))
-                 :on-error (fn [err] (a.println "uh oh" err))}))
-(send c "(:emacs-rex (swank:pprint-eval \"(+ 1 2)\") \"cl-user\" t 1)" a.println)
+; (def c (connect {:host "127.0.0.1"
+;                  :port "4005"
+;                  :on-failure (fn [err] (a.println "oh no" err))
+;                  :on-success (fn [] (a.println "Yay!"))
+;                  :on-error (fn [err] (a.println "uh oh" err))}))
+;(send c "(:emacs-rex (swank:eval-and-grab-output \"(* 3 2)\") \"cl-user\" t 1)" log.dbg)
+;(send c "(:emacs-rex (swank:list-all-package-names t) \"cl-user\" t 1)" log.dbg)
