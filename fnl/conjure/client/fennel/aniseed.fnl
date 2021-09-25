@@ -196,7 +196,7 @@
                (let [prefix (string.gsub opts.prefix ".$" "")]
                  (.. "((. (require :" *module-name* ") :value->completions) " prefix ")")))
         mods (value->completions package.loaded)
-        locals (let [(ok? m) (and opts.context (pcall #(require opts.context)))]
+        locals (let [(ok? m) (pcall #(require opts.context))]
                  (if ok?
                    (a.concat
                      (value->completions m)

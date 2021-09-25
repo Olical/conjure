@@ -257,7 +257,7 @@ local function completions(opts)
     local function _36_()
       return require(opts.context)
     end
-    ok_3f, m = (opts.context and pcall(_36_))
+    ok_3f, m = pcall(_36_)
     if ok_3f then
       locals = a.concat(value__3ecompletions(m), value__3ecompletions(a.get(m, "aniseed/locals")), mods)
     else
