@@ -27,5 +27,5 @@ local function pretty(id)
   return a.get(cats_and_dogs, a.inc((n % a.count(cats_and_dogs))))
 end
 _2amodule_2a["pretty"] = pretty
--- (v4) (pretty (v4))
+--[[ (v4) (pretty (v4)) ]]--
 return nil
