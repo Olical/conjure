@@ -20,7 +20,9 @@
    {:fennel
     {:aniseed
      {:mapping {:run_buf_tests "tt"
-                :run_all_tests "ta"}
+                :run_all_tests "ta"
+                :reset_repl "rr"
+                :reset_all_repls "ra"}
       :aniseed_module_prefix :conjure.aniseed.
       :use_metadata true}}}})
 
@@ -40,6 +42,18 @@
   ((ani mod f-name) ...))
 
 (defonce- repls {})
+
+(defn reset-repl [filename]
+  (let [filename (or filename (fs.localise-path (extract.file-path)))]
+    (tset repls filename nil)
+    (log.append [(.. "; Reset REPL for " filename)] {:break? true})))
+
+(defn reset-all-repls []
+  (a.run!
+    (fn [filename]
+      (tset repls filename nil))
+    (a.keys repls))
+  (log.append [(.. "; Reset all REPLs")] {:break? true}))
 
 (def default-module-name "conjure.user")
 
@@ -171,7 +185,11 @@
   (mapping.buf :n :FnlRunBufTests
                (cfg [:mapping :run_buf_tests]) *module-name* :run-buf-tests)
   (mapping.buf :n :FnlRunAllTests
-               (cfg [:mapping :run_all_tests]) *module-name* :run-all-tests))
+               (cfg [:mapping :run_all_tests]) *module-name* :run-all-tests)
+  (mapping.buf :n :FnlResetREPL
+               (cfg [:mapping :reset_repl]) *module-name* :reset-repl)
+  (mapping.buf :n :FnlResetAllREPLs
+               (cfg [:mapping :reset_all_repls]) *module-name* :reset-all-repls))
 
 (defn value->completions [x]
   (when (= :table (type x))

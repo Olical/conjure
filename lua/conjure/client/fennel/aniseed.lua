@@ -29,7 +29,7 @@ local context_pattern = "%(%s*module%s+(.-)[%s){]"
 _2amodule_2a["context-pattern"] = context_pattern
 local comment_prefix = "; "
 _2amodule_2a["comment-prefix"] = comment_prefix
-config.merge({client = {fennel = {aniseed = {mapping = {run_buf_tests = "tt", run_all_tests = "ta"}, aniseed_module_prefix = "conjure.aniseed.", use_metadata = true}}}})
+config.merge({client = {fennel = {aniseed = {mapping = {run_buf_tests = "tt", run_all_tests = "ta", reset_repl = "rr", reset_all_repls = "ra"}, aniseed_module_prefix = "conjure.aniseed.", use_metadata = true}}}})
 local cfg = config["get-in-fn"]({"client", "fennel", "aniseed"})
 do end (_2amodule_locals_2a)["cfg"] = cfg
 local ani_aliases = {nu = "nvim.util"}
@@ -50,6 +50,21 @@ end
 _2amodule_locals_2a["anic"] = anic
 local repls = (repls or {})
 do end (_2amodule_locals_2a)["repls"] = repls
+local function reset_repl(filename)
+  local filename0 = (filename or fs["localise-path"](extract["file-path"]()))
+  do end (repls)[filename0] = nil
+  return log.append({("; Reset REPL for " .. filename0)}, {["break?"] = true})
+end
+_2amodule_2a["reset-repl"] = reset_repl
+local function reset_all_repls()
+  local function _2_(filename)
+    repls[filename] = nil
+    return nil
+  end
+  a["run!"](_2_, a.keys(repls))
+  return log.append({"; Reset all REPLs"}, {["break?"] = true})
+end
+_2amodule_2a["reset-all-repls"] = reset_all_repls
 local default_module_name = "conjure.user"
 _2amodule_2a["default-module-name"] = default_module_name
 local function module_name(context, file_path)
@@ -64,19 +79,19 @@ end
 _2amodule_2a["module-name"] = module_name
 local function repl(opts)
   local filename = a.get(opts, "filename")
-  local function _6_()
+  local function _7_()
     local ret = {}
     local _
-    local function _3_(err)
+    local function _4_(err)
       ret["ok?"] = false
       ret.results = {err}
       return nil
     end
-    opts["error-handler"] = _3_
+    opts["error-handler"] = _4_
     _ = nil
     local eval_21 = anic("eval", "repl", opts)
     local repl0
-    local function _4_(code)
+    local function _5_(code)
       ret["ok?"] = nil
       ret.results = nil
       local results = eval_21(code)
@@ -87,44 +102,44 @@ local function repl(opts)
       end
       return ret
     end
-    repl0 = _4_
+    repl0 = _5_
     repl0(("(module " .. a.get(opts, "moduleName") .. ")"))
     do end (repls)[filename] = repl0
     return repl0
   end
-  return ((not a.get(opts, "fresh?") and a.get(repls, filename)) or _6_())
+  return ((not a.get(opts, "fresh?") and a.get(repls, filename)) or _7_())
 end
 _2amodule_2a["repl"] = repl
 local function display_result(opts)
   if opts then
-    local _let_7_ = opts
-    local ok_3f = _let_7_["ok?"]
-    local results = _let_7_["results"]
+    local _let_8_ = opts
+    local ok_3f = _let_8_["ok?"]
+    local results = _let_8_["results"]
     local result_str
-    local _8_
+    local _9_
     if ok_3f then
       if not a["empty?"](results) then
-        _8_ = str.join("\n", a.map(view.serialise, results))
+        _9_ = str.join("\n", a.map(view.serialise, results))
       else
-        _8_ = nil
+        _9_ = nil
       end
     else
-      _8_ = a.first(results)
+      _9_ = a.first(results)
     end
-    result_str = (_8_ or "nil")
+    result_str = (_9_ or "nil")
     local result_lines = str.split(result_str, "\n")
     if not opts["passive?"] then
-      local function _12_()
+      local function _13_()
         if ok_3f then
           return result_lines
         else
-          local function _11_(_241)
+          local function _12_(_241)
             return ("; " .. _241)
           end
-          return a.map(_11_, result_lines)
+          return a.map(_12_, result_lines)
         end
       end
-      log.append(_12_())
+      log.append(_13_())
     else
     end
     if opts["on-result-raw"] then
@@ -142,29 +157,29 @@ local function display_result(opts)
 end
 _2amodule_2a["display-result"] = display_result
 local function eval_str(opts)
-  local function _17_()
+  local function _18_()
     local out
-    local function _18_()
+    local function _19_()
       if (cfg({"use_metadata"}) and not package.loaded.fennel) then
         package.loaded.fennel = anic("fennel", "impl")
       else
       end
       local eval_21 = repl({filename = opts["file-path"], moduleName = module_name(opts.context, opts["file-path"]), useMetadata = cfg({"use_metadata"}), ["fresh?"] = (("file" == opts.origin) or ("buf" == opts.origin) or text["starts-with"](opts.code, ("(module " .. (opts.context or ""))))})
-      local _let_20_ = eval_21((opts.code .. "\n"))
-      local ok_3f = _let_20_["ok?"]
-      local results = _let_20_["results"]
+      local _let_21_ = eval_21((opts.code .. "\n"))
+      local ok_3f = _let_21_["ok?"]
+      local results = _let_21_["results"]
       opts["ok?"] = ok_3f
       opts.results = results
       return nil
     end
-    out = anic("nu", "with-out-str", _18_)
+    out = anic("nu", "with-out-str", _19_)
     if not a["empty?"](out) then
       log.append(text["prefixed-lines"](text["trim-last-newline"](out), "; (out) "))
     else
     end
     return display_result(opts)
   end
-  return client.wrap(_17_)()
+  return client.wrap(_18_)()
 end
 _2amodule_2a["eval-str"] = eval_str
 local function doc_str(opts)
@@ -184,22 +199,22 @@ _2amodule_2a["eval-file"] = eval_file
 local function wrapped_test(req_lines, f)
   log.append(req_lines, {["break?"] = true})
   local res = anic("nu", "with-out-str", f)
-  local _23_
+  local _24_
   if ("" == res) then
-    _23_ = "No results."
+    _24_ = "No results."
   else
-    _23_ = res
+    _24_ = res
   end
-  return log.append(text["prefixed-lines"](_23_, "; "))
+  return log.append(text["prefixed-lines"](_24_, "; "))
 end
 _2amodule_locals_2a["wrapped-test"] = wrapped_test
 local function run_buf_tests()
   local c = extract.context()
   if c then
-    local function _25_()
+    local function _26_()
       return anic("test", "run", c)
     end
-    return wrapped_test({("; run-buf-tests (" .. c .. ")")}, _25_)
+    return wrapped_test({("; run-buf-tests (" .. c .. ")")}, _26_)
   else
     return nil
   end
@@ -211,24 +226,26 @@ end
 _2amodule_2a["run-all-tests"] = run_all_tests
 local function on_filetype()
   mapping.buf("n", "FnlRunBufTests", cfg({"mapping", "run_buf_tests"}), _2amodule_name_2a, "run-buf-tests")
-  return mapping.buf("n", "FnlRunAllTests", cfg({"mapping", "run_all_tests"}), _2amodule_name_2a, "run-all-tests")
+  mapping.buf("n", "FnlRunAllTests", cfg({"mapping", "run_all_tests"}), _2amodule_name_2a, "run-all-tests")
+  mapping.buf("n", "FnlResetREPL", cfg({"mapping", "reset_repl"}), _2amodule_name_2a, "reset-repl")
+  return mapping.buf("n", "FnlResetAllREPLs", cfg({"mapping", "reset_all_repls"}), _2amodule_name_2a, "reset-all-repls")
 end
 _2amodule_2a["on-filetype"] = on_filetype
 local function value__3ecompletions(x)
   if ("table" == type(x)) then
-    local function _29_(_27_)
-      local _arg_28_ = _27_
-      local k = _arg_28_[1]
-      local v = _arg_28_[2]
+    local function _30_(_28_)
+      local _arg_29_ = _28_
+      local k = _arg_29_[1]
+      local v = _arg_29_[2]
       return {word = k, kind = type(v), menu = nil, info = nil}
     end
-    local function _32_(_30_)
-      local _arg_31_ = _30_
-      local k = _arg_31_[1]
-      local v = _arg_31_[2]
+    local function _33_(_31_)
+      local _arg_32_ = _31_
+      local k = _arg_32_[1]
+      local v = _arg_32_[2]
       return not text["starts-with"](k, "aniseed/")
     end
-    local function _33_()
+    local function _34_()
       if x["aniseed/autoload-enabled?"] then
         do local _ = x["trick-aniseed-into-loading-the-module"] end
         return x["aniseed/autoload-module"]
@@ -236,7 +253,7 @@ local function value__3ecompletions(x)
         return x
       end
     end
-    return a.map(_29_, a.filter(_32_, a["kv-pairs"](_33_())))
+    return a.map(_30_, a.filter(_33_, a["kv-pairs"](_34_())))
   else
     return nil
   end
@@ -254,10 +271,10 @@ local function completions(opts)
   local locals
   do
     local ok_3f, m = nil, nil
-    local function _36_()
+    local function _37_()
       return require(opts.context)
     end
-    ok_3f, m = pcall(_36_)
+    ok_3f, m = pcall(_37_)
     if ok_3f then
       locals = a.concat(value__3ecompletions(m), value__3ecompletions(a.get(m, "aniseed/locals")), mods)
     else
@@ -265,30 +282,30 @@ local function completions(opts)
     end
   end
   local result_fn
-  local function _38_(results)
+  local function _39_(results)
     local xs = a.first(results)
-    local function _41_()
+    local function _42_()
       if ("table" == type(xs)) then
-        local function _39_(x)
-          local function _40_(_241)
+        local function _40_(x)
+          local function _41_(_241)
             return (opts.prefix .. _241)
           end
-          return a.update(x, "word", _40_)
+          return a.update(x, "word", _41_)
         end
-        return a.concat(a.map(_39_, xs), locals)
+        return a.concat(a.map(_40_, xs), locals)
       else
         return locals
       end
     end
-    return opts.cb(_41_())
+    return opts.cb(_42_())
   end
-  result_fn = _38_
+  result_fn = _39_
   local ok_3f, err_or_res = nil, nil
   if code then
-    local function _42_()
+    local function _43_()
       return eval_str({["file-path"] = opts["file-path"], context = opts.context, code = code, ["passive?"] = true, ["on-result-raw"] = result_fn})
     end
-    ok_3f, err_or_res = pcall(_42_)
+    ok_3f, err_or_res = pcall(_43_)
   else
     ok_3f, err_or_res = nil
   end
