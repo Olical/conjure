@@ -245,7 +245,8 @@ _2amodule_2a["value->completions"] = value__3ecompletions
 local function completions(opts)
   local code
   if not str["blank?"](opts.prefix) then
-    code = ("((. (require :" .. _2amodule_name_2a .. ") :value->completions) " .. string.gsub(opts.prefix, "%..*$", "") .. ")")
+    local prefix = string.gsub(opts.prefix, ".$", "")
+    code = ("((. (require :" .. _2amodule_name_2a .. ") :value->completions) " .. prefix .. ")")
   else
     code = nil
   end
@@ -285,7 +286,7 @@ local function completions(opts)
   local ok_3f, err_or_res = nil, nil
   if code then
     local function _42_()
-      return eval_str({context = opts.context, code = code, ["passive?"] = true, ["on-result-raw"] = result_fn})
+      return eval_str({["file-path"] = opts["file-path"], context = opts.context, code = code, ["passive?"] = true, ["on-result-raw"] = result_fn})
     end
     ok_3f, err_or_res = pcall(_42_)
   else

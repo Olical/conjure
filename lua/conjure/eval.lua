@@ -329,7 +329,7 @@ local function completions(prefix, cb)
     return cb(a.map(wrap_completion_result, (results or _42_())))
   end
   if ("function" == type(client.get("completions"))) then
-    return client.call("completions", assoc_context({prefix = prefix, cb = cb_wrap}))
+    return client.call("completions", assoc_context({["file-path"] = extract["file-path"](), prefix = prefix, cb = cb_wrap}))
   else
     return cb_wrap()
   end

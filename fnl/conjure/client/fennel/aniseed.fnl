@@ -193,9 +193,8 @@
 
 (defn completions [opts]
   (let [code (when (not (str.blank? opts.prefix))
-               (.. "((. (require :" *module-name* ") :value->completions) "
-                   (string.gsub opts.prefix "%..*$" "")
-                   ")"))
+               (let [prefix (string.gsub opts.prefix ".$" "")]
+                 (.. "((. (require :" *module-name* ") :value->completions) " prefix ")")))
         mods (value->completions package.loaded)
         locals (let [(ok? m) (and opts.context (pcall #(require opts.context)))]
                  (if ok?
@@ -221,7 +220,8 @@
           (pcall
             (fn []
               (eval-str
-                {:context opts.context
+                {:file-path opts.file-path
+                 :context opts.context
                  :code code
                  :passive? true
                  :on-result-raw result-fn}))))]
