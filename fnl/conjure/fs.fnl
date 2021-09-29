@@ -1,6 +1,7 @@
 (module conjure.fs
   {autoload {nvim conjure.aniseed.nvim
              a conjure.aniseed.core
+             text conjure.text
              str conjure.aniseed.string
              afs conjure.aniseed.fs
              config conjure.config}})
@@ -77,3 +78,15 @@
   (-> path
       (apply-path-subs (config.get-in [:path_subs]))
       (resolve-relative)))
+
+(defn file-path->module-name [file-path]
+  "Tries to match a file path up to an existing loaded Lua module."
+  (when file-path
+    (a.some
+      (fn [mod-name]
+        (let [mod-path (string.gsub mod-name "%." afs.path-sep)]
+          (when (or
+                  (text.ends-with file-path (.. mod-path ".fnl"))
+                  (text.ends-with file-path (.. mod-path "/init.fnl")))
+            mod-name)))
+      (a.keys package.loaded))))

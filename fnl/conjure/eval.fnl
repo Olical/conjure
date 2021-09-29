@@ -292,7 +292,8 @@
   (if (= :function (type (client.get :completions)))
     (client.call
       :completions
-      (-> {:prefix prefix
+      (-> {:file-path (extract.file-path)
+           :prefix prefix
            :cb cb-wrap}
           (assoc-context)))
     (cb-wrap)))

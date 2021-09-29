@@ -1,520 +1,303 @@
 local _2afile_2a = "fnl/conjure/client/clojure/nrepl/server.fnl"
-local _1_
-do
-  local name_4_auto = "conjure.client.clojure.nrepl.server"
-  local module_5_auto
-  do
-    local x_6_auto = _G.package.loaded[name_4_auto]
-    if ("table" == type(x_6_auto)) then
-      module_5_auto = x_6_auto
-    else
-      module_5_auto = {}
-    end
-  end
-  module_5_auto["aniseed/module"] = name_4_auto
-  module_5_auto["aniseed/locals"] = ((module_5_auto)["aniseed/locals"] or {})
-  do end (module_5_auto)["aniseed/local-fns"] = ((module_5_auto)["aniseed/local-fns"] or {})
-  do end (_G.package.loaded)[name_4_auto] = module_5_auto
-  _1_ = module_5_auto
-end
-local autoload
-local function _3_(...)
-  return (require("conjure.aniseed.autoload")).autoload(...)
-end
-autoload = _3_
-local function _6_(...)
-  local ok_3f_21_auto, val_22_auto = nil, nil
-  local function _5_()
-    return {autoload("conjure.aniseed.core"), autoload("conjure.config"), autoload("conjure.log"), autoload("conjure.remote.nrepl"), autoload("conjure.client.clojure.nrepl.state"), autoload("conjure.aniseed.string"), autoload("conjure.timer"), autoload("conjure.client.clojure.nrepl.ui"), autoload("conjure.uuid")}
-  end
-  ok_3f_21_auto, val_22_auto = pcall(_5_)
-  if ok_3f_21_auto then
-    _1_["aniseed/local-fns"] = {autoload = {a = "conjure.aniseed.core", config = "conjure.config", log = "conjure.log", nrepl = "conjure.remote.nrepl", state = "conjure.client.clojure.nrepl.state", str = "conjure.aniseed.string", timer = "conjure.timer", ui = "conjure.client.clojure.nrepl.ui", uuid = "conjure.uuid"}}
-    return val_22_auto
-  else
-    return print(val_22_auto)
-  end
-end
-local _local_4_ = _6_(...)
-local a = _local_4_[1]
-local config = _local_4_[2]
-local log = _local_4_[3]
-local nrepl = _local_4_[4]
-local state = _local_4_[5]
-local str = _local_4_[6]
-local timer = _local_4_[7]
-local ui = _local_4_[8]
-local uuid = _local_4_[9]
-local _2amodule_2a = _1_
 local _2amodule_name_2a = "conjure.client.clojure.nrepl.server"
-do local _ = ({nil, _1_, nil, {{}, nil, nil, nil}})[2] end
-local with_conn_or_warn
+local _2amodule_2a
 do
-  local v_23_auto
-  do
-    local v_25_auto
-    local function with_conn_or_warn0(f, opts)
-      local conn = state.get("conn")
-      if conn then
-        return f(conn)
+  package.loaded[_2amodule_name_2a] = {}
+  _2amodule_2a = package.loaded[_2amodule_name_2a]
+end
+local _2amodule_locals_2a
+do
+  _2amodule_2a["aniseed/locals"] = {}
+  _2amodule_locals_2a = (_2amodule_2a)["aniseed/locals"]
+end
+local autoload = (require("conjure.aniseed.autoload")).autoload
+local a, config, log, nrepl, state, str, timer, ui, uuid = autoload("conjure.aniseed.core"), autoload("conjure.config"), autoload("conjure.log"), autoload("conjure.remote.nrepl"), autoload("conjure.client.clojure.nrepl.state"), autoload("conjure.aniseed.string"), autoload("conjure.timer"), autoload("conjure.client.clojure.nrepl.ui"), autoload("conjure.uuid")
+do end (_2amodule_locals_2a)["a"] = a
+_2amodule_locals_2a["config"] = config
+_2amodule_locals_2a["log"] = log
+_2amodule_locals_2a["nrepl"] = nrepl
+_2amodule_locals_2a["state"] = state
+_2amodule_locals_2a["str"] = str
+_2amodule_locals_2a["timer"] = timer
+_2amodule_locals_2a["ui"] = ui
+_2amodule_locals_2a["uuid"] = uuid
+local function with_conn_or_warn(f, opts)
+  local conn = state.get("conn")
+  if conn then
+    return f(conn)
+  else
+    if not a.get(opts, "silent?") then
+      log.append({"; No connection"})
+    else
+    end
+    if a.get(opts, "else") then
+      return opts["else"]()
+    else
+      return nil
+    end
+  end
+end
+_2amodule_2a["with-conn-or-warn"] = with_conn_or_warn
+local function connected_3f()
+  if state.get("conn") then
+    return true
+  else
+    return false
+  end
+end
+_2amodule_2a["connected?"] = connected_3f
+local function send(msg, cb)
+  local function _5_(conn)
+    return conn.send(msg, cb)
+  end
+  return with_conn_or_warn(_5_)
+end
+_2amodule_2a["send"] = send
+local function display_conn_status(status)
+  local function _6_(conn)
+    local function _7_()
+      if conn.port_file_path then
+        return (": " .. conn.port_file_path .. "")
       else
-        if not a.get(opts, "silent?") then
-          log.append({"; No connection"})
-        end
-        if a.get(opts, "else") then
-          return opts["else"]()
-        end
+        return nil
       end
     end
-    v_25_auto = with_conn_or_warn0
-    _1_["with-conn-or-warn"] = v_25_auto
-    v_23_auto = v_25_auto
+    return log.append({str.join({"; ", conn.host, ":", conn.port, " (", status, ")", _7_()})}, {["break?"] = true})
   end
-  local t_24_auto = (_1_)["aniseed/locals"]
-  t_24_auto["with-conn-or-warn"] = v_23_auto
-  with_conn_or_warn = v_23_auto
+  return with_conn_or_warn(_6_)
 end
-local connected_3f
-do
-  local v_23_auto
-  do
-    local v_25_auto
-    local function connected_3f0()
-      if state.get("conn") then
-        return true
+_2amodule_locals_2a["display-conn-status"] = display_conn_status
+local function disconnect()
+  local function _8_(conn)
+    conn.destroy()
+    display_conn_status("disconnected")
+    return a.assoc(state.get(), "conn", nil)
+  end
+  return with_conn_or_warn(_8_)
+end
+_2amodule_2a["disconnect"] = disconnect
+local function close_session(session, cb)
+  return send({op = "close", session = a.get(session, "id")}, cb)
+end
+_2amodule_2a["close-session"] = close_session
+local function assume_session(session)
+  a.assoc(state.get("conn"), "session", a.get(session, "id"))
+  return log.append({("; Assumed session: " .. session.str())}, {["break?"] = true})
+end
+_2amodule_2a["assume-session"] = assume_session
+local function eval(opts, cb)
+  local function _9_(_)
+    local _11_
+    do
+      local _10_ = a["get-in"](opts, {"range", "start", 2})
+      if _10_ then
+        _11_ = a.inc(_10_)
       else
-        return false
+        _11_ = _10_
       end
     end
-    v_25_auto = connected_3f0
-    _1_["connected?"] = v_25_auto
-    v_23_auto = v_25_auto
+    local _13_
+    if config["get-in"]({"client", "clojure", "nrepl", "eval", "pretty_print"}) then
+      _13_ = config["get-in"]({"client", "clojure", "nrepl", "eval", "print_function"})
+    else
+      _13_ = nil
+    end
+    return send({op = "eval", ns = opts.context, code = opts.code, file = opts["file-path"], line = a["get-in"](opts, {"range", "start", 1}), column = _11_, session = opts.session, ["nrepl.middleware.print/options"] = {associative = 1, level = (config["get-in"]({"client", "clojure", "nrepl", "eval", "print_options", "level"}) or nil), length = (config["get-in"]({"client", "clojure", "nrepl", "eval", "print_options", "length"}) or nil)}, ["nrepl.middleware.print/quota"] = config["get-in"]({"client", "clojure", "nrepl", "eval", "print_quota"}), ["nrepl.middleware.print/buffer-size"] = config["get-in"]({"client", "clojure", "nrepl", "eval", "print_buffer_size"}), ["nrepl.middleware.print/print"] = _13_}, cb)
   end
-  local t_24_auto = (_1_)["aniseed/locals"]
-  t_24_auto["connected?"] = v_23_auto
-  connected_3f = v_23_auto
+  return with_conn_or_warn(_9_)
 end
-local send
-do
-  local v_23_auto
-  do
-    local v_25_auto
-    local function send0(msg, cb)
-      local function _12_(conn)
-        return conn.send(msg, cb)
+_2amodule_2a["eval"] = eval
+local function with_session_ids(cb)
+  local function _15_(_)
+    local function _16_(msg)
+      local sessions = a.get(msg, "sessions")
+      if ("table" == type(sessions)) then
+        table.sort(sessions)
+      else
       end
-      return with_conn_or_warn(_12_)
+      return cb(sessions)
     end
-    v_25_auto = send0
-    _1_["send"] = v_25_auto
-    v_23_auto = v_25_auto
+    return send({op = "ls-sessions"}, _16_)
   end
-  local t_24_auto = (_1_)["aniseed/locals"]
-  t_24_auto["send"] = v_23_auto
-  send = v_23_auto
+  return with_conn_or_warn(_15_)
 end
-local display_conn_status
-do
-  local v_23_auto
-  local function display_conn_status0(status)
-    local function _13_(conn)
-      local function _14_()
-        if conn.port_file_path then
-          return (": " .. conn.port_file_path .. "")
-        end
+_2amodule_locals_2a["with-session-ids"] = with_session_ids
+local function pretty_session_type(st)
+  local function _18_()
+    if a["string?"](st) then
+      return (st .. "?")
+    else
+      return "https://conjure.fun/no-env"
+    end
+  end
+  return a.get({clj = "Clojure", cljs = "ClojureScript", cljr = "ClojureCLR", unknown = "Unknown", timeout = "Timeout"}, st, _18_())
+end
+_2amodule_2a["pretty-session-type"] = pretty_session_type
+local function session_type(id, cb)
+  local timeout
+  local function _19_()
+    return cb("timeout")
+  end
+  timeout = timer.defer(_19_, 300)
+  local function _20_(msgs)
+    timer.destroy(timeout)
+    local st
+    local function _21_(_241)
+      return a.get(_241, "value")
+    end
+    st = a.some(_21_, msgs)
+    local function _22_()
+      if st then
+        return str.trim(st)
+      else
+        return nil
       end
-      return log.append({str.join({"; ", conn.host, ":", conn.port, " (", status, ")", _14_()})}, {["break?"] = true})
     end
-    return with_conn_or_warn(_13_)
+    return cb(_22_())
   end
-  v_23_auto = display_conn_status0
-  local t_24_auto = (_1_)["aniseed/locals"]
-  t_24_auto["display-conn-status"] = v_23_auto
-  display_conn_status = v_23_auto
+  return send({op = "eval", code = ("#?(" .. str.join(" ", {":clj 'clj", ":cljs 'cljs", ":cljr 'cljr", ":default 'unknown"}) .. ")"), session = id}, nrepl["with-all-msgs-fn"](_20_))
 end
-local disconnect
-do
-  local v_23_auto
-  do
-    local v_25_auto
-    local function disconnect0()
-      local function _15_(conn)
-        conn.destroy()
-        display_conn_status("disconnected")
-        return a.assoc(state.get(), "conn", nil)
-      end
-      return with_conn_or_warn(_15_)
+_2amodule_2a["session-type"] = session_type
+local function enrich_session_id(id, cb)
+  local function _23_(st)
+    local t = {id = id, type = st, ["pretty-type"] = pretty_session_type(st), name = uuid.pretty(id)}
+    local function _24_()
+      return (t.name .. " (" .. t["pretty-type"] .. ")")
     end
-    v_25_auto = disconnect0
-    _1_["disconnect"] = v_25_auto
-    v_23_auto = v_25_auto
+    a.assoc(t, "str", _24_)
+    return cb(t)
   end
-  local t_24_auto = (_1_)["aniseed/locals"]
-  t_24_auto["disconnect"] = v_23_auto
-  disconnect = v_23_auto
+  return session_type(id, _23_)
 end
-local close_session
-do
-  local v_23_auto
-  do
-    local v_25_auto
-    local function close_session0(session, cb)
-      return send({op = "close", session = a.get(session, "id")}, cb)
-    end
-    v_25_auto = close_session0
-    _1_["close-session"] = v_25_auto
-    v_23_auto = v_25_auto
-  end
-  local t_24_auto = (_1_)["aniseed/locals"]
-  t_24_auto["close-session"] = v_23_auto
-  close_session = v_23_auto
-end
-local assume_session
-do
-  local v_23_auto
-  do
-    local v_25_auto
-    local function assume_session0(session)
-      a.assoc(state.get("conn"), "session", a.get(session, "id"))
-      return log.append({("; Assumed session: " .. session.str())}, {["break?"] = true})
-    end
-    v_25_auto = assume_session0
-    _1_["assume-session"] = v_25_auto
-    v_23_auto = v_25_auto
-  end
-  local t_24_auto = (_1_)["aniseed/locals"]
-  t_24_auto["assume-session"] = v_23_auto
-  assume_session = v_23_auto
-end
-local eval
-do
-  local v_23_auto
-  do
-    local v_25_auto
-    local function eval0(opts, cb)
-      local function _16_(_)
-        local _17_
-        if config["get-in"]({"client", "clojure", "nrepl", "eval", "pretty_print"}) then
-          _17_ = config["get-in"]({"client", "clojure", "nrepl", "eval", "print_function"})
-        else
-        _17_ = nil
-        end
-        local _20_
-        do
-          local _19_ = a["get-in"](opts, {"range", "start", 2})
-          if _19_ then
-            _20_ = a.inc(_19_)
-          else
-            _20_ = _19_
-          end
-        end
-        return send({["nrepl.middleware.print/buffer-size"] = config["get-in"]({"client", "clojure", "nrepl", "eval", "print_buffer_size"}), ["nrepl.middleware.print/options"] = {associative = 1, length = (config["get-in"]({"client", "clojure", "nrepl", "eval", "print_options", "length"}) or nil), level = (config["get-in"]({"client", "clojure", "nrepl", "eval", "print_options", "level"}) or nil)}, ["nrepl.middleware.print/print"] = _17_, ["nrepl.middleware.print/quota"] = config["get-in"]({"client", "clojure", "nrepl", "eval", "print_quota"}), code = opts.code, column = _20_, file = opts["file-path"], line = a["get-in"](opts, {"range", "start", 1}), ns = opts.context, op = "eval", session = opts.session}, cb)
-      end
-      return with_conn_or_warn(_16_)
-    end
-    v_25_auto = eval0
-    _1_["eval"] = v_25_auto
-    v_23_auto = v_25_auto
-  end
-  local t_24_auto = (_1_)["aniseed/locals"]
-  t_24_auto["eval"] = v_23_auto
-  eval = v_23_auto
-end
-local with_session_ids
-do
-  local v_23_auto
-  local function with_session_ids0(cb)
-    local function _22_(_)
-      local function _23_(msg)
-        local sessions = a.get(msg, "sessions")
-        if ("table" == type(sessions)) then
-          table.sort(sessions)
-        end
-        return cb(sessions)
-      end
-      return send({op = "ls-sessions"}, _23_)
-    end
-    return with_conn_or_warn(_22_)
-  end
-  v_23_auto = with_session_ids0
-  local t_24_auto = (_1_)["aniseed/locals"]
-  t_24_auto["with-session-ids"] = v_23_auto
-  with_session_ids = v_23_auto
-end
-local pretty_session_type
-do
-  local v_23_auto
-  do
-    local v_25_auto
-    local function pretty_session_type0(st)
-      local function _25_()
-        if a["string?"](st) then
-          return (st .. "?")
-        else
-          return "https://conjure.fun/no-env"
-        end
-      end
-      return a.get({clj = "Clojure", cljr = "ClojureCLR", cljs = "ClojureScript", timeout = "Timeout", unknown = "Unknown"}, st, _25_())
-    end
-    v_25_auto = pretty_session_type0
-    _1_["pretty-session-type"] = v_25_auto
-    v_23_auto = v_25_auto
-  end
-  local t_24_auto = (_1_)["aniseed/locals"]
-  t_24_auto["pretty-session-type"] = v_23_auto
-  pretty_session_type = v_23_auto
-end
-local session_type
-do
-  local v_23_auto
-  do
-    local v_25_auto
-    local function session_type0(id, cb)
-      local timeout
-      local function _26_()
-        return cb("timeout")
-      end
-      timeout = timer.defer(_26_, 300)
-      local function _27_(msgs)
-        timer.destroy(timeout)
-        local st
-        local function _28_(_241)
-          return a.get(_241, "value")
-        end
-        st = a.some(_28_, msgs)
-        local function _29_()
-          if st then
-            return str.trim(st)
-          end
-        end
-        return cb(_29_())
-      end
-      return send({code = ("#?(" .. str.join(" ", {":clj 'clj", ":cljs 'cljs", ":cljr 'cljr", ":default 'unknown"}) .. ")"), op = "eval", session = id}, nrepl["with-all-msgs-fn"](_27_))
-    end
-    v_25_auto = session_type0
-    _1_["session-type"] = v_25_auto
-    v_23_auto = v_25_auto
-  end
-  local t_24_auto = (_1_)["aniseed/locals"]
-  t_24_auto["session-type"] = v_23_auto
-  session_type = v_23_auto
-end
-local enrich_session_id
-do
-  local v_23_auto
-  do
-    local v_25_auto
-    local function enrich_session_id0(id, cb)
-      local function _30_(st)
-        local t = {["pretty-type"] = pretty_session_type(st), id = id, name = uuid.pretty(id), type = st}
-        local function _31_()
-          return (t.name .. " (" .. t["pretty-type"] .. ")")
-        end
-        a.assoc(t, "str", _31_)
-        return cb(t)
-      end
-      return session_type(id, _30_)
-    end
-    v_25_auto = enrich_session_id0
-    _1_["enrich-session-id"] = v_25_auto
-    v_23_auto = v_25_auto
-  end
-  local t_24_auto = (_1_)["aniseed/locals"]
-  t_24_auto["enrich-session-id"] = v_23_auto
-  enrich_session_id = v_23_auto
-end
-local with_sessions
-do
-  local v_23_auto
-  do
-    local v_25_auto
-    local function with_sessions0(cb)
-      local function _32_(sess_ids)
-        local rich = {}
-        local total = a.count(sess_ids)
-        if (0 == total) then
-          return cb({})
-        else
-          local function _33_(id)
-            local function _34_(t)
-              table.insert(rich, t)
-              if (total == a.count(rich)) then
-                local function _35_(_241, _242)
-                  return (a.get(_241, "name") < a.get(_242, "name"))
-                end
-                table.sort(rich, _35_)
-                return cb(rich)
-              end
+_2amodule_2a["enrich-session-id"] = enrich_session_id
+local function with_sessions(cb)
+  local function _25_(sess_ids)
+    local rich = {}
+    local total = a.count(sess_ids)
+    if (0 == total) then
+      return cb({})
+    else
+      local function _26_(id)
+        local function _27_(t)
+          table.insert(rich, t)
+          if (total == a.count(rich)) then
+            local function _28_(_241, _242)
+              return (a.get(_241, "name") < a.get(_242, "name"))
             end
-            return enrich_session_id(id, _34_)
-          end
-          return a["run!"](_33_, sess_ids)
-        end
-      end
-      return with_session_ids(_32_)
-    end
-    v_25_auto = with_sessions0
-    _1_["with-sessions"] = v_25_auto
-    v_23_auto = v_25_auto
-  end
-  local t_24_auto = (_1_)["aniseed/locals"]
-  t_24_auto["with-sessions"] = v_23_auto
-  with_sessions = v_23_auto
-end
-local clone_session
-do
-  local v_23_auto
-  do
-    local v_25_auto
-    local function clone_session0(session)
-      local function _38_(msgs)
-        local function _39_(_241)
-          return a.get(_241, "new-session")
-        end
-        return enrich_session_id(a.some(_39_, msgs), assume_session)
-      end
-      return send({op = "clone", session = a.get(session, "id")}, nrepl["with-all-msgs-fn"](_38_))
-    end
-    v_25_auto = clone_session0
-    _1_["clone-session"] = v_25_auto
-    v_23_auto = v_25_auto
-  end
-  local t_24_auto = (_1_)["aniseed/locals"]
-  t_24_auto["clone-session"] = v_23_auto
-  clone_session = v_23_auto
-end
-local assume_or_create_session
-do
-  local v_23_auto
-  do
-    local v_25_auto
-    local function assume_or_create_session0()
-      local function _40_(sessions)
-        if a["empty?"](sessions) then
-          return clone_session()
-        else
-          return assume_session(a.first(sessions))
-        end
-      end
-      return with_sessions(_40_)
-    end
-    v_25_auto = assume_or_create_session0
-    _1_["assume-or-create-session"] = v_25_auto
-    v_23_auto = v_25_auto
-  end
-  local t_24_auto = (_1_)["aniseed/locals"]
-  t_24_auto["assume-or-create-session"] = v_23_auto
-  assume_or_create_session = v_23_auto
-end
-local eval_preamble
-do
-  local v_23_auto
-  local function eval_preamble0(cb)
-    local function _42_()
-      if cb then
-        return nrepl["with-all-msgs-fn"](cb)
-      end
-    end
-    return send({code = ("(ns conjure.internal" .. "  (:require [clojure.pprint :as pp]))" .. "(defn pprint [val w opts]" .. "  (apply pp/write val" .. "    (mapcat identity (assoc opts :stream w))))"), op = "eval"}, _42_())
-  end
-  v_23_auto = eval_preamble0
-  local t_24_auto = (_1_)["aniseed/locals"]
-  t_24_auto["eval-preamble"] = v_23_auto
-  eval_preamble = v_23_auto
-end
-local capture_describe
-do
-  local v_23_auto
-  local function capture_describe0()
-    local function _43_(msg)
-      return a.assoc(state.get("conn"), "describe", msg)
-    end
-    return send({op = "describe"}, _43_)
-  end
-  v_23_auto = capture_describe0
-  local t_24_auto = (_1_)["aniseed/locals"]
-  t_24_auto["capture-describe"] = v_23_auto
-  capture_describe = v_23_auto
-end
-local with_conn_and_op_or_warn
-do
-  local v_23_auto
-  do
-    local v_25_auto
-    local function with_conn_and_op_or_warn0(op, f, opts)
-      local function _44_(conn)
-        if a["get-in"](conn, {"describe", "ops", op}) then
-          return f(conn)
-        else
-          if not a.get(opts, "silent?") then
-            log.append({("; Unsupported operation: " .. op), "; Ensure the CIDER middleware is installed and up to date", "; https://docs.cider.mx/cider-nrepl/usage.html"})
-          end
-          if a.get(opts, "else") then
-            return opts["else"]()
+            table.sort(rich, _28_)
+            return cb(rich)
+          else
+            return nil
           end
         end
+        return enrich_session_id(id, _27_)
       end
-      return with_conn_or_warn(_44_, opts)
+      return a["run!"](_26_, sess_ids)
     end
-    v_25_auto = with_conn_and_op_or_warn0
-    _1_["with-conn-and-op-or-warn"] = v_25_auto
-    v_23_auto = v_25_auto
   end
-  local t_24_auto = (_1_)["aniseed/locals"]
-  t_24_auto["with-conn-and-op-or-warn"] = v_23_auto
-  with_conn_and_op_or_warn = v_23_auto
+  return with_session_ids(_25_)
 end
-local connect
-do
-  local v_23_auto
-  do
-    local v_25_auto
-    local function connect0(_48_)
-      local _arg_49_ = _48_
-      local cb = _arg_49_["cb"]
-      local host = _arg_49_["host"]
-      local port = _arg_49_["port"]
-      local port_file_path = _arg_49_["port_file_path"]
-      if state.get("conn") then
-        disconnect()
-      end
-      local function _51_(result)
-        return ui["display-result"](result)
-      end
-      local function _52_(err)
-        if err then
-          return display_conn_status(err)
-        else
-          return disconnect()
-        end
-      end
-      local function _54_(err)
-        display_conn_status(err)
-        return disconnect()
-      end
-      local function _55_(msg)
-        if msg.status["unknown-session"] then
-          log.append({"; Unknown session, correcting"})
-          assume_or_create_session()
-        end
-        if msg.status["namespace-not-found"] then
-          return log.append({("; Namespace not found: " .. msg.ns)})
-        end
-      end
-      local function _58_()
-        display_conn_status("connected")
-        capture_describe()
-        assume_or_create_session()
-        return eval_preamble(cb)
-      end
-      return a.assoc(state.get(), "conn", a["merge!"](nrepl.connect({["default-callback"] = _51_, ["on-error"] = _52_, ["on-failure"] = _54_, ["on-message"] = _55_, ["on-success"] = _58_, host = host, port = port}), {["seen-ns"] = {}, port_file_path = port_file_path}))
+_2amodule_2a["with-sessions"] = with_sessions
+local function clone_session(session)
+  local function _31_(msgs)
+    local function _32_(_241)
+      return a.get(_241, "new-session")
     end
-    v_25_auto = connect0
-    _1_["connect"] = v_25_auto
-    v_23_auto = v_25_auto
+    return enrich_session_id(a.some(_32_, msgs), assume_session)
   end
-  local t_24_auto = (_1_)["aniseed/locals"]
-  t_24_auto["connect"] = v_23_auto
-  connect = v_23_auto
+  return send({op = "clone", session = a.get(session, "id")}, nrepl["with-all-msgs-fn"](_31_))
 end
-return nil
+_2amodule_2a["clone-session"] = clone_session
+local function assume_or_create_session()
+  local function _33_(sessions)
+    if a["empty?"](sessions) then
+      return clone_session()
+    else
+      return assume_session(a.first(sessions))
+    end
+  end
+  return with_sessions(_33_)
+end
+_2amodule_2a["assume-or-create-session"] = assume_or_create_session
+local function eval_preamble(cb)
+  local function _35_()
+    if cb then
+      return nrepl["with-all-msgs-fn"](cb)
+    else
+      return nil
+    end
+  end
+  return send({op = "eval", code = ("(ns conjure.internal" .. "  (:require [clojure.pprint :as pp]))" .. "(defn pprint [val w opts]" .. "  (apply pp/write val" .. "    (mapcat identity (assoc opts :stream w))))")}, _35_())
+end
+_2amodule_locals_2a["eval-preamble"] = eval_preamble
+local function capture_describe()
+  local function _36_(msg)
+    return a.assoc(state.get("conn"), "describe", msg)
+  end
+  return send({op = "describe"}, _36_)
+end
+_2amodule_locals_2a["capture-describe"] = capture_describe
+local function with_conn_and_op_or_warn(op, f, opts)
+  local function _37_(conn)
+    if a["get-in"](conn, {"describe", "ops", op}) then
+      return f(conn)
+    else
+      if not a.get(opts, "silent?") then
+        log.append({("; Unsupported operation: " .. op), "; Ensure the CIDER middleware is installed and up to date", "; https://docs.cider.mx/cider-nrepl/usage.html"})
+      else
+      end
+      if a.get(opts, "else") then
+        return opts["else"]()
+      else
+        return nil
+      end
+    end
+  end
+  return with_conn_or_warn(_37_, opts)
+end
+_2amodule_2a["with-conn-and-op-or-warn"] = with_conn_and_op_or_warn
+local function connect(_41_)
+  local _arg_42_ = _41_
+  local host = _arg_42_["host"]
+  local port = _arg_42_["port"]
+  local cb = _arg_42_["cb"]
+  local port_file_path = _arg_42_["port_file_path"]
+  if state.get("conn") then
+    disconnect()
+  else
+  end
+  local function _44_(err)
+    display_conn_status(err)
+    return disconnect()
+  end
+  local function _45_()
+    display_conn_status("connected")
+    capture_describe()
+    assume_or_create_session()
+    return eval_preamble(cb)
+  end
+  local function _46_(err)
+    if err then
+      return display_conn_status(err)
+    else
+      return disconnect()
+    end
+  end
+  local function _48_(msg)
+    if msg.status["unknown-session"] then
+      log.append({"; Unknown session, correcting"})
+      assume_or_create_session()
+    else
+    end
+    if msg.status["namespace-not-found"] then
+      return log.append({("; Namespace not found: " .. msg.ns)})
+    else
+      return nil
+    end
+  end
+  local function _51_(result)
+    return ui["display-result"](result)
+  end
+  return a.assoc(state.get(), "conn", a["merge!"](nrepl.connect({host = host, port = port, ["on-failure"] = _44_, ["on-success"] = _45_, ["on-error"] = _46_, ["on-message"] = _48_, ["default-callback"] = _51_}), {["seen-ns"] = {}, port_file_path = port_file_path}))
+end
+_2amodule_2a["connect"] = connect

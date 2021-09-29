@@ -101,4 +101,18 @@ All configuration can be set as described in |conjure-configuration|.
             Run all loaded tests.
             Default: `"ta"`
 
+                          *g:conjure#client#fennel#aniseed#mapping#reset_repl*
+`g:conjure#client#fennel#aniseed#mapping#reset_repl`
+            Reset the REPL for your current buffer. Use this if you need to
+            clear the local state in your REPL or you've somehow evaluated
+            unbalanced parenthesis.
+            Default: `"rr"`
+
+                     *g:conjure#client#fennel#aniseed#mapping#reset_all_repls*
+`g:conjure#client#fennel#aniseed#mapping#reset_all_repls`
+            Reset all currently loaded REPLs. Use this if you've maybe messed
+            up a few of your REPLs and you'd like to start fresh without
+            restarting Neovim.
+            Default: `"ra"`
+
 vim:tw=78:sw=2:ts=2:ft=help:norl:et:listchars=

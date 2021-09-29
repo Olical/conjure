@@ -1,431 +1,318 @@
 local _2afile_2a = "fnl/conjure/client/fennel/aniseed.fnl"
-local _1_
-do
-  local name_4_auto = "conjure.client.fennel.aniseed"
-  local module_5_auto
-  do
-    local x_6_auto = _G.package.loaded[name_4_auto]
-    if ("table" == type(x_6_auto)) then
-      module_5_auto = x_6_auto
-    else
-      module_5_auto = {}
-    end
-  end
-  module_5_auto["aniseed/module"] = name_4_auto
-  module_5_auto["aniseed/locals"] = ((module_5_auto)["aniseed/locals"] or {})
-  do end (module_5_auto)["aniseed/local-fns"] = ((module_5_auto)["aniseed/local-fns"] or {})
-  do end (_G.package.loaded)[name_4_auto] = module_5_auto
-  _1_ = module_5_auto
-end
-local autoload
-local function _3_(...)
-  return (require("conjure.aniseed.autoload")).autoload(...)
-end
-autoload = _3_
-local function _6_(...)
-  local ok_3f_21_auto, val_22_auto = nil, nil
-  local function _5_()
-    return {autoload("conjure.aniseed.core"), autoload("conjure.client"), autoload("conjure.config"), autoload("conjure.extract"), autoload("conjure.log"), autoload("conjure.mapping"), autoload("conjure.aniseed.nvim"), autoload("conjure.aniseed.string"), autoload("conjure.text"), autoload("conjure.aniseed.view")}
-  end
-  ok_3f_21_auto, val_22_auto = pcall(_5_)
-  if ok_3f_21_auto then
-    _1_["aniseed/local-fns"] = {autoload = {a = "conjure.aniseed.core", client = "conjure.client", config = "conjure.config", extract = "conjure.extract", log = "conjure.log", mapping = "conjure.mapping", nvim = "conjure.aniseed.nvim", str = "conjure.aniseed.string", text = "conjure.text", view = "conjure.aniseed.view"}}
-    return val_22_auto
-  else
-    return print(val_22_auto)
-  end
-end
-local _local_4_ = _6_(...)
-local a = _local_4_[1]
-local view = _local_4_[10]
-local client = _local_4_[2]
-local config = _local_4_[3]
-local extract = _local_4_[4]
-local log = _local_4_[5]
-local mapping = _local_4_[6]
-local nvim = _local_4_[7]
-local str = _local_4_[8]
-local text = _local_4_[9]
-local _2amodule_2a = _1_
 local _2amodule_name_2a = "conjure.client.fennel.aniseed"
-do local _ = ({nil, _1_, nil, {{}, nil, nil, nil}})[2] end
-local buf_suffix
+local _2amodule_2a
 do
-  local v_23_auto
-  do
-    local v_25_auto = ".fnl"
-    _1_["buf-suffix"] = v_25_auto
-    v_23_auto = v_25_auto
+  package.loaded[_2amodule_name_2a] = {}
+  _2amodule_2a = package.loaded[_2amodule_name_2a]
+end
+local _2amodule_locals_2a
+do
+  _2amodule_2a["aniseed/locals"] = {}
+  _2amodule_locals_2a = (_2amodule_2a)["aniseed/locals"]
+end
+local autoload = (require("conjure.aniseed.autoload")).autoload
+local a, client, config, extract, fs, log, mapping, nvim, str, text, view = autoload("conjure.aniseed.core"), autoload("conjure.client"), autoload("conjure.config"), autoload("conjure.extract"), autoload("conjure.fs"), autoload("conjure.log"), autoload("conjure.mapping"), autoload("conjure.aniseed.nvim"), autoload("conjure.aniseed.string"), autoload("conjure.text"), autoload("conjure.aniseed.view")
+do end (_2amodule_locals_2a)["a"] = a
+_2amodule_locals_2a["client"] = client
+_2amodule_locals_2a["config"] = config
+_2amodule_locals_2a["extract"] = extract
+_2amodule_locals_2a["fs"] = fs
+_2amodule_locals_2a["log"] = log
+_2amodule_locals_2a["mapping"] = mapping
+_2amodule_locals_2a["nvim"] = nvim
+_2amodule_locals_2a["str"] = str
+_2amodule_locals_2a["text"] = text
+_2amodule_locals_2a["view"] = view
+local buf_suffix = ".fnl"
+_2amodule_2a["buf-suffix"] = buf_suffix
+local context_pattern = "%(%s*module%s+(.-)[%s){]"
+_2amodule_2a["context-pattern"] = context_pattern
+local comment_prefix = "; "
+_2amodule_2a["comment-prefix"] = comment_prefix
+config.merge({client = {fennel = {aniseed = {mapping = {run_buf_tests = "tt", run_all_tests = "ta", reset_repl = "rr", reset_all_repls = "ra"}, aniseed_module_prefix = "conjure.aniseed.", use_metadata = true}}}})
+local cfg = config["get-in-fn"]({"client", "fennel", "aniseed"})
+do end (_2amodule_locals_2a)["cfg"] = cfg
+local ani_aliases = {nu = "nvim.util"}
+_2amodule_locals_2a["ani-aliases"] = ani_aliases
+local function ani(mod_name, f_name)
+  local mod_name0 = a.get(ani_aliases, mod_name, mod_name)
+  local mod = require((cfg({"aniseed_module_prefix"}) .. mod_name0))
+  if f_name then
+    return a.get(mod, f_name)
+  else
+    return mod
   end
-  local t_24_auto = (_1_)["aniseed/locals"]
-  t_24_auto["buf-suffix"] = v_23_auto
-  buf_suffix = v_23_auto
 end
-local context_pattern
-do
-  local v_23_auto
-  do
-    local v_25_auto = "%(%s*module%s+(.-)[%s){]"
-    _1_["context-pattern"] = v_25_auto
-    v_23_auto = v_25_auto
+_2amodule_locals_2a["ani"] = ani
+local function anic(mod, f_name, ...)
+  return ani(mod, f_name)(...)
+end
+_2amodule_locals_2a["anic"] = anic
+local repls = (repls or {})
+do end (_2amodule_locals_2a)["repls"] = repls
+local function reset_repl(filename)
+  local filename0 = (filename or fs["localise-path"](extract["file-path"]()))
+  do end (repls)[filename0] = nil
+  return log.append({("; Reset REPL for " .. filename0)}, {["break?"] = true})
+end
+_2amodule_2a["reset-repl"] = reset_repl
+local function reset_all_repls()
+  local function _2_(filename)
+    repls[filename] = nil
+    return nil
   end
-  local t_24_auto = (_1_)["aniseed/locals"]
-  t_24_auto["context-pattern"] = v_23_auto
-  context_pattern = v_23_auto
+  a["run!"](_2_, a.keys(repls))
+  return log.append({"; Reset all REPLs"}, {["break?"] = true})
 end
-local comment_prefix
-do
-  local v_23_auto
-  do
-    local v_25_auto = "; "
-    _1_["comment-prefix"] = v_25_auto
-    v_23_auto = v_25_auto
+_2amodule_2a["reset-all-repls"] = reset_all_repls
+local default_module_name = "conjure.user"
+_2amodule_2a["default-module-name"] = default_module_name
+local function module_name(context, file_path)
+  if context then
+    return context
+  elseif file_path then
+    return (fs["file-path->module-name"](file_path) or default_module_name)
+  else
+    return default_module_name
   end
-  local t_24_auto = (_1_)["aniseed/locals"]
-  t_24_auto["comment-prefix"] = v_23_auto
-  comment_prefix = v_23_auto
 end
-config.merge({client = {fennel = {aniseed = {aniseed_module_prefix = "conjure.aniseed.", mapping = {run_all_tests = "ta", run_buf_tests = "tt"}, use_metadata = true}}}})
-local cfg
-do
-  local v_23_auto = config["get-in-fn"]({"client", "fennel", "aniseed"})
-  local t_24_auto = (_1_)["aniseed/locals"]
-  t_24_auto["cfg"] = v_23_auto
-  cfg = v_23_auto
-end
-local ani_aliases
-do
-  local v_23_auto = {nu = "nvim.util"}
-  local t_24_auto = (_1_)["aniseed/locals"]
-  t_24_auto["ani-aliases"] = v_23_auto
-  ani_aliases = v_23_auto
-end
-local ani
-do
-  local v_23_auto
-  local function ani0(mod_name, f_name)
-    local mod_name0 = a.get(ani_aliases, mod_name, mod_name)
-    local mod = require((cfg({"aniseed_module_prefix"}) .. mod_name0))
-    if f_name then
-      return a.get(mod, f_name)
-    else
-      return mod
+_2amodule_2a["module-name"] = module_name
+local function repl(opts)
+  local filename = a.get(opts, "filename")
+  local function _7_()
+    local ret = {}
+    local _
+    local function _4_(err)
+      ret["ok?"] = false
+      ret.results = {err}
+      return nil
     end
-  end
-  v_23_auto = ani0
-  local t_24_auto = (_1_)["aniseed/locals"]
-  t_24_auto["ani"] = v_23_auto
-  ani = v_23_auto
-end
-local anic
-do
-  local v_23_auto
-  local function anic0(mod, f_name, ...)
-    return ani(mod, f_name)(...)
-  end
-  v_23_auto = anic0
-  local t_24_auto = (_1_)["aniseed/locals"]
-  t_24_auto["anic"] = v_23_auto
-  anic = v_23_auto
-end
-local display_result
-do
-  local v_23_auto
-  do
-    local v_25_auto
-    local function display_result0(opts)
-      if opts then
-        local _let_9_ = opts
-        local ok_3f = _let_9_["ok?"]
-        local results = _let_9_["results"]
-        local result_str
-        if ok_3f then
-          if a["empty?"](results) then
-            result_str = "nil"
-          else
-            result_str = str.join("\n", a.map(view.serialise, results))
-          end
-        else
-          result_str = a.first(results)
-        end
-        local result_lines = str.split(result_str, "\n")
-        if not opts["passive?"] then
-          local function _13_()
-            if ok_3f then
-              return result_lines
-            else
-              local function _12_(_241)
-                return ("; " .. _241)
-              end
-              return a.map(_12_, result_lines)
-            end
-          end
-          log.append(_13_())
-        end
-        if opts["on-result-raw"] then
-          opts["on-result-raw"](results)
-        end
-        if opts["on-result"] then
-          return opts["on-result"](result_str)
-        end
-      end
-    end
-    v_25_auto = display_result0
-    _1_["display-result"] = v_25_auto
-    v_23_auto = v_25_auto
-  end
-  local t_24_auto = (_1_)["aniseed/locals"]
-  t_24_auto["display-result"] = v_23_auto
-  display_result = v_23_auto
-end
-local eval_str
-do
-  local v_23_auto
-  do
-    local v_25_auto
-    local function eval_str0(opts)
-      local function _18_()
-        local code = (("(module " .. (opts.context or "conjure.aniseed.user") .. ") ") .. opts.code .. "\n")
-        local out
-        local function _19_()
-          if (cfg({"use_metadata"}) and not package.loaded.fennel) then
-            package.loaded.fennel = anic("fennel", "impl")
-          end
-          local _let_21_ = {anic("eval", "str", code, {filename = opts["file-path"], useMetadata = cfg({"use_metadata"})})}
-          local ok_3f = _let_21_[1]
-          local results = {(table.unpack or unpack)(_let_21_, 2)}
-          opts["ok?"] = ok_3f
-          opts.results = results
-          return nil
-        end
-        out = anic("nu", "with-out-str", _19_)
-        if not a["empty?"](out) then
-          log.append(text["prefixed-lines"](text["trim-last-newline"](out), "; (out) "))
-        end
-        return display_result(opts)
-      end
-      return client.wrap(_18_)()
-    end
-    v_25_auto = eval_str0
-    _1_["eval-str"] = v_25_auto
-    v_23_auto = v_25_auto
-  end
-  local t_24_auto = (_1_)["aniseed/locals"]
-  t_24_auto["eval-str"] = v_23_auto
-  eval_str = v_23_auto
-end
-local doc_str
-do
-  local v_23_auto
-  do
-    local v_25_auto
-    local function doc_str0(opts)
-      a.assoc(opts, "code", ("(doc " .. opts.code .. ")"))
-      return eval_str(opts)
-    end
-    v_25_auto = doc_str0
-    _1_["doc-str"] = v_25_auto
-    v_23_auto = v_25_auto
-  end
-  local t_24_auto = (_1_)["aniseed/locals"]
-  t_24_auto["doc-str"] = v_23_auto
-  doc_str = v_23_auto
-end
-local eval_file
-do
-  local v_23_auto
-  do
-    local v_25_auto
-    local function eval_file0(opts)
-      opts.code = a.slurp(opts["file-path"])
-      if opts.code then
-        return eval_str(opts)
-      end
-    end
-    v_25_auto = eval_file0
-    _1_["eval-file"] = v_25_auto
-    v_23_auto = v_25_auto
-  end
-  local t_24_auto = (_1_)["aniseed/locals"]
-  t_24_auto["eval-file"] = v_23_auto
-  eval_file = v_23_auto
-end
-local wrapped_test
-do
-  local v_23_auto
-  local function wrapped_test0(req_lines, f)
-    log.append(req_lines, {["break?"] = true})
-    local res = anic("nu", "with-out-str", f)
-    local _24_
-    if ("" == res) then
-      _24_ = "No results."
-    else
-      _24_ = res
-    end
-    return log.append(text["prefixed-lines"](_24_, "; "))
-  end
-  v_23_auto = wrapped_test0
-  local t_24_auto = (_1_)["aniseed/locals"]
-  t_24_auto["wrapped-test"] = v_23_auto
-  wrapped_test = v_23_auto
-end
-local run_buf_tests
-do
-  local v_23_auto
-  do
-    local v_25_auto
-    local function run_buf_tests0()
-      local c = extract.context()
-      if c then
-        local function _26_()
-          return anic("test", "run", c)
-        end
-        return wrapped_test({("; run-buf-tests (" .. c .. ")")}, _26_)
-      end
-    end
-    v_25_auto = run_buf_tests0
-    _1_["run-buf-tests"] = v_25_auto
-    v_23_auto = v_25_auto
-  end
-  local t_24_auto = (_1_)["aniseed/locals"]
-  t_24_auto["run-buf-tests"] = v_23_auto
-  run_buf_tests = v_23_auto
-end
-local run_all_tests
-do
-  local v_23_auto
-  do
-    local v_25_auto
-    local function run_all_tests0()
-      return wrapped_test({"; run-all-tests"}, ani("test", "run-all"))
-    end
-    v_25_auto = run_all_tests0
-    _1_["run-all-tests"] = v_25_auto
-    v_23_auto = v_25_auto
-  end
-  local t_24_auto = (_1_)["aniseed/locals"]
-  t_24_auto["run-all-tests"] = v_23_auto
-  run_all_tests = v_23_auto
-end
-local on_filetype
-do
-  local v_23_auto
-  do
-    local v_25_auto
-    local function on_filetype0()
-      mapping.buf("n", "FnlRunBufTests", cfg({"mapping", "run_buf_tests"}), _2amodule_name_2a, "run-buf-tests")
-      return mapping.buf("n", "FnlRunAllTests", cfg({"mapping", "run_all_tests"}), _2amodule_name_2a, "run-all-tests")
-    end
-    v_25_auto = on_filetype0
-    _1_["on-filetype"] = v_25_auto
-    v_23_auto = v_25_auto
-  end
-  local t_24_auto = (_1_)["aniseed/locals"]
-  t_24_auto["on-filetype"] = v_23_auto
-  on_filetype = v_23_auto
-end
-local value__3ecompletions
-do
-  local v_23_auto
-  do
-    local v_25_auto
-    local function value__3ecompletions0(x)
-      if ("table" == type(x)) then
-        local function _30_(_28_)
-          local _arg_29_ = _28_
-          local k = _arg_29_[1]
-          local v = _arg_29_[2]
-          return {info = nil, kind = type(v), menu = nil, word = k}
-        end
-        local function _33_(_31_)
-          local _arg_32_ = _31_
-          local k = _arg_32_[1]
-          local v = _arg_32_[2]
-          return not text["starts-with"](k, "aniseed/")
-        end
-        local function _34_()
-          if x["aniseed/autoload-enabled?"] then
-            do local _ = x["trick-aniseed-into-loading-the-module"] end
-            return x["aniseed/autoload-module"]
-          else
-            return x
-          end
-        end
-        return a.map(_30_, a.filter(_33_, a["kv-pairs"](_34_())))
-      end
-    end
-    v_25_auto = value__3ecompletions0
-    _1_["value->completions"] = v_25_auto
-    v_23_auto = v_25_auto
-  end
-  local t_24_auto = (_1_)["aniseed/locals"]
-  t_24_auto["value->completions"] = v_23_auto
-  value__3ecompletions = v_23_auto
-end
-local completions
-do
-  local v_23_auto
-  do
-    local v_25_auto
-    local function completions0(opts)
-      local code
-      if not str["blank?"](opts.prefix) then
-        code = ("((. (require :" .. _2amodule_name_2a .. ") :value->completions) " .. (opts.prefix):gsub(".$", "") .. ")")
+    opts["error-handler"] = _4_
+    _ = nil
+    local eval_21 = anic("eval", "repl", opts)
+    local repl0
+    local function _5_(code)
+      ret["ok?"] = nil
+      ret.results = nil
+      local results = eval_21(code)
+      if a["nil?"](ret["ok?"]) then
+        ret["ok?"] = true
+        ret.results = results
       else
-      code = nil
       end
-      local mods = value__3ecompletions(package.loaded)
-      local locals
-      do
-        local ok_3f, m = nil, nil
-        local function _37_()
-          return require(opts.context)
-        end
-        ok_3f, m = (opts.context and pcall(_37_))
-        if ok_3f then
-          locals = a.concat(value__3ecompletions(a.get(m, "aniseed/locals")), value__3ecompletions(a["get-in"](m, {"aniseed/local-fns", "require"})), value__3ecompletions(a["get-in"](m, {"aniseed/local-fns", "autoload"})), mods)
-        else
-          locals = mods
-        end
-      end
-      local result_fn
-      local function _39_(results)
-        local xs = a.first(results)
-        local function _42_()
-          if ("table" == type(xs)) then
-            local function _40_(x)
-              local function _41_(_241)
-                return (opts.prefix .. _241)
-              end
-              return a.update(x, "word", _41_)
-            end
-            return a.concat(a.map(_40_, xs), locals)
-          else
-            return locals
-          end
-        end
-        return opts.cb(_42_())
-      end
-      result_fn = _39_
-      local _, ok_3f = nil, nil
-      if code then
-        local function _43_()
-          return eval_str({["on-result-raw"] = result_fn, ["passive?"] = true, code = code, context = opts.context})
-        end
-        _, ok_3f = pcall(_43_)
+      return ret
+    end
+    repl0 = _5_
+    repl0(("(module " .. a.get(opts, "moduleName") .. ")"))
+    do end (repls)[filename] = repl0
+    return repl0
+  end
+  return ((not a.get(opts, "fresh?") and a.get(repls, filename)) or _7_())
+end
+_2amodule_2a["repl"] = repl
+local function display_result(opts)
+  if opts then
+    local _let_8_ = opts
+    local ok_3f = _let_8_["ok?"]
+    local results = _let_8_["results"]
+    local result_str
+    local _9_
+    if ok_3f then
+      if not a["empty?"](results) then
+        _9_ = str.join("\n", a.map(view.serialise, results))
       else
-      _, ok_3f = nil
+        _9_ = nil
       end
-      if not ok_3f then
-        return opts.cb(locals)
+    else
+      _9_ = a.first(results)
+    end
+    result_str = (_9_ or "nil")
+    local result_lines = str.split(result_str, "\n")
+    if not opts["passive?"] then
+      local function _13_()
+        if ok_3f then
+          return result_lines
+        else
+          local function _12_(_241)
+            return ("; " .. _241)
+          end
+          return a.map(_12_, result_lines)
+        end
+      end
+      log.append(_13_())
+    else
+    end
+    if opts["on-result-raw"] then
+      opts["on-result-raw"](results)
+    else
+    end
+    if opts["on-result"] then
+      return opts["on-result"](result_str)
+    else
+      return nil
+    end
+  else
+    return nil
+  end
+end
+_2amodule_2a["display-result"] = display_result
+local function eval_str(opts)
+  local function _18_()
+    local out
+    local function _19_()
+      if (cfg({"use_metadata"}) and not package.loaded.fennel) then
+        package.loaded.fennel = anic("fennel", "impl")
+      else
+      end
+      local eval_21 = repl({filename = opts["file-path"], moduleName = module_name(opts.context, opts["file-path"]), useMetadata = cfg({"use_metadata"}), ["fresh?"] = (("file" == opts.origin) or ("buf" == opts.origin) or text["starts-with"](opts.code, ("(module " .. (opts.context or ""))))})
+      local _let_21_ = eval_21((opts.code .. "\n"))
+      local ok_3f = _let_21_["ok?"]
+      local results = _let_21_["results"]
+      opts["ok?"] = ok_3f
+      opts.results = results
+      return nil
+    end
+    out = anic("nu", "with-out-str", _19_)
+    if not a["empty?"](out) then
+      log.append(text["prefixed-lines"](text["trim-last-newline"](out), "; (out) "))
+    else
+    end
+    return display_result(opts)
+  end
+  return client.wrap(_18_)()
+end
+_2amodule_2a["eval-str"] = eval_str
+local function doc_str(opts)
+  a.assoc(opts, "code", ("(doc " .. opts.code .. ")"))
+  return eval_str(opts)
+end
+_2amodule_2a["doc-str"] = doc_str
+local function eval_file(opts)
+  opts.code = a.slurp(opts["file-path"])
+  if opts.code then
+    return eval_str(opts)
+  else
+    return nil
+  end
+end
+_2amodule_2a["eval-file"] = eval_file
+local function wrapped_test(req_lines, f)
+  log.append(req_lines, {["break?"] = true})
+  local res = anic("nu", "with-out-str", f)
+  local _24_
+  if ("" == res) then
+    _24_ = "No results."
+  else
+    _24_ = res
+  end
+  return log.append(text["prefixed-lines"](_24_, "; "))
+end
+_2amodule_locals_2a["wrapped-test"] = wrapped_test
+local function run_buf_tests()
+  local c = extract.context()
+  if c then
+    local function _26_()
+      return anic("test", "run", c)
+    end
+    return wrapped_test({("; run-buf-tests (" .. c .. ")")}, _26_)
+  else
+    return nil
+  end
+end
+_2amodule_2a["run-buf-tests"] = run_buf_tests
+local function run_all_tests()
+  return wrapped_test({"; run-all-tests"}, ani("test", "run-all"))
+end
+_2amodule_2a["run-all-tests"] = run_all_tests
+local function on_filetype()
+  mapping.buf("n", "FnlRunBufTests", cfg({"mapping", "run_buf_tests"}), _2amodule_name_2a, "run-buf-tests")
+  mapping.buf("n", "FnlRunAllTests", cfg({"mapping", "run_all_tests"}), _2amodule_name_2a, "run-all-tests")
+  mapping.buf("n", "FnlResetREPL", cfg({"mapping", "reset_repl"}), _2amodule_name_2a, "reset-repl")
+  return mapping.buf("n", "FnlResetAllREPLs", cfg({"mapping", "reset_all_repls"}), _2amodule_name_2a, "reset-all-repls")
+end
+_2amodule_2a["on-filetype"] = on_filetype
+local function value__3ecompletions(x)
+  if ("table" == type(x)) then
+    local function _30_(_28_)
+      local _arg_29_ = _28_
+      local k = _arg_29_[1]
+      local v = _arg_29_[2]
+      return {word = k, kind = type(v), menu = nil, info = nil}
+    end
+    local function _33_(_31_)
+      local _arg_32_ = _31_
+      local k = _arg_32_[1]
+      local v = _arg_32_[2]
+      return not text["starts-with"](k, "aniseed/")
+    end
+    local function _34_()
+      if x["aniseed/autoload-enabled?"] then
+        do local _ = x["trick-aniseed-into-loading-the-module"] end
+        return x["aniseed/autoload-module"]
+      else
+        return x
       end
     end
-    v_25_auto = completions0
-    _1_["completions"] = v_25_auto
-    v_23_auto = v_25_auto
+    return a.map(_30_, a.filter(_33_, a["kv-pairs"](_34_())))
+  else
+    return nil
   end
-  local t_24_auto = (_1_)["aniseed/locals"]
-  t_24_auto["completions"] = v_23_auto
-  completions = v_23_auto
 end
-return nil
+_2amodule_2a["value->completions"] = value__3ecompletions
+local function completions(opts)
+  local code
+  if not str["blank?"](opts.prefix) then
+    local prefix = string.gsub(opts.prefix, ".$", "")
+    code = ("((. (require :" .. _2amodule_name_2a .. ") :value->completions) " .. prefix .. ")")
+  else
+    code = nil
+  end
+  local mods = value__3ecompletions(package.loaded)
+  local locals
+  do
+    local ok_3f, m = nil, nil
+    local function _37_()
+      return require(opts.context)
+    end
+    ok_3f, m = pcall(_37_)
+    if ok_3f then
+      locals = a.concat(value__3ecompletions(m), value__3ecompletions(a.get(m, "aniseed/locals")), mods)
+    else
+      locals = mods
+    end
+  end
+  local result_fn
+  local function _39_(results)
+    local xs = a.first(results)
+    local function _42_()
+      if ("table" == type(xs)) then
+        local function _40_(x)
+          local function _41_(_241)
+            return (opts.prefix .. _241)
+          end
+          return a.update(x, "word", _41_)
+        end
+        return a.concat(a.map(_40_, xs), locals)
+      else
+        return locals
+      end
+    end
+    return opts.cb(_42_())
+  end
+  result_fn = _39_
+  local ok_3f, err_or_res = nil, nil
+  if code then
+    local function _43_()
+      return eval_str({["file-path"] = opts["file-path"], context = opts.context, code = code, ["passive?"] = true, ["on-result-raw"] = result_fn})
+    end
+    ok_3f, err_or_res = pcall(_43_)
+  else
+    ok_3f, err_or_res = nil
+  end
+  if not ok_3f then
+    return opts.cb(locals)
+  else
+    return nil
+  end
+end
+_2amodule_2a["completions"] = completions

@@ -1,667 +1,349 @@
 local _2afile_2a = "fnl/conjure/eval.fnl"
-local _1_
-do
-  local name_4_auto = "conjure.eval"
-  local module_5_auto
-  do
-    local x_6_auto = _G.package.loaded[name_4_auto]
-    if ("table" == type(x_6_auto)) then
-      module_5_auto = x_6_auto
-    else
-      module_5_auto = {}
-    end
-  end
-  module_5_auto["aniseed/module"] = name_4_auto
-  module_5_auto["aniseed/locals"] = ((module_5_auto)["aniseed/locals"] or {})
-  do end (module_5_auto)["aniseed/local-fns"] = ((module_5_auto)["aniseed/local-fns"] or {})
-  do end (_G.package.loaded)[name_4_auto] = module_5_auto
-  _1_ = module_5_auto
-end
-local autoload
-local function _3_(...)
-  return (require("conjure.aniseed.autoload")).autoload(...)
-end
-autoload = _3_
-local function _6_(...)
-  local ok_3f_21_auto, val_22_auto = nil, nil
-  local function _5_()
-    return {autoload("conjure.aniseed.core"), autoload("conjure.buffer"), autoload("conjure.client"), autoload("conjure.config"), autoload("conjure.editor"), autoload("conjure.event"), autoload("conjure.extract"), autoload("conjure.fs"), autoload("conjure.inline"), autoload("conjure.log"), autoload("conjure.aniseed.nvim"), autoload("conjure.promise"), autoload("conjure.aniseed.string"), autoload("conjure.text"), autoload("conjure.timer"), autoload("conjure.uuid")}
-  end
-  ok_3f_21_auto, val_22_auto = pcall(_5_)
-  if ok_3f_21_auto then
-    _1_["aniseed/local-fns"] = {autoload = {a = "conjure.aniseed.core", buffer = "conjure.buffer", client = "conjure.client", config = "conjure.config", editor = "conjure.editor", event = "conjure.event", extract = "conjure.extract", fs = "conjure.fs", inline = "conjure.inline", log = "conjure.log", nvim = "conjure.aniseed.nvim", promise = "conjure.promise", str = "conjure.aniseed.string", text = "conjure.text", timer = "conjure.timer", uuid = "conjure.uuid"}}
-    return val_22_auto
-  else
-    return print(val_22_auto)
-  end
-end
-local _local_4_ = _6_(...)
-local a = _local_4_[1]
-local log = _local_4_[10]
-local nvim = _local_4_[11]
-local promise = _local_4_[12]
-local str = _local_4_[13]
-local text = _local_4_[14]
-local timer = _local_4_[15]
-local uuid = _local_4_[16]
-local buffer = _local_4_[2]
-local client = _local_4_[3]
-local config = _local_4_[4]
-local editor = _local_4_[5]
-local event = _local_4_[6]
-local extract = _local_4_[7]
-local fs = _local_4_[8]
-local inline = _local_4_[9]
-local _2amodule_2a = _1_
 local _2amodule_name_2a = "conjure.eval"
-do local _ = ({nil, _1_, nil, {{}, nil, nil, nil}})[2] end
-local preview
+local _2amodule_2a
 do
-  local v_23_auto
-  local function preview0(opts)
-    local sample_limit = editor["percent-width"](config["get-in"]({"preview", "sample_limit"}))
-    local _8_
+  package.loaded[_2amodule_name_2a] = {}
+  _2amodule_2a = package.loaded[_2amodule_name_2a]
+end
+local _2amodule_locals_2a
+do
+  _2amodule_2a["aniseed/locals"] = {}
+  _2amodule_locals_2a = (_2amodule_2a)["aniseed/locals"]
+end
+local autoload = (require("conjure.aniseed.autoload")).autoload
+local a, buffer, client, config, editor, event, extract, fs, inline, log, nvim, promise, str, text, timer, uuid = autoload("conjure.aniseed.core"), autoload("conjure.buffer"), autoload("conjure.client"), autoload("conjure.config"), autoload("conjure.editor"), autoload("conjure.event"), autoload("conjure.extract"), autoload("conjure.fs"), autoload("conjure.inline"), autoload("conjure.log"), autoload("conjure.aniseed.nvim"), autoload("conjure.promise"), autoload("conjure.aniseed.string"), autoload("conjure.text"), autoload("conjure.timer"), autoload("conjure.uuid")
+do end (_2amodule_locals_2a)["a"] = a
+_2amodule_locals_2a["buffer"] = buffer
+_2amodule_locals_2a["client"] = client
+_2amodule_locals_2a["config"] = config
+_2amodule_locals_2a["editor"] = editor
+_2amodule_locals_2a["event"] = event
+_2amodule_locals_2a["extract"] = extract
+_2amodule_locals_2a["fs"] = fs
+_2amodule_locals_2a["inline"] = inline
+_2amodule_locals_2a["log"] = log
+_2amodule_locals_2a["nvim"] = nvim
+_2amodule_locals_2a["promise"] = promise
+_2amodule_locals_2a["str"] = str
+_2amodule_locals_2a["text"] = text
+_2amodule_locals_2a["timer"] = timer
+_2amodule_locals_2a["uuid"] = uuid
+local function preview(opts)
+  local sample_limit = editor["percent-width"](config["get-in"]({"preview", "sample_limit"}))
+  local function _1_()
     if (("file" == opts.origin) or ("buf" == opts.origin)) then
-      _8_ = text["right-sample"](opts["file-path"], sample_limit)
+      return text["right-sample"](opts["file-path"], sample_limit)
     else
-      _8_ = text["left-sample"](opts.code, sample_limit)
+      return text["left-sample"](opts.code, sample_limit)
     end
-    return (client.get("comment-prefix") .. opts.action .. " (" .. opts.origin .. "): " .. _8_)
   end
-  v_23_auto = preview0
-  local t_24_auto = (_1_)["aniseed/locals"]
-  t_24_auto["preview"] = v_23_auto
-  preview = v_23_auto
+  return (client.get("comment-prefix") .. opts.action .. " (" .. opts.origin .. "): " .. _1_())
 end
-local display_request
-do
-  local v_23_auto
-  local function display_request0(opts)
-    return log.append({opts.preview}, a.merge(opts, {["break?"] = true}))
-  end
-  v_23_auto = display_request0
-  local t_24_auto = (_1_)["aniseed/locals"]
-  t_24_auto["display-request"] = v_23_auto
-  display_request = v_23_auto
+_2amodule_locals_2a["preview"] = preview
+local function display_request(opts)
+  return log.append({opts.preview}, a.merge(opts, {["break?"] = true}))
 end
-local highlight_range
-do
-  local v_23_auto
-  local function highlight_range0(range)
-    if (config["get-in"]({"highlight", "enabled"}) and vim.highlight and range) then
-      local bufnr = (range.bufnr or nvim.buf.nr())
-      local namespace = vim.api.nvim_create_namespace("conjure_highlight")
-      local hl_start = {(range.start[1] - 1), range.start[2]}
-      local hl_end = {((range["end"])[1] - 1), (range["end"])[2]}
-      vim.highlight.range(bufnr, namespace, config["get-in"]({"highlight", "group"}), hl_start, hl_end, "v", true)
-      local function _10_()
-        local function _11_()
-          return vim.api.nvim_buf_clear_namespace(bufnr, namespace, 0, -1)
-        end
-        return pcall(_11_)
+_2amodule_locals_2a["display-request"] = display_request
+local function highlight_range(range)
+  if (config["get-in"]({"highlight", "enabled"}) and vim.highlight and range) then
+    local bufnr = (range.bufnr or nvim.buf.nr())
+    local namespace = vim.api.nvim_create_namespace("conjure_highlight")
+    local hl_start = {(range.start[1] - 1), range.start[2]}
+    local hl_end = {((range["end"])[1] - 1), (range["end"])[2]}
+    vim.highlight.range(bufnr, namespace, config["get-in"]({"highlight", "group"}), hl_start, hl_end, "v", true)
+    local function _2_()
+      local function _3_()
+        return vim.api.nvim_buf_clear_namespace(bufnr, namespace, 0, -1)
       end
-      return timer.defer(_10_, config["get-in"]({"highlight", "timeout"}))
+      return pcall(_3_)
     end
+    return timer.defer(_2_, config["get-in"]({"highlight", "timeout"}))
+  else
+    return nil
   end
-  v_23_auto = highlight_range0
-  local t_24_auto = (_1_)["aniseed/locals"]
-  t_24_auto["highlight-range"] = v_23_auto
-  highlight_range = v_23_auto
 end
-local with_last_result_hook
-do
-  local v_23_auto
-  local function with_last_result_hook0(opts)
-    local buf = nvim.win_get_buf(0)
-    local line = a.dec(a.first(nvim.win_get_cursor(0)))
-    local function _13_(f)
-      local function _14_(result)
-        nvim.fn.setreg(config["get-in"]({"eval", "result_register"}), string.gsub(result, "%z", ""))
-        if config["get-in"]({"eval", "inline_results"}) then
-          inline.display({buf = buf, line = line, text = ("=> " .. result)})
-        end
-        if f then
-          return f(result)
-        end
+_2amodule_locals_2a["highlight-range"] = highlight_range
+local function with_last_result_hook(opts)
+  local buf = nvim.win_get_buf(0)
+  local line = a.dec(a.first(nvim.win_get_cursor(0)))
+  local function _5_(f)
+    local function _6_(result)
+      nvim.fn.setreg(config["get-in"]({"eval", "result_register"}), string.gsub(result, "%z", ""))
+      if config["get-in"]({"eval", "inline_results"}) then
+        inline.display({buf = buf, text = ("=> " .. result), line = line})
+      else
       end
-      return _14_
-    end
-    return a.update(opts, "on-result", _13_)
-  end
-  v_23_auto = with_last_result_hook0
-  local t_24_auto = (_1_)["aniseed/locals"]
-  t_24_auto["with-last-result-hook"] = v_23_auto
-  with_last_result_hook = v_23_auto
-end
-local file
-do
-  local v_23_auto
-  do
-    local v_25_auto
-    local function file0()
-      event.emit("eval", "file")
-      local opts = {["file-path"] = fs["localise-path"](extract["file-path"]()), action = "eval", origin = "file"}
-      opts.preview = preview(opts)
-      display_request(opts)
-      return client.call("eval-file", with_last_result_hook(opts))
-    end
-    v_25_auto = file0
-    _1_["file"] = v_25_auto
-    v_23_auto = v_25_auto
-  end
-  local t_24_auto = (_1_)["aniseed/locals"]
-  t_24_auto["file"] = v_23_auto
-  file = v_23_auto
-end
-local assoc_context
-do
-  local v_23_auto
-  local function assoc_context0(opts)
-    opts.context = (nvim.b["conjure#context"] or extract.context())
-    return opts
-  end
-  v_23_auto = assoc_context0
-  local t_24_auto = (_1_)["aniseed/locals"]
-  t_24_auto["assoc-context"] = v_23_auto
-  assoc_context = v_23_auto
-end
-local client_exec_fn
-do
-  local v_23_auto
-  local function client_exec_fn0(action, f_name, base_opts)
-    local function _17_(opts)
-      local opts0 = a.merge(opts, base_opts, {["file-path"] = extract["file-path"](), action = action})
-      assoc_context(opts0)
-      opts0.preview = preview(opts0)
-      if not opts0["passive?"] then
-        display_request(opts0)
-      end
-      return client.call(f_name, opts0)
-    end
-    return _17_
-  end
-  v_23_auto = client_exec_fn0
-  local t_24_auto = (_1_)["aniseed/locals"]
-  t_24_auto["client-exec-fn"] = v_23_auto
-  client_exec_fn = v_23_auto
-end
-local apply_gsubs
-do
-  local v_23_auto
-  local function apply_gsubs0(code)
-    if code then
-      local function _22_(code0, _19_)
-        local _arg_20_ = _19_
-        local name = _arg_20_[1]
-        local _arg_21_ = _arg_20_[2]
-        local pat = _arg_21_[1]
-        local rep = _arg_21_[2]
-        local ok_3f, val_or_err = pcall(string.gsub, code0, pat, rep)
-        if ok_3f then
-          return val_or_err
-        else
-          nvim.err_writeln(str.join({"Error from g:conjure#eval#gsubs: ", name, " - ", val_or_err}))
-          return code0
-        end
-      end
-      return a.reduce(_22_, code, a["kv-pairs"](nvim.g["conjure#eval#gsubs"]))
-    end
-  end
-  v_23_auto = apply_gsubs0
-  local t_24_auto = (_1_)["aniseed/locals"]
-  t_24_auto["apply-gsubs"] = v_23_auto
-  apply_gsubs = v_23_auto
-end
-local eval_str
-do
-  local v_23_auto
-  do
-    local v_25_auto
-    local function eval_str0(opts)
-      highlight_range(opts.range)
-      event.emit("eval", "str")
-      a.update(opts, "code", apply_gsubs)
-      local function _25_()
-        if opts["passive?"] then
-          return opts
-        else
-          return with_last_result_hook(opts)
-        end
-      end
-      client_exec_fn("eval", "eval-str")(_25_())
-      return nil
-    end
-    v_25_auto = eval_str0
-    _1_["eval-str"] = v_25_auto
-    v_23_auto = v_25_auto
-  end
-  local t_24_auto = (_1_)["aniseed/locals"]
-  t_24_auto["eval-str"] = v_23_auto
-  eval_str = v_23_auto
-end
-local wrap_emit
-do
-  local v_23_auto
-  do
-    local v_25_auto
-    local function wrap_emit0(name, f)
-      local function _26_(...)
-        event.emit(name)
-        return f(...)
-      end
-      return _26_
-    end
-    v_25_auto = wrap_emit0
-    _1_["wrap-emit"] = v_25_auto
-    v_23_auto = v_25_auto
-  end
-  local t_24_auto = (_1_)["aniseed/locals"]
-  t_24_auto["wrap-emit"] = v_23_auto
-  wrap_emit = v_23_auto
-end
-local doc_str
-do
-  local v_23_auto = wrap_emit("doc", client_exec_fn("doc", "doc-str"))
-  local t_24_auto = (_1_)["aniseed/locals"]
-  t_24_auto["doc-str"] = v_23_auto
-  doc_str = v_23_auto
-end
-local def_str
-do
-  local v_23_auto = wrap_emit("def", client_exec_fn("def", "def-str", {["suppress-hud?"] = true}))
-  local t_24_auto = (_1_)["aniseed/locals"]
-  t_24_auto["def-str"] = v_23_auto
-  def_str = v_23_auto
-end
-local current_form
-do
-  local v_23_auto
-  do
-    local v_25_auto
-    local function current_form0(extra_opts)
-      local form = extract.form({})
-      if form then
-        local _let_27_ = form
-        local content = _let_27_["content"]
-        local range = _let_27_["range"]
-        eval_str(a.merge({code = content, origin = "current-form", range = range}, extra_opts))
-        return form
+      if f then
+        return f(result)
+      else
+        return nil
       end
     end
-    v_25_auto = current_form0
-    _1_["current-form"] = v_25_auto
-    v_23_auto = v_25_auto
+    return _6_
   end
-  local t_24_auto = (_1_)["aniseed/locals"]
-  t_24_auto["current-form"] = v_23_auto
-  current_form = v_23_auto
+  return a.update(opts, "on-result", _5_)
 end
-local replace_form
-do
-  local v_23_auto
-  do
-    local v_25_auto
-    local function replace_form0()
-      local buf = nvim.win_get_buf(0)
-      local win = nvim.tabpage_get_win(0)
-      local form = extract.form({})
-      if form then
-        local _let_29_ = form
-        local content = _let_29_["content"]
-        local range = _let_29_["range"]
-        local function _30_(result)
-          buffer["replace-range"](buf, range, result)
-          return editor["go-to"](win, a["get-in"](range, {"start", 1}), a.inc(a["get-in"](range, {"start", 2})))
-        end
-        eval_str({["on-result"] = _30_, ["suppress-hud?"] = true, code = content, origin = "replace-form", range = range})
-        return form
-      end
+_2amodule_locals_2a["with-last-result-hook"] = with_last_result_hook
+local function file()
+  event.emit("eval", "file")
+  local opts = {["file-path"] = fs["localise-path"](extract["file-path"]()), origin = "file", action = "eval"}
+  opts.preview = preview(opts)
+  display_request(opts)
+  return client.call("eval-file", with_last_result_hook(opts))
+end
+_2amodule_2a["file"] = file
+local function assoc_context(opts)
+  opts.context = (nvim.b["conjure#context"] or extract.context())
+  return opts
+end
+_2amodule_locals_2a["assoc-context"] = assoc_context
+local function client_exec_fn(action, f_name, base_opts)
+  local function _9_(opts)
+    local opts0 = a.merge(opts, base_opts, {action = action, ["file-path"] = extract["file-path"]()})
+    assoc_context(opts0)
+    opts0.preview = preview(opts0)
+    if not opts0["passive?"] then
+      display_request(opts0)
+    else
     end
-    v_25_auto = replace_form0
-    _1_["replace-form"] = v_25_auto
-    v_23_auto = v_25_auto
+    return client.call(f_name, opts0)
   end
-  local t_24_auto = (_1_)["aniseed/locals"]
-  t_24_auto["replace-form"] = v_23_auto
-  replace_form = v_23_auto
+  return _9_
 end
-local root_form
-do
-  local v_23_auto
-  do
-    local v_25_auto
-    local function root_form0()
-      local form = extract.form({["root?"] = true})
-      if form then
-        local _let_32_ = form
-        local content = _let_32_["content"]
-        local range = _let_32_["range"]
-        return eval_str({code = content, origin = "root-form", range = range})
-      end
-    end
-    v_25_auto = root_form0
-    _1_["root-form"] = v_25_auto
-    v_23_auto = v_25_auto
-  end
-  local t_24_auto = (_1_)["aniseed/locals"]
-  t_24_auto["root-form"] = v_23_auto
-  root_form = v_23_auto
-end
-local marked_form
-do
-  local v_23_auto
-  do
-    local v_25_auto
-    local function marked_form0(mark)
-      local comment_prefix = client.get("comment-prefix")
-      local mark0 = (mark or extract["prompt-char"]())
-      local ok_3f, err = nil, nil
-      local function _34_()
-        return editor["go-to-mark"](mark0)
-      end
-      ok_3f, err = pcall(_34_)
+_2amodule_locals_2a["client-exec-fn"] = client_exec_fn
+local function apply_gsubs(code)
+  if code then
+    local function _14_(code0, _11_)
+      local _arg_12_ = _11_
+      local name = _arg_12_[1]
+      local _arg_13_ = _arg_12_[2]
+      local pat = _arg_13_[1]
+      local rep = _arg_13_[2]
+      local ok_3f, val_or_err = pcall(string.gsub, code0, pat, rep)
       if ok_3f then
-        current_form({origin = ("marked-form [" .. mark0 .. "]")})
-        editor["go-back"]()
+        return val_or_err
       else
-        log.append({(comment_prefix .. "Couldn't eval form at mark: " .. mark0), (comment_prefix .. err)}, {["break?"] = true})
-      end
-      return mark0
-    end
-    v_25_auto = marked_form0
-    _1_["marked-form"] = v_25_auto
-    v_23_auto = v_25_auto
-  end
-  local t_24_auto = (_1_)["aniseed/locals"]
-  t_24_auto["marked-form"] = v_23_auto
-  marked_form = v_23_auto
-end
-local insert_result_comment
-do
-  local v_23_auto
-  local function insert_result_comment0(tag, input)
-    local buf = nvim.win_get_buf(0)
-    local comment_prefix = (config["get-in"]({"eval", "comment_prefix"}) or client.get("comment-prefix"))
-    if input then
-      local _let_36_ = input
-      local content = _let_36_["content"]
-      local range = _let_36_["range"]
-      local function _37_(result)
-        return buffer["append-prefixed-line"](buf, range["end"], comment_prefix, result)
-      end
-      eval_str({["on-result"] = _37_, ["suppress-hud?"] = true, code = content, origin = ("comment-" .. tag), range = range})
-      return input
-    end
-  end
-  v_23_auto = insert_result_comment0
-  local t_24_auto = (_1_)["aniseed/locals"]
-  t_24_auto["insert-result-comment"] = v_23_auto
-  insert_result_comment = v_23_auto
-end
-local comment_current_form
-do
-  local v_23_auto
-  do
-    local v_25_auto
-    local function comment_current_form0()
-      return insert_result_comment("current-form", extract.form({}))
-    end
-    v_25_auto = comment_current_form0
-    _1_["comment-current-form"] = v_25_auto
-    v_23_auto = v_25_auto
-  end
-  local t_24_auto = (_1_)["aniseed/locals"]
-  t_24_auto["comment-current-form"] = v_23_auto
-  comment_current_form = v_23_auto
-end
-local comment_root_form
-do
-  local v_23_auto
-  do
-    local v_25_auto
-    local function comment_root_form0()
-      return insert_result_comment("root-form", extract.form({["root?"] = true}))
-    end
-    v_25_auto = comment_root_form0
-    _1_["comment-root-form"] = v_25_auto
-    v_23_auto = v_25_auto
-  end
-  local t_24_auto = (_1_)["aniseed/locals"]
-  t_24_auto["comment-root-form"] = v_23_auto
-  comment_root_form = v_23_auto
-end
-local comment_word
-do
-  local v_23_auto
-  do
-    local v_25_auto
-    local function comment_word0()
-      return insert_result_comment("word", extract.word())
-    end
-    v_25_auto = comment_word0
-    _1_["comment-word"] = v_25_auto
-    v_23_auto = v_25_auto
-  end
-  local t_24_auto = (_1_)["aniseed/locals"]
-  t_24_auto["comment-word"] = v_23_auto
-  comment_word = v_23_auto
-end
-local word
-do
-  local v_23_auto
-  do
-    local v_25_auto
-    local function word0()
-      local _let_39_ = extract.word()
-      local content = _let_39_["content"]
-      local range = _let_39_["range"]
-      if not a["empty?"](content) then
-        return eval_str({code = content, origin = "word", range = range})
+        nvim.err_writeln(str.join({"Error from g:conjure#eval#gsubs: ", name, " - ", val_or_err}))
+        return code0
       end
     end
-    v_25_auto = word0
-    _1_["word"] = v_25_auto
-    v_23_auto = v_25_auto
+    return a.reduce(_14_, code, a["kv-pairs"](nvim.g["conjure#eval#gsubs"]))
+  else
+    return nil
   end
-  local t_24_auto = (_1_)["aniseed/locals"]
-  t_24_auto["word"] = v_23_auto
-  word = v_23_auto
 end
-local doc_word
-do
-  local v_23_auto
-  do
-    local v_25_auto
-    local function doc_word0()
-      local _let_41_ = extract.word()
-      local content = _let_41_["content"]
-      local range = _let_41_["range"]
-      if not a["empty?"](content) then
-        return doc_str({code = content, origin = "word", range = range})
-      end
-    end
-    v_25_auto = doc_word0
-    _1_["doc-word"] = v_25_auto
-    v_23_auto = v_25_auto
-  end
-  local t_24_auto = (_1_)["aniseed/locals"]
-  t_24_auto["doc-word"] = v_23_auto
-  doc_word = v_23_auto
-end
-local def_word
-do
-  local v_23_auto
-  do
-    local v_25_auto
-    local function def_word0()
-      local _let_43_ = extract.word()
-      local content = _let_43_["content"]
-      local range = _let_43_["range"]
-      if not a["empty?"](content) then
-        return def_str({code = content, origin = "word", range = range})
-      end
-    end
-    v_25_auto = def_word0
-    _1_["def-word"] = v_25_auto
-    v_23_auto = v_25_auto
-  end
-  local t_24_auto = (_1_)["aniseed/locals"]
-  t_24_auto["def-word"] = v_23_auto
-  def_word = v_23_auto
-end
-local buf
-do
-  local v_23_auto
-  do
-    local v_25_auto
-    local function buf0()
-      local _let_45_ = extract.buf()
-      local content = _let_45_["content"]
-      local range = _let_45_["range"]
-      return eval_str({code = content, origin = "buf", range = range})
-    end
-    v_25_auto = buf0
-    _1_["buf"] = v_25_auto
-    v_23_auto = v_25_auto
-  end
-  local t_24_auto = (_1_)["aniseed/locals"]
-  t_24_auto["buf"] = v_23_auto
-  buf = v_23_auto
-end
-local command
-do
-  local v_23_auto
-  do
-    local v_25_auto
-    local function command0(code)
-      return eval_str({code = code, origin = "command"})
-    end
-    v_25_auto = command0
-    _1_["command"] = v_25_auto
-    v_23_auto = v_25_auto
-  end
-  local t_24_auto = (_1_)["aniseed/locals"]
-  t_24_auto["command"] = v_23_auto
-  command = v_23_auto
-end
-local range
-do
-  local v_23_auto
-  do
-    local v_25_auto
-    local function range0(start, _end)
-      local _let_46_ = extract.range(start, _end)
-      local content = _let_46_["content"]
-      local range1 = _let_46_["range"]
-      return eval_str({code = content, origin = "range", range = range1})
-    end
-    v_25_auto = range0
-    _1_["range"] = v_25_auto
-    v_23_auto = v_25_auto
-  end
-  local t_24_auto = (_1_)["aniseed/locals"]
-  t_24_auto["range"] = v_23_auto
-  range = v_23_auto
-end
-local selection
-do
-  local v_23_auto
-  do
-    local v_25_auto
-    local function selection0(kind)
-      local _let_47_ = extract.selection({["visual?"] = not kind, kind = (kind or nvim.fn.visualmode())})
-      local content = _let_47_["content"]
-      local range0 = _let_47_["range"]
-      return eval_str({code = content, origin = "selection", range = range0})
-    end
-    v_25_auto = selection0
-    _1_["selection"] = v_25_auto
-    v_23_auto = v_25_auto
-  end
-  local t_24_auto = (_1_)["aniseed/locals"]
-  t_24_auto["selection"] = v_23_auto
-  selection = v_23_auto
-end
-local wrap_completion_result
-do
-  local v_23_auto
-  local function wrap_completion_result0(result)
-    if a["string?"](result) then
-      return {word = result}
+_2amodule_locals_2a["apply-gsubs"] = apply_gsubs
+local function eval_str(opts)
+  highlight_range(opts.range)
+  event.emit("eval", "str")
+  a.update(opts, "code", apply_gsubs)
+  local function _17_()
+    if opts["passive?"] then
+      return opts
     else
-      return result
+      return with_last_result_hook(opts)
     end
   end
-  v_23_auto = wrap_completion_result0
-  local t_24_auto = (_1_)["aniseed/locals"]
-  t_24_auto["wrap-completion-result"] = v_23_auto
-  wrap_completion_result = v_23_auto
+  client_exec_fn("eval", "eval-str")(_17_())
+  return nil
 end
-local completions
-do
-  local v_23_auto
-  do
-    local v_25_auto
-    local function completions0(prefix, cb)
-      local function cb_wrap(results)
-        local function _50_()
-          local _49_ = config["get-in"]({"completion", "fallback"})
-          if _49_ then
-            return nvim.call_function(_49_, {0, prefix})
-          else
-            return _49_
-          end
-        end
-        return cb(a.map(wrap_completion_result, (results or _50_())))
-      end
-      if ("function" == type(client.get("completions"))) then
-        return client.call("completions", assoc_context({cb = cb_wrap, prefix = prefix}))
+_2amodule_2a["eval-str"] = eval_str
+local function wrap_emit(name, f)
+  local function _18_(...)
+    event.emit(name)
+    return f(...)
+  end
+  return _18_
+end
+_2amodule_2a["wrap-emit"] = wrap_emit
+local doc_str = wrap_emit("doc", client_exec_fn("doc", "doc-str"))
+do end (_2amodule_locals_2a)["doc-str"] = doc_str
+local def_str = wrap_emit("def", client_exec_fn("def", "def-str", {["suppress-hud?"] = true}))
+do end (_2amodule_locals_2a)["def-str"] = def_str
+local function current_form(extra_opts)
+  local form = extract.form({})
+  if form then
+    local _let_19_ = form
+    local content = _let_19_["content"]
+    local range = _let_19_["range"]
+    eval_str(a.merge({code = content, range = range, origin = "current-form"}, extra_opts))
+    return form
+  else
+    return nil
+  end
+end
+_2amodule_2a["current-form"] = current_form
+local function replace_form()
+  local buf = nvim.win_get_buf(0)
+  local win = nvim.tabpage_get_win(0)
+  local form = extract.form({})
+  if form then
+    local _let_21_ = form
+    local content = _let_21_["content"]
+    local range = _let_21_["range"]
+    local function _22_(result)
+      buffer["replace-range"](buf, range, result)
+      return editor["go-to"](win, a["get-in"](range, {"start", 1}), a.inc(a["get-in"](range, {"start", 2})))
+    end
+    eval_str({code = content, range = range, origin = "replace-form", ["suppress-hud?"] = true, ["on-result"] = _22_})
+    return form
+  else
+    return nil
+  end
+end
+_2amodule_2a["replace-form"] = replace_form
+local function root_form()
+  local form = extract.form({["root?"] = true})
+  if form then
+    local _let_24_ = form
+    local content = _let_24_["content"]
+    local range = _let_24_["range"]
+    return eval_str({code = content, range = range, origin = "root-form"})
+  else
+    return nil
+  end
+end
+_2amodule_2a["root-form"] = root_form
+local function marked_form(mark)
+  local comment_prefix = client.get("comment-prefix")
+  local mark0 = (mark or extract["prompt-char"]())
+  local ok_3f, err = nil, nil
+  local function _26_()
+    return editor["go-to-mark"](mark0)
+  end
+  ok_3f, err = pcall(_26_)
+  if ok_3f then
+    current_form({origin = ("marked-form [" .. mark0 .. "]")})
+    editor["go-back"]()
+  else
+    log.append({(comment_prefix .. "Couldn't eval form at mark: " .. mark0), (comment_prefix .. err)}, {["break?"] = true})
+  end
+  return mark0
+end
+_2amodule_2a["marked-form"] = marked_form
+local function insert_result_comment(tag, input)
+  local buf = nvim.win_get_buf(0)
+  local comment_prefix = (config["get-in"]({"eval", "comment_prefix"}) or client.get("comment-prefix"))
+  if input then
+    local _let_28_ = input
+    local content = _let_28_["content"]
+    local range = _let_28_["range"]
+    local function _29_(result)
+      return buffer["append-prefixed-line"](buf, range["end"], comment_prefix, result)
+    end
+    eval_str({code = content, range = range, origin = ("comment-" .. tag), ["suppress-hud?"] = true, ["on-result"] = _29_})
+    return input
+  else
+    return nil
+  end
+end
+_2amodule_locals_2a["insert-result-comment"] = insert_result_comment
+local function comment_current_form()
+  return insert_result_comment("current-form", extract.form({}))
+end
+_2amodule_2a["comment-current-form"] = comment_current_form
+local function comment_root_form()
+  return insert_result_comment("root-form", extract.form({["root?"] = true}))
+end
+_2amodule_2a["comment-root-form"] = comment_root_form
+local function comment_word()
+  return insert_result_comment("word", extract.word())
+end
+_2amodule_2a["comment-word"] = comment_word
+local function word()
+  local _let_31_ = extract.word()
+  local content = _let_31_["content"]
+  local range = _let_31_["range"]
+  if not a["empty?"](content) then
+    return eval_str({code = content, range = range, origin = "word"})
+  else
+    return nil
+  end
+end
+_2amodule_2a["word"] = word
+local function doc_word()
+  local _let_33_ = extract.word()
+  local content = _let_33_["content"]
+  local range = _let_33_["range"]
+  if not a["empty?"](content) then
+    return doc_str({code = content, range = range, origin = "word"})
+  else
+    return nil
+  end
+end
+_2amodule_2a["doc-word"] = doc_word
+local function def_word()
+  local _let_35_ = extract.word()
+  local content = _let_35_["content"]
+  local range = _let_35_["range"]
+  if not a["empty?"](content) then
+    return def_str({code = content, range = range, origin = "word"})
+  else
+    return nil
+  end
+end
+_2amodule_2a["def-word"] = def_word
+local function buf()
+  local _let_37_ = extract.buf()
+  local content = _let_37_["content"]
+  local range = _let_37_["range"]
+  return eval_str({code = content, range = range, origin = "buf"})
+end
+_2amodule_2a["buf"] = buf
+local function command(code)
+  return eval_str({code = code, origin = "command"})
+end
+_2amodule_2a["command"] = command
+local function range(start, _end)
+  local _let_38_ = extract.range(start, _end)
+  local content = _let_38_["content"]
+  local range0 = _let_38_["range"]
+  return eval_str({code = content, range = range0, origin = "range"})
+end
+_2amodule_2a["range"] = range
+local function selection(kind)
+  local _let_39_ = extract.selection({kind = (kind or nvim.fn.visualmode()), ["visual?"] = not kind})
+  local content = _let_39_["content"]
+  local range0 = _let_39_["range"]
+  return eval_str({code = content, range = range0, origin = "selection"})
+end
+_2amodule_2a["selection"] = selection
+local function wrap_completion_result(result)
+  if a["string?"](result) then
+    return {word = result}
+  else
+    return result
+  end
+end
+_2amodule_locals_2a["wrap-completion-result"] = wrap_completion_result
+local function completions(prefix, cb)
+  local function cb_wrap(results)
+    local function _42_()
+      local _41_ = config["get-in"]({"completion", "fallback"})
+      if _41_ then
+        return nvim.call_function(_41_, {0, prefix})
       else
-        return cb_wrap()
+        return _41_
       end
     end
-    v_25_auto = completions0
-    _1_["completions"] = v_25_auto
-    v_23_auto = v_25_auto
+    return cb(a.map(wrap_completion_result, (results or _42_())))
   end
-  local t_24_auto = (_1_)["aniseed/locals"]
-  t_24_auto["completions"] = v_23_auto
-  completions = v_23_auto
-end
-local completions_promise
-do
-  local v_23_auto
-  do
-    local v_25_auto
-    local function completions_promise0(prefix)
-      local p = promise.new()
-      completions(prefix, promise["deliver-fn"](p))
-      return p
-    end
-    v_25_auto = completions_promise0
-    _1_["completions-promise"] = v_25_auto
-    v_23_auto = v_25_auto
+  if ("function" == type(client.get("completions"))) then
+    return client.call("completions", assoc_context({["file-path"] = extract["file-path"](), prefix = prefix, cb = cb_wrap}))
+  else
+    return cb_wrap()
   end
-  local t_24_auto = (_1_)["aniseed/locals"]
-  t_24_auto["completions-promise"] = v_23_auto
-  completions_promise = v_23_auto
 end
-local completions_sync
-do
-  local v_23_auto
-  do
-    local v_25_auto
-    local function completions_sync0(prefix)
-      local p = completions_promise(prefix)
-      promise.await(p)
-      return promise.close(p)
-    end
-    v_25_auto = completions_sync0
-    _1_["completions-sync"] = v_25_auto
-    v_23_auto = v_25_auto
-  end
-  local t_24_auto = (_1_)["aniseed/locals"]
-  t_24_auto["completions-sync"] = v_23_auto
-  completions_sync = v_23_auto
+_2amodule_2a["completions"] = completions
+local function completions_promise(prefix)
+  local p = promise.new()
+  completions(prefix, promise["deliver-fn"](p))
+  return p
 end
-return nil
+_2amodule_2a["completions-promise"] = completions_promise
+local function completions_sync(prefix)
+  local p = completions_promise(prefix)
+  promise.await(p)
+  return promise.close(p)
+end
+_2amodule_2a["completions-sync"] = completions_sync

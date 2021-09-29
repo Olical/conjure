@@ -101,18 +101,18 @@
       (at [4 0])
       (t.pr= {:range {:start [3 0]
                       :end [5 2]}
-              :content "(inc\n ;)\n 5)"}
+              :content "(inc\n ; )\n 5)"}
              (extract.form {})
              "skips the comment paren with current form")
 
       (at [4 0])
       (t.pr= {:range {:start [3 0]
                       :end [5 2]}
-              :content "(inc\n ;)\n 5)"}
+              :content "(inc\n ; )\n 5)"}
              (extract.form {:root? true})
              "skips the comment paren with root form"))))
 
-(deftest escaped-parens-in-forms
+(deftest escaped-parens
   ;; https://github.com/Olical/conjure/issues/209
   (buffer.with-buf
     ["(str \\))"]
@@ -122,4 +122,22 @@
                       :end [1 7]}
               :content "(str \\))"}
              (extract.form {})
-             "escaped parens are skipped over"))))
+             "escaped parens are skipped over")))
+
+  ;; https://github.com/Olical/conjure/issues/246
+  (buffer.with-buf
+    ["(ns foo)"
+     ""
+     "(+ 10 20 (* 10 2))"
+     ""
+     "(+ 1 2)"
+     "; )"
+     ""
+     "(+ 4 6)"]
+    (fn [at]
+      (at [5 2])
+      (t.pr= {:range {:start [5 0]
+                      :end [5 6]}
+              :content "(+ 1 2)"}
+             (extract.form {:root? true})
+             "root from a form with a commented closing paren on the next line"))))

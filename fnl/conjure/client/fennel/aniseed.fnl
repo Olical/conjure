@@ -5,6 +5,7 @@
              view conjure.aniseed.view
              client conjure.client
              mapping conjure.mapping
+             fs conjure.fs
              text conjure.text
              log conjure.log
              config conjure.config
@@ -19,7 +20,9 @@
    {:fennel
     {:aniseed
      {:mapping {:run_buf_tests "tt"
-                :run_all_tests "ta"}
+                :run_all_tests "ta"
+                :reset_repl "rr"
+                :reset_all_repls "ra"}
       :aniseed_module_prefix :conjure.aniseed.
       :use_metadata true}}}})
 
@@ -38,14 +41,81 @@
 (defn- anic [mod f-name ...]
   ((ani mod f-name) ...))
 
+(defonce- repls {})
+
+(defn reset-repl [filename]
+  (let [filename (or filename (fs.localise-path (extract.file-path)))]
+    (tset repls filename nil)
+    (log.append [(.. "; Reset REPL for " filename)] {:break? true})))
+
+(defn reset-all-repls []
+  (a.run!
+    (fn [filename]
+      (tset repls filename nil))
+    (a.keys repls))
+  (log.append [(.. "; Reset all REPLs")] {:break? true}))
+
+(def default-module-name "conjure.user")
+
+(defn module-name [context file-path]
+  (if
+    context context
+    file-path (or (fs.file-path->module-name file-path) default-module-name)
+    default-module-name))
+
+(defn repl [opts]
+  (let [filename (a.get opts :filename)]
+    (or ;; Reuse an existing REPL.
+        (and (not (a.get opts :fresh?)) (a.get repls filename))
+
+        ;; Build a new REPL.
+        (let [;; Shared between the error-handler function (created at the same time as the REPL).
+              ;; And each individual eval call. This allows us to capture errors from different call stacks.
+              ret {}
+
+              ;; Set up the error-handler function on the creation of the REPL.
+              ;; Will place any errors in the ret table.
+              _ (tset opts :error-handler
+                      (fn [err]
+                        (set ret.ok? false)
+                        (set ret.results [err])))
+
+              ;; Instantiate the raw REPL, we'll wrap this a little first though.
+              eval! (anic :eval :repl opts)
+
+              ;; Build our REPL function.
+              repl (fn [code]
+                     ;; Reset the ret table before running anything.
+                     (set ret.ok? nil)
+                     (set ret.results nil)
+
+                     ;; Run the code, either capturing a result or an error.
+                     ;; If there's no error in ret we can place the results in the ret table.
+                     (let [results (eval! code)]
+                       (when (a.nil? ret.ok?)
+                         (set ret.ok? true)
+                         (set ret.results results))
+                       ;; Finally this good or bad result is returned.
+                       ret))]
+
+          ;; Set up the REPL in the module context.
+          (repl (.. "(module " (a.get opts :moduleName) ")"))
+
+          ;; Store the REPL for future reuse.
+          (tset repls filename repl)
+
+          ;; Return the new REPL!
+          repl))))
+
 (defn display-result [opts]
   (when opts
     (let [{: ok? : results} opts
-          result-str (if ok?
-                       (if (a.empty? results)
-                         "nil"
-                         (str.join "\n" (a.map view.serialise results)))
-                       (a.first results))
+          result-str (or
+                       (if ok?
+                         (when (not (a.empty? results))
+                           (str.join "\n" (a.map view.serialise results)))
+                         (a.first results))
+                       "nil")
           result-lines (str.split result-str "\n")]
       (when (not opts.passive?)
         (log.append
@@ -60,18 +130,23 @@
 (defn eval-str [opts]
   ((client.wrap
      (fn []
-       (let [code (.. (.. "(module " (or opts.context "aniseed.user") ") ")
-                      opts.code "\n")
-             out (anic :nu :with-out-str
+       (let [out (anic :nu :with-out-str
                        (fn []
                          (when (and (cfg [:use_metadata])
                                     (not package.loaded.fennel))
                            (set package.loaded.fennel (anic :fennel :impl)))
 
-                         (let [[ok? & results]
-                               [(anic :eval :str code
-                                      {:filename opts.file-path
-                                       :useMetadata (cfg [:use_metadata])})]]
+                         (let [eval! (repl {:filename opts.file-path
+                                            :moduleName (module-name opts.context opts.file-path)
+                                            :useMetadata (cfg [:use_metadata])
+
+                                            ;; Restart the REPL if...
+                                            :fresh? (or ;; We eval an entire file or buffer.
+                                                        (= :file opts.origin) (= :buf opts.origin)
+
+                                                        ;; The user is evaluating the module form.
+                                                        (text.starts-with opts.code (.. "(module " (or opts.context ""))))})
+                               {: ok? : results} (eval! (.. opts.code "\n"))]
                            (set opts.ok? ok?)
                            (set opts.results results))))]
          (when (not (a.empty? out))
@@ -110,7 +185,11 @@
   (mapping.buf :n :FnlRunBufTests
                (cfg [:mapping :run_buf_tests]) *module-name* :run-buf-tests)
   (mapping.buf :n :FnlRunAllTests
-               (cfg [:mapping :run_all_tests]) *module-name* :run-all-tests))
+               (cfg [:mapping :run_all_tests]) *module-name* :run-all-tests)
+  (mapping.buf :n :FnlResetREPL
+               (cfg [:mapping :reset_repl]) *module-name* :reset-repl)
+  (mapping.buf :n :FnlResetAllREPLs
+               (cfg [:mapping :reset_all_repls]) *module-name* :reset-all-repls))
 
 (defn value->completions [x]
   (when (= :table (type x))
@@ -132,15 +211,14 @@
 
 (defn completions [opts]
   (let [code (when (not (str.blank? opts.prefix))
-               (.. "((. (require :" *module-name* ") :value->completions) "
-                   (opts.prefix:gsub ".$" "") ")"))
+               (let [prefix (string.gsub opts.prefix ".$" "")]
+                 (.. "((. (require :" *module-name* ") :value->completions) " prefix ")")))
         mods (value->completions package.loaded)
-        locals (let [(ok? m) (and opts.context (pcall #(require opts.context)))]
+        locals (let [(ok? m) (pcall #(require opts.context))]
                  (if ok?
                    (a.concat
+                     (value->completions m)
                      (value->completions (a.get m :aniseed/locals))
-                     (value->completions (a.get-in m [:aniseed/local-fns :require]))
-                     (value->completions (a.get-in m [:aniseed/local-fns :autoload]))
                      mods)
                    mods))
         result-fn
@@ -155,12 +233,13 @@
                     xs)
                   locals)
                 locals))))
-        (_ ok?)
+        (ok? err-or-res)
         (when code
           (pcall
             (fn []
               (eval-str
-                {:context opts.context
+                {:file-path opts.file-path
+                 :context opts.context
                  :code code
                  :passive? true
                  :on-result-raw result-fn}))))]

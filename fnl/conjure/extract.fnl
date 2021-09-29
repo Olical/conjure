@@ -64,8 +64,6 @@
         flags (.. "Wnz" (if root? "r" ""))
         cursor-char (current-char)
 
-        skip-match?-viml "luaeval(\"require('conjure.extract')['skip-match?']()\")"
-
         safe-start-char
         (if escape?
           (.. "\\" start-char)
@@ -79,16 +77,16 @@
         start (nvim.fn.searchpairpos
                 safe-start-char "" safe-end-char
                 (.. flags "b" (if (= cursor-char start-char) "c" ""))
-                skip-match?-viml)
+                skip-match?)
         end (nvim.fn.searchpairpos
               safe-start-char "" safe-end-char
               (.. flags (if (= cursor-char end-char) "c" ""))
-              skip-match?-viml)]
+              skip-match?)]
 
     (when (and (not (nil-pos? start))
                (not (nil-pos? end)))
-      {:range {:start (a.update start 2 a.dec)
-               :end (a.update end 2 a.dec)}
+      {:range {:start [(a.first start) (a.dec (a.second start))]
+               :end [(a.first end) (a.dec (a.second end))]}
        :content (read-range start end)})))
 
 (defn- range-distance [range]
