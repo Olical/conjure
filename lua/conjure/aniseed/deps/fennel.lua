@@ -1547,6 +1547,7 @@ package.preload["conjure.aniseed.fennel.specials"] = package.preload["conjure.an
     do
       local _451_ = utils.copy(utils.root.options)
       do end (_451_)["env"] = "_COMPILER"
+      _451_["requireAsInclude"] = false
       _451_["allowedGlobals"] = nil
       opts = _451_
     end
@@ -4181,7 +4182,7 @@ do
   Same as ->, except splices the value into the last position of each form
   rather than the first."
     (var x val)
-    (each [_ e (pairs [...])]
+    (each [_ e (ipairs [...])]
       (let [elt (if (list? e) e (list e))]
         (table.insert elt x)
         (set x elt)))
@@ -4234,7 +4235,7 @@ do
     "Evaluates val and splices it into the first argument of subsequent forms."
     (let [name (gensym)
           form `(let [,name ,val])]
-      (each [_ elt (pairs [...])]
+      (each [_ elt (ipairs [...])]
         (table.insert elt 2 name)
         (table.insert form elt))
       (table.insert form name)

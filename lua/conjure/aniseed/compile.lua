@@ -40,16 +40,12 @@ local marker_prefix = "ANISEED_"
 _2amodule_2a["marker-prefix"] = marker_prefix
 local delete_marker = (marker_prefix .. "DELETE_ME")
 do end (_2amodule_2a)["delete-marker"] = delete_marker
-local replace_marker = (marker_prefix .. "REPLACE_ME")
-do end (_2amodule_2a)["replace-marker"] = replace_marker
 local delete_marker_pat = ("\n[^\n]-\"" .. delete_marker .. "\".-")
 do end (_2amodule_locals_2a)["delete-marker-pat"] = delete_marker_pat
-local replace_marker_pat = ("\n[^\n]-\"" .. replace_marker .. "\".-")
-do end (_2amodule_locals_2a)["replace-marker-pat"] = replace_marker_pat
 local function str(code, opts)
   local fnl = fennel.impl()
   local function _5_()
-    return string.gsub(string.gsub(string.gsub(string.gsub(fnl.compileString(macros_prefix(code, opts), a.merge({allowedGlobals = false, compilerEnv = _G}, opts)), (delete_marker_pat .. "\n"), "\n"), (delete_marker_pat .. "$"), ""), (replace_marker_pat .. "\n"), "*module*\n"), (replace_marker_pat .. "$"), "*module*")
+    return string.gsub(string.gsub(fnl.compileString(macros_prefix(code, opts), a.merge({allowedGlobals = false, compilerEnv = _G}, opts)), (delete_marker_pat .. "\n"), "\n"), (delete_marker_pat .. "$"), "")
   end
   return xpcall(_5_, fnl.traceback)
 end
