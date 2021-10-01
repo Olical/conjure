@@ -35,9 +35,6 @@
 ;; This marker can be used by a post-processor to delete a useless byproduct line.
 (local delete-marker :ANISEED_DELETE_ME)
 
-;; And this one replaces the given block with *module*!
-(local replace-marker :ANISEED_REPLACE_ME)
-
 ;; We store all locals under this for later splatting.
 (local locals-key :aniseed/locals)
 
@@ -67,9 +64,7 @@
 
         ;; The final result table that gets returned from the macro.
         ;; This is the best way I've found to introduce many (local ...) forms from one macro.
-        result `[,(if existing-mod
-                    replace-marker
-                    delete-marker)
+        result `[,delete-marker
 
                  ;; We can't refer to things like (local (foo bar) (10 foo)).
                  ;; So we need to define them in an earlier local.
