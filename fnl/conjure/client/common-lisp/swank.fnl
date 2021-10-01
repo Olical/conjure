@@ -89,15 +89,16 @@
 (defn eval-str [opts]
   (try-ensure-conn)
   (send
-    (.. opts.code "\n")
+    (.. "(:emacs-rex (swank:eval-and-grab-output \"" opts.code "\") \"cl-user\" t 1)")
     (fn [msg]
-      (let [clean (text.trim-last-newline msg)]
-        (when opts.on-result
-          ;; ANSI escape trimming happens here AND in log append (if enabled)
-          ;; so the "eval and replace form" won't end up inserting ANSI codes.
-          (opts.on-result (text.strip-ansi-escape-sequences clean)))
-        (when (not opts.passive?)
-          (log.append (text.split-lines clean)))))))
+      (log.append ["callback result " msg]))))
+      ; (let [clean (text.trim-last-newline msg)]
+      ;   (when opts.on-result
+      ;     ;; ANSI escape trimming happens here AND in log append (if enabled)
+      ;     ;; so the "eval and replace form" won't end up inserting ANSI codes.
+      ;     (opts.on-result (text.strip-ansi-escape-sequences clean)))
+      ;   (when (not opts.passive?)
+      ;     (log.append (text.split-lines clean)))))))
 
 ; Needs to be adjusted
 ; (defn doc-str [opts]

@@ -7,5 +7,7 @@
         header (string.format "%06x" (+ 1 n))] ; Additional 1 for trailing newline
     (.. header msg "\n")))
 
-(defn decoder [msg pos]
-  (log.append [msg]))
+(defn decode [msg]
+  (let [len (tonumber (string.sub msg 1 7) 16)
+        cmd (string.sub msg 7 len)]
+    cmd))

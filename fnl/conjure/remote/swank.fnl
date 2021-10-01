@@ -24,13 +24,19 @@
   Returns a connection table containing a `destroy` function."
 
   (var conn
-    {:decode trn.decoder
+    {:decode trn.decode
      :queue []})
 
   (fn handle-message [err chunk]
     (if (or err (not chunk))
       (opts.on-error err)
-      (conn.decode chunk 0)))
+      (->> (conn.decode chunk)
+           ((fn [msg]
+              (log.append ["here"])
+              (a.println (.. "receive" msg))
+              (let [cb (table.remove conn.queue)]
+                (when cb
+                  (cb msg))))))))
 
   (set conn
        (a.merge
@@ -55,5 +61,5 @@
 ;                  :on-failure (fn [err] (a.println "oh no" err))
 ;                  :on-success (fn [] (a.println "Yay!"))
 ;                  :on-error (fn [err] (a.println "uh oh" err))}))
-;(send c "(:emacs-rex (swank:eval-and-grab-output \"(* 3 2)\") \"cl-user\" t 1)" log.dbg)
+; (send c "(:emacs-rex (swank:eval-and-grab-output \"(* 3 2)\") \"cl-user\" t 1)" log.append)
 ;(send c "(:emacs-rex (swank:list-all-package-names t) \"cl-user\" t 1)" log.dbg)
