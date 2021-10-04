@@ -43,16 +43,17 @@ do end (_2amodule_2a)["delete-marker"] = delete_marker
 local delete_marker_pat = ("\n[^\n]-\"" .. delete_marker .. "\".-")
 do end (_2amodule_locals_2a)["delete-marker-pat"] = delete_marker_pat
 local function str(code, opts)
+  ANISEED_STATIC_MODULES = (true == a.get(opts, "static?"))
   local fnl = fennel.impl()
   local function _5_()
-    return string.gsub(string.gsub(fnl.compileString(macros_prefix(code, opts), a.merge({allowedGlobals = false, compilerEnv = _G}, opts)), (delete_marker_pat .. "\n"), "\n"), (delete_marker_pat .. "$"), "")
+    return string.gsub(string.gsub(fnl.compileString(macros_prefix(code, opts), a["merge!"]({allowedGlobals = false, compilerEnv = _G}, opts)), (delete_marker_pat .. "\n"), "\n"), (delete_marker_pat .. "$"), "")
   end
   return xpcall(_5_, fnl.traceback)
 end
 _2amodule_2a["str"] = str
-local function file(src, dest)
+local function file(src, dest, opts)
   local code = a.slurp(src)
-  local _6_, _7_ = str(code, {filename = src})
+  local _6_, _7_ = str(code, a["merge!"]({filename = src}, opts))
   if ((_6_ == false) and (nil ~= _7_)) then
     local err = _7_
     return nvim.err_writeln(err)
@@ -65,12 +66,12 @@ local function file(src, dest)
   end
 end
 _2amodule_2a["file"] = file
-local function glob(src_expr, src_dir, dest_dir)
+local function glob(src_expr, src_dir, dest_dir, opts)
   for _, path in ipairs(fs.relglob(src_dir, src_expr)) do
     if fs["macro-file-path?"](path) then
       a.spit((dest_dir .. path), a.slurp((src_dir .. path)))
     else
-      file((src_dir .. path), string.gsub((dest_dir .. path), ".fnl$", ".lua"))
+      file((src_dir .. path), string.gsub((dest_dir .. path), ".fnl$", ".lua"), opts)
     end
   end
   return nil

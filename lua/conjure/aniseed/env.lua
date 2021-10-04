@@ -11,8 +11,9 @@ do
   _2amodule_locals_2a = (_2amodule_2a)["aniseed/locals"]
 end
 local autoload = (require("conjure.aniseed.autoload")).autoload
-local compile, fennel, fs, nvim = autoload("conjure.aniseed.compile"), autoload("conjure.aniseed.fennel"), autoload("conjure.aniseed.fs"), autoload("conjure.aniseed.nvim")
-do end (_2amodule_locals_2a)["compile"] = compile
+local a, compile, fennel, fs, nvim = autoload("conjure.aniseed.core"), autoload("conjure.aniseed.compile"), autoload("conjure.aniseed.fennel"), autoload("conjure.aniseed.fs"), autoload("conjure.aniseed.nvim")
+do end (_2amodule_locals_2a)["a"] = a
+_2amodule_locals_2a["compile"] = compile
 _2amodule_locals_2a["fennel"] = fennel
 _2amodule_locals_2a["fs"] = fs
 _2amodule_locals_2a["nvim"] = nvim
@@ -33,11 +34,14 @@ end
 _2amodule_locals_2a["quiet-require"] = quiet_require
 local function init(opts)
   local opts0
-  if ("table" == type(opts)) then
-    opts0 = opts
-  else
-    opts0 = {}
+  local function _3_()
+    if ("table" == type(opts)) then
+      return opts
+    else
+      return nil
+    end
   end
+  opts0 = a["merge!"]({["static?"] = true}, _3_())
   local glob_expr = "**/*.fnl"
   local fnl_dir = nvim.fn.expand((opts0.input or (config_dir .. fs["path-sep"] .. "fnl")))
   local lua_dir = nvim.fn.expand((opts0.output or (config_dir .. fs["path-sep"] .. "lua")))
