@@ -32,15 +32,15 @@ do end (_2amodule_locals_2a)["cfg"] = cfg
 config.merge({client = {clojure = {nrepl = {connection = {default_host = "localhost", port_files = {".nrepl-port", ".shadow-cljs/nrepl.port"}, auto_repl = {enabled = true, hidden = false, cmd = "bb nrepl-server localhost:8794", port_file = ".nrepl-port", port = "8794"}}, eval = {pretty_print = true, raw_out = false, auto_require = true, print_quota = nil, print_function = "conjure.internal/pprint", print_options = {length = 500, level = 50}}, interrupt = {sample_limit = 0.3}, refresh = {after = nil, before = nil, dirs = nil}, test = {current_form_names = {"deftest"}, runner = "clojure", call_suffix = nil}, mapping = {disconnect = "cd", connect_port_file = "cf", interrupt = "ei", last_exception = "ve", result_1 = "v1", result_2 = "v2", result_3 = "v3", view_source = "vs", session_clone = "sc", session_fresh = "sf", session_close = "sq", session_close_all = "sQ", session_list = "sl", session_next = "sn", session_prev = "sp", session_select = "ss", run_all_tests = "ta", run_current_ns_tests = "tn", run_alternate_ns_tests = "tN", run_current_test = "tc", refresh_changed = "rr", refresh_all = "ra", refresh_clear = "rc"}, completion = {cljs = {use_suitable = true}, with_context = false}}}}})
 local function context(header)
   local _1_ = header
-  if _1_ then
+  if (nil ~= _1_) then
     local _2_ = parse["strip-meta"](_1_)
-    if _2_ then
+    if (nil ~= _2_) then
       local _3_ = parse["strip-comments"](_2_)
-      if _3_ then
+      if (nil ~= _3_) then
         local _4_ = string.match(_3_, "%(%s*ns%s+([^)]*)")
-        if _4_ then
+        if (nil ~= _4_) then
           local _5_ = str.split(_4_, "%s+")
-          if _5_ then
+          if (nil ~= _5_) then
             return a.first(_5_)
           else
             return _5_

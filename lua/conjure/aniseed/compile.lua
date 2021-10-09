@@ -21,7 +21,7 @@ local function macros_prefix(code, opts)
   local filename
   do
     local _1_ = a.get(opts, "filename")
-    if _1_ then
+    if (nil ~= _1_) then
       filename = string.gsub(_1_, (nvim.fn.getcwd() .. fs["path-sep"]), "")
     else
       filename = _1_
@@ -53,7 +53,7 @@ end
 _2amodule_2a["str"] = str
 local function file(src, dest, opts)
   local code = a.slurp(src)
-  local _6_, _7_ = str(code, a["merge!"]({filename = src}, opts))
+  local _6_, _7_ = str(code, a["merge!"]({filename = src, ["static?"] = true}, opts))
   if ((_6_ == false) and (nil ~= _7_)) then
     local err = _7_
     return nvim.err_writeln(err)

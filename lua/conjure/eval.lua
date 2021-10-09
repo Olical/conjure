@@ -320,7 +320,7 @@ local function completions(prefix, cb)
   local function cb_wrap(results)
     local function _42_()
       local _41_ = config["get-in"]({"completion", "fallback"})
-      if _41_ then
+      if (nil ~= _41_) then
         return nvim.call_function(_41_, {0, prefix})
       else
         return _41_

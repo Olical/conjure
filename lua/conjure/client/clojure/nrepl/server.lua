@@ -90,7 +90,7 @@ local function eval(opts, cb)
     local _11_
     do
       local _10_ = a["get-in"](opts, {"range", "start", 2})
-      if _10_ then
+      if (nil ~= _10_) then
         _11_ = a.inc(_10_)
       else
         _11_ = _10_
