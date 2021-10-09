@@ -38,7 +38,7 @@ local function join(...)
       else
         _3_ = a["pr-str"](x)
       end
-      if _3_ then
+      if (_3_ ~= nil) then
         table.insert(result, _3_)
       else
       end

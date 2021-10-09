@@ -62,6 +62,19 @@
         ;; If the module doesn't exist we're compiling and can skip interactive tooling.
         existing-mod (. package.loaded (tostring mod-name))
 
+        ;; Determine if we're in an interactive eval or not.
+
+        ;; We don't count userdata / other types as an existing module since we
+        ;; can't really work with anything other than a table. If it's not a
+        ;; table it's probably not a module Aniseed can work with in general
+        ;; since it's assumed all Aniseed modules are table based.
+
+        ;; We can also completely disable the interactive mode which is used by
+        ;; `aniseed.env` but can also be enabled by others. Sadly this works
+        ;; through global variables but still!
+        interactive? (and (= :table (type existing-mod))
+                          (not _G.ANISEED_STATIC_MODULES))
+
         ;; The final result table that gets returned from the macro.
         ;; This is the best way I've found to introduce many (local ...) forms from one macro.
         result `[,delete-marker
@@ -71,7 +84,7 @@
                  (local ,mod-name-sym ,(tostring mod-name))
 
                  ;; Only expose the module table if it doesn't exist yet.
-                 (local ,mod-sym ,(if existing-mod
+                 (local ,mod-sym ,(if interactive?
                                     `(. package.loaded ,mod-name-sym)
                                     `(do
                                        (tset package.loaded ,mod-name-sym ,(or mod-base {}))
@@ -79,7 +92,7 @@
 
                  ;; As we def values we insert them into locals.
                  ;; This table is then expanded in subsequent interactive evals.
-                 (local ,mod-locals-sym ,(if existing-mod
+                 (local ,mod-locals-sym ,(if interactive?
                                            `(. ,mod-sym ,locals-key)
                                            `(do
                                               (tset ,mod-sym ,locals-key {})
@@ -124,7 +137,7 @@
 
     ;; Now we can expand any existing locals into the current scope.
     ;; Since this will only happen in interactive evals we can generate messy code.
-    (when existing-mod
+    (when interactive?
       ;; Expand exported values into the current scope, except aniseed/locals.
       (sorted-each
         (fn [k v]

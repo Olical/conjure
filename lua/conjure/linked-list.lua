@@ -27,7 +27,7 @@ end
 _2amodule_2a["create"] = create
 local function val(l)
   local _2_ = l
-  if _2_ then
+  if (nil ~= _2_) then
     return a.get(_2_, "val")
   else
     return _2_
@@ -36,7 +36,7 @@ end
 _2amodule_2a["val"] = val
 local function next(l)
   local _4_ = l
-  if _4_ then
+  if (nil ~= _4_) then
     return a.get(_4_, "next")
   else
     return _4_
@@ -45,7 +45,7 @@ end
 _2amodule_2a["next"] = next
 local function prev(l)
   local _6_ = l
-  if _6_ then
+  if (nil ~= _6_) then
     return a.get(_6_, "prev")
   else
     return _6_

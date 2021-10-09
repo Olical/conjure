@@ -85,9 +85,9 @@ local function connect_port_file(opts)
   local resolved
   do
     local _7_ = cfg({"connection", "port_files"})
-    if _7_ then
+    if (_7_ ~= nil) then
       local _8_ = a.map(fs["resolve-above"], _7_)
-      if _8_ then
+      if (_8_ ~= nil) then
         local function _9_(path)
           local port = a.slurp(path)
           if port then

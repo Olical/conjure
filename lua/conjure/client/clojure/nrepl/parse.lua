@@ -12,9 +12,9 @@ do
 end
 local function strip_meta(s)
   local _1_ = s
-  if _1_ then
+  if (nil ~= _1_) then
     local _2_ = string.gsub(_1_, "%^:.-%s+", "")
-    if _2_ then
+    if (nil ~= _2_) then
       return string.gsub(_2_, "%^%b{}%s+", "")
     else
       return _2_
@@ -26,7 +26,7 @@ end
 _2amodule_2a["strip-meta"] = strip_meta
 local function strip_comments(s)
   local _5_ = s
-  if _5_ then
+  if (nil ~= _5_) then
     return string.gsub(_5_, ";.-[\n$]", "")
   else
     return _5_

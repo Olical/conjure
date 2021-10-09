@@ -76,9 +76,9 @@ _2amodule_locals_2a["clean-input-code"] = clean_input_code
 local function eval_str(opts)
   local function _6_(repl)
     local _7_ = opts.code
-    if _7_ then
+    if (nil ~= _7_) then
       local _8_ = clean_input_code(_7_)
-      if _8_ then
+      if (nil ~= _8_) then
         local function _9_(msgs)
           if ((1 == a.count(msgs)) and ("" == a["get-in"](msgs, {1, "out"}))) then
             a["assoc-in"](msgs, {1, "out"}, (comment_prefix .. "Empty result"))
