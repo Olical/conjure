@@ -26,8 +26,7 @@
   (.. "conjure-log-" (nvim.fn.getpid) (client.get :buf-suffix)))
 
 (defn log-buf? [name]
-  (let [log-buf-name-sanitized (string.gsub (log-buf-name) "%-" "%%-")]
-    (name:match (.. log-buf-name-sanitized "$"))))
+  (text.ends-with name (log-buf-name)))
 
 (defn- on-new-log-buf [buf]
   (nvim.buf_set_lines
