@@ -38,7 +38,8 @@ local function log_buf_name()
 end
 _2amodule_locals_2a["log-buf-name"] = log_buf_name
 local function log_buf_3f(name)
-  return name:match((log_buf_name() .. "$"))
+  local log_buf_name_sanitized = string.gsub(log_buf_name(), "%-", "%%-")
+  return name:match((log_buf_name_sanitized .. "$"))
 end
 _2amodule_2a["log-buf?"] = log_buf_3f
 local function on_new_log_buf(buf)
