@@ -389,7 +389,7 @@ local function assoc(t, ...)
   local _let_53_ = {...}
   local k = _let_53_[1]
   local v = _let_53_[2]
-  local xs = {(table.unpack or unpack)(_let_53_, 3)}
+  local xs = (getmetatable(_let_53_) and getmetatable(_let_53_).__fennelrest and getmetatable(_let_53_).__fennelrest(_let_53_, 3)) or {(table.unpack or unpack)(_let_53_, 3)}
   local rem = count(xs)
   local t0 = (t or {})
   if odd_3f(rem) then

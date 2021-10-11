@@ -28,7 +28,7 @@ _2amodule_2a["str"] = str
 local function clean_values(vals)
   local function _2_(val)
     if a["table?"](val) then
-      return ((compile["delete-marker"] ~= a.first(val)) and (compile["replace-marker"] ~= a.first(val)))
+      return (compile["delete-marker"] ~= a.first(val))
     else
       return true
     end
