@@ -10,6 +10,7 @@
 "daveyarwood"
 "davidmh"
 "dharrigan"
+"djwhitt"
 "emilaasa"
 "Fedreg"
 "frenchy64"
