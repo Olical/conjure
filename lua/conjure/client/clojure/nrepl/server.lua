@@ -209,6 +209,7 @@ local function clone_session(session)
 end
 _2amodule_2a["clone-session"] = clone_session
 local function assume_or_create_session()
+  a.assoc(state.get("conn"), "session", nil)
   local function _33_(sessions)
     if a["empty?"](sessions) then
       return clone_session()

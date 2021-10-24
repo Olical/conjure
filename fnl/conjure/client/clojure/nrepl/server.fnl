@@ -174,6 +174,7 @@
           assume-session)))))
 
 (defn assume-or-create-session []
+  (a.assoc (state.get :conn) :session nil)
   (with-sessions
     (fn [sessions]
       (if (a.empty? sessions)
