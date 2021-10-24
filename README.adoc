@@ -37,6 +37,8 @@ Conjure allows you to send the right part of your code off for evaluation, see t
 
 The goal is to give you a tool that lets you effortlessly run whatever you need to while keeping out of your way (but there with context and more information if you need it).
 
+Once installed you can run `:ConjureSchool` to begin an interactive tutorial.
+
 == Try without installing
 
 You can trial run Conjure with the interactive `:ConjureSchool` tutorial without actually installing it! The only prerequisites are `curl` and an up to date `nvim`.
@@ -50,18 +52,21 @@ This will temporarily download the plugin, launch Neovim with `:ConjureSchool` r
 
 == Installation
 
-Use your favourite plugin manager, mine is https://github.com/junegunn/vim-plug[vim-plug] but any will do. Be sure to pin it to a tag and subscribe to releases through GitHub to avoid any surprises in the future.
+Requires Neovim 0.5 or newer.
+
+=== https://github.com/wbthomason/packer.nvim[packer.nvim]
+
+[source,lua]
+----
+use 'Olical/conjure'
+----
+
+=== https://github.com/junegunn/vim-plug[vim-plug]
 
 [source,viml]
 ----
-Plug 'Olical/conjure', {'tag': 'v4.25.0'}
+Plug 'Olical/conjure'
 ----
-
-You'll need to be on the latest stable Neovim for all of the features (such as floating windows) to work. If you see errors, please check your Neovim version before raising an issue.
-
-____
-Note: Some issues have been reported when using https://github.com/wbthomason/packer.nvim[packer] to install Conjure and Aniseed. Work has been done to mitigate this, but https://github.com/Olical/conjure/issues/159#issuecomment-757384128[this comment] should help you out if you run into issues.
-____
 
 == Getting started
 
