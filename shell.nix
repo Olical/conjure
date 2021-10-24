@@ -20,6 +20,8 @@ in
     nativeBuildInputs = with pkgs; [
       unstable.mitscheme
       unstable.guile
+      unstable.chez
+      unstable.leiningen
       unstable.racket
       unstable.janet
       unstable.chicken
