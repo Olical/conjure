@@ -17,7 +17,8 @@
                 :stop "cS"}
       :command "mit-scheme"
       ;; Match "]=> " or "error> "
-      :prompt_pattern "[%]e][=r]r?o?r?> "}}}})
+      :prompt_pattern "[%]e][=r]r?o?r?> "
+      :value_prefix_pattern "^;Value: "}}}})
 
 (def- cfg (config.get-in-fn [:client :scheme :stdio]))
 
@@ -38,14 +39,22 @@
           (str.join ""))})
 
 (defn format-msg [msg]
-  (a.map #(if (string.match $1 "^;Value: ")
-            (string.gsub $1 "^;Value: " "")
-            (.. comment-prefix "(out) " $1))
-    (-> msg
-      (a.get :out)
-      (string.gsub "^%s*" "")
-      (string.gsub "%s+%d+%s*$" "")
-      (str.split "\n"))))
+  (->> (-> msg
+           (a.get :out)
+           (string.gsub "^%s*" "")
+           (string.gsub "%s+%d+%s*$" "")
+           (str.split "\n"))
+       (a.map
+         (fn [line]
+           (if
+             (not (cfg [:value_prefix_pattern]))
+             line
+
+             (string.match line (cfg [:value_prefix_pattern]))
+             (string.gsub line (cfg [:value_prefix_pattern]) "")
+
+             (.. comment-prefix "(out) " line))))
+       (a.filter #(not (str.blank? $1)))))
 
 (defn eval-str [opts]
   (with-repl-or-warn

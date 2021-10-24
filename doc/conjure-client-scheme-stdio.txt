@@ -72,4 +72,14 @@ All configuration can be set as described in |conjure-configuration|.
             marker as the result.
             Default: `"[%]e][=r]r?o?r?> "`
 
+                          *g:conjure#client#scheme#stdio#value_prefix_pattern*
+`g:conjure#client#scheme#stdio#value_prefix_pattern`
+            Lua pattern to identify a value output as opposed to a printed,
+            non-code, string. This is mostly only useful with `mit-scheme`
+            which prefixes values with `Value:`, for other REPLs (such as
+            Chez) you should either adapt this pattern to their value string
+            or set it to `v:false` to turn it off entirely and treat
+            everything as a value.
+            Default: `"^;Value: "`
+
 vim:tw=78:sw=2:ts=2:ft=help:norl:et:listchars=

@@ -21,7 +21,7 @@ _2amodule_locals_2a["nvim"] = nvim
 _2amodule_locals_2a["stdio"] = stdio
 _2amodule_locals_2a["str"] = str
 _2amodule_locals_2a["_"] = _
-config.merge({client = {scheme = {stdio = {mapping = {start = "cs", stop = "cS"}, command = "mit-scheme", prompt_pattern = "[%]e][=r]r?o?r?> "}}}})
+config.merge({client = {scheme = {stdio = {mapping = {start = "cs", stop = "cS"}, command = "mit-scheme", prompt_pattern = "[%]e][=r]r?o?r?> ", value_prefix_pattern = "^;Value: "}}}})
 local cfg = config["get-in-fn"]({"client", "scheme", "stdio"})
 do end (_2amodule_locals_2a)["cfg"] = cfg
 local state
@@ -52,25 +52,30 @@ end
 _2amodule_2a["unbatch"] = unbatch
 local function format_msg(msg)
   local function _4_(_241)
-    if string.match(_241, "^;Value: ") then
-      return string.gsub(_241, "^;Value: ", "")
+    return not str["blank?"](_241)
+  end
+  local function _5_(line)
+    if not cfg({"value_prefix_pattern"}) then
+      return line
+    elseif string.match(line, cfg({"value_prefix_pattern"})) then
+      return string.gsub(line, cfg({"value_prefix_pattern"}), "")
     else
-      return (comment_prefix .. "(out) " .. _241)
+      return (comment_prefix .. "(out) " .. line)
     end
   end
-  return a.map(_4_, str.split(string.gsub(string.gsub(a.get(msg, "out"), "^%s*", ""), "%s+%d+%s*$", ""), "\n"))
+  return a.filter(_4_, a.map(_5_, str.split(string.gsub(string.gsub(a.get(msg, "out"), "^%s*", ""), "%s+%d+%s*$", ""), "\n")))
 end
 _2amodule_2a["format-msg"] = format_msg
 local function eval_str(opts)
-  local function _6_(repl)
-    local function _7_(msgs)
+  local function _7_(repl)
+    local function _8_(msgs)
       local msgs0 = format_msg(unbatch(msgs))
       opts["on-result"](a.last(msgs0))
       return log.append(msgs0)
     end
-    return repl.send((opts.code .. "\n"), _7_, {["batch?"] = true})
+    return repl.send((opts.code .. "\n"), _8_, {["batch?"] = true})
   end
-  return with_repl_or_warn(_6_)
+  return with_repl_or_warn(_7_)
 end
 _2amodule_2a["eval-str"] = eval_str
 local function eval_file(opts)
@@ -96,13 +101,13 @@ local function start()
   if state("repl") then
     return log.append({(comment_prefix .. "Can't start, REPL is already running."), (comment_prefix .. "Stop the REPL with " .. config["get-in"]({"mapping", "prefix"}) .. cfg({"mapping", "stop"}))}, {["break?"] = true})
   else
-    local function _9_()
+    local function _10_()
       return display_repl_status("started")
     end
-    local function _10_(err)
+    local function _11_(err)
       return display_repl_status(err)
     end
-    local function _11_(code, signal)
+    local function _12_(code, signal)
       if (("number" == type(code)) and (code > 0)) then
         log.append({(comment_prefix .. "process exited with code " .. code)})
       else
@@ -113,10 +118,10 @@ local function start()
       end
       return stop()
     end
-    local function _14_(msg)
+    local function _15_(msg)
       return log.append(format_msg(msg))
     end
-    return a.assoc(state(), "repl", stdio.start({["prompt-pattern"] = cfg({"prompt_pattern"}), cmd = cfg({"command"}), ["on-success"] = _9_, ["on-error"] = _10_, ["on-exit"] = _11_, ["on-stray-output"] = _14_}))
+    return a.assoc(state(), "repl", stdio.start({["prompt-pattern"] = cfg({"prompt_pattern"}), cmd = cfg({"command"}), ["on-success"] = _10_, ["on-error"] = _11_, ["on-exit"] = _12_, ["on-stray-output"] = _15_}))
   end
 end
 _2amodule_2a["start"] = start
