@@ -43,6 +43,7 @@ _2amodule_2a["clean-error"] = clean_error
 local function repl(opts)
   local eval_values = nil
   local fnl = fennel.impl()
+  local opts0 = (opts or {})
   local co
   local function _4_()
     local function _5_(_241)
@@ -50,15 +51,16 @@ local function repl(opts)
       return nil
     end
     local function _6_(_241, _242)
-      return (opts["error-handler"] or nvim.err_writeln)(clean_error(_242))
+      return (opts0["error-handler"] or nvim.err_writeln)(clean_error(_242))
     end
-    return fnl.repl(a.merge({compilerEnv = _G, pp = a.identity, readChunk = coroutine.yield, onValues = _5_, onError = _6_}, opts))
+    return fnl.repl(a.merge({compilerEnv = _G, pp = a.identity, readChunk = coroutine.yield, onValues = _5_, onError = _6_}, opts0))
   end
   co = coroutine.create(_4_)
   coroutine.resume(co)
-  coroutine.resume(co, compile["macros-prefix"](nil, opts))
+  coroutine.resume(co, compile["macros-prefix"](nil, opts0))
   eval_values = nil
   local function _7_(code)
+    ANISEED_STATIC_MODULES = false
     coroutine.resume(co, code)
     local prev_eval_values = eval_values
     eval_values = nil
