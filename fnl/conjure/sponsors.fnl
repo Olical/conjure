@@ -16,6 +16,7 @@
 "frenchy64"
 "jkrasnay"
 "ketansrivastav"
+"kevinkrouse"
 "lucaslollobrigida"
 "mamapitufo"
 "martinklepsch"
