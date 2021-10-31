@@ -20,7 +20,8 @@ local function ks__3evar(ks)
 end
 _2amodule_locals_2a["ks->var"] = ks__3evar
 local function get_in(ks)
-  local v = a.get(nvim.g, ks__3evar(ks))
+  local key = ks__3evar(ks)
+  local v = (a.get(nvim.b, key) or a.get(nvim.g, key))
   if (a["table?"](v) and a.get(v, vim.type_idx) and a.get(v, vim.val_idx)) then
     return a.get(v, vim.val_idx)
   else

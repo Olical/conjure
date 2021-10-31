@@ -118,7 +118,8 @@
                 (str.join ["Error from g:conjure#eval#gsubs: " name " - " val-or-err]))
               code))))
       code
-      (a.kv-pairs nvim.g.conjure#eval#gsubs))))
+      (a.kv-pairs (or nvim.b.conjure#eval#gsubs
+                      nvim.g.conjure#eval#gsubs)))))
 
 (defn eval-str [opts]
   (highlight-range opts.range)
