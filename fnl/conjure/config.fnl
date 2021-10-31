@@ -7,7 +7,8 @@
   (.. "conjure#" (str.join "#" ks)))
 
 (defn get-in [ks]
-  (let [v (a.get nvim.g (ks->var ks))]
+  (let [key (ks->var ks)
+        v (or (a.get nvim.b key) (a.get nvim.g key))]
     (if (and (a.table? v)
              (a.get v vim.type_idx)
              (a.get v vim.val_idx))

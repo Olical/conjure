@@ -127,7 +127,7 @@ local function apply_gsubs(code)
         return code0
       end
     end
-    return a.reduce(_14_, code, a["kv-pairs"](nvim.g["conjure#eval#gsubs"]))
+    return a.reduce(_14_, code, a["kv-pairs"]((nvim.b["conjure#eval#gsubs"] or nvim.g["conjure#eval#gsubs"])))
   else
     return nil
   end
