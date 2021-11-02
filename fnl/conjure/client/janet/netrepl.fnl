@@ -48,9 +48,11 @@
       (display-conn-status :disconnected)
       (a.assoc (state) :conn nil))))
 
-(defn- send [msg cb]
+(defn- send [msg cb row col file-path]
   (with-conn-or-warn
     (fn [conn]
+      (remote.send conn (.. "\xFF(parser/where (dyn :parser) " row " " col ")") (fn [msg] nil))
+      ; (remote.send conn (.. "\xFEsource " "\"/path/to/file.janet\"") cb)
       (remote.send conn msg cb))))
 
 (defn connect [opts]
@@ -97,7 +99,10 @@
           ;; so that "eval and replace form" won't end up inserting ANSI codes.
           (opts.on-result (text.strip-ansi-escape-sequences clean)))
         (when (not opts.passive?)
-          (log.append (text.split-lines clean)))))))
+          (log.append (text.split-lines clean)))))
+    (or (a.get-in opts.range [:start 1]) 1)
+    (or (a.get-in opts.range [:start 2]) 1)
+    opts.file-path))
 
 (defn doc-str [opts]
   (try-ensure-conn)
