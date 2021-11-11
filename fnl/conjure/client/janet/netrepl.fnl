@@ -51,9 +51,9 @@
 (defn- send [msg cb row col file-path]
   (with-conn-or-warn
     (fn [conn]
-      (remote.send conn (.. "\xFF(parser/where (dyn :parser) " row " " col ")") (fn [msg] nil))
-      ; (remote.send conn (.. "\xFEsource " "\"/path/to/file.janet\"") cb)
-      (remote.send conn msg cb))))
+      (remote.send conn (.. "\xFF(parser/where (dyn :parser) " row " " col ")"))
+      (remote.send conn (.. "\xFEsource \"" file-path "\"") nil true)
+      (remote.send conn msg cb true))))
 
 (defn connect [opts]
   (let [opts (or opts {})

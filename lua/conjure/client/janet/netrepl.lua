@@ -67,11 +67,9 @@ end
 _2amodule_2a["disconnect"] = disconnect
 local function send(msg, cb, row, col, file_path)
   local function _6_(conn)
-    local function _7_(msg0)
-      return nil
-    end
-    remote.send(conn, ("\255(parser/where (dyn :parser) " .. row .. " " .. col .. ")"), _7_)
-    return remote.send(conn, msg, cb)
+    remote.send(conn, ("\255(parser/where (dyn :parser) " .. row .. " " .. col .. ")"))
+    remote.send(conn, ("\254source \"" .. file_path .. "\""), nil, true)
+    return remote.send(conn, msg, cb, true)
   end
   return with_conn_or_warn(_6_)
 end
@@ -84,21 +82,21 @@ local function connect(opts)
     disconnect()
   else
   end
-  local function _9_(err)
+  local function _8_(err)
     display_conn_status(err)
     return disconnect()
   end
-  local function _10_()
+  local function _9_()
     return display_conn_status("connected")
   end
-  local function _11_(err)
+  local function _10_(err)
     if err then
       return display_conn_status(err)
     else
       return disconnect()
     end
   end
-  return a.assoc(state(), "conn", remote.connect({host = host, port = port, ["on-failure"] = _9_, ["on-success"] = _10_, ["on-error"] = _11_}))
+  return a.assoc(state(), "conn", remote.connect({host = host, port = port, ["on-failure"] = _8_, ["on-success"] = _9_, ["on-error"] = _10_}))
 end
 _2amodule_2a["connect"] = connect
 local function try_ensure_conn()
@@ -111,7 +109,7 @@ end
 _2amodule_locals_2a["try-ensure-conn"] = try_ensure_conn
 local function eval_str(opts)
   try_ensure_conn()
-  local function _14_(msg)
+  local function _13_(msg)
     local clean = text["trim-last-newline"](msg)
     if opts["on-result"] then
       opts["on-result"](text["strip-ansi-escape-sequences"](clean))
@@ -123,15 +121,15 @@ local function eval_str(opts)
       return nil
     end
   end
-  return send((opts.code .. "\n"), _14_, (a["get-in"](opts.range, {"start", 1}) or 1), (a["get-in"](opts.range, {"start", 2}) or 1), opts["file-path"])
+  return send((opts.code .. "\n"), _13_, (a["get-in"](opts.range, {"start", 1}) or 1), (a["get-in"](opts.range, {"start", 2}) or 1), opts["file-path"])
 end
 _2amodule_2a["eval-str"] = eval_str
 local function doc_str(opts)
   try_ensure_conn()
-  local function _17_(_241)
+  local function _16_(_241)
     return ("(doc " .. _241 .. ")")
   end
-  return eval_str(a.update(opts, "code", _17_))
+  return eval_str(a.update(opts, "code", _16_))
 end
 _2amodule_2a["doc-str"] = doc_str
 local function eval_file(opts)
