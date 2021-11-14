@@ -42,7 +42,7 @@
 
                       (let [{: results : ok?} (eval! "(ohno)")]
                         (t.= false ok?)
-                        (t.= (contains? (a.first results) "attempt to call global 'ohno' (a nil value)")))
+                        (t.= (contains? (a.first results) "unknown identifier in strict mode: ohno")))
 
 
                       (let [{: results : ok?} (eval! "(())")]
@@ -80,6 +80,6 @@
   (t.pr= {:raw [10] :result "10"} (eval! "(hi)"))
 
   (let [{: result : raw} (eval! "(ohno)")]
-    (t.= (contains? result "attempt to call global 'ohno' (a nil value)")))
+    (t.= (contains? result "unknown identifier in strict mode: ohno")))
 
   (tset package.loaded :foo.bar nil))

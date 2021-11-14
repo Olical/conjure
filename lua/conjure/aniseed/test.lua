@@ -30,13 +30,14 @@ local function display_results(results, prefix)
     local tests_passed = _let_3_["tests-passed"]
     local assertions = _let_3_["assertions"]
     local assertions_passed = _let_3_["assertions-passed"]
-    local _4_
-    if ok_3f(results) then
-      _4_ = "OK"
-    else
-      _4_ = "FAILED"
+    local function _4_()
+      if ok_3f(results) then
+        return "OK"
+      else
+        return "FAILED"
+      end
     end
-    a.println((prefix .. " " .. _4_ .. " " .. tests_passed .. "/" .. tests .. " tests and " .. assertions_passed .. "/" .. assertions .. " assertions passed"))
+    a.println((prefix .. " " .. _4_() .. " " .. tests_passed .. "/" .. tests .. " tests and " .. assertions_passed .. "/" .. assertions .. " assertions passed"))
   end
   return results
 end
@@ -52,30 +53,30 @@ local function run(mod_name)
       do
         local prefix = ("[" .. mod_name .. "/" .. label .. "]")
         local fail
-        local function _6_(desc, ...)
+        local function _5_(desc, ...)
           test_failed = true
-          local function _7_(...)
+          local function _6_(...)
             if desc then
               return (" (" .. desc .. ")")
             else
               return ""
             end
           end
-          return a.println((str.join({prefix, " ", ...}) .. _7_(...)))
+          return a.println((str.join({prefix, " ", ...}) .. _6_(...)))
         end
-        fail = _6_
+        fail = _5_
         local begin
-        local function _8_()
+        local function _7_()
           return a.update(results, "assertions", a.inc)
         end
-        begin = _8_
+        begin = _7_
         local pass
-        local function _9_()
+        local function _8_()
           return a.update(results, "assertions-passed", a.inc)
         end
-        pass = _9_
+        pass = _8_
         local t
-        local function _10_(e, r, desc)
+        local function _9_(e, r, desc)
           begin()
           if (e == r) then
             return pass()
@@ -83,7 +84,7 @@ local function run(mod_name)
             return fail(desc, "Expected '", a["pr-str"](e), "' but received '", a["pr-str"](r), "'")
           end
         end
-        local function _12_(e, r, desc)
+        local function _11_(e, r, desc)
           begin()
           local se = a["pr-str"](e)
           local sr = a["pr-str"](r)
@@ -93,7 +94,7 @@ local function run(mod_name)
             return fail(desc, "Expected (with pr) '", se, "' but received '", sr, "'")
           end
         end
-        local function _14_(r, desc)
+        local function _13_(r, desc)
           begin()
           if r then
             return pass()
@@ -101,14 +102,14 @@ local function run(mod_name)
             return fail(desc, "Expected truthy result but received '", a["pr-str"](r), "'")
           end
         end
-        t = {["="] = _10_, ["pr="] = _12_, ["ok?"] = _14_}
-        local _16_, _17_ = nil, nil
-        local function _18_()
+        t = {["="] = _9_, ["pr="] = _11_, ["ok?"] = _13_}
+        local _15_, _16_ = nil, nil
+        local function _17_()
           return f(t)
         end
-        _16_, _17_ = pcall(_18_)
-        if ((_16_ == false) and (nil ~= _17_)) then
-          local err = _17_
+        _15_, _16_ = pcall(_17_)
+        if ((_15_ == false) and (nil ~= _16_)) then
+          local err = _16_
           fail("Exception: ", err)
         else
         end
@@ -125,22 +126,22 @@ local function run(mod_name)
 end
 _2amodule_2a["run"] = run
 local function run_all()
-  local function _22_(totals, results)
+  local function _21_(totals, results)
     for k, v in pairs(results) do
       totals[k] = (v + totals[k])
     end
     return totals
   end
-  return display_results(a.reduce(_22_, {tests = 0, ["tests-passed"] = 0, assertions = 0, ["assertions-passed"] = 0}, a.filter(a["table?"], a.map(run, a.keys(_G.package.loaded)))), "[total]")
+  return display_results(a.reduce(_21_, {tests = 0, ["tests-passed"] = 0, assertions = 0, ["assertions-passed"] = 0}, a.filter(a["table?"], a.map(run, a.keys(_G.package.loaded)))), "[total]")
 end
 _2amodule_2a["run-all"] = run_all
 local function suite()
   do
     local sep = fs["path-sep"]
-    local function _23_(path)
+    local function _22_(path)
       return require(string.gsub(string.match(path, ("^test" .. sep .. "fnl" .. sep .. "(.-).fnl$")), sep, "."))
     end
-    a["run!"](_23_, nvim.fn.globpath(("test" .. sep .. "fnl"), "**/*-test.fnl", false, true))
+    a["run!"](_22_, nvim.fn.globpath(("test" .. sep .. "fnl"), "**/*-test.fnl", false, true))
   end
   if ok_3f(run_all()) then
     return nvim.ex.q()

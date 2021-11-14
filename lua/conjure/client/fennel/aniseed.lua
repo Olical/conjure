@@ -116,30 +116,31 @@ local function display_result(opts)
     local ok_3f = _let_8_["ok?"]
     local results = _let_8_["results"]
     local result_str
-    local _9_
-    if ok_3f then
-      if not a["empty?"](results) then
-        _9_ = str.join("\n", a.map(view.serialise, results))
+    local function _10_()
+      if ok_3f then
+        if not a["empty?"](results) then
+          return str.join("\n", a.map(view.serialise, results))
+        else
+          return nil
+        end
       else
-        _9_ = nil
+        return a.first(results)
       end
-    else
-      _9_ = a.first(results)
     end
-    result_str = (_9_ or "nil")
+    result_str = (_10_() or "nil")
     local result_lines = str.split(result_str, "\n")
     if not opts["passive?"] then
-      local function _13_()
+      local function _12_()
         if ok_3f then
           return result_lines
         else
-          local function _12_(_241)
+          local function _11_(_241)
             return ("; " .. _241)
           end
-          return a.map(_12_, result_lines)
+          return a.map(_11_, result_lines)
         end
       end
-      log.append(_13_())
+      log.append(_12_())
     else
     end
     if opts["on-result-raw"] then
@@ -157,29 +158,29 @@ local function display_result(opts)
 end
 _2amodule_2a["display-result"] = display_result
 local function eval_str(opts)
-  local function _18_()
+  local function _17_()
     local out
-    local function _19_()
+    local function _18_()
       if (cfg({"use_metadata"}) and not package.loaded.fennel) then
         package.loaded.fennel = anic("fennel", "impl")
       else
       end
       local eval_21 = repl({filename = opts["file-path"], moduleName = module_name(opts.context, opts["file-path"]), useMetadata = cfg({"use_metadata"}), ["fresh?"] = (("file" == opts.origin) or ("buf" == opts.origin) or text["starts-with"](opts.code, ("(module " .. (opts.context or ""))))})
-      local _let_21_ = eval_21((opts.code .. "\n"))
-      local ok_3f = _let_21_["ok?"]
-      local results = _let_21_["results"]
+      local _let_20_ = eval_21((opts.code .. "\n"))
+      local ok_3f = _let_20_["ok?"]
+      local results = _let_20_["results"]
       opts["ok?"] = ok_3f
       opts.results = results
       return nil
     end
-    out = anic("nu", "with-out-str", _19_)
+    out = anic("nu", "with-out-str", _18_)
     if not a["empty?"](out) then
       log.append(text["prefixed-lines"](text["trim-last-newline"](out), "; (out) "))
     else
     end
     return display_result(opts)
   end
-  return client.wrap(_18_)()
+  return client.wrap(_17_)()
 end
 _2amodule_2a["eval-str"] = eval_str
 local function doc_str(opts)
@@ -199,22 +200,22 @@ _2amodule_2a["eval-file"] = eval_file
 local function wrapped_test(req_lines, f)
   log.append(req_lines, {["break?"] = true})
   local res = anic("nu", "with-out-str", f)
-  local _24_
+  local _23_
   if ("" == res) then
-    _24_ = "No results."
+    _23_ = "No results."
   else
-    _24_ = res
+    _23_ = res
   end
-  return log.append(text["prefixed-lines"](_24_, "; "))
+  return log.append(text["prefixed-lines"](_23_, "; "))
 end
 _2amodule_locals_2a["wrapped-test"] = wrapped_test
 local function run_buf_tests()
   local c = extract.context()
   if c then
-    local function _26_()
+    local function _25_()
       return anic("test", "run", c)
     end
-    return wrapped_test({("; run-buf-tests (" .. c .. ")")}, _26_)
+    return wrapped_test({("; run-buf-tests (" .. c .. ")")}, _25_)
   else
     return nil
   end
@@ -233,19 +234,19 @@ end
 _2amodule_2a["on-filetype"] = on_filetype
 local function value__3ecompletions(x)
   if ("table" == type(x)) then
-    local function _30_(_28_)
-      local _arg_29_ = _28_
-      local k = _arg_29_[1]
-      local v = _arg_29_[2]
+    local function _29_(_27_)
+      local _arg_28_ = _27_
+      local k = _arg_28_[1]
+      local v = _arg_28_[2]
       return {word = k, kind = type(v), menu = nil, info = nil}
     end
-    local function _33_(_31_)
-      local _arg_32_ = _31_
-      local k = _arg_32_[1]
-      local v = _arg_32_[2]
+    local function _32_(_30_)
+      local _arg_31_ = _30_
+      local k = _arg_31_[1]
+      local v = _arg_31_[2]
       return not text["starts-with"](k, "aniseed/")
     end
-    local function _34_()
+    local function _33_()
       if x["aniseed/autoload-enabled?"] then
         do local _ = x["trick-aniseed-into-loading-the-module"] end
         return x["aniseed/autoload-module"]
@@ -253,7 +254,7 @@ local function value__3ecompletions(x)
         return x
       end
     end
-    return a.map(_30_, a.filter(_33_, a["kv-pairs"](_34_())))
+    return a.map(_29_, a.filter(_32_, a["kv-pairs"](_33_())))
   else
     return nil
   end
@@ -271,10 +272,10 @@ local function completions(opts)
   local locals
   do
     local ok_3f, m = nil, nil
-    local function _37_()
+    local function _36_()
       return require(opts.context)
     end
-    ok_3f, m = pcall(_37_)
+    ok_3f, m = pcall(_36_)
     if ok_3f then
       locals = a.concat(value__3ecompletions(m), value__3ecompletions(a.get(m, "aniseed/locals")), mods)
     else
@@ -282,30 +283,30 @@ local function completions(opts)
     end
   end
   local result_fn
-  local function _39_(results)
+  local function _38_(results)
     local xs = a.first(results)
-    local function _42_()
+    local function _41_()
       if ("table" == type(xs)) then
-        local function _40_(x)
-          local function _41_(_241)
+        local function _39_(x)
+          local function _40_(_241)
             return (opts.prefix .. _241)
           end
-          return a.update(x, "word", _41_)
+          return a.update(x, "word", _40_)
         end
-        return a.concat(a.map(_40_, xs), locals)
+        return a.concat(a.map(_39_, xs), locals)
       else
         return locals
       end
     end
-    return opts.cb(_42_())
+    return opts.cb(_41_())
   end
-  result_fn = _39_
+  result_fn = _38_
   local ok_3f, err_or_res = nil, nil
   if code then
-    local function _43_()
+    local function _42_()
       return eval_str({["file-path"] = opts["file-path"], context = opts.context, code = code, ["passive?"] = true, ["on-result-raw"] = result_fn})
     end
-    ok_3f, err_or_res = pcall(_43_)
+    ok_3f, err_or_res = pcall(_42_)
   else
     ok_3f, err_or_res = nil
   end
