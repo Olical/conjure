@@ -48,10 +48,13 @@
       (display-conn-status :disconnected)
       (a.assoc (state) :conn nil))))
 
-(defn- send [msg cb]
-  (with-conn-or-warn
-    (fn [conn]
-      (remote.send conn msg cb))))
+(defn- send [opts]
+  (let [{: msg : cb : row : col : file-path} opts]
+    (with-conn-or-warn
+      (fn [conn]
+        (remote.send conn (.. "\xFF(parser/where (dyn :parser) " row " " col ")"))
+        (remote.send conn (.. "\xFEsource \"" file-path "\"") nil true)
+        (remote.send conn msg cb true)))))
 
 (defn connect [opts]
   (let [opts (or opts {})
@@ -89,15 +92,18 @@
 (defn eval-str [opts]
   (try-ensure-conn)
   (send
-    (.. opts.code "\n")
-    (fn [msg]
-      (let [clean (text.trim-last-newline msg)]
-        (when opts.on-result
-          ;; ANSI escape trimming happens here AND in log append (if enabled)
-          ;; so that "eval and replace form" won't end up inserting ANSI codes.
-          (opts.on-result (text.strip-ansi-escape-sequences clean)))
-        (when (not opts.passive?)
-          (log.append (text.split-lines clean)))))))
+    {:msg (.. opts.code "\n")
+     :cb (fn [msg]
+           (let [clean (text.trim-last-newline msg)]
+             (when opts.on-result
+               ;; ANSI escape trimming happens here AND in log append (if enabled)
+               ;; so that "eval and replace form" won't end up inserting ANSI codes.
+               (opts.on-result (text.strip-ansi-escape-sequences clean)))
+             (when (not opts.passive?)
+               (log.append (text.split-lines clean)))))
+     :row (a.get-in opts.range [:start 1] 1)
+     :col (a.get-in opts.range [:start 2] 1)
+     :file-path opts.file-path}))
 
 (defn doc-str [opts]
   (try-ensure-conn)

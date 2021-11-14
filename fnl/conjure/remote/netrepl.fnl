@@ -5,10 +5,13 @@
             client conjure.client
             trn conjure.remote.transport.netrepl}})
 
-(defn send [conn msg cb]
-  "Send a message to the given connection, call the callback when a response is received."
+(defn send [conn msg cb prompt?]
+  "Send a message to the given connection, call the callback when a response is received.
+  If a prompt is expected in addition to the response, prompt? should be set to true."
   (log.dbg "send" msg)
   (table.insert conn.queue 1 (or cb false))
+  (when prompt?
+    (table.insert conn.queue 1 false))
   (conn.sock:write (trn.encode msg))
   nil)
 

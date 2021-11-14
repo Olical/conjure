@@ -17,9 +17,13 @@ _2amodule_locals_2a["client"] = client
 _2amodule_locals_2a["log"] = log
 _2amodule_locals_2a["net"] = net
 _2amodule_locals_2a["trn"] = trn
-local function send(conn, msg, cb)
+local function send(conn, msg, cb, prompt_3f)
   log.dbg("send", msg)
   table.insert(conn.queue, 1, (cb or false))
+  if prompt_3f then
+    table.insert(conn.queue, 1, false)
+  else
+  end
   do end (conn.sock):write(trn.encode(msg))
   return nil
 end
@@ -30,7 +34,7 @@ local function connect(opts)
     if (err or not chunk) then
       return opts["on-error"](err)
     else
-      local function _1_(msg)
+      local function _2_(msg)
         log.dbg("receive", msg)
         local cb = table.remove(conn.queue)
         if cb then
@@ -39,10 +43,10 @@ local function connect(opts)
           return nil
         end
       end
-      return a["run!"](_1_, conn.decode(chunk))
+      return a["run!"](_2_, conn.decode(chunk))
     end
   end
-  local function _4_(err)
+  local function _5_(err)
     if err then
       return opts["on-failure"](err)
     else
@@ -50,7 +54,7 @@ local function connect(opts)
       return opts["on-success"]()
     end
   end
-  conn = a.merge(conn, net.connect({host = opts.host, port = opts.port, cb = client["schedule-wrap"](_4_)}))
+  conn = a.merge(conn, net.connect({host = opts.host, port = opts.port, cb = client["schedule-wrap"](_5_)}))
   send(conn, (opts.name or "Conjure"))
   return conn
 end
