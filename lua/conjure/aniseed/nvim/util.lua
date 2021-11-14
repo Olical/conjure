@@ -21,25 +21,28 @@ local function fn_bridge(viml_name, mod, lua_name, opts)
   local _let_1_ = (opts or {})
   local range = _let_1_["range"]
   local _return = _let_1_["return"]
-  local _2_
-  if range then
-    _2_ = " range"
-  else
-    _2_ = ""
+  local function _2_()
+    if range then
+      return " range"
+    else
+      return ""
+    end
   end
-  local _4_
-  if (_return ~= false) then
-    _4_ = "return"
-  else
-    _4_ = "call"
+  local function _3_()
+    if (_return ~= false) then
+      return "return"
+    else
+      return "call"
+    end
   end
-  local _6_
-  if range then
-    _6_ = "\" . a:firstline . \", \" . a:lastline . \", "
-  else
-    _6_ = ""
+  local function _4_()
+    if range then
+      return "\" . a:firstline . \", \" . a:lastline . \", "
+    else
+      return ""
+    end
   end
-  return nvim.ex.function_((viml_name .. "(...)" .. _2_ .. "\n          " .. _4_ .. " luaeval(\"require('" .. mod .. "')['" .. lua_name .. "'](" .. _6_ .. "unpack(_A))\", a:000)\n          endfunction"))
+  return nvim.ex.function_((viml_name .. "(...)" .. _2_() .. "\n          " .. _3_() .. " luaeval(\"require('" .. mod .. "')['" .. lua_name .. "'](" .. _4_() .. "unpack(_A))\", a:000)\n          endfunction"))
 end
 _2amodule_2a["fn-bridge"] = fn_bridge
 local function with_out_str(f)

@@ -112,25 +112,23 @@ _2amodule_2a["doc-str"] = doc_str
 local function display_repl_status()
   local repl = state("repl")
   if repl then
-    local _14_
-    do
+    local function _14_()
       local pipename = a["get-in"](repl, {"opts", "pipename"})
       if pipename then
-        _14_ = (pipename .. " ")
+        return (pipename .. " ")
       else
-        _14_ = ""
+        return ""
       end
     end
-    local _16_
-    do
+    local function _16_()
       local err = a.get(repl, "err")
       if err then
-        _16_ = (" " .. err)
+        return (" " .. err)
       else
-        _16_ = ""
+        return ""
       end
     end
-    return log.append({(comment_prefix .. _14_ .. "(" .. repl.status .. _16_ .. ")")}, {["break?"] = true})
+    return log.append({(comment_prefix .. _14_() .. "(" .. repl.status .. _16_() .. ")")}, {["break?"] = true})
   else
     return nil
   end

@@ -27,13 +27,14 @@ local function macros_prefix(code, opts)
       filename = _1_
     end
   end
-  local _3_
-  if filename then
-    _3_ = ("\"" .. string.gsub(filename, "\\", "\\\\") .. "\"")
-  else
-    _3_ = "nil"
+  local function _3_()
+    if filename then
+      return ("\"" .. string.gsub(filename, "\\", "\\\\") .. "\"")
+    else
+      return "nil"
+    end
   end
-  return ("(local *file* " .. _3_ .. ")" .. "(require-macros \"" .. macros_module .. "\")\n" .. (code or ""))
+  return ("(local *file* " .. _3_() .. ")" .. "(require-macros \"" .. macros_module .. "\")\n" .. (code or ""))
 end
 _2amodule_2a["macros-prefix"] = macros_prefix
 local marker_prefix = "ANISEED_"
@@ -45,20 +46,20 @@ do end (_2amodule_locals_2a)["delete-marker-pat"] = delete_marker_pat
 local function str(code, opts)
   ANISEED_STATIC_MODULES = (true == a.get(opts, "static?"))
   local fnl = fennel.impl()
-  local function _5_()
+  local function _4_()
     return string.gsub(string.gsub(fnl.compileString(macros_prefix(code, opts), a["merge!"]({allowedGlobals = false, compilerEnv = _G}, opts)), (delete_marker_pat .. "\n"), "\n"), (delete_marker_pat .. "$"), "")
   end
-  return xpcall(_5_, fnl.traceback)
+  return xpcall(_4_, fnl.traceback)
 end
 _2amodule_2a["str"] = str
 local function file(src, dest, opts)
   local code = a.slurp(src)
-  local _6_, _7_ = str(code, a["merge!"]({filename = src, ["static?"] = true}, opts))
-  if ((_6_ == false) and (nil ~= _7_)) then
-    local err = _7_
+  local _5_, _6_ = str(code, a["merge!"]({filename = src, ["static?"] = true}, opts))
+  if ((_5_ == false) and (nil ~= _6_)) then
+    local err = _6_
     return nvim.err_writeln(err)
-  elseif ((_6_ == true) and (nil ~= _7_)) then
-    local result = _7_
+  elseif ((_5_ == true) and (nil ~= _6_)) then
+    local result = _6_
     fs.mkdirp(fs.basename(dest))
     return a.spit(dest, result)
   else

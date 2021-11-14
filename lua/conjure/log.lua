@@ -366,13 +366,14 @@ end
 _2amodule_2a["append"] = append
 local function create_win(cmd)
   local buf = upsert_buf()
-  local _50_
-  if config["get-in"]({"log", "botright"}) then
-    _50_ = "botright "
-  else
-    _50_ = ""
+  local function _50_()
+    if config["get-in"]({"log", "botright"}) then
+      return "botright "
+    else
+      return ""
+    end
   end
-  nvim.command(("keepalt " .. _50_ .. cmd .. " " .. buffer.resolve(log_buf_name())))
+  nvim.command(("keepalt " .. _50_() .. cmd .. " " .. buffer.resolve(log_buf_name())))
   nvim.win_set_cursor(0, {nvim.buf_line_count(buf), 0})
   set_win_opts_21(0)
   return buffer.unlist(buf)
@@ -393,13 +394,13 @@ _2amodule_2a["tab"] = tab
 local function close_visible()
   local buf = upsert_buf()
   close_hud()
-  local function _52_(_241)
+  local function _51_(_241)
     return nvim.win_close(_241, true)
   end
-  local function _53_(win)
+  local function _52_(win)
     return (buf == nvim.win_get_buf(win))
   end
-  return a["run!"](_52_, a.filter(_53_, nvim.tabpage_list_wins(0)))
+  return a["run!"](_51_, a.filter(_52_, nvim.tabpage_list_wins(0)))
 end
 _2amodule_2a["close-visible"] = close_visible
 local function dbg(desc, ...)

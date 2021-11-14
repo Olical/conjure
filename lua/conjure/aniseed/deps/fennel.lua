@@ -39,9 +39,7 @@ package.preload["conjure.aniseed.fennel.repl"] = package.preload["conjure.anisee
     return io.write(_521_())
   end
   local save_source = table.concat({"local ___i___ = 1", "while true do", " local name, value = debug.getlocal(1, ___i___)", " if(name and name ~= \"___i___\") then", " ___replLocals___[name] = value", " ___i___ = ___i___ + 1", " else break end end"}, "\n")
-  local function splice_save_locals(env, lua_source, _523_)
-    local _arg_524_ = _523_
-    local unmanglings = _arg_524_["unmanglings"]
+  local function splice_save_locals(env, lua_source)
     local spliced_source = {}
     local bind = "local %s = ___replLocals___['%s']"
     for line in lua_source:gmatch("([^\n]+)\n?") do
@@ -69,14 +67,14 @@ package.preload["conjure.aniseed.fennel.repl"] = package.preload["conjure.anisee
           k0 = k
         end
         if ((#matches < 2000) and (type(k0) == "string") and (input == k0:sub(0, #input)) and (not method_3f or ("function" == type(tbl[k0])))) then
-          local function _527_()
+          local function _525_()
             if method_3f then
               return (prefix .. ":" .. k0)
             else
               return (prefix .. k0)
             end
           end
-          table.insert(matches, _527_())
+          table.insert(matches, _525_())
         else
         end
       end
@@ -128,7 +126,7 @@ package.preload["conjure.aniseed.fennel.repl"] = package.preload["conjure.anisee
     return input:match("^%s*,")
   end
   local function command_docs()
-    local _534_
+    local _532_
     do
       local tbl_14_auto = {}
       local i_15_auto = #tbl_14_auto
@@ -140,18 +138,18 @@ package.preload["conjure.aniseed.fennel.repl"] = package.preload["conjure.anisee
         else
         end
       end
-      _534_ = tbl_14_auto
+      _532_ = tbl_14_auto
     end
-    return table.concat(_534_, "\n")
+    return table.concat(_532_, "\n")
   end
   commands.help = function(_, _0, on_values)
-    return on_values({("Welcome to Fennel.\nThis is the REPL where you can enter code to be evaluated.\nYou can also run these repl commands:\n\n" .. command_docs() .. "\n  ,exit - Leave the repl.\n\nUse (doc something) to see descriptions for individual macros and special forms.\n\nFor more information about the language, see https://fennel-lang.org/reference")})
+    return on_values({("Welcome to Fennel.\nThis is the REPL where you can enter code to be evaluated.\nYou can also run these repl commands:\n\n" .. command_docs() .. "\n  ,exit - Leave the repl.\n\nUse ,doc something to see descriptions for individual macros and special forms.\n\nFor more information about the language, see https://fennel-lang.org/reference")})
   end
   do end (compiler.metadata):set(commands.help, "fnl/docstring", "Show this message.")
   local function reload(module_name, env, on_values, on_error)
-    local _536_, _537_ = pcall(specials["load-code"]("return require(...)", env), module_name)
-    if ((_536_ == true) and (nil ~= _537_)) then
-      local old = _537_
+    local _534_, _535_ = pcall(specials["load-code"]("return require(...)", env), module_name)
+    if ((_534_ == true) and (nil ~= _535_)) then
+      local old = _535_
       local _
       package.loaded[module_name] = nil
       _ = nil
@@ -177,33 +175,33 @@ package.preload["conjure.aniseed.fennel.repl"] = package.preload["conjure.anisee
       else
       end
       return on_values({"ok"})
-    elseif ((_536_ == false) and (nil ~= _537_)) then
-      local msg = _537_
-      local function _542_()
-        local _541_ = msg:gsub("\n.*", "")
-        return _541_
+    elseif ((_534_ == false) and (nil ~= _535_)) then
+      local msg = _535_
+      local function _540_()
+        local _539_ = msg:gsub("\n.*", "")
+        return _539_
       end
-      return on_error("Runtime", _542_())
+      return on_error("Runtime", _540_())
     else
       return nil
     end
   end
   local function run_command(read, on_error, f)
-    local _544_, _545_, _546_ = pcall(read)
-    if ((_544_ == true) and (_545_ == true) and (nil ~= _546_)) then
-      local val = _546_
+    local _542_, _543_, _544_ = pcall(read)
+    if ((_542_ == true) and (_543_ == true) and (nil ~= _544_)) then
+      local val = _544_
       return f(val)
-    elseif (_544_ == false) then
+    elseif (_542_ == false) then
       return on_error("Parse", "Couldn't parse input.")
     else
       return nil
     end
   end
   commands.reload = function(env, read, on_values, on_error)
-    local function _548_(_241)
+    local function _546_(_241)
       return reload(tostring(_241), env, on_values, on_error)
     end
-    return run_command(read, on_error, _548_)
+    return run_command(read, on_error, _546_)
   end
   do end (compiler.metadata):set(commands.reload, "fnl/docstring", "Reload the specified module.")
   commands.reset = function(env, _, on_values)
@@ -212,30 +210,30 @@ package.preload["conjure.aniseed.fennel.repl"] = package.preload["conjure.anisee
   end
   do end (compiler.metadata):set(commands.reset, "fnl/docstring", "Erase all repl-local scope.")
   commands.complete = function(env, read, on_values, on_error, scope, chars)
-    local function _549_()
+    local function _547_()
       return on_values(completer(env, scope, string.char(unpack(chars)):gsub(",complete +", ""):sub(1, -2)))
     end
-    return run_command(read, on_error, _549_)
+    return run_command(read, on_error, _547_)
   end
   do end (compiler.metadata):set(commands.complete, "fnl/docstring", "Print all possible completions for a given input symbol.")
   local function apropos_2a(pattern, tbl, prefix, seen, names)
     for name, subtbl in pairs(tbl) do
       if (("string" == type(name)) and (package ~= subtbl)) then
-        local _550_ = type(subtbl)
-        if (_550_ == "function") then
+        local _548_ = type(subtbl)
+        if (_548_ == "function") then
           if ((prefix .. name)):match(pattern) then
             table.insert(names, (prefix .. name))
           else
           end
-        elseif (_550_ == "table") then
+        elseif (_548_ == "table") then
           if not seen[subtbl] then
-            local _553_
+            local _551_
             do
-              local _552_ = seen
-              _552_[subtbl] = true
-              _553_ = _552_
+              local _550_ = seen
+              _550_[subtbl] = true
+              _551_ = _550_
             end
-            apropos_2a(pattern, subtbl, (prefix .. name:gsub("%.", "/") .. "."), _553_, names)
+            apropos_2a(pattern, subtbl, (prefix .. name:gsub("%.", "/") .. "."), _551_, names)
           else
           end
         else
@@ -260,10 +258,10 @@ package.preload["conjure.aniseed.fennel.repl"] = package.preload["conjure.anisee
     return tbl_14_auto
   end
   commands.apropos = function(_env, read, on_values, on_error, _scope)
-    local function _558_(_241)
+    local function _556_(_241)
       return on_values(apropos(tostring(_241)))
     end
-    return run_command(read, on_error, _558_)
+    return run_command(read, on_error, _556_)
   end
   do end (compiler.metadata):set(commands.apropos, "fnl/docstring", "Print all functions matching a pattern in all loaded modules.")
   local function apropos_follow_path(path)
@@ -284,12 +282,12 @@ package.preload["conjure.aniseed.fennel.repl"] = package.preload["conjure.anisee
     local tgt = package.loaded
     for _, path0 in ipairs(paths) do
       if (nil == tgt) then break end
-      local _561_
+      local _559_
       do
-        local _560_ = path0:gsub("%/", ".")
-        _561_ = _560_
+        local _558_ = path0:gsub("%/", ".")
+        _559_ = _558_
       end
-      tgt = tgt[_561_]
+      tgt = tgt[_559_]
     end
     return tgt
   end
@@ -298,9 +296,9 @@ package.preload["conjure.aniseed.fennel.repl"] = package.preload["conjure.anisee
     for _, path in ipairs(apropos(".*")) do
       local tgt = apropos_follow_path(path)
       if ("function" == type(tgt)) then
-        local _562_ = (compiler.metadata):get(tgt, "fnl/docstring")
-        if (nil ~= _562_) then
-          local docstr = _562_
+        local _560_ = (compiler.metadata):get(tgt, "fnl/docstring")
+        if (nil ~= _560_) then
+          local docstr = _560_
           if docstr:match(pattern) then
             table.insert(names, path)
           else
@@ -313,10 +311,10 @@ package.preload["conjure.aniseed.fennel.repl"] = package.preload["conjure.anisee
     return names
   end
   commands["apropos-doc"] = function(_env, read, on_values, on_error, _scope)
-    local function _566_(_241)
+    local function _564_(_241)
       return on_values(apropos_doc(tostring(_241)))
     end
-    return run_command(read, on_error, _566_)
+    return run_command(read, on_error, _564_)
   end
   do end (compiler.metadata):set(commands["apropos-doc"], "fnl/docstring", "Print all functions that match the pattern in their docs")
   local function apropos_show_docs(on_values, pattern)
@@ -330,19 +328,90 @@ package.preload["conjure.aniseed.fennel.repl"] = package.preload["conjure.anisee
     end
     return nil
   end
-  commands["apropos-show-docs"] = function(_env, read, on_values)
-    local function _568_(_241)
+  commands["apropos-show-docs"] = function(_env, read, on_values, on_error)
+    local function _566_(_241)
       return apropos_show_docs(on_values, tostring(_241))
     end
-    return run_command(read, __fnl_global__on_2derror, _568_)
+    return run_command(read, on_error, _566_)
   end
   do end (compiler.metadata):set(commands["apropos-show-docs"], "fnl/docstring", "Print all documentations matching a pattern in function name")
+  local function resolve(identifier, _567_, scope)
+    local _arg_568_ = _567_
+    local ___replLocals___ = _arg_568_["___replLocals___"]
+    local env = _arg_568_
+    local e
+    local function _569_(_241, _242)
+      return (___replLocals___[_242] or env[_242])
+    end
+    e = setmetatable({}, {__index = _569_})
+    local code = compiler["compile-string"](tostring(identifier), {scope = scope})
+    return specials["load-code"](code, e)()
+  end
+  commands.find = function(env, read, on_values, on_error, scope)
+    local function _570_(_241)
+      local _571_
+      do
+        local _572_ = utils["sym?"](_241)
+        if (nil ~= _572_) then
+          local _573_ = resolve(_572_, env, scope)
+          if (nil ~= _573_) then
+            _571_ = debug.getinfo(_573_)
+          else
+            _571_ = _573_
+          end
+        else
+          _571_ = _572_
+        end
+      end
+      if ((_G.type(_571_) == "table") and (nil ~= (_571_).source) and ((_571_).what == "Lua") and (nil ~= (_571_).linedefined) and (nil ~= (_571_).short_src)) then
+        local source = (_571_).source
+        local line = (_571_).linedefined
+        local src = (_571_).short_src
+        local fnlsrc
+        do
+          local t_576_ = compiler.sourcemap
+          if (nil ~= t_576_) then
+            t_576_ = (t_576_)[source]
+          else
+          end
+          if (nil ~= t_576_) then
+            t_576_ = (t_576_)[line]
+          else
+          end
+          if (nil ~= t_576_) then
+            t_576_ = (t_576_)[2]
+          else
+          end
+          fnlsrc = t_576_
+        end
+        return on_values({string.format("%s:%s", src, (fnlsrc or line))})
+      elseif (_571_ == nil) then
+        return on_error("Repl", "Unknown value")
+      elseif true then
+        local _ = _571_
+        return on_error("Repl", "No source info")
+      else
+        return nil
+      end
+    end
+    return run_command(read, on_error, _570_)
+  end
+  do end (compiler.metadata):set(commands.find, "fnl/docstring", "Print the filename and line number for a given function")
+  commands.doc = function(env, read, on_values, on_error, scope)
+    local function _581_(_241)
+      local name = tostring(_241)
+      local target = (scope.specials[name] or scope.macros[name] or resolve(name, env, scope))
+      return on_values({specials.doc(target, name)})
+    end
+    return run_command(read, on_error, _581_)
+  end
+  do end (compiler.metadata):set(commands.doc, "fnl/docstring", "Print the docstring and arglist for a function, macro, or special form.")
   local function load_plugin_commands(plugins)
     for _, plugin in ipairs((plugins or {})) do
       for name, f in pairs(plugin) do
-        local _569_ = name:match("^repl%-command%-(.*)")
-        if (nil ~= _569_) then
-          local cmd_name = _569_
+        local _582_ = name:match("^repl%-command%-(.*)")
+        if (nil ~= _582_) then
+          local cmd_name = _582_
           commands[cmd_name] = (commands[cmd_name] or f)
         else
         end
@@ -353,12 +422,12 @@ package.preload["conjure.aniseed.fennel.repl"] = package.preload["conjure.anisee
   local function run_command_loop(input, read, loop, env, on_values, on_error, scope, chars)
     local command_name = input:match(",([^%s/]+)")
     do
-      local _571_ = commands[command_name]
-      if (nil ~= _571_) then
-        local command = _571_
+      local _584_ = commands[command_name]
+      if (nil ~= _584_) then
+        local command = _584_
         command(env, read, on_values, on_error, scope, chars)
       elseif true then
-        local _ = _571_
+        local _ = _584_
         if ("exit" ~= command_name) then
           on_values({"Unknown command", command_name})
         else
@@ -374,12 +443,7 @@ package.preload["conjure.aniseed.fennel.repl"] = package.preload["conjure.anisee
   end
   local function repl(options)
     local old_root_options = utils.root.options
-    local env
-    if options.env then
-      env = specials["wrap-env"](options.env)
-    else
-      env = setmetatable({}, {__index = (rawget(_G, "_ENV") or _G)})
-    end
+    local env = specials["wrap-env"]((options.env or (rawget(_G, "_ENV") or _G)))
     local save_locals_3f = ((options.saveLocals ~= false) and env.debug and env.debug.getlocal)
     local opts = utils.copy(options)
     local read_chunk = (opts.readChunk or default_read_chunk)
@@ -389,28 +453,28 @@ package.preload["conjure.aniseed.fennel.repl"] = package.preload["conjure.anisee
     local byte_stream, clear_stream = parser.granulate(read_chunk)
     local chars = {}
     local read, reset = nil, nil
-    local function _576_(parser_state)
+    local function _588_(parser_state)
       local c = byte_stream(parser_state)
       table.insert(chars, c)
       return c
     end
-    read, reset = parser.parser(_576_)
+    read, reset = parser.parser(_588_)
     opts.env, opts.scope = env, compiler["make-scope"]()
     opts.useMetadata = (options.useMetadata ~= false)
     if (opts.allowedGlobals == nil) then
-      opts.allowedGlobals = specials["current-global-names"](opts.env)
+      opts.allowedGlobals = specials["current-global-names"](env)
     else
     end
     if opts.registerCompleter then
-      local function _580_()
-        local _578_ = env
-        local _579_ = opts.scope
-        local function _581_(...)
-          return completer(_578_, _579_, ...)
+      local function _592_()
+        local _590_ = env
+        local _591_ = opts.scope
+        local function _593_(...)
+          return completer(_590_, _591_, ...)
         end
-        return _581_
+        return _593_
       end
-      opts.registerCompleter(_580_())
+      opts.registerCompleter(_592_())
     else
     end
     load_plugin_commands(opts.plugins)
@@ -450,43 +514,43 @@ package.preload["conjure.aniseed.fennel.repl"] = package.preload["conjure.anisee
       else
         if parse_ok_3f then
           do
-            local _585_, _586_ = nil, nil
-            local function _588_()
-              local _587_ = opts
-              _587_["source"] = src_string
-              return _587_
+            local _597_, _598_ = nil, nil
+            local function _600_()
+              local _599_ = opts
+              _599_["source"] = src_string
+              return _599_
             end
-            _585_, _586_ = pcall(compiler.compile, x, _588_())
-            if ((_585_ == false) and (nil ~= _586_)) then
-              local msg = _586_
+            _597_, _598_ = pcall(compiler.compile, x, _600_())
+            if ((_597_ == false) and (nil ~= _598_)) then
+              local msg = _598_
               clear_stream()
               on_error("Compile", msg)
-            elseif ((_585_ == true) and (nil ~= _586_)) then
-              local src = _586_
+            elseif ((_597_ == true) and (nil ~= _598_)) then
+              local src = _598_
               local src0
               if save_locals_3f then
                 src0 = splice_save_locals(env, src, opts.scope)
               else
                 src0 = src
               end
-              local _590_, _591_ = pcall(specials["load-code"], src0, env)
-              if ((_590_ == false) and (nil ~= _591_)) then
-                local msg = _591_
+              local _602_, _603_ = pcall(specials["load-code"], src0, env)
+              if ((_602_ == false) and (nil ~= _603_)) then
+                local msg = _603_
                 clear_stream()
                 on_error("Lua Compile", msg, src0)
-              elseif (true and (nil ~= _591_)) then
-                local _ = _590_
-                local chunk = _591_
-                local function _592_()
+              elseif (true and (nil ~= _603_)) then
+                local _ = _602_
+                local chunk = _603_
+                local function _604_()
                   return print_values(chunk())
                 end
-                local function _593_()
-                  local function _594_(...)
+                local function _605_()
+                  local function _606_(...)
                     return on_error("Runtime", ...)
                   end
-                  return _594_
+                  return _606_
                 end
-                xpcall(_592_, _593_())
+                xpcall(_604_, _605_())
               else
               end
             else
@@ -511,14 +575,14 @@ package.preload["conjure.aniseed.fennel.specials"] = package.preload["conjure.an
   local unpack = (table.unpack or _G.unpack)
   local SPECIALS = compiler.scopes.global.specials
   local function wrap_env(env)
-    local function _342_(_, key)
+    local function _345_(_, key)
       if (type(key) == "string") then
         return env[compiler["global-unmangling"](key)]
       else
         return env[key]
       end
     end
-    local function _344_(_, key, value)
+    local function _347_(_, key, value)
       if (type(key) == "string") then
         env[compiler["global-unmangling"](key)] = value
         return nil
@@ -527,42 +591,38 @@ package.preload["conjure.aniseed.fennel.specials"] = package.preload["conjure.an
         return nil
       end
     end
-    local function _346_()
+    local function _349_()
       local function putenv(k, v)
-        local _347_
+        local _350_
         if (type(k) == "string") then
-          _347_ = compiler["global-unmangling"](k)
+          _350_ = compiler["global-unmangling"](k)
         else
-          _347_ = k
+          _350_ = k
         end
-        return _347_, v
+        return _350_, v
       end
       return next, utils.kvmap(env, putenv), nil
     end
-    return setmetatable({}, {__index = _342_, __newindex = _344_, __pairs = _346_})
+    return setmetatable({}, {__index = _345_, __newindex = _347_, __pairs = _349_})
   end
   local function current_global_names(_3fenv)
     local mt
     do
-      local _349_ = getmetatable(_3fenv)
-      local function _350_()
-        local __pairs = (_349_).__pairs
-        return __pairs
-      end
-      if (((_G.type(_349_) == "table") and true) and _350_()) then
-        local __pairs = (_349_).__pairs
+      local _352_ = getmetatable(_3fenv)
+      if ((_G.type(_352_) == "table") and (nil ~= (_352_).__pairs)) then
+        local mtpairs = (_352_).__pairs
         local tbl_11_auto = {}
-        for k, v in __pairs(_3fenv) do
-          local _351_, _352_ = k, v
-          if ((nil ~= _351_) and (nil ~= _352_)) then
-            local k_12_auto = _351_
-            local v_13_auto = _352_
+        for k, v in mtpairs(_3fenv) do
+          local _353_, _354_ = k, v
+          if ((nil ~= _353_) and (nil ~= _354_)) then
+            local k_12_auto = _353_
+            local v_13_auto = _354_
             tbl_11_auto[k_12_auto] = v_13_auto
           else
           end
         end
         mt = tbl_11_auto
-      elseif (_349_ == nil) then
+      elseif (_352_ == nil) then
         mt = (_3fenv or _G)
       else
         mt = nil
@@ -574,9 +634,9 @@ package.preload["conjure.aniseed.fennel.specials"] = package.preload["conjure.an
     local env = (_3fenv or rawget(_G, "_ENV") or _G)
     if (rawget(_G, "setfenv") and rawget(_G, "loadstring")) then
       local f = assert(_G.loadstring(code, _3ffilename))
-      local _355_ = f
-      setfenv(_355_, env)
-      return _355_
+      local _357_ = f
+      setfenv(_357_, env)
+      return _357_
     else
       return assert(load(code, _3ffilename, "t", env))
     end
@@ -589,13 +649,13 @@ package.preload["conjure.aniseed.fennel.specials"] = package.preload["conjure.an
       local mt = getmetatable(tgt)
       if ((type(tgt) == "function") or ((type(mt) == "table") and (type(mt.__call) == "function"))) then
         local arglist = table.concat(((compiler.metadata):get(tgt, "fnl/arglist") or {"#<unknown-arguments>"}), " ")
-        local _357_
+        local _359_
         if (#arglist > 0) then
-          _357_ = " "
+          _359_ = " "
         else
-          _357_ = ""
+          _359_ = ""
         end
-        return string.format("(%s%s%s)\n  %s", name, _357_, arglist, docstring)
+        return string.format("(%s%s%s)\n  %s", name, _359_, arglist, docstring)
       else
         return string.format("%s\n  %s", name, docstring)
       end
@@ -684,7 +744,7 @@ package.preload["conjure.aniseed.fennel.specials"] = package.preload["conjure.an
   doc_special("values", {"..."}, "Return multiple values from a function. Must be in tail position.")
   local function deep_tostring(x, key_3f)
     if utils["sequence?"](x) then
-      local _366_
+      local _368_
       do
         local tbl_14_auto = {}
         local i_15_auto = #tbl_14_auto
@@ -696,11 +756,11 @@ package.preload["conjure.aniseed.fennel.specials"] = package.preload["conjure.an
           else
           end
         end
-        _366_ = tbl_14_auto
+        _368_ = tbl_14_auto
       end
-      return ("[" .. table.concat(_366_, " ") .. "]")
+      return ("[" .. table.concat(_368_, " ") .. "]")
     elseif utils["table?"](x) then
-      local _368_
+      local _370_
       do
         local tbl_14_auto = {}
         local i_15_auto = #tbl_14_auto
@@ -712,9 +772,9 @@ package.preload["conjure.aniseed.fennel.specials"] = package.preload["conjure.an
           else
           end
         end
-        _368_ = tbl_14_auto
+        _370_ = tbl_14_auto
       end
-      return ("{" .. table.concat(_368_, " ") .. "}")
+      return ("{" .. table.concat(_370_, " ") .. "}")
     elseif (key_3f and (type(x) == "string") and x:find("^[-%w?\\^_!$%&*+./@:|<=>]+$")) then
       return (":" .. x)
     elseif (type(x) == "string") then
@@ -726,10 +786,10 @@ package.preload["conjure.aniseed.fennel.specials"] = package.preload["conjure.an
   local function set_fn_metadata(arg_list, docstring, parent, fn_name)
     if utils.root.options.useMetadata then
       local args
-      local function _371_(_241)
+      local function _373_(_241)
         return ("\"%s\""):format(deep_tostring(_241))
       end
-      args = utils.map(arg_list, _371_)
+      args = utils.map(arg_list, _373_)
       local meta_fields = {"\"fnl/arglist\"", ("{" .. table.concat(args, ", ") .. "}")}
       if docstring then
         table.insert(meta_fields, "\"fnl/docstring\"")
@@ -744,13 +804,13 @@ package.preload["conjure.aniseed.fennel.specials"] = package.preload["conjure.an
   end
   local function get_fn_name(ast, scope, fn_name, multi)
     if (fn_name and (fn_name[1] ~= "nil")) then
-      local _374_
+      local _376_
       if not multi then
-        _374_ = compiler["declare-local"](fn_name, {}, scope, ast)
+        _376_ = compiler["declare-local"](fn_name, {}, scope, ast)
       else
-        _374_ = (compiler["symbol-to-expression"](fn_name, scope))[1]
+        _376_ = (compiler["symbol-to-expression"](fn_name, scope))[1]
       end
-      return _374_, not multi, 3
+      return _376_, not multi, 3
     else
       return nil, true, 2
     end
@@ -759,13 +819,13 @@ package.preload["conjure.aniseed.fennel.specials"] = package.preload["conjure.an
     for i = (index + 1), #ast do
       compiler.compile1(ast[i], f_scope, f_chunk, {nval = (((i ~= #ast) and 0) or nil), tail = (i == #ast)})
     end
-    local _377_
+    local _379_
     if local_3f then
-      _377_ = "local function %s(%s)"
+      _379_ = "local function %s(%s)"
     else
-      _377_ = "%s = function(%s)"
+      _379_ = "%s = function(%s)"
     end
-    compiler.emit(parent, string.format(_377_, fn_name, table.concat(arg_name_list, ", ")), ast)
+    compiler.emit(parent, string.format(_379_, fn_name, table.concat(arg_name_list, ", ")), ast)
     compiler.emit(parent, f_chunk, ast)
     compiler.emit(parent, "end", ast)
     set_fn_metadata(arg_list, docstring, parent, fn_name)
@@ -779,9 +839,9 @@ package.preload["conjure.aniseed.fennel.specials"] = package.preload["conjure.an
   SPECIALS.fn = function(ast, scope, parent)
     local f_scope
     do
-      local _379_ = compiler["make-scope"](scope)
-      do end (_379_)["vararg"] = false
-      f_scope = _379_
+      local _381_ = compiler["make-scope"](scope)
+      do end (_381_)["vararg"] = false
+      f_scope = _381_
     end
     local f_chunk = {}
     local fn_sym = utils["sym?"](ast[2])
@@ -821,48 +881,34 @@ package.preload["conjure.aniseed.fennel.specials"] = package.preload["conjure.an
   doc_special("fn", {"name?", "args", "docstring?", "..."}, "Function syntax. May optionally include a name and docstring.\nIf a name is provided, the function will be bound in the current scope.\nWhen called with the wrong number of args, excess args will be discarded\nand lacking args will be nil, use lambda for arity-checked functions.", true)
   SPECIALS.lua = function(ast, _, parent)
     compiler.assert(((#ast == 2) or (#ast == 3)), "expected 1 or 2 arguments", ast)
-    local _384_
+    local _386_
     do
-      local _383_ = utils["sym?"](ast[2])
-      if (nil ~= _383_) then
-        _384_ = tostring(_383_)
+      local _385_ = utils["sym?"](ast[2])
+      if (nil ~= _385_) then
+        _386_ = tostring(_385_)
       else
-        _384_ = _383_
+        _386_ = _385_
       end
     end
-    if ("nil" ~= _384_) then
+    if ("nil" ~= _386_) then
       table.insert(parent, {ast = ast, leaf = tostring(ast[2])})
     else
     end
-    local _388_
+    local _390_
     do
-      local _387_ = utils["sym?"](ast[3])
-      if (nil ~= _387_) then
-        _388_ = tostring(_387_)
+      local _389_ = utils["sym?"](ast[3])
+      if (nil ~= _389_) then
+        _390_ = tostring(_389_)
       else
-        _388_ = _387_
+        _390_ = _389_
       end
     end
-    if ("nil" ~= _388_) then
+    if ("nil" ~= _390_) then
       return tostring(ast[3])
     else
       return nil
     end
   end
-  SPECIALS.doc = function(ast, scope, parent)
-    assert(utils.root.options.useMetadata, "can't look up doc with metadata disabled.")
-    compiler.assert((#ast == 2), "expected one argument", ast)
-    local target = tostring(ast[2])
-    local special_or_macro = (scope.specials[target] or scope.macros[target])
-    if special_or_macro then
-      return ("print(%q)"):format(doc_2a(special_or_macro, target))
-    else
-      local _let_391_ = compiler.compile1(ast[2], scope, parent, {nval = 1})
-      local value = _let_391_[1]
-      return ("print(require('%s').doc(%s, '%s'))"):format((utils.root.options.moduleName or "fennel"), tostring(value), tostring(ast[2]))
-    end
-  end
-  doc_special("doc", {"x"}, "Print the docstring and arglist for a function, macro, or special form.")
   local function dot(ast, scope, parent)
     compiler.assert((1 < #ast), "expected table argument", ast)
     local len = #ast
@@ -1313,50 +1359,47 @@ package.preload["conjure.aniseed.fennel.specials"] = package.preload["conjure.an
     local operands = {}
     local padded_op = (" " .. name .. " ")
     for i = 2, len do
-      local subexprs
-      local _430_
-      if (i < len) then
-        _430_ = 1
+      local subexprs = compiler.compile1(ast[i], scope, parent)
+      if (i == len) then
+        utils.map(subexprs, tostring, operands)
       else
-        _430_ = nil
+        table.insert(operands, tostring(subexprs[1]))
       end
-      subexprs = compiler.compile1(ast[i], scope, parent, {nval = _430_})
-      utils.map(subexprs, tostring, operands)
     end
-    local _432_ = #operands
-    if (_432_ == 0) then
-      local _434_
+    local _431_ = #operands
+    if (_431_ == 0) then
+      local _433_
       do
-        local _433_ = zero_arity
-        compiler.assert(_433_, "Expected more than 0 arguments", ast)
-        _434_ = _433_
+        local _432_ = zero_arity
+        compiler.assert(_432_, "Expected more than 0 arguments", ast)
+        _433_ = _432_
       end
-      return utils.expr(_434_, "literal")
-    elseif (_432_ == 1) then
+      return utils.expr(_433_, "literal")
+    elseif (_431_ == 1) then
       if unary_prefix then
         return ("(" .. unary_prefix .. padded_op .. operands[1] .. ")")
       else
         return operands[1]
       end
     elseif true then
-      local _ = _432_
+      local _ = _431_
       return ("(" .. table.concat(operands, padded_op) .. ")")
     else
       return nil
     end
   end
   local function define_arithmetic_special(name, zero_arity, unary_prefix, _3flua_name)
-    local _440_
+    local _439_
     do
-      local _437_ = (_3flua_name or name)
-      local _438_ = zero_arity
-      local _439_ = unary_prefix
-      local function _441_(...)
-        return arithmetic_special(_437_, _438_, _439_, ...)
+      local _436_ = (_3flua_name or name)
+      local _437_ = zero_arity
+      local _438_ = unary_prefix
+      local function _440_(...)
+        return arithmetic_special(_436_, _437_, _438_, ...)
       end
-      _440_ = _441_
+      _439_ = _440_
     end
-    SPECIALS[name] = _440_
+    SPECIALS[name] = _439_
     return doc_special(name, {"a", "b", "..."}, "Arithmetic operator; works the same as Lua but accepts more arguments.")
   end
   define_arithmetic_special("+", "0")
@@ -1385,13 +1428,13 @@ package.preload["conjure.aniseed.fennel.specials"] = package.preload["conjure.an
       local prefixed_lib_name = ("bit." .. lib_name)
       for i = 2, len do
         local subexprs
-        local _442_
+        local _441_
         if (i ~= len) then
-          _442_ = 1
+          _441_ = 1
         else
-          _442_ = nil
+          _441_ = nil
         end
-        subexprs = compiler.compile1(ast[i], scope, parent, {nval = _442_})
+        subexprs = compiler.compile1(ast[i], scope, parent, {nval = _441_})
         utils.map(subexprs, tostring, operands)
       end
       if (#operands == 1) then
@@ -1410,18 +1453,18 @@ package.preload["conjure.aniseed.fennel.specials"] = package.preload["conjure.an
     end
   end
   local function define_bitop_special(name, zero_arity, unary_prefix, native)
-    local _452_
+    local _451_
     do
-      local _448_ = native
-      local _449_ = name
-      local _450_ = zero_arity
-      local _451_ = unary_prefix
-      local function _453_(...)
-        return bitop_special(_448_, _449_, _450_, _451_, ...)
+      local _447_ = native
+      local _448_ = name
+      local _449_ = zero_arity
+      local _450_ = unary_prefix
+      local function _452_(...)
+        return bitop_special(_447_, _448_, _449_, _450_, ...)
       end
-      _452_ = _453_
+      _451_ = _452_
     end
-    SPECIALS[name] = _452_
+    SPECIALS[name] = _451_
     return nil
   end
   define_bitop_special("lshift", nil, "1", "<<")
@@ -1435,15 +1478,15 @@ package.preload["conjure.aniseed.fennel.specials"] = package.preload["conjure.an
   doc_special("bor", {"x1", "x2", "..."}, "Bitwise OR of any number of arguments.\nOnly works in Lua 5.3+ or LuaJIT with the --use-bit-lib flag.")
   doc_special("bxor", {"x1", "x2", "..."}, "Bitwise XOR of any number of arguments.\nOnly works in Lua 5.3+ or LuaJIT with the --use-bit-lib flag.")
   doc_special("..", {"a", "b", "..."}, "String concatenation operator; works the same as Lua but accepts more arguments.")
-  local function native_comparator(op, _454_, scope, parent)
-    local _arg_455_ = _454_
-    local _ = _arg_455_[1]
-    local lhs_ast = _arg_455_[2]
-    local rhs_ast = _arg_455_[3]
-    local _let_456_ = compiler.compile1(lhs_ast, scope, parent, {nval = 1})
-    local lhs = _let_456_[1]
-    local _let_457_ = compiler.compile1(rhs_ast, scope, parent, {nval = 1})
-    local rhs = _let_457_[1]
+  local function native_comparator(op, _453_, scope, parent)
+    local _arg_454_ = _453_
+    local _ = _arg_454_[1]
+    local lhs_ast = _arg_454_[2]
+    local rhs_ast = _arg_454_[3]
+    local _let_455_ = compiler.compile1(lhs_ast, scope, parent, {nval = 1})
+    local lhs = _let_455_[1]
+    local _let_456_ = compiler.compile1(rhs_ast, scope, parent, {nval = 1})
+    local rhs = _let_456_[1]
     return string.format("(%s %s %s)", tostring(lhs), op, tostring(rhs))
   end
   local function double_eval_protected_comparator(op, chain_op, ast, scope, parent)
@@ -1519,12 +1562,12 @@ package.preload["conjure.aniseed.fennel.specials"] = package.preload["conjure.an
   end
   local safe_require = nil
   local function safe_compiler_env()
-    return {table = utils.copy(table), math = utils.copy(math), string = utils.copy(string), pairs = pairs, ipairs = ipairs, select = select, tostring = tostring, tonumber = tonumber, bit = rawget(_G, "bit"), pcall = pcall, xpcall = xpcall, next = next, print = print, type = type, assert = assert, error = error, setmetatable = setmetatable, getmetatable = safe_getmetatable, require = safe_require, rawlen = rawget(_G, "rawlen"), rawget = rawget, rawset = rawset, rawequal = rawequal}
+    return {table = utils.copy(table), math = utils.copy(math), string = utils.copy(string), pairs = pairs, ipairs = ipairs, select = select, tostring = tostring, tonumber = tonumber, bit = rawget(_G, "bit"), pcall = pcall, xpcall = xpcall, next = next, print = print, type = type, assert = assert, error = error, setmetatable = setmetatable, getmetatable = safe_getmetatable, require = safe_require, rawlen = rawget(_G, "rawlen"), rawget = rawget, rawset = rawset, rawequal = rawequal, _VERSION = _VERSION}
   end
   local function combined_mt_pairs(env)
     local combined = {}
-    local _let_460_ = getmetatable(env)
-    local __index = _let_460_["__index"]
+    local _let_459_ = getmetatable(env)
+    local __index = _let_459_["__index"]
     if ("table" == type(__index)) then
       for k, v in pairs(__index) do
         combined[k] = v
@@ -1539,42 +1582,42 @@ package.preload["conjure.aniseed.fennel.specials"] = package.preload["conjure.an
   local function make_compiler_env(ast, scope, parent, _3fopts)
     local provided
     do
-      local _462_ = (_3fopts or utils.root.options)
-      if ((_G.type(_462_) == "table") and ((_462_)["compiler-env"] == "strict")) then
+      local _461_ = (_3fopts or utils.root.options)
+      if ((_G.type(_461_) == "table") and ((_461_)["compiler-env"] == "strict")) then
         provided = safe_compiler_env()
-      elseif ((_G.type(_462_) == "table") and (nil ~= (_462_).compilerEnv)) then
-        local compilerEnv = (_462_).compilerEnv
+      elseif ((_G.type(_461_) == "table") and (nil ~= (_461_).compilerEnv)) then
+        local compilerEnv = (_461_).compilerEnv
         provided = compilerEnv
-      elseif ((_G.type(_462_) == "table") and (nil ~= (_462_)["compiler-env"])) then
-        local compiler_env = (_462_)["compiler-env"]
+      elseif ((_G.type(_461_) == "table") and (nil ~= (_461_)["compiler-env"])) then
+        local compiler_env = (_461_)["compiler-env"]
         provided = compiler_env
       elseif true then
-        local _ = _462_
+        local _ = _461_
         provided = safe_compiler_env(false)
       else
         provided = nil
       end
     end
     local env
-    local function _464_(base)
+    local function _463_(base)
       return utils.sym(compiler.gensym((compiler.scopes.macro or scope), base))
     end
-    local function _465_()
+    local function _464_()
       return compiler.scopes.macro
     end
-    local function _466_(symbol)
+    local function _465_(symbol)
       compiler.assert(compiler.scopes.macro, "must call from macro", ast)
       return compiler.scopes.macro.manglings[tostring(symbol)]
     end
-    local function _467_(form)
+    local function _466_(form)
       compiler.assert(compiler.scopes.macro, "must call from macro", ast)
       return compiler.macroexpand(form, compiler.scopes.macro)
     end
-    env = {_AST = ast, _CHUNK = parent, _IS_COMPILER = true, _SCOPE = scope, _SPECIALS = compiler.scopes.global.specials, _VARARG = utils.varg(), ["macro-loaded"] = macro_loaded, unpack = unpack, ["assert-compile"] = compiler.assert, list = utils.list, ["list?"] = utils["list?"], ["multi-sym?"] = utils["multi-sym?"], sequence = utils.sequence, ["sequence?"] = utils["sequence?"], sym = utils.sym, ["sym?"] = utils["sym?"], ["table?"] = utils["table?"], ["varg?"] = utils["varg?"], view = view, gensym = _464_, ["get-scope"] = _465_, ["in-scope?"] = _466_, macroexpand = _467_}
+    env = {_AST = ast, _CHUNK = parent, _IS_COMPILER = true, _SCOPE = scope, _SPECIALS = compiler.scopes.global.specials, _VARARG = utils.varg(), ["macro-loaded"] = macro_loaded, unpack = unpack, ["assert-compile"] = compiler.assert, view = view, version = utils.version, metadata = compiler.metadata, list = utils.list, ["list?"] = utils["list?"], ["table?"] = utils["table?"], sequence = utils.sequence, ["sequence?"] = utils["sequence?"], sym = utils.sym, ["sym?"] = utils["sym?"], ["multi-sym?"] = utils["multi-sym?"], comment = utils.comment, ["comment?"] = utils["comment?"], ["varg?"] = utils["varg?"], gensym = _463_, ["get-scope"] = _464_, ["in-scope?"] = _465_, macroexpand = _466_}
     env._G = env
     return setmetatable(env, {__index = provided, __newindex = provided, __pairs = combined_mt_pairs})
   end
-  local function _469_(...)
+  local function _468_(...)
     local tbl_14_auto = {}
     local i_15_auto = #tbl_14_auto
     for c in string.gmatch((package.config or ""), "([^\n]+)") do
@@ -1587,10 +1630,10 @@ package.preload["conjure.aniseed.fennel.specials"] = package.preload["conjure.an
     end
     return tbl_14_auto
   end
-  local _local_468_ = _469_(...)
-  local dirsep = _local_468_[1]
-  local pathsep = _local_468_[2]
-  local pathmark = _local_468_[3]
+  local _local_467_ = _468_(...)
+  local dirsep = _local_467_[1]
+  local pathsep = _local_467_[2]
+  local pathmark = _local_467_[3]
   local pkg_config = {dirsep = (dirsep or "/"), pathmark = (pathmark or ";"), pathsep = (pathsep or "?")}
   local function escapepat(str)
     return string.gsub(str, "[^%w]", "%%%1")
@@ -1603,9 +1646,9 @@ package.preload["conjure.aniseed.fennel.specials"] = package.preload["conjure.an
     local function try_path(path)
       local filename = path:gsub(escapepat(pkg_config.pathmark), no_dot_module)
       local filename2 = path:gsub(escapepat(pkg_config.pathmark), modulename)
-      local _471_ = (io.open(filename) or io.open(filename2))
-      if (nil ~= _471_) then
-        local file = _471_
+      local _470_ = (io.open(filename) or io.open(filename2))
+      if (nil ~= _470_) then
+        local file = _470_
         file:close()
         return filename
       else
@@ -1613,9 +1656,9 @@ package.preload["conjure.aniseed.fennel.specials"] = package.preload["conjure.an
       end
     end
     local function find_in_path(start)
-      local _473_ = fullpath:match(pattern, start)
-      if (nil ~= _473_) then
-        local path = _473_
+      local _472_ = fullpath:match(pattern, start)
+      if (nil ~= _472_) then
+        local path = _472_
         return (try_path(path) or find_in_path((start + #path + 1)))
       else
         return nil
@@ -1624,61 +1667,61 @@ package.preload["conjure.aniseed.fennel.specials"] = package.preload["conjure.an
     return find_in_path(1)
   end
   local function make_searcher(_3foptions)
-    local function _475_(module_name)
+    local function _474_(module_name)
       local opts = utils.copy(utils.root.options)
       for k, v in pairs((_3foptions or {})) do
         opts[k] = v
       end
       opts["module-name"] = module_name
-      local _476_ = search_module(module_name)
-      if (nil ~= _476_) then
-        local filename = _476_
-        local _479_
+      local _475_ = search_module(module_name)
+      if (nil ~= _475_) then
+        local filename = _475_
+        local _478_
         do
-          local _477_ = filename
-          local _478_ = opts
-          local function _480_(...)
-            return utils["fennel-module"].dofile(_477_, _478_, ...)
+          local _476_ = filename
+          local _477_ = opts
+          local function _479_(...)
+            return utils["fennel-module"].dofile(_476_, _477_, ...)
           end
-          _479_ = _480_
+          _478_ = _479_
         end
-        return _479_, filename
+        return _478_, filename
       else
         return nil
       end
     end
-    return _475_
+    return _474_
   end
   local function fennel_macro_searcher(module_name)
     local opts
     do
-      local _482_ = utils.copy(utils.root.options)
-      do end (_482_)["env"] = "_COMPILER"
-      _482_["requireAsInclude"] = false
-      _482_["allowedGlobals"] = nil
-      opts = _482_
+      local _481_ = utils.copy(utils.root.options)
+      do end (_481_)["env"] = "_COMPILER"
+      _481_["requireAsInclude"] = false
+      _481_["allowedGlobals"] = nil
+      opts = _481_
     end
-    local _483_ = search_module(module_name, utils["fennel-module"]["macro-path"])
-    if (nil ~= _483_) then
-      local filename = _483_
-      local _486_
+    local _482_ = search_module(module_name, utils["fennel-module"]["macro-path"])
+    if (nil ~= _482_) then
+      local filename = _482_
+      local _485_
       do
-        local _484_ = filename
-        local _485_ = opts
-        local function _487_(...)
-          return utils["fennel-module"].dofile(_484_, _485_, ...)
+        local _483_ = filename
+        local _484_ = opts
+        local function _486_(...)
+          return utils["fennel-module"].dofile(_483_, _484_, ...)
         end
-        _486_ = _487_
+        _485_ = _486_
       end
-      return _486_, filename
+      return _485_, filename
     else
       return nil
     end
   end
   local function lua_macro_searcher(module_name)
-    local _489_ = search_module(module_name, package.path)
-    if (nil ~= _489_) then
-      local filename = _489_
+    local _488_ = search_module(module_name, package.path)
+    if (nil ~= _488_) then
+      local filename = _488_
       local code
       do
         local f = io.open(filename)
@@ -1690,10 +1733,10 @@ package.preload["conjure.aniseed.fennel.specials"] = package.preload["conjure.an
             return error(..., 0)
           end
         end
-        local function _491_()
+        local function _490_()
           return assert(f:read("*a"))
         end
-        code = close_handlers_8_auto(_G.xpcall(_491_, (package.loaded.fennel or debug).traceback))
+        code = close_handlers_8_auto(_G.xpcall(_490_, (package.loaded.fennel or debug).traceback))
       end
       local chunk = load_code(code, make_compiler_env(), filename)
       return chunk, filename
@@ -1703,16 +1746,16 @@ package.preload["conjure.aniseed.fennel.specials"] = package.preload["conjure.an
   end
   local macro_searchers = {fennel_macro_searcher, lua_macro_searcher}
   local function search_macro_module(modname, n)
-    local _493_ = macro_searchers[n]
-    if (nil ~= _493_) then
-      local f = _493_
-      local _494_, _495_ = f(modname)
-      if ((nil ~= _494_) and true) then
-        local loader = _494_
-        local _3ffilename = _495_
+    local _492_ = macro_searchers[n]
+    if (nil ~= _492_) then
+      local f = _492_
+      local _493_, _494_ = f(modname)
+      if ((nil ~= _493_) and true) then
+        local loader = _493_
+        local _3ffilename = _494_
         return loader, _3ffilename
       elseif true then
-        local _ = _494_
+        local _ = _493_
         return search_macro_module(modname, (n + 1))
       else
         return nil
@@ -1728,16 +1771,16 @@ package.preload["conjure.aniseed.fennel.specials"] = package.preload["conjure.an
       return nil
     end
   end
-  local function _499_(modname)
-    local function _500_()
+  local function _498_(modname)
+    local function _499_()
       local loader, filename = search_macro_module(modname, 1)
       compiler.assert(loader, (modname .. " module not found."))
       do end (macro_loaded)[modname] = loader(modname, filename)
       return macro_loaded[modname]
     end
-    return (macro_loaded[modname] or metadata_only_fennel(modname) or _500_())
+    return (macro_loaded[modname] or metadata_only_fennel(modname) or _499_())
   end
-  safe_require = _499_
+  safe_require = _498_
   local function add_macros(macros_2a, ast, scope)
     compiler.assert(utils["table?"](macros_2a), "expected macros to be table", ast)
     for k, v in pairs(macros_2a) do
@@ -1746,10 +1789,10 @@ package.preload["conjure.aniseed.fennel.specials"] = package.preload["conjure.an
     end
     return nil
   end
-  local function resolve_module_name(_501_, _scope, _parent, opts)
-    local _arg_502_ = _501_
-    local filename = _arg_502_["filename"]
-    local second = _arg_502_[2]
+  local function resolve_module_name(_500_, _scope, _parent, opts)
+    local _arg_501_ = _500_
+    local filename = _arg_501_["filename"]
+    local second = _arg_501_[2]
     local filename0 = (filename or (utils["table?"](second) and second.filename))
     local module_name = utils.root.options["module-name"]
     local modexpr = compiler.compile(second, opts)
@@ -1766,7 +1809,11 @@ package.preload["conjure.aniseed.fennel.specials"] = package.preload["conjure.an
       do end (macro_loaded)[modname] = loader(modname, filename)
     else
     end
-    return add_macros(macro_loaded[modname], ast, scope, parent)
+    if ("import-macros" == tostring(ast[1])) then
+      return macro_loaded[modname]
+    else
+      return add_macros(macro_loaded[modname], ast, scope, parent)
+    end
   end
   doc_special("require-macros", {"macro-module-name"}, "Load given module and use its contents as macro definitions in current scope.\nMacro module should return a table of macro functions with string keys.\nConsider using import-macros instead as it is more flexible.")
   local function emit_included_fennel(src, path, opts, sub_chunk)
@@ -1918,13 +1965,13 @@ package.preload["conjure.aniseed.fennel.compiler"] = package.preload["conjure.an
   local scopes = {}
   local function make_scope(_3fparent)
     local parent = (_3fparent or scopes.global)
-    local _200_
+    local _203_
     if parent then
-      _200_ = ((parent.depth or 0) + 1)
+      _203_ = ((parent.depth or 0) + 1)
     else
-      _200_ = 0
+      _203_ = 0
     end
-    return {includes = setmetatable({}, {__index = (parent and parent.includes)}), macros = setmetatable({}, {__index = (parent and parent.macros)}), manglings = setmetatable({}, {__index = (parent and parent.manglings)}), specials = setmetatable({}, {__index = (parent and parent.specials)}), symmeta = setmetatable({}, {__index = (parent and parent.symmeta)}), unmanglings = setmetatable({}, {__index = (parent and parent.unmanglings)}), gensyms = setmetatable({}, {__index = (parent and parent.gensyms)}), autogensyms = setmetatable({}, {__index = (parent and parent.autogensyms)}), vararg = (parent and parent.vararg), depth = _200_, hashfn = (parent and parent.hashfn), refedglobals = {}, parent = parent}
+    return {includes = setmetatable({}, {__index = (parent and parent.includes)}), macros = setmetatable({}, {__index = (parent and parent.macros)}), manglings = setmetatable({}, {__index = (parent and parent.manglings)}), specials = setmetatable({}, {__index = (parent and parent.specials)}), symmeta = setmetatable({}, {__index = (parent and parent.symmeta)}), unmanglings = setmetatable({}, {__index = (parent and parent.unmanglings)}), gensyms = setmetatable({}, {__index = (parent and parent.gensyms)}), autogensyms = setmetatable({}, {__index = (parent and parent.autogensyms)}), vararg = (parent and parent.vararg), depth = _203_, hashfn = (parent and parent.hashfn), refedglobals = {}, parent = parent}
   end
   local function assert_msg(ast, msg)
     local ast_tbl
@@ -1941,9 +1988,9 @@ package.preload["conjure.aniseed.fennel.compiler"] = package.preload["conjure.an
   end
   local function assert_compile(condition, msg, ast)
     if not condition then
-      local _let_203_ = (utils.root.options or {})
-      local source = _let_203_["source"]
-      local unfriendly = _let_203_["unfriendly"]
+      local _let_206_ = (utils.root.options or {})
+      local source = _let_206_["source"]
+      local unfriendly = _let_206_["unfriendly"]
       if (nil == utils.hook("assert-compile", condition, msg, ast, utils.root.reset)) then
         utils.root.reset()
         if (unfriendly or not friend or not _G.io or not _G.io.read) then
@@ -1963,33 +2010,33 @@ package.preload["conjure.aniseed.fennel.compiler"] = package.preload["conjure.an
   scopes.macro = scopes.global
   local serialize_subst = {["\7"] = "\\a", ["\8"] = "\\b", ["\9"] = "\\t", ["\n"] = "n", ["\11"] = "\\v", ["\12"] = "\\f"}
   local function serialize_string(str)
-    local function _207_(_241)
+    local function _210_(_241)
       return ("\\" .. _241:byte())
     end
-    return string.gsub(string.gsub(string.format("%q", str), ".", serialize_subst), "[\128-\255]", _207_)
+    return string.gsub(string.gsub(string.format("%q", str), ".", serialize_subst), "[\128-\255]", _210_)
   end
   local function global_mangling(str)
     if utils["valid-lua-identifier?"](str) then
       return str
     else
-      local function _208_(_241)
+      local function _211_(_241)
         return string.format("_%02x", _241:byte())
       end
-      return ("__fnl_global__" .. str:gsub("[^%w]", _208_))
+      return ("__fnl_global__" .. str:gsub("[^%w]", _211_))
     end
   end
   local function global_unmangling(identifier)
-    local _210_ = string.match(identifier, "^__fnl_global__(.*)$")
-    if (nil ~= _210_) then
-      local rest = _210_
-      local _211_
-      local function _212_(_241)
+    local _213_ = string.match(identifier, "^__fnl_global__(.*)$")
+    if (nil ~= _213_) then
+      local rest = _213_
+      local _214_
+      local function _215_(_241)
         return string.char(tonumber(_241:sub(2), 16))
       end
-      _211_ = string.gsub(rest, "_[%da-f][%da-f]", _212_)
-      return _211_
+      _214_ = string.gsub(rest, "_[%da-f][%da-f]", _215_)
+      return _214_
     elseif true then
-      local _ = _210_
+      local _ = _213_
       return identifier
     else
       return nil
@@ -2015,10 +2062,10 @@ package.preload["conjure.aniseed.fennel.compiler"] = package.preload["conjure.an
       raw = str
     end
     local mangling
-    local function _216_(_241)
+    local function _219_(_241)
       return string.format("_%02x", _241:byte())
     end
-    mangling = string.gsub(string.gsub(raw, "-", "_"), "[^%w_]", _216_)
+    mangling = string.gsub(string.gsub(raw, "-", "_"), "[^%w_]", _219_)
     local unique = unique_mangling(mangling, mangling, scope, 0)
     do end (scope.unmanglings)[unique] = str
     do
@@ -2063,19 +2110,19 @@ package.preload["conjure.aniseed.fennel.compiler"] = package.preload["conjure.an
     return mangling
   end
   local function autogensym(base, scope)
-    local _219_ = utils["multi-sym?"](base)
-    if (nil ~= _219_) then
-      local parts = _219_
+    local _222_ = utils["multi-sym?"](base)
+    if (nil ~= _222_) then
+      local parts = _222_
       parts[1] = autogensym(parts[1], scope)
       return table.concat(parts, ((parts["multi-sym-method-call"] and ":") or "."))
     elseif true then
-      local _ = _219_
-      local function _220_()
+      local _ = _222_
+      local function _223_()
         local mangling = gensym(scope, base:sub(1, ( - 2)), "auto")
         do end (scope.autogensyms)[base] = mangling
         return mangling
       end
-      return (scope.autogensyms[base] or _220_())
+      return (scope.autogensyms[base] or _223_())
     else
       return nil
     end
@@ -2194,14 +2241,14 @@ package.preload["conjure.aniseed.fennel.compiler"] = package.preload["conjure.an
     else
       local tab0
       do
-        local _233_ = tab
-        if (_233_ == true) then
+        local _236_ = tab
+        if (_236_ == true) then
           tab0 = "  "
-        elseif (_233_ == false) then
+        elseif (_236_ == false) then
           tab0 = ""
-        elseif (_233_ == tab) then
+        elseif (_236_ == tab) then
           tab0 = tab
-        elseif (_233_ == nil) then
+        elseif (_236_ == nil) then
           tab0 = ""
         else
           tab0 = nil
@@ -2222,7 +2269,7 @@ package.preload["conjure.aniseed.fennel.compiler"] = package.preload["conjure.an
       return table.concat(utils.map(chunk, parter), "\n")
     end
   end
-  local fennel_sourcemap = {}
+  local sourcemap = {}
   local function make_short_src(source)
     local source0 = source:gsub("\n", " ")
     if (#source0 <= 49) then
@@ -2245,26 +2292,26 @@ package.preload["conjure.aniseed.fennel.compiler"] = package.preload["conjure.an
         else
           sm.key = ret
         end
-        fennel_sourcemap[sm.key] = sm
+        sourcemap[sm.key] = sm
       else
       end
       return ret, sm
     end
   end
   local function make_metadata()
-    local function _242_(self, tgt, key)
+    local function _245_(self, tgt, key)
       if self[tgt] then
         return self[tgt][key]
       else
         return nil
       end
     end
-    local function _244_(self, tgt, key, value)
+    local function _247_(self, tgt, key, value)
       self[tgt] = (self[tgt] or {})
       do end (self[tgt])[key] = value
       return tgt
     end
-    local function _245_(self, tgt, ...)
+    local function _248_(self, tgt, ...)
       local kv_len = select("#", ...)
       local kvs = {...}
       if ((kv_len % 2) ~= 0) then
@@ -2277,7 +2324,7 @@ package.preload["conjure.aniseed.fennel.compiler"] = package.preload["conjure.an
       end
       return tgt
     end
-    return setmetatable({}, {__index = {get = _242_, set = _244_, setall = _245_}, __mode = "k"})
+    return setmetatable({}, {__index = {get = _245_, set = _247_, setall = _248_}, __mode = "k"})
   end
   local function exprs1(exprs)
     return table.concat(utils.map(exprs, tostring), ", ")
@@ -2327,22 +2374,22 @@ package.preload["conjure.aniseed.fennel.compiler"] = package.preload["conjure.an
     end
     if opts.target then
       local result = exprs1(exprs)
-      local function _253_()
+      local function _256_()
         if (result == "") then
           return "nil"
         else
           return result
         end
       end
-      emit(parent, string.format("%s = %s", opts.target, _253_()), ast)
+      emit(parent, string.format("%s = %s", opts.target, _256_()), ast)
     else
     end
     if (opts.tail or opts.target) then
       return {returned = true}
     else
-      local _255_ = exprs
-      _255_["returned"] = true
-      return _255_
+      local _258_ = exprs
+      _258_["returned"] = true
+      return _258_
     end
   end
   local function find_macro(ast, scope, multi_sym_parts)
@@ -2362,12 +2409,12 @@ package.preload["conjure.aniseed.fennel.compiler"] = package.preload["conjure.an
       return macro_2a
     end
   end
-  local function propagate_trace_info(_259_, _index, node)
-    local _arg_260_ = _259_
-    local filename = _arg_260_["filename"]
-    local line = _arg_260_["line"]
-    local bytestart = _arg_260_["bytestart"]
-    local byteend = _arg_260_["byteend"]
+  local function propagate_trace_info(_262_, _index, node)
+    local _arg_263_ = _262_
+    local filename = _arg_263_["filename"]
+    local line = _arg_263_["line"]
+    local bytestart = _arg_263_["bytestart"]
+    local byteend = _arg_263_["byteend"]
     if (("table" == type(node)) and (filename ~= node.filename)) then
       local src = utils["ast-source"](node)
       src.filename, src.line = filename, line
@@ -2377,33 +2424,33 @@ package.preload["conjure.aniseed.fennel.compiler"] = package.preload["conjure.an
     return ("table" == type(node))
   end
   local function macroexpand_2a(ast, scope, _3fonce)
-    local _262_
+    local _265_
     if utils["list?"](ast) then
-      _262_ = find_macro(ast, scope, utils["multi-sym?"](ast[1]))
+      _265_ = find_macro(ast, scope, utils["multi-sym?"](ast[1]))
     else
-      _262_ = nil
+      _265_ = nil
     end
-    if (_262_ == false) then
+    if (_265_ == false) then
       return ast
-    elseif (nil ~= _262_) then
-      local macro_2a = _262_
+    elseif (nil ~= _265_) then
+      local macro_2a = _265_
       local old_scope = scopes.macro
       local _
       scopes.macro = scope
       _ = nil
       local ok, transformed = nil, nil
-      local function _264_()
+      local function _267_()
         return macro_2a(unpack(ast, 2))
       end
-      ok, transformed = xpcall(_264_, debug.traceback)
-      local function _266_()
-        local _265_ = ast
-        local function _267_(...)
-          return propagate_trace_info(_265_, ...)
+      ok, transformed = xpcall(_267_, debug.traceback)
+      local function _269_()
+        local _268_ = ast
+        local function _270_(...)
+          return propagate_trace_info(_268_, ...)
         end
-        return _267_
+        return _270_
       end
-      utils["walk-tree"](transformed, _266_())
+      utils["walk-tree"](transformed, _269_())
       scopes.macro = old_scope
       assert_compile(ok, transformed, ast)
       if (_3fonce or not transformed) then
@@ -2412,7 +2459,7 @@ package.preload["conjure.aniseed.fennel.compiler"] = package.preload["conjure.an
         return macroexpand_2a(transformed, scope)
       end
     elseif true then
-      local _ = _262_
+      local _ = _265_
       return ast
     else
       return nil
@@ -2446,13 +2493,13 @@ package.preload["conjure.aniseed.fennel.compiler"] = package.preload["conjure.an
     assert_compile((("string" == type(ast[1])) or (fcallee.type ~= "literal")), ("cannot call literal value " .. tostring(ast[1])), ast)
     for i = 2, len do
       local subexprs
-      local _273_
+      local _276_
       if (i ~= len) then
-        _273_ = 1
+        _276_ = 1
       else
-        _273_ = nil
+        _276_ = nil
       end
-      subexprs = compile1(ast[i], scope, parent, {nval = _273_})
+      subexprs = compile1(ast[i], scope, parent, {nval = _276_})
       table.insert(fargs, (subexprs[1] or utils.expr("nil", "literal")))
       if (i == len) then
         for j = 2, #subexprs do
@@ -2505,20 +2552,20 @@ package.preload["conjure.aniseed.fennel.compiler"] = package.preload["conjure.an
     return handle_compile_opts({e}, parent, opts, ast)
   end
   local function serialize_number(n)
-    local _279_ = string.gsub(tostring(n), ",", ".")
-    return _279_
+    local _282_ = string.gsub(tostring(n), ",", ".")
+    return _282_
   end
   local function compile_scalar(ast, _scope, parent, opts)
     local serialize
     do
-      local _280_ = type(ast)
-      if (_280_ == "nil") then
+      local _283_ = type(ast)
+      if (_283_ == "nil") then
         serialize = tostring
-      elseif (_280_ == "boolean") then
+      elseif (_283_ == "boolean") then
         serialize = tostring
-      elseif (_280_ == "string") then
+      elseif (_283_ == "string") then
         serialize = serialize_string
-      elseif (_280_ == "number") then
+      elseif (_283_ == "number") then
         serialize = serialize_number
       else
         serialize = nil
@@ -2533,8 +2580,8 @@ package.preload["conjure.aniseed.fennel.compiler"] = package.preload["conjure.an
         if ((type(k) == "string") and utils["valid-lua-identifier?"](k)) then
           return {k, k}
         else
-          local _let_282_ = compile1(k, scope, parent, {nval = 1})
-          local compiled = _let_282_[1]
+          local _let_285_ = compile1(k, scope, parent, {nval = 1})
+          local compiled = _let_285_[1]
           local kstr = ("[" .. tostring(compiled) .. "]")
           return {kstr, k}
         end
@@ -2557,15 +2604,15 @@ package.preload["conjure.aniseed.fennel.compiler"] = package.preload["conjure.an
         end
         keys = tbl_14_auto
       end
-      local function _288_(_286_)
-        local _arg_287_ = _286_
-        local k1 = _arg_287_[1]
-        local k2 = _arg_287_[2]
-        local _let_289_ = compile1(ast[k2], scope, parent, {nval = 1})
-        local v = _let_289_[1]
+      local function _291_(_289_)
+        local _arg_290_ = _289_
+        local k1 = _arg_290_[1]
+        local k2 = _arg_290_[2]
+        local _let_292_ = compile1(ast[k2], scope, parent, {nval = 1})
+        local v = _let_292_[1]
         return string.format("%s = %s", k1, tostring(v))
       end
-      utils.map(keys, _288_, buffer)
+      utils.map(keys, _291_, buffer)
     end
     for i = 1, #ast do
       local nval = ((i ~= #ast) and 1)
@@ -2592,12 +2639,12 @@ package.preload["conjure.aniseed.fennel.compiler"] = package.preload["conjure.an
   end
   local function destructure(to, from, ast, scope, parent, opts)
     local opts0 = (opts or {})
-    local _let_291_ = opts0
-    local isvar = _let_291_["isvar"]
-    local declaration = _let_291_["declaration"]
-    local forceglobal = _let_291_["forceglobal"]
-    local forceset = _let_291_["forceset"]
-    local symtype = _let_291_["symtype"]
+    local _let_294_ = opts0
+    local isvar = _let_294_["isvar"]
+    local declaration = _let_294_["declaration"]
+    local forceglobal = _let_294_["forceglobal"]
+    local forceset = _let_294_["forceset"]
+    local symtype = _let_294_["symtype"]
     local symtype0 = ("_" .. (symtype or "dst"))
     local setter
     if declaration then
@@ -2636,14 +2683,14 @@ package.preload["conjure.aniseed.fennel.compiler"] = package.preload["conjure.an
     end
     local function compile_top_target(lvalues)
       local inits
-      local function _297_(_241)
+      local function _300_(_241)
         if scope.manglings[_241] then
           return _241
         else
           return "nil"
         end
       end
-      inits = utils.map(lvalues, _297_)
+      inits = utils.map(lvalues, _300_)
       local init = table.concat(inits, ", ")
       local lvalue = table.concat(lvalues, ", ")
       local plen, plast = #parent, parent[#parent]
@@ -2685,16 +2732,16 @@ package.preload["conjure.aniseed.fennel.compiler"] = package.preload["conjure.an
       local s = gensym(scope, symtype0)
       local right
       do
-        local _304_
+        local _307_
         if top_3f then
-          _304_ = exprs1(compile1(from, scope, parent))
+          _307_ = exprs1(compile1(from, scope, parent))
         else
-          _304_ = exprs1(rightexprs)
+          _307_ = exprs1(rightexprs)
         end
-        if (_304_ == "") then
+        if (_307_ == "") then
           right = "nil"
-        elseif (nil ~= _304_) then
-          local right0 = _304_
+        elseif (nil ~= _307_) then
+          local right0 = _307_
           right = right0
         else
           right = nil
@@ -2849,10 +2896,10 @@ package.preload["conjure.aniseed.fennel.compiler"] = package.preload["conjure.an
     elseif (info.what == "C") then
       return "  [C]: in ?"
     else
-      local remap = fennel_sourcemap[info.source]
+      local remap = sourcemap[info.source]
       if (remap and remap[info.currentline]) then
         if remap[info.currentline][1] then
-          info.short_src = fennel_sourcemap[("@" .. remap[info.currentline][1])].short_src
+          info.short_src = sourcemap[("@" .. remap[info.currentline][1])].short_src
         else
           info.short_src = remap.short_src
         end
@@ -2860,14 +2907,14 @@ package.preload["conjure.aniseed.fennel.compiler"] = package.preload["conjure.an
       else
       end
       if (info.what == "Lua") then
-        local function _322_()
+        local function _325_()
           if info.name then
             return ("'" .. info.name .. "'")
           else
             return "?"
           end
         end
-        return string.format("  %s:%d: in function %s", info.short_src, info.currentline, _322_())
+        return string.format("  %s:%d: in function %s", info.short_src, info.currentline, _325_())
       elseif (info.short_src == "(tail call)") then
         return "  (tail call)"
       else
@@ -2891,11 +2938,11 @@ package.preload["conjure.aniseed.fennel.compiler"] = package.preload["conjure.an
       local done_3f, level = false, (start or 2)
       while not done_3f do
         do
-          local _326_ = debug.getinfo(level, "Sln")
-          if (_326_ == nil) then
+          local _329_ = debug.getinfo(level, "Sln")
+          if (_329_ == nil) then
             done_3f = true
-          elseif (nil ~= _326_) then
-            local info = _326_
+          elseif (nil ~= _329_) then
+            local info = _329_
             table.insert(lines, traceback_frame(info))
           else
           end
@@ -2906,14 +2953,14 @@ package.preload["conjure.aniseed.fennel.compiler"] = package.preload["conjure.an
     end
   end
   local function entry_transform(fk, fv)
-    local function _329_(k, v)
+    local function _332_(k, v)
       if (type(k) == "number") then
         return k, fv(v)
       else
         return fk(k), fv(v)
       end
     end
-    return _329_
+    return _332_
   end
   local function mixed_concat(t, joiner)
     local seen = {}
@@ -2959,10 +3006,10 @@ package.preload["conjure.aniseed.fennel.compiler"] = package.preload["conjure.an
       return res[1]
     elseif utils["list?"](form) then
       local mapped
-      local function _334_()
+      local function _337_()
         return nil
       end
-      mapped = utils.kvmap(form, entry_transform(_334_, q))
+      mapped = utils.kvmap(form, entry_transform(_337_, q))
       local filename
       if form.filename then
         filename = string.format("%q", form.filename)
@@ -2980,13 +3027,13 @@ package.preload["conjure.aniseed.fennel.compiler"] = package.preload["conjure.an
       else
         filename = "nil"
       end
-      local _337_
+      local _340_
       if source then
-        _337_ = source.line
+        _340_ = source.line
       else
-        _337_ = "nil"
+        _340_ = "nil"
       end
-      return string.format("setmetatable({%s}, {filename=%s, line=%s, sequence=%s})", mixed_concat(mapped, ", "), filename, _337_, "(getmetatable(sequence()))['sequence']")
+      return string.format("setmetatable({%s}, {filename=%s, line=%s, sequence=%s})", mixed_concat(mapped, ", "), filename, _340_, "(getmetatable(sequence()))['sequence']")
     elseif (type(form) == "table") then
       local mapped = utils.kvmap(form, entry_transform(q, q))
       local source = getmetatable(form)
@@ -2996,21 +3043,21 @@ package.preload["conjure.aniseed.fennel.compiler"] = package.preload["conjure.an
       else
         filename = "nil"
       end
-      local function _340_()
+      local function _343_()
         if source then
           return source.line
         else
           return "nil"
         end
       end
-      return string.format("setmetatable({%s}, {filename=%s, line=%s})", mixed_concat(mapped, ", "), filename, _340_())
+      return string.format("setmetatable({%s}, {filename=%s, line=%s})", mixed_concat(mapped, ", "), filename, _343_())
     elseif (type(form) == "string") then
       return serialize_string(form)
     else
       return tostring(form)
     end
   end
-  return {compile = compile, compile1 = compile1, ["compile-stream"] = compile_stream, ["compile-string"] = compile_string, emit = emit, destructure = destructure, ["require-include"] = require_include, autogensym = autogensym, gensym = gensym, ["do-quote"] = do_quote, ["global-mangling"] = global_mangling, ["global-unmangling"] = global_unmangling, ["apply-manglings"] = apply_manglings, macroexpand = macroexpand_2a, ["declare-local"] = declare_local, ["make-scope"] = make_scope, ["keep-side-effects"] = keep_side_effects, ["symbol-to-expression"] = symbol_to_expression, assert = assert_compile, scopes = scopes, traceback = traceback, metadata = make_metadata()}
+  return {compile = compile, compile1 = compile1, ["compile-stream"] = compile_stream, ["compile-string"] = compile_string, emit = emit, destructure = destructure, ["require-include"] = require_include, autogensym = autogensym, gensym = gensym, ["do-quote"] = do_quote, ["global-mangling"] = global_mangling, ["global-unmangling"] = global_unmangling, ["apply-manglings"] = apply_manglings, macroexpand = macroexpand_2a, ["declare-local"] = declare_local, ["make-scope"] = make_scope, ["keep-side-effects"] = keep_side_effects, ["symbol-to-expression"] = symbol_to_expression, assert = assert_compile, scopes = scopes, traceback = traceback, metadata = make_metadata(), sourcemap = sourcemap}
 end
 package.preload["conjure.aniseed.fennel.friend"] = package.preload["conjure.aniseed.fennel.friend"] or function(...)
   local utils = require("conjure.aniseed.fennel.utils")
@@ -3066,12 +3113,12 @@ package.preload["conjure.aniseed.fennel.friend"] = package.preload["conjure.anis
       return read_line_from_file(filename, line)
     end
   end
-  local function friendly_msg(msg, _139_, source)
-    local _arg_140_ = _139_
-    local filename = _arg_140_["filename"]
-    local line = _arg_140_["line"]
-    local bytestart = _arg_140_["bytestart"]
-    local byteend = _arg_140_["byteend"]
+  local function friendly_msg(msg, _142_, source)
+    local _arg_143_ = _142_
+    local filename = _arg_143_["filename"]
+    local line = _arg_143_["line"]
+    local bytestart = _arg_143_["bytestart"]
+    local byteend = _arg_143_["byteend"]
     local ok, codeline, bol = pcall(read_line, filename, line, source)
     local suggestions0 = suggest(msg)
     local out = {msg, ""}
@@ -3098,9 +3145,9 @@ package.preload["conjure.aniseed.fennel.friend"] = package.preload["conjure.anis
   end
   local function assert_compile(condition, msg, ast, source)
     if not condition then
-      local _let_145_ = utils["ast-source"](ast)
-      local filename = _let_145_["filename"]
-      local line = _let_145_["line"]
+      local _let_148_ = utils["ast-source"](ast)
+      local filename = _let_148_["filename"]
+      local line = _let_148_["line"]
       error(friendly_msg(("Compile error in %s:%s\n  %s"):format((filename or "unknown"), (line or "?"), msg), utils["ast-source"](ast), source), 0)
     else
     end
@@ -3117,25 +3164,25 @@ package.preload["conjure.aniseed.fennel.parser"] = package.preload["conjure.anis
   local unpack = (table.unpack or _G.unpack)
   local function granulate(getchunk)
     local c, index, done_3f = "", 1, false
-    local function _147_(parser_state)
+    local function _150_(parser_state)
       if not done_3f then
         if (index <= #c) then
           local b = c:byte(index)
           index = (index + 1)
           return b
         else
-          local _148_ = getchunk(parser_state)
-          local function _149_()
-            local char = _148_
+          local _151_ = getchunk(parser_state)
+          local function _152_()
+            local char = _151_
             return (char ~= "")
           end
-          if ((nil ~= _148_) and _149_()) then
-            local char = _148_
+          if ((nil ~= _151_) and _152_()) then
+            local char = _151_
             c = char
             index = 2
             return c:byte()
           elseif true then
-            local _ = _148_
+            local _ = _151_
             done_3f = true
             return nil
           else
@@ -3146,21 +3193,21 @@ package.preload["conjure.aniseed.fennel.parser"] = package.preload["conjure.anis
         return nil
       end
     end
-    local function _153_()
+    local function _156_()
       c = ""
       return nil
     end
-    return _147_, _153_
+    return _150_, _156_
   end
   local function string_stream(str)
     local str0 = str:gsub("^#!", ";;")
     local index = 1
-    local function _154_()
+    local function _157_()
       local r = str0:byte(index)
       index = (index + 1)
       return r
     end
-    return _154_
+    return _157_
   end
   local delims = {[40] = 41, [41] = true, [91] = 93, [93] = true, [123] = 125, [125] = true}
   local function whitespace_3f(b)
@@ -3206,9 +3253,9 @@ package.preload["conjure.aniseed.fennel.parser"] = package.preload["conjure.anis
     end
     assert(((nil == _3ffilename) or ("string" == type(_3ffilename))), "expected filename as second argument to parser")
     local function parse_error(msg, byteindex_override)
-      local _let_159_ = (_3foptions or utils.root.options or {})
-      local source = _let_159_["source"]
-      local unfriendly = _let_159_["unfriendly"]
+      local _let_162_ = (_3foptions or utils.root.options or {})
+      local source = _let_162_["source"]
+      local unfriendly = _let_162_["unfriendly"]
       if (nil == utils.hook("parse-error", msg, (_3ffilename or "unknown"), (line or "?"), (byteindex_override or byteindex), source, utils.root.reset)) then
         utils.root.reset()
         if (unfriendly or not friend or not _G.io or not _G.io.read) then
@@ -3223,25 +3270,25 @@ package.preload["conjure.aniseed.fennel.parser"] = package.preload["conjure.anis
     local function parse_stream()
       local whitespace_since_dispatch, done_3f, retval = true
       local function dispatch(v)
-        local _162_ = stack[#stack]
-        if (_162_ == nil) then
+        local _165_ = stack[#stack]
+        if (_165_ == nil) then
           retval, done_3f, whitespace_since_dispatch = v, true, false
           return nil
-        elseif ((_G.type(_162_) == "table") and (nil ~= (_162_).prefix)) then
-          local prefix = (_162_).prefix
+        elseif ((_G.type(_165_) == "table") and (nil ~= (_165_).prefix)) then
+          local prefix = (_165_).prefix
           local source
           do
-            local _163_ = table.remove(stack)
-            do end (_163_)["byteend"] = byteindex
-            source = _163_
+            local _166_ = table.remove(stack)
+            do end (_166_)["byteend"] = byteindex
+            source = _166_
           end
           local list = utils.list(utils.sym(prefix, source), v)
           for k, v0 in pairs(source) do
             list[k] = v0
           end
           return dispatch(list)
-        elseif (nil ~= _162_) then
-          local top = _162_
+        elseif (nil ~= _165_) then
+          local top = _165_
           whitespace_since_dispatch = false
           return table.insert(top, v)
         else
@@ -3250,13 +3297,13 @@ package.preload["conjure.aniseed.fennel.parser"] = package.preload["conjure.anis
       end
       local function badend()
         local accum = utils.map(stack, "closer")
-        local _165_
+        local _168_
         if (#stack == 1) then
-          _165_ = ""
+          _168_ = ""
         else
-          _165_ = "s"
+          _168_ = "s"
         end
-        return parse_error(string.format("expected closing delimiter%s %s", _165_, string.char(unpack(accum))))
+        return parse_error(string.format("expected closing delimiter%s %s", _168_, string.char(unpack(accum))))
       end
       local function skip_whitespace(b)
         if (b and whitespace_3f(b)) then
@@ -3270,12 +3317,12 @@ package.preload["conjure.aniseed.fennel.parser"] = package.preload["conjure.anis
       end
       local function parse_comment(b, contents)
         if (b and (10 ~= b)) then
-          local function _169_()
-            local _168_ = contents
-            table.insert(_168_, string.char(b))
-            return _168_
+          local function _172_()
+            local _171_ = contents
+            table.insert(_171_, string.char(b))
+            return _171_
           end
-          return parse_comment(getb(), _169_())
+          return parse_comment(getb(), _172_())
         elseif (_3foptions and _3foptions.comments) then
           return dispatch(utils.comment(table.concat(contents), {line = (line - 1), filename = _3ffilename}))
         else
@@ -3300,12 +3347,12 @@ package.preload["conjure.aniseed.fennel.parser"] = package.preload["conjure.anis
         return dispatch(val)
       end
       local function add_comment_at(comments, index, node)
-        local _172_ = comments[index]
-        if (nil ~= _172_) then
-          local existing = _172_
+        local _175_ = comments[index]
+        if (nil ~= _175_) then
+          local existing = _175_
           return table.insert(existing, node)
         elseif true then
-          local _ = _172_
+          local _ = _175_
           comments[index] = {node}
           return nil
         else
@@ -3387,16 +3434,16 @@ package.preload["conjure.aniseed.fennel.parser"] = package.preload["conjure.anis
         table.insert(chars, b)
         local state0
         do
-          local _182_ = {state, b}
-          if ((_G.type(_182_) == "table") and ((_182_)[1] == "base") and ((_182_)[2] == 92)) then
+          local _185_ = {state, b}
+          if ((_G.type(_185_) == "table") and ((_185_)[1] == "base") and ((_185_)[2] == 92)) then
             state0 = "backslash"
-          elseif ((_G.type(_182_) == "table") and ((_182_)[1] == "base") and ((_182_)[2] == 34)) then
+          elseif ((_G.type(_185_) == "table") and ((_185_)[1] == "base") and ((_185_)[2] == 34)) then
             state0 = "done"
-          elseif ((_G.type(_182_) == "table") and ((_182_)[1] == "backslash") and ((_182_)[2] == 10)) then
+          elseif ((_G.type(_185_) == "table") and ((_185_)[1] == "backslash") and ((_185_)[2] == 10)) then
             table.remove(chars, (#chars - 1))
             state0 = "base"
           elseif true then
-            local _ = _182_
+            local _ = _185_
             state0 = "base"
           else
             state0 = nil
@@ -3421,11 +3468,11 @@ package.preload["conjure.aniseed.fennel.parser"] = package.preload["conjure.anis
         table.remove(stack)
         local raw = string.char(unpack(chars))
         local formatted = raw:gsub("[\7-\13]", escape_char)
-        local _186_ = (rawget(_G, "loadstring") or load)(("return " .. formatted))
-        if (nil ~= _186_) then
-          local load_fn = _186_
+        local _189_ = (rawget(_G, "loadstring") or load)(("return " .. formatted))
+        if (nil ~= _189_) then
+          local load_fn = _189_
           return dispatch(load_fn())
-        elseif (_186_ == nil) then
+        elseif (_189_ == nil) then
           return parse_error(("Invalid string: " .. raw))
         else
           return nil
@@ -3463,13 +3510,13 @@ package.preload["conjure.aniseed.fennel.parser"] = package.preload["conjure.anis
           dispatch((tonumber(number_with_stripped_underscores) or parse_error(("could not read number \"" .. rawstr .. "\""))))
           return true
         else
-          local _192_ = tonumber(number_with_stripped_underscores)
-          if (nil ~= _192_) then
-            local x = _192_
+          local _195_ = tonumber(number_with_stripped_underscores)
+          if (nil ~= _195_) then
+            local x = _195_
             dispatch(x)
             return true
           elseif true then
-            local _ = _192_
+            local _ = _195_
             return false
           else
             return nil
@@ -3536,11 +3583,11 @@ package.preload["conjure.aniseed.fennel.parser"] = package.preload["conjure.anis
       end
       return parse_loop(skip_whitespace(getb()))
     end
-    local function _199_()
+    local function _202_()
       stack, line, byteindex, lastb = {}, 1, 0, nil
       return nil
     end
-    return parse_stream, _199_
+    return parse_stream, _202_
   end
   return {granulate = granulate, parser = parser, ["string-stream"] = string_stream, ["sym-char?"] = sym_char_3f}
 end
@@ -4103,6 +4150,7 @@ package.preload["conjure.aniseed.fennel.view"] = package.preload["conjure.anisee
 end
 package.preload["conjure.aniseed.fennel.utils"] = package.preload["conjure.aniseed.fennel.utils"] or function(...)
   local view = require("conjure.aniseed.fennel.view")
+  local version = "1.0.0-dev"
   local function warn(message)
     if (_G.io and _G.io.stderr) then
       return (_G.io.stderr):write(("--WARNING: %s\n"):format(tostring(message)))
@@ -4425,14 +4473,28 @@ package.preload["conjure.aniseed.fennel.utils"] = package.preload["conjure.anise
     end
     return root.reset
   end
+  local warned = {}
+  local function check_plugin_version(_132_)
+    local _arg_133_ = _132_
+    local name = _arg_133_["name"]
+    local versions = _arg_133_["versions"]
+    local plugin = _arg_133_
+    if (not member_3f(version:gsub("-dev", ""), (versions or {})) and not warned[plugin]) then
+      warned[plugin] = true
+      return warn(string.format("plugin %s does not support Fennel version %s", (name or "unknown"), version))
+    else
+      return nil
+    end
+  end
   local function hook(event, ...)
     local result = nil
     if (root.options and root.options.plugins) then
       for _, plugin in ipairs(root.options.plugins) do
         if result then break end
-        local _132_ = plugin[event]
-        if (nil ~= _132_) then
-          local f = _132_
+        check_plugin_version(plugin)
+        local _135_ = plugin[event]
+        if (nil ~= _135_) then
+          local f = _135_
           result = f(...)
         else
         end
@@ -4441,7 +4503,7 @@ package.preload["conjure.aniseed.fennel.utils"] = package.preload["conjure.anise
     end
     return result
   end
-  return {warn = warn, allpairs = allpairs, stablepairs = stablepairs, copy = copy, kvmap = kvmap, map = map, ["walk-tree"] = walk_tree, ["member?"] = member_3f, list = list, sequence = sequence, sym = sym, varg = varg, expr = expr, comment = comment_2a, ["comment?"] = comment_3f, ["expr?"] = expr_3f, ["list?"] = list_3f, ["multi-sym?"] = multi_sym_3f, ["sequence?"] = sequence_3f, ["sym?"] = sym_3f, ["table?"] = table_3f, ["varg?"] = varg_3f, ["quoted?"] = quoted_3f, ["valid-lua-identifier?"] = valid_lua_identifier_3f, ["lua-keywords"] = lua_keywords, hook = hook, ["propagate-options"] = propagate_options, root = root, ["debug-on?"] = debug_on_3f, ["ast-source"] = ast_source, path = table.concat({"./?.fnl", "./?/init.fnl", getenv("FENNEL_PATH")}, ";"), ["macro-path"] = table.concat({"./?.fnl", "./?/init-macros.fnl", "./?/init.fnl", getenv("FENNEL_MACRO_PATH")}, ";")}
+  return {warn = warn, allpairs = allpairs, stablepairs = stablepairs, copy = copy, kvmap = kvmap, map = map, ["walk-tree"] = walk_tree, ["member?"] = member_3f, list = list, sequence = sequence, sym = sym, varg = varg, expr = expr, comment = comment_2a, ["comment?"] = comment_3f, ["expr?"] = expr_3f, ["list?"] = list_3f, ["multi-sym?"] = multi_sym_3f, ["sequence?"] = sequence_3f, ["sym?"] = sym_3f, ["table?"] = table_3f, ["varg?"] = varg_3f, ["quoted?"] = quoted_3f, ["valid-lua-identifier?"] = valid_lua_identifier_3f, ["lua-keywords"] = lua_keywords, hook = hook, ["propagate-options"] = propagate_options, root = root, ["debug-on?"] = debug_on_3f, ["ast-source"] = ast_source, version = version, path = table.concat({"./?.fnl", "./?/init.fnl", getenv("FENNEL_PATH")}, ";"), ["macro-path"] = table.concat({"./?.fnl", "./?/init-macros.fnl", "./?/init.fnl", getenv("FENNEL_MACRO_PATH")}, ";")}
 end
 utils = require("conjure.aniseed.fennel.utils")
 local parser = require("conjure.aniseed.fennel.parser")
@@ -4482,14 +4544,14 @@ local function eval(str, options, ...)
   local env = eval_env(opts.env, opts)
   local lua_source = compiler["compile-string"](str, opts)
   local loader
-  local function _604_(...)
+  local function _616_(...)
     if opts.filename then
       return ("@" .. opts.filename)
     else
       return str
     end
   end
-  loader = specials["load-code"](lua_source, env, _604_(...))
+  loader = specials["load-code"](lua_source, env, _616_(...))
   opts.filename = nil
   return loader(...)
 end
@@ -4514,10 +4576,10 @@ local function syntax()
     out[k] = {["macro?"] = true, ["body-form?"] = utils["member?"](k, body_3f), ["binding-form?"] = utils["member?"](k, binding_3f), ["define?"] = utils["member?"](k, define_3f)}
   end
   for k, v in pairs(_G) do
-    local _605_ = type(v)
-    if (_605_ == "function") then
+    local _617_ = type(v)
+    if (_617_ == "function") then
       out[k] = {["global?"] = true, ["function?"] = true}
-    elseif (_605_ == "table") then
+    elseif (_617_ == "table") then
       for k2, v2 in pairs(v) do
         if (("function" == type(v2)) and (k ~= "_G")) then
           out[(k .. "." .. k2)] = {["function?"] = true, ["global?"] = true}
@@ -4530,7 +4592,7 @@ local function syntax()
   end
   return out
 end
-local mod = {list = utils.list, ["list?"] = utils["list?"], sym = utils.sym, ["sym?"] = utils["sym?"], sequence = utils.sequence, ["sequence?"] = utils["sequence?"], comment = utils.comment, ["comment?"] = utils["comment?"], varg = utils.varg, path = utils.path, ["macro-path"] = utils["macro-path"], ["sym-char?"] = parser["sym-char?"], parser = parser.parser, granulate = parser.granulate, ["string-stream"] = parser["string-stream"], compile = compiler.compile, ["compile-string"] = compiler["compile-string"], ["compile-stream"] = compiler["compile-stream"], compile1 = compiler.compile1, traceback = compiler.traceback, mangle = compiler["global-mangling"], unmangle = compiler["global-unmangling"], metadata = compiler.metadata, scope = compiler["make-scope"], gensym = compiler.gensym, ["load-code"] = specials["load-code"], ["macro-loaded"] = specials["macro-loaded"], ["macro-searchers"] = specials["macro-searchers"], ["search-module"] = specials["search-module"], ["make-searcher"] = specials["make-searcher"], makeSearcher = specials["make-searcher"], searcher = specials["make-searcher"](), doc = specials.doc, view = view, eval = eval, dofile = dofile_2a, version = "1.0.0-dev", repl = repl, syntax = syntax, loadCode = specials["load-code"], make_searcher = specials["make-searcher"], searchModule = specials["search-module"], macroLoaded = specials["macro-loaded"], compileStream = compiler["compile-stream"], compileString = compiler["compile-string"], stringStream = parser["string-stream"]}
+local mod = {list = utils.list, ["list?"] = utils["list?"], sym = utils.sym, ["sym?"] = utils["sym?"], sequence = utils.sequence, ["sequence?"] = utils["sequence?"], comment = utils.comment, ["comment?"] = utils["comment?"], varg = utils.varg, path = utils.path, ["macro-path"] = utils["macro-path"], ["sym-char?"] = parser["sym-char?"], parser = parser.parser, granulate = parser.granulate, ["string-stream"] = parser["string-stream"], compile = compiler.compile, ["compile-string"] = compiler["compile-string"], ["compile-stream"] = compiler["compile-stream"], compile1 = compiler.compile1, traceback = compiler.traceback, mangle = compiler["global-mangling"], unmangle = compiler["global-unmangling"], metadata = compiler.metadata, scope = compiler["make-scope"], gensym = compiler.gensym, ["load-code"] = specials["load-code"], ["macro-loaded"] = specials["macro-loaded"], ["macro-searchers"] = specials["macro-searchers"], ["search-module"] = specials["search-module"], ["make-searcher"] = specials["make-searcher"], makeSearcher = specials["make-searcher"], searcher = specials["make-searcher"](), doc = specials.doc, view = view, eval = eval, dofile = dofile_2a, version = utils.version, repl = repl, syntax = syntax, loadCode = specials["load-code"], make_searcher = specials["make-searcher"], searchModule = specials["search-module"], macroLoaded = specials["macro-loaded"], compileStream = compiler["compile-stream"], compileString = compiler["compile-string"], stringStream = parser["string-stream"]}
 utils["fennel-module"] = mod
 do
   local builtin_macros = [===[;; This module contains all the built-in Fennel macros. Unlike all the other
@@ -4658,15 +4720,16 @@ do
             "expected table, function call, or symbol in :into clause")
     (or into []))
   
-  (fn collect* [iter-tbl key-value-expr ...]
-    "Returns a table made by running an iterator and evaluating an expression
-  that returns key-value pairs to be inserted sequentially into the table.
-  This can be thought of as a \"table comprehension\". The provided key-value
-  expression must return either 2 values, or nil.
+  (fn collect* [iter-tbl key-expr value-expr ...]
+    "Returns a table made by running an iterator and evaluating an expression that
+  returns key-value pairs to be inserted sequentially into the table.  This can
+  be thought of as a table comprehension. The body should provide two
+  expressions (used as key and value) or nil, which causes it to be omitted from
+  the resulting table.
   
   For example,
     (collect [k v (pairs {:apple \"red\" :orange \"orange\"})]
-      (values v k))
+      v k)
   returns
     {:red \"apple\" :orange \"orange\"}
   
@@ -4674,24 +4737,26 @@ do
   Supports early termination with an :until clause."
     (assert (and (sequence? iter-tbl) (>= (length iter-tbl) 2))
             "expected iterator binding table")
-    (assert (not= nil key-value-expr) "expected key-value expression")
+    (assert (not= nil key-expr) "expected key and value expression")
     (assert (= nil ...)
-            "expected exactly one body expression. Wrap multiple expressions with do")
-    `(let [tbl# ,(into-val iter-tbl)]
-       (each ,iter-tbl
-         (match ,key-value-expr
-           (k# v#) (tset tbl# k# v#)))
-       tbl#))
+            "expected 1 or 2 body expressions; wrap multiple expressions with do")
+    (let [kv-expr (if (= nil value-expr) key-expr `(values ,key-expr ,value-expr))]
+      `(let [tbl# ,(into-val iter-tbl)]
+         (each ,iter-tbl
+           (match ,kv-expr
+             (k# v#) (tset tbl# k# v#)))
+         tbl#)))
   
   (fn icollect* [iter-tbl value-expr ...]
     "Returns a sequential table made by running an iterator and evaluating an
   expression that returns values to be inserted sequentially into the table.
-  This can be thought of as a \"list comprehension\".
+  This can be thought of as a \"list comprehension\". If the body returns nil
+  that element is omitted from the resulting table.
   
   For example,
-    (icollect [_ v (ipairs [1 2 3 4 5])] (when (> v 2) (* v v)))
+    (icollect [_ v (ipairs [1 2 3 4 5])] (when (not= v 3) (* v v)))
   returns
-    [9 16 25]
+    [1 4 16 25]
   
   Supports an :into clause after the iterator to put results in an existing table.
   Supports early termination with an :until clause."
@@ -4851,23 +4916,23 @@ do
     (assert (and binding1 module-name1 (= 0 (% (select "#" ...) 2)))
             "expected even number of binding/modulename pairs")
     (for [i 1 (select "#" binding1 module-name1 ...) 2]
+      ;; delegate the actual loading of the macros to the require-macros
+      ;; special which already knows how to set up the compiler env and stuff.
+      ;; this is weird because require-macros is deprecated but it works.
       (let [(binding modname) (select i binding1 module-name1 ...)
-            ;; generate a subscope of current scope, use require-macros
-            ;; to bring in macro module. after that, we just copy the
-            ;; macros from subscope to scope.
             scope (get-scope)
-            subscope (fennel.scope scope)]
-        (_SPECIALS.require-macros `(require-macros ,modname) subscope {} ast)
+            macros* (_SPECIALS.require-macros `(import-macros ,modname)
+                                              scope {} binding1)]
         (if (sym? binding)
             ;; bind whole table of macros to table bound to symbol
-            (tset scope.macros (. binding 1) (. macro-loaded modname))
+            (tset scope.macros (. binding 1) macros*)
             ;; 1-level table destructuring for importing individual macros
             (table? binding)
             (each [macro-name [import-key] (pairs binding)]
-              (assert (= :function (type (. subscope.macros macro-name)))
+              (assert (= :function (type (. macros* macro-name)))
                       (.. "macro " macro-name " not found in module "
                           (tostring modname)))
-              (tset scope.macros import-key (. subscope.macros macro-name))))))
+              (tset scope.macros import-key (. macros* macro-name))))))
     nil)
   
   ;;; Pattern matching
@@ -4888,12 +4953,16 @@ do
           bindings []]
       (each [k pat (pairs pattern)]
         (if (= pat `&)
-            (do
+            (let [rest-pat (. pattern (+ k 1))
+                  rest-val `(select ,k ((or table.unpack _G.unpack) ,val))
+                  subcondition (match-table `(pick-values 1 ,rest-val)
+                                            rest-pat unifications match-pattern)]
+              (if (not (sym? rest-pat))
+                  (table.insert condition subcondition))
               (assert (= nil (. pattern (+ k 2)))
                       "expected & rest argument before last parameter")
-              (table.insert bindings (. pattern (+ k 1)))
-              (table.insert bindings
-                            [`(select ,k ((or table.unpack _G.unpack) ,val))]))
+              (table.insert bindings rest-pat)
+              (table.insert bindings [rest-val]))
             (= k `&as)
             (do
               (table.insert bindings pat)
@@ -5082,17 +5151,17 @@ do
   ]===]
   local module_name = "conjure.aniseed.fennel.macros"
   local _
-  local function _608_()
+  local function _620_()
     return mod
   end
-  package.preload[module_name] = _608_
+  package.preload[module_name] = _620_
   _ = nil
   local env
   do
-    local _609_ = specials["make-compiler-env"](nil, compiler.scopes.compiler, {})
-    do end (_609_)["utils"] = utils
-    _609_["fennel"] = mod
-    env = _609_
+    local _621_ = specials["make-compiler-env"](nil, compiler.scopes.compiler, {})
+    do end (_621_)["utils"] = utils
+    _621_["fennel"] = mod
+    env = _621_
   end
   local built_ins = eval(builtin_macros, {env = env, scope = compiler.scopes.compiler, allowedGlobals = false, useMetadata = true, filename = "src/fennel/macros.fnl", moduleName = module_name})
   for k, v in pairs(built_ins) do

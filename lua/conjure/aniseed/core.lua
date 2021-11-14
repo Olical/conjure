@@ -18,18 +18,30 @@ local function rand(n)
   return (math.random() * (n or 1))
 end
 _2amodule_2a["rand"] = rand
-local function string_3f(x)
-  return ("string" == type(x))
-end
-_2amodule_2a["string?"] = string_3f
 local function nil_3f(x)
   return (nil == x)
 end
 _2amodule_2a["nil?"] = nil_3f
+local function number_3f(x)
+  return ("number" == type(x))
+end
+_2amodule_2a["number?"] = number_3f
+local function boolean_3f(x)
+  return ("boolean" == type(x))
+end
+_2amodule_2a["boolean?"] = boolean_3f
+local function string_3f(x)
+  return ("string" == type(x))
+end
+_2amodule_2a["string?"] = string_3f
 local function table_3f(x)
   return ("table" == type(x))
 end
 _2amodule_2a["table?"] = table_3f
+local function function_3f(value)
+  return ("function" == type(value))
+end
+_2amodule_2a["function?"] = function_3f
 local function count(xs)
   if table_3f(xs) then
     return table.maxn(xs)
