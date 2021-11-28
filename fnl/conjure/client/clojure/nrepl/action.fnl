@@ -455,7 +455,8 @@
         #(ui.display-result
            $1
            {:simple-out? true
-            :ignore-nil? true})))))
+            :ignore-nil? true
+            :raw-out? (cfg [:eval :raw_out])})))))
 
 (defn- run-ns-tests [ns]
   (try-ensure-conn
@@ -469,7 +470,8 @@
           #(ui.display-result
              $1
              {:simple-out? true
-              :ignore-nil? true}))))))
+              :ignore-nil? true
+              :raw-out? (cfg [:eval :raw_out])}))))))
 
 (defn run-current-ns-tests []
   (run-ns-tests (extract.context)))
@@ -514,16 +516,11 @@
                              test-name
                              (test-cfg :name-suffix)))
                  :context (extract.context)}
-                (nrepl.with-all-msgs-fn
-                  (fn [msgs]
-                    (if (and (= 2 (a.count msgs))
-                             (= "nil" (a.get (a.first msgs) :value)))
-                      (log.append ["; Success!"])
-                      (a.run! #(ui.display-result
-                                 $1
-                                 {:simple-out? true
-                                  :ignore-nil? true})
-                              msgs))))))))))))
+                #(ui.display-result
+                   $1
+                   {:simple-out? true
+                    :ignore-nil? false
+                    :raw-out? (cfg [:eval :raw_out])})))))))))
 
 (defn- refresh-impl [op]
   (server.with-conn-and-op-or-warn

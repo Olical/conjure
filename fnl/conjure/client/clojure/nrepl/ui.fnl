@@ -28,8 +28,8 @@
         (text.prefixed-lines
           (text.trim-last-newline resp.out)
           (if
-            opts.simple-out? "; "
             (or opts.raw-out? (cfg [:eval :raw_out])) ""
+            opts.simple-out? "; "
             "; (out) ")
           {:skip-first? joined?})
 
