@@ -561,7 +561,7 @@ local function run_all_tests()
     log.append({"; run-all-tests"}, {["break?"] = true})
     require_test_runner()
     local function _103_(_241)
-      return ui["display-result"](_241, {["simple-out?"] = true, ["ignore-nil?"] = true})
+      return ui["display-result"](_241, {["simple-out?"] = true, ["raw-out?"] = cfg({"test", "raw_out"}), ["ignore-nil?"] = true})
     end
     return server.eval({code = test_runner_code("all")}, _103_)
   end
@@ -574,7 +574,7 @@ local function run_ns_tests(ns)
       log.append({("; run-ns-tests: " .. ns)}, {["break?"] = true})
       require_test_runner()
       local function _105_(_241)
-        return ui["display-result"](_241, {["simple-out?"] = true, ["ignore-nil?"] = true})
+        return ui["display-result"](_241, {["simple-out?"] = true, ["raw-out?"] = cfg({"test", "raw_out"}), ["ignore-nil?"] = true})
       end
       return server.eval({code = test_runner_code("ns", ("'" .. ns))}, _105_)
     else
@@ -631,7 +631,7 @@ local function run_current_test()
             return log.append({"; Success!"})
           else
             local function _113_(_241)
-              return ui["display-result"](_241, {["simple-out?"] = true, ["ignore-nil?"] = true})
+              return ui["display-result"](_241, {["simple-out?"] = true, ["raw-out?"] = cfg({"test", "raw_out"}), ["ignore-nil?"] = true})
             end
             return a["run!"](_113_, msgs)
           end

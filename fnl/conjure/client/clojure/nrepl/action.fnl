@@ -455,6 +455,7 @@
         #(ui.display-result
            $1
            {:simple-out? true
+            :raw-out? (cfg [:test :raw_out])
             :ignore-nil? true})))))
 
 (defn- run-ns-tests [ns]
@@ -469,6 +470,7 @@
           #(ui.display-result
              $1
              {:simple-out? true
+              :raw-out? (cfg [:test :raw_out])
               :ignore-nil? true}))))))
 
 (defn run-current-ns-tests []
@@ -522,6 +524,7 @@
                       (a.run! #(ui.display-result
                                  $1
                                  {:simple-out? true
+                                  :raw-out? (cfg [:test :raw_out])
                                   :ignore-nil? true})
                               msgs))))))))))))
 

@@ -45,6 +45,7 @@
 
       :test
       {:current_form_names ["deftest"]
+       :raw_out false
        :runner "clojure"
        :call_suffix nil}
 

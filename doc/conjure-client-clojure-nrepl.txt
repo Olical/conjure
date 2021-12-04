@@ -280,6 +280,13 @@ All configuration can be set as described in |conjure-configuration|.
             More can be added through contributions where required.
             Default: `"clojure"`
 
+                                 *g:conjure#client#clojure#nrepl#test#raw_out*
+`g:conjure#client#clojure#nrepl#test#raw_out`
+            Don't prefix test output lines with `; (out)`, useful if you want
+            to work with the test results to understand why something doesn't
+            match your expected data structure, for example.
+            Default: `false`
+
                              *g:conjure#client#clojure#nrepl#test#call_suffix*
 `g:conjure#client#clojure#nrepl#test#call_suffix`
             Overrides the string appended to the end of the test runner
