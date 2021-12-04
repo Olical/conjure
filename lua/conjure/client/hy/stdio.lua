@@ -23,7 +23,7 @@ _2amodule_locals_2a["stdio"] = stdio
 _2amodule_locals_2a["str"] = str
 _2amodule_locals_2a["text"] = text
 _2amodule_locals_2a["_"] = _
-config.merge({client = {hy = {stdio = {mapping = {start = "cs", stop = "cS", interrupt = "ei"}, command = "hy --repl-output-fn=hy.contrib.hy-repr.hy-repr", prompt_pattern = "=> "}}}})
+config.merge({client = {hy = {stdio = {mapping = {start = "cs", stop = "cS", interrupt = "ei"}, command = "hy --repl-output-fn=hy.repr", prompt_pattern = "=> "}}}})
 local cfg = config["get-in-fn"]({"client", "hy", "stdio"})
 do end (_2amodule_locals_2a)["cfg"] = cfg
 local state

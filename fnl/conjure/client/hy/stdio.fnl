@@ -18,7 +18,7 @@
      {:mapping {:start "cs"
                 :stop "cS"
                 :interrupt "ei"}
-      :command "hy --repl-output-fn=hy.contrib.hy-repr.hy-repr"
+      :command "hy --repl-output-fn=hy.repr"
       :prompt_pattern "=> "}}}})
 
 (def- cfg (config.get-in-fn [:client :hy :stdio]))
