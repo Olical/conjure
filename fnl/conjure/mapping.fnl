@@ -130,7 +130,10 @@
     (client.call
       :connect
       (if (= 1 (a.count args))
-        {:port (a.first args)}
+        (let [(host port) (string.match (a.first args) "([a-zA-Z%d\\.-]+):(%d+)$")]
+          (if (and host port)
+            {:host host :port port}
+            {:port (a.first args)}))
         {:host (a.first args)
          :port (a.second args)}))))
 
