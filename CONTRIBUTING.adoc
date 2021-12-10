@@ -6,6 +6,8 @@ It's developed using itself which leads to an extremely tight feedback loop. Thi
 
 To work on Conjure you'll first need to clone the repository and execute `make deps`, then point your plugin manager at the directory.
 
+You should checkout the `develop` branch and make all changes there as well as target your pull request at the `develop` branch.
+
 Now you can open up Conjure's source files (ending in `.fnl`) and evaluate them as you would any other language with Conjure, see `:help conjure`.
 
 Your changes and evaluations only apply to the in memory copy of Conjure, use `make compile` to persist the changes as files in the `lua` directory. I commit these alongside my Fennel changes so each commit lines up with the Fennel and corresponding Lua changes.
