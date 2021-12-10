@@ -204,7 +204,9 @@
     (text.starts-with path "jar:file:")
     (string.gsub path "^jar:file:(.+)!/?(.+)$"
                  (fn [zip file]
-                   (.. "zipfile:" zip "::" file)))
+                   (if (> (tonumber (string.sub nvim.g.loaded_zipPlugin 2)) 31)
+                     (.. "zipfile://" zip "::" file)
+                     (.. "zipfile:" zip "::" file))))
 
     (text.starts-with path "file:")
     (string.gsub path "^file:(.+)$"
