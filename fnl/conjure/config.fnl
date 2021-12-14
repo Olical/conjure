@@ -65,6 +65,8 @@
    :eval
    {:result_register "c"
     :inline_results true
+    :inline {:highlight :comment
+             :prefix "=> "}
     :comment_prefix nil
     :gsubs {}}
 
