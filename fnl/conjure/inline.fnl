@@ -11,8 +11,7 @@
     ""))
 
 (defn display [opts]
-  "Display virtual text for opts.buf on opts.line containing opts.text.
-  Currently always displays under the comment highlight group."
+  "Display virtual text for opts.buf on opts.line containing opts.text."
   (local hl-group (config.get-in [:eval :inline :highlight]))
   (pcall
     (fn []
