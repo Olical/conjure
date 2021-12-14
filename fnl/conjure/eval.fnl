@@ -72,9 +72,10 @@
             (string.gsub result "%z" ""))
 
           (when (config.get-in [:eval :inline_results])
+            (local prefix (config.get-in [:eval :inline :prefix]))
             (inline.display
               {:buf buf
-               :text (.. "=> " result)
+               :text (.. prefix result)
                :line line}))
           (when f (f result)))))))
 

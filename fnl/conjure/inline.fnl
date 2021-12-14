@@ -1,5 +1,6 @@
 (module conjure.inline
   {autoload {a conjure.aniseed.core
+             config conjure.config
              nvim conjure.aniseed.nvim}})
 
 (defonce ns-id (nvim.create_namespace *module-name*))
@@ -12,11 +13,12 @@
 (defn display [opts]
   "Display virtual text for opts.buf on opts.line containing opts.text.
   Currently always displays under the comment highlight group."
+  (local hl-group (config.get-in [:eval :inline :highlight]))
   (pcall
     (fn []
       (nvim.buf_set_virtual_text
         (a.get opts :buf 0) ns-id opts.line
-        [[(sanitise-text opts.text) "comment"]]
+        [[(sanitise-text opts.text) hl-group]]
         {}))))
 
 (defn clear [opts]
