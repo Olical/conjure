@@ -25,9 +25,9 @@ local function resolve(buf_name)
 end
 _2amodule_2a["resolve"] = resolve
 local function upsert_hidden(buf_name, new_buf_fn)
-  local buf = nvim.fn.bufnr(buf_name)
-  local loaded_3f = nvim.buf_is_loaded(buf)
-  if ((-1 == buf) or not loaded_3f) then
+  local ok, buf = pcall(nvim.fn.bufnr, buf_name)
+  local loaded_3f = (ok and nvim.buf_is_loaded(buf))
+  if (not ok or ((-1 == buf) or not loaded_3f)) then
     local buf0
     if loaded_3f then
       buf0 = buf
