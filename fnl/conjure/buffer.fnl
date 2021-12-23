@@ -14,8 +14,8 @@
   (nvim.buf_get_name (nvim.fn.bufnr buf-name)))
 
 (defn upsert-hidden [buf-name new-buf-fn]
-  (let [buf (nvim.fn.bufnr buf-name)
-        loaded? (nvim.buf_is_loaded buf)]
+  (let [(ok? buf) (pcall nvim.fn.bufnr buf-name)
+        loaded? (and ok? (nvim.buf_is_loaded buf))]
     (if (or (= -1 buf) (not loaded?))
       (let [buf (if loaded?
                   buf
