@@ -328,8 +328,8 @@ Tip: Booleans in Vim Script are written as `v:true` and `v:false`.
                                                *g:conjure#eval#inline#highlight*
 `g:conjure#eval#inline#highlight`
             Sets the highlight group used for the inline results
-            Example: `EndOfBuffer`
-            Default: `Comment`
+            Example: `"EndOfBuffer"`
+            Default: `"Comment"`
 
                                                *g:conjure#eval#inline#prefix*
 `g:conjure#eval#inline#prefix`
