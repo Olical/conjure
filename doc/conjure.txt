@@ -334,8 +334,8 @@ Tip: Booleans in Vim Script are written as `v:true` and `v:false`.
                                                *g:conjure#eval#inline#prefix*
 `g:conjure#eval#inline#prefix`
             Sets the prefix used in the inline results
-            Example: `-> `
-            Default: `=> `
+            Example: `"-> "`
+            Default: `"=> "`
 
                                                *g:conjure#eval#comment_prefix*
 `g:conjure#eval#comment_prefix`
