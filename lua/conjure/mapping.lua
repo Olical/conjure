@@ -153,14 +153,19 @@ end
 _2amodule_2a["eval-ranged-command"] = eval_ranged_command
 local function connect_command(...)
   local args = {...}
-  local function _14_(...)
+  local function _15_(...)
     if (1 == a.count(args)) then
-      return {port = a.first(args)}
+      local host, port = string.match(a.first(args), "([a-zA-Z%d\\.-]+):(%d+)$")
+      if (host and port) then
+        return {host = host, port = port}
+      else
+        return {port = a.first(args)}
+      end
     else
       return {host = a.first(args), port = a.second(args)}
     end
   end
-  return client.call("connect", _14_(...))
+  return client.call("connect", _15_(...))
 end
 _2amodule_2a["connect-command"] = connect_command
 local function client_state_command(state_key)
@@ -173,11 +178,11 @@ end
 _2amodule_2a["client-state-command"] = client_state_command
 local function omnifunc(find_start_3f, base)
   if find_start_3f then
-    local _let_16_ = nvim.win_get_cursor(0)
-    local row = _let_16_[1]
-    local col = _let_16_[2]
-    local _let_17_ = nvim.buf_get_lines(0, a.dec(row), row, false)
-    local line = _let_17_[1]
+    local _let_17_ = nvim.win_get_cursor(0)
+    local row = _let_17_[1]
+    local col = _let_17_[2]
+    local _let_18_ = nvim.buf_get_lines(0, a.dec(row), row, false)
+    local line = _let_18_[1]
     return (col - a.count(nvim.fn.matchstr(string.sub(line, 1, col), "\\k\\+$")))
   else
     return eval["completions-sync"](base)
