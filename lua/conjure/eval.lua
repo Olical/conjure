@@ -70,8 +70,7 @@ local function with_last_result_hook(opts)
     local function _6_(result)
       nvim.fn.setreg(config["get-in"]({"eval", "result_register"}), string.gsub(result, "%z", ""))
       if config["get-in"]({"eval", "inline_results"}) then
-        local prefix = config["get-in"]({"eval", "inline", "prefix"})
-        inline.display({buf = buf, text = (prefix .. result), line = line})
+        inline.display({buf = buf, text = (config["get-in"]({"eval", "inline", "prefix"}) .. result), line = line})
       else
       end
       if f then
