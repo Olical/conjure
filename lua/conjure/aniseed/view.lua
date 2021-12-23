@@ -10,7 +10,9 @@ do
   _2amodule_2a["aniseed/locals"] = {}
   _2amodule_locals_2a = (_2amodule_2a)["aniseed/locals"]
 end
+local fnl = require("conjure.aniseed.fennel")
+do end (_2amodule_locals_2a)["fnl"] = fnl
 local function serialise(...)
-  return require("conjure.aniseed.deps.fennelview")(...)
+  return fnl.impl().view(...)
 end
 _2amodule_2a["serialise"] = serialise
