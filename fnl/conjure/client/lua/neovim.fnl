@@ -22,10 +22,10 @@
       (log.append [(.. comment-prefix "No REPL running")]))))
 
 (defn- display [out ret err]
-  (let [outs (->> (str.split out "\n")
+  (let [outs (->> (str.split (or out "") "\n")
               (a.filter #(~= "" $1))
               (a.map #(.. comment-prefix "(out) " $1)))
-        errs (->> (str.split err "\n")
+        errs (->> (str.split (or err "") "\n")
               (a.filter #(~= "" $1))
               (a.map #(.. comment-prefix "(err) " $1)))]
     (log.append outs)
