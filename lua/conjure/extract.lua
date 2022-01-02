@@ -173,7 +173,11 @@ local function form(opts)
 end
 _2amodule_2a["form"] = form
 local function word()
-  return {content = nvim.fn.expand("<cword>"), range = {start = nvim.win_get_cursor(0), ["end"] = nvim.win_get_cursor(0)}}
+  local cword = nvim.fn.expand("<cword>")
+  local line = nvim.fn.getline(".")
+  local cword_index = nvim.fn.strridx(line, cword, (nvim.fn.col(".") - 1))
+  local line_num = nvim.fn.line(".")
+  return {content = cword, range = {start = {line_num, cword_index}, ["end"] = {line_num, (cword_index + #cword + -1)}}}
 end
 _2amodule_2a["word"] = word
 local function file_path()
