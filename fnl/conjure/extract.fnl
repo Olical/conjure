@@ -122,12 +122,19 @@
         (a.last forms)
         (a.first forms)))))
 
+; https://stackoverflow.com/questions/15020143/vim-script-check-if-the-cursor-is-on-the-current-word/15058922
 (defn word []
-  {:content (nvim.fn.expand "<cword>")
-
-   ;; This is wrong but that's okay. I hope.
-   :range {:start (nvim.win_get_cursor 0)
-           :end (nvim.win_get_cursor 0)}})
+  (let [cword (nvim.fn.expand "<cword>")
+        line (nvim.fn.getline ".")
+        cword-index
+        (nvim.fn.strridx
+         line
+         cword
+         (- (nvim.fn.col ".") 1))
+        line-num (nvim.fn.line ".")]
+   {:content cword
+    :range {:start [line-num cword-index]
+            :end [line-num (+ cword-index (length cword) -1)]}}))
 
 (defn file-path []
   (nvim.fn.expand "%:p"))
