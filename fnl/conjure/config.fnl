@@ -52,13 +52,14 @@
    :relative_file_root nil
    :path_subs nil
 
-   :filetypes [:clojure :fennel :janet :hy :racket :scheme]
+   :filetypes [:clojure :fennel :janet :hy :racket :scheme :lua]
    :filetype {:clojure :conjure.client.clojure.nrepl
               :fennel :conjure.client.fennel.aniseed
               :janet :conjure.client.janet.netrepl
               :hy :conjure.client.hy.stdio
               :racket :conjure.client.racket.stdio
-              :scheme :conjure.client.scheme.stdio}
+              :scheme :conjure.client.scheme.stdio
+              :lua :conjure.client.lua.neovim}
    :filetype_suffixes {:racket [:rkt]
                        :scheme [:scm]}
 
