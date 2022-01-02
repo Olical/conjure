@@ -166,7 +166,8 @@ local function current_form(extra_opts)
     local _let_19_ = form
     local content = _let_19_["content"]
     local range = _let_19_["range"]
-    eval_str(a.merge({code = content, range = range, origin = "current-form"}, extra_opts))
+    local node_type = _let_19_["node-type"]
+    eval_str(a.merge({code = content, range = range, ["node-type"] = node_type, origin = "current-form"}, extra_opts))
     return form
   else
     return nil
@@ -181,11 +182,12 @@ local function replace_form()
     local _let_21_ = form
     local content = _let_21_["content"]
     local range = _let_21_["range"]
+    local node_type = _let_21_["node-type"]
     local function _22_(result)
       buffer["replace-range"](buf, range, result)
       return editor["go-to"](win, a["get-in"](range, {"start", 1}), a.inc(a["get-in"](range, {"start", 2})))
     end
-    eval_str({code = content, range = range, origin = "replace-form", ["suppress-hud?"] = true, ["on-result"] = _22_})
+    eval_str({code = content, range = range, ["node-type"] = node_type, origin = "replace-form", ["suppress-hud?"] = true, ["on-result"] = _22_})
     return form
   else
     return nil
@@ -198,7 +200,8 @@ local function root_form()
     local _let_24_ = form
     local content = _let_24_["content"]
     local range = _let_24_["range"]
-    return eval_str({code = content, range = range, origin = "root-form"})
+    local node_type = _let_24_["node-type"]
+    return eval_str({code = content, range = range, ["node-type"] = node_type, origin = "root-form"})
   else
     return nil
   end

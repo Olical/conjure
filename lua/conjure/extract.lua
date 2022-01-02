@@ -150,7 +150,7 @@ local function form(opts)
       node = ts["get-form"]()
     end
     if node then
-      return {range = ts.range(node), content = ts["node->str"](node)}
+      return {range = ts.range(node), content = ts["node->str"](node), ["node-type"] = tostring(node)}
     else
       return nil
     end
