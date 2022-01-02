@@ -862,6 +862,10 @@ See `fnl/conjure/client/clojure/nrepl/init.fnl` for an example of this.
                  String to be embedded in your evaluation. You can wrap it
                  with whatever padding code you require. This is what the user
                  selected for evaluation.
+             - `opts.node-type`
+                 The tree-sitter node type associated with the string. It's
+                 non-nil only if tree-sitter support is enabled and origin is
+                 one of "current-form", "replace-form", "root-form".
              - `opts.context`
                  String extracted using `context-pattern` or `nil` if nothing
                  could be found. At that point you should default it to
