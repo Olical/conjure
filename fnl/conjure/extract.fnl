@@ -105,7 +105,8 @@
                  (ts.get-form))]
       (when node
         {:range (ts.range node)
-         :content (ts.node->str node)}))
+         :content (ts.node->str node)
+         :node-type (tostring node)}))
     (do
       (local forms
         (->> (config.get-in [:extract :form_pairs])

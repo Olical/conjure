@@ -143,11 +143,12 @@
 (defn current-form [extra-opts]
   (let [form (extract.form {})]
     (when form
-      (let [{: content : range} form]
+      (let [{: content : range : node-type} form]
         (eval-str
           (a.merge
             {:code content
              :range range
+             :node-type node-type
              :origin :current-form}
             extra-opts))
         form))))
@@ -157,10 +158,11 @@
         win (nvim.tabpage_get_win 0)
         form (extract.form {})]
     (when form
-      (let [{: content : range} form]
+      (let [{: content : range : node-type} form]
         (eval-str
           {:code content
            :range range
+           :node-type node-type
            :origin :replace-form
            :suppress-hud? true
            :on-result
@@ -177,10 +179,11 @@
 (defn root-form []
   (let [form (extract.form {:root? true})]
     (when form
-      (let [{: content : range} form]
+      (let [{: content : range : node-type} form]
         (eval-str
           {:code content
            :range range
+           :node-type node-type
            :origin :root-form})))))
 
 (defn marked-form [mark]
