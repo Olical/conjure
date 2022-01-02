@@ -45,7 +45,7 @@ local function display(out, ret, err)
   local function _3_(_241)
     return ("" ~= _241)
   end
-  outs = a.map(_2_, a.filter(_3_, str.split(out, "\n")))
+  outs = a.map(_2_, a.filter(_3_, str.split((out or ""), "\n")))
   local errs
   local function _4_(_241)
     return (comment_prefix .. "(err) " .. _241)
@@ -53,7 +53,7 @@ local function display(out, ret, err)
   local function _5_(_241)
     return ("" ~= _241)
   end
-  errs = a.map(_4_, a.filter(_5_, str.split(err, "\n")))
+  errs = a.map(_4_, a.filter(_5_, str.split((err or ""), "\n")))
   log.append(outs)
   log.append(errs)
   return log.append({vim.inspect(ret)})
@@ -112,7 +112,6 @@ end
 _2amodule_locals_2a["lua-eval"] = lua_eval
 local function eval_str(opts)
   local out, ret, err = lua_eval(opts.code)
-  print("out is", out)
   display(out, ret, err)
   if opts["on-result"] then
     local on_result = opts["on-result"]
