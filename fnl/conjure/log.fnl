@@ -13,7 +13,8 @@
 
 (defonce- state
   {:hud {:id nil
-         :timer nil}})
+         :timer nil
+         :created-at-ms 0}})
 
 (defn- break []
   (.. (client.get :comment-prefix)
@@ -50,8 +51,13 @@
     (pcall nvim.win_close state.hud.id true)
     (set state.hud.id nil)))
 
+(defn hud-lifetime-ms []
+  (- (vim.loop.now) state.hud.created-at-ms))
+
 (defn close-hud-passive []
-  (when state.hud.id
+  (when (and state.hud.id
+             (> (hud-lifetime-ms)
+                (config.get-in [:log :hud :minimum_lifetime_ms])))
     (let [original-timer-id state.hud.timer-id
           delay (config.get-in [:log :hud :passive_close_delay])]
       (if (= 0 delay)
@@ -170,6 +176,8 @@
         (do
           (set state.hud.id (nvim.open_win buf false win-opts))
           (set-win-opts! state.hud.id)))
+
+      (set state.hud.created-at-ms (vim.loop.now))
 
       (if last-break
         (do

@@ -114,6 +114,7 @@
           :height 0.3
           :enabled true
           :passive_close_delay 0
+          :minimum_lifetime_ms 20
           :overlap_padding 0.1
           :border :single
           :anchor :NE}

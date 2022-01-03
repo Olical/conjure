@@ -23,7 +23,7 @@ _2amodule_locals_2a["text"] = text
 _2amodule_locals_2a["timer"] = timer
 _2amodule_locals_2a["view"] = view
 _2amodule_locals_2a["sponsors"] = sponsors
-local state = (state or {hud = {id = nil, timer = nil}})
+local state = (state or {hud = {id = nil, timer = nil, ["created-at-ms"] = 0}})
 do end (_2amodule_locals_2a)["state"] = state
 local function _break()
   return (client.get("comment-prefix") .. string.rep("-", config["get-in"]({"log", "break_length"})))
@@ -64,8 +64,12 @@ local function close_hud()
   end
 end
 _2amodule_2a["close-hud"] = close_hud
+local function hud_lifetime_ms()
+  return (vim.loop.now() - state.hud["created-at-ms"])
+end
+_2amodule_2a["hud-lifetime-ms"] = hud_lifetime_ms
 local function close_hud_passive()
-  if state.hud.id then
+  if (state.hud.id and (hud_lifetime_ms() > config["get-in"]({"log", "hud", "minimum_lifetime_ms"}))) then
     local original_timer_id = state.hud["timer-id"]
     local delay = config["get-in"]({"log", "hud", "passive_close_delay"})
     if (0 == delay) then
@@ -199,6 +203,7 @@ local function display_hud()
       state.hud.id = nvim.open_win(buf, false, win_opts)
       set_win_opts_21(state.hud.id)
     end
+    state.hud["created-at-ms"] = vim.loop.now()
     if last_break then
       nvim.win_set_cursor(state.hud.id, {1, 0})
       return nvim.win_set_cursor(state.hud.id, {math.min((last_break + a.inc(math.floor((win_opts.height / 2)))), line_count), 0})

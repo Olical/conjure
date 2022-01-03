@@ -535,6 +535,14 @@ Tip: Booleans in Vim Script are written as `v:true` and `v:false`.
             disable the mechanic entirely and close instantly.
             Default: `0`
 
+                                       *g:conjure#log#hud#minimum_lifetime_ms*
+`g:conjure#log#hud#minimum_lifetime_ms`
+            A minimum amount of milliseconds that must have passed since the
+            HUD opened before it'll be passively closed from cursor movement.
+            This delay means evaluations that involve cursor movement etc
+            won't close the HUD the moment it displays.
+            Default: `20`
+
                                            *g:conjure#log#hud#overlap_padding*
 `g:conjure#log#hud#overlap_padding`
             Extra space checked around the HUD window for the cursor. If it's
