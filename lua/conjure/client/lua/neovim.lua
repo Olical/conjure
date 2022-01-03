@@ -56,7 +56,7 @@ local function display(out, ret, err)
   errs = a.map(_4_, a.filter(_5_, str.split((err or ""), "\n")))
   log.append(outs)
   log.append(errs)
-  return log.append({vim.inspect(ret)})
+  return log.append(str.split(vim.inspect(ret), "\n"))
 end
 _2amodule_locals_2a["display"] = display
 local print_original = _G.print
