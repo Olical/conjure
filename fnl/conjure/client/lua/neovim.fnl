@@ -70,11 +70,10 @@
 
 (defn eval-str [opts]
   (let [(out ret err) (lua-eval opts.code)]
-   (do
-     (display out ret err)
-     (when (. opts :on-result)
-      (let [on-result (. opts :on-result)]
-       ((. opts :on-result) (vim.inspect ret)))))))
+   (display out ret err)
+   (when (. opts :on-result)
+    (let [on-result (. opts :on-result)]
+     ((. opts :on-result) (vim.inspect ret))))))
 
 (defn eval-file [opts]
   (redirect)
