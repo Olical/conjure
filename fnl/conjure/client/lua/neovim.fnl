@@ -30,7 +30,7 @@
               (a.map #(.. comment-prefix "(err) " $1)))]
     (log.append outs)
     (log.append errs)
-    (log.append [(vim.inspect ret)])))
+    (log.append (str.split (vim.inspect ret) "\n"))))
 
 (def- print_original _G.print)
 (def- io_write_original _G.io.write)
