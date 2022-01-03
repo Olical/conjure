@@ -55,9 +55,7 @@
 
 (defn- lua-try-compile [codes]
  (let [(f e) (load (.. "return (" codes "\n)"))]
-  (if (not f)
-   (load codes)
-   (values f e))))
+  (if f (values f e) (load codes))))
 
 (defn- lua-eval [codes]
   (let [(f e) (lua-try-compile codes)]
