@@ -88,10 +88,10 @@ end
 _2amodule_locals_2a["end-redirect"] = end_redirect
 local function lua_try_compile(codes)
   local f, e = load(("return (" .. codes .. "\n)"))
-  if not f then
-    return load(codes)
-  else
+  if f then
     return f, e
+  else
+    return load(codes)
   end
 end
 _2amodule_locals_2a["lua-try-compile"] = lua_try_compile
