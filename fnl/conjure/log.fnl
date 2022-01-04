@@ -162,7 +162,8 @@
             (when (= 1 (nvim.fn.has "nvim-0.5"))
               {:border border}))]
 
-      (when (not (nvim.win_is_valid state.hud.id))
+      (when (and state.hud.id
+                 (not (nvim.win_is_valid state.hud.id)))
         (close-hud))
 
       (if state.hud.id
