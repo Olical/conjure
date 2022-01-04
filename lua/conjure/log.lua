@@ -193,7 +193,7 @@ local function display_hud()
       end
     end
     win_opts = a.merge({relative = "editor", row = pos.row, col = pos.col, anchor = pos.anchor, width = size.width, height = size.height, focusable = false, style = "minimal"}, _18_())
-    if (state.hud.id and not nvim.win_is_valid(state.hud.id)) then
+    if not nvim.win_is_valid(state.hud.id) then
       close_hud()
     else
     end
