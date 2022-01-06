@@ -12,6 +12,12 @@
 (def buf-suffix ".lisp")
 (def comment-prefix "; ")
 
+;; ------------ common lisp client
+;; Can parse simple forms
+;; and return the result.
+;; will also display the stdout
+;; in the log, when present.
+
 (config.merge
   {:client
    {:common-lisp
