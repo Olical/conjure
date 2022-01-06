@@ -48,10 +48,27 @@
       (display-conn-status :disconnected)
       (a.assoc (state) :conn nil))))
 
+(defn- escape-string [in]
+  "puts leading slashes infront of \\ and \"
+  so that swank can correctly interpret the results."
+  (fn replace [in pat rep]
+    (let [(s c) (string.gsub in pat rep)] s))
+  (-> in
+      (replace "\\" "\\\\")
+      (replace "\"" "\\\"")))
+
 (defn- send [msg cb]
   (with-conn-or-warn
     (fn [conn]
-      (remote.send conn msg cb))))
+      ;; TODO: the '1' at the end is indicating the expression given
+      ;; and should be incremented at each call
+      ;; this is so the results that return can be married up to the
+      ;; expression that is sent, asynchronously.
+      (remote.send conn
+                   (.. "(:emacs-rex (swank:eval-and-grab-output \"" 
+                       (escape-string msg)
+                       "\") \"cl-user\" t 1)")
+                   cb))))
 
 (defn connect [opts]
   (let [opts (or opts {})
@@ -89,7 +106,7 @@
 (defn eval-str [opts]
   (try-ensure-conn)
   (send
-    (.. "(:emacs-rex (swank:eval-and-grab-output \"" opts.code "\") \"cl-user\" t 1)")
+    opts.code
     (fn [msg]
       (log.append ["callback result " msg]))))
       ; (let [clean (text.trim-last-newline msg)]

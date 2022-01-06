@@ -8,7 +8,7 @@
 
 (defn send [conn msg cb]
   "Send a message to the given connection, call the callback when a response is received."
-  (log.dbg "send" msg)
+  ; (log.dbg "send" msg)
   (table.insert conn.queue 1 (or cb false))
   (conn.sock:write (trn.encode msg))
   nil)
@@ -32,8 +32,7 @@
       (opts.on-error err)
       (->> (conn.decode chunk)
            ((fn [msg]
-              (log.append ["here"])
-              (a.println (.. "receive" msg))
+              ; (log.dbg "receive" msg)
               (let [cb (table.remove conn.queue)]
                 (when cb
                   (cb msg))))))))
@@ -56,10 +55,3 @@
   ; (send conn (or opts.name "Conjure"))
   conn)
 
-; (def c (connect {:host "127.0.0.1"
-;                  :port "4005"
-;                  :on-failure (fn [err] (a.println "oh no" err))
-;                  :on-success (fn [] (a.println "Yay!"))
-;                  :on-error (fn [err] (a.println "uh oh" err))}))
-; (send c "(:emacs-rex (swank:eval-and-grab-output \"(* 3 2)\") \"cl-user\" t 1)" log.append)
-;(send c "(:emacs-rex (swank:list-all-package-names t) \"cl-user\" t 1)" log.dbg)
