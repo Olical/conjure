@@ -195,19 +195,38 @@
   ;;finally return vals
   vals)
 
+(defn parse-result [received]
+  "Given the form (:return (:ok (\"\" \"(1 2 \\\"3\\\" 4)\")) 1) we want)])
+  to extract both 
+  - the stdout, which is the first delimited quoted component
+  - the result, which is the second delimited quoted component 
+  
+  If there has been an error, it will not look like a result, so more parsing
+  will be needed"
+  (fn result? [response]
+    (text.starts-with response "(:return (:ok ("))
+
+  ;;TODO - parse debug messages properly and show them in a nice way
+  ;; I'm not sure what the proper conjure way is here. 
+  (when (not (result? received))
+    ;;super hack; taking out the first quoted component and hoping it is
+    ;; a nice message.
+    (let [(msg) (pick-values 1 (parse-separated-list received))]
+      (log.dbg (. msg 1))))
+
+  (when (result? received)
+    (unpack (parse-separated-list (inner-results received)))))
+
 (defn eval-str [opts]
   (try-ensure-conn)
   (send
     opts.code
     (fn [msg]
-      (log.append ["callback result " msg]))))
-      ; (let [clean (text.trim-last-newline msg)]
-      ;   (when opts.on-result
-      ;     ;; ANSI escape trimming happens here AND in log append (if enabled)
-      ;     ;; so the "eval and replace form" won't end up inserting ANSI codes.
-      ;     (opts.on-result (text.strip-ansi-escape-sequences clean)))
-      ;   (when (not opts.passive?)
-      ;     (log.append (text.split-lines clean)))))))
+      (let [(stdout result) (parse-result msg)]
+        (display-stdout stdout)
+        (when (not= nil result)
+          (when opts.on-result (opts.on-result result))
+          (when (not opts.passive?) (log.append (text.split-lines result))))))))
 
 ; Needs to be adjusted
 ; (defn doc-str [opts]

@@ -203,12 +203,46 @@ local function parse_separated_list(string_to_parse)
   return vals
 end
 _2amodule_locals_2a["parse-separated-list"] = parse_separated_list
+local function parse_result(received)
+  local function result_3f(response)
+    return text["starts-with"](response, "(:return (:ok (")
+  end
+  if not result_3f(received) then
+    local msg
+    do
+      local _23_ = parse_separated_list(received)
+      msg = _23_
+    end
+    log.dbg(msg[1])
+  else
+  end
+  if result_3f(received) then
+    return unpack(parse_separated_list(inner_results(received)))
+  else
+    return nil
+  end
+end
+_2amodule_2a["parse-result"] = parse_result
 local function eval_str(opts)
   try_ensure_conn()
-  local function _23_(msg)
-    return log.append({"callback result ", msg})
+  local function _26_(msg)
+    local stdout, result = parse_result(msg)
+    display_stdout(stdout)
+    if (nil ~= result) then
+      if opts["on-result"] then
+        opts["on-result"](result)
+      else
+      end
+      if not opts["passive?"] then
+        return log.append(text["split-lines"](result))
+      else
+        return nil
+      end
+    else
+      return nil
+    end
   end
-  return send(opts.code, _23_)
+  return send(opts.code, _26_)
 end
 _2amodule_2a["eval-str"] = eval_str
 local function on_filetype()
