@@ -113,12 +113,102 @@ local function try_ensure_conn()
   end
 end
 _2amodule_locals_2a["try-ensure-conn"] = try_ensure_conn
+local function string_stream(str)
+  local index = 1
+  local function _13_()
+    local r = str:byte(index)
+    index = (index + 1)
+    return r
+  end
+  return _13_
+end
+_2amodule_locals_2a["string-stream"] = string_stream
+local function display_stdout(msg)
+  if ((nil ~= msg) and ("" ~= msg)) then
+    return log.append({("\"" .. msg .. "\"")})
+  else
+    return nil
+  end
+end
+_2amodule_locals_2a["display-stdout"] = display_stdout
+local function inner_results(received)
+  local search_string = "(:return (:ok ("
+  local tail_size = 5
+  local idx, len = string.find(received, search_string, 1, true)
+  return string.sub(received, (idx + len), (string.len(received) - tail_size))
+end
+_2amodule_locals_2a["inner-results"] = inner_results
+local function parse_separated_list(string_to_parse)
+  local opened_quote = nil
+  local escaped = false
+  local stack = {}
+  local vals = {}
+  local slash_byte = string.byte("\\")
+  local quote_byte = string.byte("\"")
+  local function maybe_insert(b)
+    if opened_quote then
+      table.insert(stack, b)
+      escaped = false
+      return nil
+    else
+      return nil
+    end
+  end
+  local function maybe_close(b)
+    if opened_quote then
+      if not escaped then
+        opened_quote = false
+        table.insert(vals, string.char(unpack(stack)))
+        stack = {}
+      else
+      end
+      if escaped then
+        return maybe_insert(b)
+      else
+        return nil
+      end
+    else
+      if escaped then
+        log.dbg("Received an escaped quote outside of expected values")
+      else
+      end
+      opened_quote = true
+      return nil
+    end
+  end
+  local function slash_escape(b)
+    if escaped then
+      return maybe_insert(b)
+    else
+      escaped = true
+      return nil
+    end
+  end
+  local function dispatch(b)
+    local _21_ = b
+    if (_21_ == slash_byte) then
+      return slash_escape(b)
+    elseif (_21_ == quote_byte) then
+      return maybe_close(b)
+    elseif true then
+      local _ = _21_
+      return maybe_insert(b)
+    else
+      return nil
+    end
+  end
+  for b in string_stream(string_to_parse) do
+    dispatch(b)
+  end
+  return vals
+end
+_2amodule_locals_2a["parse-separated-list"] = parse_separated_list
 local function eval_str(opts)
   try_ensure_conn()
-  local function _13_(msg)
+  local function _23_(msg)
     return log.append({"callback result ", msg})
   end
-  return send(opts.code, _13_)
+  return send(opts.code, _23_)
 end
 _2amodule_2a["eval-str"] = eval_str
 local function on_filetype()
