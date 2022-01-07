@@ -23,7 +23,7 @@ _2amodule_locals_2a["text"] = text
 _2amodule_locals_2a["timer"] = timer
 _2amodule_locals_2a["view"] = view
 _2amodule_locals_2a["sponsors"] = sponsors
-local state = (state or {hud = {id = nil, timer = nil, ["created-at-ms"] = 0}})
+local state = (state or {["last-open-cmd"] = nil, hud = {id = nil, timer = nil, ["created-at-ms"] = 0}})
 do end (_2amodule_locals_2a)["state"] = state
 local function _break()
   return (client.get("comment-prefix") .. string.rep("-", config["get-in"]({"log", "break_length"})))
@@ -370,6 +370,7 @@ local function append(lines, opts)
 end
 _2amodule_2a["append"] = append
 local function create_win(cmd)
+  state["last-open-cmd"] = cmd
   local buf = upsert_buf()
   local function _50_()
     if config["get-in"]({"log", "botright"}) then
@@ -396,18 +397,39 @@ local function tab()
   return create_win("tabnew")
 end
 _2amodule_2a["tab"] = tab
-local function close_visible()
+local function find_windows()
   local buf = upsert_buf()
-  close_hud()
-  local function _51_(_241)
+  local function _51_(win)
+    return ((state.hud.id ~= win) and (buf == nvim.win_get_buf(win)))
+  end
+  return a.filter(_51_, nvim.tabpage_list_wins(0))
+end
+_2amodule_locals_2a["find-windows"] = find_windows
+local function close(windows)
+  local function _52_(_241)
     return nvim.win_close(_241, true)
   end
-  local function _52_(win)
-    return (buf == nvim.win_get_buf(win))
-  end
-  return a["run!"](_51_, a.filter(_52_, nvim.tabpage_list_wins(0)))
+  return a["run!"](_52_, windows)
+end
+_2amodule_locals_2a["close"] = close
+local function close_visible()
+  close_hud()
+  return close(find_windows())
 end
 _2amodule_2a["close-visible"] = close_visible
+local function toggle()
+  local windows = find_windows()
+  if a["empty?"](windows) then
+    if state["last-open-cmd"] then
+      return create_win(state["last-open-cmd"])
+    else
+      return nil
+    end
+  else
+    return close_visible(windows)
+  end
+end
+_2amodule_2a["toggle"] = toggle
 local function dbg(desc, ...)
   if config["get-in"]({"debug"}) then
     append(a.concat({(client.get("comment-prefix") .. "debug: " .. desc)}, text["split-lines"](a["pr-str"](...))))
