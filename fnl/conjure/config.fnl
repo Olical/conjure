@@ -77,6 +77,7 @@
     :log_split "ls"
     :log_vsplit "lv"
     :log_tab "lt"
+    :log_buf "ll"
     :log_close_visible "lq"
     :log_reset_soft "lr"
     :log_reset_hard "lR"
