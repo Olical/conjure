@@ -92,6 +92,10 @@ I've also included some commands since they're related to the mappings.
                          large output. Just close the window to close the tab
                          when you're done and return to your previous layout.
 
+<localleader>ll          Open the log buffer in your current window. Just
+                         jump back (with e.g. |Ctrl-O|) when you're done and
+                         return to your previous buffer.
+
 <localleader>lq          Close all visible log windows in your current tab.
                          Other tabs will remain unaffected.
 
