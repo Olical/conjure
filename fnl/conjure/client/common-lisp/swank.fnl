@@ -119,9 +119,8 @@
 
 (defn- display-stdout [msg]
   (when (and (not= nil msg) (not= "" msg))
-    ;; I'm not actually sure what the correct way to display
-    ;; stdout in conjure is; so I went with this.
-    (log.append [(.. "\"" msg "\"")])))
+    (log.append (text.prefixed-lines msg comment-prefix))))
+
 
 (defn- inner-results [received]
   "A string of '(:return (:ok (blah)) 1)' should just give us the blah"
@@ -218,7 +217,7 @@
     ;;super hack; taking out the first quoted component and hoping it is
     ;; a nice message.
     (let [(msg) (pick-values 1 (parse-separated-list received))]
-      (log.dbg (. msg 1))))
+      (display-stdout (. msg 1))))
 
   (when (result? received)
     (unpack (parse-separated-list (inner-results received)))))
@@ -234,16 +233,14 @@
           (when opts.on-result (opts.on-result result))
           (when (not opts.passive?) (log.append (text.split-lines result))))))))
 
-; Needs to be adjusted
-; (defn doc-str [opts]
-;   (try-ensure-conn)
-;   (eval-str (a.update opts :code #(.. "(doc " $1 ")"))))
+(defn doc-str [opts]
+  (try-ensure-conn)
+  (eval-str (a.update opts :code #(.. "(describe #'" $1 ")"))))
 
-; (defn eval-file [opts]
-;   (try-ensure-conn)
-;   (eval-str
-;     (a.assoc opts :code (.. "(do (dofile \"" opts.file-path
-;                             "\" :env (fiber/getenv (fiber/current))) nil)"))))
+(defn eval-file [opts]
+  (try-ensure-conn)
+  (eval-str
+    (a.assoc opts :code (.. "(load \"" opts.file-path "\")"))))
 
 (defn on-filetype []
   (mapping.buf :n :CommonLispDisconnect

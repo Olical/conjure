@@ -5,10 +5,14 @@
 
 ;; We can define functions
 (defun some-function (a b c)
+  "This is a function that prints the first var
+  and adds the second two"
   (princ a)
   (+ b c))
 
-;; Then we can call it:
+
+
+;; Then we can call it: (press K for documentation
 (some-function 1 2 3)
 
 (reverse

@@ -125,7 +125,7 @@ end
 _2amodule_locals_2a["string-stream"] = string_stream
 local function display_stdout(msg)
   if ((nil ~= msg) and ("" ~= msg)) then
-    return log.append({("\"" .. msg .. "\"")})
+    return log.append(text["prefixed-lines"](msg, comment_prefix))
   else
     return nil
   end
@@ -213,7 +213,7 @@ local function parse_result(received)
       local _23_ = parse_separated_list(received)
       msg = _23_
     end
-    log.dbg(msg[1])
+    display_stdout(msg[1])
   else
   end
   if result_3f(received) then
@@ -245,6 +245,19 @@ local function eval_str(opts)
   return send(opts.code, _26_)
 end
 _2amodule_2a["eval-str"] = eval_str
+local function doc_str(opts)
+  try_ensure_conn()
+  local function _30_(_241)
+    return ("(describe #'" .. _241 .. ")")
+  end
+  return eval_str(a.update(opts, "code", _30_))
+end
+_2amodule_2a["doc-str"] = doc_str
+local function eval_file(opts)
+  try_ensure_conn()
+  return eval_str(a.assoc(opts, "code", ("(load \"" .. opts["file-path"] .. "\")")))
+end
+_2amodule_2a["eval-file"] = eval_file
 local function on_filetype()
   mapping.buf("n", "CommonLispDisconnect", config["get-in"]({"client", "common-lisp", "swank", "mapping", "disconnect"}), "conjure.client.common-lisp", "disconnect")
   return mapping.buf("n", "CommonLispConnect", config["get-in"]({"client", "common-lisp", "swank", "mapping", "connect"}), "conjure.client.common-lisp", "connect")
