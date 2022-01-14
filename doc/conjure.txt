@@ -397,6 +397,11 @@ Tip: Booleans in Vim Script are written as `v:true` and `v:false`.
             Hard reset the log buffer by deleting the entire buffer.
             Default: `"lR"`
 
+                                        *g:conjure#mapping#log_jump_to_latest*
+`g:conjure#mapping#log_jump_to_latest`
+            Set cursor to top of latest evaluation result.
+            Default: `"ll"`
+
                                          *g:conjure#mapping#log_close_visible*
 `g:conjure#mapping#log_close_visible`
             Close all visible log windows.
@@ -624,6 +629,18 @@ Tip: Booleans in Vim Script are written as `v:true` and `v:false`.
 `g:conjure#log#fold#marker#end`
             Marker to use to represent the end of a log fold.
             Default: `"}%~~~"`
+
+                                        *g:conjure#log#jump_to_latest#enabled*
+`g:conjure#log#jump_to_latest#enabled`
+            Should the log buffer always set cursor to the top of the latest
+            evaluation output?
+            Default: `false`
+
+                                 *g:conjure#log#jump_to_latest#scroll_command*
+`g:conjure#log#jump_to_latest#scroll_command`
+            Command to set how the cursor be positioned at in the log.
+            `"zz"` for centering, `"zt"` for top, and `"zb"` for bottom.
+            Default: `"zz"`
 
                                       *g:conjure#extract#context_header_lines*
 `g:conjure#extract#context_header_lines`

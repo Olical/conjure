@@ -242,6 +242,15 @@
       (or buf (upsert-buf))
       (+ -2 (or extra-offset 0)) -1 false)))
 
+(defn jump-to-latest []
+  (let [buf (upsert-buf)
+        last-eval-start (nvim.buf_get_mark buf "E")]
+    (with-buf-wins
+      buf
+      (fn [win]
+        (nvim.win_set_cursor win last-eval-start)
+        (nvim.win_call win (fn [] (nvim.command (.. "norm " (config.get-in [:log :jump_to_latest :scroll_command])))))))))
+
 (defn append [lines opts]
   (let [line-count (a.count lines)]
     (when (> line-count 0)
@@ -326,17 +335,21 @@
             (error (.. "Conjure failed to append to log: " err "\n"
                        "Offending lines: " (a.pr-str lines)))))
 
-        (let [new-lines (nvim.buf_line_count buf)]
+        (let [new-lines (nvim.buf_line_count buf)
+              jump-to-latest? (config.get-in [:log :jump_to_latest :enabled])]
+          (nvim.buf_set_mark buf "E" old-lines 1 [])
           (with-buf-wins
             buf
             (fn [win]
-              (let [[row col] (nvim.win_get_cursor win)]
-                (when (and (not= win state.hud.id)
-                           (win-visible? win)
-                           (>= (win-botline win) old-lines))
-                  (set visible-scrolling-log? true))
+              (set visible-scrolling-log? (and (not= win state.hud.id)
+                                               (win-visible? win)
+                                               (or jump-to-latest?
+                                                   (>= (win-botline win) old-lines))))
+              (let [[row _] (nvim.win_get_cursor win)]
+                (if jump-to-latest?
+                  (jump-to-latest)
 
-                (when (= row old-lines)
+                  (= row old-lines)
                   (nvim.win_set_cursor win [new-lines 0]))))))
 
         (if (and (not (a.get opts :suppress-hud?))

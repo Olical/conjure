@@ -59,6 +59,7 @@
   (buf :n :LogCloseVisible (cfg :log_close_visible) :conjure.log :close-visible)
   (buf :n :LogResetSoft (cfg :log_reset_soft) :conjure.log :reset-soft)
   (buf :n :LogResetHard (cfg :log_reset_hard) :conjure.log :reset-hard)
+  (buf :n :LogJumpToLatest (cfg :log_jump_to_latest) :conjure.log :jump-to-latest)
 
   (buf :n nil (cfg :eval_motion) ":set opfunc=ConjureEvalMotion<cr>g@")
 
