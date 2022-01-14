@@ -82,6 +82,7 @@
     :log_close_visible "lq"
     :log_reset_soft "lr"
     :log_reset_hard "lR"
+    :log_jump_to_latest "ll"
 
     :eval_current_form "ee"
     :eval_comment_current_form "ece"
@@ -121,6 +122,8 @@
           :border :single
           :anchor :NE}
     :botright false
+    :jump_to_latest {:enabled false
+                     :scroll_command "zz"}
     :break_length 80
     :trim {:at 10000
            :to 6000}
