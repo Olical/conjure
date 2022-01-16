@@ -16,7 +16,7 @@
    :hud {:id nil
          :timer nil
          :created-at-ms 0}
-   :jump_to_latest {:mark nil
+   :jump-to-latest {:mark nil
                     :ns (nvim.create_namespace "conjure_log_jump_to_latest")}})
 
 (defn- break []
@@ -33,8 +33,8 @@
   (text.ends-with name (log-buf-name)))
 
 (defn- on-new-log-buf [buf]
-  (set state.jump_to_latest.mark
-       (nvim.buf_set_extmark buf state.jump_to_latest.ns 0 0 {}))
+  (set state.jump-to-latest.mark
+       (nvim.buf_set_extmark buf state.jump-to-latest.ns 0 0 {}))
 
   (nvim.buf_set_lines
     buf 0 -1 false
@@ -257,8 +257,8 @@
 (defn jump-to-latest []
   (let [buf (upsert-buf)
         last-eval-start (nvim.buf_get_extmark_by_id
-                          buf state.jump_to_latest.ns
-                          state.jump_to_latest.mark {})]
+                          buf state.jump-to-latest.ns
+                          state.jump-to-latest.mark {})]
     (with-buf-wins
       buf
       (fn [win]
@@ -357,9 +357,9 @@
         (let [new-lines (nvim.buf_line_count buf)
               jump-to-latest? (config.get-in [:log :jump_to_latest :enabled])]
           (nvim.buf_set_extmark
-            buf state.jump_to_latest.ns
+            buf state.jump-to-latest.ns
             (a.inc old-lines) 0
-            {:id state.jump_to_latest.mark})
+            {:id state.jump-to-latest.mark})
           (with-buf-wins
             buf
             (fn [win]
