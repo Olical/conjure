@@ -394,7 +394,7 @@ Tip: Booleans in Vim Script are written as `v:true` and `v:false`.
                                                    *g:conjure#mapping#log_buf*
 `g:conjure#mapping#log_buf`
             Opens the log in the current window.
-            Default: `"ll"`
+            Default: `"le"`
 
                                             *g:conjure#mapping#log_reset_soft*
 `g:conjure#mapping#log_reset_soft`
