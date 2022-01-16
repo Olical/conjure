@@ -396,14 +396,18 @@ local function tab()
   return create_win("tabnew")
 end
 _2amodule_2a["tab"] = tab
+local function buf()
+  return create_win("buf")
+end
+_2amodule_2a["buf"] = buf
 local function close_visible()
-  local buf = upsert_buf()
+  local buf0 = upsert_buf()
   close_hud()
   local function _51_(_241)
     return nvim.win_close(_241, true)
   end
   local function _52_(win)
-    return (buf == nvim.win_get_buf(win))
+    return (buf0 == nvim.win_get_buf(win))
   end
   return a["run!"](_51_, a.filter(_52_, nvim.tabpage_list_wins(0)))
 end

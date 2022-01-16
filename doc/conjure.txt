@@ -92,6 +92,10 @@ I've also included some commands since they're related to the mappings.
                          large output. Just close the window to close the tab
                          when you're done and return to your previous layout.
 
+<localleader>ll          Open the log buffer in your current window. Just
+                         jump back (with e.g. |Ctrl-O|) when you're done and
+                         return to your previous buffer.
+
 <localleader>lq          Close all visible log windows in your current tab.
                          Other tabs will remain unaffected.
 
@@ -386,6 +390,11 @@ Tip: Booleans in Vim Script are written as `v:true` and `v:false`.
 `g:conjure#mapping#log_tab`
             Opens the log in a new tab.
             Default: `"lt"`
+
+                                                   *g:conjure#mapping#log_buf*
+`g:conjure#mapping#log_buf`
+            Opens the log in the current window.
+            Default: `"ll"`
 
                                             *g:conjure#mapping#log_reset_soft*
 `g:conjure#mapping#log_reset_soft`

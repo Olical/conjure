@@ -368,6 +368,9 @@
 (defn tab []
   (create-win :tabnew))
 
+(defn buf []
+  (create-win :buf))
+
 (defn close-visible []
   (let [buf (upsert-buf)]
     (close-hud)
