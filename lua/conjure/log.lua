@@ -270,6 +270,19 @@ local function last_line(buf, extra_offset)
   return a.first(nvim.buf_get_lines((buf or upsert_buf()), (-2 + (extra_offset or 0)), -1, false))
 end
 _2amodule_2a["last-line"] = last_line
+local function jump_to_latest()
+  local buf = upsert_buf()
+  local last_eval_start = nvim.buf_get_mark(buf, "E")
+  local function _31_(win)
+    nvim.win_set_cursor(win, last_eval_start)
+    local function _32_()
+      return nvim.command(("norm " .. config["get-in"]({"log", "jump_to_latest", "scroll_command"})))
+    end
+    return nvim.win_call(win, _32_)
+  end
+  return with_buf_wins(buf, _31_)
+end
+_2amodule_2a["jump-to-latest"] = jump_to_latest
 local function append(lines, opts)
   local line_count = a.count(lines)
   if (line_count > 0) then
@@ -277,10 +290,10 @@ local function append(lines, opts)
     local buf = upsert_buf()
     local join_first_3f = a.get(opts, "join-first?")
     local lines0
-    local function _31_(s)
+    local function _33_(s)
       return s:gsub("\n", "\226\134\181")
     end
-    lines0 = a.map(_31_, lines)
+    lines0 = a.map(_33_, lines)
     local lines1
     if (line_count <= config["get-in"]({"log", "strip_ansi_escape_sequences_line_limit"})) then
       lines1 = a.map(text["strip-ansi-escape-sequences"], lines0)
@@ -298,43 +311,43 @@ local function append(lines, opts)
     local last_fold_3f = (fold_marker_end == last_line(buf))
     local lines3
     if a.get(opts, "break?") then
-      local _34_
-      if client["multiple-states?"]() then
-        _34_ = {state_key_header()}
-      else
-        _34_ = nil
-      end
-      lines3 = a.concat({_break()}, _34_, lines2)
-    elseif join_first_3f then
       local _36_
-      if last_fold_3f then
-        _36_ = {(last_line(buf, -1) .. a.first(lines2)), fold_marker_end}
+      if client["multiple-states?"]() then
+        _36_ = {state_key_header()}
       else
-        _36_ = {(last_line(buf) .. a.first(lines2))}
+        _36_ = nil
       end
-      lines3 = a.concat(_36_, a.rest(lines2))
+      lines3 = a.concat({_break()}, _36_, lines2)
+    elseif join_first_3f then
+      local _38_
+      if last_fold_3f then
+        _38_ = {(last_line(buf, -1) .. a.first(lines2)), fold_marker_end}
+      else
+        _38_ = {(last_line(buf) .. a.first(lines2))}
+      end
+      lines3 = a.concat(_38_, a.rest(lines2))
     else
       lines3 = lines2
     end
     local old_lines = nvim.buf_line_count(buf)
     do
       local ok_3f, err = nil, nil
-      local function _39_()
-        local _40_
+      local function _41_()
+        local _42_
         if buffer["empty?"](buf) then
-          _40_ = 0
+          _42_ = 0
         elseif join_first_3f then
           if last_fold_3f then
-            _40_ = -3
+            _42_ = -3
           else
-            _40_ = -2
+            _42_ = -2
           end
         else
-          _40_ = -1
+          _42_ = -1
         end
-        return nvim.buf_set_lines(buf, _40_, -1, false, lines3)
+        return nvim.buf_set_lines(buf, _42_, -1, false, lines3)
       end
-      ok_3f, err = pcall(_39_)
+      ok_3f, err = pcall(_41_)
       if not ok_3f then
         error(("Conjure failed to append to log: " .. err .. "\n" .. "Offending lines: " .. a["pr-str"](lines3)))
       else
@@ -342,21 +355,22 @@ local function append(lines, opts)
     end
     do
       local new_lines = nvim.buf_line_count(buf)
-      local function _44_(win)
-        local _let_45_ = nvim.win_get_cursor(win)
-        local row = _let_45_[1]
-        local col = _let_45_[2]
-        if ((win ~= state.hud.id) and win_visible_3f(win) and (win_botline(win) >= old_lines)) then
-          visible_scrolling_log_3f = true
-        else
-        end
-        if (row == old_lines) then
+      local jump_to_latest_3f = config["get-in"]({"log", "jump_to_latest", "enabled"})
+      nvim.buf_set_mark(buf, "E", old_lines, 1, {})
+      local function _46_(win)
+        visible_scrolling_log_3f = ((win ~= state.hud.id) and win_visible_3f(win) and (jump_to_latest_3f or (win_botline(win) >= old_lines)))
+        local _let_47_ = nvim.win_get_cursor(win)
+        local row = _let_47_[1]
+        local _ = _let_47_[2]
+        if jump_to_latest_3f then
+          return jump_to_latest()
+        elseif (row == old_lines) then
           return nvim.win_set_cursor(win, {new_lines, 0})
         else
           return nil
         end
       end
-      with_buf_wins(buf, _44_)
+      with_buf_wins(buf, _46_)
     end
     if (not a.get(opts, "suppress-hud?") and not visible_scrolling_log_3f) then
       display_hud()
@@ -371,14 +385,14 @@ end
 _2amodule_2a["append"] = append
 local function create_win(cmd)
   local buf = upsert_buf()
-  local function _50_()
+  local function _51_()
     if config["get-in"]({"log", "botright"}) then
       return "botright "
     else
       return ""
     end
   end
-  nvim.command(("keepalt " .. _50_() .. cmd .. " " .. buffer.resolve(log_buf_name())))
+  nvim.command(("keepalt " .. _51_() .. cmd .. " " .. buffer.resolve(log_buf_name())))
   nvim.win_set_cursor(0, {nvim.buf_line_count(buf), 0})
   set_win_opts_21(0)
   return buffer.unlist(buf)
@@ -403,13 +417,13 @@ _2amodule_2a["buf"] = buf
 local function close_visible()
   local buf0 = upsert_buf()
   close_hud()
-  local function _51_(_241)
+  local function _52_(_241)
     return nvim.win_close(_241, true)
   end
-  local function _52_(win)
+  local function _53_(win)
     return (buf0 == nvim.win_get_buf(win))
   end
-  return a["run!"](_51_, a.filter(_52_, nvim.tabpage_list_wins(0)))
+  return a["run!"](_52_, a.filter(_53_, nvim.tabpage_list_wins(0)))
 end
 _2amodule_2a["close-visible"] = close_visible
 local function dbg(desc, ...)
