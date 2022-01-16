@@ -396,6 +396,12 @@ Tip: Booleans in Vim Script are written as `v:true` and `v:false`.
             Opens the log in the current window.
             Default: `"le"`
 
+                                                *g:conjure#mapping#log_toggle*
+`g:conjure#mapping#log_toggle`
+            Toggles open or closed the log, using the last used log open
+            command.
+            Default: `"lg"`
+
                                             *g:conjure#mapping#log_reset_soft*
 `g:conjure#mapping#log_reset_soft`
             Soft reset the log buffer by wiping the contents.

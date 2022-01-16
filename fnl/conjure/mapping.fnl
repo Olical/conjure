@@ -57,6 +57,7 @@
   (buf :n :LogVSplit (cfg :log_vsplit) :conjure.log :vsplit)
   (buf :n :LogTab (cfg :log_tab) :conjure.log :tab)
   (buf :n :LogBuf (cfg :log_buf) :conjure.log :buf)
+  (buf :n :LogToggle (cfg :log_toggle) :conjure.log :toggle)
   (buf :n :LogCloseVisible (cfg :log_close_visible) :conjure.log :close-visible)
   (buf :n :LogResetSoft (cfg :log_reset_soft) :conjure.log :reset-soft)
   (buf :n :LogResetHard (cfg :log_reset_hard) :conjure.log :reset-hard)

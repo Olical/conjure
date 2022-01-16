@@ -12,7 +12,8 @@
    require {sponsors conjure.sponsors}})
 
 (defonce- state
-  {:hud {:id nil
+  {:last-open-cmd nil
+   :hud {:id nil
          :timer nil
          :created-at-ms 0}
    :jump_to_latest {:mark nil
@@ -381,6 +382,7 @@
         (trim buf)))))
 
 (defn- create-win [cmd]
+  (set state.last-open-cmd cmd)
   (let [buf (upsert-buf)]
     (nvim.command
       (.. "keepalt "
@@ -405,14 +407,25 @@
 (defn buf []
   (create-win :buf))
 
-(defn close-visible []
+(defn- find-windows []
   (let [buf (upsert-buf)]
-    (close-hud)
-    (->> (nvim.tabpage_list_wins 0)
-         (a.filter
-           (fn [win]
-             (= buf (nvim.win_get_buf win))))
-         (a.run! #(nvim.win_close $1 true)))))
+    (a.filter (fn [win] (and (not= state.hud.id win)
+                             (= buf (nvim.win_get_buf win))))
+              (nvim.tabpage_list_wins 0))))
+
+(defn- close [windows]
+  (a.run! #(nvim.win_close $1 true) windows))
+
+(defn close-visible []
+  (close-hud)
+  (close (find-windows)))
+
+(defn toggle []
+  (let [windows (find-windows)]
+    (if (a.empty? windows)
+      (when state.last-open-cmd
+        (create-win state.last-open-cmd))
+      (close-visible windows))))
 
 (defn dbg [desc ...]
   (when (config.get-in [:debug])
