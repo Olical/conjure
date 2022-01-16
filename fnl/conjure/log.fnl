@@ -242,6 +242,12 @@
       (or buf (upsert-buf))
       (+ -2 (or extra-offset 0)) -1 false)))
 
+(def cursor-scroll-position->command
+  {:top "normal zt"
+   :center "normal zz"
+   :bottom "normal zb"
+   :none nil})
+
 (defn jump-to-latest []
   (let [buf (upsert-buf)
         last-eval-start (nvim.buf_get_mark buf "E")]
@@ -249,7 +255,12 @@
       buf
       (fn [win]
         (nvim.win_set_cursor win last-eval-start)
-        (nvim.win_call win (fn [] (nvim.command (.. "norm " (config.get-in [:log :jump_to_latest :scroll_command])))))))))
+
+        (let [cmd (a.get
+                    cursor-scroll-position->command
+                    (config.get-in [:log :jump_to_latest :cursor_scroll_position]))]
+          (when cmd
+            (nvim.win_call win (fn [] (nvim.command cmd)))))))))
 
 (defn append [lines opts]
   (let [line-count (a.count lines)]
@@ -337,7 +348,7 @@
 
         (let [new-lines (nvim.buf_line_count buf)
               jump-to-latest? (config.get-in [:log :jump_to_latest :enabled])]
-          (nvim.buf_set_mark buf "E" old-lines 1 [])
+          (nvim.buf_set_mark buf "E" (a.inc old-lines) 0 [])
           (with-buf-wins
             buf
             (fn [win]

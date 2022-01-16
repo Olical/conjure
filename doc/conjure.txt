@@ -645,11 +645,15 @@ Tip: Booleans in Vim Script are written as `v:true` and `v:false`.
             evaluation output?
             Default: `false`
 
-                                 *g:conjure#log#jump_to_latest#scroll_command*
-`g:conjure#log#jump_to_latest#scroll_command`
-            Command to set how the cursor be positioned at in the log.
-            `"zz"` for centering, `"zt"` for top, and `"zb"` for bottom.
-            Default: `"zz"`
+                         *g:conjure#log#jump_to_latest#cursor_scroll_position*
+`g:conjure#log#jump_to_latest#cursor_scroll_position`
+            After jumping to the latest log entry, this decides where your
+            cursor should appear on the screen by adjusting the scroll. Your
+            options are `top`, `center`, `bottom` and `none`.
+
+            `none` will just leave the scroll wherever it naturally lands
+            after moving the cursor to the latest log entry.
+            Default: `"top"`
 
                                       *g:conjure#extract#context_header_lines*
 `g:conjure#extract#context_header_lines`
