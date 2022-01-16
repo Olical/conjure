@@ -123,7 +123,7 @@
           :anchor :NE}
     :botright false
     :jump_to_latest {:enabled false
-                     :scroll_command "zz"}
+                     :cursor_scroll_position "top"}
     :break_length 80
     :trim {:at 10000
            :to 6000}
