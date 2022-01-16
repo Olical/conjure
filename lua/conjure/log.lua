@@ -446,7 +446,7 @@ _2amodule_2a["close-visible"] = close_visible
 local function toggle()
   local windows = find_windows()
   if a["empty?"](windows) then
-    if state["last-open-cmd"] then
+    if ((state["last-open-cmd"] == "split") or (state["last-open-cmd"] == "vsplit")) then
       return create_win(state["last-open-cmd"])
     else
       return nil

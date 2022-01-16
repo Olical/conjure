@@ -399,7 +399,8 @@ Tip: Booleans in Vim Script are written as `v:true` and `v:false`.
                                                 *g:conjure#mapping#log_toggle*
 `g:conjure#mapping#log_toggle`
             Toggles open or closed the log, using the last used log open
-            command.
+            command. This will only work for vertical or horizontal split
+            log windows.
             Default: `"lg"`
 
                                             *g:conjure#mapping#log_reset_soft*

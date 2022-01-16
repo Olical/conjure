@@ -423,7 +423,8 @@
 (defn toggle []
   (let [windows (find-windows)]
     (if (a.empty? windows)
-      (when state.last-open-cmd
+      (when (or (= state.last-open-cmd :split)
+                (= state.last-open-cmd :vsplit))
         (create-win state.last-open-cmd))
       (close-visible windows))))
 
