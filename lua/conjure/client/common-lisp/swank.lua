@@ -259,8 +259,8 @@ local function eval_file(opts)
 end
 _2amodule_2a["eval-file"] = eval_file
 local function on_filetype()
-  mapping.buf("n", "CommonLispDisconnect", config["get-in"]({"client", "common-lisp", "swank", "mapping", "disconnect"}), "conjure.client.common-lisp", "disconnect")
-  return mapping.buf("n", "CommonLispConnect", config["get-in"]({"client", "common-lisp", "swank", "mapping", "connect"}), "conjure.client.common-lisp", "connect")
+  mapping.buf("n", "CommonLispDisconnect", config["get-in"]({"client", "common-lisp", "swank", "mapping", "disconnect"}), "conjure.client.common-lisp.swank", "disconnect")
+  return mapping.buf("n", "CommonLispConnect", config["get-in"]({"client", "common-lisp", "swank", "mapping", "connect"}), "conjure.client.common-lisp.swank", "connect")
 end
 _2amodule_2a["on-filetype"] = on_filetype
 local function on_load()

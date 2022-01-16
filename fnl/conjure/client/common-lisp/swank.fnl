@@ -245,10 +245,10 @@
 (defn on-filetype []
   (mapping.buf :n :CommonLispDisconnect
                (config.get-in [:client :common-lisp :swank :mapping :disconnect])
-               :conjure.client.common-lisp :disconnect)
+               :conjure.client.common-lisp.swank :disconnect)
   (mapping.buf :n :CommonLispConnect
                (config.get-in [:client :common-lisp :swank :mapping :connect])
-               :conjure.client.common-lisp :connect))
+               :conjure.client.common-lisp.swank :connect))
 
 (defn on-load []
   (connect {}))
