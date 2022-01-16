@@ -25,7 +25,7 @@ local buf_suffix = ".lisp"
 _2amodule_2a["buf-suffix"] = buf_suffix
 local comment_prefix = "; "
 _2amodule_2a["comment-prefix"] = comment_prefix
-config.merge({client = {["common-lisp"] = {swank = {connection = {default_host = "127.0.0.1", default_port = "4005"}, mapping = {connect = "cc", disconnect = "cd"}}}}})
+config.merge({client = {common_lisp = {swank = {connection = {default_host = "127.0.0.1", default_port = "4005"}, mapping = {connect = "cc", disconnect = "cd"}}}}})
 local state
 local function _1_()
   return {conn = nil}
@@ -82,8 +82,8 @@ end
 _2amodule_locals_2a["send"] = send
 local function connect(opts)
   local opts0 = (opts or {})
-  local host = (opts0.host or config["get-in"]({"client", "common-lisp", "swank", "connection", "default_host"}))
-  local port = (opts0.port or config["get-in"]({"client", "common-lisp", "swank", "connection", "default_port"}))
+  local host = (opts0.host or config["get-in"]({"client", "common_lisp", "swank", "connection", "default_host"}))
+  local port = (opts0.port or config["get-in"]({"client", "common_lisp", "swank", "connection", "default_port"}))
   if state("conn") then
     disconnect()
   else
@@ -259,8 +259,8 @@ local function eval_file(opts)
 end
 _2amodule_2a["eval-file"] = eval_file
 local function on_filetype()
-  mapping.buf("n", "CommonLispDisconnect", config["get-in"]({"client", "common-lisp", "swank", "mapping", "disconnect"}), "conjure.client.common-lisp.swank", "disconnect")
-  return mapping.buf("n", "CommonLispConnect", config["get-in"]({"client", "common-lisp", "swank", "mapping", "connect"}), "conjure.client.common-lisp.swank", "connect")
+  mapping.buf("n", "CommonLispDisconnect", config["get-in"]({"client", "common_lisp", "swank", "mapping", "disconnect"}), "conjure.client.common-lisp.swank", "disconnect")
+  return mapping.buf("n", "CommonLispConnect", config["get-in"]({"client", "common_lisp", "swank", "mapping", "connect"}), "conjure.client.common-lisp.swank", "connect")
 end
 _2amodule_2a["on-filetype"] = on_filetype
 local function on_load()

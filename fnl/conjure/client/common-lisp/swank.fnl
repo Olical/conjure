@@ -20,7 +20,7 @@
 
 (config.merge
   {:client
-   {:common-lisp
+   {:common_lisp
     {:swank
      {:connection {:default_host "127.0.0.1"
                    :default_port "4005"}
@@ -78,8 +78,8 @@
 
 (defn connect [opts]
   (let [opts (or opts {})
-        host (or opts.host (config.get-in [:client :common-lisp :swank :connection :default_host]))
-        port (or opts.port (config.get-in [:client :common-lisp :swank :connection :default_port]))]
+        host (or opts.host (config.get-in [:client :common_lisp :swank :connection :default_host]))
+        port (or opts.port (config.get-in [:client :common_lisp :swank :connection :default_port]))]
 
     (when (state :conn)
       (disconnect))
@@ -244,10 +244,10 @@
 
 (defn on-filetype []
   (mapping.buf :n :CommonLispDisconnect
-               (config.get-in [:client :common-lisp :swank :mapping :disconnect])
+               (config.get-in [:client :common_lisp :swank :mapping :disconnect])
                :conjure.client.common-lisp.swank :disconnect)
   (mapping.buf :n :CommonLispConnect
-               (config.get-in [:client :common-lisp :swank :mapping :connect])
+               (config.get-in [:client :common_lisp :swank :mapping :connect])
                :conjure.client.common-lisp.swank :connect))
 
 (defn on-load []

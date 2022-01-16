@@ -1,0 +1,70 @@
+                                              *conjure-client-common-lisp-swank*
+
+==============================================================================
+CONTENTS                           *conjure-client-common-lisp-swank-contents*
+
+    1. Introduction ..... |conjure-client-common-lisp-swank-introduction|
+    2. Mappings ............. |conjure-client-common-lisp-swank-mappings|
+    3. Configuration ... |conjure-client-common-lisp-swank-configuration|
+
+==============================================================================
+INTRODUCTION                   *conjure-client-common-lisp-swank-introduction*
+
+Connecting Common Lisp to Conjure is an easy process if you have used swank,
+emacs, or quicklisp before.
+
+Firstly, set up Common Lisp and Quick Lisp as normal.
+
+Open up the CL REPL in another terminal, then type the following code:
+>
+  (ql:quickload :swank)
+  (swank:create-server :dont-close t)
+
+You should now have a swank server started, listening on port `4005`. This is
+the default port that conjure will use.
+
+Now simply open up any `.lisp` file in conjure, and it will automatically
+connect to swank.
+>
+ * https://common-lisp.net/
+
+==============================================================================
+MAPPINGS                           *conjure-client-common-lisp-swank-mappings*
+
+These mappings are the defaults, you can change them as described in
+|conjure-mappings| and |conjure-configuration|.
+
+See |conjure-client-common-lisp-swank-configuration| for specific
+configuration options relevant to these mappings.
+
+<localleader>cc          Connect to a running swank REPL.
+
+<localleader>cd          Disconnect from the REPL.
+
+==============================================================================
+CONFIGURATION                 *conjure-client-common-lisp-swank-configuration*
+
+All configuration can be set as described in |conjure-configuration|.
+
+
+                                 *g:conjure#client#common_lisp#swank#mapping#start*
+`g:conjure#client#common_lisp#swank#mapping#connect`
+            Connect to a running swank REPL.
+            Default: `"cc"`
+
+                                  *g:conjure#client#common_lisp#swank#mapping#stop*
+`g:conjure#client#common_lisp#swank#mapping#disconnect`
+            Disconnect from the REPL.
+            Default: `"cd"`
+
+                                  *g:conjure#client#common_lisp#swank#connection#default_host*
+`g:conjure#client#common_lisp#swank#connection#default_host`
+            The default swank host to connect to.
+            Default: `"127.0.0.1"`
+
+                                  *g:conjure#client#common_lisp#swank#connection#default_port*
+`g:conjure#client#common_lisp#swank#connection#default_port`
+            The default swank port to connect to.
+            Default: `"4005"`
+
+vim:tw=78:sw=2:ts=2:ft=help:norl:et:listchars=
