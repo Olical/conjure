@@ -23,7 +23,7 @@ _2amodule_locals_2a["text"] = text
 _2amodule_locals_2a["timer"] = timer
 _2amodule_locals_2a["view"] = view
 _2amodule_locals_2a["sponsors"] = sponsors
-local state = (state or {hud = {id = nil, timer = nil, ["created-at-ms"] = 0}})
+local state = (state or {hud = {id = nil, timer = nil, ["created-at-ms"] = 0}, jump_to_latest = {mark = nil, ns = nvim.create_namespace("conjure_log_jump_to_latest")}})
 do end (_2amodule_locals_2a)["state"] = state
 local function _break()
   return (client.get("comment-prefix") .. string.rep("-", config["get-in"]({"log", "break_length"})))
@@ -42,6 +42,7 @@ local function log_buf_3f(name)
 end
 _2amodule_2a["log-buf?"] = log_buf_3f
 local function on_new_log_buf(buf)
+  state.jump_to_latest.mark = nvim.buf_set_extmark(buf, state.jump_to_latest.ns, 0, 0, {})
   return nvim.buf_set_lines(buf, 0, -1, false, {(client.get("comment-prefix") .. "Sponsored by @" .. a.get(sponsors, a.inc(math.floor(a.rand(a.dec(a.count(sponsors)))))) .. " \226\157\164")})
 end
 _2amodule_locals_2a["on-new-log-buf"] = on_new_log_buf
@@ -274,7 +275,7 @@ local cursor_scroll_position__3ecommand = {top = "normal zt", center = "normal z
 _2amodule_2a["cursor-scroll-position->command"] = cursor_scroll_position__3ecommand
 local function jump_to_latest()
   local buf = upsert_buf()
-  local last_eval_start = nvim.buf_get_mark(buf, "E")
+  local last_eval_start = nvim.buf_get_extmark_by_id(buf, state.jump_to_latest.ns, state.jump_to_latest.mark, {})
   local function _31_(win)
     nvim.win_set_cursor(win, last_eval_start)
     local cmd = a.get(cursor_scroll_position__3ecommand, config["get-in"]({"log", "jump_to_latest", "cursor_scroll_position"}))
@@ -363,7 +364,7 @@ local function append(lines, opts)
     do
       local new_lines = nvim.buf_line_count(buf)
       local jump_to_latest_3f = config["get-in"]({"log", "jump_to_latest", "enabled"})
-      nvim.buf_set_mark(buf, "E", a.inc(old_lines), 0, {})
+      nvim.buf_set_extmark(buf, state.jump_to_latest.ns, a.inc(old_lines), 0, {id = state.jump_to_latest.mark})
       local function _47_(win)
         visible_scrolling_log_3f = ((win ~= state.hud.id) and win_visible_3f(win) and (jump_to_latest_3f or (win_botline(win) >= old_lines)))
         local _let_48_ = nvim.win_get_cursor(win)
