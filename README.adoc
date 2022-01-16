@@ -17,6 +17,7 @@ The core features of Conjure are language agnostic (although it's targeted at Li
  * https://docs.hylang.org[Hy] over stdio (https://github.com/Olical/conjure/wiki/Quick-start:-Hy-(stdio)[quickstart])
  * https://www.gnu.org/software/mit-scheme/[Scheme] (MIT by default) over stdio (https://github.com/Olical/conjure/wiki/Quick-start:-Scheme-(stdio)[quickstart])
  * https://www.gnu.org/software/guile/[Guile] over a socket file (https://github.com/Olical/conjure/wiki/Quick-start:-Guile-(socket)[quickstart])
+ * https://lisp-lang.org/[Common Lisp] over https://www.cliki.net/SWANK[Swank] (https://github.com/Olical/conjure/wiki/Quick-start:-Common-Lisp-(Swank)[quickstart])
 
 == User experience
 
@@ -80,6 +81,7 @@ Plug 'Olical/conjure'
  * https://github.com/Olical/conjure/wiki/Quick-start:-Hy-(stdio)[Hy (stdio)]
  * https://github.com/Olical/conjure/wiki/Quick-start:-Scheme-(stdio)[Scheme (stdio)]
  * https://github.com/Olical/conjure/wiki/Quick-start:-Guile-(socket)[Guile (socket)]
+ * https://github.com/Olical/conjure/wiki/Quick-start:-Common-Lisp-(Swank)
  * https://github.com/Olical/conjure/wiki/Frequently-asked-questions[Frequently asked questions]
 
 All further documentation is found within link:doc/conjure.txt[`:help conjure`]. You can also use `:ConjureSchool` to get an interactive introduction to the workflow and mappings Conjure provides.
@@ -93,7 +95,6 @@ Broader documentation can be found in the https://github.com/Olical/conjure/wiki
 These are clients I intend to build eventually or encourage another community member to build and maintain on my behalf. Every language we add creates another bridge between communities, I would like Conjure to be common ground between all of our beloved esoteric REPL based languages.
 
  * http://lfe.io/[Lisp Flavoured Erlang]
- * Common Lisp (https://github.com/Olical/conjure/issues/97[#97])
  * Minimal https://clojure.org/[Clojure] sans nREPL+CIDER over https://oli.me.uk/clojure-socket-prepl-cookbook/[prepl] (or socket REPL)
  * Non-Lisp languages and beyond! (when Neovim has tree-sitter)
 
