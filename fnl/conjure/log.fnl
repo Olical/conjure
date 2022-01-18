@@ -335,21 +335,19 @@
 
                     lines)
 
-            old-lines (nvim.buf_line_count buf)]
+            old-lines (nvim.buf_line_count buf)
+            new-line-index (if
+                             (buffer.empty? buf) 0
+
+                             ;; Replace one extra line if joining across fold markers.
+                             join-first? (if last-fold? -3 -2)
+
+                             -1)]
 
         (let [(ok? err)
               (pcall
                 (fn []
-                  (nvim.buf_set_lines
-                    buf
-                    (if
-                      (buffer.empty? buf) 0
-
-                      ;; Replace one extra line if joining across fold markers.
-                      join-first? (if last-fold? -3 -2)
-
-                      -1)
-                    -1 false lines)))]
+                  (nvim.buf_set_lines buf new-line-index -1 false lines)))]
           (when (not ok?)
             (error (.. "Conjure failed to append to log: " err "\n"
                        "Offending lines: " (a.pr-str lines)))))
@@ -358,7 +356,7 @@
               jump-to-latest? (config.get-in [:log :jump_to_latest :enabled])]
           (nvim.buf_set_extmark
             buf state.jump-to-latest.ns
-            (a.inc old-lines) 0
+            (+ new-line-index old-lines 2) 0
             {:id state.jump-to-latest.mark})
           (with-buf-wins
             buf
