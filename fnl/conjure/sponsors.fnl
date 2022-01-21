@@ -14,6 +14,7 @@
 "emilaasa"
 "Fedreg"
 "frenchy64"
+"fuadsaud"
 "jkrasnay"
 "ketansrivastav"
 "kevinkrouse"
@@ -28,6 +29,5 @@
 "thiru"
 "TimoKramer"
 "valsen"
-"victorb"
 "zhming0"
 ]
