@@ -107,8 +107,13 @@ local function client_exec_fn(action, f_name, base_opts)
       display_request(opts0)
     else
     end
-    if opts0["set-jump-mark?"] then
+    if opts0["jumping?"] then
       local function _11_()
+        do
+          local win = nvim.get_current_win()
+          local buf = nvim.get_current_buf()
+          nvim.fn.settagstack(win, {items = {{tagname = opts0.code, bufnr = buf, from = a.concat({buf}, nvim.win_get_cursor(win), {0}), matchnr = 0}}}, "a")
+        end
         return nu.normal("m'")
       end
       pcall(_11_)
@@ -166,7 +171,7 @@ end
 _2amodule_2a["wrap-emit"] = wrap_emit
 local doc_str = wrap_emit("doc", client_exec_fn("doc", "doc-str"))
 do end (_2amodule_locals_2a)["doc-str"] = doc_str
-local def_str = wrap_emit("def", client_exec_fn("def", "def-str", {["suppress-hud?"] = true, ["set-jump-mark?"] = true}))
+local def_str = wrap_emit("def", client_exec_fn("def", "def-str", {["suppress-hud?"] = true, ["jumping?"] = true}))
 do end (_2amodule_locals_2a)["def-str"] = def_str
 local function current_form(extra_opts)
   local form = extract.form({})

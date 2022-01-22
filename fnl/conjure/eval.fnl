@@ -108,8 +108,21 @@
       (when (not opts.passive?)
         (display-request opts))
 
-      (when opts.set-jump-mark?
-        (pcall #(nu.normal "m'")))
+      (when opts.jumping?
+        ;; Ensure the tag stack and jumplist are up to date before any jump
+        ;; related code executes.
+        (pcall
+          (fn []
+            (let [win (nvim.get_current_win)
+                  buf (nvim.get_current_buf)]
+              (nvim.fn.settagstack
+                win
+                {:items [{:tagname opts.code
+                          :bufnr buf
+                          :from (a.concat [buf] (nvim.win_get_cursor win) [0])
+                          :matchnr 0}]}
+                :a))
+            (nu.normal "m'"))))
 
       (client.call f-name opts))))
 
@@ -143,8 +156,16 @@
     (event.emit name)
     (f ...)))
 
-(def- doc-str (wrap-emit :doc (client-exec-fn :doc :doc-str)))
-(def- def-str (wrap-emit :def (client-exec-fn :def :def-str {:suppress-hud? true :set-jump-mark? true})))
+(def- doc-str (wrap-emit
+                :doc
+                (client-exec-fn :doc :doc-str)))
+
+(def- def-str (wrap-emit
+                :def
+                (client-exec-fn
+                  :def :def-str
+                  {:suppress-hud? true
+                   :jumping? true})))
 
 (defn current-form [extra-opts]
   (let [form (extract.form {})]
