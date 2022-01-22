@@ -262,7 +262,7 @@
     (with-buf-wins
       buf
       (fn [win]
-        (nvim.win_set_cursor win last-eval-start)
+        (pcall #(nvim.win_set_cursor win last-eval-start))
 
         (let [cmd (a.get
                     cursor-scroll-position->command
@@ -356,10 +356,15 @@
 
         (let [new-lines (nvim.buf_line_count buf)
               jump-to-latest? (config.get-in [:log :jump_to_latest :enabled])]
+
+          ;; This mark is used when jumping to the latest log entry.
           (nvim.buf_set_extmark
             buf state.jump-to-latest.ns
-            (a.inc old-lines) 0
+            (if join-first?
+              old-lines
+              (a.inc old-lines)) 0
             {:id state.jump-to-latest.mark})
+
           (with-buf-wins
             buf
             (fn [win]
