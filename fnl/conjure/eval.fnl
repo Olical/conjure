@@ -2,6 +2,7 @@
   {autoload {a conjure.aniseed.core
              str conjure.aniseed.string
              nvim conjure.aniseed.nvim
+             nu conjure.aniseed.nvim.util
              extract conjure.extract
              client conjure.client
              text conjure.text
@@ -103,8 +104,13 @@
                          :file-path (extract.file-path)})]
       (assoc-context opts)
       (set opts.preview (preview opts))
+
       (when (not opts.passive?)
         (display-request opts))
+
+      (when base-opts.set-jump-mark?
+        (pcall #(nu.normal "m'")))
+
       (client.call f-name opts))))
 
 (defn- apply-gsubs [code]
@@ -138,7 +144,7 @@
     (f ...)))
 
 (def- doc-str (wrap-emit :doc (client-exec-fn :doc :doc-str)))
-(def- def-str (wrap-emit :def (client-exec-fn :def :def-str {:suppress-hud? true})))
+(def- def-str (wrap-emit :def (client-exec-fn :def :def-str {:suppress-hud? true :set-jump-mark? true})))
 
 (defn current-form [extra-opts]
   (let [form (extract.form {})]
