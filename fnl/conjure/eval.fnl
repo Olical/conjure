@@ -108,7 +108,7 @@
       (when (not opts.passive?)
         (display-request opts))
 
-      (when base-opts.set-jump-mark?
+      (when opts.set-jump-mark?
         (pcall #(nu.normal "m'")))
 
       (client.call f-name opts))))

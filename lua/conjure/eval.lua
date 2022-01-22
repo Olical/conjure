@@ -107,7 +107,7 @@ local function client_exec_fn(action, f_name, base_opts)
       display_request(opts0)
     else
     end
-    if base_opts["set-jump-mark?"] then
+    if opts0["set-jump-mark?"] then
       local function _11_()
         return nu.normal("m'")
       end
