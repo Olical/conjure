@@ -92,7 +92,7 @@ I've also included some commands since they're related to the mappings.
                          large output. Just close the window to close the tab
                          when you're done and return to your previous layout.
 
-<localleader>ll          Open the log buffer in your current window. Just
+<localleader>le          Open the log buffer in your current window. Just
                          jump back (with e.g. |Ctrl-O|) when you're done and
                          return to your previous buffer.
 
@@ -106,6 +106,8 @@ I've also included some commands since they're related to the mappings.
 <localleader>lR          Hard reset the log buffer, completely deleting the
                          buffer, mappings and buffer local settings. This will
                          close any open log windows.
+
+<localleader>ll          Set cursor to top of latest evaluation result.
 
 <localleader>E           When in visual mode, evaluate the current selection.
 
