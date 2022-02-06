@@ -200,3 +200,4 @@ local function on_filetype()
   return mapping.buf("n", "HyInterrupt", cfg({"mapping", "interrupt"}), _2amodule_name_2a, "interrupt")
 end
 _2amodule_2a["on-filetype"] = on_filetype
+return _2amodule_2a

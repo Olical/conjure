@@ -90,3 +90,4 @@ local function stop(proc)
   return proc
 end
 _2amodule_2a["stop"] = stop
+return _2amodule_2a

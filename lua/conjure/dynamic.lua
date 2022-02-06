@@ -77,3 +77,4 @@ local function set_root_21(dyn, new_value)
   return nil
 end
 _2amodule_2a["set-root!"] = set_root_21
+return _2amodule_2a

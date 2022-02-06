@@ -26,3 +26,4 @@ local function decode(msg)
   return cmd
 end
 _2amodule_2a["decode"] = decode
+return _2amodule_2a

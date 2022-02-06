@@ -53,3 +53,4 @@ local function connect(opts)
   return conn
 end
 _2amodule_2a["connect"] = connect
+return _2amodule_2a

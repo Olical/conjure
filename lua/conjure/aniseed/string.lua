@@ -81,3 +81,4 @@ local function trim(s)
   return string.gsub(s, "^%s*(.-)%s*$", "%1")
 end
 _2amodule_2a["trim"] = trim
+return _2amodule_2a

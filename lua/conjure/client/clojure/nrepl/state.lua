@@ -19,3 +19,4 @@ local function _1_()
 end
 get = (get or client["new-state"](_1_))
 do end (_2amodule_2a)["get"] = get
+return _2amodule_2a

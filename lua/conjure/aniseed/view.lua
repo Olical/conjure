@@ -16,3 +16,4 @@ local function serialise(...)
   return fnl.impl().view(...)
 end
 _2amodule_2a["serialise"] = serialise
+return _2amodule_2a

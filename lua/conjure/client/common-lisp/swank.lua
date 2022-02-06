@@ -271,3 +271,4 @@ local function on_exit()
   return disconnect()
 end
 _2amodule_2a["on-exit"] = on_exit
+return _2amodule_2a

@@ -110,3 +110,4 @@ local function lesson_7()
   return progress(7)
 end
 _2amodule_2a["lesson-7"] = lesson_7
+return _2amodule_2a

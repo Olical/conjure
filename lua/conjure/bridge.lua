@@ -14,3 +14,4 @@ local function viml__3elua(m, f, opts)
   return ("lua require('" .. m .. "')['" .. f .. "'](" .. ((opts and opts.args) or "") .. ")")
 end
 _2amodule_2a["viml->lua"] = viml__3elua
+return _2amodule_2a

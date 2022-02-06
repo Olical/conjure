@@ -210,3 +210,4 @@ local function on_filetype()
   return mapping.buf("n", "GuileDisconnect", cfg({"mapping", "disconnect"}), _2amodule_name_2a, "disconnect")
 end
 _2amodule_2a["on-filetype"] = on_filetype
+return _2amodule_2a

@@ -60,3 +60,4 @@ local function with_out_str(f)
   return string.gsub(nvim.g.aniseed_nvim_util_out_str, "^(\n?)(.*)$", "%2%1")
 end
 _2amodule_2a["with-out-str"] = with_out_str
+return _2amodule_2a

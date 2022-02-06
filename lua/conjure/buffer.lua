@@ -122,3 +122,4 @@ local function append_prefixed_line(buf, _7_, prefix, body)
   end
 end
 _2amodule_2a["append-prefixed-line"] = append_prefixed_line
+return _2amodule_2a

@@ -34,3 +34,4 @@ local function autoload(name)
   return setmetatable(res, {__call = _2_, __index = _3_, __newindex = _4_})
 end
 _2amodule_2a["autoload"] = autoload
+return _2amodule_2a

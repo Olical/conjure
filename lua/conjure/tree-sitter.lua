@@ -106,3 +106,4 @@ local function get_form(node)
   end
 end
 _2amodule_2a["get-form"] = get_form
+return _2amodule_2a

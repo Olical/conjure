@@ -360,3 +360,4 @@ local function completions_sync(prefix)
   return promise.close(p)
 end
 _2amodule_2a["completions-sync"] = completions_sync
+return _2amodule_2a

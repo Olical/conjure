@@ -71,3 +71,4 @@ local function has_filetype_3f(ft)
   return a.some(_5_, nvim.fn.getcompletion(ft, "filetype"))
 end
 _2amodule_2a["has-filetype?"] = has_filetype_3f
+return _2amodule_2a

@@ -93,3 +93,4 @@ local function cycle(l)
   return l
 end
 _2amodule_2a["cycle"] = cycle
+return _2amodule_2a

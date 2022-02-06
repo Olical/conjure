@@ -20,7 +20,7 @@ _2amodule_locals_2a["nvim"] = nvim
 local function str(code, opts)
   local fnl = fennel.impl()
   local function _1_()
-    return fnl.eval(compile["macros-prefix"](code, opts), a.merge({compilerEnv = _G}, opts))
+    return fnl.eval(compile["wrap-macros"](code, opts), a.merge({compilerEnv = _G}, opts))
   end
   return xpcall(_1_, fnl.traceback)
 end
@@ -57,7 +57,7 @@ local function repl(opts)
   end
   co = coroutine.create(_4_)
   coroutine.resume(co)
-  coroutine.resume(co, compile["macros-prefix"](nil, opts0))
+  coroutine.resume(co, compile["wrap-macros"](nil, opts0))
   eval_values = nil
   local function _7_(code)
     ANISEED_STATIC_MODULES = false
@@ -69,3 +69,4 @@ local function repl(opts)
   return _7_
 end
 _2amodule_2a["repl"] = repl
+return _2amodule_2a

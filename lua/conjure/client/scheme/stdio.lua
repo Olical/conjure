@@ -138,3 +138,4 @@ local function on_exit()
   return stop()
 end
 _2amodule_2a["on-exit"] = on_exit
+return _2amodule_2a

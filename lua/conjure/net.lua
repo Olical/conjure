@@ -62,7 +62,10 @@ local function destroy_all_socks()
   return a["run!"](destroy_sock, state["sock-drawer"])
 end
 _2amodule_2a["destroy-all-socks"] = destroy_all_socks
-nvim.ex.augroup("conjure-net-sock-cleanup")
-nvim.ex.autocmd_()
-nvim.ex.autocmd("VimLeavePre", "*", ("lua require('" .. _2amodule_name_2a .. "')['" .. "destroy-all-socks" .. "']()"))
-return nvim.ex.augroup("END")
+do
+  nvim.ex.augroup("conjure-net-sock-cleanup")
+  nvim.ex.autocmd_()
+  nvim.ex.autocmd("VimLeavePre", "*", ("lua require('" .. _2amodule_name_2a .. "')['" .. "destroy-all-socks" .. "']()"))
+  nvim.ex.augroup("END")
+end
+return _2amodule_2a

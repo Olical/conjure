@@ -32,3 +32,4 @@ local function emit(...)
   return nil
 end
 _2amodule_2a["emit"] = emit
+return _2amodule_2a

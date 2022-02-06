@@ -16,7 +16,7 @@ do end (_2amodule_locals_2a)["a"] = a
 _2amodule_locals_2a["fennel"] = fennel
 _2amodule_locals_2a["fs"] = fs
 _2amodule_locals_2a["nvim"] = nvim
-local function macros_prefix(code, opts)
+local function wrap_macros(code, opts)
   local macros_module = "conjure.aniseed.macros"
   local filename
   do
@@ -34,9 +34,9 @@ local function macros_prefix(code, opts)
       return "nil"
     end
   end
-  return ("(local *file* " .. _3_() .. ")" .. "(require-macros \"" .. macros_module .. "\")\n" .. (code or ""))
+  return ("(local *file* " .. _3_() .. ")" .. "(require-macros \"" .. macros_module .. "\")\n" .. "(wrap-module-body " .. (code or "") .. ")")
 end
-_2amodule_2a["macros-prefix"] = macros_prefix
+_2amodule_2a["wrap-macros"] = wrap_macros
 local marker_prefix = "ANISEED_"
 _2amodule_2a["marker-prefix"] = marker_prefix
 local delete_marker = (marker_prefix .. "DELETE_ME")
@@ -47,7 +47,7 @@ local function str(code, opts)
   ANISEED_STATIC_MODULES = (true == a.get(opts, "static?"))
   local fnl = fennel.impl()
   local function _4_()
-    return string.gsub(string.gsub(fnl.compileString(macros_prefix(code, opts), a["merge!"]({allowedGlobals = false, compilerEnv = _G}, opts)), (delete_marker_pat .. "\n"), "\n"), (delete_marker_pat .. "$"), "")
+    return string.gsub(string.gsub(fnl.compileString(wrap_macros(code, opts), a["merge!"]({allowedGlobals = false, compilerEnv = _G}, opts)), (delete_marker_pat .. "\n"), "\n"), (delete_marker_pat .. "$"), "")
   end
   return xpcall(_4_, fnl.traceback)
 end
@@ -78,3 +78,4 @@ local function glob(src_expr, src_dir, dest_dir, opts)
   return nil
 end
 _2amodule_2a["glob"] = glob
+return _2amodule_2a

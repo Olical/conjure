@@ -158,3 +158,4 @@ local function on_filetype()
   return mapping.buf("n", "FnlEvalReload", cfg({"mapping", "eval_reload"}), _2amodule_name_2a, "eval-reload")
 end
 _2amodule_2a["on-filetype"] = on_filetype
+return _2amodule_2a

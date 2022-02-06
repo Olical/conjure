@@ -317,3 +317,4 @@ local function completions(opts)
   end
 end
 _2amodule_2a["completions"] = completions
+return _2amodule_2a

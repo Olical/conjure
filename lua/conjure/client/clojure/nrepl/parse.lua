@@ -33,3 +33,4 @@ local function strip_comments(s)
   end
 end
 _2amodule_2a["strip-comments"] = strip_comments
+return _2amodule_2a

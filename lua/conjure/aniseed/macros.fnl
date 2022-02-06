@@ -193,9 +193,46 @@
      (print (.. "Elapsed time: " (/ (- end# start#) 1000000) " msecs"))
      result#))
 
+;; Checks surrounding scope for *module* and, if found, makes sure *module* is
+;; inserted after `last-expr` (and therefore *module* is returned)
+(fn wrap-last-expr [last-expr]
+  (if (rawget (. (get-scope) :symmeta) :*module*)
+      `(do ,last-expr ,(sym :*module*))
+      last-expr))
+
+;; Used by aniseed.compile to wrap the entire body of a file, replacing the
+;; last expression with another wrapper; `wrap-last-expr` which handles the
+;; module's return value.
+;;
+;; i.e.
+;; (wrap-module-body
+;; (module foo)
+;; (def x 1)
+;; (vim.cmd "...")) ; vim.cmd returns a string which becomes the returned value
+;;                  ; for the entire file once compiled
+;; --> expands to:
+;; (do
+;;   (module foo)
+;;   (def x 1)
+;;   (wrap-last-expr (vim.cmd "...")))
+;; --> expands to:
+;; (do
+;;   (module foo)
+;;   (def x 1)
+;;   (do
+;;     (vim.cmd "...")
+;;     *module*))
+(fn wrap-module-body [...]
+  (let [body# [...]
+        last-expr# (table.remove body#)]
+    (table.insert body# `(wrap-last-expr ,last-expr#))
+    `(do ,(unpack body#))))
+
 {:module module
  :def- def- :def def
  :defn- defn- :defn defn
  :defonce- defonce- :defonce defonce
+ :wrap-last-expr wrap-last-expr
+ :wrap-module-body wrap-module-body
  :deftest deftest
  :time time}

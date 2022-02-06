@@ -113,3 +113,4 @@ local function file_path__3emodule_name(file_path)
   end
 end
 _2amodule_2a["file-path->module-name"] = file_path__3emodule_name
+return _2amodule_2a

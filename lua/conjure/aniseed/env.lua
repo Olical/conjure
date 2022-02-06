@@ -60,3 +60,4 @@ local function init(opts)
   return quiet_require((opts0.module or "init"))
 end
 _2amodule_2a["init"] = init
+return _2amodule_2a

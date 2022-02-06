@@ -481,3 +481,4 @@ local function reset_hard()
   return nvim.ex.bwipeout_(upsert_buf())
 end
 _2amodule_2a["reset-hard"] = reset_hard
+return _2amodule_2a

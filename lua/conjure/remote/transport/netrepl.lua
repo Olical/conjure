@@ -62,3 +62,4 @@ local function decoder()
   return decode
 end
 _2amodule_2a["decoder"] = decoder
+return _2amodule_2a

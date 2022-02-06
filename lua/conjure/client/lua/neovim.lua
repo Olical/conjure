@@ -133,3 +133,4 @@ local function eval_file(opts)
   end
 end
 _2amodule_2a["eval-file"] = eval_file
+return _2amodule_2a

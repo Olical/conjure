@@ -825,3 +825,4 @@ local function out_unsubscribe()
   return server["with-conn-and-op-or-warn"]("out-unsubscribe", _148_)
 end
 _2amodule_2a["out-unsubscribe"] = out_unsubscribe
+return _2amodule_2a

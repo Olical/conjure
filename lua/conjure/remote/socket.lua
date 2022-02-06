@@ -124,3 +124,4 @@ local function start(opts)
   return a["merge!"](repl, {opts = opts, destroy = destroy, send = send})
 end
 _2amodule_2a["start"] = start
+return _2amodule_2a

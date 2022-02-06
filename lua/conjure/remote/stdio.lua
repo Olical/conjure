@@ -179,3 +179,4 @@ local function start(opts)
   end
 end
 _2amodule_2a["start"] = start
+return _2amodule_2a

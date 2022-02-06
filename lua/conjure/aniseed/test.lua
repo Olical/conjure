@@ -150,3 +150,4 @@ local function suite()
   end
 end
 _2amodule_2a["suite"] = suite
+return _2amodule_2a

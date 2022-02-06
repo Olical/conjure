@@ -55,3 +55,4 @@ do
   end
 end
 _2amodule_2a["path-sep"] = path_sep
+return _2amodule_2a

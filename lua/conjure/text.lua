@@ -87,3 +87,4 @@ local function upper_first(s)
   end
 end
 _2amodule_2a["upper-first"] = upper_first
+return _2amodule_2a

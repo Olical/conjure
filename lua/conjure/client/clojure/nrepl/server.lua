@@ -302,3 +302,4 @@ local function connect(_41_)
   return a.assoc(state.get(), "conn", a["merge!"](nrepl.connect({host = host, port = port, ["on-failure"] = _44_, ["on-success"] = _45_, ["on-error"] = _46_, ["on-message"] = _48_, ["default-callback"] = _51_}), {["seen-ns"] = {}, port_file_path = port_file_path}))
 end
 _2amodule_2a["connect"] = connect
+return _2amodule_2a

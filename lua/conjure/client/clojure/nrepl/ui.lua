@@ -94,3 +94,4 @@ local function display_sessions(sessions, cb)
   end
 end
 _2amodule_2a["display-sessions"] = display_sessions
+return _2amodule_2a

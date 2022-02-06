@@ -194,3 +194,4 @@ local function each_loaded_client(f)
   return a["run!"](_27_, a.vals(loaded))
 end
 _2amodule_2a["each-loaded-client"] = each_loaded_client
+return _2amodule_2a

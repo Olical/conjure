@@ -40,3 +40,4 @@ local function clear(opts)
   return pcall(_3_)
 end
 _2amodule_2a["clear"] = clear
+return _2amodule_2a

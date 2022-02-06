@@ -52,3 +52,4 @@ local function add_path(path)
   return nil
 end
 _2amodule_2a["add-path"] = add_path
+return _2amodule_2a

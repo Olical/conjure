@@ -18,3 +18,4 @@ local function main()
   return mapping.init(config.filetypes())
 end
 _2amodule_2a["main"] = main
+return _2amodule_2a

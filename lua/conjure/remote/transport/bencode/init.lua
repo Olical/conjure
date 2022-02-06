@@ -40,3 +40,4 @@ local function encode(...)
   return impl.encode(...)
 end
 _2amodule_2a["encode"] = encode
+return _2amodule_2a

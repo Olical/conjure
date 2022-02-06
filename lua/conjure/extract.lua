@@ -262,3 +262,4 @@ local function prompt_char()
   return nvim.fn.nr2char(nvim.fn.getchar())
 end
 _2amodule_2a["prompt-char"] = prompt_char
+return _2amodule_2a

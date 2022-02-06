@@ -29,3 +29,4 @@ local function destroy(t)
   return nil
 end
 _2amodule_2a["destroy"] = destroy
+return _2amodule_2a

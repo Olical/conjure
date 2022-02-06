@@ -28,4 +28,4 @@ local function pretty(id)
 end
 _2amodule_2a["pretty"] = pretty
 --[[ (v4) (pretty (v4)) ]]--
-return nil
+return _2amodule_2a

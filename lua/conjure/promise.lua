@@ -53,3 +53,4 @@ local function await(id, opts)
   return nvim.fn.wait(a.get(opts, "timeout", 10000), ("luaeval(\"require('conjure.promise')['done?']('" .. id .. "')\")"), a.get(opts, "interval", 50))
 end
 _2amodule_2a["await"] = await
+return _2amodule_2a
