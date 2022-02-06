@@ -50,10 +50,10 @@ local function display_result(resp, opts)
   local _4_
   if resp.out then
     local _5_
-    if opts0["simple-out?"] then
-      _5_ = "; "
-    elseif (opts0["raw-out?"] or cfg({"eval", "raw_out"})) then
+    if (opts0["raw-out?"] or cfg({"eval", "raw_out"})) then
       _5_ = ""
+    elseif opts0["simple-out?"] then
+      _5_ = "; "
     else
       _5_ = "; (out) "
     end
