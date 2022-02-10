@@ -33,7 +33,7 @@
   (let [conn (state :conn)]
     (if conn
       (f conn)
-      (log.append ("; No connection")))))
+      (log.append "; No connection"))))
 
 (defn- connected? []
   (if (state :conn)
