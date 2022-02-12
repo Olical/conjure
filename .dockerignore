@@ -1,0 +1,4 @@
+.git/
+.lsp/
+.clj-kondo/
+.cpcache/

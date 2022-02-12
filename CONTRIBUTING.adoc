@@ -14,4 +14,6 @@ Your changes and evaluations only apply to the in memory copy of Conjure, use `m
 
 Once you're happy with your changes, you can (maybe) write some tests and execute them with `make test`. CircleCI will also run them for you.
 
+You can run `scripts/docker.sh` to drop into a fresh Ubuntu based Neovim environment with Conjure pre-installed from your working directory. This can be used to verify your changes in a clean room environment.
+
 If you'd like to contribute or are having issues please don't hesitate to get in touch with me (Olical / Oliver Caldwell) on twitter, email or Clojurians Slack.
