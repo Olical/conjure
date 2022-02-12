@@ -196,8 +196,8 @@
 ;; Checks surrounding scope for *module* and, if found, makes sure *module* is
 ;; inserted after `last-expr` (and therefore *module* is returned)
 (fn wrap-last-expr [last-expr]
-  (if (rawget (. (get-scope) :symmeta) :*module*)
-      `(do ,last-expr ,(sym :*module*))
+  (if (in-scope? mod-sym)
+      `(do ,last-expr ,mod-sym)
       last-expr))
 
 ;; Used by aniseed.compile to wrap the entire body of a file, replacing the
