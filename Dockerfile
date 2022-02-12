@@ -8,6 +8,4 @@ RUN add-apt-repository ppa:neovim-ppa/stable
 RUN apt-get update
 RUN apt-get install -y neovim
 
-ADD . /root/.local/share/nvim/site/pack/conjure/start/conjure
-
 CMD nvim
