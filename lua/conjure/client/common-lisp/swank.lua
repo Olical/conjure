@@ -37,7 +37,7 @@ local function with_conn_or_warn(f, opts)
   if conn then
     return f(conn)
   else
-    return log.append(("; No connection")())
+    return log.append("; No connection")
   end
 end
 _2amodule_locals_2a["with-conn-or-warn"] = with_conn_or_warn
