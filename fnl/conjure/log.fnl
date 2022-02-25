@@ -20,14 +20,15 @@
                     :ns (nvim.create_namespace "conjure_log_jump_to_latest")}})
 
 (defn- break []
-  (.. (client.get :comment-prefix)
-      (string.rep "-" (config.get-in [:log :break_length]))))
+  (str.join
+    [(client.get :comment-prefix)
+     (string.rep "-" (config.get-in [:log :break_length]))]))
 
 (defn- state-key-header []
-  (.. (client.get :comment-prefix) "State: " (client.state-key)))
+  (str.join [(client.get :comment-prefix) "State: " (client.state-key)]))
 
 (defn- log-buf-name []
-  (.. "conjure-log-" (nvim.fn.getpid) (client.get :buf-suffix)))
+  (str.join ["conjure-log-" (nvim.fn.getpid) (client.get :buf-suffix)]))
 
 (defn log-buf? [name]
   (text.ends-with name (log-buf-name)))

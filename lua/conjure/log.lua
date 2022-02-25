@@ -26,15 +26,15 @@ _2amodule_locals_2a["sponsors"] = sponsors
 local state = (state or {["last-open-cmd"] = nil, hud = {id = nil, timer = nil, ["created-at-ms"] = 0}, ["jump-to-latest"] = {mark = nil, ns = nvim.create_namespace("conjure_log_jump_to_latest")}})
 do end (_2amodule_locals_2a)["state"] = state
 local function _break()
-  return (client.get("comment-prefix") .. string.rep("-", config["get-in"]({"log", "break_length"})))
+  return str.join({client.get("comment-prefix"), string.rep("-", config["get-in"]({"log", "break_length"}))})
 end
 _2amodule_locals_2a["break"] = _break
 local function state_key_header()
-  return (client.get("comment-prefix") .. "State: " .. client["state-key"]())
+  return str.join({client.get("comment-prefix"), "State: ", client["state-key"]()})
 end
 _2amodule_locals_2a["state-key-header"] = state_key_header
 local function log_buf_name()
-  return ("conjure-log-" .. nvim.fn.getpid() .. client.get("buf-suffix"))
+  return str.join({"conjure-log-", nvim.fn.getpid(), client.get("buf-suffix")})
 end
 _2amodule_locals_2a["log-buf-name"] = log_buf_name
 local function log_buf_3f(name)
