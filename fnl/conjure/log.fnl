@@ -15,7 +15,9 @@
   {:last-open-cmd nil
    :hud {:id nil
          :timer nil
-         :created-at-ms 0}
+         :created-at-ms 0
+         :low-priority-spam {:streak 0
+                             :help-displayed? false}}
    :jump-to-latest {:mark nil
                     :ns (nvim.create_namespace "conjure_log_jump_to_latest")}})
 
@@ -154,10 +156,40 @@
 (defn- current-window-floating? []
   (= :number (type (a.get (nvim.win_get_config 0) :zindex))))
 
-(defn- display-hud []
+(def- low-priority-streak-threshold 5)
+
+(defn- handle-low-priority-spam! [low-priority?]
+  ;; When we see a bunch of low-priority? messages opening the HUD repeatedly
+  ;; we display a bit of help _once_ that can prevent this spam in the future
+  ;; for the user.
+  (when (not (a.get-in state [:hud :low-priority-spam :help-displayed?]))
+    (if low-priority?
+      (a.update-in state [:hud :low-priority-spam :streak] a.inc)
+      (a.assoc-in state [:hud :low-priority-spam :streak] 0))
+
+    (when (> (a.get-in state [:hud :low-priority-spam :streak]) low-priority-streak-threshold)
+      (let [pref (client.get :comment-prefix)]
+        (client.schedule
+          (. *module* :append)
+          [(.. pref "Is the HUD popping up too much and annoying you in this project?")
+           (.. pref "Set this option to suppress this kind of output for this session.")
+           (.. pref "  :let g:conjure#log#hud#ignore_low_priority = v:true")]
+          {:break? true}))
+      (a.assoc-in state [:hud :low-priority-spam :help-displayed?] true))))
+
+(defn- display-hud [opts]
   (when (and (config.get-in [:log :hud :enabled])
-             (not (current-window-floating?)))
+
+             ;; Don't display when the user is already doing something in a floating window.
+             (not (current-window-floating?))
+
+             ;; Don't display low priority messages if configured.
+             (or (not (config.get-in [:log :hud :ignore_low_priority]))
+                 (and (config.get-in [:log :hud :ignore_low_priority])
+                      (a.get opts :low-priority?))))
+
     (clear-close-hud-passive-timer)
+
     (let [buf (upsert-buf)
           last-break (a.last (break-lines buf))
           line-count (nvim.buf_line_count buf)
@@ -180,13 +212,13 @@
             (when (= 1 (nvim.fn.has "nvim-0.5"))
               {:border border}))]
 
-      (when (and state.hud.id
-                 (not (nvim.win_is_valid state.hud.id)))
+      (when (and state.hud.id (not (nvim.win_is_valid state.hud.id)))
         (close-hud))
 
       (if state.hud.id
         (nvim.win_set_buf state.hud.id buf)
         (do
+          (handle-low-priority-spam! (a.get opts :low-priority?))
           (set state.hud.id (nvim.open_win buf false win-opts))
           (set-win-opts! state.hud.id)))
 
@@ -387,7 +419,7 @@
 
         (if (and (not (a.get opts :suppress-hud?))
                  (not visible-scrolling-log?))
-          (display-hud)
+          (display-hud opts)
           (close-hud))
 
         (trim buf)))))

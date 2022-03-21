@@ -590,6 +590,26 @@ Tip: Booleans in Vim Script are written as `v:true` and `v:false`.
             `"none"` if you don't want a border.
             Default: `"single"`
 
+                                       *g:conjure#log#hud#ignore_low_priority*
+`g:conjure#log#hud#ignore_low_priority`
+            Don't display the HUD for "low priority" messages. This includes
+            `stdout` and `stderr` for Clojure, this support varies from
+            language to language drastically depending on the information each
+            REPL can offer Conjure. Most languages only have standard priority
+            messages, there is no distinction between low and anything else.
+
+            If your HUD is constantly displaying because of low priority
+            messages you'll see a warning, once, telling you about this
+            option. You can then set the option during a session to improve
+            your experience with particularly noisy REPLs.
+
+            The following snippet will set this to true and suppress low
+            priority output from the HUD, just in case you're in a rush:
+            >
+              :let g:conjure#log#hud#ignore_low_priority = v:true
+<
+            Default: `false`
+
                                                       *g:conjure#log#botright*
 `g:conjure#log#botright`
             Force the log to always open at the bottom or far right of the

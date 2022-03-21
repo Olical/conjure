@@ -69,7 +69,7 @@ local function display_result(resp, opts)
   else
     _4_ = nil
   end
-  return log.append(_4_, {["join-first?"] = joined_3f})
+  return log.append(_4_, {["join-first?"] = joined_3f, ["low-priority?"] = not not (resp.out or resp.err)})
 end
 _2amodule_2a["display-result"] = display_result
 local function display_sessions(sessions, cb)

@@ -44,7 +44,8 @@
           (text.split-lines resp.value))
 
         nil)
-      {:join-first? joined?})))
+      {:join-first? joined?
+       :low-priority? (not (not (or resp.out resp.err)))})))
 
 (defn display-sessions [sessions cb]
   (let [current (state.get :conn :session)]

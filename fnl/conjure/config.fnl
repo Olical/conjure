@@ -121,7 +121,8 @@
           :minimum_lifetime_ms 20
           :overlap_padding 0.1
           :border :single
-          :anchor :NE}
+          :anchor :NE
+          :ignore_low_priority false}
     :botright false
     :jump_to_latest {:enabled false
                      :cursor_scroll_position "top"}
