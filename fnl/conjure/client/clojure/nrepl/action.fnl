@@ -65,7 +65,7 @@
 (defn connect-port-file [opts]
   (let [resolved
         (-?>> (cfg [:connection :port_files])
-              (a.map fs.resolve-above)
+              (fs.resolve-above)
               (a.some
                 (fn [path]
                   (let [port (a.slurp path)]
