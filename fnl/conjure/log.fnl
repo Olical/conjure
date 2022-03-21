@@ -151,8 +151,12 @@
         size true)
       pos)))
 
+(defn- current-window-floating? []
+  (= :number (type (a.get (nvim.win_get_config 0) :zindex))))
+
 (defn- display-hud []
-  (when (config.get-in [:log :hud :enabled])
+  (when (and (config.get-in [:log :hud :enabled])
+             (not (current-window-floating?)))
     (clear-close-hud-passive-timer)
     (let [buf (upsert-buf)
           last-break (a.last (break-lines buf))
@@ -171,7 +175,8 @@
              :width size.width
              :height size.height
              :focusable false
-             :style :minimal}
+             :style :minimal
+             :zindex 10}
             (when (= 1 (nvim.fn.has "nvim-0.5"))
               {:border border}))]
 

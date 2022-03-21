@@ -176,8 +176,12 @@ local function hud_window_pos(anchor, size, rec_3f)
   end
 end
 _2amodule_locals_2a["hud-window-pos"] = hud_window_pos
+local function current_window_floating_3f()
+  return ("number" == type(a.get(nvim.win_get_config(0), "zindex")))
+end
+_2amodule_locals_2a["current-window-floating?"] = current_window_floating_3f
 local function display_hud()
-  if config["get-in"]({"log", "hud", "enabled"}) then
+  if (config["get-in"]({"log", "hud", "enabled"}) and not current_window_floating_3f()) then
     clear_close_hud_passive_timer()
     local buf = upsert_buf()
     local last_break = a.last(break_lines(buf))
@@ -193,7 +197,7 @@ local function display_hud()
         return nil
       end
     end
-    win_opts = a.merge({relative = "editor", row = pos.row, col = pos.col, anchor = pos.anchor, width = size.width, height = size.height, focusable = false, style = "minimal"}, _18_())
+    win_opts = a.merge({relative = "editor", row = pos.row, col = pos.col, anchor = pos.anchor, width = size.width, height = size.height, focusable = false, style = "minimal", zindex = 10}, _18_())
     if (state.hud.id and not nvim.win_is_valid(state.hud.id)) then
       close_hud()
     else
