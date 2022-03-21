@@ -204,7 +204,7 @@ local function handle_low_priority_spam_21(low_priority_3f)
 end
 _2amodule_locals_2a["handle-low-priority-spam!"] = handle_low_priority_spam_21
 local function display_hud(opts)
-  if (config["get-in"]({"log", "hud", "enabled"}) and not current_window_floating_3f() and (not config["get-in"]({"log", "hud", "ignore_low_priority"}) or (config["get-in"]({"log", "hud", "ignore_low_priority"}) and a.get(opts, "low-priority?")))) then
+  if (config["get-in"]({"log", "hud", "enabled"}) and not current_window_floating_3f() and (not config["get-in"]({"log", "hud", "ignore_low_priority"}) or (config["get-in"]({"log", "hud", "ignore_low_priority"}) and not a.get(opts, "low-priority?")))) then
     clear_close_hud_passive_timer()
     local buf = upsert_buf()
     local last_break = a.last(break_lines(buf))

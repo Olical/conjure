@@ -186,7 +186,7 @@
              ;; Don't display low priority messages if configured.
              (or (not (config.get-in [:log :hud :ignore_low_priority]))
                  (and (config.get-in [:log :hud :ignore_low_priority])
-                      (a.get opts :low-priority?))))
+                      (not (a.get opts :low-priority?)))))
 
     (clear-close-hud-passive-timer)
 
