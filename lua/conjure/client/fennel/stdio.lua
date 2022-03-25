@@ -91,7 +91,7 @@ end
 _2amodule_2a["eval-reload"] = eval_reload
 local function doc_str(opts)
   local function _9_(_241)
-    return ("(doc " .. _241 .. ")\n")
+    return (",doc " .. _241 .. "\n")
   end
   return eval_str(a.update(opts, "code", _9_))
 end
