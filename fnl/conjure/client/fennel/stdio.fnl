@@ -71,7 +71,7 @@
        :code (.. ",reload " module-path)})))
 
 (defn doc-str [opts]
-  (eval-str (a.update opts :code #(.. "(doc " $1 ")\n"))))
+  (eval-str (a.update opts :code #(.. ",doc " $1 "\n"))))
 
 (defn- display-repl-status [status]
   (let [repl (state :repl)]
