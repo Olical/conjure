@@ -63,15 +63,12 @@
         proc))))
 
 (defn connect-port-file [opts]
-  (let [resolved
-        (-?>> (cfg [:connection :port_files])
-              (fs.resolve-above)
-              (a.some
-                (fn [path]
-                  (let [port (a.slurp path)]
-                    (when port
-                      {:path path
-                       :port (tonumber port)})))))]
+  (let [resolved-path (-?>> (cfg [:connection :port_files]) (fs.resolve-above))
+        resolved (when resolved-path
+                   (let [port (a.slurp resolved-path)]
+                     (when port
+                       {:path resolved-path
+                        :port (tonumber port)})))]
     (if resolved
       (server.connect
         {:host (cfg [:connection :default_host])

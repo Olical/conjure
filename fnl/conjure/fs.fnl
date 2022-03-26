@@ -63,9 +63,13 @@
   file)
 
 (defn resolve-above [names]
-  "Resolve a pathless file name to an absolute path by looking in the
+  "Resolve a pathless list of file names to an absolute path by looking in the
   containing and parent directories of the current file, current working
-  directory and finally $XDG_CONFIG_HOME/conjure"
+  directory and finally $XDG_CONFIG_HOME/conjure.
+
+  The file names are considered in priority order, if a match is found for the
+  first file name in the first directory, everything will short circuit and
+  return that full path."
   (or
     (upwards-file-search names (nvim.fn.expand "%:p:h"))
     (upwards-file-search names (nvim.fn.getcwd))
