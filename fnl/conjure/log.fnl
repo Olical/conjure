@@ -12,7 +12,7 @@
    require {sponsors conjure.sponsors}})
 
 (defonce- state
-  {:last-open-cmd nil
+  {:last-open-cmd :vsplit
    :hud {:id nil
          :timer nil
          :created-at-ms 0

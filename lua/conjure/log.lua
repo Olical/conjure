@@ -23,7 +23,7 @@ _2amodule_locals_2a["text"] = text
 _2amodule_locals_2a["timer"] = timer
 _2amodule_locals_2a["view"] = view
 _2amodule_locals_2a["sponsors"] = sponsors
-local state = (state or {["last-open-cmd"] = nil, hud = {id = nil, timer = nil, ["created-at-ms"] = 0, ["low-priority-spam"] = {streak = 0, ["help-displayed?"] = false}}, ["jump-to-latest"] = {mark = nil, ns = nvim.create_namespace("conjure_log_jump_to_latest")}})
+local state = (state or {["last-open-cmd"] = "vsplit", hud = {id = nil, timer = nil, ["created-at-ms"] = 0, ["low-priority-spam"] = {streak = 0, ["help-displayed?"] = false}}, ["jump-to-latest"] = {mark = nil, ns = nvim.create_namespace("conjure_log_jump_to_latest")}})
 do end (_2amodule_locals_2a)["state"] = state
 local function _break()
   return str.join({client.get("comment-prefix"), string.rep("-", config["get-in"]({"log", "break_length"}))})
