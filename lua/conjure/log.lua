@@ -43,11 +43,11 @@ end
 _2amodule_2a["log-buf?"] = log_buf_3f
 local function on_new_log_buf(buf)
   state["jump-to-latest"].mark = nvim.buf_set_extmark(buf, state["jump-to-latest"].ns, 0, 0, {})
-  return nvim.buf_set_lines(buf, 0, -1, false, {(client.get("comment-prefix") .. "Sponsored by @" .. a.get(sponsors, a.inc(math.floor(a.rand(a.dec(a.count(sponsors)))))) .. " \226\157\164")})
+  return nvim.buf_set_lines(buf, 0, -1, false, {str.join({client.get("comment-prefix"), "Sponsored by @", a.get(sponsors, a.inc(math.floor(a.rand(a.dec(a.count(sponsors)))))), " \226\157\164"})})
 end
 _2amodule_locals_2a["on-new-log-buf"] = on_new_log_buf
 local function upsert_buf()
-  return buffer["upsert-hidden"](log_buf_name(), on_new_log_buf)
+  return buffer["upsert-hidden"](log_buf_name(), client.wrap(on_new_log_buf))
 end
 _2amodule_locals_2a["upsert-buf"] = upsert_buf
 local function clear_close_hud_passive_timer()
