@@ -25,6 +25,13 @@
     (when (not (a.empty? res))
       res)))
 
+(defn split-path [path]
+  (->> (str.split path afs.path-sep)
+       (a.filter #(not (a.empty? $)))))
+
+(defn join-path [parts]
+  (str.join afs.path-sep (a.concat parts)))
+
 (defn parent-dir [path]
   (let [res (-> path
                 (split-path)
@@ -66,13 +73,6 @@
 
 (defn file-readable? [path]
   (= 1 (nvim.fn.filereadable path)))
-
-(defn split-path [path]
-  (->> (str.split path afs.path-sep)
-       (a.filter #(not (a.empty? $)))))
-
-(defn join-path [parts]
-  (str.join afs.path-sep (a.concat parts)))
 
 (defn resolve-relative-to [path root]
   "Successively remove parts of the path until we get to a relative path that
