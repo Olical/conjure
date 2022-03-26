@@ -184,7 +184,7 @@ local function eval_str(opts)
 end
 _2amodule_2a["eval-str"] = eval_str
 local function doc_str(opts)
-  a.assoc(opts, "code", ("(doc " .. opts.code .. ")"))
+  a.assoc(opts, "code", (",doc " .. opts.code))
   return eval_str(opts)
 end
 _2amodule_2a["doc-str"] = doc_str

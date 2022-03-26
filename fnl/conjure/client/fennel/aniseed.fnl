@@ -154,7 +154,7 @@
          (display-result opts))))))
 
 (defn doc-str [opts]
-  (a.assoc opts :code (.. "(doc " opts.code ")"))
+  (a.assoc opts :code (.. ",doc " opts.code))
   (eval-str opts))
 
 (defn eval-file [opts]
