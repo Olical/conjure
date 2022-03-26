@@ -10,8 +10,6 @@
 "davidmh"
 "dharrigan"
 "djwhitt"
-"emilaasa"
-"Fedreg"
 "frenchy64"
 "fuadsaud"
 "harrygallagher4"
@@ -26,9 +24,7 @@
 "rafaeldelboni"
 "rbatista"
 "rgm"
-"shaunlebron"
 "thiru"
 "TimoKramer"
-"valsen"
 "zhming0"
 ]
