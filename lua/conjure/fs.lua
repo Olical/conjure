@@ -40,14 +40,6 @@ local function findfile(name, path)
   end
 end
 _2amodule_2a["findfile"] = findfile
-local function resolve_above(name)
-  return (findfile(name, ".;") or findfile(name, (nvim.fn.getcwd() .. ";")) or findfile(name, (config_dir() .. ";")))
-end
-_2amodule_2a["resolve-above"] = resolve_above
-local function file_readable_3f(path)
-  return (1 == nvim.fn.filereadable(path))
-end
-_2amodule_2a["file-readable?"] = file_readable_3f
 local function split_path(path)
   local function _3_(_241)
     return not a["empty?"](_241)
@@ -59,6 +51,44 @@ local function join_path(parts)
   return str.join(afs["path-sep"], a.concat(parts))
 end
 _2amodule_2a["join-path"] = join_path
+local function parent_dir(path)
+  local res = join_path(a.butlast(split_path(path)))
+  if ("" == res) then
+    return nil
+  else
+    return ("/" .. res)
+  end
+end
+_2amodule_2a["parent-dir"] = parent_dir
+local function upwards_file_search(orig_names, orig_dir)
+  local names = orig_names
+  local dir = orig_dir
+  local file = nil
+  while (dir and not file) do
+    local name = a.first(names)
+    if name then
+      local res = findfile(name, dir)
+      if res then
+        file = res
+      else
+        names = a.rest(names)
+      end
+    else
+      names = orig_names
+      dir = parent_dir(dir)
+    end
+  end
+  return file
+end
+_2amodule_2a["upwards-file-search"] = upwards_file_search
+local function resolve_above(names)
+  return (upwards_file_search(names, nvim.fn.expand("%:p:h")) or upwards_file_search(names, nvim.fn.getcwd()) or upwards_file_search(names, config_dir()))
+end
+_2amodule_2a["resolve-above"] = resolve_above
+local function file_readable_3f(path)
+  return (1 == nvim.fn.filereadable(path))
+end
+_2amodule_2a["file-readable?"] = file_readable_3f
 local function resolve_relative_to(path, root)
   local function loop(parts)
     if a["empty?"](parts) then
@@ -84,13 +114,13 @@ local function resolve_relative(path)
 end
 _2amodule_2a["resolve-relative"] = resolve_relative
 local function apply_path_subs(path, path_subs)
-  local function _9_(path0, _7_)
-    local _arg_8_ = _7_
-    local pat = _arg_8_[1]
-    local rep = _arg_8_[2]
+  local function _12_(path0, _10_)
+    local _arg_11_ = _10_
+    local pat = _arg_11_[1]
+    local rep = _arg_11_[2]
     return path0:gsub(pat, rep)
   end
-  return a.reduce(_9_, path, a["kv-pairs"](path_subs))
+  return a.reduce(_12_, path, a["kv-pairs"](path_subs))
 end
 _2amodule_2a["apply-path-subs"] = apply_path_subs
 local function localise_path(path)
@@ -99,7 +129,7 @@ end
 _2amodule_2a["localise-path"] = localise_path
 local function file_path__3emodule_name(file_path)
   if file_path then
-    local function _10_(mod_name)
+    local function _13_(mod_name)
       local mod_path = string.gsub(mod_name, "%.", afs["path-sep"])
       if (text["ends-with"](file_path, (mod_path .. ".fnl")) or text["ends-with"](file_path, (mod_path .. "/init.fnl"))) then
         return mod_name
@@ -107,7 +137,7 @@ local function file_path__3emodule_name(file_path)
         return nil
       end
     end
-    return a.some(_10_, a.keys(package.loaded))
+    return a.some(_13_, a.keys(package.loaded))
   else
     return nil
   end

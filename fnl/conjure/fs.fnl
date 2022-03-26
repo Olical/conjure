@@ -25,24 +25,58 @@
     (when (not (a.empty? res))
       res)))
 
-(defn resolve-above [name]
-  "Resolve a pathless file name to an absolute path by looking in the
-  containing and parent directories of the current file, current working
-  direcotry and finally $XDG_CONFIG_HOME/conjure"
-  (or
-    (findfile name ".;")
-    (findfile name (.. (nvim.fn.getcwd) ";"))
-    (findfile name (.. (config-dir) ";"))))
-
-(defn file-readable? [path]
-  (= 1 (nvim.fn.filereadable path)))
-
 (defn split-path [path]
   (->> (str.split path afs.path-sep)
        (a.filter #(not (a.empty? $)))))
 
 (defn join-path [parts]
   (str.join afs.path-sep (a.concat parts)))
+
+(defn parent-dir [path]
+  (let [res (-> path
+                (split-path)
+                (a.butlast)
+                (join-path))]
+    (if (= "" res)
+      nil
+      ;; TODO: Needs to be Windows compatible?
+      (.. "/" res))))
+
+(defn upwards-file-search [orig-names orig-dir]
+  "Given a list of relative filenames and an absolute path to a directory,
+  return the absolute path of the first file that matches a relative path,
+  starting at the directory and then upwards towards the root directory. If no
+  match is found, return nil."
+  (var names orig-names)
+  (var dir orig-dir)
+  (var file nil)
+  (while (and dir (not file))
+    (let [name (a.first names)]
+      (if name
+        (let [res (findfile name dir)]
+          (if res
+            (set file res)
+            (set names (a.rest names))))
+        (do
+          (set names orig-names)
+          (set dir (parent-dir dir))))))
+  file)
+
+(defn resolve-above [names]
+  "Resolve a pathless list of file names to an absolute path by looking in the
+  containing and parent directories of the current file, current working
+  directory and finally $XDG_CONFIG_HOME/conjure.
+
+  The file names are considered in priority order, if a match is found for the
+  first file name in the first directory, everything will short circuit and
+  return that full path."
+  (or
+    (upwards-file-search names (nvim.fn.expand "%:p:h"))
+    (upwards-file-search names (nvim.fn.getcwd))
+    (upwards-file-search names (config-dir))))
+
+(defn file-readable? [path]
+  (= 1 (nvim.fn.filereadable path)))
 
 (defn resolve-relative-to [path root]
   "Successively remove parts of the path until we get to a relative path that
