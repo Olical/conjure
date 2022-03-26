@@ -40,6 +40,8 @@ https://asciinema.org/a/325517[image:https://asciinema.org/a/325517.svg[asciicas
 
 Conjure allows you to send the right part of your code off for evaluation, see the results, wrap the results in more code and evaluate that. It keeps a log of your actions and results so you don't have to remember them, that context is extremely helpful when you're down the rabbit hole of a bug hunt.
 
+Evaluating a form under your cursor is as simple as `<prefix>ee`, where `<prefix>` defaults to `<localleader>`. Be sure to set your your `<localleader>` key or configure Conjure to use a different mapping prefix, see `:h maplocalleader` and `:h g:conjure#mapping#prefix` for more information.
+
 The goal is to give you a tool that lets you effortlessly run whatever you need to while keeping out of your way (but there with context and more information if you need it).
 
 Once installed you can run `:ConjureSchool` to begin an interactive tutorial.
