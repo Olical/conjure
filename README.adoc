@@ -1,5 +1,5 @@
 ++++
-<p align="center"><img src="https://conjure.fun/images/lillian.png"/></p>
+<p align="center"><a href="https://www.etsy.com/uk/shop/MysticalScribbles?ref=profile_header"><img src="https://conjure.fun/images/lillian.png"/></a></p>
 ++++
 
 == https://oli.me.uk/conversational-software-development/[Conversational software development] for https://neovim.io[Neovim] +
