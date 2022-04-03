@@ -39,28 +39,22 @@
                 (join-path))]
     (if (= "" res)
       nil
-      ;; TODO: Needs to be Windows compatible?
-      (.. "/" res))))
+      (.. afs.path-sep res))))
 
-(defn upwards-file-search [orig-names orig-dir]
+(defn upwards-file-search [file-names from-dir]
   "Given a list of relative filenames and an absolute path to a directory,
   return the absolute path of the first file that matches a relative path,
   starting at the directory and then upwards towards the root directory. If no
   match is found, return nil."
-  (var names orig-names)
-  (var dir orig-dir)
-  (var file nil)
-  (while (and dir (not file))
-    (let [name (a.first names)]
-      (if name
-        (let [res (findfile name dir)]
-          (if res
-            (set file res)
-            (set names (a.rest names))))
-        (do
-          (set names orig-names)
-          (set dir (parent-dir dir))))))
-  file)
+
+  (when (and from-dir (not (a.empty? file-names)))
+    (let [result (a.some
+                   (fn [file-name]
+                     (findfile file-name from-dir))
+                   file-names)]
+      (if result
+        result
+        (upwards-file-search file-names (parent-dir from-dir))))))
 
 (defn resolve-above [names]
   "Resolve a pathless list of file names to an absolute path by looking in the

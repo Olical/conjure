@@ -56,29 +56,25 @@ local function parent_dir(path)
   if ("" == res) then
     return nil
   else
-    return ("/" .. res)
+    return (afs["path-sep"] .. res)
   end
 end
 _2amodule_2a["parent-dir"] = parent_dir
-local function upwards_file_search(orig_names, orig_dir)
-  local names = orig_names
-  local dir = orig_dir
-  local file = nil
-  while (dir and not file) do
-    local name = a.first(names)
-    if name then
-      local res = findfile(name, dir)
-      if res then
-        file = res
-      else
-        names = a.rest(names)
-      end
-    else
-      names = orig_names
-      dir = parent_dir(dir)
+local function upwards_file_search(file_names, from_dir)
+  if (from_dir and not a["empty?"](file_names)) then
+    local result
+    local function _5_(file_name)
+      return findfile(file_name, from_dir)
     end
+    result = a.some(_5_, file_names)
+    if result then
+      return result
+    else
+      return upwards_file_search(file_names, parent_dir(from_dir))
+    end
+  else
+    return nil
   end
-  return file
 end
 _2amodule_2a["upwards-file-search"] = upwards_file_search
 local function resolve_above(names)
@@ -114,13 +110,13 @@ local function resolve_relative(path)
 end
 _2amodule_2a["resolve-relative"] = resolve_relative
 local function apply_path_subs(path, path_subs)
-  local function _12_(path0, _10_)
-    local _arg_11_ = _10_
-    local pat = _arg_11_[1]
-    local rep = _arg_11_[2]
+  local function _13_(path0, _11_)
+    local _arg_12_ = _11_
+    local pat = _arg_12_[1]
+    local rep = _arg_12_[2]
     return path0:gsub(pat, rep)
   end
-  return a.reduce(_12_, path, a["kv-pairs"](path_subs))
+  return a.reduce(_13_, path, a["kv-pairs"](path_subs))
 end
 _2amodule_2a["apply-path-subs"] = apply_path_subs
 local function localise_path(path)
@@ -129,7 +125,7 @@ end
 _2amodule_2a["localise-path"] = localise_path
 local function file_path__3emodule_name(file_path)
   if file_path then
-    local function _13_(mod_name)
+    local function _14_(mod_name)
       local mod_path = string.gsub(mod_name, "%.", afs["path-sep"])
       if (text["ends-with"](file_path, (mod_path .. ".fnl")) or text["ends-with"](file_path, (mod_path .. "/init.fnl"))) then
         return mod_name
@@ -137,7 +133,7 @@ local function file_path__3emodule_name(file_path)
         return nil
       end
     end
-    return a.some(_13_, a.keys(package.loaded))
+    return a.some(_14_, a.keys(package.loaded))
   else
     return nil
   end
