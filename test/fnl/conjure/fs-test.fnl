@@ -107,3 +107,11 @@
        (fs.upwards-file-search
          ["README.adoc" ".fs.test"]
          (.. (nvim.fn.getcwd) "/test/fnl/conjure"))))
+
+(deftest resolve-above
+  ;; No match
+  (t.= nil (fs.resolve-above []))
+  (t.= nil (fs.resolve-above ["thisbetternotexist"]))
+
+  ;; Match in the cwd
+  (t.= "README.adoc" (fs.resolve-above ["README.adoc"])))
