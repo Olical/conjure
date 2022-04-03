@@ -10,6 +10,7 @@
 "davidmh"
 "dharrigan"
 "djwhitt"
+"Fedreg"
 "frenchy64"
 "fuadsaud"
 "harrygallagher4"
