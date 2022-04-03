@@ -78,3 +78,32 @@
   (t.= nil (fs.file-path->module-name ex-no-file))
 
   (tset package.loaded ex-mod nil))
+
+(deftest upwards-file-search
+  ;; No match
+  (t.= nil (fs.upwards-file-search [] (nvim.fn.getcwd)))
+  (t.= nil (fs.upwards-file-search ["thisbetternotexist"] (nvim.fn.getcwd)))
+
+  ;; Match in the cwd
+  (t.= "README.adoc"
+       (fs.upwards-file-search
+         ["README.adoc"]
+         (nvim.fn.getcwd)))
+
+  ;; Match by walking upwards
+  (t.= "README.adoc"
+       (fs.upwards-file-search
+         ["README.adoc"]
+         (.. (nvim.fn.getcwd) "/test/fnl/conjure/client/clojure/nrepl")))
+
+  ;; Matching below first, return early
+  (t.= "test/fnl/conjure/.fs.test"
+       (fs.upwards-file-search
+         ["README.adoc" ".fs.test"]
+         (.. (nvim.fn.getcwd) "/test/fnl/conjure/client/clojure/nrepl")))
+
+  ;; Matching at same level first, return early
+  (t.= "test/fnl/conjure/.fs.test"
+       (fs.upwards-file-search
+         ["README.adoc" ".fs.test"]
+         (.. (nvim.fn.getcwd) "/test/fnl/conjure"))))
