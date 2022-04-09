@@ -17,6 +17,6 @@ local get
 local function _1_()
   return {conn = nil, ["auto-repl-proc"] = nil, ["join-next"] = {key = nil}}
 end
-get = (get or client["new-state"](_1_))
+get = ((_2amodule_2a).get or client["new-state"](_1_))
 do end (_2amodule_2a)["get"] = get
 return _2amodule_2a

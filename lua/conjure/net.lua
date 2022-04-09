@@ -27,7 +27,7 @@ local function resolve(host)
   end
 end
 _2amodule_2a["resolve"] = resolve
-local state = (state or {["sock-drawer"] = {}})
+local state = ((_2amodule_2a).state or {["sock-drawer"] = {}})
 do end (_2amodule_locals_2a)["state"] = state
 local function destroy_sock(sock)
   if not sock:is_closing() then

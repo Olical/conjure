@@ -15,7 +15,7 @@ local a, config, nvim = autoload("conjure.aniseed.core"), autoload("conjure.conf
 do end (_2amodule_locals_2a)["a"] = a
 _2amodule_locals_2a["config"] = config
 _2amodule_locals_2a["nvim"] = nvim
-local ns_id = (__fnl_global__ns_2did or nvim.create_namespace(_2amodule_name_2a))
+local ns_id = ((_2amodule_2a)["ns-id"] or nvim.create_namespace(_2amodule_name_2a))
 do end (_2amodule_2a)["ns-id"] = ns_id
 local function sanitise_text(s)
   if a["string?"](s) then

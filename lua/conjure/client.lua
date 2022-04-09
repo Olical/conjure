@@ -22,9 +22,9 @@ local state_key
 local function _1_()
   return "default"
 end
-state_key = (__fnl_global__state_2dkey or dyn.new(_1_))
+state_key = ((_2amodule_2a)["state-key"] or dyn.new(_1_))
 do end (_2amodule_2a)["state-key"] = state_key
-local state = (state or {["state-key-set?"] = false})
+local state = ((_2amodule_2a).state or {["state-key-set?"] = false})
 do end (_2amodule_locals_2a)["state"] = state
 local function set_state_key_21(new_key)
   state["state-key-set?"] = true
@@ -56,7 +56,7 @@ local function new_state(init_fn)
   return _3_
 end
 _2amodule_2a["new-state"] = new_state
-local loaded = (loaded or {})
+local loaded = ((_2amodule_2a).loaded or {})
 do end (_2amodule_locals_2a)["loaded"] = loaded
 local function load_module(ft, name)
   local fnl = fennel.impl()

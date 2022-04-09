@@ -48,7 +48,7 @@ local function anic(mod, f_name, ...)
   return ani(mod, f_name)(...)
 end
 _2amodule_locals_2a["anic"] = anic
-local repls = (repls or {})
+local repls = ((_2amodule_2a).repls or {})
 do end (_2amodule_locals_2a)["repls"] = repls
 local function reset_repl(filename)
   local filename0 = (filename or fs["localise-path"](extract["file-path"]()))
