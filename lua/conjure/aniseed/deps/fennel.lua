@@ -363,9 +363,9 @@ package.preload["conjure.aniseed.fennel.repl"] = package.preload["conjure.anisee
           _571_ = _572_
         end
       end
-      if ((_G.type(_571_) == "table") and ((_571_).what == "Lua") and (nil ~= (_571_).linedefined) and (nil ~= (_571_).source) and (nil ~= (_571_).short_src)) then
-        local line = (_571_).linedefined
+      if ((_G.type(_571_) == "table") and (nil ~= (_571_).source) and (nil ~= (_571_).linedefined) and ((_571_).what == "Lua") and (nil ~= (_571_).short_src)) then
         local source = (_571_).source
+        local line = (_571_).linedefined
         local src = (_571_).short_src
         local fnlsrc
         do
@@ -3456,7 +3456,7 @@ package.preload["conjure.aniseed.fennel.parser"] = package.preload["conjure.anis
         end
       end
       local function escape_char(c)
-        return ({nil, nil, nil, nil, nil, nil, "\\a", "\\b", "\\t", "\\n", "\\v", "\\f", "\\r"})[c:byte()]
+        return ({[7] = "\\a", [8] = "\\b", [9] = "\\t", [10] = "\\n", [11] = "\\v", [12] = "\\f", [13] = "\\r"})[c:byte()]
       end
       local function parse_string()
         table.insert(stack, {closer = 34})

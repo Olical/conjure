@@ -15,7 +15,7 @@ local a, nvim, uuid = autoload("conjure.aniseed.core"), autoload("conjure.anisee
 do end (_2amodule_locals_2a)["a"] = a
 _2amodule_locals_2a["nvim"] = nvim
 _2amodule_locals_2a["uuid"] = uuid
-local state = (state or {})
+local state = ((_2amodule_2a).state or {})
 do end (_2amodule_locals_2a)["state"] = state
 local function new()
   local id = uuid.v4()

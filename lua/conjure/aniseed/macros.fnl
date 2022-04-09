@@ -175,10 +175,10 @@
     (tset ,mod-sym ,(tostring name) ,name)])
 
 (fn defonce- [name value]
-  `(def- ,name (or ,name ,value)))
+  `(def- ,name (or (. ,mod-sym ,(tostring name)) ,value)))
 
 (fn defonce [name value]
-  `(def ,name (or ,name ,value)))
+  `(def ,name (or (. ,mod-sym ,(tostring name)) ,value)))
 
 (fn deftest [name ...]
   `(let [tests# (or (. ,mod-sym :aniseed/tests

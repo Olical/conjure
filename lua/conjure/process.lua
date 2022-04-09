@@ -27,7 +27,7 @@ local function running_3f(proc)
   end
 end
 _2amodule_2a["running?"] = running_3f
-local state = (state or {jobs = {}})
+local state = ((_2amodule_2a).state or {jobs = {}})
 do end (_2amodule_locals_2a)["state"] = state
 local function on_exit(job_id)
   local proc = state.jobs[job_id]

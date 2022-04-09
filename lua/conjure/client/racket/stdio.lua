@@ -29,7 +29,7 @@ local state
 local function _1_()
   return {repl = nil}
 end
-state = (state or client["new-state"](_1_))
+state = ((_2amodule_2a).state or client["new-state"](_1_))
 do end (_2amodule_locals_2a)["state"] = state
 local buf_suffix = ".rkt"
 _2amodule_2a["buf-suffix"] = buf_suffix
