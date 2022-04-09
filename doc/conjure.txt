@@ -722,7 +722,12 @@ Tip: Booleans in Vim Script are written as `v:true` and `v:false`.
             for matching parenthesis in the buffer from the cursors current
             location.
 
-            Default: `false`
+            Beware trying to use TreeSitter to highlight your buffer while
+            simultaneously asking Conjure to use the legacy regex based form
+            extraction by setting this to `false`. It will not work!
+            More information: https://github.com/Olical/conjure/issues/246
+
+            Default: `true`
 
                                               *g:conjure#preview#sample_limit*
 `g:conjure#preview#sample_limit`

@@ -140,7 +140,7 @@
     :form_pairs [["(" ")"]
                  ["{" "}"]
                  ["[" "]" true]]
-    :tree_sitter {:enabled false}}
+    :tree_sitter {:enabled true}}
 
    :preview
    {:sample_limit 0.3}})
