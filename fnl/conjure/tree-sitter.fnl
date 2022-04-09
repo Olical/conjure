@@ -50,11 +50,10 @@
 (defn get-root [node]
   "Get the root node below the entire document."
   (let [node (or node (ts.get_node_at_cursor))
-        p1 (parent node)
-        p2 (parent p1)]
-    (if (and p1 p2)
-      (get-root p1)
-      node)))
+        parent-node (parent node)]
+    (if (document? parent-node)
+      node
+      (get-root parent-node))))
 
 (defn leaf? [node]
   "Does the node have any children? Or is it the end of the tree?"

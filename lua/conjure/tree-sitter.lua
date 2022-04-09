@@ -69,12 +69,11 @@ end
 _2amodule_2a["range"] = range
 local function get_root(node)
   local node0 = (node or ts.get_node_at_cursor())
-  local p1 = parent(node0)
-  local p2 = parent(p1)
-  if (p1 and p2) then
-    return get_root(p1)
-  else
+  local parent_node = parent(node0)
+  if document_3f(parent_node) then
     return node0
+  else
+    return get_root(parent_node)
   end
 end
 _2amodule_2a["get-root"] = get_root
