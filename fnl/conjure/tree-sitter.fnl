@@ -21,8 +21,8 @@
   (and
     (= :table (type ts))
     (config.get-in [:extract :tree_sitter :enabled])
-    (let [(ok? _) (pcall vim.treesitter.get_parser)]
-      ok?)))
+    (let [(ok? parser) (pcall vim.treesitter.get_parser)]
+      (and ok? parser))))
 
 (defn node->str [node]
   "Turn the node into a string, nils flow through. Separate forms are joined by

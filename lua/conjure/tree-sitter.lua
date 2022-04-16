@@ -32,8 +32,8 @@ end
 _2amodule_locals_2a["ts"] = ts
 local function enabled_3f()
   local function _3_()
-    local ok_3f, _ = pcall(vim.treesitter.get_parser)
-    return ok_3f
+    local ok_3f, parser = pcall(vim.treesitter.get_parser)
+    return (ok_3f and parser)
   end
   return (("table" == type(ts)) and config["get-in"]({"extract", "tree_sitter", "enabled"}) and _3_())
 end
