@@ -587,7 +587,7 @@
         (fn [conn]
           (log.append [(.. "; shadow-cljs (select): " build)] {:break? true})
           (server.eval
-            {:code (.. "(shadow.cljs.devtools.api/nrepl-select :" build ")")}
+            {:code (.. "#?(:clj (shadow.cljs.devtools.api/nrepl-select :" build ") :cljs :already-selected)")}
             ui.display-result)
           (passive-ns-require))))))
 

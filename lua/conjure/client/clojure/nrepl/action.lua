@@ -703,7 +703,7 @@ local function shadow_select(build)
   local function _124_()
     local function _125_(conn)
       log.append({("; shadow-cljs (select): " .. build)}, {["break?"] = true})
-      server.eval({code = ("(shadow.cljs.devtools.api/nrepl-select :" .. build .. ")")}, ui["display-result"])
+      server.eval({code = ("#?(:clj (shadow.cljs.devtools.api/nrepl-select :" .. build .. ") :cljs :already-selected)")}, ui["display-result"])
       return passive_ns_require()
     end
     return server["with-conn-or-warn"](_125_)
