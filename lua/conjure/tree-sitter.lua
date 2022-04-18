@@ -40,7 +40,7 @@ end
 _2amodule_2a["enabled?"] = enabled_3f
 local function node__3estr(node)
   if node then
-    return str.join("\n", ts.get_node_text(node))
+    return str.join("\n", vim.treesitter.query.get_node_text(node))
   else
     return nil
   end

@@ -28,7 +28,7 @@
   "Turn the node into a string, nils flow through. Separate forms are joined by
   new lines."
   (when node
-    (-> (ts.get_node_text node)
+    (-> (vim.treesitter.query.get_node_text node)
         (->> (str.join "\n")))))
 
 (defn parent [node]
