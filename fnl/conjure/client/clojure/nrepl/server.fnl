@@ -105,31 +105,28 @@
     {:clj :Clojure
      :cljs :ClojureScript
      :cljr :ClojureCLR
-     :unknown :Unknown
-     :timeout :Timeout}
+     :unknown :Unknown}
     st
     (if (a.string? st)
       (.. st "?")
       "https://conjure.fun/no-env")))
 
 (defn session-type [id cb]
-  (let [timeout (timer.defer #(cb :timeout) 300)]
-    (send
-      {:op :eval
-       :code (.. "#?("
-                 (str.join
-                   " "
-                   [":clj 'clj"
-                    ":cljs 'cljs"
-                    ":cljr 'cljr"
-                    ":default 'unknown"])
-                 ")")
-       :session id}
-      (nrepl.with-all-msgs-fn
-        (fn [msgs]
-          (timer.destroy timeout)
-          (let [st (a.some #(a.get $1 :value) msgs)]
-            (cb (when st (str.trim st)))))))))
+  (send
+    {:op :eval
+     :code (.. "#?("
+                   (str.join
+                     " "
+                     [":clj 'clj"
+                      ":cljs 'cljs"
+                      ":cljr 'cljr"
+                      ":default 'unknown"])
+                   ")")
+     :session id}
+    (nrepl.with-all-msgs-fn
+      (fn [msgs]
+        (let [st (a.some #(a.get $1 :value) msgs)]
+          (cb (when st (str.trim st))))))))
 
 (defn enrich-session-id [id cb]
   (session-type
