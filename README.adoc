@@ -89,7 +89,7 @@ Plug 'Olical/conjure'
  * https://github.com/Olical/conjure/wiki/Quick-start:-Hy-(stdio)[Hy (stdio)]
  * https://github.com/Olical/conjure/wiki/Quick-start:-Scheme-(stdio)[Scheme (stdio)]
  * https://github.com/Olical/conjure/wiki/Quick-start:-Guile-(socket)[Guile (socket)]
- * https://github.com/Olical/conjure/wiki/Quick-start:-Common-Lisp-(Swank)
+ * https://github.com/Olical/conjure/wiki/Quick-start:-Common-Lisp-(Swank)[Common Lisp (Swank)]
  * https://github.com/Olical/conjure/wiki/Frequently-asked-questions[Frequently asked questions]
 
 All further documentation is found within link:doc/conjure.txt[`:help conjure`]. You can also use `:ConjureSchool` to get an interactive introduction to the workflow and mappings Conjure provides.
