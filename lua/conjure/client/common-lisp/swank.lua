@@ -106,7 +106,10 @@ local function connect(opts)
       return disconnect()
     end
   end
-  return a.assoc(state(), "conn", remote.connect({host = host, port = port, ["on-failure"] = _8_, ["on-success"] = _9_, ["on-error"] = _10_}))
+  a.assoc(state(), "conn", remote.connect({host = host, port = port, ["on-failure"] = _8_, ["on-success"] = _9_, ["on-error"] = _10_}))
+  local function _12_(_)
+  end
+  return send(":ok", _12_)
 end
 _2amodule_2a["connect"] = connect
 local function try_ensure_conn()
@@ -119,12 +122,12 @@ end
 _2amodule_locals_2a["try-ensure-conn"] = try_ensure_conn
 local function string_stream(str0)
   local index = 1
-  local function _13_()
+  local function _14_()
     local r = str0:byte(index)
     index = (index + 1)
     return r
   end
-  return _13_
+  return _14_
 end
 _2amodule_locals_2a["string-stream"] = string_stream
 local function display_stdout(msg)
@@ -189,13 +192,13 @@ local function parse_separated_list(string_to_parse)
     end
   end
   local function dispatch(b)
-    local _21_ = b
-    if (_21_ == slash_byte) then
+    local _22_ = b
+    if (_22_ == slash_byte) then
       return slash_escape(b)
-    elseif (_21_ == quote_byte) then
+    elseif (_22_ == quote_byte) then
       return maybe_close(b)
     elseif true then
-      local _ = _21_
+      local _ = _22_
       return maybe_insert(b)
     else
       return nil
@@ -214,8 +217,8 @@ local function parse_result(received)
   if not result_3f(received) then
     local msg
     do
-      local _23_ = parse_separated_list(received)
-      msg = _23_
+      local _24_ = parse_separated_list(received)
+      msg = _24_
     end
     display_stdout(msg[1])
   else
@@ -229,13 +232,13 @@ end
 _2amodule_2a["parse-result"] = parse_result
 local function eval_str(opts)
   try_ensure_conn()
-  local _26_
+  local _27_
   if not a["empty?"](opts.context) then
-    _26_ = opts.context
+    _27_ = opts.context
   else
-    _26_ = nil
+    _27_ = nil
   end
-  local function _28_(msg)
+  local function _29_(msg)
     local stdout, result = parse_result(msg)
     display_stdout(stdout)
     if (nil ~= result) then
@@ -252,15 +255,15 @@ local function eval_str(opts)
       return nil
     end
   end
-  return send(opts.code, _26_, _28_)
+  return send(opts.code, _27_, _29_)
 end
 _2amodule_2a["eval-str"] = eval_str
 local function doc_str(opts)
   try_ensure_conn()
-  local function _32_(_241)
+  local function _33_(_241)
     return ("(describe #'" .. _241 .. ")")
   end
-  return eval_str(a.update(opts, "code", _32_))
+  return eval_str(a.update(opts, "code", _33_))
 end
 _2amodule_2a["doc-str"] = doc_str
 local function eval_file(opts)

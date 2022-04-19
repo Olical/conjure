@@ -110,7 +110,9 @@
          (fn [err]
            (if err
              (display-conn-status err)
-             (disconnect)))}))))
+             (disconnect)))}))
+
+    (send ":ok" (fn [_]))))
 
 (defn- try-ensure-conn []
   (when (not (connected?))
