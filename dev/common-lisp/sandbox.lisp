@@ -1,5 +1,12 @@
 ;;;; Common Lisp Conjure Sandbox 
 
+(defpackage :sandbox
+  (:use :cl))
+
+(in-package :sandbox)
+
+*package*
+
 ;; We can call regular functions
 (+ 1 2 3)
 

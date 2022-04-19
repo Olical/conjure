@@ -1,0 +1,18 @@
+= Using Common Lisp with Conjure
+
+Connecting Common Lisp to Conjure is an easy process if you have used swank, emacs, or quicklisp before. 
+
+Firstly, set up Common Lisp and Quick Lisp as normal.
+
+Open up the CL REPL in another terminal, then type the following code:
+
+[source,lisp]
+----
+(ql:quickload :swank)
+(swank:create-server :dont-close t)
+----
+
+You should now have a swank server started, listening on port `4005`. This is the default port that Conjure will use.
+
+Now simply open up any `.lisp` file in Conjure, and it will automatically connect to swank.
+
