@@ -5,11 +5,13 @@
              mapping conjure.mapping
              text conjure.text
              log conjure.log
+             str conjure.aniseed.string
              config conjure.config
              client conjure.client
              remote conjure.remote.swank}})
 
 (def buf-suffix ".lisp")
+(def context-pattern "%(%s*defpackage%s+(.-)[%s){]")
 (def comment-prefix "; ")
 
 ;; ------------ common lisp client
@@ -27,7 +29,10 @@
       :mapping {:connect "cc"
                 :disconnect "cd"}}}}})
 
-(defonce- state (client.new-state #(do {:conn nil})))
+(defonce- state (client.new-state
+                  #(do
+                     {:conn nil
+                      :eval-id 0})))
 
 (defn- with-conn-or-warn [f opts]
   (let [conn (state :conn)]
@@ -63,18 +68,20 @@
       (replace "\\" "\\\\")
       (replace "\"" "\\\"")))
 
-(defn- send [msg cb]
+(defn- send [msg context cb]
   (with-conn-or-warn
     (fn [conn]
-      ;; TODO: the '1' at the end is indicating the expression given
-      ;; and should be incremented at each call
-      ;; this is so the results that return can be married up to the
-      ;; expression that is sent, asynchronously.
-      (remote.send conn
-                   (.. "(:emacs-rex (swank:eval-and-grab-output \"" 
-                       (escape-string msg)
-                       "\") \"cl-user\" t 1)")
-                   cb))))
+      (let [eval-id (a.get (a.update (state) :eval-id a.inc) :eval-id)]
+        ;; TODO: the 'eval-id' at the end is indicating the expression given
+        ;; this is so the results that return can be married up to the
+        ;; expression that is sent, asynchronously.
+        (remote.send
+          conn
+          (str.join
+            ["(:emacs-rex (swank:eval-and-grab-output \""
+             (escape-string msg)
+             "\") \"" (or context ":common-lisp-user") "\" t " eval-id ")"])
+          cb)))))
 
 (defn connect [opts]
   (let [opts (or opts {})
@@ -129,7 +136,7 @@
   (local search-string "(:return (:ok (")
   (local tail-size 5) ;; TODO: once we fix up the increments, this will change
   (let [(idx len) (string.find received search-string 1 true)]
-    (string.sub received 
+    (string.sub received
                 (+ idx len)
                 (- (string.len received) tail-size))))
 
@@ -137,7 +144,7 @@
   "Take a string of quoted components and return an array of those values,
   ie: (I'm using single instead of double quotes in the example for ease)
 
-  'this is' not the 'the\' output' 
+  'this is' not the 'the\' output'
   => ['this is' 'the\' output'] (length of 2)
 
   We must be able to correctly deal with escaped values.
@@ -171,7 +178,7 @@
           (set opened-quote false)
           (table.insert
             vals
-            (string.char 
+            (string.char
               (unpack stack)))
           (set stack []))
         (when escaped
@@ -185,7 +192,7 @@
   (fn slash-escape [b]
     "process a \\ value, which could be escaped or escaping something else"
     (if escaped
-      (maybe-insert b) 
+      (maybe-insert b)
       (set escaped true)))
 
   (fn dispatch [b]
@@ -202,17 +209,17 @@
 
 (defn parse-result [received]
   "Given the form (:return (:ok (\"\" \"(1 2 \\\"3\\\" 4)\")) 1) we want)])
-  to extract both 
+  to extract both
   - the stdout, which is the first delimited quoted component
-  - the result, which is the second delimited quoted component 
-  
+  - the result, which is the second delimited quoted component
+
   If there has been an error, it will not look like a result, so more parsing
   will be needed"
   (fn result? [response]
     (text.starts-with response "(:return (:ok ("))
 
-  ;;TODO - parse debug messages properly and show them in a nice way
-  ;; I'm not sure what the proper conjure way is here. 
+  ;; TODO - parse debug messages properly and show them in a nice way
+  ;; I'm not sure what the proper conjure way is here.
   (when (not (result? received))
     ;;super hack; taking out the first quoted component and hoping it is
     ;; a nice message.
@@ -224,14 +231,20 @@
 
 (defn eval-str [opts]
   (try-ensure-conn)
+
   (send
     opts.code
+    (when (not (a.empty? opts.context))
+      opts.context)
     (fn [msg]
       (let [(stdout result) (parse-result msg)]
         (display-stdout stdout)
         (when (not= nil result)
-          (when opts.on-result (opts.on-result result))
-          (when (not opts.passive?) (log.append (text.split-lines result))))))))
+          (when opts.on-result
+            (opts.on-result result))
+
+          (when (not opts.passive?)
+            (log.append (text.split-lines result))))))))
 
 (defn doc-str [opts]
   (try-ensure-conn)

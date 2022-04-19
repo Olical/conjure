@@ -11,7 +11,7 @@ do
   _2amodule_locals_2a = (_2amodule_2a)["aniseed/locals"]
 end
 local autoload = (require("conjure.aniseed.autoload")).autoload
-local a, bridge, client, config, log, mapping, nvim, remote, text = autoload("conjure.aniseed.core"), autoload("conjure.bridge"), autoload("conjure.client"), autoload("conjure.config"), autoload("conjure.log"), autoload("conjure.mapping"), autoload("conjure.aniseed.nvim"), autoload("conjure.remote.swank"), autoload("conjure.text")
+local a, bridge, client, config, log, mapping, nvim, remote, str, text = autoload("conjure.aniseed.core"), autoload("conjure.bridge"), autoload("conjure.client"), autoload("conjure.config"), autoload("conjure.log"), autoload("conjure.mapping"), autoload("conjure.aniseed.nvim"), autoload("conjure.remote.swank"), autoload("conjure.aniseed.string"), autoload("conjure.text")
 do end (_2amodule_locals_2a)["a"] = a
 _2amodule_locals_2a["bridge"] = bridge
 _2amodule_locals_2a["client"] = client
@@ -20,15 +20,18 @@ _2amodule_locals_2a["log"] = log
 _2amodule_locals_2a["mapping"] = mapping
 _2amodule_locals_2a["nvim"] = nvim
 _2amodule_locals_2a["remote"] = remote
+_2amodule_locals_2a["str"] = str
 _2amodule_locals_2a["text"] = text
 local buf_suffix = ".lisp"
 _2amodule_2a["buf-suffix"] = buf_suffix
+local context_pattern = "%(%s*defpackage%s+(.-)[%s){]"
+_2amodule_2a["context-pattern"] = context_pattern
 local comment_prefix = "; "
 _2amodule_2a["comment-prefix"] = comment_prefix
 config.merge({client = {common_lisp = {swank = {connection = {default_host = "127.0.0.1", default_port = "4005"}, mapping = {connect = "cc", disconnect = "cd"}}}}})
 local state
 local function _1_()
-  return {conn = nil}
+  return {conn = nil, ["eval-id"] = 0}
 end
 state = ((_2amodule_2a).state or client["new-state"](_1_))
 do end (_2amodule_locals_2a)["state"] = state
@@ -73,9 +76,10 @@ local function escape_string(_in)
   return replace(replace(_in, "\\", "\\\\"), "\"", "\\\"")
 end
 _2amodule_locals_2a["escape-string"] = escape_string
-local function send(msg, cb)
+local function send(msg, context, cb)
   local function _6_(conn)
-    return remote.send(conn, ("(:emacs-rex (swank:eval-and-grab-output \"" .. escape_string(msg) .. "\") \"cl-user\" t 1)"), cb)
+    local eval_id = a.get(a.update(state(), "eval-id", a.inc), "eval-id")
+    return remote.send(conn, str.join({"(:emacs-rex (swank:eval-and-grab-output \"", escape_string(msg), "\") \"", (context or ":common-lisp-user"), "\" t ", eval_id, ")"}), cb)
   end
   return with_conn_or_warn(_6_)
 end
@@ -113,10 +117,10 @@ local function try_ensure_conn()
   end
 end
 _2amodule_locals_2a["try-ensure-conn"] = try_ensure_conn
-local function string_stream(str)
+local function string_stream(str0)
   local index = 1
   local function _13_()
-    local r = str:byte(index)
+    local r = str0:byte(index)
     index = (index + 1)
     return r
   end
@@ -225,7 +229,13 @@ end
 _2amodule_2a["parse-result"] = parse_result
 local function eval_str(opts)
   try_ensure_conn()
-  local function _26_(msg)
+  local _26_
+  if not a["empty?"](opts.context) then
+    _26_ = opts.context
+  else
+    _26_ = nil
+  end
+  local function _28_(msg)
     local stdout, result = parse_result(msg)
     display_stdout(stdout)
     if (nil ~= result) then
@@ -242,15 +252,15 @@ local function eval_str(opts)
       return nil
     end
   end
-  return send(opts.code, _26_)
+  return send(opts.code, _26_, _28_)
 end
 _2amodule_2a["eval-str"] = eval_str
 local function doc_str(opts)
   try_ensure_conn()
-  local function _30_(_241)
+  local function _32_(_241)
     return ("(describe #'" .. _241 .. ")")
   end
-  return eval_str(a.update(opts, "code", _30_))
+  return eval_str(a.update(opts, "code", _32_))
 end
 _2amodule_2a["doc-str"] = doc_str
 local function eval_file(opts)
