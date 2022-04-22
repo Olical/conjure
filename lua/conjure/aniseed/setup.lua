@@ -17,37 +17,40 @@ _2amodule_locals_2a["env"] = env
 _2amodule_locals_2a["eval"] = eval
 _2amodule_locals_2a["nvim"] = nvim
 local function init()
-  local function _1_(cmd)
-    local ok_3f, res = eval.str(cmd.args, {})
-    if ok_3f then
-      return nvim.echo(res)
-    else
-      return nvim.err_writeln(res)
-    end
-  end
-  nvim.create_user_command("AniseedEval", _1_, {nargs = 1})
-  local function _3_(cmd)
-    local code
-    local function _4_()
-      if ("" == cmd.args) then
-        return nvim.buf_get_name(nvim.get_current_buf())
-      else
-        return cmd.args
-      end
-    end
-    code = a.slurp(_4_())
-    if code then
-      local ok_3f, res = eval.str(code, {})
+  if (1 == nvim.fn.has("nvim-0.7")) then
+    local function _1_(cmd)
+      local ok_3f, res = eval.str(cmd.args, {})
       if ok_3f then
         return nvim.echo(res)
       else
         return nvim.err_writeln(res)
       end
-    else
-      return nvim.err_writeln(("File '" .. (cmd.args or "nil") .. "' not found"))
     end
+    nvim.create_user_command("AniseedEval", _1_, {nargs = 1})
+    local function _3_(cmd)
+      local code
+      local function _4_()
+        if ("" == cmd.args) then
+          return nvim.buf_get_name(nvim.get_current_buf())
+        else
+          return cmd.args
+        end
+      end
+      code = a.slurp(_4_())
+      if code then
+        local ok_3f, res = eval.str(code, {})
+        if ok_3f then
+          return nvim.echo(res)
+        else
+          return nvim.err_writeln(res)
+        end
+      else
+        return nvim.err_writeln(("File '" .. (cmd.args or "nil") .. "' not found"))
+      end
+    end
+    nvim.create_user_command("AniseedEvalFile", _3_, {nargs = "?", complete = "file"})
+  else
   end
-  nvim.create_user_command("AniseedEvalFile", _3_, {nargs = "?", complete = "file"})
   if nvim.g["aniseed#env"] then
     return env.init(nvim.g["aniseed#env"])
   else
