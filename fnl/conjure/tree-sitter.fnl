@@ -18,12 +18,13 @@
   and then `:TSInstall [filetype]`
 
   See also: g:conjure#extract#tree_sitter#enabled"
-  (= true
-     (and
-       (= :table (type ts))
-       (config.get-in [:extract :tree_sitter :enabled])
-       (let [(ok? parser) (pcall vim.treesitter.get_parser)]
-         (and ok? parser)))))
+  (if (and
+        (= :table (type ts))
+        (config.get-in [:extract :tree_sitter :enabled])
+        (let [(ok? parser) (pcall vim.treesitter.get_parser)]
+          (and ok? parser)))
+    true
+    false))
 
 (defn node->str [node]
   "Turn the node into a string, nils flow through. Separate forms are joined by
