@@ -338,15 +338,15 @@ end
 _2amodule_locals_2a["wrap-completion-result"] = wrap_completion_result
 local function completions(prefix, cb)
   local function cb_wrap(results)
-    local function _45_()
-      local _44_ = config["get-in"]({"completion", "fallback"})
-      if (nil ~= _44_) then
-        return nvim.call_function(_44_, {0, prefix})
+    local function _44_()
+      local _45_ = config["get-in"]({"completion", "fallback"})
+      if (nil ~= _45_) then
+        return nvim.call_function(_45_, {0, prefix})
       else
-        return _44_
+        return _45_
       end
     end
-    return cb(a.map(wrap_completion_result, (results or _45_())))
+    return cb(a.map(wrap_completion_result, (results or _44_())))
   end
   if ("function" == type(client.get("completions"))) then
     return client.call("completions", assoc_context({["file-path"] = extract["file-path"](), prefix = prefix, cb = cb_wrap}))
