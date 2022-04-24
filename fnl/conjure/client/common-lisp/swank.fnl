@@ -234,19 +234,20 @@
 (defn eval-str [opts]
   (try-ensure-conn)
 
-  (send
-    opts.code
-    (when (not (a.empty? opts.context))
-      opts.context)
-    (fn [msg]
-      (let [(stdout result) (parse-result msg)]
-        (display-stdout stdout)
-        (when (not= nil result)
-          (when opts.on-result
-            (opts.on-result result))
+  (when (not (a.empty? opts.code))
+    (send
+      opts.code
+      (when (not (a.empty? opts.context))
+        opts.context)
+      (fn [msg]
+        (let [(stdout result) (parse-result msg)]
+          (display-stdout stdout)
+          (when (not= nil result)
+            (when opts.on-result
+              (opts.on-result result))
 
-          (when (not opts.passive?)
-            (log.append (text.split-lines result))))))))
+            (when (not opts.passive?)
+              (log.append (text.split-lines result)))))))))
 
 (defn doc-str [opts]
   (try-ensure-conn)

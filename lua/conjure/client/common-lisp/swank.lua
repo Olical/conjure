@@ -232,38 +232,42 @@ end
 _2amodule_2a["parse-result"] = parse_result
 local function eval_str(opts)
   try_ensure_conn()
-  local _27_
-  if not a["empty?"](opts.context) then
-    _27_ = opts.context
-  else
-    _27_ = nil
-  end
-  local function _29_(msg)
-    local stdout, result = parse_result(msg)
-    display_stdout(stdout)
-    if (nil ~= result) then
-      if opts["on-result"] then
-        opts["on-result"](result)
-      else
-      end
-      if not opts["passive?"] then
-        return log.append(text["split-lines"](result))
+  if not a["empty?"](opts.code) then
+    local _27_
+    if not a["empty?"](opts.context) then
+      _27_ = opts.context
+    else
+      _27_ = nil
+    end
+    local function _29_(msg)
+      local stdout, result = parse_result(msg)
+      display_stdout(stdout)
+      if (nil ~= result) then
+        if opts["on-result"] then
+          opts["on-result"](result)
+        else
+        end
+        if not opts["passive?"] then
+          return log.append(text["split-lines"](result))
+        else
+          return nil
+        end
       else
         return nil
       end
-    else
-      return nil
     end
+    return send(opts.code, _27_, _29_)
+  else
+    return nil
   end
-  return send(opts.code, _27_, _29_)
 end
 _2amodule_2a["eval-str"] = eval_str
 local function doc_str(opts)
   try_ensure_conn()
-  local function _33_(_241)
+  local function _34_(_241)
     return ("(describe #'" .. _241 .. ")")
   end
-  return eval_str(a.update(opts, "code", _33_))
+  return eval_str(a.update(opts, "code", _34_))
 end
 _2amodule_2a["doc-str"] = doc_str
 local function eval_file(opts)
