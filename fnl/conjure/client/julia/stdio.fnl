@@ -19,7 +19,7 @@
      {:mapping {:start "cs"
                 :stop "cS"
                 :interrupt "ei"}
-      :command "julia --banner=no --color=no --handle-signals=no -i"
+      :command "julia --banner=no --color=no -i"
       :prompt_pattern ""}}}})
 
 (def- cfg (config.get-in-fn [:client :julia :stdio]))
@@ -49,37 +49,24 @@
 
 (defn format-msg [msg]
   (->> (str.split msg "\n")
-       (a.map #(.. comment-prefix $1))))
+       ;(a.map #(.. comment-prefix $1))
+       ))
 
 (defn eval-str [opts]
+  (log.dbg "inside eval-str" opts.code)
   (with-repl-or-warn
     (fn [repl]
       (repl.send
         (prep-code opts.code)
         (fn [msgs]
-             (log.dbg "display of msgs" (unbatch msgs))
              (log.append (-> msgs unbatch format-msg)))
         {:batch? true}))))
 
 (defn eval-file [opts]
-  (log.append [(.. comment-prefix "Not implemented")]))
+  (eval-str (a.assoc opts :code (a.slurp opts.file-path))))
 
 (defn doc-str [opts]
-  (let [obj (when (= "." (string.sub opts.code 1 1))
-              (extract.prompt "Specify object or module: "))
-        obj (.. (or obj "") opts.code)
-        code (.. "(if (in (mangle '" obj ") --macros--)
-                    (doc " obj ")
-                    (help " obj "))")]
-    (with-repl-or-warn
-      (fn [repl]
-        (repl.send
-          (prep-code code)
-          (fn [msg]
-            (log.append (text.prefixed-lines
-                          (or msg.err msg.out)
-                          (.. comment-prefix
-                              (if msg.err "(err) " "(doc) "))))))))))
+  (eval-str (a.update opts :code #(.. "Main.eval(REPL.helpmode(\"" $1 "\"))"))))
 
 (defn- display-repl-status [status]
   (let [repl (state :repl)]
@@ -110,7 +97,15 @@
 
          :on-success
          (fn []
-           (display-repl-status :started))
+           (display-repl-status :started)
+           (with-repl-or-warn
+             (fn [repl]
+               (repl.send
+                 ; TODO extra "Ready" is because of the issue with the empty "".
+                 "using REPL; print(\"Ready\")\n"
+                 (fn [msgs]
+                   (log.append (-> msgs unbatch format-msg)))
+                 {:batch? true}))))
 
          :on-error
          (fn [err]
@@ -135,7 +130,6 @@
   (stop))
 
 (defn interrupt []
-  (log.dbg "sending interrupt message" "")
   (with-repl-or-warn
     (fn [repl]
       (let [uv vim.loop]

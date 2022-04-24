@@ -23,7 +23,7 @@ _2amodule_locals_2a["stdio"] = stdio
 _2amodule_locals_2a["str"] = str
 _2amodule_locals_2a["text"] = text
 _2amodule_locals_2a["_"] = _
-config.merge({client = {julia = {stdio = {mapping = {start = "cs", stop = "cS", interrupt = "ei"}, command = "julia --banner=no --color=no --handle-signals=no -i", prompt_pattern = ""}}}})
+config.merge({client = {julia = {stdio = {mapping = {start = "cs", stop = "cS", interrupt = "ei"}, command = "julia --banner=no --color=no -i", prompt_pattern = ""}}}})
 local cfg = config["get-in-fn"]({"client", "julia", "stdio"})
 do end (_2amodule_locals_2a)["cfg"] = cfg
 local state
@@ -49,71 +49,37 @@ local function prep_code(s)
   return (s .. "\n")
 end
 _2amodule_locals_2a["prep-code"] = prep_code
-local function display_result(msgs)
-  local function _3_(_241)
-    return (comment_prefix .. _241)
-  end
-  local function _4_(_241)
-    return ("" ~= _241)
-  end
-  local function _5_(_241)
-    return (a.get(_241, "out") or a.get(_241, "err"))
-  end
-  return log.append(a.map(_3_, a.filter(_4_, a.map(_5_, str.split((msgs.err or msgs.out), "\n")))))
-end
-_2amodule_locals_2a["display-result"] = display_result
 local function unbatch(msgs)
-  local function _6_(_241)
+  local function _3_(_241)
     return (a.get(_241, "out") or a.get(_241, "err"))
   end
-  return str.join("", a.map(_6_, msgs))
+  return str.join("", a.map(_3_, msgs))
 end
 _2amodule_2a["unbatch"] = unbatch
 local function format_msg(msg)
-  local function _7_(_241)
-    return (comment_prefix .. _241)
-  end
-  return a.map(_7_, str.split(msg, "\n"))
+  return str.split(msg, "\n")
 end
 _2amodule_2a["format-msg"] = format_msg
 local function eval_str(opts)
-  local function _8_(repl)
-    local function _9_(msgs)
-      log.dbg("display of msgs", unbatch(msgs))
+  log.dbg("inside eval-str", opts.code)
+  local function _4_(repl)
+    local function _5_(msgs)
       return log.append(format_msg(unbatch(msgs)))
     end
-    return repl.send(prep_code(opts.code), _9_, {["batch?"] = true})
+    return repl.send(prep_code(opts.code), _5_, {["batch?"] = true})
   end
-  return with_repl_or_warn(_8_)
+  return with_repl_or_warn(_4_)
 end
 _2amodule_2a["eval-str"] = eval_str
 local function eval_file(opts)
-  return log.append({(comment_prefix .. "Not implemented")})
+  return eval_str(a.assoc(opts, "code", a.slurp(opts["file-path"])))
 end
 _2amodule_2a["eval-file"] = eval_file
 local function doc_str(opts)
-  local obj
-  if ("." == string.sub(opts.code, 1, 1)) then
-    obj = extract.prompt("Specify object or module: ")
-  else
-    obj = nil
+  local function _6_(_241)
+    return ("Main.eval(REPL.helpmode(\"" .. _241 .. "\"))")
   end
-  local obj0 = ((obj or "") .. opts.code)
-  local code = ("(if (in (mangle '" .. obj0 .. ") --macros--)\n                    (doc " .. obj0 .. ")\n                    (help " .. obj0 .. "))")
-  local function _11_(repl)
-    local function _12_(msg)
-      local function _13_()
-        if msg.err then
-          return "(err) "
-        else
-          return "(doc) "
-        end
-      end
-      return log.append(text["prefixed-lines"]((msg.err or msg.out), (comment_prefix .. _13_())))
-    end
-    return repl.send(prep_code(code), _12_)
-  end
-  return with_repl_or_warn(_11_)
+  return eval_str(a.update(opts, "code", _6_))
 end
 _2amodule_2a["doc-str"] = doc_str
 local function display_repl_status(status)
@@ -140,13 +106,20 @@ local function start()
   if state("repl") then
     return log.append({(comment_prefix .. "Can't start, REPL is already running."), (comment_prefix .. "Stop the REPL with " .. config["get-in"]({"mapping", "prefix"}) .. cfg({"mapping", "stop"}))}, {["break?"] = true})
   else
-    local function _16_()
-      return display_repl_status("started")
+    local function _9_()
+      display_repl_status("started")
+      local function _10_(repl)
+        local function _11_(msgs)
+          return log.append(format_msg(unbatch(msgs)))
+        end
+        return repl.send("using REPL; print(\"Ready\")\n", _11_, {["batch?"] = true})
+      end
+      return with_repl_or_warn(_10_)
     end
-    local function _17_(err)
+    local function _12_(err)
       return display_repl_status(err)
     end
-    local function _18_(code, signal)
+    local function _13_(code, signal)
       if (("number" == type(code)) and (code > 0)) then
         log.append({(comment_prefix .. "process exited with code " .. code)})
       else
@@ -157,10 +130,10 @@ local function start()
       end
       return stop()
     end
-    local function _21_(msg)
+    local function _16_(msg)
       return format_msg(unbatch(msg))
     end
-    return a.assoc(state(), "repl", stdio.start({["prompt-pattern"] = cfg({"prompt_pattern"}), cmd = cfg({"command"}), ["on-success"] = _16_, ["on-error"] = _17_, ["on-exit"] = _18_, ["on-stray-output"] = _21_}))
+    return a.assoc(state(), "repl", stdio.start({["prompt-pattern"] = cfg({"prompt_pattern"}), cmd = cfg({"command"}), ["on-success"] = _9_, ["on-error"] = _12_, ["on-exit"] = _13_, ["on-stray-output"] = _16_}))
   end
 end
 _2amodule_2a["start"] = start
@@ -173,12 +146,11 @@ local function on_exit()
 end
 _2amodule_2a["on-exit"] = on_exit
 local function interrupt()
-  log.dbg("sending interrupt message", "")
-  local function _23_(repl)
+  local function _18_(repl)
     local uv = vim.loop
     return uv.kill(repl.pid, uv.constants.SIGINT)
   end
-  return with_repl_or_warn(_23_)
+  return with_repl_or_warn(_18_)
 end
 _2amodule_2a["interrupt"] = interrupt
 local function on_filetype()
