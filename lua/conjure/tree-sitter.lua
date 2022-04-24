@@ -11,10 +11,11 @@ do
   _2amodule_locals_2a = (_2amodule_2a)["aniseed/locals"]
 end
 local autoload = (require("conjure.aniseed.autoload")).autoload
-local a, client, config, str = autoload("conjure.aniseed.core"), autoload("conjure.client"), autoload("conjure.config"), autoload("conjure.aniseed.string")
+local a, client, config, nvim, str = autoload("conjure.aniseed.core"), autoload("conjure.client"), autoload("conjure.config"), autoload("conjure.aniseed.nvim"), autoload("conjure.aniseed.string")
 do end (_2amodule_locals_2a)["a"] = a
 _2amodule_locals_2a["client"] = client
 _2amodule_locals_2a["config"] = config
+_2amodule_locals_2a["nvim"] = nvim
 _2amodule_locals_2a["str"] = str
 local ts
 do
@@ -44,7 +45,7 @@ end
 _2amodule_2a["enabled?"] = enabled_3f
 local function node__3estr(node)
   if node then
-    return str.join("\n", vim.treesitter.query.get_node_text(node))
+    return vim.treesitter.query.get_node_text(node, nvim.get_current_buf())
   else
     return nil
   end
@@ -74,7 +75,9 @@ _2amodule_2a["range"] = range
 local function get_root(node)
   local node0 = (node or ts.get_node_at_cursor())
   local parent_node = parent(node0)
-  if document_3f(parent_node) then
+  if document_3f(node0) then
+    return nil
+  elseif document_3f(parent_node) then
     return node0
   else
     return get_root(parent_node)

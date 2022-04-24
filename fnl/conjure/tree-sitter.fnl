@@ -1,6 +1,7 @@
 (module conjure.tree-sitter
   {autoload {a conjure.aniseed.core
              str conjure.aniseed.string
+             nvim conjure.aniseed.nvim
              client conjure.client
              config conjure.config}})
 
@@ -30,8 +31,7 @@
   "Turn the node into a string, nils flow through. Separate forms are joined by
   new lines."
   (when node
-    (-> (vim.treesitter.query.get_node_text node)
-        (->> (str.join "\n")))))
+    (vim.treesitter.query.get_node_text node (nvim.get_current_buf))))
 
 (defn parent [node]
   "Get the parent if possible."
@@ -53,8 +53,9 @@
   "Get the root node below the entire document."
   (let [node (or node (ts.get_node_at_cursor))
         parent-node (parent node)]
-    (if (document? parent-node)
-      node
+    (if
+      (document? node) nil
+      (document? parent-node) node
       (get-root parent-node))))
 
 (defn leaf? [node]
