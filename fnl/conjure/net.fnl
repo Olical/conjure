@@ -29,6 +29,10 @@
 (defn connect [{:  host : port : cb}]
   (let [sock (vim.loop.new_tcp)
         resolved-host (resolve host)]
+
+    (when (not resolved-host)
+      (error "Failed to resolve host for Conjure connection"))
+
     (sock:connect resolved-host port cb)
     (table.insert state.sock-drawer sock)
     {:sock sock
