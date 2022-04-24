@@ -31,7 +31,10 @@
   "Turn the node into a string, nils flow through. Separate forms are joined by
   new lines."
   (when node
-    (vim.treesitter.query.get_node_text node (nvim.get_current_buf))))
+    (if (= 1 (nvim.fn.has "nvim-0.7"))
+      (vim.treesitter.query.get_node_text node (nvim.get_current_buf))
+      (-> (vim.treesitter.query.get_node_text node)
+          (->> (str.join "\n"))))))
 
 (defn parent [node]
   "Get the parent if possible."

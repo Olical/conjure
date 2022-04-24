@@ -45,7 +45,11 @@ end
 _2amodule_2a["enabled?"] = enabled_3f
 local function node__3estr(node)
   if node then
-    return vim.treesitter.query.get_node_text(node, nvim.get_current_buf())
+    if (1 == nvim.fn.has("nvim-0.7")) then
+      return vim.treesitter.query.get_node_text(node, nvim.get_current_buf())
+    else
+      return str.join("\n", vim.treesitter.query.get_node_text(node))
+    end
   else
     return nil
   end
