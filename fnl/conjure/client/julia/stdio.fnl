@@ -49,6 +49,7 @@
 
 (defn format-msg [msg]
   (->> (str.split msg "\n")
+       (a.filter #(~= "" $1))
        ;(a.map #(.. comment-prefix $1))
        ))
 
@@ -59,7 +60,10 @@
       (repl.send
         (prep-code opts.code)
         (fn [msgs]
-             (log.append (-> msgs unbatch format-msg)))
+          (let [msgs (-> msgs unbatch format-msg)]
+             (log.append msgs)
+             (when opts.on-result
+               (opts.on-result (a.last msgs)))))
         {:batch? true}))))
 
 (defn eval-file [opts]
