@@ -142,7 +142,7 @@ local function start()
       return stop()
     end
     local function _19_(msg)
-      return format_msg(unbatch(msg))
+      return log.append(format_msg(unbatch({msg})), {["join-first?"] = true})
     end
     return a.assoc(state(), "repl", stdio.start({["prompt-pattern"] = cfg({"prompt_pattern"}), cmd = cfg({"command"}), ["on-success"] = _12_, ["on-error"] = _15_, ["on-exit"] = _16_, ["on-stray-output"] = _19_}))
   end

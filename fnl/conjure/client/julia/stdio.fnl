@@ -126,7 +126,7 @@
 
          :on-stray-output
          (fn [msg]
-           (-> msg unbatch format-msg))}))))
+           (log.append (-> [msg] unbatch format-msg) {:join-first? true}))}))))
 
 (defn on-load []
   (start))
