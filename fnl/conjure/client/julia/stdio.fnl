@@ -40,7 +40,9 @@
                        (cfg [:mapping :start]))]))))
 
 (defn- prep-code [s]
-  (.. s "\n"))
+  ; remove last "\n" in s to connect display and s properly.
+  ( -> (string.gsub s "\n$" "")
+       (.. "|> display" "\n")))
 
 (defn unbatch [msgs]
   (->> msgs
@@ -50,11 +52,11 @@
 (defn format-msg [msg]
   (->> (str.split msg "\n")
        (a.filter #(~= "" $1))
-       ;(a.map #(.. comment-prefix $1))
+       ; remove last "nothing" if preceded by character.
+       (a.map #(string.gsub $1 "(.)(nothing)" "%1")) 
        ))
 
 (defn eval-str [opts]
-  (log.dbg "inside eval-str" opts.code)
   (with-repl-or-warn
     (fn [repl]
       (repl.send
@@ -105,8 +107,7 @@
            (with-repl-or-warn
              (fn [repl]
                (repl.send
-                 ; TODO extra "Ready" is because of the issue with the empty "".
-                 "using REPL; print(\"Ready\")\n"
+                 (prep-code "using REPL")
                  (fn [msgs]
                    (log.append (-> msgs unbatch format-msg)))
                  {:batch? true}))))
