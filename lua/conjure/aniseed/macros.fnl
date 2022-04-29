@@ -32,6 +32,11 @@
       (set seen? true)))
   seen?)
 
+(fn ensure-sym [x]
+  (if (= :string (type x))
+    (sym x)
+    x))
+
 ;; This marker can be used by a post-processor to delete a useless byproduct line.
 (local delete-marker :ANISEED_DELETE_ME)
 
@@ -72,7 +77,7 @@
         ;; We can also completely disable the interactive mode which is used by
         ;; `aniseed.env` but can also be enabled by others. Sadly this works
         ;; through global variables but still!
-        interactive? (and (= :table (type existing-mod))
+        interactive? (and (table? existing-mod)
                           (not _G.ANISEED_STATIC_MODULES))
 
         ;; The final result table that gets returned from the macro.
@@ -118,7 +123,7 @@
             ;; Otherwise we need to bind the execution to a name.
             (sorted-each
               (fn [bind arg]
-                (=> bind `(,mod-fn ,(tostring arg))))
+                (=> (ensure-sym bind) `(,mod-fn ,(tostring arg))))
               args)))
          mod-fns)
 
@@ -133,7 +138,18 @@
 
       ;; We also bind these exposed locals into *module-locals* for future splatting.
       (each [_ k (ipairs keys)]
-        (table.insert result `(tset ,mod-locals-sym ,(tostring k) ,k))))
+        (if (sym? k)
+          ;; Normal symbols can just be assigned into module-locals.
+          (table.insert result `(tset ,mod-locals-sym ,(tostring k) ,k))
+
+          ;; Tables mean we're using Fennel destructure syntax.
+          ;; So we need to unpack the assignments so they can be used later in interactive evals.
+          (sorted-each
+            (fn [k v]
+              (table.insert
+                result
+                `(tset ,mod-locals-sym ,(tostring k) ,v)))
+            k))))
 
     ;; Now we can expand any existing locals into the current scope.
     ;; Since this will only happen in interactive evals we can generate messy code.
