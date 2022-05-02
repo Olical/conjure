@@ -7,7 +7,7 @@ https://conjure.fun/discord[image:https://img.shields.io/discord/732957595249410
 
 Conjure is an interactive environment for evaluating code within your running program.
 
-The core features of Conjure are language agnostic (although it's targeted at Lisps _for now_), with each language client providing their own extra tools. Here's the currently supported languages, contributions and 3rd party plugins that add clients are highly encouraged!
+The core features of Conjure are language agnostic (although it's targeted at Lisps _for now_), with each language client providing their own extra tools. Here's the currently supported languages, contributions and 3rd party plugins that add clients are highly encouraged! You can find a https://github.com/Olical/conjure/wiki/Client-features[comparison table for all clients and supported features] in the wiki.
 
  * https://clojure.org/[Clojure] over https://nrepl.org/[nREPL] (https://github.com/Olical/conjure/wiki/Quick-start:-Clojure[quickstart])
  * https://fennel-lang.org/[Fennel] inside Neovim via Lua and https://github.com/Olical/aniseed[Aniseed] (https://github.com/Olical/conjure/wiki/Quick-start:-Fennel-(Aniseed)[quickstart])
