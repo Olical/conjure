@@ -895,6 +895,11 @@ values and functions at the top level of your module. You can split your
 client up into separate modules and just build this API into your init module.
 See `fnl/conjure/client/clojure/nrepl/init.fnl` for an example of this.
 
+You can read more about the current state of clients and their feature
+support on the wiki. This is also a good place for client implementers to
+learn about the various features Conjure allows you to provide with links to
+examples: https://github.com/Olical/conjure/wiki/Client-features
+
 `buf-suffix`
             String
             Last part of the log buffer name which helps with setting the
