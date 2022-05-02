@@ -180,7 +180,7 @@
     {:args "<f-args>"}))
 
 (nvim.ex.command_
-  "-nargs=* ConjureClientState"
+  "-nargs=1 ConjureClientState"
   (bridge.viml->lua
     :conjure.mapping :client-state-command
     {:args "<f-args>"}))
