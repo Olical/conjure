@@ -276,6 +276,7 @@ All configuration can be set as described in |conjure-configuration|.
             Test runner to use for the various test mappings. The following
             are supported:
              * `"clojure"`
+             * `"clojurescript" (cljs.test instead of clojure.test)`
              * `"kaocha"`
             More can be added through contributions where required.
             Default: `"clojure"`

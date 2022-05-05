@@ -415,6 +415,14 @@
     :default-call-suffix ""
     :name-prefix "[(resolve '"
     :name-suffix ")]"}
+   :clojurescript
+   {:namespace "cljs.test"
+    :all-fn "run-all-tests"
+    :ns-fn "run-tests"
+    :single-fn "test-vars"
+    :default-call-suffix ""
+    :name-prefix "[(resolve '"
+    :name-suffix ")]"}
    :kaocha
    {:namespace "kaocha.repl"
     :all-fn "run-all"
