@@ -40,9 +40,7 @@
                        (cfg [:mapping :start]))]))))
 
 (defn- prep-code [s]
-  ; remove last "\n" in s to connect display and s properly.
-  ( -> (string.gsub s "\n$" "")
-       (.. "|> display" "\n")))
+  (.. s "\nif(isnothing(ans)) display(nothing) end\n"))
 
 (defn unbatch [msgs]
   (->> msgs

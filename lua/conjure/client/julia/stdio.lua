@@ -46,7 +46,7 @@ local function with_repl_or_warn(f, opts)
 end
 _2amodule_locals_2a["with-repl-or-warn"] = with_repl_or_warn
 local function prep_code(s)
-  return (string.gsub(s, "\n$", "") .. "|> display" .. "\n")
+  return (s .. "\nif(isnothing(ans)) display(nothing) end\n")
 end
 _2amodule_locals_2a["prep-code"] = prep_code
 local function unbatch(msgs)
