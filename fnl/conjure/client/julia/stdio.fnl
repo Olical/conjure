@@ -50,11 +50,10 @@
        (str.join "")))
 
 (defn format-msg [msg]
-  (->> (str.split msg "\n")
-       (a.filter #(~= "" $1))
-       ; remove last "nothing" if preceded by character.
-       (a.map #(string.gsub $1 "(.)(nothing)" "%1")) 
-       ))
+  ; remove last "nothing" if preceded by character or newline.
+  (->> (-> (string.gsub msg "(.?[%w\n])(nothing)" "%1")
+           (str.split "\n"))
+       (a.filter #(~= "" $1))))
 
 (defn eval-str [opts]
   (with-repl-or-warn
