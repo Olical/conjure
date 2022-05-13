@@ -18,8 +18,8 @@ sponsors:
 
 compile:
 	rm -rf lua
-	deps/aniseed/scripts/compile.sh
 	deps/aniseed/scripts/embed.sh aniseed conjure
+	ANISEED_EMBED_PREFIX=conjure deps/aniseed/scripts/compile.sh
 	cp deps/bencode/bencode.lua lua/conjure/remote/transport/bencode/impl.lua
 
 test:
