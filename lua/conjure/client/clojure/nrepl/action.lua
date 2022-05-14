@@ -167,7 +167,7 @@ local function connect_host_port(opts)
     if parsed_port then
       return server.connect({host = (opts.host or cfg({"connection", "default_host"})), port = parsed_port, cb = passive_ns_require})
     else
-      return log.append({("; Could not parse '" .. opts.port .. "' as a port number")})
+      return log.append({str.join({"; Could not parse '", (opts.port or "nil"), "' as a port number"})})
     end
   end
 end

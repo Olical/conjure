@@ -102,7 +102,7 @@
           {:host (or opts.host (cfg [:connection :default_host]))
            :port parsed-port
            :cb passive-ns-require})
-        (log.append [(.. "; Could not parse '" opts.port "' as a port number")])))))
+        (log.append [(str.join ["; Could not parse '" (or opts.port "nil") "' as a port number"])])))))
 
 (defn- eval-cb-fn [opts]
   (fn [resp]
