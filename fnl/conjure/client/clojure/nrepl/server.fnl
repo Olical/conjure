@@ -195,19 +195,32 @@
     (fn [msg]
       (a.assoc (state.get :conn) :describe msg))))
 
-(defn with-conn-and-op-or-warn [op f opts]
+(defn with-conn-and-ops-or-warn [op-names f opts]
+  "Takes a sequential table of op names and calls your function f with an
+  associative table of the shape {:op-name true} if any exist. If not, your
+  function is not called and a warning is displayed."
   (with-conn-or-warn
     (fn [conn]
-      (if (a.get-in conn [:describe :ops op])
-        (f conn)
-        (do
-          (when (not (a.get opts :silent?))
-            (log.append
-              [(.. "; Unsupported operation: " op)
-               "; Ensure the CIDER middleware is installed and up to date"
-               "; https://docs.cider.mx/cider-nrepl/usage.html"]))
-          (when (a.get opts :else)
-            (opts.else)))))
+      (let [found-ops
+            (a.reduce
+              (fn [acc op]
+                (if (a.get-in conn [:describe :ops op])
+                  (a.assoc acc op true)
+                  acc))
+              {}
+              op-names)]
+
+        (if (not (a.empty? found-ops))
+          (f conn found-ops)
+          (do
+            (when (not (a.get opts :silent?))
+              (log.append
+                ["; None of the required operations are supported by this nREPL."
+                 "; Ensure your nREPL is up to date."
+                 "; Consider installing or updating the CIDER middleware."
+                 "; https://docs.cider.mx/cider-nrepl/usage.html"]))
+            (when (a.get opts :else)
+              (opts.else))))))
     opts))
 
 (defn connect [{: host : port : cb : port_file_path}]

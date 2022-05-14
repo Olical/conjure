@@ -232,13 +232,23 @@ local function capture_describe()
   return send({op = "describe"}, _35_)
 end
 _2amodule_locals_2a["capture-describe"] = capture_describe
-local function with_conn_and_op_or_warn(op, f, opts)
+local function with_conn_and_ops_or_warn(op_names, f, opts)
   local function _36_(conn)
-    if a["get-in"](conn, {"describe", "ops", op}) then
-      return f(conn)
+    local found_ops
+    local function _37_(acc, op)
+      if a["get-in"](conn, {"describe", "ops", op}) then
+        return a.assoc(acc, op, true)
+      else
+        return acc
+      end
+    end
+    found_ops = a.reduce(_37_, {}, op_names)
+    a.println("---", op_names, found_ops)
+    if not a["empty?"](found_ops) then
+      return f(conn, found_ops)
     else
       if not a.get(opts, "silent?") then
-        log.append({("; Unsupported operation: " .. op), "; Ensure the CIDER middleware is installed and up to date", "; https://docs.cider.mx/cider-nrepl/usage.html"})
+        log.append({"; None of the required operations are supported by this nREPL.", "; Ensure your nREPL is up to date.", "; Consider installing or updating the CIDER middleware.", "; https://docs.cider.mx/cider-nrepl/usage.html"})
       else
       end
       if a.get(opts, "else") then
@@ -250,35 +260,35 @@ local function with_conn_and_op_or_warn(op, f, opts)
   end
   return with_conn_or_warn(_36_, opts)
 end
-_2amodule_2a["with-conn-and-op-or-warn"] = with_conn_and_op_or_warn
-local function connect(_40_)
-  local _arg_41_ = _40_
-  local host = _arg_41_["host"]
-  local port = _arg_41_["port"]
-  local cb = _arg_41_["cb"]
-  local port_file_path = _arg_41_["port_file_path"]
+_2amodule_2a["with-conn-and-ops-or-warn"] = with_conn_and_ops_or_warn
+local function connect(_42_)
+  local _arg_43_ = _42_
+  local host = _arg_43_["host"]
+  local port = _arg_43_["port"]
+  local cb = _arg_43_["cb"]
+  local port_file_path = _arg_43_["port_file_path"]
   if state.get("conn") then
     disconnect()
   else
   end
-  local function _43_(err)
+  local function _45_(err)
     display_conn_status(err)
     return disconnect()
   end
-  local function _44_()
+  local function _46_()
     display_conn_status("connected")
     capture_describe()
     assume_or_create_session()
     return eval_preamble(cb)
   end
-  local function _45_(err)
+  local function _47_(err)
     if err then
       return display_conn_status(err)
     else
       return disconnect()
     end
   end
-  local function _47_(msg)
+  local function _49_(msg)
     if msg.status["unknown-session"] then
       log.append({"; Unknown session, correcting"})
       assume_or_create_session()
@@ -290,10 +300,10 @@ local function connect(_40_)
       return nil
     end
   end
-  local function _50_(result)
+  local function _52_(result)
     return ui["display-result"](result)
   end
-  return a.assoc(state.get(), "conn", a["merge!"](nrepl.connect({host = host, port = port, ["on-failure"] = _43_, ["on-success"] = _44_, ["on-error"] = _45_, ["on-message"] = _47_, ["default-callback"] = _50_}), {["seen-ns"] = {}, port_file_path = port_file_path}))
+  return a.assoc(state.get(), "conn", a["merge!"](nrepl.connect({host = host, port = port, ["on-failure"] = _45_, ["on-success"] = _46_, ["on-error"] = _47_, ["on-message"] = _49_, ["default-callback"] = _52_}), {["seen-ns"] = {}, port_file_path = port_file_path}))
 end
 _2amodule_2a["connect"] = connect
 return _2amodule_2a

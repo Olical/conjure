@@ -223,7 +223,7 @@ local function with_info(opts, f)
     end
     return server.send({op = "info", ns = (opts.context or "user"), symbol = opts.code, session = conn.session}, _35_)
   end
-  return server["with-conn-and-op-or-warn"]("info", _34_)
+  return server["with-conn-and-ops-or-warn"]({"info"}, _34_)
 end
 _2amodule_locals_2a["with-info"] = with_info
 local function java_info__3elines(_37_)
@@ -666,7 +666,7 @@ local function refresh_impl(op)
     end
     return server.send(a.merge({op = op, session = conn.session, after = cfg({"refresh", "after"}), before = cfg({"refresh", "before"}), dirs = cfg({"refresh", "dirs"})}), _117_)
   end
-  return server["with-conn-and-op-or-warn"](op, _116_)
+  return server["with-conn-and-ops-or-warn"]({op}, _116_)
 end
 _2amodule_locals_2a["refresh-impl"] = refresh_impl
 local function refresh_changed()
@@ -694,7 +694,7 @@ local function refresh_clear()
       end
       return server.send({op = "refresh-clear", session = conn.session}, nrepl["with-all-msgs-fn"](_123_))
     end
-    return server["with-conn-and-op-or-warn"]("refresh-clear", _122_)
+    return server["with-conn-and-ops-or-warn"]({"refresh-clear"}, _122_)
   end
   return try_ensure_conn(_121_)
 end
@@ -784,43 +784,51 @@ local function enhanced_cljs_completion_3f()
 end
 _2amodule_locals_2a["enhanced-cljs-completion?"] = enhanced_cljs_completion_3f
 local function completions(opts)
-  local function _139_(conn)
+  local function _139_(conn, ops)
     local _140_
-    if cfg({"completion", "with_context"}) then
-      _140_ = extract_completion_context(opts.prefix)
+    if ops.complete then
+      local _141_
+      if cfg({"completion", "with_context"}) then
+        _141_ = extract_completion_context(opts.prefix)
+      else
+        _141_ = nil
+      end
+      local _143_
+      if enhanced_cljs_completion_3f() then
+        _143_ = "t"
+      else
+        _143_ = nil
+      end
+      _140_ = {op = "complete", session = conn.session, ns = opts.context, symbol = opts.prefix, context = _141_, ["extra-metadata"] = {"arglists", "doc"}, ["enhanced-cljs-completion?"] = _143_}
+    elseif ops.completions then
+      _140_ = {op = "completions", session = conn.session, ns = opts.context, prefix = opts.prefix}
     else
       _140_ = nil
     end
-    local _142_
-    if enhanced_cljs_completion_3f() then
-      _142_ = "t"
-    else
-      _142_ = nil
-    end
-    local function _144_(msgs)
+    local function _146_(msgs)
       return opts.cb(a.map(clojure__3evim_completion, a.get(a.last(msgs), "completions")))
     end
-    return server.send({op = "complete", session = conn.session, ns = opts.context, symbol = opts.prefix, context = _140_, ["extra-metadata"] = {"arglists", "doc"}, ["enhanced-cljs-completion?"] = _142_}, nrepl["with-all-msgs-fn"](_144_))
+    return server.send(_140_, nrepl["with-all-msgs-fn"](_146_))
   end
-  return server["with-conn-and-op-or-warn"]("complete", _139_, {["silent?"] = true, ["else"] = opts.cb})
+  return server["with-conn-and-ops-or-warn"]({"complete", "completions"}, _139_, {["silent?"] = true, ["else"] = opts.cb})
 end
 _2amodule_2a["completions"] = completions
 local function out_subscribe()
   try_ensure_conn()
   log.append({"; Subscribing to out"}, {["break?"] = true})
-  local function _145_(conn)
+  local function _147_(conn)
     return server.send({op = "out-subscribe"})
   end
-  return server["with-conn-and-op-or-warn"]("out-subscribe", _145_)
+  return server["with-conn-and-ops-or-warn"]({"out-subscribe"}, _147_)
 end
 _2amodule_2a["out-subscribe"] = out_subscribe
 local function out_unsubscribe()
   try_ensure_conn()
   log.append({"; Unsubscribing from out"}, {["break?"] = true})
-  local function _146_(conn)
+  local function _148_(conn)
     return server.send({op = "out-unsubscribe"})
   end
-  return server["with-conn-and-op-or-warn"]("out-unsubscribe", _146_)
+  return server["with-conn-and-ops-or-warn"]({"out-unsubscribe"}, _148_)
 end
 _2amodule_2a["out-unsubscribe"] = out_unsubscribe
 return _2amodule_2a

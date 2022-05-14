@@ -130,8 +130,8 @@
           (server.eval opts (eval-cb-fn opts)))))))
 
 (defn- with-info [opts f]
-  (server.with-conn-and-op-or-warn
-    :info
+  (server.with-conn-and-ops-or-warn
+    [:info]
     (fn [conn]
       (server.send
         {:op :info
@@ -536,8 +536,8 @@
                               msgs))))))))))))
 
 (defn- refresh-impl [op]
-  (server.with-conn-and-op-or-warn
-    op
+  (server.with-conn-and-ops-or-warn
+    [op]
     (fn [conn]
       (server.send
         (a.merge
@@ -578,8 +578,8 @@
   (try-ensure-conn
     (fn []
       (log.append ["; Clearing refresh cache"] {:break? true})
-      (server.with-conn-and-op-or-warn
-        :refresh-clear
+      (server.with-conn-and-ops-or-warn
+        [:refresh-clear]
         (fn [conn]
           (server.send
             {:op :refresh-clear
@@ -656,38 +656,49 @@
   (cfg [:completion :cljs :use_suitable]))
 
 (defn completions [opts]
-  (server.with-conn-and-op-or-warn
-    :complete
-    (fn [conn]
+  (server.with-conn-and-ops-or-warn
+    [:complete :completions]
+    (fn [conn ops]
       (server.send
-        {:op :complete
-         :session conn.session
-         :ns opts.context
-         :symbol opts.prefix
-         :context (when (cfg [:completion :with_context])
-                    (extract-completion-context opts.prefix))
-         :extra-metadata [:arglists :doc]
-         :enhanced-cljs-completion? (when (enhanced-cljs-completion?) "t")}
+        (if
+          ;; CIDER
+          ops.complete
+          {:op :complete
+           :session conn.session
+           :ns opts.context
+           :symbol opts.prefix
+           :context (when (cfg [:completion :with_context])
+                      (extract-completion-context opts.prefix))
+           :extra-metadata [:arglists :doc]
+           :enhanced-cljs-completion? (when (enhanced-cljs-completion?) "t")}
+
+          ;; nREPL 0.8+
+          ops.completions
+          {:op :completions
+           :session conn.session
+           :ns opts.context
+           :prefix opts.prefix})
+
         (nrepl.with-all-msgs-fn
-          (fn [msgs]
-            (->> (a.get (a.last msgs) :completions)
-                 (a.map clojure->vim-completion)
-                 (opts.cb))))))
+            (fn [msgs]
+              (->> (a.get (a.last msgs) :completions)
+                   (a.map clojure->vim-completion)
+                   (opts.cb))))))
     {:silent? true
      :else opts.cb}))
 
 (defn out-subscribe []
   (try-ensure-conn)
   (log.append ["; Subscribing to out"] {:break? true})
-  (server.with-conn-and-op-or-warn
-    :out-subscribe
+  (server.with-conn-and-ops-or-warn
+    [:out-subscribe]
     (fn [conn]
       (server.send {:op :out-subscribe}))))
 
 (defn out-unsubscribe []
   (try-ensure-conn)
   (log.append ["; Unsubscribing from out"] {:break? true})
-  (server.with-conn-and-op-or-warn
-    :out-unsubscribe
+  (server.with-conn-and-ops-or-warn
+    [:out-unsubscribe]
     (fn [conn]
       (server.send {:op :out-unsubscribe}))))
