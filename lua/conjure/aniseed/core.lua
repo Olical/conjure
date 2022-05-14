@@ -42,9 +42,25 @@ local function function_3f(value)
   return ("function" == type(value))
 end
 _2amodule_2a["function?"] = function_3f
+local function keys(t)
+  local result = {}
+  if t then
+    for k, _ in pairs(t) do
+      table.insert(result, k)
+    end
+  else
+  end
+  return result
+end
+_2amodule_2a["keys"] = keys
 local function count(xs)
   if table_3f(xs) then
-    return table.maxn(xs)
+    local maxn = table.maxn(xs)
+    if (0 == maxn) then
+      return table.maxn(keys(xs))
+    else
+      return maxn
+    end
   elseif not xs then
     return 0
   else
@@ -96,17 +112,6 @@ local function odd_3f(n)
   return not even_3f(n)
 end
 _2amodule_2a["odd?"] = odd_3f
-local function keys(t)
-  local result = {}
-  if t then
-    for k, _ in pairs(t) do
-      table.insert(result, k)
-    end
-  else
-  end
-  return result
-end
-_2amodule_2a["keys"] = keys
 local function vals(t)
   local result = {}
   if t then
@@ -147,31 +152,31 @@ end
 _2amodule_2a["run!"] = run_21
 local function filter(f, xs)
   local result = {}
-  local function _10_(x)
+  local function _11_(x)
     if f(x) then
       return table.insert(result, x)
     else
       return nil
     end
   end
-  run_21(_10_, xs)
+  run_21(_11_, xs)
   return result
 end
 _2amodule_2a["filter"] = filter
 local function map(f, xs)
   local result = {}
-  local function _12_(x)
+  local function _13_(x)
     local mapped = f(x)
-    local function _13_()
+    local function _14_()
       if (0 == select("#", mapped)) then
         return nil
       else
         return mapped
       end
     end
-    return table.insert(result, _13_())
+    return table.insert(result, _14_())
   end
-  run_21(_12_, xs)
+  run_21(_13_, xs)
   return result
 end
 _2amodule_2a["map"] = map
@@ -185,11 +190,11 @@ end
 _2amodule_2a["identity"] = identity
 local function reduce(f, init, xs)
   local result = init
-  local function _14_(x)
+  local function _15_(x)
     result = f(result, x)
     return nil
   end
-  run_21(_14_, xs)
+  run_21(_15_, xs)
   return result
 end
 _2amodule_2a["reduce"] = reduce
@@ -209,34 +214,34 @@ end
 _2amodule_2a["some"] = some
 local function butlast(xs)
   local total = count(xs)
-  local function _18_(_16_)
-    local _arg_17_ = _16_
-    local n = _arg_17_[1]
-    local v = _arg_17_[2]
+  local function _19_(_17_)
+    local _arg_18_ = _17_
+    local n = _arg_18_[1]
+    local v = _arg_18_[2]
     return (n ~= total)
   end
-  return map(second, filter(_18_, kv_pairs(xs)))
+  return map(second, filter(_19_, kv_pairs(xs)))
 end
 _2amodule_2a["butlast"] = butlast
 local function rest(xs)
-  local function _21_(_19_)
-    local _arg_20_ = _19_
-    local n = _arg_20_[1]
-    local v = _arg_20_[2]
+  local function _22_(_20_)
+    local _arg_21_ = _20_
+    local n = _arg_21_[1]
+    local v = _arg_21_[2]
     return (n ~= 1)
   end
-  return map(second, filter(_21_, kv_pairs(xs)))
+  return map(second, filter(_22_, kv_pairs(xs)))
 end
 _2amodule_2a["rest"] = rest
 local function concat(...)
   local result = {}
-  local function _22_(xs)
-    local function _23_(x)
+  local function _23_(xs)
+    local function _24_(x)
       return table.insert(result, x)
     end
-    return run_21(_23_, xs)
+    return run_21(_24_, xs)
   end
-  run_21(_22_, {...})
+  run_21(_23_, {...})
   return result
 end
 _2amodule_2a["concat"] = concat
@@ -246,10 +251,10 @@ end
 _2amodule_2a["mapcat"] = mapcat
 local function pr_str(...)
   local s
-  local function _24_(x)
+  local function _25_(x)
     return view.serialise(x, {["one-line"] = true})
   end
-  s = table.concat(map(_24_, {...}), " ")
+  s = table.concat(map(_25_, {...}), " ")
   if (nil_3f(s) or ("" == s)) then
     return "nil"
   else
@@ -258,41 +263,41 @@ local function pr_str(...)
 end
 _2amodule_2a["pr-str"] = pr_str
 local function str(...)
-  local function _26_(acc, s)
+  local function _27_(acc, s)
     return (acc .. s)
   end
-  local function _27_(s)
+  local function _28_(s)
     if string_3f(s) then
       return s
     else
       return pr_str(s)
     end
   end
-  return reduce(_26_, "", map(_27_, {...}))
+  return reduce(_27_, "", map(_28_, {...}))
 end
 _2amodule_2a["str"] = str
 local function println(...)
-  local function _29_(acc, s)
+  local function _30_(acc, s)
     return (acc .. s)
   end
-  local function _32_(_30_)
-    local _arg_31_ = _30_
-    local i = _arg_31_[1]
-    local s = _arg_31_[2]
+  local function _33_(_31_)
+    local _arg_32_ = _31_
+    local i = _arg_32_[1]
+    local s = _arg_32_[2]
     if (1 == i) then
       return s
     else
       return (" " .. s)
     end
   end
-  local function _34_(s)
+  local function _35_(s)
     if string_3f(s) then
       return s
     else
       return pr_str(s)
     end
   end
-  return print(reduce(_29_, "", map_indexed(_32_, map(_34_, {...}))))
+  return print(reduce(_30_, "", map_indexed(_33_, map(_35_, {...}))))
 end
 _2amodule_2a["println"] = println
 local function pr(...)
@@ -300,12 +305,12 @@ local function pr(...)
 end
 _2amodule_2a["pr"] = pr
 local function slurp(path, silent_3f)
-  local _36_, _37_ = io.open(path, "r")
-  if ((_36_ == nil) and (nil ~= _37_)) then
-    local msg = _37_
+  local _37_, _38_ = io.open(path, "r")
+  if ((_37_ == nil) and (nil ~= _38_)) then
+    local msg = _38_
     return nil
-  elseif (nil ~= _36_) then
-    local f = _36_
+  elseif (nil ~= _37_) then
+    local f = _37_
     local content = f:read("*all")
     f:close()
     return content
@@ -315,12 +320,12 @@ local function slurp(path, silent_3f)
 end
 _2amodule_2a["slurp"] = slurp
 local function spit(path, content)
-  local _39_, _40_ = io.open(path, "w")
-  if ((_39_ == nil) and (nil ~= _40_)) then
-    local msg = _40_
+  local _40_, _41_ = io.open(path, "w")
+  if ((_40_ == nil) and (nil ~= _41_)) then
+    local msg = _41_
     return error(("Could not open file: " .. msg))
-  elseif (nil ~= _39_) then
-    local f = _39_
+  elseif (nil ~= _40_) then
+    local f = _40_
     f:write(content)
     f:close()
     return nil
@@ -330,7 +335,7 @@ local function spit(path, content)
 end
 _2amodule_2a["spit"] = spit
 local function merge_21(base, ...)
-  local function _42_(acc, m)
+  local function _43_(acc, m)
     if m then
       for k, v in pairs(m) do
         acc[k] = v
@@ -339,7 +344,7 @@ local function merge_21(base, ...)
     end
     return acc
   end
-  return reduce(_42_, (base or {}), {...})
+  return reduce(_43_, (base or {}), {...})
 end
 _2amodule_2a["merge!"] = merge_21
 local function merge(...)
@@ -348,14 +353,14 @@ end
 _2amodule_2a["merge"] = merge
 local function select_keys(t, ks)
   if (t and ks) then
-    local function _44_(acc, k)
+    local function _45_(acc, k)
       if k then
         acc[k] = t[k]
       else
       end
       return acc
     end
-    return reduce(_44_, {}, ks)
+    return reduce(_45_, {}, ks)
   else
     return {}
   end
@@ -382,14 +387,14 @@ end
 _2amodule_2a["get"] = get
 local function get_in(t, ks, d)
   local res
-  local function _50_(acc, k)
+  local function _51_(acc, k)
     if table_3f(acc) then
       return get(acc, k)
     else
       return nil
     end
   end
-  res = reduce(_50_, t, ks)
+  res = reduce(_51_, t, ks)
   if nil_3f(res) then
     return d
   else
@@ -398,10 +403,10 @@ local function get_in(t, ks, d)
 end
 _2amodule_2a["get-in"] = get_in
 local function assoc(t, ...)
-  local _let_53_ = {...}
-  local k = _let_53_[1]
-  local v = _let_53_[2]
-  local xs = (function (t, k) local mt = getmetatable(t) if "table" == type(mt) and mt.__fennelrest then return mt.__fennelrest(t, k) else return {(table.unpack or unpack)(t, k)} end end)(_let_53_, 3)
+  local _let_54_ = {...}
+  local k = _let_54_[1]
+  local v = _let_54_[2]
+  local xs = (function (t, k) local mt = getmetatable(t) if "table" == type(mt) and mt.__fennelrest then return mt.__fennelrest(t, k) else return {(table.unpack or unpack)(t, k)} end end)(_let_54_, 3)
   local rem = count(xs)
   local t0 = (t or {})
   if odd_3f(rem) then
@@ -423,7 +428,7 @@ local function assoc_in(t, ks, v)
   local path = butlast(ks)
   local final = last(ks)
   local t0 = (t or {})
-  local function _57_(acc, k)
+  local function _58_(acc, k)
     local step = get(acc, k)
     if nil_3f(step) then
       return get(assoc(acc, k, {}), k)
@@ -431,7 +436,7 @@ local function assoc_in(t, ks, v)
       return step
     end
   end
-  assoc(reduce(_57_, t0, path), final, v)
+  assoc(reduce(_58_, t0, path), final, v)
   return t0
 end
 _2amodule_2a["assoc-in"] = assoc_in
@@ -444,10 +449,10 @@ local function update_in(t, ks, f)
 end
 _2amodule_2a["update-in"] = update_in
 local function constantly(v)
-  local function _59_()
+  local function _60_()
     return v
   end
-  return _59_
+  return _60_
 end
 _2amodule_2a["constantly"] = constantly
 return _2amodule_2a
