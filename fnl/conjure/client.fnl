@@ -106,10 +106,11 @@
   (let [f (get fn-name)]
     (if f
       (f ...)
-      (error (.. "Conjure client '"
-                 (a.get (current-client-module-name) :module-name)
-                 "' doesn't support function: "
-                 fn-name)))))
+      (error (str.join
+               ["Conjure client '"
+                (a.get (current-client-module-name) :module-name)
+                "' doesn't support function: "
+                fn-name])))))
 
 (defn optional-call [fn-name ...]
   (let [f (get fn-name)]

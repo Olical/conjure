@@ -172,7 +172,7 @@ local function call(fn_name, ...)
   if f then
     return f(...)
   else
-    return error(("Conjure client '" .. a.get(current_client_module_name(), "module-name") .. "' doesn't support function: " .. fn_name))
+    return error(str.join({"Conjure client '", a.get(current_client_module_name(), "module-name"), "' doesn't support function: ", fn_name}))
   end
 end
 _2amodule_2a["call"] = call
