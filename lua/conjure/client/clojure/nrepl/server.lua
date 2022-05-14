@@ -243,7 +243,6 @@ local function with_conn_and_ops_or_warn(op_names, f, opts)
       end
     end
     found_ops = a.reduce(_37_, {}, op_names)
-    a.println("---", op_names, found_ops)
     if not a["empty?"](found_ops) then
       return f(conn, found_ops)
     else
