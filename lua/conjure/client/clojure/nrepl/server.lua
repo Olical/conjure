@@ -57,7 +57,7 @@ local function display_conn_status(status)
   local function _6_(conn)
     local function _7_()
       if conn.port_file_path then
-        return (": " .. conn.port_file_path .. "")
+        return str.join({": ", conn.port_file_path})
       else
         return nil
       end
@@ -82,7 +82,7 @@ end
 _2amodule_2a["close-session"] = close_session
 local function assume_session(session)
   a.assoc(state.get("conn"), "session", a.get(session, "id"))
-  return log.append({("; Assumed session: " .. session.str())}, {["break?"] = true})
+  return log.append({str.join({"; Assumed session: ", session.str()})}, {["break?"] = true})
 end
 _2amodule_2a["assume-session"] = assume_session
 local function eval(opts, cb)
@@ -125,7 +125,7 @@ _2amodule_locals_2a["with-session-ids"] = with_session_ids
 local function pretty_session_type(st)
   local function _18_()
     if a["string?"](st) then
-      return (st .. "?")
+      return str.join({st, "?"})
     else
       return "https://conjure.fun/no-env"
     end
@@ -156,7 +156,7 @@ local function enrich_session_id(id, cb)
   local function _22_(st)
     local t = {id = id, type = st, ["pretty-type"] = pretty_session_type(st), name = uuid.pretty(id)}
     local function _23_()
-      return (t.name .. " (" .. t["pretty-type"] .. ")")
+      return str.join({t.name, " (", t["pretty-type"], ")"})
     end
     a.assoc(t, "str", _23_)
     return cb(t)
@@ -294,7 +294,7 @@ local function connect(_42_)
     else
     end
     if msg.status["namespace-not-found"] then
-      return log.append({("; Namespace not found: " .. msg.ns)})
+      return log.append({str.join({"; Namespace not found: ", msg.ns})})
     else
       return nil
     end

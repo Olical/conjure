@@ -35,7 +35,7 @@
       (log.append [(str.join
                      ["; " conn.host ":" conn.port " (" status ")"
                       (when conn.port_file_path
-                        (.. ": " conn.port_file_path ""))])]
+                        (str.join [": " conn.port_file_path]))])]
                   {:break? true}))))
 
 (defn disconnect []
@@ -52,7 +52,7 @@
 
 (defn assume-session [session]
   (a.assoc (state.get :conn) :session (a.get session :id))
-  (log.append [(.. "; Assumed session: " (session.str))]
+  (log.append [(str.join ["; Assumed session: " (session.str)])]
               {:break? true}))
 
 (defn eval [opts cb]
@@ -108,7 +108,7 @@
      :unknown :Unknown}
     st
     (if (a.string? st)
-      (.. st "?")
+      (str.join [st "?"])
       "https://conjure.fun/no-env")))
 
 (defn session-type [id cb]
@@ -136,7 +136,7 @@
                :type st
                :pretty-type (pretty-session-type st)
                :name (uuid.pretty id)}]
-        (a.assoc t :str #(.. t.name " (" t.pretty-type ")"))
+        (a.assoc t :str #(str.join [t.name " (" t.pretty-type ")"]))
         (cb t)))))
 
 (defn with-sessions [cb]
@@ -258,7 +258,7 @@
              (log.append ["; Unknown session, correcting"])
              (assume-or-create-session))
            (when msg.status.namespace-not-found
-             (log.append [(.. "; Namespace not found: " msg.ns)])))
+             (log.append [(str.join ["; Namespace not found: " msg.ns])])))
 
          :default-callback
          (fn [result]
