@@ -131,16 +131,24 @@
 
 (defn- with-info [opts f]
   (server.with-conn-and-ops-or-warn
-    [:info]
-    (fn [conn]
+    [:info :lookup]
+    (fn [conn ops]
       (server.send
-        {:op :info
-         :ns (or opts.context "user")
-         :symbol opts.code
-         :session conn.session}
+        (if
+          ops.info
+          {:op :info
+           :ns (or opts.context "user")
+           :symbol opts.code
+           :session conn.session}
+
+          ops.lookup
+          {:op :lookup
+           :ns (or opts.context "user")
+           :sym opts.code
+           :session conn.session})
         (fn [msg]
           (f (when (not msg.status.no-info)
-               msg)))))))
+               (or (. msg :info) msg))))))))
 
 (defn- java-info->lines [{: arglists-str : class : member : javadoc}]
   (a.concat
@@ -173,13 +181,13 @@
                    {:simple-out? true :ignore-nil? true})
                 msgs)
               (do
-                (log.append ["; No results, checking CIDER's info op"])
+                (log.append ["; No results for (doc ...), checking nREPL info ops"])
                 (with-info
                   opts
                   (fn [info]
                     (if
                       (a.nil? info)
-                      (log.append ["; Nothing found via CIDER's info either"])
+                      (log.append ["; No information found, all I can do is wish you good luck and point you to https://duckduckgo.com/"])
 
                       (= :table (type info.javadoc))
                       (log.append (java-info->lines info))
@@ -188,7 +196,7 @@
                       (log.append
                         (a.concat
                           [(.. "; " info.ns "/" info.name)
-                           (.. "; (" info.arglists-str ")")]
+                           (.. "; " info.arglists-str)]
                           (text.prefixed-lines info.doc "; ")))
 
                       (log.append
