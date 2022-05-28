@@ -14,6 +14,12 @@
   [a b]
   (+ a b))
 
+#{:a :b :c}
+#?(:clj :hi-clojure :cljs :hi-cljs)
+#(+ 1 %)
+'(+ 10 20)
+`(+ 10 20)
+
 (println "\033[0;31mHello, World!\033[0m")
 
 {:xyz

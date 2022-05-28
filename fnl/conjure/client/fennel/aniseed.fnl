@@ -12,10 +12,12 @@
              extract conjure.extract
              ts conjure.tree-sitter}})
 
+(defn form-node? [node]
+  (ts.node-surrounded-by-form-pair-chars? node [["#(" ")"]]))
+
 (def buf-suffix ".fnl")
 (def context-pattern "%(%s*module%s+(.-)[%s){]")
 (def comment-prefix "; ")
-(def form-node? ts.node-surrounded-by-form-pair-chars?)
 
 (config.merge
   {:client

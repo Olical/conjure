@@ -24,14 +24,16 @@ _2amodule_locals_2a["str"] = str
 _2amodule_locals_2a["text"] = text
 _2amodule_locals_2a["ts"] = ts
 _2amodule_locals_2a["view"] = view
+local function form_node_3f(node)
+  return ts["node-surrounded-by-form-pair-chars?"](node, {{"#(", ")"}})
+end
+_2amodule_2a["form-node?"] = form_node_3f
 local buf_suffix = ".fnl"
 _2amodule_2a["buf-suffix"] = buf_suffix
 local context_pattern = "%(%s*module%s+(.-)[%s){]"
 _2amodule_2a["context-pattern"] = context_pattern
 local comment_prefix = "; "
 _2amodule_2a["comment-prefix"] = comment_prefix
-local form_node_3f = ts["node-surrounded-by-form-pair-chars?"]
-_2amodule_2a["form-node?"] = form_node_3f
 config.merge({client = {fennel = {aniseed = {mapping = {run_buf_tests = "tt", run_all_tests = "ta", reset_repl = "rr", reset_all_repls = "ra"}, aniseed_module_prefix = "conjure.aniseed.", use_metadata = true}}}})
 local cfg = config["get-in-fn"]({"client", "fennel", "aniseed"})
 do end (_2amodule_locals_2a)["cfg"] = cfg

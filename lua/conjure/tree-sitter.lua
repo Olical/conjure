@@ -106,15 +106,22 @@ local function get_leaf(node)
   end
 end
 _2amodule_2a["get-leaf"] = get_leaf
-local function node_surrounded_by_form_pair_chars_3f(node)
-  local first_and_last_chars = text["first-and-last-chars"](node__3estr(node))
+local function node_surrounded_by_form_pair_chars_3f(node, extra_pairs)
+  local node_str = node__3estr(node)
+  local first_and_last_chars = text["first-and-last-chars"](node_str)
   local function _14_(_12_)
     local _arg_13_ = _12_
     local start = _arg_13_[1]
     local _end = _arg_13_[2]
     return (first_and_last_chars == (start .. _end))
   end
-  return (a.some(_14_, config["get-in"]({"extract", "form_pairs"})) or false)
+  local function _17_(_15_)
+    local _arg_16_ = _15_
+    local start = _arg_16_[1]
+    local _end = _arg_16_[2]
+    return (text["starts-with"](node_str, start) and text["ends-with"](node_str, _end))
+  end
+  return (a.some(_14_, config["get-in"]({"extract", "form_pairs"})) or a.some(_17_, extra_pairs) or false)
 end
 _2amodule_2a["node-surrounded-by-form-pair-chars?"] = node_surrounded_by_form_pair_chars_3f
 local function get_form(node)

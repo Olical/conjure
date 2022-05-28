@@ -5,6 +5,7 @@
              bridge conjure.bridge
              eval conjure.eval
              str conjure.aniseed.string
+             text conjure.text
              config conjure.config
              action conjure.client.clojure.nrepl.action
              server conjure.client.clojure.nrepl.server
@@ -15,7 +16,20 @@
 (def buf-suffix ".cljc")
 (def comment-prefix "; ")
 (def- cfg (config.get-in-fn [:client :clojure :nrepl]))
-(def form-node? ts.node-surrounded-by-form-pair-chars?)
+
+(def- reader-macro-pairs
+  [["#{" "}"]
+   ["#(" ")"]
+   ["#?(" ")"]
+   ["'(" ")"]
+   ["'[" "]"]
+   ["'{" "}"]
+   ["`(" ")"]
+   ["`[" "]"]
+   ["`{" "}"]])
+
+(defn form-node? [node]
+  (ts.node-surrounded-by-form-pair-chars? node reader-macro-pairs))
 
 (config.merge
   {:client

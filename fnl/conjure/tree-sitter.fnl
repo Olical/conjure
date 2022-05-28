@@ -73,13 +73,18 @@
     (when (leaf? node)
       node)))
 
-(defn node-surrounded-by-form-pair-chars? [node]
-  (let [first-and-last-chars (text.first-and-last-chars
-                               (node->str node))]
+(defn node-surrounded-by-form-pair-chars? [node extra-pairs]
+  (let [node-str (node->str node)
+        first-and-last-chars (text.first-and-last-chars node-str)]
     (or (a.some
           (fn [[start end]]
             (= first-and-last-chars (.. start end)))
           (config.get-in [:extract :form_pairs]))
+        (a.some
+          (fn [[start end]]
+            (and (text.starts-with node-str start)
+                 (text.ends-with node-str end)))
+          extra-pairs)
         false)))
 
 (defn get-form [node]
