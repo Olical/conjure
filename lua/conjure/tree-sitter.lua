@@ -11,12 +11,13 @@ do
   _2amodule_locals_2a = (_2amodule_2a)["aniseed/locals"]
 end
 local autoload = (require("conjure.aniseed.autoload")).autoload
-local a, client, config, nvim, str = autoload("conjure.aniseed.core"), autoload("conjure.client"), autoload("conjure.config"), autoload("conjure.aniseed.nvim"), autoload("conjure.aniseed.string")
+local a, client, config, nvim, str, text = autoload("conjure.aniseed.core"), autoload("conjure.client"), autoload("conjure.config"), autoload("conjure.aniseed.nvim"), autoload("conjure.aniseed.string"), autoload("conjure.text")
 do end (_2amodule_locals_2a)["a"] = a
 _2amodule_locals_2a["client"] = client
 _2amodule_locals_2a["config"] = config
 _2amodule_locals_2a["nvim"] = nvim
 _2amodule_locals_2a["str"] = str
+_2amodule_locals_2a["text"] = text
 local ts
 do
   local ok_3f, x = nil, nil
@@ -105,11 +106,22 @@ local function get_leaf(node)
   end
 end
 _2amodule_2a["get-leaf"] = get_leaf
+local function node_surrounded_by_form_pair_chars_3f(node)
+  local first_and_last_chars = text["first-and-last-chars"](node__3estr(node))
+  local function _14_(_12_)
+    local _arg_13_ = _12_
+    local start = _arg_13_[1]
+    local _end = _arg_13_[2]
+    return (first_and_last_chars == (start .. _end))
+  end
+  return (a.some(_14_, config["get-in"]({"extract", "form_pairs"})) or false)
+end
+_2amodule_2a["node-surrounded-by-form-pair-chars?"] = node_surrounded_by_form_pair_chars_3f
 local function get_form(node)
   local node0 = (node or ts.get_node_at_cursor())
-  if (document_3f(node0) or (false == client["optional-call"]("form-node?", node0))) then
+  if document_3f(node0) then
     return nil
-  elseif leaf_3f(node0) then
+  elseif (leaf_3f(node0) or (false == client["optional-call"]("form-node?", node0))) then
     return get_form(parent(node0))
   else
     return node0

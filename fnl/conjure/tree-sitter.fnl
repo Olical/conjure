@@ -3,7 +3,8 @@
              str conjure.aniseed.string
              nvim conjure.aniseed.nvim
              client conjure.client
-             config conjure.config}})
+             config conjure.config
+             text conjure.text}})
 
 ;; From https://github.com/savq/conjure-julia <3
 
@@ -72,16 +73,29 @@
     (when (leaf? node)
       node)))
 
+(defn node-surrounded-by-form-pair-chars? [node]
+  (let [first-and-last-chars (text.first-and-last-chars
+                               (node->str node))]
+    (or (a.some
+          (fn [[start end]]
+            (= first-and-last-chars (.. start end)))
+          (config.get-in [:extract :form_pairs]))
+        false)))
+
 (defn get-form [node]
   "Get the current form under the cursor. Walks up until it finds a non-leaf."
   (let [node (or node (ts.get_node_at_cursor))]
     (if
-      (or
-        (document? node)
-        (= false (client.optional-call :form-node? node)))
+      ;; If we're already at the root then we're not in a form.
+      (document? node)
       nil
 
-      (leaf? node)
+      ;; Something with 0 children or whatever the client defines as not
+      ;; a form-node isn't right. So we walk up further until we find a
+      ;; good form to work with.
+      (or (leaf? node)
+          (= false (client.optional-call :form-node? node)))
       (get-form (parent node))
 
+      ;; If we make it this far we have a true form node.
       node)))
