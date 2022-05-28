@@ -12,11 +12,15 @@
   (buffer.upsert-hidden buf-name))
 
 (defn- append [lines]
-  (let [buf (upsert-buf)]
-    (nvim.buf_set_lines
-      buf
-      (if (buffer.empty? buf) 0 -1)
-      -1 false lines)))
+  (let [buf (upsert-buf)
+        current-buf-str (str.join "\n" (nvim.buf_get_lines 0 0 -1 true))
+        to-insert-str (str.join "\n" lines)]
+    (when (not (string.find current-buf-str to-insert-str 0 true))
+      (nvim.buf_set_lines
+        buf
+        (if (buffer.empty? buf) 0 -1)
+        -1 false lines)
+      true)))
 
 (defn- map-str [m]
   (.. (config.get-in [:mapping :prefix])
@@ -24,6 +28,11 @@
 
 (defn- progress [n]
   (.. "Lesson ["n "/7] complete!"))
+
+(defn- append-or-warn [current-progress lines]
+  (if (append lines)
+    (progress current-progress)
+    "You've already completed this lesson! You can (u)ndo and run it again though if you'd like."))
 
 (defn start []
   (when (not (editor.has-filetype? :fennel))
@@ -68,7 +77,8 @@
         ["(school.lesson-1)"]))))
 
 (defn lesson-1 []
-  (append
+  (append-or-warn
+    1
     [""
      ";; Good job!"
      ";; You'll notice the heads up display (HUD) appeared showing the result of the evaluation."
@@ -92,23 +102,23 @@
      ";; Next, we have a form inside a comment. We want to evaluate that inner form, not the comment."
      (.. ";; Place your cursor on the inner form (the one inside the comment) and use " (map-str :eval_current_form) " to evaluate it.")
      "(comment"
-     "  (school.lesson-2))"])
-  (progress 1))
+        "  (school.lesson-2))"]))
 
 (defn lesson-2 []
-  (append
+  (append-or-warn
+    2
     [""
      ";; Awesome! You evaluated the inner form under your cursor."
      (.. ";; If we want to evaluate the outermost form under our cursor, we can use " (map-str :eval_root_form) " instead.")
      ";; Try that below to print some output and advance to the next lesson."
      ";; You can place your cursor anywhere inside the (do ...) form or it's children."
      "(do"
-     "  (print \"Hello, World!\")"
-     "  (school.lesson-3))"])
-  (progress 2))
+        "  (print \"Hello, World!\")"
+        "  (school.lesson-3))"]))
 
 (defn lesson-3 []
-  (append
+  (append-or-warn
+    3
     [""
      ";; You evaluated the outermost form! Nice!"
      ";; Notice that the print output was captured and displayed in the log too."
@@ -116,25 +126,25 @@
      (.. ";; Try pressing \"" (config.get-in [:eval :result_register]) "p to paste the contents of the register into your buffer.")
      (.. ";; We can also evaluate a form and replace it with the result of the evaluation with " (map-str :eval_replace_form))
      (.. ";; We'll try that in the next lesson, place your cursor inside the form below and press " (map-str :eval_replace_form))
-     "(school.lesson-4)"])
-  (progress 3))
+     "(school.lesson-4)"]))
 
 (defn lesson-4 []
-  (append
+  (append-or-warn
+    4
     [""
      ";; Well done! Notice how the resulting string in the log also replaced the form in the buffer!"
      ";; Next let's try evaluating a form at a mark."
      ";; Place your cursor on the next lesson form below and use mf to set the f mark at that location."
      (.. ";; Now move your cursor elsewhere in the buffer and use " (map-str :eval_marked_form) "f to evaluate it.")
      ";; If you use a capital letter like mF you can even open a different file and evaluate that marked form without changing buffers!"
-     "(school.lesson-5)"])
-  (progress 4))
+     "(school.lesson-5)"]))
 
 (def lesson-5-message
   "This is the contents of school.lesson-5-message!")
 
 (defn lesson-5 []
-  (append
+  (append-or-warn
+    5
     [""
      ";; Excellent!"
      ";; This is extremely useful when you want to evaluate a specific form repeatedly as you change code elsewhere in the file or project."
@@ -145,14 +155,14 @@
      ""
      (.. ";; You can evaluate visual selections with " (map-str :eval_visual))
      ";; Try evaluating the form below using a visual selection."
-     "(school.lesson-6)"])
-  (progress 5))
+     "(school.lesson-6)"]))
 
 (def lesson-6-message
   "This is the contents of school.lesson-6-message!")
 
 (defn lesson-6 []
-  (append
+  (append-or-warn
+    6
     [""
      ";; Wonderful!"
      ";; Visual evaluation is great for specific sections of a form."
@@ -161,16 +171,15 @@
      "school.lesson-6-message"
      ""
      (.. ";; Use " (map-str :eval_motion) "a( to evaluate the lesson form.")
-     "(school.lesson-7)"])
-  (progress 6))
+         "(school.lesson-7)"]))
 
 (defn lesson-7 []
-  (append
+  (append-or-warn
+    7
     [""
      ";; Excellent job, you made it to the end!"
      ";; To learn more about configuring Conjure, install the plugin and check out :help conjure"
      ";; You can learn about specific languages with :help conjure-client- and then tab completion."
      ";; For example, conjure-client-fennel-aniseed or conjure-client-clojure-nrepl."
      ""
-     ";; I hope you have a wonderful time in Conjure!"])
-  (progress 7))
+     ";; I hope you have a wonderful time in Conjure!"]))
