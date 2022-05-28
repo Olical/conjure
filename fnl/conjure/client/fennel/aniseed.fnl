@@ -9,11 +9,13 @@
              text conjure.text
              log conjure.log
              config conjure.config
-             extract conjure.extract}})
+             extract conjure.extract
+             ts conjure.tree-sitter}})
 
 (def buf-suffix ".fnl")
 (def context-pattern "%(%s*module%s+(.-)[%s){]")
 (def comment-prefix "; ")
+(def form-node? ts.node-surrounded-by-form-pair-chars?)
 
 (config.merge
   {:client

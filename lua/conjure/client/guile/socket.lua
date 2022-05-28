@@ -11,7 +11,7 @@ do
   _2amodule_locals_2a = (_2amodule_2a)["aniseed/locals"]
 end
 local autoload = (require("conjure.aniseed.autoload")).autoload
-local a, client, config, extract, log, mapping, nvim, socket, str, text, _ = autoload("conjure.aniseed.core"), autoload("conjure.client"), autoload("conjure.config"), autoload("conjure.extract"), autoload("conjure.log"), autoload("conjure.mapping"), autoload("conjure.aniseed.nvim"), autoload("conjure.remote.socket"), autoload("conjure.aniseed.string"), autoload("conjure.text"), nil
+local a, client, config, extract, log, mapping, nvim, socket, str, text, ts, _ = autoload("conjure.aniseed.core"), autoload("conjure.client"), autoload("conjure.config"), autoload("conjure.extract"), autoload("conjure.log"), autoload("conjure.mapping"), autoload("conjure.aniseed.nvim"), autoload("conjure.remote.socket"), autoload("conjure.aniseed.string"), autoload("conjure.text"), autoload("conjure.tree-sitter"), nil
 _2amodule_locals_2a["a"] = a
 _2amodule_locals_2a["client"] = client
 _2amodule_locals_2a["config"] = config
@@ -22,6 +22,7 @@ _2amodule_locals_2a["nvim"] = nvim
 _2amodule_locals_2a["socket"] = socket
 _2amodule_locals_2a["str"] = str
 _2amodule_locals_2a["text"] = text
+_2amodule_locals_2a["ts"] = ts
 _2amodule_locals_2a["_"] = _
 config.merge({client = {guile = {socket = {mapping = {connect = "cc", disconnect = "cd"}, pipename = nil}}}})
 local cfg = config["get-in-fn"]({"client", "guile", "socket"})
@@ -38,6 +39,8 @@ local comment_prefix = "; "
 _2amodule_2a["comment-prefix"] = comment_prefix
 local context_pattern = "%(define%-module%s+(%([%g%s]-%))"
 _2amodule_2a["context-pattern"] = context_pattern
+local form_node_3f = ts["node-surrounded-by-form-pair-chars?"]
+_2amodule_2a["form-node?"] = form_node_3f
 local function with_repl_or_warn(f, opts)
   local repl = state("repl")
   if (repl and ("connected" == repl.status)) then

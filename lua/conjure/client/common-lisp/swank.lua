@@ -11,7 +11,7 @@ do
   _2amodule_locals_2a = (_2amodule_2a)["aniseed/locals"]
 end
 local autoload = (require("conjure.aniseed.autoload")).autoload
-local a, bridge, client, config, log, mapping, nvim, remote, str, text = autoload("conjure.aniseed.core"), autoload("conjure.bridge"), autoload("conjure.client"), autoload("conjure.config"), autoload("conjure.log"), autoload("conjure.mapping"), autoload("conjure.aniseed.nvim"), autoload("conjure.remote.swank"), autoload("conjure.aniseed.string"), autoload("conjure.text")
+local a, bridge, client, config, log, mapping, nvim, remote, str, text, ts = autoload("conjure.aniseed.core"), autoload("conjure.bridge"), autoload("conjure.client"), autoload("conjure.config"), autoload("conjure.log"), autoload("conjure.mapping"), autoload("conjure.aniseed.nvim"), autoload("conjure.remote.swank"), autoload("conjure.aniseed.string"), autoload("conjure.text"), autoload("conjure.tree-sitter")
 do end (_2amodule_locals_2a)["a"] = a
 _2amodule_locals_2a["bridge"] = bridge
 _2amodule_locals_2a["client"] = client
@@ -22,12 +22,15 @@ _2amodule_locals_2a["nvim"] = nvim
 _2amodule_locals_2a["remote"] = remote
 _2amodule_locals_2a["str"] = str
 _2amodule_locals_2a["text"] = text
+_2amodule_locals_2a["ts"] = ts
 local buf_suffix = ".lisp"
 _2amodule_2a["buf-suffix"] = buf_suffix
 local context_pattern = "%(%s*defpackage%s+(.-)[%s){]"
 _2amodule_2a["context-pattern"] = context_pattern
 local comment_prefix = "; "
 _2amodule_2a["comment-prefix"] = comment_prefix
+local form_node_3f = ts["node-surrounded-by-form-pair-chars?"]
+_2amodule_2a["form-node?"] = form_node_3f
 config.merge({client = {common_lisp = {swank = {connection = {default_host = "127.0.0.1", default_port = "4005"}, mapping = {connect = "cc", disconnect = "cd"}}}}})
 local state
 local function _1_()

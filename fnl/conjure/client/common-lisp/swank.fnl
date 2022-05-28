@@ -8,11 +8,13 @@
              str conjure.aniseed.string
              config conjure.config
              client conjure.client
-             remote conjure.remote.swank}})
+             remote conjure.remote.swank
+             ts conjure.tree-sitter}})
 
 (def buf-suffix ".lisp")
 (def context-pattern "%(%s*defpackage%s+(.-)[%s){]")
 (def comment-prefix "; ")
+(def form-node? ts.node-surrounded-by-form-pair-chars?)
 
 ;; ------------ common lisp client
 ;; Can parse simple forms

@@ -9,11 +9,13 @@
              action conjure.client.clojure.nrepl.action
              server conjure.client.clojure.nrepl.server
              parse conjure.client.clojure.nrepl.parse
-             client conjure.client}})
+             client conjure.client
+             ts conjure.tree-sitter}})
 
 (def buf-suffix ".cljc")
 (def comment-prefix "; ")
 (def- cfg (config.get-in-fn [:client :clojure :nrepl]))
+(def form-node? ts.node-surrounded-by-form-pair-chars?)
 
 (config.merge
   {:client

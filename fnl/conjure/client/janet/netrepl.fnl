@@ -7,10 +7,12 @@
              log conjure.log
              config conjure.config
              client conjure.client
-             remote conjure.remote.netrepl}})
+             remote conjure.remote.netrepl
+             ts conjure.tree-sitter}})
 
 (def buf-suffix ".janet")
 (def comment-prefix "# ")
+(def form-node? ts.node-surrounded-by-form-pair-chars?)
 
 (config.merge
   {:client

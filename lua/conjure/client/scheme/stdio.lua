@@ -11,7 +11,7 @@ do
   _2amodule_locals_2a = (_2amodule_2a)["aniseed/locals"]
 end
 local autoload = (require("conjure.aniseed.autoload")).autoload
-local a, client, config, log, mapping, nvim, stdio, str, _ = autoload("conjure.aniseed.core"), autoload("conjure.client"), autoload("conjure.config"), autoload("conjure.log"), autoload("conjure.mapping"), autoload("conjure.aniseed.nvim"), autoload("conjure.remote.stdio"), autoload("conjure.aniseed.string"), nil
+local a, client, config, log, mapping, nvim, stdio, str, ts, _ = autoload("conjure.aniseed.core"), autoload("conjure.client"), autoload("conjure.config"), autoload("conjure.log"), autoload("conjure.mapping"), autoload("conjure.aniseed.nvim"), autoload("conjure.remote.stdio"), autoload("conjure.aniseed.string"), autoload("conjure.tree-sitter"), nil
 _2amodule_locals_2a["a"] = a
 _2amodule_locals_2a["client"] = client
 _2amodule_locals_2a["config"] = config
@@ -20,6 +20,7 @@ _2amodule_locals_2a["mapping"] = mapping
 _2amodule_locals_2a["nvim"] = nvim
 _2amodule_locals_2a["stdio"] = stdio
 _2amodule_locals_2a["str"] = str
+_2amodule_locals_2a["ts"] = ts
 _2amodule_locals_2a["_"] = _
 config.merge({client = {scheme = {stdio = {mapping = {start = "cs", stop = "cS"}, command = "mit-scheme", prompt_pattern = "[%]e][=r]r?o?r?> ", value_prefix_pattern = "^;Value: "}}}})
 local cfg = config["get-in-fn"]({"client", "scheme", "stdio"})
@@ -34,6 +35,8 @@ local buf_suffix = ".scm"
 _2amodule_2a["buf-suffix"] = buf_suffix
 local comment_prefix = "; "
 _2amodule_2a["comment-prefix"] = comment_prefix
+local form_node_3f = ts["node-surrounded-by-form-pair-chars?"]
+_2amodule_2a["form-node?"] = form_node_3f
 local function with_repl_or_warn(f, opts)
   local repl = state("repl")
   if repl then

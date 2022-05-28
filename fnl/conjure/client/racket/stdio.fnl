@@ -7,7 +7,8 @@
              text conjure.text
              mapping conjure.mapping
              client conjure.client
-             log conjure.log}
+             log conjure.log
+             ts conjure.tree-sitter}
    require-macros [conjure.macros]})
 
 (config.merge
@@ -27,6 +28,7 @@
 (def buf-suffix ".rkt")
 (def comment-prefix "; ")
 (def context-pattern "%(%s*module%s+(.-)[%s){]")
+(def form-node? ts.node-surrounded-by-form-pair-chars?)
 
 (defn- with-repl-or-warn [f opts]
   (let [repl (state :repl)]
