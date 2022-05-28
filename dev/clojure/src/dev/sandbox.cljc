@@ -108,3 +108,16 @@
   (enable-console-print!)
   (throw (js/Error. "ohno"))
   :cljs/quit)
+
+(defrecord Person [fname lname address])
+(defrecord Address [street city state zip])
+
+(def stu (Person. "Stu" "Halloway"
+           (Address. "200 N Mangum"
+                      "Durham"
+                      "NC"
+                      27701)))
+
+(comment
+  (clojure.pprint/pprint stu)
+  (pr stu))
