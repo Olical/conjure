@@ -25,12 +25,20 @@
 (deftest starts-with
   (t.= true (text.starts-with "foobar" "foo"))
   (t.= true (text.starts-with "foobar" "foob"))
-  (t.= false (text.starts-with "foobar" "foox")))
+  (t.= false (text.starts-with "foobar" "foox"))
+  (t.= nil (text.starts-with nil "ohno")))
 
 (deftest ends-with
   (t.= true (text.ends-with "foobar" "bar"))
   (t.= true (text.ends-with "foobar" "obar"))
-  (t.= false (text.ends-with "foobar" "xbar")))
+  (t.= false (text.ends-with "foobar" "xbar"))
+  (t.= nil (text.ends-with nil "ohno")))
+
+(deftest first-and-last-chars
+  (t.= "()" (text.first-and-last-chars "(hello-world)"))
+  (t.= "" (text.first-and-last-chars ""))
+  (t.= "(" (text.first-and-last-chars "("))
+  (t.= nil (text.first-and-last-chars nil)))
 
 (deftest chars
   (t.pr= [] (text.chars))

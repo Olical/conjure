@@ -57,13 +57,33 @@ local function prefixed_lines(s, prefix, opts)
 end
 _2amodule_2a["prefixed-lines"] = prefixed_lines
 local function starts_with(str0, start)
-  return (string.sub(str0, 1, a.count(start)) == start)
+  if str0 then
+    return (string.sub(str0, 1, a.count(start)) == start)
+  else
+    return nil
+  end
 end
 _2amodule_2a["starts-with"] = starts_with
 local function ends_with(str0, _end)
-  return ((_end == "") or (_end == string.sub(str0, ( - a.count(_end)))))
+  if str0 then
+    return ((_end == "") or (_end == string.sub(str0, ( - a.count(_end)))))
+  else
+    return nil
+  end
 end
 _2amodule_2a["ends-with"] = ends_with
+local function first_and_last_chars(str0)
+  if str0 then
+    if (1 == a.count(str0)) then
+      return str0
+    else
+      return (string.sub(str0, 1, 1) .. string.sub(str0, -1, -1))
+    end
+  else
+    return nil
+  end
+end
+_2amodule_2a["first-and-last-chars"] = first_and_last_chars
 local function strip_ansi_escape_sequences(s)
   return string.gsub(string.gsub(string.gsub(string.gsub(string.gsub(s, "\27%[%d+;%d+;%d+;%d+;%d+m", ""), "\27%[%d+;%d+;%d+;%d+m", ""), "\27%[%d+;%d+;%d+m", ""), "\27%[%d+;%d+m", ""), "\27%[%d+m", "")
 end

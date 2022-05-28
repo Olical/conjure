@@ -34,10 +34,19 @@
              (.. prefix line))))))
 
 (defn starts-with [str start]
-  (= (string.sub str 1 (a.count start)) start))
+  (when str
+    (= (string.sub str 1 (a.count start)) start)))
 
 (defn ends-with [str end]
-  (or (= end "") (= end (string.sub str (- (a.count end))))))
+  (when str
+    (or (= end "") (= end (string.sub str (- (a.count end)))))))
+
+(defn first-and-last-chars [str]
+  (when str
+    (if (= 1 (a.count str))
+      str
+      (.. (string.sub str 1 1)
+          (string.sub str -1 -1)))))
 
 (defn strip-ansi-escape-sequences [s]
   (-> s
