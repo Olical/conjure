@@ -12,7 +12,7 @@
   "Hello, World!
   This is a function."
   [a b]
-  (+ a b))
+  #dbg (+ a b))
 
 #{:a :b :c}
 #?(:clj :hi-clojure :cljs :hi-cljs)
