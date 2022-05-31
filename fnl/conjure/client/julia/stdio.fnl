@@ -62,7 +62,7 @@
           (let [msgs (-> msgs unbatch format-msg)]
              (log.append msgs)
              (when opts.on-result
-               (opts.on-result (a.last msgs)))))
+               (opts.on-result (str.join " " msgs)))))
         {:batch? true}))))
 
 (defn eval-file [opts]

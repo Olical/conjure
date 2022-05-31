@@ -69,7 +69,7 @@ local function eval_str(opts)
       local msgs0 = format_msg(unbatch(msgs))
       log.append(msgs0)
       if opts["on-result"] then
-        return opts["on-result"](a.last(msgs0))
+        return opts["on-result"](str.join(" ", msgs0))
       else
         return nil
       end
