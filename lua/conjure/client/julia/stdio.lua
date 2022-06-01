@@ -11,7 +11,7 @@ do
   _2amodule_locals_2a = (_2amodule_2a)["aniseed/locals"]
 end
 local autoload = (require("conjure.aniseed.autoload")).autoload
-local a, client, config, extract, log, mapping, nvim, stdio, str, text, _ = autoload("conjure.aniseed.core"), autoload("conjure.client"), autoload("conjure.config"), autoload("conjure.extract"), autoload("conjure.log"), autoload("conjure.mapping"), autoload("conjure.aniseed.nvim"), autoload("conjure.remote.stdio"), autoload("conjure.aniseed.string"), autoload("conjure.text"), nil
+local a, client, config, extract, log, mapping, nvim, stdio, str, text, ts, _ = autoload("conjure.aniseed.core"), autoload("conjure.client"), autoload("conjure.config"), autoload("conjure.extract"), autoload("conjure.log"), autoload("conjure.mapping"), autoload("conjure.aniseed.nvim"), autoload("conjure.remote.stdio"), autoload("conjure.aniseed.string"), autoload("conjure.text"), autoload("conjure.tree-sitter"), nil
 _2amodule_locals_2a["a"] = a
 _2amodule_locals_2a["client"] = client
 _2amodule_locals_2a["config"] = config
@@ -22,6 +22,7 @@ _2amodule_locals_2a["nvim"] = nvim
 _2amodule_locals_2a["stdio"] = stdio
 _2amodule_locals_2a["str"] = str
 _2amodule_locals_2a["text"] = text
+_2amodule_locals_2a["ts"] = ts
 _2amodule_locals_2a["_"] = _
 config.merge({client = {julia = {stdio = {mapping = {start = "cs", stop = "cS", interrupt = "ei"}, command = "julia --banner=no --color=no -i", prompt_pattern = ""}}}})
 local cfg = config["get-in-fn"]({"client", "julia", "stdio"})
@@ -63,6 +64,10 @@ local function format_msg(msg)
   return a.filter(_4_, str.split(string.gsub(msg, "(.?[%w\n])(nothing)", "%1"), "\n"))
 end
 _2amodule_2a["format-msg"] = format_msg
+local function form_node_3f(node)
+  return not string.match(ts["node->str"](node), "julia>")
+end
+_2amodule_2a["form-node?"] = form_node_3f
 local function eval_str(opts)
   local function _5_(repl)
     local function _6_(msgs)

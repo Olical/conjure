@@ -8,7 +8,8 @@
              text conjure.text
              mapping conjure.mapping
              client conjure.client
-             log conjure.log}
+             log conjure.log
+             ts conjure.tree-sitter}
    require-macros [conjure.macros]})
 
 ; TODO prompt_pattern for julia seems to not show, empty "" is problematic.
@@ -52,6 +53,10 @@
   (->> (-> (string.gsub msg "(.?[%w\n])(nothing)" "%1")
            (str.split "\n"))
        (a.filter #(~= "" $1))))
+
+(defn form-node? [node]
+  (-> node ts.node->str (string.match "julia>") not)
+  )
 
 (defn eval-str [opts]
   (with-repl-or-warn
