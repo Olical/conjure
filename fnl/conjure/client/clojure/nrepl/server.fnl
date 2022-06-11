@@ -93,7 +93,8 @@
   (with-conn-or-warn
     (fn [_]
       (send
-        {:op :ls-sessions}
+        {:op :ls-sessions
+         :session :no-session}
         (fn [msg]
           (let [sessions (a.get msg :sessions)]
             (when (= :table (type sessions))
@@ -104,29 +105,42 @@
   (a.get
     {:clj :Clojure
      :cljs :ClojureScript
-     :cljr :ClojureCLR
-     :unknown :Unknown}
+     :cljr :ClojureCLR}
     st
-    (if (a.string? st)
-      (str.join [st "?"])
-      "https://conjure.fun/no-env")))
+    "Unknown https://conjure.fun/unknown-env"))
 
 (defn session-type [id cb]
-  (send
-    {:op :eval
-     :code (.. "#?("
-                   (str.join
-                     " "
-                     [":clj 'clj"
-                      ":cljs 'cljs"
-                      ":cljr 'cljr"
-                      ":default 'unknown"])
-                   ")")
-     :session id}
-    (nrepl.with-all-msgs-fn
-      (fn [msgs]
-        (let [st (a.some #(a.get $1 :value) msgs)]
-          (cb (when st (str.trim st))))))))
+  (let [state {:done? false}]
+
+    ;; Let's not wait forever just to check the type of a session.
+    ;; This prevents long running processes preventing session hopping.
+    ;; https://github.com/Olical/conjure/issues/366
+    (timer.defer
+      (fn []
+        (when (not state.done?)
+          (set state.done? true)
+          (cb :unknown)))
+
+      ;; Hard coding this because it shouldn't matter too much.
+      200)
+
+    (send
+      {:op :eval
+       :code (.. "#?("
+                     (str.join
+                       " "
+                       [":clj 'clj"
+                        ":cljs 'cljs"
+                        ":cljr 'cljr"
+                        ":default 'unknown"])
+                     ")")
+       :session id}
+      (nrepl.with-all-msgs-fn
+        (fn [msgs]
+          (let [st (a.some #(a.get $1 :value) msgs)]
+            (when (not state.done?)
+              (set state.done? true)
+              (cb (when st (str.trim st))))))))))
 
 (defn enrich-session-id [id cb]
   (session-type

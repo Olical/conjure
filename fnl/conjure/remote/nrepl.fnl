@@ -47,8 +47,14 @@
     (fn send [msg cb]
       (let [msg-id (uuid.v4)]
         (a.assoc msg :id msg-id)
-        (when (and (not msg.session) conn.session)
+
+        (if
+          (= :no-session msg.session)
+          (a.assoc msg :session nil)
+
+          (and (not msg.session) conn.session)
           (a.assoc msg :session conn.session))
+
         (log.dbg "send" msg)
         (a.assoc-in state [:msgs msg-id]
                     {:msg msg

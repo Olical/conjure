@@ -76,7 +76,10 @@
   (throw (Error. "ohno"))
   (do (print "start ")
       (Thread/sleep 5000)
-      (println "FOO"))
+      (println "FOO")
+      :done)
+  (+ 10 20)
+
   (future
     (do (print "start ")
         (flush)

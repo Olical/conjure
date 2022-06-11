@@ -49,7 +49,9 @@ local function connect(opts)
   local function send(msg, cb)
     local msg_id = uuid.v4()
     a.assoc(msg, "id", msg_id)
-    if (not msg.session and conn.session) then
+    if ("no-session" == msg.session) then
+      a.assoc(msg, "session", nil)
+    elseif (not msg.session and conn.session) then
       a.assoc(msg, "session", conn.session)
     else
     end
