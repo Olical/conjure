@@ -189,14 +189,14 @@
                       (a.nil? info)
                       (log.append ["; No information found, all I can do is wish you good luck and point you to https://duckduckgo.com/"])
 
-                      (= :table (type info.javadoc))
+                      (= :string (type info.javadoc))
                       (log.append (java-info->lines info))
 
                       (= :string (type info.doc))
                       (log.append
                         (a.concat
-                          [(.. "; " info.ns "/" info.name)
-                           (.. "; " info.arglists-str)]
+                          [(str.join ["; " info.ns "/" info.name])
+                           (str.join ["; " info.arglists-str])]
                           (text.prefixed-lines info.doc "; ")))
 
                       (log.append

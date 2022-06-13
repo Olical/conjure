@@ -280,10 +280,10 @@ local function doc_str(opts)
         local function _49_(info)
           if a["nil?"](info) then
             return log.append({"; No information found, all I can do is wish you good luck and point you to https://duckduckgo.com/"})
-          elseif ("table" == type(info.javadoc)) then
+          elseif ("string" == type(info.javadoc)) then
             return log.append(java_info__3elines(info))
           elseif ("string" == type(info.doc)) then
-            return log.append(a.concat({("; " .. info.ns .. "/" .. info.name), ("; " .. info["arglists-str"])}, text["prefixed-lines"](info.doc, "; ")))
+            return log.append(a.concat({str.join({"; ", info.ns, "/", info.name}), str.join({"; ", info["arglists-str"]})}, text["prefixed-lines"](info.doc, "; ")))
           else
             return log.append(a.concat({"; Unknown result, it may still be helpful"}, text["prefixed-lines"](view.serialise(info), "; ")))
           end
