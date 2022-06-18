@@ -1,9 +1,22 @@
 (module conjure.remote.transport.elisp-test
   {require {elisp conjure.remote.transport.elisp}})
 
-(deftest parse
-  (t.= :TODO
-       (elisp.parse "(\"Class\" \": \" (:value \"clojure.lang.PersistentArrayMap\" 0) (:newline) \"Contents: \" (:newline) \"  \" (:value \"a\" 1) \" = \" (:value \"1\" 2) (:newline) \"  \" (:value \"b\" 3) \" = \" (:value \"2\" 4) (:newline))")))
+(deftest read
+  ; (t.= :TODO
+  ;      (elisp.read "(\"Class\" \": \" (:value \"clojure.lang.PersistentArrayMap\" 0) (:newline) \"Contents: \" (:newline) \"  \" (:value \"a\" 1) \" = \" (:value \"1\" 2) (:newline) \"  \" (:value \"b\" 3) \" = \" (:value \"2\" 4) (:newline))"))
+
+  (t.= nil (elisp.read ""))
+  (t.= "foo" (elisp.read "\"foo\""))
+  (t.= "foo" (elisp.read "  \"foo\"  "))
+  (t.= "foo" (elisp.read ":foo"))
+  (t.= "foo" (elisp.read "   :foo    "))
+  (t.= "bar" (elisp.read "   :foo \"hi\" \n :bar  ")))
+
+;; What I think the nREPL example data should look like.
+; ["Class" ": " [:value "clojure.lang.PersistentArrayMap" 0] [:newline]
+;  "Contents:" [:newline]
+;  [:value "a" 1] " = " [:value "1" 2] [:newline]
+;  [:value "b" 3] " = " [:value "2" 4] [:newline]]
 
 ; (comment
 ;   (server.send
