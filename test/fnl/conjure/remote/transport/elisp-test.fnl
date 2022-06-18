@@ -1,5 +1,9 @@
-(module conjure.client.clojure.nrepl.server-test
-  {require {server conjure.client.clojure.nrepl.server}})
+(module conjure.remote.transport.elisp-test
+  {require {elisp conjure.remote.transport.elisp}})
+
+(deftest parse
+  (t.= :TODO
+       (elisp.parse "(\"Class\" \": \" (:value \"clojure.lang.PersistentArrayMap\" 0) (:newline) \"Contents: \" (:newline) \"  \" (:value \"a\" 1) \" = \" (:value \"1\" 2) (:newline) \"  \" (:value \"b\" 3) \" = \" (:value \"2\" 4) (:newline))")))
 
 ; (comment
 ;   (server.send
