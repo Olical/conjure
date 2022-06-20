@@ -10,7 +10,15 @@
   (t.= "foo" (elisp.read "  \"foo\"  "))
   (t.= "foo" (elisp.read ":foo"))
   (t.= "foo" (elisp.read "   :foo    "))
-  (t.= "bar" (elisp.read "   :foo \"hi\" \n :bar  ")))
+  (t.= "bar" (elisp.read "   :foo \"hi\" \n :bar  "))
+  (t.= 0 (elisp.read "0"))
+  (t.= 1 (elisp.read " 1  "))
+  (t.= 0.5 (elisp.read "  0.5"))
+  (t.= 30 (elisp.read "   30 "))
+  (t.= 30.2 (elisp.read "   30.2 "))
+  (t.= 0.2 (elisp.read ".2 "))
+  (t.= -0.3 (elisp.read "   -.3 "))
+  (t.= -20.25 (elisp.read "   -20.25 ")))
 
 ;; What I think the nREPL example data should look like.
 ; ["Class" ": " [:value "clojure.lang.PersistentArrayMap" 0] [:newline]
