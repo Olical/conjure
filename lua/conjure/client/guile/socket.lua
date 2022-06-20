@@ -76,13 +76,21 @@ local function clean_input_code(code)
   end
 end
 _2amodule_locals_2a["clean-input-code"] = clean_input_code
+local function ctx_or_default(str0)
+  if str0 then
+    return str0
+  else
+    return "(guile-user)"
+  end
+end
+_2amodule_locals_2a["ctx-or-default"] = ctx_or_default
 local function eval_str(opts)
-  local function _6_(repl)
-    local _7_ = opts.code
-    if (nil ~= _7_) then
-      local _8_ = clean_input_code(_7_)
-      if (nil ~= _8_) then
-        local function _9_(msgs)
+  local function _7_(repl)
+    local _8_ = (",m " .. ctx_or_default(opts.context) .. "\n" .. opts.code)
+    if (nil ~= _8_) then
+      local _9_ = clean_input_code(_8_)
+      if (nil ~= _9_) then
+        local function _10_(msgs)
           if ((1 == a.count(msgs)) and ("" == a["get-in"](msgs, {1, "out"}))) then
             a["assoc-in"](msgs, {1, "out"}, (comment_prefix .. "Empty result"))
           else
@@ -90,15 +98,15 @@ local function eval_str(opts)
           opts["on-result"](str.join("\n", format_message(a.last(msgs))))
           return a["run!"](display_result, msgs)
         end
-        return repl.send(_8_, _9_, {["batch?"] = true})
+        return repl.send(_9_, _10_, {["batch?"] = true})
       else
-        return _8_
+        return _9_
       end
     else
-      return _7_
+      return _8_
     end
   end
-  return with_repl_or_warn(_6_)
+  return with_repl_or_warn(_7_)
 end
 _2amodule_2a["eval-str"] = eval_str
 local function eval_file(opts)
@@ -106,16 +114,16 @@ local function eval_file(opts)
 end
 _2amodule_2a["eval-file"] = eval_file
 local function doc_str(opts)
-  local function _13_(_241)
+  local function _14_(_241)
     return ("(procedure-documentation " .. _241 .. ")")
   end
-  return eval_str(a.update(opts, "code", _13_))
+  return eval_str(a.update(opts, "code", _14_))
 end
 _2amodule_2a["doc-str"] = doc_str
 local function display_repl_status()
   local repl = state("repl")
   if repl then
-    local function _14_()
+    local function _15_()
       local pipename = a["get-in"](repl, {"opts", "pipename"})
       if pipename then
         return (pipename .. " ")
@@ -123,7 +131,7 @@ local function display_repl_status()
         return ""
       end
     end
-    local function _16_()
+    local function _17_()
       local err = a.get(repl, "err")
       if err then
         return (" " .. err)
@@ -131,7 +139,7 @@ local function display_repl_status()
         return ""
       end
     end
-    return log.append({(comment_prefix .. _14_() .. "(" .. repl.status .. _16_() .. ")")}, {["break?"] = true})
+    return log.append({(comment_prefix .. _15_() .. "(" .. repl.status .. _17_() .. ")")}, {["break?"] = true})
   else
     return nil
   end
@@ -162,46 +170,26 @@ local function parse_guile_result(s)
   end
 end
 _2amodule_locals_2a["parse-guile-result"] = parse_guile_result
-local function enter()
-  local repl = state("repl")
-  local c = extract.context()
-  if (repl and ("connected" == repl.status)) then
-    local function _22_()
-    end
-    return repl.send((",m " .. (c or "(guile-user)") .. "\n"), _22_)
-  else
-    return nil
-  end
-end
-_2amodule_2a["enter"] = enter
 local function connect(opts)
   disconnect()
   local pipename = (cfg({"pipename"}) or a.get(opts, "port"))
   if ("string" ~= type(pipename)) then
     return log.append({(comment_prefix .. "g:conjure#client#guile#socket#pipename is not specified"), (comment_prefix .. "Please set it to the name of your Guile REPL pipe or pass it to :ConjureConnect [pipename]")})
   else
-    local function _24_()
-      display_repl_status()
-      return enter()
+    local function _23_()
+      return display_repl_status()
     end
-    local function _25_(msg, repl)
+    local function _24_(msg, repl)
       display_result(msg)
-      local function _26_()
+      local function _25_()
       end
-      return repl.send(",q\n", _26_)
+      return repl.send(",q\n", _25_)
     end
-    return a.assoc(state(), "repl", socket.start({["parse-output"] = parse_guile_result, pipename = pipename, ["on-success"] = _24_, ["on-error"] = _25_, ["on-failure"] = disconnect, ["on-close"] = disconnect, ["on-stray-output"] = display_result}))
+    return a.assoc(state(), "repl", socket.start({["parse-output"] = parse_guile_result, pipename = pipename, ["on-success"] = _23_, ["on-error"] = _24_, ["on-failure"] = disconnect, ["on-close"] = disconnect, ["on-stray-output"] = display_result}))
   end
 end
 _2amodule_2a["connect"] = connect
 local function on_load()
-  do
-    nvim.ex.augroup("conjure-guile-socket-bufenter")
-    nvim.ex.autocmd_()
-    nvim.ex.autocmd("BufEnter", ("*" .. buf_suffix), ("lua require('" .. _2amodule_name_2a .. "')['" .. "enter" .. "']()"))
-    nvim.ex.augroup("END")
-  end
-  return connect()
 end
 _2amodule_2a["on-load"] = on_load
 local function on_exit()
