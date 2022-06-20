@@ -11,22 +11,32 @@
 (def- number-char-pat "[0-9.-]")
 (def- whitespace-char-pat "%s")
 
+;; Beware, here be dragons. Really cool magic dragons, but dragons all the same.
+;; Grab a coffee, put on your seat belt. Good luck.
 (defn- read* [cs ctxs result]
   (if (a.empty? cs)
     result
     (let [prev-cs cs
           c (a.first cs)
           cs (a.rest cs)
-          ctx (stack.peek ctxs)]
+          {:name ctx-name
+           :value ctx-value} (or (stack.peek ctxs) {})]
 
       (if
+        ;; Are we inside a list right now? Do we have a value to work with? If
+        ;; so we capture the result inside it then continue on.
+        (and (= :list ctx-name) (not= nil result))
+        (do
+          (table.insert ctx-value result)
+          (read* prev-cs ctxs nil))
+
         ;; Previous char was \, we just treat this character as plain text.
         ;; Even if it's a closing quote.
-        (= :escaped-string ctx)
+        (= :escaped-string ctx-name)
         (read* cs (stack.pop ctxs) (.. result c))
 
         ;; We're in a string. It ends when we hit a closing quote.
-        (= :string ctx)
+        (= :string ctx-name)
         (if
           ;; The string is finished.
           (= "\"" c)
@@ -34,14 +44,14 @@
 
           ;; We're escaping the next character.
           (= "\\" c)
-          (read* cs (stack.push ctxs :escaped-string) result)
+          (read* cs (stack.push ctxs {:name :escaped-string}) result)
 
           ;; It's a character inside a string.
           (read* cs ctxs (.. result c)))
 
         ;; We're in a symbol, this ends at the end of the input or when we see
         ;; a non-symbol character.
-        (= :symbol ctx)
+        (= :symbol ctx-name)
         (if
           ;; It's a plain symbol character. Include it!
           (string.find c symbol-char-pat)
@@ -52,7 +62,7 @@
           (read* prev-cs (stack.pop ctxs) result))
 
         ;; We are in a number. Keep reading until then end then parse it. This might throw!
-        (= :number ctx)
+        (= :number ctx-name)
         (if
           ;; Check that we're still in the number.
           (string.find c number-char-pat)
@@ -69,16 +79,24 @@
           ;;  2. Recur onto the previous character for processing.
           (read* prev-cs (stack.pop ctxs) (tonumber result)))
 
-        ;; We're not inside anything right now.
-        (a.nil? ctx)
+        ;; If we're in a list or nothing at all, we look for more context clues for the next value.
+        (or (= :list ctx-name) (a.nil? ctx-name))
         (if
           ;; Begin a string.
           (= "\"" c)
-          (read* cs (stack.push ctxs :string) "")
+          (read* cs (stack.push ctxs {:name :string}) "")
 
           ;; Begin a symbol. We'll treat these like strings too.
           (= ":" c)
-          (read* cs (stack.push ctxs :symbol) "")
+          (read* cs (stack.push ctxs {:name :symbol}) "")
+
+          ;; Start a list, this is where the fun begins.
+          (= "(" c)
+          (read* cs (stack.push ctxs {:name :list :value []}) nil)
+
+          ;; End a list, capture the value and pop upwards.
+          (= ")" c)
+          (read* cs (stack.pop ctxs) ctx-value)
 
           ;; Drop whitespace.
           (string.find c whitespace-char-pat)
@@ -90,17 +108,13 @@
           ;; We use the previous character for the start, this is so that the
           ;; "when do we parse the number" logic doesn't have to be repeated.
           (string.find c number-char-pat)
-          (read* prev-cs (stack.push ctxs :number) "")
+          (read* prev-cs (stack.push ctxs {:name :number}) "")
 
           ;; Handle unknown characters, just halt.
           (err "Unknown character: " c))
 
         ;; Catch all, stop processing if we're confused.
-        (err "Unknown `ctx`: " ctx)))))
+        (err "Unknown `ctx`: " ctx-name)))))
 
 (defn read [s]
   (read* (text.chars s) [] nil))
-
-; (read "(\"Class\" \": \" (:value \"clojure.lang.PersistentArrayMap\" 0) (:newline) \"Contents: \" (:newline) \"  \" (:value \"a\" 1) \" = \" (:value \"1\" 2) (:newline) \"  \" (:value \"b\" 3) \" = \" (:value \"2\" 4) (:newline))")
-
-(read "  :foo-bar :baz  10 ")
