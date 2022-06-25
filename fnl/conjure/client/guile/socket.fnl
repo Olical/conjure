@@ -61,15 +61,10 @@
     (when (not (str.blank? clean))
       clean)))
 
-(defn- ctx-or-default [str]
-  (if str
-    str
-    "(guile-user)"))
-
 (defn eval-str [opts]
   (with-repl-or-warn
     (fn [repl]
-      (-?> (.. ",m " (ctx-or-default opts.context) "\n" opts.code)
+      (-?> (.. ",m " (or opts.context "(guile-user)") "\n" opts.code)
            (clean-input-code)
            (repl.send
              (fn [msgs]
