@@ -5,7 +5,6 @@
              uuid conjure.uuid
              log conjure.log
              client conjure.client
-             extract conjure.extract
              bencode conjure.remote.transport.bencode}})
 
 (defn with-all-msgs-fn [cb]
@@ -15,6 +14,16 @@
       (when msg.status.done
         (cb acc)))))
 
+(defn enrich-status [msg]
+  (let [ks (a.get msg :status)
+        status {}]
+    (a.run!
+      (fn [k]
+        (a.assoc status k true))
+      ks)
+    (a.assoc msg :status status)
+    msg))
+
 (defn connect [opts]
   "Connects to a remote nREPL server.
   * opts.host: The host string.
@@ -23,6 +32,7 @@
   * opts.on-success: Function to call on a successful connection.
   * opts.on-error: Function to call when we receive an error (passed as argument) or a nil response.
   * opts.default-callback: Function to call when the user didn't provide a callback to their send.
+  * opts.side-effect-callback: Intended for side-effects fired off the back of some messages. It's called with every message before the message callback handler.
   * opts.on-message: Function to call when we receive a message after the callback for the message is invoked.
   Returns a connection table containing a `destroy` function."
   (let [state {:message-queue []
@@ -33,16 +43,6 @@
     (var conn
       {:session nil
        :state state})
-
-    (fn enrich-status [msg]
-      (let [ks (a.get msg :status)
-            status {}]
-        (a.run!
-          (fn [k]
-            (a.assoc status k true))
-          ks)
-        (a.assoc msg :status status)
-        msg))
 
     (fn send [msg cb]
       (let [msg-id (uuid.v4)]
@@ -73,14 +73,9 @@
                  (log.dbg "receive" msg)
                  (enrich-status msg)
 
-                 (when msg.status.need-input
-                   (client.schedule
-                     (fn []
-                       (send {:op :stdin
-                              :stdin (.. (or (extract.prompt "Input required: ")
-                                             "")
-                                         "\n")
-                              :session msg.session}))))
+                 (let [(ok? err) (pcall opts.side-effect-callback msg)]
+                   (when (not ok?)
+                     (opts.on-error err)))
 
                  (let [cb (a.get-in state [:msgs msg.id :cb] opts.default-callback)
                        (ok? err) (pcall cb msg)]

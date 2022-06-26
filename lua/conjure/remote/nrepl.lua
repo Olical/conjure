@@ -11,11 +11,10 @@ do
   _2amodule_locals_2a = (_2amodule_2a)["aniseed/locals"]
 end
 local autoload = (require("conjure.aniseed.autoload")).autoload
-local a, bencode, client, extract, log, net, timer, uuid = autoload("conjure.aniseed.core"), autoload("conjure.remote.transport.bencode"), autoload("conjure.client"), autoload("conjure.extract"), autoload("conjure.log"), autoload("conjure.net"), autoload("conjure.timer"), autoload("conjure.uuid")
+local a, bencode, client, log, net, timer, uuid = autoload("conjure.aniseed.core"), autoload("conjure.remote.transport.bencode"), autoload("conjure.client"), autoload("conjure.log"), autoload("conjure.net"), autoload("conjure.timer"), autoload("conjure.uuid")
 do end (_2amodule_locals_2a)["a"] = a
 _2amodule_locals_2a["bencode"] = bencode
 _2amodule_locals_2a["client"] = client
-_2amodule_locals_2a["extract"] = extract
 _2amodule_locals_2a["log"] = log
 _2amodule_locals_2a["net"] = net
 _2amodule_locals_2a["timer"] = timer
@@ -33,19 +32,20 @@ local function with_all_msgs_fn(cb)
   return _1_
 end
 _2amodule_2a["with-all-msgs-fn"] = with_all_msgs_fn
+local function enrich_status(msg)
+  local ks = a.get(msg, "status")
+  local status = {}
+  local function _3_(k)
+    return a.assoc(status, k, true)
+  end
+  a["run!"](_3_, ks)
+  a.assoc(msg, "status", status)
+  return msg
+end
+_2amodule_2a["enrich-status"] = enrich_status
 local function connect(opts)
   local state = {["message-queue"] = {}, ["awaiting-process?"] = false, bc = bencode.new(), msgs = {}}
   local conn = {session = nil, state = state}
-  local function enrich_status(msg)
-    local ks = a.get(msg, "status")
-    local status = {}
-    local function _3_(k)
-      return a.assoc(status, k, true)
-    end
-    a["run!"](_3_, ks)
-    a.assoc(msg, "status", status)
-    return msg
-  end
   local function send(msg, cb)
     local msg_id = uuid.v4()
     a.assoc(msg, "id", msg_id)
@@ -71,12 +71,12 @@ local function connect(opts)
       local function _6_(msg)
         log.dbg("receive", msg)
         enrich_status(msg)
-        if msg.status["need-input"] then
-          local function _7_()
-            return send({op = "stdin", stdin = ((extract.prompt("Input required: ") or "") .. "\n"), session = msg.session})
+        do
+          local ok_3f, err0 = pcall(opts["side-effect-callback"], msg)
+          if not ok_3f then
+            opts["on-error"](err0)
+          else
           end
-          client.schedule(_7_)
-        else
         end
         do
           local cb = a["get-in"](state, {"msgs", msg.id, "cb"}, opts["default-callback"])
@@ -100,10 +100,10 @@ local function connect(opts)
     if not a["empty?"](state["message-queue"]) then
       local msgs = state["message-queue"]
       state["message-queue"] = {}
-      local function _12_(args)
+      local function _11_(args)
         return process_message(unpack(args))
       end
-      return a["run!"](_12_, msgs)
+      return a["run!"](_11_, msgs)
     else
       return nil
     end
@@ -118,7 +118,7 @@ local function connect(opts)
     end
   end
   local function handle_connect_fn()
-    local function _15_(err)
+    local function _14_(err)
       if err then
         return opts["on-failure"](err)
       else
@@ -126,7 +126,7 @@ local function connect(opts)
         return opts["on-success"]()
       end
     end
-    return client["schedule-wrap"](_15_)
+    return client["schedule-wrap"](_14_)
   end
   conn = a["merge!"](conn, {send = send}, net.connect({host = opts.host, port = opts.port, cb = handle_connect_fn()}))
   return conn

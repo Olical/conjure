@@ -11,9 +11,12 @@ do
   _2amodule_locals_2a = (_2amodule_2a)["aniseed/locals"]
 end
 local autoload = (require("conjure.aniseed.autoload")).autoload
-local a, config, log, nrepl, state, str, timer, ui, uuid = autoload("conjure.aniseed.core"), autoload("conjure.config"), autoload("conjure.log"), autoload("conjure.remote.nrepl"), autoload("conjure.client.clojure.nrepl.state"), autoload("conjure.aniseed.string"), autoload("conjure.timer"), autoload("conjure.client.clojure.nrepl.ui"), autoload("conjure.uuid")
+local a, client, config, debugger, extract, log, nrepl, state, str, timer, ui, uuid = autoload("conjure.aniseed.core"), autoload("conjure.client"), autoload("conjure.config"), autoload("conjure.client.clojure.nrepl.debugger"), autoload("conjure.extract"), autoload("conjure.log"), autoload("conjure.remote.nrepl"), autoload("conjure.client.clojure.nrepl.state"), autoload("conjure.aniseed.string"), autoload("conjure.timer"), autoload("conjure.client.clojure.nrepl.ui"), autoload("conjure.uuid")
 do end (_2amodule_locals_2a)["a"] = a
+_2amodule_locals_2a["client"] = client
 _2amodule_locals_2a["config"] = config
+_2amodule_locals_2a["debugger"] = debugger
+_2amodule_locals_2a["extract"] = extract
 _2amodule_locals_2a["log"] = log
 _2amodule_locals_2a["nrepl"] = nrepl
 _2amodule_locals_2a["state"] = state
@@ -268,6 +271,10 @@ local function with_conn_and_ops_or_warn(op_names, f, opts)
   return with_conn_or_warn(_38_, opts)
 end
 _2amodule_2a["with-conn-and-ops-or-warn"] = with_conn_and_ops_or_warn
+local function handle_input_request(msg)
+  return send({op = "stdin", stdin = ((extract.prompt("Input required: ") or "") .. "\n"), session = msg.session})
+end
+_2amodule_2a["handle-input-request"] = handle_input_request
 local function connect(_44_)
   local _arg_45_ = _44_
   local host = _arg_45_["host"]
@@ -307,10 +314,21 @@ local function connect(_44_)
       return nil
     end
   end
-  local function _54_(result)
-    return ui["display-result"](result)
+  local function _54_(msg)
+    if msg.status["need-input"] then
+      client.schedule(handle_input_request, msg)
+    else
+    end
+    if msg.status["need-debug-input"] then
+      return client.schedule(debugger["handle-input-request"], msg)
+    else
+      return nil
+    end
   end
-  return a.assoc(state.get(), "conn", a["merge!"](nrepl.connect({host = host, port = port, ["on-failure"] = _47_, ["on-success"] = _48_, ["on-error"] = _49_, ["on-message"] = _51_, ["default-callback"] = _54_}), {["seen-ns"] = {}, port_file_path = port_file_path}))
+  local function _57_(msg)
+    return ui["display-result"](msg)
+  end
+  return a.assoc(state.get(), "conn", a["merge!"](nrepl.connect({host = host, port = port, ["on-failure"] = _47_, ["on-success"] = _48_, ["on-error"] = _49_, ["on-message"] = _51_, ["side-effect-callback"] = _54_, ["default-callback"] = _57_}), {["seen-ns"] = {}, port_file_path = port_file_path}))
 end
 _2amodule_2a["connect"] = connect
 return _2amodule_2a
