@@ -1,7 +1,27 @@
 (module conjure.client.clojure.nrepl.debugger
   {autoload {a conjure.aniseed.core
              elisp conjure.remote.transport.elisp
+             log conjure.log
              server conjure.client.clojure.nrepl.server}})
+
+;; TODO Make all of this generic, have Conjure call client methods.
+
+(defonce dap
+  (let [(ok? dap) (pcall require :dap)]
+    (if ok?
+      dap
+      (do
+        (log.append
+          [";; nvim-dap is required for debugging support https://github.com/mfussenegger/nvim-dap"]
+          {:break? true})
+        nil))))
+
+(when dap
+  (set
+    dap.adapters.clojure
+    (fn [cb config]
+      (when (= :attach config.request)
+        (a.println "I think here's where we connect to Conjure's internal DAP server")))))
 
 (defn init []
   (server.send
@@ -19,6 +39,8 @@
 
 (defn handle-input-request [msg]
   (a.println msg))
+
+; (vim.json.encode)
 
 ;   {:code "(defn add
 ;             \"Hello, World!
