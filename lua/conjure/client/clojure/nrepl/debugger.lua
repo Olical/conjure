@@ -46,12 +46,15 @@ local function send(opts)
 end
 _2amodule_2a["send"] = send
 local function valid_inputs()
-  local input_type = a["get-in"](state, {"last-request", "input-type"})
-  return (input_type or {})
+  local input_types = a["get-in"](state, {"last-request", "input-type"})
+  local function _4_(input_type)
+    return ("stacktrace" ~= input_type)
+  end
+  return a.filter(_4_, (input_types or {}))
 end
 _2amodule_2a["valid-inputs"] = valid_inputs
 local function render_inspect(inspect)
-  local function _4_(v)
+  local function _5_(v)
     if a["table?"](v) then
       local head = a.first(v)
       if ("newline" == head) then
@@ -65,36 +68,28 @@ local function render_inspect(inspect)
       return v
     end
   end
-  return str.join(a.map(_4_, inspect))
+  return str.join(a.map(_5_, inspect))
 end
 _2amodule_2a["render-inspect"] = render_inspect
 local function handle_input_request(msg)
   state["last-request"] = msg
   log.append({"; CIDER debugger"}, {["break?"] = true})
-  if not a["empty?"](msg.locals) then
-    log.append({"; Locals", a["pr-str"](msg.locals)}, {})
-  else
-  end
-  if not a["empty?"](msg.locals) then
-    log.append({"; Value", msg["debug-value"]}, {})
-  else
-  end
   if not a["empty?"](msg.inspect) then
-    log.append(a.concat({"; Inspect"}, text["prefixed-lines"](render_inspect(elisp.read(msg.inspect)), "; ", {})), {})
+    log.append(text["prefixed-lines"](render_inspect(elisp.read(msg.inspect)), "; ", {}), {})
   else
   end
   if a["empty?"](msg.prompt) then
-    return log.append({"; Input required", "; Respond with :ConjureCljDebugInput [input]", ("; Valid inputs: " .. str.join(", ", valid_inputs()))}, {})
+    return log.append({"; Respond with :ConjureCljDebugInput [input]", ("; Inputs: " .. str.join(", ", valid_inputs()))}, {})
   else
     return send({input = extract.prompt(msg.prompt)})
   end
 end
 _2amodule_2a["handle-input-request"] = handle_input_request
 local function debug_input(opts)
-  local function _11_(_241)
+  local function _10_(_241)
     return (opts.args == _241)
   end
-  if a.some(_11_, valid_inputs()) then
+  if a.some(_10_, valid_inputs()) then
     return send({input = (":" .. opts.args)})
   else
     return log.append({("; Valid inputs: " .. str.join(", ", valid_inputs()))})

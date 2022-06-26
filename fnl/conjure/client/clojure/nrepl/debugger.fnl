@@ -35,8 +35,11 @@
         {:break? true}))))
 
 (defn valid-inputs []
-  (let [input-type (a.get-in state [:last-request :input-type])]
-    (or input-type [])))
+  (let [input-types (a.get-in state [:last-request :input-type])]
+    (a.filter
+      (fn [input-type]
+        (not= :stacktrace input-type))
+      (or input-types []))))
 
 (defn render-inspect [inspect]
   (str.join
@@ -55,31 +58,18 @@
 
   (log.append ["; CIDER debugger"] {:break? true})
 
-  (when (not (a.empty? msg.locals))
-    (log.append
-      ["; Locals" (a.pr-str msg.locals)]
-      {}))
-
-  (when (not (a.empty? msg.locals))
-    (log.append
-      ["; Value" msg.debug-value]
-      {}))
-
   (when (not (a.empty? msg.inspect))
     (log.append
-      (a.concat
-        ["; Inspect"]
-        (text.prefixed-lines
-          (render-inspect (elisp.read msg.inspect))
-          "; "
-          {}))
+      (text.prefixed-lines
+        (render-inspect (elisp.read msg.inspect))
+        "; "
+        {})
       {}))
 
   (if (a.empty? msg.prompt)
     (log.append
-      ["; Input required"
-       "; Respond with :ConjureCljDebugInput [input]"
-       (.. "; Valid inputs: " (str.join ", " (valid-inputs)))]
+      ["; Respond with :ConjureCljDebugInput [input]"
+       (.. "; Inputs: " (str.join ", " (valid-inputs)))]
       {})
     (send {:input (extract.prompt msg.prompt)})))
 
