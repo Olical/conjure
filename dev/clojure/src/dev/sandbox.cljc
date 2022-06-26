@@ -14,6 +14,8 @@
   [a b]
   #dbg (+ a b))
 
+(add 1 2)
+
 #{:a :b :c}
 #?(:clj :hi-clojure :cljs :hi-cljs)
 #(+ 1 %)

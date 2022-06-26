@@ -10,6 +10,7 @@
              action conjure.client.clojure.nrepl.action
              server conjure.client.clojure.nrepl.server
              parse conjure.client.clojure.nrepl.parse
+             debugger conjure.client.clojure.nrepl.debugger
              client conjure.client
              ts conjure.tree-sitter}})
 
@@ -196,6 +197,19 @@
   (nvim.ex.command_
     "-nargs=0 -buffer ConjureOutUnsubscribe"
     (bridge.viml->lua :conjure.client.clojure.nrepl.action :out-unsubscribe {}))
+
+  (nvim.buf_create_user_command
+    0
+    "ConjureCljDebugInit"
+    debugger.init
+    {:force true})
+
+  (nvim.buf_create_user_command
+    0
+    "ConjureCljDebugInput"
+    debugger.debug-input
+    {:force true
+     :nargs 1})
 
   (action.passive-ns-require))
 

@@ -11,50 +11,94 @@ do
   _2amodule_locals_2a = (_2amodule_2a)["aniseed/locals"]
 end
 local autoload = (require("conjure.aniseed.autoload")).autoload
-local a, elisp, log, server = autoload("conjure.aniseed.core"), autoload("conjure.remote.transport.elisp"), autoload("conjure.log"), autoload("conjure.client.clojure.nrepl.server")
+local a, client, elisp, extract, log, server, str, text = autoload("conjure.aniseed.core"), autoload("conjure.client"), autoload("conjure.remote.transport.elisp"), autoload("conjure.extract"), autoload("conjure.log"), autoload("conjure.client.clojure.nrepl.server"), autoload("conjure.aniseed.string"), autoload("conjure.text")
 do end (_2amodule_locals_2a)["a"] = a
+_2amodule_locals_2a["client"] = client
 _2amodule_locals_2a["elisp"] = elisp
+_2amodule_locals_2a["extract"] = extract
 _2amodule_locals_2a["log"] = log
 _2amodule_locals_2a["server"] = server
-local dap
-local function _1_(...)
-  local ok_3f, dap0 = pcall(require, "dap")
-  if ok_3f then
-    return dap0
-  else
-    log.append({";; nvim-dap is required for debugging support https://github.com/mfussenegger/nvim-dap"}, {["break?"] = true})
-    return nil
-  end
-end
-dap = ((_2amodule_2a).dap or _1_(...))
-do end (_2amodule_2a)["dap"] = dap
-if dap then
-  local function _3_(cb, config)
-    if ("attach" == config.request) then
-      return a.println("I think here's where we connect to Conjure's internal DAP server")
-    else
-      return nil
-    end
-  end
-  dap.adapters.clojure = _3_
-else
-end
+_2amodule_locals_2a["str"] = str
+_2amodule_locals_2a["text"] = text
+local state = ((_2amodule_2a).state or {["last-request"] = nil})
+do end (_2amodule_2a)["state"] = state
 local function init()
-  local function _6_(...)
-    return a.println(...)
+  log.append({"; Initialising CIDER debugger"}, {["break?"] = true})
+  local function _1_(msg)
+    return log.dbg("init-debugger response", msg)
   end
-  return server.send({op = "init-debugger"}, _6_)
+  server.send({op = "init-debugger"}, _1_)
+  return nil
 end
 _2amodule_2a["init"] = init
 local function send(opts)
-  local function _7_(...)
-    return a.println(...)
+  local key = a["get-in"](state, {"last-request", "key"})
+  if key then
+    local function _2_(msg)
+      log.dbg("debug-input response", msg)
+      state["last-request"] = nil
+      return nil
+    end
+    return server.send({op = "debug-input", input = a.get(opts, "input"), key = key}, _2_)
+  else
+    return log.append({"; Debugger is not awaiting input"}, {["break?"] = true})
   end
-  return server.send({op = "debug-input", input = (":" .. a.get(opts, "input")), key = a.get(opts, "key")}, _7_)
 end
 _2amodule_2a["send"] = send
+local function valid_inputs()
+  local input_type = a["get-in"](state, {"last-request", "input-type"})
+  return (input_type or {})
+end
+_2amodule_2a["valid-inputs"] = valid_inputs
+local function render_inspect(inspect)
+  local function _4_(v)
+    if a["table?"](v) then
+      local head = a.first(v)
+      if ("newline" == head) then
+        return "\n"
+      elseif ("value" == head) then
+        return a.second(v)
+      else
+        return nil
+      end
+    else
+      return v
+    end
+  end
+  return str.join(a.map(_4_, inspect))
+end
+_2amodule_2a["render-inspect"] = render_inspect
 local function handle_input_request(msg)
-  return a.println(msg)
+  state["last-request"] = msg
+  log.append({"; CIDER debugger"}, {["break?"] = true})
+  if not a["empty?"](msg.locals) then
+    log.append({"; Locals", a["pr-str"](msg.locals)}, {})
+  else
+  end
+  if not a["empty?"](msg.locals) then
+    log.append({"; Value", msg["debug-value"]}, {})
+  else
+  end
+  if not a["empty?"](msg.inspect) then
+    log.append(a.concat({"; Inspect"}, text["prefixed-lines"](render_inspect(elisp.read(msg.inspect)), "; ", {})), {})
+  else
+  end
+  if a["empty?"](msg.prompt) then
+    return log.append({"; Input required", "; Respond with :ConjureCljDebugInput [input]", ("; Valid inputs: " .. str.join(", ", valid_inputs()))}, {})
+  else
+    return send({input = extract.prompt(msg.prompt)})
+  end
 end
 _2amodule_2a["handle-input-request"] = handle_input_request
+local function debug_input(opts)
+  local function _11_(_241)
+    return (opts.args == _241)
+  end
+  if a.some(_11_, valid_inputs()) then
+    return send({input = (":" .. opts.args)})
+  else
+    return log.append({("; Valid inputs: " .. str.join(", ", valid_inputs()))})
+  end
+end
+_2amodule_2a["debug-input"] = debug_input
 return _2amodule_2a

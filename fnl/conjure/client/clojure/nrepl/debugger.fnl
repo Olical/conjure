@@ -1,46 +1,93 @@
 (module conjure.client.clojure.nrepl.debugger
-  {autoload {a conjure.aniseed.core
+  {autoload {log conjure.log
+             extract conjure.extract
+             text conjure.text
+             client conjure.client
+             a conjure.aniseed.core
+             str conjure.aniseed.string
              elisp conjure.remote.transport.elisp
-             log conjure.log
              server conjure.client.clojure.nrepl.server}})
 
-;; TODO Make all of this generic, have Conjure call client methods.
-
-(defonce dap
-  (let [(ok? dap) (pcall require :dap)]
-    (if ok?
-      dap
-      (do
-        (log.append
-          [";; nvim-dap is required for debugging support https://github.com/mfussenegger/nvim-dap"]
-          {:break? true})
-        nil))))
-
-(when dap
-  (set
-    dap.adapters.clojure
-    (fn [cb config]
-      (when (= :attach config.request)
-        (a.println "I think here's where we connect to Conjure's internal DAP server")))))
+(defonce state {:last-request nil})
 
 (defn init []
+  (log.append ["; Initialising CIDER debugger"] {:break? true})
   (server.send
     {:op :init-debugger}
-    (fn [...]
-      (a.println ...))))
+    (fn [msg]
+      (log.dbg "init-debugger response" msg)))
+  nil)
+
+;; TODO Highlight :line :column
 
 (defn send [opts]
-  (server.send
-    {:op :debug-input
-     :input (.. ":" (a.get opts :input))
-     :key (a.get opts :key)}
-    (fn [...]
-      (a.println ...))))
+  (let [key (a.get-in state [:last-request :key])]
+    (if key
+      (server.send
+        {:op :debug-input
+         :input (a.get opts :input)
+         :key key}
+        (fn [msg]
+          (log.dbg "debug-input response" msg)
+          (set state.last-request nil)))
+      (log.append
+        ["; Debugger is not awaiting input"]
+        {:break? true}))))
+
+(defn valid-inputs []
+  (let [input-type (a.get-in state [:last-request :input-type])]
+    (or input-type [])))
+
+(defn render-inspect [inspect]
+  (str.join
+    (a.map
+      (fn [v]
+        (if (a.table? v)
+          (let [head (a.first v)]
+            (if
+              (= :newline head) "\n"
+              (= :value head) (a.second v)))
+          v))
+      inspect)))
 
 (defn handle-input-request [msg]
-  (a.println msg))
+  (set state.last-request msg)
 
-; (vim.json.encode)
+  (log.append ["; CIDER debugger"] {:break? true})
+
+  (when (not (a.empty? msg.locals))
+    (log.append
+      ["; Locals" (a.pr-str msg.locals)]
+      {}))
+
+  (when (not (a.empty? msg.locals))
+    (log.append
+      ["; Value" msg.debug-value]
+      {}))
+
+  (when (not (a.empty? msg.inspect))
+    (log.append
+      (a.concat
+        ["; Inspect"]
+        (text.prefixed-lines
+          (render-inspect (elisp.read msg.inspect))
+          "; "
+          {}))
+      {}))
+
+  (if (a.empty? msg.prompt)
+    (log.append
+      ["; Input required"
+       "; Respond with :ConjureCljDebugInput [input]"
+       (.. "; Valid inputs: " (str.join ", " (valid-inputs)))]
+      {})
+    (send {:input (extract.prompt msg.prompt)})))
+
+(defn debug-input [opts]
+  (if (a.some #(= opts.args $1) (valid-inputs))
+    (send {:input (.. ":" opts.args)})
+    (log.append
+      [(.. "; Valid inputs: " (str.join ", " (valid-inputs)))])))
 
 ;   {:code "(defn add
 ;             \"Hello, World!
