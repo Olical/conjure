@@ -73,6 +73,20 @@ options relevant to these mappings.
 :ConjureOutUnsubscribe   Change `#'*out*` so that it no longer prints to
                          active sessions outside an eval scope.
 
+                                                        *:ConjureCljDebugInit*
+:ConjureCljDebugInit     Initialise the CIDER debugger system, this must be
+                         done before any breakpoints will be triggered. Once
+                         done, you can add `#dbg` tags to your code and
+                         evaluate it to have CIDER pause the execution.
+
+                                                       *:ConjureCljDebugInput*
+:ConjureCljDebugInput [input]
+                         Send a response to the CIDER debugger after it has
+                         prompted you for input. You'll see the possible
+                         inputs when the debugger is triggered such as
+                         `locals` which will print the current local values
+                         and then prompt again.
+
 <localleader>cd          Disconnect from the current nREPL server.
 
 <localleader>cf          Connect to a server using the port found in any of
