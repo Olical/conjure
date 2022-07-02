@@ -64,7 +64,7 @@
 (defn eval-str [opts]
   (with-repl-or-warn
     (fn [repl]
-      (-?> opts.code
+      (-?> (.. ",m " (or opts.context "(guile-user)") "\n" opts.code)
            (clean-input-code)
            (repl.send
              (fn [msgs]
@@ -121,22 +121,13 @@
        :error? false
        :result s})))
 
-(defn enter []
-  (let [repl (state :repl)
-        c (extract.context)]
-    (when (and repl (= :connected repl.status))
-      (repl.send
-        (.. ",m " (or c "(guile-user)") "\n")
-        (fn [])))))
-
 (defn connect [opts]
   (disconnect)
   (let [pipename (or (cfg [:pipename]) (a.get opts :port))]
     (if (not= :string (type pipename))
-      (when (not (a.get opts :passive?))
-        (log.append
-          [(.. comment-prefix "g:conjure#client#guile#socket#pipename is not specified")
-           (.. comment-prefix "Please set it to the name of your Guile REPL pipe or pass it to :ConjureConnect [pipename]")]))
+      (log.append
+        [(.. comment-prefix "g:conjure#client#guile#socket#pipename is not specified")
+         (.. comment-prefix "Please set it to the name of your Guile REPL pipe or pass it to :ConjureConnect [pipename]")])
       (a.assoc
         (state) :repl
         (socket.start
@@ -144,8 +135,7 @@
            :pipename pipename
            :on-success
            (fn []
-             (display-repl-status)
-             (enter))
+             (display-repl-status))
            :on-error
            (fn [msg repl]
              (display-result msg)
@@ -153,12 +143,6 @@
            :on-failure disconnect
            :on-close disconnect
            :on-stray-output display-result})))))
-
-(defn on-load []
-  (augroup
-    conjure-guile-socket-bufenter
-    (autocmd :BufEnter (.. :* buf-suffix) (viml->fn :enter)))
-  (connect {:passive? true}))
 
 (defn on-exit []
   (disconnect))
