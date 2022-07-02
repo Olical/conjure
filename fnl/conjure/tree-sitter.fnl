@@ -60,6 +60,7 @@
     (if
       (document? node) nil
       (document? parent-node) node
+      (client.optional-call :comment-form? parent-node) node
       (get-root parent-node))))
 
 (defn leaf? [node]

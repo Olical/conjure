@@ -1060,4 +1060,14 @@ examples: https://github.com/Olical/conjure/wiki/Client-features
             want to reject any form that doesn't start with an opening
             parenthesis.
 
+`comment-node?`
+            Function(node)
+            When tree-sitter is in use this will be called with each node
+            considered when looking for the "root form under the cursor".
+            Your client can then (optionally) accept or reject the node by
+            returning `true` or `false`. For example, Lisp clients probably
+            want to reject any form that begins with `(comment)` which means
+            the user can use "eval root form" inside comment blocks to
+            evaluate each entry in the comment.
+
 vim:tw=78:sw=2:ts=2:ft=help:norl:et:listchars=

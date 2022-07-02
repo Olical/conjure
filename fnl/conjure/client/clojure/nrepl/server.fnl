@@ -58,13 +58,17 @@
   (log.append [(str.join ["; Assumed session: " (session.str)])]
               {:break? true}))
 
+(defn un-comment [code]
+  (when code
+    (string.gsub code "^#_" "")))
+
 (defn eval [opts cb]
   (with-conn-or-warn
     (fn [_]
       (send
         {:op :eval
          :ns opts.context
-         :code opts.code
+         :code (un-comment opts.code)
          :file opts.file-path
          :line (a.get-in opts [:range :start 1])
          :column (-?> (a.get-in opts [:range :start 2]) (a.inc))

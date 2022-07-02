@@ -88,31 +88,39 @@ local function assume_session(session)
   return log.append({str.join({"; Assumed session: ", session.str()})}, {["break?"] = true})
 end
 _2amodule_2a["assume-session"] = assume_session
+local function un_comment(code)
+  if code then
+    return string.gsub(code, "^#_", "")
+  else
+    return nil
+  end
+end
+_2amodule_2a["un-comment"] = un_comment
 local function eval(opts, cb)
-  local function _9_(_)
-    local _11_
+  local function _10_(_)
+    local _12_
     do
-      local _10_ = a["get-in"](opts, {"range", "start", 2})
-      if (nil ~= _10_) then
-        _11_ = a.inc(_10_)
+      local _11_ = a["get-in"](opts, {"range", "start", 2})
+      if (nil ~= _11_) then
+        _12_ = a.inc(_11_)
       else
-        _11_ = _10_
+        _12_ = _11_
       end
     end
-    local _13_
+    local _14_
     if config["get-in"]({"client", "clojure", "nrepl", "eval", "pretty_print"}) then
-      _13_ = config["get-in"]({"client", "clojure", "nrepl", "eval", "print_function"})
+      _14_ = config["get-in"]({"client", "clojure", "nrepl", "eval", "print_function"})
     else
-      _13_ = nil
+      _14_ = nil
     end
-    return send({op = "eval", ns = opts.context, code = opts.code, file = opts["file-path"], line = a["get-in"](opts, {"range", "start", 1}), column = _11_, session = opts.session, ["nrepl.middleware.print/options"] = {associative = 1, level = (config["get-in"]({"client", "clojure", "nrepl", "eval", "print_options", "level"}) or nil), length = (config["get-in"]({"client", "clojure", "nrepl", "eval", "print_options", "length"}) or nil)}, ["nrepl.middleware.print/quota"] = config["get-in"]({"client", "clojure", "nrepl", "eval", "print_quota"}), ["nrepl.middleware.print/buffer-size"] = config["get-in"]({"client", "clojure", "nrepl", "eval", "print_buffer_size"}), ["nrepl.middleware.print/print"] = _13_}, cb)
+    return send({op = "eval", ns = opts.context, code = un_comment(opts.code), file = opts["file-path"], line = a["get-in"](opts, {"range", "start", 1}), column = _12_, session = opts.session, ["nrepl.middleware.print/options"] = {associative = 1, level = (config["get-in"]({"client", "clojure", "nrepl", "eval", "print_options", "level"}) or nil), length = (config["get-in"]({"client", "clojure", "nrepl", "eval", "print_options", "length"}) or nil)}, ["nrepl.middleware.print/quota"] = config["get-in"]({"client", "clojure", "nrepl", "eval", "print_quota"}), ["nrepl.middleware.print/buffer-size"] = config["get-in"]({"client", "clojure", "nrepl", "eval", "print_buffer_size"}), ["nrepl.middleware.print/print"] = _14_}, cb)
   end
-  return with_conn_or_warn(_9_)
+  return with_conn_or_warn(_10_)
 end
 _2amodule_2a["eval"] = eval
 local function with_session_ids(cb)
-  local function _15_(_)
-    local function _16_(msg)
+  local function _16_(_)
+    local function _17_(msg)
       local sessions = a.get(msg, "sessions")
       if ("table" == type(sessions)) then
         table.sort(sessions)
@@ -120,9 +128,9 @@ local function with_session_ids(cb)
       end
       return cb(sessions)
     end
-    return send({op = "ls-sessions", session = "no-session"}, _16_)
+    return send({op = "ls-sessions", session = "no-session"}, _17_)
   end
-  return with_conn_or_warn(_15_)
+  return with_conn_or_warn(_16_)
 end
 _2amodule_locals_2a["with-session-ids"] = with_session_ids
 local function pretty_session_type(st)
@@ -131,7 +139,7 @@ end
 _2amodule_2a["pretty-session-type"] = pretty_session_type
 local function session_type(id, cb)
   local state0 = {["done?"] = false}
-  local function _18_()
+  local function _19_()
     if not state0["done?"] then
       state0["done?"] = true
       return cb("unknown")
@@ -139,121 +147,121 @@ local function session_type(id, cb)
       return nil
     end
   end
-  timer.defer(_18_, 200)
-  local function _20_(msgs)
+  timer.defer(_19_, 200)
+  local function _21_(msgs)
     local st
-    local function _21_(_241)
+    local function _22_(_241)
       return a.get(_241, "value")
     end
-    st = a.some(_21_, msgs)
+    st = a.some(_22_, msgs)
     if not state0["done?"] then
       state0["done?"] = true
-      local function _22_()
+      local function _23_()
         if st then
           return str.trim(st)
         else
           return nil
         end
       end
-      return cb(_22_())
+      return cb(_23_())
     else
       return nil
     end
   end
-  return send({op = "eval", code = ("#?(" .. str.join(" ", {":clj 'clj", ":cljs 'cljs", ":cljr 'cljr", ":default 'unknown"}) .. ")"), session = id}, nrepl["with-all-msgs-fn"](_20_))
+  return send({op = "eval", code = ("#?(" .. str.join(" ", {":clj 'clj", ":cljs 'cljs", ":cljr 'cljr", ":default 'unknown"}) .. ")"), session = id}, nrepl["with-all-msgs-fn"](_21_))
 end
 _2amodule_2a["session-type"] = session_type
 local function enrich_session_id(id, cb)
-  local function _24_(st)
+  local function _25_(st)
     local t = {id = id, type = st, ["pretty-type"] = pretty_session_type(st), name = uuid.pretty(id)}
-    local function _25_()
+    local function _26_()
       return str.join({t.name, " (", t["pretty-type"], ")"})
     end
-    a.assoc(t, "str", _25_)
+    a.assoc(t, "str", _26_)
     return cb(t)
   end
-  return session_type(id, _24_)
+  return session_type(id, _25_)
 end
 _2amodule_2a["enrich-session-id"] = enrich_session_id
 local function with_sessions(cb)
-  local function _26_(sess_ids)
+  local function _27_(sess_ids)
     local rich = {}
     local total = a.count(sess_ids)
     if (0 == total) then
       return cb({})
     else
-      local function _27_(id)
-        local function _28_(t)
+      local function _28_(id)
+        local function _29_(t)
           table.insert(rich, t)
           if (total == a.count(rich)) then
-            local function _29_(_241, _242)
+            local function _30_(_241, _242)
               return (a.get(_241, "name") < a.get(_242, "name"))
             end
-            table.sort(rich, _29_)
+            table.sort(rich, _30_)
             return cb(rich)
           else
             return nil
           end
         end
-        return enrich_session_id(id, _28_)
+        return enrich_session_id(id, _29_)
       end
-      return a["run!"](_27_, sess_ids)
+      return a["run!"](_28_, sess_ids)
     end
   end
-  return with_session_ids(_26_)
+  return with_session_ids(_27_)
 end
 _2amodule_2a["with-sessions"] = with_sessions
 local function clone_session(session)
-  local function _32_(msgs)
-    local function _33_(_241)
+  local function _33_(msgs)
+    local function _34_(_241)
       return a.get(_241, "new-session")
     end
-    return enrich_session_id(a.some(_33_, msgs), assume_session)
+    return enrich_session_id(a.some(_34_, msgs), assume_session)
   end
-  return send({op = "clone", session = a.get(session, "id")}, nrepl["with-all-msgs-fn"](_32_))
+  return send({op = "clone", session = a.get(session, "id")}, nrepl["with-all-msgs-fn"](_33_))
 end
 _2amodule_2a["clone-session"] = clone_session
 local function assume_or_create_session()
   a.assoc(state.get("conn"), "session", nil)
-  local function _34_(sessions)
+  local function _35_(sessions)
     if a["empty?"](sessions) then
       return clone_session()
     else
       return assume_session(a.first(sessions))
     end
   end
-  return with_sessions(_34_)
+  return with_sessions(_35_)
 end
 _2amodule_2a["assume-or-create-session"] = assume_or_create_session
 local function eval_preamble(cb)
-  local function _36_()
+  local function _37_()
     if cb then
       return nrepl["with-all-msgs-fn"](cb)
     else
       return nil
     end
   end
-  return send({op = "eval", code = ("(ns conjure.internal" .. "  (:require [clojure.pprint :as pp]))" .. "(defn pprint [val w opts]" .. "  (apply pp/write val" .. "    (mapcat identity (assoc opts :stream w))))")}, _36_())
+  return send({op = "eval", code = ("(ns conjure.internal" .. "  (:require [clojure.pprint :as pp]))" .. "(defn pprint [val w opts]" .. "  (apply pp/write val" .. "    (mapcat identity (assoc opts :stream w))))")}, _37_())
 end
 _2amodule_locals_2a["eval-preamble"] = eval_preamble
 local function capture_describe()
-  local function _37_(msg)
+  local function _38_(msg)
     return a.assoc(state.get("conn"), "describe", msg)
   end
-  return send({op = "describe"}, _37_)
+  return send({op = "describe"}, _38_)
 end
 _2amodule_locals_2a["capture-describe"] = capture_describe
 local function with_conn_and_ops_or_warn(op_names, f, opts)
-  local function _38_(conn)
+  local function _39_(conn)
     local found_ops
-    local function _39_(acc, op)
+    local function _40_(acc, op)
       if a["get-in"](conn, {"describe", "ops", op}) then
         return a.assoc(acc, op, true)
       else
         return acc
       end
     end
-    found_ops = a.reduce(_39_, {}, op_names)
+    found_ops = a.reduce(_40_, {}, op_names)
     if not a["empty?"](found_ops) then
       return f(conn, found_ops)
     else
@@ -268,41 +276,41 @@ local function with_conn_and_ops_or_warn(op_names, f, opts)
       end
     end
   end
-  return with_conn_or_warn(_38_, opts)
+  return with_conn_or_warn(_39_, opts)
 end
 _2amodule_2a["with-conn-and-ops-or-warn"] = with_conn_and_ops_or_warn
 local function handle_input_request(msg)
   return send({op = "stdin", stdin = ((extract.prompt("Input required: ") or "") .. "\n"), session = msg.session})
 end
 _2amodule_2a["handle-input-request"] = handle_input_request
-local function connect(_44_)
-  local _arg_45_ = _44_
-  local host = _arg_45_["host"]
-  local port = _arg_45_["port"]
-  local cb = _arg_45_["cb"]
-  local port_file_path = _arg_45_["port_file_path"]
+local function connect(_45_)
+  local _arg_46_ = _45_
+  local host = _arg_46_["host"]
+  local port = _arg_46_["port"]
+  local cb = _arg_46_["cb"]
+  local port_file_path = _arg_46_["port_file_path"]
   if state.get("conn") then
     disconnect()
   else
   end
-  local function _47_(err)
+  local function _48_(err)
     display_conn_status(err)
     return disconnect()
   end
-  local function _48_()
+  local function _49_()
     display_conn_status("connected")
     capture_describe()
     assume_or_create_session()
     return eval_preamble(cb)
   end
-  local function _49_(err)
+  local function _50_(err)
     if err then
       return display_conn_status(err)
     else
       return disconnect()
     end
   end
-  local function _51_(msg)
+  local function _52_(msg)
     if msg.status["unknown-session"] then
       log.append({"; Unknown session, correcting"})
       assume_or_create_session()
@@ -314,7 +322,7 @@ local function connect(_44_)
       return nil
     end
   end
-  local function _54_(msg)
+  local function _55_(msg)
     if msg.status["need-input"] then
       client.schedule(handle_input_request, msg)
     else
@@ -325,10 +333,10 @@ local function connect(_44_)
       return nil
     end
   end
-  local function _57_(msg)
+  local function _58_(msg)
     return ui["display-result"](msg)
   end
-  return a.assoc(state.get(), "conn", a["merge!"](nrepl.connect({host = host, port = port, ["on-failure"] = _47_, ["on-success"] = _48_, ["on-error"] = _49_, ["on-message"] = _51_, ["side-effect-callback"] = _54_, ["default-callback"] = _57_}), {["seen-ns"] = {}, port_file_path = port_file_path}))
+  return a.assoc(state.get(), "conn", a["merge!"](nrepl.connect({host = host, port = port, ["on-failure"] = _48_, ["on-success"] = _49_, ["on-error"] = _50_, ["on-message"] = _52_, ["side-effect-callback"] = _55_, ["default-callback"] = _58_}), {["seen-ns"] = {}, port_file_path = port_file_path}))
 end
 _2amodule_2a["connect"] = connect
 return _2amodule_2a

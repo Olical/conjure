@@ -84,6 +84,8 @@ local function get_root(node)
     return nil
   elseif document_3f(parent_node) then
     return node0
+  elseif client["optional-call"]("comment-form?", parent_node) then
+    return node0
   else
     return get_root(parent_node)
   end
