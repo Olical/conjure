@@ -133,9 +133,10 @@
   (disconnect)
   (let [pipename (or (cfg [:pipename]) (a.get opts :port))]
     (if (not= :string (type pipename))
-      (log.append
-        [(.. comment-prefix "g:conjure#client#guile#socket#pipename is not specified")
-         (.. comment-prefix "Please set it to the name of your Guile REPL pipe or pass it to :ConjureConnect [pipename]")])
+      (when (not (a.get opts :passive?))
+        (log.append
+          [(.. comment-prefix "g:conjure#client#guile#socket#pipename is not specified")
+           (.. comment-prefix "Please set it to the name of your Guile REPL pipe or pass it to :ConjureConnect [pipename]")]))
       (a.assoc
         (state) :repl
         (socket.start
@@ -157,7 +158,7 @@
   (augroup
     conjure-guile-socket-bufenter
     (autocmd :BufEnter (.. :* buf-suffix) (viml->fn :enter)))
-  (connect))
+  (connect {:passive? true}))
 
 (defn on-exit []
   (disconnect))

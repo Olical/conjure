@@ -178,19 +178,23 @@ local function connect(opts)
   disconnect()
   local pipename = (cfg({"pipename"}) or a.get(opts, "port"))
   if ("string" ~= type(pipename)) then
-    return log.append({(comment_prefix .. "g:conjure#client#guile#socket#pipename is not specified"), (comment_prefix .. "Please set it to the name of your Guile REPL pipe or pass it to :ConjureConnect [pipename]")})
+    if not a.get(opts, "passive?") then
+      return log.append({(comment_prefix .. "g:conjure#client#guile#socket#pipename is not specified"), (comment_prefix .. "Please set it to the name of your Guile REPL pipe or pass it to :ConjureConnect [pipename]")})
+    else
+      return nil
+    end
   else
-    local function _24_()
+    local function _25_()
       display_repl_status()
       return enter()
     end
-    local function _25_(msg, repl)
+    local function _26_(msg, repl)
       display_result(msg)
-      local function _26_()
+      local function _27_()
       end
-      return repl.send(",q\n", _26_)
+      return repl.send(",q\n", _27_)
     end
-    return a.assoc(state(), "repl", socket.start({["parse-output"] = parse_guile_result, pipename = pipename, ["on-success"] = _24_, ["on-error"] = _25_, ["on-failure"] = disconnect, ["on-close"] = disconnect, ["on-stray-output"] = display_result}))
+    return a.assoc(state(), "repl", socket.start({["parse-output"] = parse_guile_result, pipename = pipename, ["on-success"] = _25_, ["on-error"] = _26_, ["on-failure"] = disconnect, ["on-close"] = disconnect, ["on-stray-output"] = display_result}))
   end
 end
 _2amodule_2a["connect"] = connect
@@ -201,7 +205,7 @@ local function on_load()
     nvim.ex.autocmd("BufEnter", ("*" .. buf_suffix), ("lua require('" .. _2amodule_name_2a .. "')['" .. "enter" .. "']()"))
     nvim.ex.augroup("END")
   end
-  return connect()
+  return connect({["passive?"] = true})
 end
 _2amodule_2a["on-load"] = on_load
 local function on_exit()
