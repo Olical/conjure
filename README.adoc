@@ -79,6 +79,16 @@ use 'Olical/conjure'
 Plug 'Olical/conjure'
 ----
 
+== Tree sitter support
+
+When you ask Conjure to evaluate the form under your cursor it has to understand the code enough to be able to find the boundaries and extract the right characters from the buffer. This used to be done using Neovim's built in `findpairpos`, syntax highlighting regexes and exhaustive searching of the buffer. This is error prone, gets slow as the buffer grows and doesn't work with non-Lisp languages which lack clear boundaries.
+
+I highly recommend you set up tree sitter inside your Neovim configuration and `:TSInstall [language]` every language you're interested in working with. You should then keep those tree sitter modules up to date as you upgrade Neovim since the API seems to change slightly over time.
+
+Tree sitter allows you to work with non-Lisp languages like Julia as well as get far more accurate, smart and performant evaluations in languages like Clojure. You can learn more and get everything set up using the https://github.com/nvim-treesitter/nvim-treesitter[nvim-treesitter] repository.
+
+It's technically optional since Conjure contains legacy fallback code, but I highly recommend tree sitter when using Conjure, it's how you get cool things like smart comment block evaluations in Clojure and form based evaluations in Julia and Lua.
+
 == Getting started
 
  * https://github.com/Olical/conjure/wiki/Quick-start:-Clojure[Clojure (JVM)]
