@@ -1,14 +1,14 @@
-                                                  *conjure-client-julia-stdio*
+                                                    *conjure-client-julia-stdio*
 
 ==============================================================================
-CONTENTS                                 *conjure-client-julia-stdio-contents*
+CONTENTS                                   *conjure-client-julia-stdio-contents*
 
     1. Introduction ............. |conjure-client-julia-stdio-introduction|
     2. Mappings ..................... |conjure-client-julia-stdio-mappings|
     3. Configuration ........... |conjure-client-julia-stdio-configuration|
 
 ==============================================================================
-INTRODUCTION                         *conjure-client-julia-stdio-introduction*
+INTRODUCTION                           *conjure-client-julia-stdio-introduction*
 
 Conjure starts a Julia REPL within Neovim when you first open a Julia (`.jl`)
 file. You should be able to evaluate files and forms as you would with other Conjure
@@ -23,7 +23,7 @@ you can perform.
  * https://julialang.org/
 
 ==============================================================================
-MAPPINGS                                 *conjure-client-julia-stdio-mappings*
+MAPPINGS                                   *conjure-client-julia-stdio-mappings*
 
 These mappings are the defaults, you can change them as described in
 |conjure-mappings| and |conjure-configuration|.
@@ -38,33 +38,33 @@ options relevant to these mappings.
 <localleader>ei          Interrupt the REPL execution.
 
 ==============================================================================
-CONFIGURATION                       *conjure-client-julia-stdio-configuration*
+CONFIGURATION                         *conjure-client-julia-stdio-configuration*
 
 All configuration can be set as described in |conjure-configuration|.
 
-                                 *g:conjure#client#julia#stdio#mapping#start*
+                                    *g:conjure#client#julia#stdio#mapping#start*
 `g:conjure#client#julia#stdio#mapping#start`
             Start the Julia REPL if it's not running already.
             Default: `"cs"`
 
-                                  *g:conjure#client#julia#stdio#mapping#stop*
+                                     *g:conjure#client#julia#stdio#mapping#stop*
 `g:conjure#client#julia#stdio#mapping#stop`
             Stop any existing Julia REPL.
             Default: `"cS"`
 
-                             *g:conjure#client#julia#stdio#mapping#interrupt*
+                                *g:conjure#client#julia#stdio#mapping#interrupt*
 `g:conjure#client#julia#stdio#mapping#interrupt`
             Interrupt the REPL execution.
             Default: `"ei"`
 
-                                       *g:conjure#client#julia#stdio#command*
+                                          *g:conjure#client#julia#stdio#command*
 `g:conjure#client#julia#stdio#command`
             Command used to start the Julia REPL, you can modify this to add
             arguments or change the command entirely.
 
             Default: `"julia --banner=no --color=no -i"`
 
-                                *g:conjure#client#julia#stdio#prompt_pattern*
+                                   *g:conjure#client#julia#stdio#prompt_pattern*
 `g:conjure#client#julia#stdio#prompt_pattern`
             Lua pattern to identify a new REPL prompt. This match signals to
             Conjure that the previous evaluation is complete and we're ready
