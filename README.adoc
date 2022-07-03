@@ -18,6 +18,7 @@ The core features of Conjure are language agnostic (although it's targeted at Li
  * https://www.gnu.org/software/mit-scheme/[Scheme] (MIT by default) over stdio (https://github.com/Olical/conjure/wiki/Quick-start:-Scheme-(stdio)[quickstart])
  * https://www.gnu.org/software/guile/[Guile] over a socket file (https://github.com/Olical/conjure/wiki/Quick-start:-Guile-(socket)[quickstart])
  * https://lisp-lang.org/[Common Lisp] over https://www.cliki.net/SWANK[Swank] (https://github.com/Olical/conjure/wiki/Quick-start:-Common-Lisp-(Swank)[quickstart])
+ * https://julialang.org/[Julia] over stdio (https://github.com/Olical/conjure/wiki/Quick-start:-Julia-(stdio)[quickstart])
 
 You can learn more about the mappings and configuration inside Neovim with `:help conjure`. Each language client also has it's own specific help text under `:help conjure-client-{LANGUAGE}-{TRANSPORT}`, such as `:help conjure-client-clojure-nrepl`, which contains specific mappings and configuration for that client.
 
@@ -97,14 +98,6 @@ All further documentation is found within link:doc/conjure.txt[`:help conjure`].
 Please do get in touch via https://conjure.fun/discord[Discord] or https://twitter.com/OliverCaldwell[Twitter] if you have any questions or issues.
 
 Broader documentation can be found in the https://github.com/Olical/conjure/wiki[Conjure wiki], there you'll find blog posts and guides that will help you get common workflows up and running. Contributions are encouraged!
-
-== Clients of tomorrow
-
-These are clients I intend to build eventually or encourage another community member to build and maintain on my behalf. Every language we add creates another bridge between communities, I would like Conjure to be common ground between all of our beloved esoteric REPL based languages.
-
- * http://lfe.io/[Lisp Flavoured Erlang]
- * Minimal https://clojure.org/[Clojure] sans nREPL+CIDER over https://oli.me.uk/clojure-socket-prepl-cookbook/[prepl] (or socket REPL)
- * Non-Lisp languages and beyond! (when Neovim has tree-sitter)
 
 == Behind the curtain
 
