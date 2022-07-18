@@ -59,6 +59,8 @@ local function merge(tbl, opts, ks)
     else
       if (a["nil?"](current) or opts0["overwrite?"]) then
         return assoc_in(ks1, v)
+      elseif (current == vim.NIL) then
+        return assoc_in(ks1, nil)
       else
         return nil
       end

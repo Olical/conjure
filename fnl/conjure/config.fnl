@@ -41,9 +41,12 @@
             ;; Recur if so.
             (merge v opts ks)
 
-            ;; Otherwise we're at a value and we can assoc it.
-            (when (or (a.nil? current) opts.overwrite?)
-              (assoc-in ks v)))))
+            ;; Otherwise
+            (if
+              ;; We're at a value and we can assoc it
+              (or (a.nil? current) opts.overwrite?) (assoc-in ks v)
+              ;; Encountered vim.NIL value, transform it to nil
+              (= current vim.NIL) (assoc-in ks nil)))))
       (a.kv-pairs tbl))
     nil))
 
