@@ -3,10 +3,11 @@
 # Install
 Firstly, set up Rust and it's tools as normal.
 
-Install [IRust](https://github.com/sigmaSd/IRust)
-`cargo install --force --git https://github.com/sigmaSd/IRust.git irust`
+Install evcxr:
+```bash
+cargo install evcxr_repl
+```
 
-# Usage
-- Make sure that `local_sever` is set to `true` in IRust configuration file
-- Run `irust` on your terminal to start the repl
-- Open a rust file
+For more info on how to install/use evcxr:
+https://github.com/google/evcxr/blob/main/evcxr_repl/README.md
+https://github.com/google/evcxr/blob/main/COMMON.md
