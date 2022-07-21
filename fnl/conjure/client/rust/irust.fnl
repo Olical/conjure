@@ -48,14 +48,14 @@
 
 (defn- send [msg]
   (let [p (promise.new)]
-    (def conn (connect 
+    (def conn (connect
                 {}
                 (fn [err]
                   (if err
-                    (do 
+                    (do
                       (log.append ["error:" err])
                       (promise.deliver p :error))
-                    (do 
+                    (do
                       (log.dbg "success:")
                       (promise.deliver p :success))))))
 
@@ -67,3 +67,19 @@
     (destroy-sock conn)))
 
 ;(send ":help")
+
+(defn encode [msg]
+  (let [n (a.count msg)]
+    (.. msg (string.char "10"))))
+
+(def conn (connect
+                {}
+                (fn [err]
+                  (if err
+                    (a.println "error:" err)
+                    (a.println "success:")))))
+
+(tcp-send conn ":reset\n" (fn [a] (a.println "send:" a)))
+(tcp-send conn ":reset" (fn [a] (a.println "send:" a)))
+
+(destroy-sock conn)

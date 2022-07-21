@@ -85,4 +85,28 @@ local function send(msg)
   return destroy_sock(conn)
 end
 _2amodule_locals_2a["send"] = send
+local function encode(msg)
+  local n = a.count(msg)
+  return (msg .. string.char("10"))
+end
+_2amodule_2a["encode"] = encode
+local conn
+local function _8_(err)
+  if err then
+    return a.println("error:", err)
+  else
+    return a.println("success:")
+  end
+end
+conn = connect({}, _8_)
+do end (_2amodule_2a)["conn"] = conn
+local function _10_(a0)
+  return a0.println("send:", a0)
+end
+tcp_send(conn, ":reset\n", _10_)
+local function _11_(a0)
+  return a0.println("send:", a0)
+end
+tcp_send(conn, ":reset", _11_)
+destroy_sock(conn)
 return _2amodule_2a

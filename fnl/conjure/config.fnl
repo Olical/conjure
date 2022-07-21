@@ -62,7 +62,7 @@
               :scheme :conjure.client.scheme.stdio
               :lua :conjure.client.lua.neovim
               :lisp :conjure.client.common-lisp.swank
-              :rust :conjure.client.rust.irust}
+              :rust :conjure.client.rust.evcxr}
    :filetype_suffixes {:racket [:rkt]
                        :scheme [:scm]}
 
