@@ -507,7 +507,7 @@ Tip: Booleans in Vim Script are written as `v:true` and `v:false`.
                                                *g:conjure#completion#omnifunc*
 `g:conjure#completion#omnifunc`
             |omnifunc| to set for supported Conjure clients. No omnicompletion
-            will be provided if you set this to `nil`.
+            will be provided if you set this to `v:false`.
             Default: `"ConjureOmnifunc"`
 
                                                *g:conjure#completion#fallback*
