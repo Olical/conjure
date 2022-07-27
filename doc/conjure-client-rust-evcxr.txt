@@ -1,0 +1,80 @@
+                                                     *conjure-client-rust-evcxr*
+
+==============================================================================
+CONTENTS                                  *conjure-client-rust-evcxr-contents*
+
+    1. Introduction ........ |conjure-client-rust-evcxr-introduction|
+    2. Mappings ................ |conjure-client-rust-evcxr-mappings|
+    3. Configuration ...... |conjure-client-rust-evcxr-configuration|
+
+==============================================================================
+INTRODUCTION                            *conjure-client-rust-evcxr-introduction*
+>
+  Rust is a multi-paradigm, general-purpose programming language. Rust
+  emphasizes performance, type safety, and concurrency. Evcxr is a Rust REPL
+  over stdio, built using the evcxr's library for evaluation context.
+
+Conjure starts a Rust REPL within Neovim when you first open a Rust file.
+
+You should be able to evaluate files and forms as you would with other Conjure
+supported languages right away.
+
+Check out `:ConjureSchool` if you're unsure about what evaluation operations
+you can perform.
+
+ * https://www.rust-lang.org/
+ * https://github.com/google/evcxr/
+
+==============================================================================
+MAPPINGS                                    *conjure-client-rust-evcxr-mappings*
+
+These mappings are the defaults, you can change them as described in
+|conjure-mappings| and |conjure-configuration|.
+
+See |conjure-client-rust-evcxr-configuration| for specific configuration
+options relevant to these mappings.
+
+<localleader>cs          Start the Rust REPL if it's not running already.
+
+<localleader>cS          Stop any existing Rust REPL.
+
+<localleader>ei          Interrupt running command. Same as pressing Ctrl-C
+                         in a cmdline REPL.
+
+==============================================================================
+CONFIGURATION                          *conjure-client-rust-evcxr-configuration*
+
+All configuration can be set as described in |conjure-configuration|.
+
+
+                                     *g:conjure#client#rust#evcxr#mapping#start*
+`g:conjure#client#rust#evcxr#mapping#start`
+            Start the rust REPL if it's not running already.
+            Default: `"cs"`
+
+                                      *g:conjure#client#rust#evcxr#mapping#stop*
+`g:conjure#client#rust#evcxr#mapping#stop`
+            Stop any existing rust REPL.
+            Default: `"cS"`
+
+                                 *g:conjure#client#rust#evcxr#mapping#interrupt*
+`g:conjure#client#rust#evcxr#mapping#interrupt`
+            Interrupt running command. Same as pressing Ctrl-C in a cmdline
+            REPL.
+            Default: `"ei"`
+
+                                           *g:conjure#client#rust#evcxr#command*
+`g:conjure#client#rust#evcxr#command`
+            Command used to start the rust REPL, you can modify this to add
+            arguments or change the command entirely.
+            Default: `"evcxr"`
+
+                                    *g:conjure#client#rust#evcxr#prompt_pattern*
+`g:conjure#client#rust#evcxr#prompt_pattern`
+            Lua pattern to identify a new REPL prompt. This match signals to
+            Conjure that the previous evaluation is complete and we're ready
+            to submit more code as well as collect all output prior to the
+            marker as the result.
+            Default: `">> "`
+
+vim:tw=78:sw=2:ts=2:ft=help:norl:et:listchars=
