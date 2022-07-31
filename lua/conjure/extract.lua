@@ -38,12 +38,25 @@ local function form(opts)
   end
 end
 _2amodule_2a["form"] = form
-local function word()
+local function legacy_word()
   local cword = nvim.fn.expand("<cword>")
   local line = nvim.fn.getline(".")
   local cword_index = nvim.fn.strridx(line, cword, (nvim.fn.col(".") - 1))
   local line_num = nvim.fn.line(".")
   return {content = cword, range = {start = {line_num, cword_index}, ["end"] = {line_num, (cword_index + #cword + -1)}}}
+end
+_2amodule_2a["legacy-word"] = legacy_word
+local function word()
+  if ts["enabled?"]() then
+    local node = ts["get-leaf"]()
+    if node then
+      return {range = ts.range(node), content = ts["node->str"](node)}
+    else
+      return nil
+    end
+  else
+    return legacy_word()
+  end
 end
 _2amodule_2a["word"] = word
 local function file_path()
@@ -63,18 +76,18 @@ local function buf()
 end
 _2amodule_2a["buf"] = buf
 local function getpos(expr)
-  local _let_4_ = nvim.fn.getpos(expr)
-  local _ = _let_4_[1]
-  local start = _let_4_[2]
-  local _end = _let_4_[3]
-  local _0 = _let_4_[4]
+  local _let_6_ = nvim.fn.getpos(expr)
+  local _ = _let_6_[1]
+  local start = _let_6_[2]
+  local _end = _let_6_[3]
+  local _0 = _let_6_[4]
   return {start, a.dec(_end)}
 end
 _2amodule_locals_2a["getpos"] = getpos
-local function selection(_5_)
-  local _arg_6_ = _5_
-  local kind = _arg_6_["kind"]
-  local visual_3f = _arg_6_["visual?"]
+local function selection(_7_)
+  local _arg_8_ = _7_
+  local kind = _arg_8_["kind"]
+  local visual_3f = _arg_8_["visual?"]
   local sel_backup = nvim.o.selection
   nvim.ex.let("g:conjure_selection_reg_backup = @@")
   nvim.o.selection = "inclusive"
@@ -97,10 +110,10 @@ local function context()
   local pat = client.get("context-pattern")
   local f
   if pat then
-    local function _8_(_241)
+    local function _10_(_241)
       return string.match(_241, pat)
     end
-    f = _8_
+    f = _10_
   else
     f = client.get("context")
   end
@@ -113,10 +126,10 @@ end
 _2amodule_2a["context"] = context
 local function prompt(prefix)
   local ok_3f, val = nil, nil
-  local function _11_()
+  local function _13_()
     return nvim.fn.input((prefix or ""))
   end
-  ok_3f, val = pcall(_11_)
+  ok_3f, val = pcall(_13_)
   if ok_3f then
     return val
   else

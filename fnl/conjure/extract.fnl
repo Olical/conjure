@@ -19,7 +19,7 @@
     (searchpair.form opts)))
 
 ; https://stackoverflow.com/questions/15020143/vim-script-check-if-the-cursor-is-on-the-current-word/15058922
-(defn word []
+(defn legacy-word []
   (let [cword (nvim.fn.expand "<cword>")
         line (nvim.fn.getline ".")
         cword-index
@@ -31,6 +31,13 @@
    {:content cword
     :range {:start [line-num cword-index]
             :end [line-num (+ cword-index (length cword) -1)]}}))
+
+(defn word []
+  (if (ts.enabled?)
+    (when-let [node (ts.get-leaf)]
+      {:range (ts.range node)
+       :content (ts.node->str node)})
+    (legacy-word)))
 
 (defn file-path []
   (nvim.fn.expand "%:p"))
