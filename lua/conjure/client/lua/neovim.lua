@@ -76,33 +76,6 @@ local function display(out, ret, err)
   return log.append(str.split(vim.inspect(ret), "\n"))
 end
 _2amodule_locals_2a["display"] = display
-local print_original = _G.print
-_2amodule_locals_2a["print_original"] = print_original
-local io_write_original = _G.io.write
-_2amodule_locals_2a["io_write_original"] = io_write_original
-CONJURE_NVIM_REDIRECTED = ""
-local function redirect()
-  local function _6_(...)
-    CONJURE_NVIM_REDIRECTED = (CONJURE_NVIM_REDIRECTED .. str.join("\9", {...}) .. "\n")
-    return nil
-  end
-  _G.print = _6_
-  local function _7_(...)
-    CONJURE_NVIM_REDIRECTED = (CONJURE_NVIM_REDIRECTED .. str.join({...}))
-    return nil
-  end
-  _G.io.write = _7_
-  return nil
-end
-_2amodule_locals_2a["redirect"] = redirect
-local function end_redirect()
-  _G.print = print_original
-  _G.io.write = io_write_original
-  local result = CONJURE_NVIM_REDIRECTED
-  CONJURE_NVIM_REDIRECTED = ""
-  return result
-end
-_2amodule_locals_2a["end-redirect"] = end_redirect
 local function lua_compile(opts)
   if (opts.origin == "file") then
     return loadfile(opts["file-path"])
@@ -116,12 +89,45 @@ local function lua_compile(opts)
   end
 end
 _2amodule_locals_2a["lua-compile"] = lua_compile
+local function default_env()
+  local base = setmetatable({["REDIRECTED-OUTPUT"] = "", io = setmetatable({}, {__index = _G.io})}, {__index = _G})
+  local print_redirected
+  local function _8_(...)
+    base["REDIRECTED-OUTPUT"] = (base["REDIRECTED-OUTPUT"] .. str.join("\9", {...}) .. "\n")
+    return nil
+  end
+  print_redirected = _8_
+  local io_write_redirected
+  local function _9_(...)
+    base["REDIRECTED-OUTPUT"] = (base["REDIRECTED-OUTPUT"] .. str.join({...}))
+    return nil
+  end
+  io_write_redirected = _9_
+  local io_read_redirected
+  local function _10_()
+    return ((extract.prompt("Input required: ") or "") .. "\n")
+  end
+  io_read_redirected = _10_
+  base["print"] = print_redirected
+  base.io["write"] = io_write_redirected
+  base.io["read"] = io_read_redirected
+  return base
+end
+_2amodule_2a["default-env"] = default_env
+local function pcall_default(f)
+  local env = default_env()
+  setfenv(f, env)
+  local status, ret = pcall(f)
+  return status, ret, env["REDIRECTED-OUTPUT"]
+end
+_2amodule_locals_2a["pcall-default"] = pcall_default
 local function pcall_persistent_debug(file, f)
   repls[file] = (repls[file] or {})
-  do end (repls[file])["env"] = (repls[file].env or setmetatable({}, {__index = _G}))
+  do end (repls[file])["env"] = (repls[file].env or default_env())
+  do end (repls[file].env)["REDIRECTED-OUTPUT"] = ""
   setfenv(f, repls[file].env)
   local collect_env
-  local function _10_(_0, _1)
+  local function _11_(_0, _1)
     debug.sethook()
     local i = 1
     local n = true
@@ -136,36 +142,36 @@ local function pcall_persistent_debug(file, f)
     end
     return nil
   end
-  collect_env = _10_
+  collect_env = _11_
   debug.sethook(collect_env, "r")
-  return pcall(f)
+  local status, ret = pcall(f)
+  return status, ret, repls[file].env["REDIRECTED-OUTPUT"]
 end
-_2amodule_2a["pcall-persistent-debug"] = pcall_persistent_debug
+_2amodule_locals_2a["pcall-persistent-debug"] = pcall_persistent_debug
 local function lua_eval(opts)
   local f, e = lua_compile(opts)
   if f then
-    redirect()
     local pcall_custom
     do
-      local _12_ = cfg({"persistent"})
-      if (_12_ == "debug") then
-        local _13_ = opts["file-path"]
-        local function _14_(...)
-          return pcall_persistent_debug(_13_, ...)
+      local _13_ = cfg({"persistent"})
+      if (_13_ == "debug") then
+        local _14_ = opts["file-path"]
+        local function _15_(...)
+          return pcall_persistent_debug(_14_, ...)
         end
-        pcall_custom = _14_
+        pcall_custom = _15_
       elseif true then
-        local _0 = _12_
-        pcall_custom = pcall
+        local _0 = _13_
+        pcall_custom = pcall_default
       else
         pcall_custom = nil
       end
     end
-    local status, ret = pcall_custom(f)
+    local status, ret, out = pcall_custom(f)
     if status then
-      return end_redirect(), ret, ""
+      return out, ret, ""
     else
-      return end_redirect(), nil, ("Execution error: " .. ret)
+      return out, nil, ("Execution error: " .. ret)
     end
   else
     return "", nil, ("Compilation error: " .. e)
