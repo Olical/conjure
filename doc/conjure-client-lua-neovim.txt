@@ -48,7 +48,8 @@ All configuration can be set as described in |conjure-configuration|.
             Which method should conjure use to remember evaluation
             environtment(e.g. local variable), can be `"debug"`. Using `"debug"` 
             will forbid you from using debug tools will interacting with
-            conjure. Setting this option to other values forbid this ability.
+            conjure. Setting this option to `"none"`or other values to disable
+            this ability.
             Default: `"debug"`
 
                                 *g:conjure#client#lua#neovim#mapping#reset_env*
