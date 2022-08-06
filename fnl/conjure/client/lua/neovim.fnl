@@ -58,37 +58,43 @@
     (log.append ["return"]) ;; add this new line so that syntax-highlighting and other plugins maybe happier
     (log.append (str.split (vim.inspect ret) "\n"))))
 
-(def- print_original _G.print)
-(def- io_write_original _G.io.write)
-(global CONJURE_NVIM_REDIRECTED "")
-
-(defn- redirect []
-  (set _G.print
-   (fn [...]
-    (global CONJURE_NVIM_REDIRECTED
-      (.. CONJURE_NVIM_REDIRECTED (str.join "\t" [...]) "\n"))))
-  (set _G.io.write
-   (fn [...]
-    (global CONJURE_NVIM_REDIRECTED
-      (.. CONJURE_NVIM_REDIRECTED (str.join [...]))))))
-
-(defn- end-redirect []
-  (set _G.print print_original)
-  (set _G.io.write io_write_original)
-  (let [result CONJURE_NVIM_REDIRECTED]
-    (global CONJURE_NVIM_REDIRECTED "")
-    result))
-
 (defn- lua-compile [opts]
   (if (= opts.origin "file")
     (loadfile opts.file-path)
     (let [(f e) (load (.. "return (" opts.code "\n)"))]
       (if f (values f e) (load opts.code)))))
 
+(defn default-env []
+  (let [base (setmetatable {:REDIRECTED-OUTPUT ""
+                            :io (setmetatable {} {:__index _G.io})} 
+                           {:__index _G})
+        print-redirected 
+        (fn [...] 
+          (tset base :REDIRECTED-OUTPUT
+           (.. base.REDIRECTED-OUTPUT (str.join "\t" [...]) "\n")))
+        io-write-redirected 
+        (fn [...] 
+          (tset base :REDIRECTED-OUTPUT
+           (.. base.REDIRECTED-OUTPUT (str.join [...]))))
+        io-read-redirected
+        (fn []
+          (.. (or (extract.prompt "Input required: ") "") "\n"))]
+    (tset base :print print-redirected)
+    (tset (. base :io) :write io-write-redirected)
+    (tset (. base :io) :read io-read-redirected)
+    base))
+  
+(defn- pcall-default [f]
+  (let [env (default-env)]
+    (setfenv f env)
+    (let [(status ret) (pcall f)]
+      (values status ret env.REDIRECTED-OUTPUT))))
+       
 ;; this function is ugly due to the imperative interface of debug.getlocal
-(defn pcall-persistent-debug [file f]
+(defn- pcall-persistent-debug [file f]
   (tset repls file (or (. repls file) {}))
-  (tset (. repls file) :env (or (. repls file :env) (setmetatable {} {:__index _G})))
+  (tset (. repls file) :env (or (. repls file :env) (default-env)))
+  (tset (. repls file :env) :REDIRECTED-OUTPUT "") ;; Clear last output
   (setfenv f (. repls file :env))
   (let [collect-env 
          (fn [_ _]
@@ -103,21 +109,20 @@
                  (tset (. repls file :env) n v)
                  (set i (+ i 1))))))]
     (debug.sethook collect-env :r)
-    (pcall f)));; If there's only one pcall instance, we could 
+    (let [(status ret) (pcall f)]
+      (values status ret (. repls file :env :REDIRECTED-OUTPUT)))));; If there's only one pcall instance, we could 
     
 (defn- lua-eval [opts]
   (let [(f e) (lua-compile opts)]
-   (if f
-    (do
-     (redirect)
-     (let [pcall-custom (match (cfg [:persistent])
-                          :debug (partial pcall-persistent-debug opts.file-path)
-                          _ pcall)
-           (status ret) (pcall-custom f)]
-      (if status
-       (values (end-redirect) ret "")
-       (values (end-redirect) nil (.. "Execution error: " ret)))))
-    (values "" nil (.. "Compilation error: " e)))))
+    (if f
+       (let [pcall-custom (match (cfg [:persistent])
+                            :debug (partial pcall-persistent-debug opts.file-path)
+                            _ pcall-default)
+             (status ret out) (pcall-custom f)]
+         (if status
+           (values out ret "")
+           (values out nil (.. "Execution error: " ret))))
+       (values "" nil (.. "Compilation error: " e)))))
 
 (defn eval-str [opts]
   (let [(out ret err) (lua-eval opts)]
