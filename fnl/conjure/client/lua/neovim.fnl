@@ -19,26 +19,32 @@
   {:client
    {:lua
     {:neovim
-     {:mapping {:reset_repl "rr"
-                :reset_all_repls "ra"}
+     {:mapping {:reset_env "rr"
+                :reset_all_envs "ra"}
       :persistent :debug}}}}) ;persistent can be either :debug or nil
 
 (def- cfg (config.get-in-fn [:client :lua :neovim]))
 
+(defn on-filetype []
+  (mapping.buf :n :LuaResetEnv
+               (cfg [:mapping :reset_env]) *module-name* :reset-env)
+  (mapping.buf :n :LuaResetAllEnvs
+               (cfg [:mapping :reset_all_envs]) *module-name* :reset-all-envs))
+
 (defonce- repls {})
 
-;; Two following functions are from client/fennel/aniseed.fnl
-(defn reset-repl [filename]
+;; Two following functions are modified client/fennel/aniseed.fnl
+(defn reset-env [filename]
   (let [filename (or filename (fs.localise-path (extract.file-path)))]
     (tset repls filename nil)
-    (log.append [(.. "; Reset REPL for " filename)] {:break? true})))
+    (log.append [(.. "-- Reset environment for " filename)] {:break? true})))
 
-(defn reset-all-repls []
+(defn reset-all-envs []
   (a.run!
     (fn [filename]
       (tset repls filename nil))
     (a.keys repls))
-  (log.append [(.. "; Reset all REPLs")] {:break? true}))
+  (log.append [(.. "-- Reset all environments")] {:break? true}))
 
 (defn- display [out ret err]
   (let [outs (->> (str.split (or out "") "\n")
@@ -119,8 +125,14 @@
      ((. opts :on-result) (vim.inspect ret))))))
 
 (defn eval-file [opts]
+  (reset-env)
   (redirect)
-  (let [(ret err) ((loadfile opts.file-path))]
+  (let [f (loadfile opts.file-path)
+        pcall-custom (match (cfg [:persistent])
+                          :debug (partial pcall-persistent-debug opts.file-path)
+                          _ pcall)
+
+        (status ret) (pcall-custom f)]
    (display (end-redirect) ret err)
    (when (. opts :on-result)
     (let [on-result (. opts :on-result)]
