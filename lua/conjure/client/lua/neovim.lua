@@ -28,26 +28,31 @@ local buf_suffix = ".lua"
 _2amodule_2a["buf-suffix"] = buf_suffix
 local comment_prefix = "-- "
 _2amodule_2a["comment-prefix"] = comment_prefix
-config.merge({client = {lua = {neovim = {mapping = {reset_repl = "rr", reset_all_repls = "ra"}, persistent = "debug"}}}})
+config.merge({client = {lua = {neovim = {mapping = {reset_env = "rr", reset_all_envs = "ra"}, persistent = "debug"}}}})
 local cfg = config["get-in-fn"]({"client", "lua", "neovim"})
 do end (_2amodule_locals_2a)["cfg"] = cfg
+local function on_filetype()
+  mapping.buf("n", "LuaResetEnv", cfg({"mapping", "reset_env"}), _2amodule_name_2a, "reset-env")
+  return mapping.buf("n", "LuaResetAllEnvs", cfg({"mapping", "reset_all_envs"}), _2amodule_name_2a, "reset-all-envs")
+end
+_2amodule_2a["on-filetype"] = on_filetype
 local repls = ((_2amodule_2a).repls or {})
 do end (_2amodule_locals_2a)["repls"] = repls
-local function reset_repl(filename)
+local function reset_env(filename)
   local filename0 = (filename or fs["localise-path"](extract["file-path"]()))
   do end (repls)[filename0] = nil
-  return log.append({("; Reset REPL for " .. filename0)}, {["break?"] = true})
+  return log.append({("-- Reset environment for " .. filename0)}, {["break?"] = true})
 end
-_2amodule_2a["reset-repl"] = reset_repl
-local function reset_all_repls()
+_2amodule_2a["reset-env"] = reset_env
+local function reset_all_envs()
   local function _1_(filename)
     repls[filename] = nil
     return nil
   end
   a["run!"](_1_, a.keys(repls))
-  return log.append({"; Reset all REPLs"}, {["break?"] = true})
+  return log.append({"-- Reset all environments"}, {["break?"] = true})
 end
-_2amodule_2a["reset-all-repls"] = reset_all_repls
+_2amodule_2a["reset-all-envs"] = reset_all_envs
 local function display(out, ret, err)
   local outs
   local function _2_(_241)
@@ -98,21 +103,25 @@ local function end_redirect()
   return result
 end
 _2amodule_locals_2a["end-redirect"] = end_redirect
-local function lua_try_compile(codes)
-  local f, e = load(("return (" .. codes .. "\n)"))
-  if f then
-    return f, e
+local function lua_compile(opts)
+  if (opts.origin == "file") then
+    return loadfile(opts["file-path"])
   else
-    return load(codes)
+    local f, e = load(("return (" .. opts.code .. "\n)"))
+    if f then
+      return f, e
+    else
+      return load(opts.code)
+    end
   end
 end
-_2amodule_locals_2a["lua-try-compile"] = lua_try_compile
+_2amodule_locals_2a["lua-compile"] = lua_compile
 local function pcall_persistent_debug(file, f)
   repls[file] = (repls[file] or {})
   do end (repls[file])["env"] = (repls[file].env or setmetatable({}, {__index = _G}))
   setfenv(f, repls[file].env)
   local collect_env
-  local function _9_(_0, _1)
+  local function _10_(_0, _1)
     debug.sethook()
     local i = 1
     local n = true
@@ -127,26 +136,26 @@ local function pcall_persistent_debug(file, f)
     end
     return nil
   end
-  collect_env = _9_
+  collect_env = _10_
   debug.sethook(collect_env, "r")
   return pcall(f)
 end
 _2amodule_2a["pcall-persistent-debug"] = pcall_persistent_debug
 local function lua_eval(opts)
-  local f, e = lua_try_compile(opts.code)
+  local f, e = lua_compile(opts)
   if f then
     redirect()
     local pcall_custom
     do
-      local _11_ = cfg({"persistent"})
-      if (_11_ == "debug") then
-        local _12_ = opts["file-path"]
-        local function _13_(...)
-          return pcall_persistent_debug(_12_, ...)
+      local _12_ = cfg({"persistent"})
+      if (_12_ == "debug") then
+        local _13_ = opts["file-path"]
+        local function _14_(...)
+          return pcall_persistent_debug(_13_, ...)
         end
-        pcall_custom = _13_
+        pcall_custom = _14_
       elseif true then
-        local _0 = _11_
+        local _0 = _12_
         pcall_custom = pcall
       else
         pcall_custom = nil
@@ -175,9 +184,9 @@ local function eval_str(opts)
 end
 _2amodule_2a["eval-str"] = eval_str
 local function eval_file(opts)
-  redirect()
-  local ret, err = loadfile(opts["file-path"])()
-  display(end_redirect(), ret, err)
+  reset_env(opts["file-path"])
+  local out, ret, err = lua_eval(opts)
+  display(out, ret, err)
   if opts["on-result"] then
     local on_result = opts["on-result"]
     return opts["on-result"](vim.inspect(ret))
