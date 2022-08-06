@@ -79,9 +79,11 @@
     (global CONJURE_NVIM_REDIRECTED "")
     result))
 
-(defn- lua-try-compile [codes]
-  (let [(f e) (load (.. "return (" codes "\n)"))]
-    (if f (values f e) (load codes))))
+(defn- lua-compile [opts]
+  (if (= opts.origin "file")
+    (loadfile opts.file-path)
+    (let [(f e) (load (.. "return (" opts.code "\n)"))]
+      (if f (values f e) (load opts.code)))))
 
 ;; this function is ugly due to the imperative interface of debug.getlocal
 (defn pcall-persistent-debug [file f]
@@ -104,7 +106,7 @@
     (pcall f)));; If there's only one pcall instance, we could 
     
 (defn- lua-eval [opts]
-  (let [(f e) (lua-try-compile opts.code)]
+  (let [(f e) (lua-compile opts)]
    (if f
     (do
      (redirect)
@@ -124,16 +126,10 @@
     (let [on-result (. opts :on-result)]
      ((. opts :on-result) (vim.inspect ret))))))
 
-(defn eval-file [opts]
-  (reset-env)
-  (redirect)
-  (let [f (loadfile opts.file-path)
-        pcall-custom (match (cfg [:persistent])
-                          :debug (partial pcall-persistent-debug opts.file-path)
-                          _ pcall)
-
-        (status ret) (pcall-custom f)]
-   (display (end-redirect) ret err)
+(defn eval-file [opts] 
+  (reset-env opts.file-path)
+  (let [(out ret err) (lua-eval opts)]
+   (display out ret err)
    (when (. opts :on-result)
     (let [on-result (. opts :on-result)]
      ((. opts :on-result) (vim.inspect ret))))))
