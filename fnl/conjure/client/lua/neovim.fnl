@@ -7,19 +7,38 @@
              text conjure.text
              mapping conjure.mapping
              client conjure.client
-             log conjure.log}
+             log conjure.log
+             fs conjure.fs
+             extract conjure.extract}
    require-macros [conjure.macros]})
-
-(def- cfg (config.get-in-fn [:client :lua :neovim]))
 
 (def buf-suffix ".lua")
 (def comment-prefix "-- ")
 
-(defn- with-repl-or-warn [f opts]
-  (let [repl (state :repl)]
-    (if repl
-      (f repl)
-      (log.append [(.. comment-prefix "No REPL running")]))))
+(config.merge 
+  {:client
+   {:lua
+    {:neovim
+     {:mapping {:reset_repl "rr"
+                :reset_all_repls "ra"}
+      :persistent :debug}}}}) ;persistent can be either :debug or nil
+
+(def- cfg (config.get-in-fn [:client :lua :neovim]))
+
+(defonce- repls {})
+
+;; Two following functions are from client/fennel/aniseed.fnl
+(defn reset-repl [filename]
+  (let [filename (or filename (fs.localise-path (extract.file-path)))]
+    (tset repls filename nil)
+    (log.append [(.. "; Reset REPL for " filename)] {:break? true})))
+
+(defn reset-all-repls []
+  (a.run!
+    (fn [filename]
+      (tset repls filename nil))
+    (a.keys repls))
+  (log.append [(.. "; Reset all REPLs")] {:break? true}))
 
 (defn- display [out ret err]
   (let [outs (->> (str.split (or out "") "\n")
@@ -55,22 +74,45 @@
     result))
 
 (defn- lua-try-compile [codes]
- (let [(f e) (load (.. "return (" codes "\n)"))]
-  (if f (values f e) (load codes))))
+  (let [(f e) (load (.. "return (" codes "\n)"))]
+    (if f (values f e) (load codes))))
 
-(defn- lua-eval [codes]
-  (let [(f e) (lua-try-compile codes)]
+;; this function is ugly due to the imperative interface of debug.getlocal
+(defn pcall-persistent-debug [file f]
+  (tset repls file (or (. repls file) {}))
+  (tset (. repls file) :env (or (. repls file :env) (setmetatable {} {:__index _G})))
+  (setfenv f (. repls file :env))
+  (let [collect-env 
+         (fn [_ _]
+           (debug.sethook)
+           (var i 1)
+           (var n true)
+           (var v nil)
+           (while n
+             (set (n v) (debug.getlocal 2 i))
+             (if n
+               (do
+                 (tset (. repls file :env) n v)
+                 (set i (+ i 1))))))]
+    (debug.sethook collect-env :r)
+    (pcall f)));; If there's only one pcall instance, we could 
+    
+(defn- lua-eval [opts]
+  (let [(f e) (lua-try-compile opts.code)]
    (if f
     (do
      (redirect)
-     (let [(status ret) (pcall f)]
+     (let [pcall-custom (match (cfg [:persistent])
+                          :debug (partial pcall-persistent-debug opts.file-path)
+                          _ pcall)
+           (status ret) (pcall-custom f)]
       (if status
        (values (end-redirect) ret "")
        (values (end-redirect) nil (.. "Execution error: " ret)))))
     (values "" nil (.. "Compilation error: " e)))))
 
 (defn eval-str [opts]
-  (let [(out ret err) (lua-eval opts.code)]
+  (let [(out ret err) (lua-eval opts)]
    (display out ret err)
    (when (. opts :on-result)
     (let [on-result (. opts :on-result)]
@@ -78,7 +120,7 @@
 
 (defn eval-file [opts]
   (redirect)
-  (let [(ret err) ((loadfile (. opts :file-path)))]
+  (let [(ret err) ((loadfile opts.file-path))]
    (display (end-redirect) ret err)
    (when (. opts :on-result)
     (let [on-result (. opts :on-result)]
