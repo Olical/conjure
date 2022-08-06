@@ -1,0 +1,64 @@
+                                                    *conjure-client-lua-neovim*
+
+==============================================================================
+CONTENTS                                   *conjure-client-lua-neovim-contents*
+
+    1. Introduction ............. |conjure-client-lua-neovim-introduction|
+    2. Mappings ..................... |conjure-client-lua-neovim-mappings|
+    3. Configuration ........... |conjure-client-lua-neovim-configuration|
+
+==============================================================================
+INTRODUCTION                           *conjure-client-lua-neovim-introduction*
+
+Conjure starts within Neovim when you first open a Lua (`.lua`) file. You
+should be able to evaluate files and forms as you would with other Conjure
+supported languages right away.
+
+You will have to use visual and motion based evaluations unless you have tree
+sitter set up and configured for the Lua language.
+
+Check out `:ConjureSchool` if you're unsure about what evaluation operations
+you can perform.
+
+ * https://lua.org/
+ * https://luajit.org/
+
+==============================================================================
+MAPPINGS                                   *conjure-client-lua-neovim-mappings*
+
+These mappings are the defaults, you can change them as described in
+|conjure-mappings| and |conjure-configuration|.
+
+See |conjure-client-lua-neovim-configuration| for specific configuration
+options relevant to these mappings.
+
+<localleader>rr          Reset environment in current buffer.
+                         Command: `:LuaResetEnv`
+
+<localleader>ra          Reset environments in all buffers.
+                         Command: `:LuaResetAllEnvs`
+
+==============================================================================
+CONFIGURATION                         *conjure-client-lua-neovim-configuration*
+
+All configuration can be set as described in |conjure-configuration|.
+
+                                       *g:conjure#client#lua#neovim#persistent*
+`g:conjure#client#lua#neovim#persistent`
+            Which method should conjure use to remember evaluation
+            environtment(e.g. local variable), can be `"debug"`. Using `"debug"` 
+            will forbid you from using debug tools will interacting with
+            conjure. Setting this option to other values forbid this ability.
+            Default: `"debug"`
+
+                                *g:conjure#client#lua#neovim#mapping#reset_env*
+`g:conjure#client#lua#neovim#mapping#reset_env`
+            Clear evaluation environment in current buffer.
+            Default: `"rr"`
+
+                           *g:conjure#client#lua#neovim#mapping#reset_all_envs*
+`g:conjure#client#lua#neovim#mapping#reset_all_envs`
+            Clear evaluation environment in all buffer.
+            Default: `"ra"`
+
+vim:tw=78:sw=2:ts=2:ft=help:norl:et:listchars=
