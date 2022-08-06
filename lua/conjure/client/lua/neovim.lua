@@ -11,10 +11,12 @@ do
   _2amodule_locals_2a = (_2amodule_2a)["aniseed/locals"]
 end
 local autoload = (require("conjure.aniseed.autoload")).autoload
-local a, client, config, log, mapping, nvim, stdio, str, text, _ = autoload("conjure.aniseed.core"), autoload("conjure.client"), autoload("conjure.config"), autoload("conjure.log"), autoload("conjure.mapping"), autoload("conjure.aniseed.nvim"), autoload("conjure.remote.stdio"), autoload("conjure.aniseed.string"), autoload("conjure.text"), nil
+local a, client, config, extract, fs, log, mapping, nvim, stdio, str, text, _ = autoload("conjure.aniseed.core"), autoload("conjure.client"), autoload("conjure.config"), autoload("conjure.extract"), autoload("conjure.fs"), autoload("conjure.log"), autoload("conjure.mapping"), autoload("conjure.aniseed.nvim"), autoload("conjure.remote.stdio"), autoload("conjure.aniseed.string"), autoload("conjure.text"), nil
 _2amodule_locals_2a["a"] = a
 _2amodule_locals_2a["client"] = client
 _2amodule_locals_2a["config"] = config
+_2amodule_locals_2a["extract"] = extract
+_2amodule_locals_2a["fs"] = fs
 _2amodule_locals_2a["log"] = log
 _2amodule_locals_2a["mapping"] = mapping
 _2amodule_locals_2a["nvim"] = nvim
@@ -22,21 +24,30 @@ _2amodule_locals_2a["stdio"] = stdio
 _2amodule_locals_2a["str"] = str
 _2amodule_locals_2a["text"] = text
 _2amodule_locals_2a["_"] = _
-local cfg = config["get-in-fn"]({"client", "lua", "neovim"})
-do end (_2amodule_locals_2a)["cfg"] = cfg
 local buf_suffix = ".lua"
 _2amodule_2a["buf-suffix"] = buf_suffix
 local comment_prefix = "-- "
 _2amodule_2a["comment-prefix"] = comment_prefix
-local function with_repl_or_warn(f, opts)
-  local repl = state("repl")
-  if repl then
-    return f(repl)
-  else
-    return log.append({(comment_prefix .. "No REPL running")})
-  end
+config.merge({client = {lua = {neovim = {mapping = {reset_repl = "rr", reset_all_repls = "ra"}, persistent = "debug"}}}})
+local cfg = config["get-in-fn"]({"client", "lua", "neovim"})
+do end (_2amodule_locals_2a)["cfg"] = cfg
+local repls = ((_2amodule_2a).repls or {})
+do end (_2amodule_locals_2a)["repls"] = repls
+local function reset_repl(filename)
+  local filename0 = (filename or fs["localise-path"](extract["file-path"]()))
+  do end (repls)[filename0] = nil
+  return log.append({("; Reset REPL for " .. filename0)}, {["break?"] = true})
 end
-_2amodule_locals_2a["with-repl-or-warn"] = with_repl_or_warn
+_2amodule_2a["reset-repl"] = reset_repl
+local function reset_all_repls()
+  local function _1_(filename)
+    repls[filename] = nil
+    return nil
+  end
+  a["run!"](_1_, a.keys(repls))
+  return log.append({"; Reset all REPLs"}, {["break?"] = true})
+end
+_2amodule_2a["reset-all-repls"] = reset_all_repls
 local function display(out, ret, err)
   local outs
   local function _2_(_241)
@@ -56,6 +67,7 @@ local function display(out, ret, err)
   errs = a.map(_4_, a.filter(_5_, str.split((err or ""), "\n")))
   log.append(outs)
   log.append(errs)
+  log.append({"return"})
   return log.append(str.split(vim.inspect(ret), "\n"))
 end
 _2amodule_locals_2a["display"] = display
@@ -95,11 +107,52 @@ local function lua_try_compile(codes)
   end
 end
 _2amodule_locals_2a["lua-try-compile"] = lua_try_compile
-local function lua_eval(codes)
-  local f, e = lua_try_compile(codes)
+local function pcall_persistent_debug(file, f)
+  repls[file] = (repls[file] or {})
+  do end (repls[file])["env"] = (repls[file].env or setmetatable({}, {__index = _G}))
+  setfenv(f, repls[file].env)
+  local collect_env
+  local function _9_(_0, _1)
+    debug.sethook()
+    local i = 1
+    local n = true
+    local v = nil
+    while n do
+      n, v = debug.getlocal(2, i)
+      if n then
+        repls[file].env[n] = v
+        i = (i + 1)
+      else
+      end
+    end
+    return nil
+  end
+  collect_env = _9_
+  debug.sethook(collect_env, "r")
+  return pcall(f)
+end
+_2amodule_2a["pcall-persistent-debug"] = pcall_persistent_debug
+local function lua_eval(opts)
+  local f, e = lua_try_compile(opts.code)
   if f then
     redirect()
-    local status, ret = pcall(f)
+    local pcall_custom
+    do
+      local _11_ = cfg({"persistent"})
+      if (_11_ == "debug") then
+        local _12_ = opts["file-path"]
+        local function _13_(...)
+          return pcall_persistent_debug(_12_, ...)
+        end
+        pcall_custom = _13_
+      elseif true then
+        local _0 = _11_
+        pcall_custom = pcall
+      else
+        pcall_custom = nil
+      end
+    end
+    local status, ret = pcall_custom(f)
     if status then
       return end_redirect(), ret, ""
     else
@@ -111,7 +164,7 @@ local function lua_eval(codes)
 end
 _2amodule_locals_2a["lua-eval"] = lua_eval
 local function eval_str(opts)
-  local out, ret, err = lua_eval(opts.code)
+  local out, ret, err = lua_eval(opts)
   display(out, ret, err)
   if opts["on-result"] then
     local on_result = opts["on-result"]
