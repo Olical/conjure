@@ -34,9 +34,11 @@
 
 (defn word []
   (if (ts.enabled?)
-    (when-let [node (ts.get-leaf)]
+    (if-let [node (ts.get-leaf)]
       {:range (ts.range node)
-       :content (ts.node->str node)})
+       :content (ts.node->str node)}
+      {:range nil
+       :content nil})
     (legacy-word)))
 
 (defn file-path []

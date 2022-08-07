@@ -52,7 +52,7 @@ local function word()
     if node then
       return {range = ts.range(node), content = ts["node->str"](node)}
     else
-      return nil
+      return {range = nil, content = nil}
     end
   else
     return legacy_word()
