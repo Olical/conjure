@@ -119,7 +119,7 @@
                          (when (not (a.empty? results))
                            (str.join "\n" (a.map view.serialise results)))
                          (a.first results))
-                       "nil")
+                       "; No result! Did you leave a string open? Maybe try `:help g:conjure#client#fennel#aniseed#mapping#reset_repl`")
           result-lines (str.split result-str "\n")]
       (when (not opts.passive?)
         (log.append

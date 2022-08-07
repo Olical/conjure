@@ -132,7 +132,7 @@ local function display_result(opts)
         return a.first(results)
       end
     end
-    result_str = (_10_() or "nil")
+    result_str = (_10_() or "; No result! Did you leave a string open? Maybe try `:help g:conjure#client#fennel#aniseed#mapping#reset_repl`")
     local result_lines = str.split(result_str, "\n")
     if not opts["passive?"] then
       local function _12_()
