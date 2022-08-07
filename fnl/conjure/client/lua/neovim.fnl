@@ -37,14 +37,14 @@
 (defn reset-env [filename]
   (let [filename (or filename (fs.localise-path (extract.file-path)))]
     (tset repls filename nil)
-    (log.append [(.. comment-prefix " Reset environment for " filename)] {:break? true})))
+    (log.append [(.. comment-prefix "Reset environment for " filename)] {:break? true})))
 
 (defn reset-all-envs []
   (a.run!
     (fn [filename]
       (tset repls filename nil))
     (a.keys repls))
-  (log.append [(.. comment-prefix " Reset all environments")] {:break? true}))
+  (log.append [(.. comment-prefix "Reset all environments")] {:break? true}))
 
 (defn- display [out ret err]
   (let [outs (->> (str.split (or out "") "\n")
