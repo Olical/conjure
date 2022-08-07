@@ -41,7 +41,7 @@ do end (_2amodule_locals_2a)["repls"] = repls
 local function reset_env(filename)
   local filename0 = (filename or fs["localise-path"](extract["file-path"]()))
   do end (repls)[filename0] = nil
-  return log.append({(comment_prefix .. " Reset environment for " .. filename0)}, {["break?"] = true})
+  return log.append({(comment_prefix .. "Reset environment for " .. filename0)}, {["break?"] = true})
 end
 _2amodule_2a["reset-env"] = reset_env
 local function reset_all_envs()
@@ -50,7 +50,7 @@ local function reset_all_envs()
     return nil
   end
   a["run!"](_1_, a.keys(repls))
-  return log.append({(comment_prefix .. " Reset all environments")}, {["break?"] = true})
+  return log.append({(comment_prefix .. "Reset all environments")}, {["break?"] = true})
 end
 _2amodule_2a["reset-all-envs"] = reset_all_envs
 local function display(out, ret, err)
