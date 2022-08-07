@@ -110,7 +110,7 @@
                  (set i (+ i 1))))))]
     (debug.sethook collect-env :r)
     (let [(status ret) (pcall f)]
-      (values status ret (. repls file :env :REDIRECTED-OUTPUT)))));; If there's only one pcall instance, we could 
+      (values status ret (. repls file :env :REDIRECTED-OUTPUT)))))
     
 (defn- lua-eval [opts]
   (let [(f e) (lua-compile opts)]
