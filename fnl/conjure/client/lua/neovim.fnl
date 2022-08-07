@@ -37,14 +37,14 @@
 (defn reset-env [filename]
   (let [filename (or filename (fs.localise-path (extract.file-path)))]
     (tset repls filename nil)
-    (log.append [(.. "-- Reset environment for " filename)] {:break? true})))
+    (log.append [(.. comment-prefix " Reset environment for " filename)] {:break? true})))
 
 (defn reset-all-envs []
   (a.run!
     (fn [filename]
       (tset repls filename nil))
     (a.keys repls))
-  (log.append [(.. "-- Reset all environments")] {:break? true}))
+  (log.append [(.. comment-prefix " Reset all environments")] {:break? true}))
 
 (defn- display [out ret err]
   (let [outs (->> (str.split (or out "") "\n")
@@ -80,8 +80,8 @@
         (fn []
           (.. (or (extract.prompt "Input required: ") "") "\n"))]
     (tset base :print print-redirected)
-    (tset (. base :io) :write io-write-redirected)
-    (tset (. base :io) :read io-read-redirected)
+    (tset base.io :write io-write-redirected)
+    (tset base.io :read io-read-redirected)
     base))
   
 (defn- pcall-default [f]
@@ -127,14 +127,12 @@
 (defn eval-str [opts]
   (let [(out ret err) (lua-eval opts)]
    (display out ret err)
-   (when (. opts :on-result)
-    (let [on-result (. opts :on-result)]
-     ((. opts :on-result) (vim.inspect ret))))))
+   (when opts.on-result
+    (opts.on-result (vim.inspect ret)))))
 
 (defn eval-file [opts] 
   (reset-env opts.file-path)
   (let [(out ret err) (lua-eval opts)]
    (display out ret err)
-   (when (. opts :on-result)
-    (let [on-result (. opts :on-result)]
-     ((. opts :on-result) (vim.inspect ret))))))
+   (when opts.on-result
+    (opts.on-result (vim.inspect ret)))))
