@@ -400,10 +400,10 @@ package.preload["conjure.aniseed.fennel.repl"] = package.preload["conjure.anisee
           _625_ = _626_
         end
       end
-      if ((_G.type(_625_) == "table") and (nil ~= (_625_).short_src) and ((_625_).what == "Lua") and (nil ~= (_625_).source) and (nil ~= (_625_).linedefined)) then
+      if ((_G.type(_625_) == "table") and (nil ~= (_625_).linedefined) and ((_625_).what == "Lua") and (nil ~= (_625_).short_src) and (nil ~= (_625_).source)) then
+        local line = (_625_).linedefined
         local src = (_625_).short_src
         local source = (_625_).source
-        local line = (_625_).linedefined
         local fnlsrc
         do
           local t_630_ = compiler.sourcemap
