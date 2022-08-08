@@ -34,10 +34,10 @@
         0 mode
         mapping
         (if cmd
-          (.. (if (not= false (a.get opts :repeat?))
+          (.. ":" cmd "<cr>"
+              (if (not= false (a.get opts :repeat?))
                 (.. ":silent! call " (vim-repeat mapping) "<cr>")
-                "")
-              ":" cmd "<cr>")
+                ""))
           (unpack args))
         {:silent true
          :noremap true}))))

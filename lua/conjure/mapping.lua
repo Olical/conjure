@@ -63,7 +63,7 @@ local function buf(mode_or_opts, cmd_suffix, keys, ...)
           return ""
         end
       end
-      _5_ = (_6_(...) .. ":" .. cmd .. "<cr>")
+      _5_ = (":" .. cmd .. "<cr>" .. _6_(...))
     else
       _5_ = unpack(args)
     end
