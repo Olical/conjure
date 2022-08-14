@@ -28,6 +28,11 @@
     true
     false))
 
+(defn parse! []
+  (let [(ok? parser) (pcall vim.treesitter.get_parser)]
+    (if ok?
+      (parser:parse))))
+
 (defn node->str [node]
   "Turn the node into a string, nils flow through. Separate forms are joined by
   new lines."
@@ -55,6 +60,8 @@
 
 (defn get-root [node]
   "Get the root node below the entire document."
+  (parse!)
+
   (let [node (or node (ts.get_node_at_cursor))
         parent-node (parent node)]
     (if
@@ -70,6 +77,8 @@
 
 (defn get-leaf [node]
   "Return the leaf node under the cursor or nothing at all."
+  (parse!)
+
   (let [node (or node (ts.get_node_at_cursor))]
     (when (leaf? node)
       node)))
@@ -90,6 +99,8 @@
 
 (defn get-form [node]
   "Get the current form under the cursor. Walks up until it finds a non-leaf."
+  (parse!)
+
   (let [node (or node (ts.get_node_at_cursor))]
     (if
       ;; If we're already at the root then we're not in a form.

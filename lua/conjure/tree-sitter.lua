@@ -44,6 +44,15 @@ local function enabled_3f()
   end
 end
 _2amodule_2a["enabled?"] = enabled_3f
+local function parse_21()
+  local ok_3f, parser = pcall(vim.treesitter.get_parser)
+  if ok_3f then
+    return parser:parse()
+  else
+    return nil
+  end
+end
+_2amodule_2a["parse!"] = parse_21
 local function node__3estr(node)
   if node then
     if (1 == nvim.fn.has("nvim-0.7")) then
@@ -78,6 +87,7 @@ local function range(node)
 end
 _2amodule_2a["range"] = range
 local function get_root(node)
+  parse_21()
   local node0 = (node or ts.get_node_at_cursor())
   local parent_node = parent(node0)
   if document_3f(node0) then
@@ -100,6 +110,7 @@ local function leaf_3f(node)
 end
 _2amodule_2a["leaf?"] = leaf_3f
 local function get_leaf(node)
+  parse_21()
   local node0 = (node or ts.get_node_at_cursor())
   if leaf_3f(node0) then
     return node0
@@ -111,22 +122,23 @@ _2amodule_2a["get-leaf"] = get_leaf
 local function node_surrounded_by_form_pair_chars_3f(node, extra_pairs)
   local node_str = node__3estr(node)
   local first_and_last_chars = text["first-and-last-chars"](node_str)
-  local function _14_(_12_)
-    local _arg_13_ = _12_
-    local start = _arg_13_[1]
-    local _end = _arg_13_[2]
+  local function _15_(_13_)
+    local _arg_14_ = _13_
+    local start = _arg_14_[1]
+    local _end = _arg_14_[2]
     return (first_and_last_chars == (start .. _end))
   end
-  local function _17_(_15_)
-    local _arg_16_ = _15_
-    local start = _arg_16_[1]
-    local _end = _arg_16_[2]
+  local function _18_(_16_)
+    local _arg_17_ = _16_
+    local start = _arg_17_[1]
+    local _end = _arg_17_[2]
     return (text["starts-with"](node_str, start) and text["ends-with"](node_str, _end))
   end
-  return (a.some(_14_, config["get-in"]({"extract", "form_pairs"})) or a.some(_17_, extra_pairs) or false)
+  return (a.some(_15_, config["get-in"]({"extract", "form_pairs"})) or a.some(_18_, extra_pairs) or false)
 end
 _2amodule_2a["node-surrounded-by-form-pair-chars?"] = node_surrounded_by_form_pair_chars_3f
 local function get_form(node)
+  parse_21()
   local node0 = (node or ts.get_node_at_cursor())
   if document_3f(node0) then
     return nil
