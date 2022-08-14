@@ -174,6 +174,10 @@ local function eval_str(opts)
       local _let_20_ = eval_21((opts.code .. "\n"))
       local ok_3f = _let_20_["ok?"]
       local results = _let_20_["results"]
+      if ("ok" ~= a["get-in"](eval_21(":ok\n"), {"results", 1})) then
+        log.append({"; REPL appears to be stuck, did you open a string or form and not close it?", str.join({"; You can use ", config["get-in"]({"mapping", "prefix"}), cfg({"mapping", "reset_repl"}), " to reset and repair the REPL."})})
+      else
+      end
       opts["ok?"] = ok_3f
       opts.results = results
       return nil
@@ -205,22 +209,22 @@ _2amodule_2a["eval-file"] = eval_file
 local function wrapped_test(req_lines, f)
   log.append(req_lines, {["break?"] = true})
   local res = anic("nu", "with-out-str", f)
-  local _23_
+  local _24_
   if ("" == res) then
-    _23_ = "No results."
+    _24_ = "No results."
   else
-    _23_ = res
+    _24_ = res
   end
-  return log.append(text["prefixed-lines"](_23_, "; "))
+  return log.append(text["prefixed-lines"](_24_, "; "))
 end
 _2amodule_locals_2a["wrapped-test"] = wrapped_test
 local function run_buf_tests()
   local c = extract.context()
   if c then
-    local function _25_()
+    local function _26_()
       return anic("test", "run", c)
     end
-    return wrapped_test({("; run-buf-tests (" .. c .. ")")}, _25_)
+    return wrapped_test({("; run-buf-tests (" .. c .. ")")}, _26_)
   else
     return nil
   end
@@ -239,19 +243,19 @@ end
 _2amodule_2a["on-filetype"] = on_filetype
 local function value__3ecompletions(x)
   if ("table" == type(x)) then
-    local function _29_(_27_)
-      local _arg_28_ = _27_
-      local k = _arg_28_[1]
-      local v = _arg_28_[2]
+    local function _30_(_28_)
+      local _arg_29_ = _28_
+      local k = _arg_29_[1]
+      local v = _arg_29_[2]
       return {word = k, kind = type(v), menu = nil, info = nil}
     end
-    local function _32_(_30_)
-      local _arg_31_ = _30_
-      local k = _arg_31_[1]
-      local v = _arg_31_[2]
+    local function _33_(_31_)
+      local _arg_32_ = _31_
+      local k = _arg_32_[1]
+      local v = _arg_32_[2]
       return not text["starts-with"](k, "aniseed/")
     end
-    local function _33_()
+    local function _34_()
       if x["aniseed/autoload-enabled?"] then
         do local _ = x["trick-aniseed-into-loading-the-module"] end
         return x["aniseed/autoload-module"]
@@ -259,7 +263,7 @@ local function value__3ecompletions(x)
         return x
       end
     end
-    return a.map(_29_, a.filter(_32_, a["kv-pairs"](_33_())))
+    return a.map(_30_, a.filter(_33_, a["kv-pairs"](_34_())))
   else
     return nil
   end
@@ -277,10 +281,10 @@ local function completions(opts)
   local locals
   do
     local ok_3f, m = nil, nil
-    local function _36_()
+    local function _37_()
       return require(opts.context)
     end
-    ok_3f, m = pcall(_36_)
+    ok_3f, m = pcall(_37_)
     if ok_3f then
       locals = a.concat(value__3ecompletions(m), value__3ecompletions(a.get(m, "aniseed/locals")), mods)
     else
@@ -288,30 +292,30 @@ local function completions(opts)
     end
   end
   local result_fn
-  local function _38_(results)
+  local function _39_(results)
     local xs = a.first(results)
-    local function _41_()
+    local function _42_()
       if ("table" == type(xs)) then
-        local function _39_(x)
-          local function _40_(_241)
+        local function _40_(x)
+          local function _41_(_241)
             return (opts.prefix .. _241)
           end
-          return a.update(x, "word", _40_)
+          return a.update(x, "word", _41_)
         end
-        return a.concat(a.map(_39_, xs), locals)
+        return a.concat(a.map(_40_, xs), locals)
       else
         return locals
       end
     end
-    return opts.cb(_41_())
+    return opts.cb(_42_())
   end
-  result_fn = _38_
+  result_fn = _39_
   local ok_3f, err_or_res = nil, nil
   if code then
-    local function _42_()
+    local function _43_()
       return eval_str({["file-path"] = opts["file-path"], context = opts.context, code = code, ["passive?"] = true, ["on-result-raw"] = result_fn})
     end
-    ok_3f, err_or_res = pcall(_42_)
+    ok_3f, err_or_res = pcall(_43_)
   else
     ok_3f, err_or_res = nil
   end

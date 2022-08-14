@@ -151,6 +151,11 @@
                                                         ;; The user is evaluating the module form.
                                                         (text.starts-with opts.code (.. "(module " (or opts.context ""))))})
                                {: ok? : results} (eval! (.. opts.code "\n"))]
+
+                           (when (not= :ok (a.get-in (eval! ":ok\n") [:results 1]))
+                             (log.append ["; REPL appears to be stuck, did you open a string or form and not close it?"
+                                          (str.join ["; You can use " (config.get-in [:mapping :prefix]) (cfg [:mapping :reset_repl]) " to reset and repair the REPL."])]))
+
                            (set opts.ok? ok?)
                            (set opts.results results))))]
          (when (not (a.empty? out))
