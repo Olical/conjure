@@ -51,6 +51,7 @@
   {:debug false
    :relative_file_root nil
    :path_subs nil
+   :client_on_load true
 
    :filetypes [:clojure :fennel :janet :hy :julia :racket :scheme :lua :lisp :rust]
    :filetype {:clojure :conjure.client.clojure.nrepl

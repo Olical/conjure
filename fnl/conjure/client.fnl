@@ -44,7 +44,9 @@
                {:filetype ft
                 :module-name name
                 :module result})
-      (when (and result.on-load (not nvim.wo.diff))
+      (when (and result.on-load
+                 (not nvim.wo.diff)
+                 (config.get-in [:client_on_load]))
         (vim.schedule result.on-load)))
 
     (if ok?

@@ -168,16 +168,16 @@ local function start()
 end
 _2amodule_2a["start"] = start
 local function on_load()
+  return start()
+end
+_2amodule_2a["on-load"] = on_load
+local function on_filetype()
   do
     nvim.ex.augroup("conjure-racket-stdio-bufenter")
     nvim.ex.autocmd_()
     nvim.ex.autocmd("BufEnter", ("*" .. buf_suffix), ("lua require('" .. _2amodule_name_2a .. "')['" .. "enter" .. "']()"))
     nvim.ex.augroup("END")
   end
-  return start()
-end
-_2amodule_2a["on-load"] = on_load
-local function on_filetype()
   mapping.buf("n", "RktStart", cfg({"mapping", "start"}), _2amodule_name_2a, "start")
   mapping.buf("n", "RktStop", cfg({"mapping", "stop"}), _2amodule_name_2a, "stop")
   return mapping.buf("n", "RktInterrupt", cfg({"mapping", "interrupt"}), _2amodule_name_2a, "interrupt")

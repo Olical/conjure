@@ -67,7 +67,7 @@ local function load_module(ft, name)
   ok_3f, result = xpcall(_7_, fnl.traceback)
   if (ok_3f and a["nil?"](a.get(loaded, name))) then
     a.assoc(loaded, name, {filetype = ft, ["module-name"] = name, module = result})
-    if (result["on-load"] and not nvim.wo.diff) then
+    if (result["on-load"] and not nvim.wo.diff and config["get-in"]({"client_on_load"})) then
       vim.schedule(result["on-load"])
     else
     end

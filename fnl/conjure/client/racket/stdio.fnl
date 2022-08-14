@@ -140,12 +140,12 @@
            (display-result msg))}))))
 
 (defn on-load []
-  (augroup
-    conjure-racket-stdio-bufenter
-    (autocmd :BufEnter (.. :* buf-suffix) (viml->fn :enter)))
   (start))
 
 (defn on-filetype []
+  (augroup
+    conjure-racket-stdio-bufenter
+    (autocmd :BufEnter (.. :* buf-suffix) (viml->fn :enter)))
   (mapping.buf :n :RktStart (cfg [:mapping :start]) *module-name* :start)
   (mapping.buf :n :RktStop (cfg [:mapping :stop]) *module-name* :stop)
   (mapping.buf :n :RktInterrupt (cfg [:mapping :interrupt]) *module-name* :interrupt))

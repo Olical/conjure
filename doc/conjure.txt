@@ -780,6 +780,15 @@ Tip: Booleans in Vim Script are written as `v:true` and `v:false`.
 
             Default: `undefined`
 
+                                                    *g:conjure#client_on_load*
+`g:conjure#client_on_load`
+            Call the relevant client's `on-load` function when you enter a
+            relevant buffer for the first time. This normally automatically
+            starts or connects to a REPL for you. If you don't want Conjure to
+            automatically connect you can switch this off. The client will
+            still set up it's mappings and commands but it shouldn't start any
+            REPLs or connect to anything.
+            Default: `true`
                                                              *g:conjure#debug*
 `g:conjure#debug`
             Display debug information in any client you're using.
