@@ -7,7 +7,8 @@
              log conjure.log
              client conjure.client
              eval conjure.eval
-             bridge conjure.bridge}
+             bridge conjure.bridge
+             school conjure.school}
    require-macros [conjure.macros]})
 
 (defn- cfg [k]
@@ -141,9 +142,9 @@
          :port (a.second args)}))))
 
 (defn client-state-command [state-key]
-  (if state-key
-    (client.set-state-key! state-key)
-    (a.println (client.state-key))))
+  (if (a.empty? state-key)
+    (a.println (client.state-key))
+    (client.set-state-key! state-key)))
 
 (defn omnifunc [find-start? base]
   (if find-start?
@@ -179,12 +180,12 @@
     :conjure.mapping :connect-command
     {:args "<f-args>"}))
 
-(nvim.ex.command_
-  "-nargs=1 ConjureClientState"
-  (bridge.viml->lua
-    :conjure.mapping :client-state-command
-    {:args "<f-args>"}))
+(nvim.create_user_command
+  "ConjureClientState"
+  #(client-state-command (. $ :args))
+  {:nargs "?"})
 
-(nvim.ex.command_
+(nvim.create_user_command
   "ConjureSchool"
-  (bridge.viml->lua :conjure.school :start {}))
+  #(school.start)
+  {})
