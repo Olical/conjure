@@ -132,7 +132,7 @@ local function display_result(opts)
         return a.first(results)
       end
     end
-    result_str = (_10_() or "; Empty result. Try `:help g:conjure#client#fennel#aniseed#mapping#reset_repl` if your REPL is stuck.")
+    result_str = (_10_() or "nil")
     local result_lines = str.split(result_str, "\n")
     if not opts["passive?"] then
       local function _12_()

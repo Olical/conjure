@@ -119,7 +119,7 @@
                          (when (not (a.empty? results))
                            (str.join "\n" (a.map view.serialise results)))
                          (a.first results))
-                       "; Empty result. Try `:help g:conjure#client#fennel#aniseed#mapping#reset_repl` if your REPL is stuck.")
+                       "nil")
           result-lines (str.split result-str "\n")]
       (when (not opts.passive?)
         (log.append
