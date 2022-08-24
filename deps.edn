@@ -8,7 +8,7 @@
  :aliases
  {:nrepl
   {:extra-deps
-   {nrepl/nrepl {:mvn/version "0.9.0"}}}
+   {nrepl/nrepl {:mvn/version "1.0.0"}}}
 
   :cider
   {:extra-deps
