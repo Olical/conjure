@@ -70,7 +70,9 @@ _2amodule_2a["file"] = file
 local function glob(src_expr, src_dir, dest_dir, opts)
   for _, path in ipairs(fs.relglob(src_dir, src_expr)) do
     if fs["macro-file-path?"](path) then
-      a.spit((dest_dir .. path), a.slurp((src_dir .. path)))
+      local dest = (dest_dir .. path)
+      fs.mkdirp(fs.basename(dest))
+      a.spit(dest, a.slurp((src_dir .. path)))
     else
       file((src_dir .. path), string.gsub((dest_dir .. path), ".fnl$", ".lua"), opts)
     end
