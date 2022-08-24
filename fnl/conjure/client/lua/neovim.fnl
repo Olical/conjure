@@ -15,7 +15,7 @@
 (def buf-suffix ".lua")
 (def comment-prefix "-- ")
 
-(config.merge 
+(config.merge
   {:client
    {:lua
     {:neovim
@@ -48,15 +48,14 @@
 
 (defn- display [out ret err]
   (let [outs (->> (str.split (or out "") "\n")
-              (a.filter #(~= "" $1))
-              (a.map #(.. comment-prefix "(out) " $1)))
+                  (a.filter #(~= "" $1))
+                  (a.map #(.. comment-prefix "(out) " $1)))
         errs (->> (str.split (or err "") "\n")
-              (a.filter #(~= "" $1))
-              (a.map #(.. comment-prefix "(err) " $1)))]
+                  (a.filter #(~= "" $1))
+                  (a.map #(.. comment-prefix "(err) " $1)))]
     (log.append outs)
     (log.append errs)
-    (log.append ["return"]) ;; add this new line so that syntax-highlighting and other plugins maybe happier
-    (log.append (str.split (vim.inspect ret) "\n"))))
+    (log.append (str.split (.. "res = " (vim.inspect ret)) "\n"))))
 
 (defn- lua-compile [opts]
   (if (= opts.origin "file")
@@ -66,16 +65,16 @@
 
 (defn default-env []
   (let [base (setmetatable {:REDIRECTED-OUTPUT ""
-                            :io (setmetatable {} {:__index _G.io})} 
+                            :io (setmetatable {} {:__index _G.io})}
                            {:__index _G})
-        print-redirected 
-        (fn [...] 
+        print-redirected
+        (fn [...]
           (tset base :REDIRECTED-OUTPUT
-           (.. base.REDIRECTED-OUTPUT (str.join "\t" [...]) "\n")))
-        io-write-redirected 
-        (fn [...] 
+                (.. base.REDIRECTED-OUTPUT (str.join "\t" [...]) "\n")))
+        io-write-redirected
+        (fn [...]
           (tset base :REDIRECTED-OUTPUT
-           (.. base.REDIRECTED-OUTPUT (str.join [...]))))
+                (.. base.REDIRECTED-OUTPUT (str.join [...]))))
         io-read-redirected
         (fn []
           (.. (or (extract.prompt "Input required: ") "") "\n"))]
@@ -83,56 +82,56 @@
     (tset base.io :write io-write-redirected)
     (tset base.io :read io-read-redirected)
     base))
-  
+
 (defn- pcall-default [f]
   (let [env (default-env)]
     (setfenv f env)
     (let [(status ret) (pcall f)]
       (values status ret env.REDIRECTED-OUTPUT))))
-       
+
 ;; this function is ugly due to the imperative interface of debug.getlocal
 (defn- pcall-persistent-debug [file f]
   (tset repls file (or (. repls file) {}))
   (tset (. repls file) :env (or (. repls file :env) (default-env)))
   (tset (. repls file :env) :REDIRECTED-OUTPUT "") ;; Clear last output
   (setfenv f (. repls file :env))
-  (let [collect-env 
-         (fn [_ _]
-           (debug.sethook)
-           (var i 1)
-           (var n true)
-           (var v nil)
-           (while n
-             (set (n v) (debug.getlocal 2 i))
-             (if n
-               (do
-                 (tset (. repls file :env) n v)
-                 (set i (+ i 1))))))]
+  (let [collect-env
+        (fn [_ _]
+          (debug.sethook)
+          (var i 1)
+          (var n true)
+          (var v nil)
+          (while n
+            (set (n v) (debug.getlocal 2 i))
+            (if n
+              (do
+                (tset (. repls file :env) n v)
+                (set i (+ i 1))))))]
     (debug.sethook collect-env :r)
     (let [(status ret) (pcall f)]
       (values status ret (. repls file :env :REDIRECTED-OUTPUT)))))
-    
+
 (defn- lua-eval [opts]
   (let [(f e) (lua-compile opts)]
     (if f
-       (let [pcall-custom (match (cfg [:persistent])
-                            :debug (partial pcall-persistent-debug opts.file-path)
-                            _ pcall-default)
-             (status ret out) (pcall-custom f)]
-         (if status
-           (values out ret "")
-           (values out nil (.. "Execution error: " ret))))
-       (values "" nil (.. "Compilation error: " e)))))
+      (let [pcall-custom (match (cfg [:persistent])
+                           :debug (partial pcall-persistent-debug opts.file-path)
+                           _ pcall-default)
+            (status ret out) (pcall-custom f)]
+        (if status
+          (values out ret "")
+          (values out nil (.. "Execution error: " ret))))
+      (values "" nil (.. "Compilation error: " e)))))
 
 (defn eval-str [opts]
   (let [(out ret err) (lua-eval opts)]
-   (display out ret err)
-   (when opts.on-result
-    (opts.on-result (vim.inspect ret)))))
+    (display out ret err)
+    (when opts.on-result
+      (opts.on-result (vim.inspect ret)))))
 
-(defn eval-file [opts] 
+(defn eval-file [opts]
   (reset-env opts.file-path)
   (let [(out ret err) (lua-eval opts)]
-   (display out ret err)
-   (when opts.on-result
-    (opts.on-result (vim.inspect ret)))))
+    (display out ret err)
+    (when opts.on-result
+      (opts.on-result (vim.inspect ret)))))
