@@ -197,10 +197,10 @@ asyncomplete.vim support is provided by asyncomplete-conjure.vim.
  * https://github.com/prabirshrestha/asyncomplete.vim
  * https://github.com/thecontinium/asyncomplete-conjure.vim
 
-compe-nvim support is provided by compe-conjure.
+nvim-cmp support is provided by cmp-conjure.
 
- * https://github.com/hrsh7th/nvim-compe
- * https://github.com/tami5/compe-conjure
+ * https://github.com/hrsh7th/nvim-cmp
+ * https://github.com/PaterJason/cmp-conjure
 
 ==============================================================================
 CONFIGURATION                                          *conjure-configuration*
