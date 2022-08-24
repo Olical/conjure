@@ -78,7 +78,7 @@ local function eval_marked_form()
   local mark = eval["marked-form"]()
   local mapping
   local function _9_(m)
-    return ((":ConjureEvalMarkedForm<CR>" == m.rhs) and m.lhs)
+    return ((":ConjureEvalMarkedForm<CR>" == a.get(m, "rhs")) and m.lhs)
   end
   mapping = a.some(_9_, nvim.buf_get_keymap(0, "n"))
   if (mark and mapping) then

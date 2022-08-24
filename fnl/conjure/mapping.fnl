@@ -47,7 +47,7 @@
   (let [mark (eval.marked-form)
         mapping (a.some
                   (fn [m]
-                    (and (= ":ConjureEvalMarkedForm<CR>" m.rhs)
+                    (and (= ":ConjureEvalMarkedForm<CR>" (a.get m :rhs))
                          m.lhs))
                   (nvim.buf_get_keymap 0 :n))]
     (when (and mark mapping)
