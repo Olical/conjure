@@ -8,7 +8,7 @@
 
 (defn send [conn msg cb]
   "Send a message to the given connection, call the callback when a response is received."
-  ; (log.dbg "send" msg)
+  (log.dbg "send" msg)
   (table.insert conn.queue 1 (or cb false))
   (conn.sock:write (trn.encode msg))
   nil)
@@ -32,7 +32,7 @@
       (opts.on-error err)
       (->> (conn.decode chunk)
            ((fn [msg]
-              ; (log.dbg "receive" msg)
+              (log.dbg "receive" msg)
               (let [cb (table.remove conn.queue)]
                 (when cb
                   (cb msg))))))))

@@ -19,6 +19,7 @@ _2amodule_locals_2a["net"] = net
 _2amodule_locals_2a["nvim"] = nvim
 _2amodule_locals_2a["trn"] = trn
 local function send(conn, msg, cb)
+  log.dbg("send", msg)
   table.insert(conn.queue, 1, (cb or false))
   do end (conn.sock):write(trn.encode(msg))
   return nil
@@ -31,6 +32,7 @@ local function connect(opts)
       return opts["on-error"](err)
     else
       local function _1_(msg)
+        log.dbg("receive", msg)
         local cb = table.remove(conn.queue)
         if cb then
           return cb(msg)
