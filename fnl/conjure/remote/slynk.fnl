@@ -1,9 +1,9 @@
-(module conjure.remote.swank
+(module conjure.remote.slynk
   {autoload {a conjure.aniseed.core
              net conjure.net
              log conjure.log
              client conjure.client
-             trn conjure.remote.transport.swank
+             trn conjure.remote.transport.slynk
              nvim conjure.aniseed.nvim}})
 
 (defn send [conn msg cb]
@@ -14,7 +14,7 @@
   nil)
 
 (defn connect [opts]
-  "Connects to a remote swank server.
+  "Connects to a remote slynk server.
   * opts.host: The host string.
   * opts.port: Port as a string.
   * opts.name: Name of the client to send post-connection, defaults to `Conjure`.

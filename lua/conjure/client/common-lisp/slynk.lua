@@ -1,5 +1,5 @@
-local _2afile_2a = "fnl/conjure/client/common-lisp/swank.fnl"
-local _2amodule_name_2a = "conjure.client.common-lisp.swank"
+local _2afile_2a = "fnl/conjure/client/common-lisp/slynk.fnl"
+local _2amodule_name_2a = "conjure.client.common-lisp.slynk"
 local _2amodule_2a
 do
   package.loaded[_2amodule_name_2a] = {}
@@ -11,7 +11,7 @@ do
   _2amodule_locals_2a = (_2amodule_2a)["aniseed/locals"]
 end
 local autoload = (require("conjure.aniseed.autoload")).autoload
-local a, bridge, client, config, log, mapping, nvim, remote, str, text, ts = autoload("conjure.aniseed.core"), autoload("conjure.bridge"), autoload("conjure.client"), autoload("conjure.config"), autoload("conjure.log"), autoload("conjure.mapping"), autoload("conjure.aniseed.nvim"), autoload("conjure.remote.swank"), autoload("conjure.aniseed.string"), autoload("conjure.text"), autoload("conjure.tree-sitter")
+local a, bridge, client, config, log, mapping, nvim, remote, str, text, ts = autoload("conjure.aniseed.core"), autoload("conjure.bridge"), autoload("conjure.client"), autoload("conjure.config"), autoload("conjure.log"), autoload("conjure.mapping"), autoload("conjure.aniseed.nvim"), autoload("conjure.remote.slynk"), autoload("conjure.aniseed.string"), autoload("conjure.text"), autoload("conjure.tree-sitter")
 do end (_2amodule_locals_2a)["a"] = a
 _2amodule_locals_2a["bridge"] = bridge
 _2amodule_locals_2a["client"] = client
@@ -31,7 +31,7 @@ local comment_prefix = "; "
 _2amodule_2a["comment-prefix"] = comment_prefix
 local form_node_3f = ts["node-surrounded-by-form-pair-chars?"]
 _2amodule_2a["form-node?"] = form_node_3f
-config.merge({client = {common_lisp = {swank = {connection = {default_host = "127.0.0.1", default_port = "4005"}, mapping = {connect = "cc", disconnect = "cd"}}}}})
+config.merge({client = {common_lisp = {slynk = {connection = {default_host = "127.0.0.1", default_port = "4005"}, mapping = {connect = "cc", disconnect = "cd"}}}}})
 local state
 local function _1_()
   return {conn = nil, ["eval-id"] = 0}
@@ -82,15 +82,15 @@ _2amodule_locals_2a["escape-string"] = escape_string
 local function send(msg, context, cb)
   local function _6_(conn)
     local eval_id = a.get(a.update(state(), "eval-id", a.inc), "eval-id")
-    return remote.send(conn, str.join({"(:emacs-rex (swank:eval-and-grab-output \"", escape_string(msg), "\") \"", (context or ":common-lisp-user"), "\" t ", eval_id, ")"}), cb)
+    return remote.send(conn, str.join({"(:emacs-rex (slynk:eval-and-grab-output \"", escape_string(msg), "\") \"", (context or ":common-lisp-user"), "\" t ", eval_id, ")"}), cb)
   end
   return with_conn_or_warn(_6_)
 end
 _2amodule_locals_2a["send"] = send
 local function connect(opts)
   local opts0 = (opts or {})
-  local host = (opts0.host or config["get-in"]({"client", "common_lisp", "swank", "connection", "default_host"}))
-  local port = (opts0.port or config["get-in"]({"client", "common_lisp", "swank", "connection", "default_port"}))
+  local host = (opts0.host or config["get-in"]({"client", "common_lisp", "slynk", "connection", "default_host"}))
+  local port = (opts0.port or config["get-in"]({"client", "common_lisp", "slynk", "connection", "default_port"}))
   if state("conn") then
     disconnect()
   else
@@ -279,8 +279,8 @@ local function eval_file(opts)
 end
 _2amodule_2a["eval-file"] = eval_file
 local function on_filetype()
-  mapping.buf("n", "CommonLispDisconnect", config["get-in"]({"client", "common_lisp", "swank", "mapping", "disconnect"}), "conjure.client.common-lisp.swank", "disconnect")
-  return mapping.buf("n", "CommonLispConnect", config["get-in"]({"client", "common_lisp", "swank", "mapping", "connect"}), "conjure.client.common-lisp.swank", "connect")
+  mapping.buf("n", "CommonLispDisconnect", config["get-in"]({"client", "common_lisp", "slynk", "mapping", "disconnect"}), "conjure.client.common-lisp.slynk", "disconnect")
+  return mapping.buf("n", "CommonLispConnect", config["get-in"]({"client", "common_lisp", "slynk", "mapping", "connect"}), "conjure.client.common-lisp.slynk", "connect")
 end
 _2amodule_2a["on-filetype"] = on_filetype
 local function on_load()

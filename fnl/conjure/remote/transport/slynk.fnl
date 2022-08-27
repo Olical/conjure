@@ -1,4 +1,4 @@
-(module conjure.remote.transport.swank
+(module conjure.remote.transport.slynk
   {autoload {a conjure.aniseed.core
              log conjure.log}})
 

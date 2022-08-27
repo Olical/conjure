@@ -1,4 +1,4 @@
-(module conjure.client.common-lisp.swank
+(module conjure.client.common-lisp.slynk
   {autoload {a conjure.aniseed.core
              nvim conjure.aniseed.nvim
              bridge conjure.bridge
@@ -8,7 +8,7 @@
              str conjure.aniseed.string
              config conjure.config
              client conjure.client
-             remote conjure.remote.swank
+             remote conjure.remote.slynk
              ts conjure.tree-sitter}})
 
 (def buf-suffix ".lisp")
@@ -25,7 +25,7 @@
 (config.merge
   {:client
    {:common_lisp
-    {:swank
+    {:slynk
      {:connection {:default_host "127.0.0.1"
                    :default_port "4005"}
       :mapping {:connect "cc"
@@ -63,7 +63,7 @@
 
 (defn- escape-string [in]
   "puts leading slashes infront of \\ and \"
-  so that swank can correctly interpret the results."
+  so that slynk can correctly interpret the results."
   (fn replace [in pat rep]
     (let [(s c) (string.gsub in pat rep)] s))
   (-> in
@@ -80,15 +80,15 @@
         (remote.send
           conn
           (str.join
-            ["(:emacs-rex (swank:eval-and-grab-output \""
+            ["(:emacs-rex (slynk:eval-and-grab-output \""
              (escape-string msg)
              "\") \"" (or context ":common-lisp-user") "\" t " eval-id ")"])
           cb)))))
 
 (defn connect [opts]
   (let [opts (or opts {})
-        host (or opts.host (config.get-in [:client :common_lisp :swank :connection :default_host]))
-        port (or opts.port (config.get-in [:client :common_lisp :swank :connection :default_port]))]
+        host (or opts.host (config.get-in [:client :common_lisp :slynk :connection :default_host]))
+        port (or opts.port (config.get-in [:client :common_lisp :slynk :connection :default_port]))]
 
     (when (state :conn)
       (disconnect))
@@ -262,11 +262,11 @@
 
 (defn on-filetype []
   (mapping.buf :n :CommonLispDisconnect
-               (config.get-in [:client :common_lisp :swank :mapping :disconnect])
-               :conjure.client.common-lisp.swank :disconnect)
+               (config.get-in [:client :common_lisp :slynk :mapping :disconnect])
+               :conjure.client.common-lisp.slynk :disconnect)
   (mapping.buf :n :CommonLispConnect
-               (config.get-in [:client :common_lisp :swank :mapping :connect])
-               :conjure.client.common-lisp.swank :connect))
+               (config.get-in [:client :common_lisp :slynk :mapping :connect])
+               :conjure.client.common-lisp.slynk :connect))
 
 (defn on-load []
   (connect {}))

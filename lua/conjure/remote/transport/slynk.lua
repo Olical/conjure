@@ -1,5 +1,5 @@
-local _2afile_2a = "fnl/conjure/remote/transport/swank.fnl"
-local _2amodule_name_2a = "conjure.remote.transport.swank"
+local _2afile_2a = "fnl/conjure/remote/transport/slynk.fnl"
+local _2amodule_name_2a = "conjure.remote.transport.slynk"
 local _2amodule_2a
 do
   package.loaded[_2amodule_name_2a] = {}
