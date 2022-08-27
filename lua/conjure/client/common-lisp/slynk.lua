@@ -72,40 +72,48 @@ local function disconnect()
   return with_conn_or_warn(_5_)
 end
 _2amodule_2a["disconnect"] = disconnect
-local function send(msg, context, cb)
+local function remote_execute(slyfn, msg, context, cb)
   local function _6_(conn)
     local eval_id = a.get(a.update(state(), "eval-id", a.inc), "eval-id")
-    return remote.send(conn, str.join({"(:emacs-rex (slynk:eval-and-grab-output \"", parser["escape-string"](msg), "\") \"", (context or ":common-lisp-user"), "\" t ", eval_id, ")"}), cb)
+    return remote.send(conn, str.join({"(:emacs-rex (slynk:", slyfn, " ", parser["wrap-message"](msg), ") ", parser["wrap-message-or-nil"]((context or nil)), " t ", eval_id, ")"}), cb)
   end
   return with_conn_or_warn(_6_)
 end
-_2amodule_locals_2a["send"] = send
+_2amodule_locals_2a["remote-execute"] = remote_execute
+local function eval_and_grab_output(msg, context, cb)
+  return remote_execute("eval-and-grab-output", msg, context, cb)
+end
+_2amodule_2a["eval-and-grab-output"] = eval_and_grab_output
+local function connection_info()
+  return remote_execute("connection-info")
+end
+_2amodule_2a["connection-info"] = connection_info
 local function connect(opts)
-  local opts0 = (opts or {})
-  local host = (opts0.host or config["get-in"]({"client", "common_lisp", "slynk", "connection", "default_host"}))
-  local port = (opts0.port or config["get-in"]({"client", "common_lisp", "slynk", "connection", "default_port"}))
-  if state("conn") then
-    disconnect()
-  else
-  end
-  local function _8_(err)
-    display_conn_status(err)
-    return disconnect()
-  end
-  local function _9_()
-    return display_conn_status("connected")
-  end
-  local function _10_(err)
-    if err then
-      return display_conn_status(err)
+  do
+    local opts0 = (opts or {})
+    local host = (opts0.host or config["get-in"]({"client", "common_lisp", "slynk", "connection", "default_host"}))
+    local port = (opts0.port or config["get-in"]({"client", "common_lisp", "slynk", "connection", "default_port"}))
+    if state("conn") then
+      disconnect()
     else
+    end
+    local function _8_(err)
+      display_conn_status(err)
       return disconnect()
     end
+    local function _9_()
+      return display_conn_status("connected")
+    end
+    local function _10_(err)
+      if err then
+        return display_conn_status(err)
+      else
+        return disconnect()
+      end
+    end
+    a.assoc(state(), "conn", remote.connect({host = host, port = port, ["on-failure"] = _8_, ["on-success"] = _9_, ["on-error"] = _10_}))
   end
-  a.assoc(state(), "conn", remote.connect({host = host, port = port, ["on-failure"] = _8_, ["on-success"] = _9_, ["on-error"] = _10_}))
-  local function _12_(_)
-  end
-  return send(":ok", _12_)
+  return connection_info()
 end
 _2amodule_2a["connect"] = connect
 local function try_ensure_conn()
@@ -127,13 +135,13 @@ _2amodule_locals_2a["display-stdout"] = display_stdout
 local function eval_str(opts)
   try_ensure_conn()
   if not a["empty?"](opts.code) then
-    local _15_
+    local _14_
     if not a["empty?"](opts.context) then
-      _15_ = opts.context
+      _14_ = opts.context
     else
-      _15_ = nil
+      _14_ = nil
     end
-    local function _17_(msg)
+    local function _16_(msg)
       local stdout, result = parser["parse-result"](msg)
       display_stdout(stdout)
       if (nil ~= result) then
@@ -150,7 +158,7 @@ local function eval_str(opts)
         return nil
       end
     end
-    return send(opts.code, _15_, _17_)
+    return eval_and_grab_output(opts.code, _14_, _16_)
   else
     return nil
   end
@@ -158,10 +166,10 @@ end
 _2amodule_2a["eval-str"] = eval_str
 local function doc_str(opts)
   try_ensure_conn()
-  local function _22_(_241)
+  local function _21_(_241)
     return ("(describe #'" .. _241 .. ")")
   end
-  return eval_str(a.update(opts, "code", _22_))
+  return eval_str(a.update(opts, "code", _21_))
 end
 _2amodule_2a["doc-str"] = doc_str
 local function eval_file(opts)

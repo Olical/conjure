@@ -63,7 +63,7 @@
       (a.assoc (state) :conn nil))))
 
 
-(defn- send [msg context cb]
+(defn- remote-execute [slyfn msg context cb]
   (with-conn-or-warn
     (fn [conn]
       (let [eval-id (a.get (a.update (state) :eval-id a.inc) :eval-id)]
@@ -73,10 +73,23 @@
         (remote.send
           conn
           (str.join
-            ["(:emacs-rex (slynk:eval-and-grab-output \""
-             (parser.escape-string msg)
-             "\") \"" (or context ":common-lisp-user") "\" t " eval-id ")"])
+            ["(:emacs-rex (slynk:"
+             slyfn
+             " " 
+             (parser.wrap-message msg)
+             ") " 
+             (parser.wrap-message-or-nil (or context nil))
+             " t "
+             eval-id
+             ")"]) 
           cb)))))
+
+;; functions we can send to SLYNK:
+(defn eval-and-grab-output [msg context cb]
+   (remote-execute :eval-and-grab-output msg context cb))
+(defn connection-info []
+   (remote-execute :connection-info))
+; -----------------------------------
 
 (defn connect [opts]
   (let [opts (or opts {})
@@ -105,9 +118,9 @@
          (fn [err]
            (if err
              (display-conn-status err)
-             (disconnect)))}))
+             (disconnect)))})))
+  (connection-info))
 
-    (send ":ok" (fn [_]))))
 
 (defn- try-ensure-conn []
   (when (not (connected?))
@@ -123,7 +136,7 @@
   (try-ensure-conn)
 
   (when (not (a.empty? opts.code))
-    (send
+    (eval-and-grab-output
       opts.code
       (when (not (a.empty? opts.context))
         opts.context)
