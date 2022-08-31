@@ -196,13 +196,16 @@ _2amodule_2a["omnifunc"] = omnifunc
 nvim.ex.function_(str.join("\n", {"ConjureEvalMotion(kind)", "call luaeval(\"require('conjure.eval')['selection'](_A)\", a:kind)", "endfunction"}))
 nvim.ex.function_(str.join("\n", {"ConjureOmnifunc(findstart, base)", "return luaeval(\"require('conjure.mapping')['omnifunc'](_A[1] == 1, _A[2])\", [a:findstart, a:base])", "endfunction"}))
 nvim.ex.command_("-nargs=? -range ConjureEval", bridge["viml->lua"]("conjure.mapping", "eval-ranged-command", {args = "<line1>, <line2>, <q-args>"}))
-nvim.ex.command_("-nargs=* -range -complete=file ConjureConnect", bridge["viml->lua"]("conjure.mapping", "connect-command", {args = "<f-args>"}))
 local function _20_(_241)
+  return connect_command(unpack((_241).fargs))
+end
+nvim.create_user_command("ConjureConnect", _20_, {nargs = "*", range = true, complete = "file"})
+local function _21_(_241)
   return client_state_command((_241).args)
 end
-nvim.create_user_command("ConjureClientState", _20_, {nargs = "?"})
-local function _21_()
+nvim.create_user_command("ConjureClientState", _21_, {nargs = "?"})
+local function _22_()
   return school.start()
 end
-nvim.create_user_command("ConjureSchool", _21_, {})
+nvim.create_user_command("ConjureSchool", _22_, {})
 return _2amodule_2a
