@@ -12,9 +12,11 @@
   "Hello, World!
   This is a function."
   [a b]
-  #dbg (+ a b))
+  (+ a b))
 
 (add 1 2)
+
+(rand-int 10)
 
 #{:a :b :c}
 #?(:clj :hi-clojure :cljs :hi-cljs)

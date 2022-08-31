@@ -25,19 +25,20 @@ local function sanitise_text(s)
   end
 end
 _2amodule_2a["sanitise-text"] = sanitise_text
-local function display(opts)
-  local hl_group = config["get-in"]({"eval", "inline", "highlight"})
+local function clear(opts)
   local function _2_()
-    return nvim.buf_set_virtual_text(a.get(opts, "buf", 0), ns_id, opts.line, {{sanitise_text(opts.text), hl_group}}, {})
+    return nvim.buf_clear_namespace(a.get(opts, "buf", 0), ns_id, 0, -1)
   end
   return pcall(_2_)
 end
-_2amodule_2a["display"] = display
-local function clear(opts)
+_2amodule_2a["clear"] = clear
+local function display(opts)
+  local hl_group = config["get-in"]({"eval", "inline", "highlight"})
   local function _3_()
-    return nvim.buf_clear_namespace(a.get(opts, "buf", 0), ns_id, 0, -1)
+    clear()
+    return nvim.buf_set_virtual_text(a.get(opts, "buf", 0), ns_id, opts.line, {{sanitise_text(opts.text), hl_group}}, {})
   end
   return pcall(_3_)
 end
-_2amodule_2a["clear"] = clear
+_2amodule_2a["display"] = display
 return _2amodule_2a
