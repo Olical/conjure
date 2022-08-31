@@ -15,7 +15,6 @@
 "harrygallagher4"
 "jcpsantiago"
 "jkrasnay"
-"ketansrivastav"
 "kevinkrouse"
 "lucasdf"
 "lucaslollobrigida"
