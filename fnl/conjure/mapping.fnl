@@ -168,11 +168,11 @@
         "endfunction"]
        (str.join "\n")))
 
-(nvim.ex.command_
-  "-nargs=? -range ConjureEval"
-  (bridge.viml->lua
-    :conjure.mapping :eval-ranged-command
-    {:args "<line1>, <line2>, <q-args>"}))
+(nvim.create_user_command
+  "ConjureEval"
+  #(eval-ranged-command (. $ :line1) (. $ :line2) (. $ :args))
+  {:nargs "?"
+   :range true })
 
 (nvim.create_user_command
   "ConjureConnect"
