@@ -46,15 +46,20 @@ config.merge({client = {clojure = {nrepl = {connection = {default_host = "localh
 local function context(header)
   local _1_ = header
   if (nil ~= _1_) then
-    local _2_ = parse["strip-meta"](_1_)
+    local _2_ = parse["strip-shebang"](_1_)
     if (nil ~= _2_) then
-      local _3_ = parse["strip-comments"](_2_)
+      local _3_ = parse["strip-meta"](_2_)
       if (nil ~= _3_) then
-        local _4_ = string.match(_3_, "%(%s*ns%s+([^)]*)")
+        local _4_ = parse["strip-comments"](_3_)
         if (nil ~= _4_) then
-          local _5_ = str.split(_4_, "%s+")
+          local _5_ = string.match(_4_, "%(%s*ns%s+([^)]*)")
           if (nil ~= _5_) then
-            return a.first(_5_)
+            local _6_ = str.split(_5_, "%s+")
+            if (nil ~= _6_) then
+              return a.first(_6_)
+            else
+              return _6_
+            end
           else
             return _5_
           end

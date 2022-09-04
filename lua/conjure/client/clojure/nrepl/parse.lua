@@ -33,4 +33,13 @@ local function strip_comments(s)
   end
 end
 _2amodule_2a["strip-comments"] = strip_comments
+local function strip_shebang(s)
+  local _7_ = s
+  if (nil ~= _7_) then
+    return string.gsub(_7_, "^#![^\n]*\n", "")
+  else
+    return _7_
+  end
+end
+_2amodule_2a["strip-shebang"] = strip_shebang
 return _2amodule_2a
