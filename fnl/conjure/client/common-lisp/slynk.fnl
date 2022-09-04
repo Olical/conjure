@@ -9,7 +9,7 @@
              config conjure.config
              client conjure.client
              remote conjure.remote.slynk
-             parser conjure.client.common-lisp.parser
+             output conjure.client.common-lisp.output
              ts conjure.tree-sitter}})
 
 (def buf-suffix ".lisp")
@@ -76,9 +76,9 @@
             ["(:emacs-rex (slynk:"
              slyfn
              " " 
-             (parser.wrap-message msg)
+             (output.wrap-message msg)
              ") " 
-             (parser.wrap-message-or-nil (or context nil))
+             (output.wrap-message-or-nil (or context nil))
              " t "
              eval-id
              ")"]) 
@@ -127,10 +127,6 @@
     (connect {:silent? true})))
 
 
-(defn- display-stdout [msg]
-  (when (and (not= nil msg) (not= "" msg))
-    (log.append (text.prefixed-lines msg comment-prefix))))
-
 
 (defn eval-str [opts]
   (try-ensure-conn)
@@ -141,8 +137,8 @@
       (when (not (a.empty? opts.context))
         opts.context)
       (fn [msg]
-        (let [(stdout result) (parser.parse-result msg)]
-          (display-stdout stdout)
+        (let [(stdout result) (output.parse-result msg)]
+          (output.display-stdout stdout)
           (when (not= nil result)
             (when opts.on-result
               (opts.on-result result))

@@ -11,7 +11,7 @@ do
   _2amodule_locals_2a = (_2amodule_2a)["aniseed/locals"]
 end
 local autoload = (require("conjure.aniseed.autoload")).autoload
-local a, bridge, client, config, log, mapping, nvim, parser, remote, str, text, ts = autoload("conjure.aniseed.core"), autoload("conjure.bridge"), autoload("conjure.client"), autoload("conjure.config"), autoload("conjure.log"), autoload("conjure.mapping"), autoload("conjure.aniseed.nvim"), autoload("conjure.client.common-lisp.parser"), autoload("conjure.remote.slynk"), autoload("conjure.aniseed.string"), autoload("conjure.text"), autoload("conjure.tree-sitter")
+local a, bridge, client, config, log, mapping, nvim, output, remote, str, text, ts = autoload("conjure.aniseed.core"), autoload("conjure.bridge"), autoload("conjure.client"), autoload("conjure.config"), autoload("conjure.log"), autoload("conjure.mapping"), autoload("conjure.aniseed.nvim"), autoload("conjure.client.common-lisp.output"), autoload("conjure.remote.slynk"), autoload("conjure.aniseed.string"), autoload("conjure.text"), autoload("conjure.tree-sitter")
 do end (_2amodule_locals_2a)["a"] = a
 _2amodule_locals_2a["bridge"] = bridge
 _2amodule_locals_2a["client"] = client
@@ -19,7 +19,7 @@ _2amodule_locals_2a["config"] = config
 _2amodule_locals_2a["log"] = log
 _2amodule_locals_2a["mapping"] = mapping
 _2amodule_locals_2a["nvim"] = nvim
-_2amodule_locals_2a["parser"] = parser
+_2amodule_locals_2a["output"] = output
 _2amodule_locals_2a["remote"] = remote
 _2amodule_locals_2a["str"] = str
 _2amodule_locals_2a["text"] = text
@@ -75,7 +75,7 @@ _2amodule_2a["disconnect"] = disconnect
 local function remote_execute(slyfn, msg, context, cb)
   local function _6_(conn)
     local eval_id = a.get(a.update(state(), "eval-id", a.inc), "eval-id")
-    return remote.send(conn, str.join({"(:emacs-rex (slynk:", slyfn, " ", parser["wrap-message"](msg), ") ", parser["wrap-message-or-nil"]((context or nil)), " t ", eval_id, ")"}), cb)
+    return remote.send(conn, str.join({"(:emacs-rex (slynk:", slyfn, " ", output["wrap-message"](msg), ") ", output["wrap-message-or-nil"]((context or nil)), " t ", eval_id, ")"}), cb)
   end
   return with_conn_or_warn(_6_)
 end
@@ -124,26 +124,18 @@ local function try_ensure_conn()
   end
 end
 _2amodule_locals_2a["try-ensure-conn"] = try_ensure_conn
-local function display_stdout(msg)
-  if ((nil ~= msg) and ("" ~= msg)) then
-    return log.append(text["prefixed-lines"](msg, comment_prefix))
-  else
-    return nil
-  end
-end
-_2amodule_locals_2a["display-stdout"] = display_stdout
 local function eval_str(opts)
   try_ensure_conn()
   if not a["empty?"](opts.code) then
-    local _14_
+    local _13_
     if not a["empty?"](opts.context) then
-      _14_ = opts.context
+      _13_ = opts.context
     else
-      _14_ = nil
+      _13_ = nil
     end
-    local function _16_(msg)
-      local stdout, result = parser["parse-result"](msg)
-      display_stdout(stdout)
+    local function _15_(msg)
+      local stdout, result = output["parse-result"](msg)
+      output["display-stdout"](stdout)
       if (nil ~= result) then
         if opts["on-result"] then
           opts["on-result"](result)
@@ -158,7 +150,7 @@ local function eval_str(opts)
         return nil
       end
     end
-    return eval_and_grab_output(opts.code, _14_, _16_)
+    return eval_and_grab_output(opts.code, _13_, _15_)
   else
     return nil
   end
@@ -166,10 +158,10 @@ end
 _2amodule_2a["eval-str"] = eval_str
 local function doc_str(opts)
   try_ensure_conn()
-  local function _21_(_241)
+  local function _20_(_241)
     return ("(describe #'" .. _241 .. ")")
   end
-  return eval_str(a.update(opts, "code", _21_))
+  return eval_str(a.update(opts, "code", _20_))
 end
 _2amodule_2a["doc-str"] = doc_str
 local function eval_file(opts)
