@@ -105,6 +105,7 @@
 
 (defn context [header]
   (-?> header
+       (parse.strip-shebang)
        (parse.strip-meta)
        (parse.strip-comments)
        (string.match "%(%s*ns%s+([^)]*)")

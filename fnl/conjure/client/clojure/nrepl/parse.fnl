@@ -8,3 +8,7 @@
 (defn strip-comments [s]
   (-?> s
        (string.gsub ";.-[\n$]" "")))
+
+(defn strip-shebang [s]
+  (-?> s
+       (string.gsub "^#![^\n]*\n" "")))
