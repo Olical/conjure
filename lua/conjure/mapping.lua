@@ -27,11 +27,15 @@ local function cfg(k)
   return config["get-in"]({"mapping", k})
 end
 _2amodule_locals_2a["cfg"] = cfg
+local function desc(k)
+  return config["get-in"]({"desc", k})
+end
+_2amodule_locals_2a["desc"] = desc
 local function vim_repeat(mapping)
   return ("repeat#set(\"" .. nvim.fn.escape(mapping, "\"") .. "\", 1)")
 end
 _2amodule_locals_2a["vim-repeat"] = vim_repeat
-local function buf(mode_or_opts, cmd_suffix, keys, ...)
+local function buf(mode_or_opts, cmd_suffix, keys, desc0, ...)
   if keys then
     local function _2_(...)
       if ("table" == type(mode_or_opts)) then
@@ -68,7 +72,7 @@ local function buf(mode_or_opts, cmd_suffix, keys, ...)
     else
       _5_ = unpack(args)
     end
-    return nvim.buf_set_keymap(0, mode, mapping, _5_, {silent = true, noremap = true})
+    return nvim.buf_set_keymap(0, mode, mapping, _5_, {silent = true, noremap = true, desc = desc0})
   else
     return nil
   end
@@ -89,29 +93,29 @@ local function eval_marked_form()
 end
 _2amodule_2a["eval-marked-form"] = eval_marked_form
 local function on_filetype()
-  buf("n", "LogSplit", cfg("log_split"), "conjure.log", "split")
-  buf("n", "LogVSplit", cfg("log_vsplit"), "conjure.log", "vsplit")
-  buf("n", "LogTab", cfg("log_tab"), "conjure.log", "tab")
-  buf("n", "LogBuf", cfg("log_buf"), "conjure.log", "buf")
-  buf("n", "LogToggle", cfg("log_toggle"), "conjure.log", "toggle")
-  buf("n", "LogCloseVisible", cfg("log_close_visible"), "conjure.log", "close-visible")
-  buf("n", "LogResetSoft", cfg("log_reset_soft"), "conjure.log", "reset-soft")
-  buf("n", "LogResetHard", cfg("log_reset_hard"), "conjure.log", "reset-hard")
-  buf("n", "LogJumpToLatest", cfg("log_jump_to_latest"), "conjure.log", "jump-to-latest")
-  buf("n", nil, cfg("eval_motion"), ":set opfunc=ConjureEvalMotion<cr>g@")
-  buf("n", "EvalCurrentForm", cfg("eval_current_form"), "conjure.eval", "current-form")
-  buf("n", "EvalCommentCurrentForm", cfg("eval_comment_current_form"), "conjure.eval", "comment-current-form")
-  buf("n", "EvalRootForm", cfg("eval_root_form"), "conjure.eval", "root-form")
-  buf("n", "EvalCommentRootForm", cfg("eval_comment_root_form"), "conjure.eval", "comment-root-form")
-  buf("n", "EvalWord", cfg("eval_word"), "conjure.eval", "word")
-  buf("n", "EvalCommentWord", cfg("eval_comment_word"), "conjure.eval", "comment-word")
-  buf("n", "EvalReplaceForm", cfg("eval_replace_form"), "conjure.eval", "replace-form")
-  buf({mode = "n", ["repeat?"] = false}, "EvalMarkedForm", cfg("eval_marked_form"), "conjure.mapping", "eval-marked-form")
-  buf("n", "EvalFile", cfg("eval_file"), "conjure.eval", "file")
-  buf("n", "EvalBuf", cfg("eval_buf"), "conjure.eval", "buf")
-  buf("v", "EvalVisual", cfg("eval_visual"), "conjure.eval", "selection")
-  buf("n", "DocWord", cfg("doc_word"), "conjure.eval", "doc-word")
-  buf("n", "DefWord", cfg("def_word"), "conjure.eval", "def-word")
+  buf("n", "LogSplit", cfg("log_split"), desc("log_split"), "conjure.log", "split")
+  buf("n", "LogVSplit", cfg("log_vsplit"), desc("log_vsplit"), "conjure.log", "vsplit")
+  buf("n", "LogTab", cfg("log_tab"), desc("log_tab"), "conjure.log", "tab")
+  buf("n", "LogBuf", cfg("log_buf"), desc("log_buf"), "conjure.log", "buf")
+  buf("n", "LogToggle", cfg("log_toggle"), desc("log_toggle"), "conjure.log", "toggle")
+  buf("n", "LogCloseVisible", cfg("log_close_visible"), desc("log_close_visible"), "conjure.log", "close-visible")
+  buf("n", "LogResetSoft", cfg("log_reset_soft"), desc("log_reset_soft"), "conjure.log", "reset-soft")
+  buf("n", "LogResetHard", cfg("log_reset_hard"), desc("log_reset_hard"), "conjure.log", "reset-hard")
+  buf("n", "LogJumpToLatest", cfg("log_jump_to_latest"), desc("log_jump_to_latest"), "conjure.log", "jump-to-latest")
+  buf("n", nil, cfg("eval_motion"), desc("eval_motion"), ":set opfunc=ConjureEvalMotion<cr>g@")
+  buf("n", "EvalCurrentForm", cfg("eval_current_form"), desc("eval_current_form"), "conjure.eval", "current-form")
+  buf("n", "EvalCommentCurrentForm", cfg("eval_comment_current_form"), desc("eval_comment_current_form"), "conjure.eval", "comment-current-form")
+  buf("n", "EvalRootForm", cfg("eval_root_form"), desc("eval_root_form"), "conjure.eval", "root-form")
+  buf("n", "EvalCommentRootForm", cfg("eval_comment_root_form"), desc("eval_comment_root_form"), "conjure.eval", "comment-root-form")
+  buf("n", "EvalWord", cfg("eval_word"), desc("eval_word"), "conjure.eval", "word")
+  buf("n", "EvalCommentWord", cfg("eval_comment_word"), desc("eval_comment_word"), "conjure.eval", "comment-word")
+  buf("n", "EvalReplaceForm", cfg("eval_replace_form"), desc("eval_replace_form"), "conjure.eval", "replace-form")
+  buf({mode = "n", ["repeat?"] = false}, "EvalMarkedForm", cfg("eval_marked_form"), desc("eval_marked_form"), "conjure.mapping", "eval-marked-form")
+  buf("n", "EvalFile", cfg("eval_file"), desc("eval_file"), "conjure.eval", "file")
+  buf("n", "EvalBuf", cfg("eval_buf"), desc("eval_buf"), "conjure.eval", "buf")
+  buf("v", "EvalVisual", cfg("eval_visual"), desc("eval_visual"), "conjure.eval", "selection")
+  buf("n", "DocWord", cfg("doc_word"), desc("doc_word"), "conjure.eval", "doc-word")
+  buf("n", "DefWord", cfg("def_word"), desc("def_word"), "conjure.eval", "def-word")
   do
     local fn_name = config["get-in"]({"completion", "omnifunc"})
     if fn_name then

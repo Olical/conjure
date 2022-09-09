@@ -14,10 +14,13 @@
 (defn- cfg [k]
   (config.get-in [:mapping k]))
 
+(defn- desc [k]
+  (config.get-in [:desc k]))
+
 (defn- vim-repeat [mapping]
   (.. "repeat#set(\"" (nvim.fn.escape mapping "\"") "\", 1)"))
 
-(defn buf [mode-or-opts cmd-suffix keys ...]
+(defn buf [mode-or-opts cmd-suffix keys desc ...]
   (when keys
     (let [[mode opts] (if (= :table (type mode-or-opts))
                         [(a.get mode-or-opts :mode) mode-or-opts]
@@ -41,7 +44,8 @@
                 ""))
           (unpack args))
         {:silent true
-         :noremap true}))))
+         :noremap true
+         :desc desc}))))
 
 (defn eval-marked-form []
   (let [mark (eval.marked-form)
@@ -54,35 +58,35 @@
       (nvim.ex.silent_ :call (vim-repeat (.. mapping mark))))))
 
 (defn on-filetype []
-  (buf :n :LogSplit (cfg :log_split) :conjure.log :split)
-  (buf :n :LogVSplit (cfg :log_vsplit) :conjure.log :vsplit)
-  (buf :n :LogTab (cfg :log_tab) :conjure.log :tab)
-  (buf :n :LogBuf (cfg :log_buf) :conjure.log :buf)
-  (buf :n :LogToggle (cfg :log_toggle) :conjure.log :toggle)
-  (buf :n :LogCloseVisible (cfg :log_close_visible) :conjure.log :close-visible)
-  (buf :n :LogResetSoft (cfg :log_reset_soft) :conjure.log :reset-soft)
-  (buf :n :LogResetHard (cfg :log_reset_hard) :conjure.log :reset-hard)
-  (buf :n :LogJumpToLatest (cfg :log_jump_to_latest) :conjure.log :jump-to-latest)
+  (buf :n :LogSplit (cfg :log_split) (desc :log_split) :conjure.log :split)
+  (buf :n :LogVSplit (cfg :log_vsplit) (desc :log_vsplit) :conjure.log :vsplit)
+  (buf :n :LogTab (cfg :log_tab) (desc :log_tab) :conjure.log :tab)
+  (buf :n :LogBuf (cfg :log_buf) (desc :log_buf) :conjure.log :buf)
+  (buf :n :LogToggle (cfg :log_toggle) (desc :log_toggle) :conjure.log :toggle)
+  (buf :n :LogCloseVisible (cfg :log_close_visible) (desc :log_close_visible) :conjure.log :close-visible)
+  (buf :n :LogResetSoft (cfg :log_reset_soft) (desc :log_reset_soft) :conjure.log :reset-soft)
+  (buf :n :LogResetHard (cfg :log_reset_hard) (desc :log_reset_hard) :conjure.log :reset-hard)
+  (buf :n :LogJumpToLatest (cfg :log_jump_to_latest) (desc :log_jump_to_latest) :conjure.log :jump-to-latest)
 
-  (buf :n nil (cfg :eval_motion) ":set opfunc=ConjureEvalMotion<cr>g@")
+  (buf :n nil (cfg :eval_motion) (desc :eval_motion) ":set opfunc=ConjureEvalMotion<cr>g@")
 
-  (buf :n :EvalCurrentForm (cfg :eval_current_form) :conjure.eval :current-form)
-  (buf :n :EvalCommentCurrentForm (cfg :eval_comment_current_form) :conjure.eval :comment-current-form)
+  (buf :n :EvalCurrentForm (cfg :eval_current_form) (desc :eval_current_form) :conjure.eval :current-form)
+  (buf :n :EvalCommentCurrentForm (cfg :eval_comment_current_form) (desc :eval_comment_current_form) :conjure.eval :comment-current-form)
 
-  (buf :n :EvalRootForm (cfg :eval_root_form) :conjure.eval :root-form)
-  (buf :n :EvalCommentRootForm (cfg :eval_comment_root_form) :conjure.eval :comment-root-form)
+  (buf :n :EvalRootForm (cfg :eval_root_form) (desc :eval_root_form) :conjure.eval :root-form)
+  (buf :n :EvalCommentRootForm (cfg :eval_comment_root_form) (desc :eval_comment_root_form) :conjure.eval :comment-root-form)
 
-  (buf :n :EvalWord (cfg :eval_word) :conjure.eval :word)
-  (buf :n :EvalCommentWord (cfg :eval_comment_word) :conjure.eval :comment-word)
+  (buf :n :EvalWord (cfg :eval_word) (desc :eval_word) :conjure.eval :word)
+  (buf :n :EvalCommentWord (cfg :eval_comment_word) (desc :eval_comment_word) :conjure.eval :comment-word)
 
-  (buf :n :EvalReplaceForm (cfg :eval_replace_form) :conjure.eval :replace-form)
-  (buf {:mode :n :repeat? false} :EvalMarkedForm (cfg :eval_marked_form) :conjure.mapping :eval-marked-form)
-  (buf :n :EvalFile (cfg :eval_file) :conjure.eval :file)
-  (buf :n :EvalBuf (cfg :eval_buf) :conjure.eval :buf)
-  (buf :v :EvalVisual (cfg :eval_visual) :conjure.eval :selection)
+  (buf :n :EvalReplaceForm (cfg :eval_replace_form) (desc :eval_replace_form) :conjure.eval :replace-form)
+  (buf {:mode :n :repeat? false} :EvalMarkedForm (cfg :eval_marked_form) (desc :eval_marked_form) :conjure.mapping :eval-marked-form)
+  (buf :n :EvalFile (cfg :eval_file) (desc :eval_file) :conjure.eval :file)
+  (buf :n :EvalBuf (cfg :eval_buf) (desc :eval_buf) :conjure.eval :buf)
+  (buf :v :EvalVisual (cfg :eval_visual) (desc :eval_visual) :conjure.eval :selection)
 
-  (buf :n :DocWord (cfg :doc_word) :conjure.eval :doc-word)
-  (buf :n :DefWord (cfg :def_word) :conjure.eval :def-word)
+  (buf :n :DocWord (cfg :doc_word) (desc :doc_word) :conjure.eval :doc-word)
+  (buf :n :DefWord (cfg :def_word) (desc :def_word) :conjure.eval :def-word)
 
   (let [fn-name (config.get-in [:completion :omnifunc])]
     (when fn-name
