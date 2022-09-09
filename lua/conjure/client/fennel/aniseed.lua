@@ -235,10 +235,10 @@ local function run_all_tests()
 end
 _2amodule_2a["run-all-tests"] = run_all_tests
 local function on_filetype()
-  mapping.buf("n", "FnlRunBufTests", cfg({"mapping", "run_buf_tests"}), _2amodule_name_2a, "run-buf-tests")
-  mapping.buf("n", "FnlRunAllTests", cfg({"mapping", "run_all_tests"}), _2amodule_name_2a, "run-all-tests")
-  mapping.buf("n", "FnlResetREPL", cfg({"mapping", "reset_repl"}), _2amodule_name_2a, "reset-repl")
-  return mapping.buf("n", "FnlResetAllREPLs", cfg({"mapping", "reset_all_repls"}), _2amodule_name_2a, "reset-all-repls")
+  mapping.buf("n", "FnlRunBufTests", cfg({"mapping", "run_buf_tests"}), cfg({"desc", "run_buf_tests"}), _2amodule_name_2a, "run-buf-tests")
+  mapping.buf("n", "FnlRunAllTests", cfg({"mapping", "run_all_tests"}), cfg({"desc", "run_all_tests"}), _2amodule_name_2a, "run-all-tests")
+  mapping.buf("n", "FnlResetREPL", cfg({"mapping", "reset_repl"}), cfg({"desc", "reset_repl"}), _2amodule_name_2a, "reset-repl")
+  return mapping.buf("n", "FnlResetAllREPLs", cfg({"mapping", "reset_all_repls"}), cfg({"desc", "reset_all_repls"}), _2amodule_name_2a, "reset-all-repls")
 end
 _2amodule_2a["on-filetype"] = on_filetype
 local function value__3ecompletions(x)

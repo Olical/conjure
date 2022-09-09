@@ -105,6 +105,35 @@
     :eval_motion "E"
     :def_word "gd"
     :doc_word ["K"]}
+   :desc
+   {:log_split "Open log in new horizontal split window"
+    :log_vsplit "Open log in new vertical split window"
+    :log_tab "Open log in new tab"
+    :log_buf "Open log in new buffer"
+    :log_toggle "Toggle log buffer"
+    :log_close_visible "Close all visible log windows"
+    :log_reset_soft "Soft reset log"
+    :log_reset_hard "Hard reset log"
+    :log_jump_to_latest "Jump to latest part of log"
+
+    ;; :eval_current_form "ee"
+    ;; :eval_comment_current_form "ece"
+    ;;
+    ;; :eval_root_form "er"
+    ;; :eval_comment_root_form "ecr"
+    ;;
+    ;; :eval_word "ew"
+    ;; :eval_comment_word "ecw"
+    ;;
+    ;; :eval_replace_form "e!"
+    ;; :eval_marked_form "em"
+    ;; :eval_file "ef"
+    ;; :eval_buf "eb"
+    ;; :eval_visual "E"
+    ;; :eval_motion "E"
+    ;; :def_word "gd"
+    ;; :doc_word ["K"]
+    }
 
    :completion
    {:omnifunc :ConjureOmnifunc
