@@ -117,11 +117,13 @@
           (uv.spawn cmd {:stdio [stdin stdout stderr]
                          :args args
                          :env (extend-env
-                                ;; Trying to disable custom readline config.
-                                ;; Doesn't work in practice but is probably close?
-                                ;; If you know how, please open a PR!
-                                {:INPUTRC "/dev/null"
-                                 :TERM "dumb"})}
+                                (a.merge!
+                                  opts.env
+                                  ;; Trying to disable custom readline config.
+                                  ;; Doesn't work in practice but is probably close?
+                                  ;; If you know how, please open a PR!
+                                  {:INPUTRC "/dev/null"
+                                   :TERM "dumb"}))}
                     (client.schedule-wrap on-exit))]
       (if handle
         (do

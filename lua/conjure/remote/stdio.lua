@@ -161,7 +161,7 @@ local function start(opts)
   local _let_25_ = parse_cmd(opts.cmd)
   local cmd = _let_25_["cmd"]
   local args = _let_25_["args"]
-  local handle, pid_or_err = uv.spawn(cmd, {stdio = {stdin, stdout, stderr}, args = args, env = extend_env({INPUTRC = "/dev/null", TERM = "dumb"})}, client["schedule-wrap"](on_exit))
+  local handle, pid_or_err = uv.spawn(cmd, {stdio = {stdin, stdout, stderr}, args = args, env = extend_env(a["merge!"](opts.env, {INPUTRC = "/dev/null", TERM = "dumb"}))}, client["schedule-wrap"](on_exit))
   if handle then
     stdout:read_start(client["schedule-wrap"](on_stdout))
     stderr:read_start(client["schedule-wrap"](on_stderr))
