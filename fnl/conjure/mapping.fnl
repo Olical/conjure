@@ -95,8 +95,14 @@
           mapping (if (a.string? mapping-suffix)
                     (.. (cfg :prefix) mapping-suffix)
                     (a.first mapping-suffix))
-          cmd (.. :Conjure name-suffix)]
-      (nvim.create_user_command cmd handler-fn (a.get opts :command-opts {}))
+          cmd (.. :Conjure name-suffix)
+          desc (a.get opts :desc)]
+      (nvim.create_user_command
+        cmd handler-fn
+        (a.merge!
+          {:force true
+           :desc desc}
+          (a.get opts :command-opts {})))
       (nvim.buf_set_keymap
         (a.get opts :buf 0)
         (a.get opts :mode :n)
@@ -105,24 +111,17 @@
         (a.merge!
           {:silent true
            :noremap true
-           :desc (a.get opts :desc)
+           :desc desc
            :callback (fn []
                        (when (not= false (a.get opts :repeat?))
-                         (nvim.fn.repeat#set
+                         (pcall
+                           nvim.fn.repeat#set
                            (util.replace-termcodes mapping)
                            1))
-                       (nvim.command cmd))}
-          (a.get opts :mapping-opts {}))))))
 
-(defn eval-marked-form []
-  (let [mark (eval.marked-form)
-        mapping (a.some
-                  (fn [m]
-                    (and (= ":ConjureEvalMarkedForm<CR>" (a.get m :rhs))
-                         m.lhs))
-                  (nvim.buf_get_keymap 0 :n))]
-    (when (and mark mapping)
-      (nvim.ex.silent_ :call (vim-repeat (.. mapping mark))))))
+                       ;; Have to call like this to pass visual selections through.
+                       (nvim.ex.normal_ ":" cmd (util.replace-termcodes "<cr>")))}
+          (a.get opts :mapping-opts {}))))))
 
 (defn on-filetype []
   (buf2
@@ -187,7 +186,6 @@
     (util.wrap-require-fn-call :conjure.eval :comment-current-form)
     {:desc (desc :eval_comment_current_form)})
 
-
   (buf2
     :EvalRootForm (cfg :eval_root_form)
     (util.wrap-require-fn-call :conjure.eval :root-form)
@@ -215,7 +213,7 @@
 
   (buf2
     :EvalMarkedForm (cfg :eval_marked_form)
-    eval-marked-form
+    (util.wrap-require-fn-call :conjure.eval :marked-form)
     {:desc (desc :eval_marked_form)
      :repeat? false})
 
@@ -231,9 +229,12 @@
 
   (buf2
     :EvalVisual (cfg :eval_visual)
-    (util.wrap-require-fn-call :conjure.eval :selection)
+    (fn [_opts]
+      ;; Behaves differently if it gets an arg, so we make sure it gets none.
+      (eval.selection))
     {:desc (desc :eval_visual)
-     :mode :v})
+     :mode :v
+     :command-opts {:range true}})
 
   (buf2
     :DocWord (cfg :doc_word)
