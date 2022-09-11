@@ -27,8 +27,10 @@ local function cfg(k)
   return config["get-in"]({"mapping", k})
 end
 _2amodule_locals_2a["cfg"] = cfg
+local mapping_descriptions = {log_split = "Open log in new horizontal split window", log_vsplit = "Open log in new vertical split window", log_tab = "Open log in new tab", log_buf = "Open log in new buffer", log_toggle = "Toggle log buffer", log_close_visible = "Close all visible log windows", log_reset_soft = "Soft reset log", log_reset_hard = "Hard reset log", log_jump_to_latest = "Jump to latest part of log"}
+_2amodule_locals_2a["mapping-descriptions"] = mapping_descriptions
 local function desc(k)
-  return config["get-in"]({"desc", k})
+  return a.get(mapping_descriptions, k)
 end
 _2amodule_locals_2a["desc"] = desc
 local function vim_repeat(mapping)
