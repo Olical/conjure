@@ -1,7 +1,8 @@
 (module conjure.editor
   {autoload {a conjure.aniseed.core
              nvim conjure.aniseed.nvim
-             fs conjure.fs}})
+             fs conjure.fs
+             util conjure.util}})
 
 (defn- percent-fn [total-fn]
   (fn [pc]
@@ -36,7 +37,7 @@
   (nvim.ex.normal_ (.. "`" m)))
 
 (defn go-back []
-  (nvim.ex.normal_ (nvim.replace_termcodes "<c-o>" true false true)))
+  (nvim.ex.normal_ (util.replace-termcodes "<c-o>")))
 
 (defn has-filetype? [ft]
   (a.some #(= ft $1) (nvim.fn.getcompletion ft :filetype)))

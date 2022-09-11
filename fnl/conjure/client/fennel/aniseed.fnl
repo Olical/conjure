@@ -191,14 +191,10 @@
   (wrapped-test ["; run-all-tests"] (ani :test :run-all)))
 
 (defn on-filetype []
-  (mapping.buf :n :FnlRunBufTests
-               (cfg [:mapping :run_buf_tests]) (cfg [:desc :run_buf_tests]) *module-name* :run-buf-tests)
-  (mapping.buf :n :FnlRunAllTests
-               (cfg [:mapping :run_all_tests]) (cfg [:desc :run_all_tests]) *module-name* :run-all-tests)
-  (mapping.buf :n :FnlResetREPL
-               (cfg [:mapping :reset_repl]) (cfg [:desc :reset_repl]) *module-name* :reset-repl)
-  (mapping.buf :n :FnlResetAllREPLs
-               (cfg [:mapping :reset_all_repls]) (cfg [:desc :reset_all_repls]) *module-name* :reset-all-repls))
+  (mapping.buf :n :FnlRunBufTests (cfg [:mapping :run_buf_tests]) *module-name* :run-buf-tests)
+  (mapping.buf :n :FnlRunAllTests (cfg [:mapping :run_all_tests]) *module-name* :run-all-tests)
+  (mapping.buf :n :FnlResetREPL (cfg [:mapping :reset_repl]) *module-name* :reset-repl)
+  (mapping.buf :n :FnlResetAllREPLs (cfg [:mapping :reset_all_repls]) *module-name* :reset-all-repls))
 
 (defn value->completions [x]
   (when (= :table (type x))

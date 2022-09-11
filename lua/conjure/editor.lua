@@ -11,10 +11,11 @@ do
   _2amodule_locals_2a = (_2amodule_2a)["aniseed/locals"]
 end
 local autoload = (require("conjure.aniseed.autoload")).autoload
-local a, fs, nvim = autoload("conjure.aniseed.core"), autoload("conjure.fs"), autoload("conjure.aniseed.nvim")
+local a, fs, nvim, util = autoload("conjure.aniseed.core"), autoload("conjure.fs"), autoload("conjure.aniseed.nvim"), autoload("conjure.util")
 do end (_2amodule_locals_2a)["a"] = a
 _2amodule_locals_2a["fs"] = fs
 _2amodule_locals_2a["nvim"] = nvim
+_2amodule_locals_2a["util"] = util
 local function percent_fn(total_fn)
   local function _1_(pc)
     return math.floor(((total_fn() / 100) * (pc * 100)))
@@ -61,7 +62,7 @@ local function go_to_mark(m)
 end
 _2amodule_2a["go-to-mark"] = go_to_mark
 local function go_back()
-  return nvim.ex.normal_(nvim.replace_termcodes("<c-o>", true, false, true))
+  return nvim.ex.normal_(util["replace-termcodes"]("<c-o>"))
 end
 _2amodule_2a["go-back"] = go_back
 local function has_filetype_3f(ft)
