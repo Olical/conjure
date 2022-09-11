@@ -174,7 +174,7 @@
     :EvalMotion (cfg :eval_motion)
     (fn []
       (set nvim.o.opfunc :ConjureEvalMotionOpFunc)
-      (nvim.ex.normal_ "g@"))
+      (nvim.feedkeys "g@" :n false))
     {:desc (desc :eval_motion)})
 
   (buf2

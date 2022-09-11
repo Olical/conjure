@@ -130,7 +130,7 @@ local function on_filetype()
   buf2("LogJumpToLatest", cfg("log_jump_to_latest"), util["wrap-require-fn-call"]("conjure.log", "jump-to-latest"), {desc = desc("log_jump_to_latest")})
   local function _15_()
     nvim.o.opfunc = "ConjureEvalMotionOpFunc"
-    return nvim.ex.normal_("g@")
+    return nvim.feedkeys("g@", "n", false)
   end
   buf2("EvalMotion", cfg("eval_motion"), _15_, {desc = desc("eval_motion")})
   buf2("EvalCurrentForm", cfg("eval_current_form"), util["wrap-require-fn-call"]("conjure.eval", "current-form"), {desc = desc("eval_current_form")})
