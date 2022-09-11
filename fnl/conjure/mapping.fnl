@@ -215,7 +215,7 @@
 
   (buf2
     :EvalMarkedForm (cfg :eval_marked_form)
-    (util.wrap-require-fn-call :conjure.mapping :eval-marked-form)
+    eval-marked-form
     {:desc (desc :eval_marked_form)
      :repeat? false})
 
