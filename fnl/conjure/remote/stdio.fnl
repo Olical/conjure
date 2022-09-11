@@ -118,12 +118,12 @@
                          :args args
                          :env (extend-env
                                 (a.merge!
-                                  opts.env
                                   ;; Trying to disable custom readline config.
                                   ;; Doesn't work in practice but is probably close?
                                   ;; If you know how, please open a PR!
                                   {:INPUTRC "/dev/null"
-                                   :TERM "dumb"}))}
+                                   :TERM "dumb"}
+                                  opts.env))}
                     (client.schedule-wrap on-exit))]
       (if handle
         (do
