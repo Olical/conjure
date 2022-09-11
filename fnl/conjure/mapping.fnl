@@ -26,23 +26,23 @@
    :log_reset_hard "Hard reset log"
    :log_jump_to_latest "Jump to latest part of log"
 
-   ;; :eval_current_form "ee"
-   ;; :eval_comment_current_form "ece"
-   ;;
-   ;; :eval_root_form "er"
-   ;; :eval_comment_root_form "ecr"
-   ;;
-   ;; :eval_word "ew"
-   ;; :eval_comment_word "ecw"
-   ;;
-   ;; :eval_replace_form "e!"
-   ;; :eval_marked_form "em"
-   ;; :eval_file "ef"
-   ;; :eval_buf "eb"
-   ;; :eval_visual "E"
-   ;; :eval_motion "E"
-   ;; :def_word "gd"
-   ;; :doc_word ["K"]
+   :eval_current_form "Evaluate current form"
+   :eval_comment_current_form "Evaluate current form and comment result"
+
+   :eval_root_form "Evaluate root form"
+   :eval_comment_root_form "Evaluate root form and comment result"
+
+   :eval_word "Evaluate word"
+   :eval_comment_word "Evaluate word and comment result"
+
+   :eval_replace_form "Evaluate form and replace with result"
+   :eval_marked_form "Evaluate marked form"
+   :eval_file "Evaluate file"
+   :eval_buf "Evaluate buffer"
+   :eval_visual "Evaluate visual select"
+   :eval_motion "Evaluate motion"
+   :def_word "Get definition under cursor"
+   :doc_word "Get documentation under cursor"
    })
 
 (defn- desc [k]
