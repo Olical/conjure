@@ -15,7 +15,7 @@ local nvim = autoload("conjure.aniseed.nvim")
 do end (_2amodule_locals_2a)["nvim"] = nvim
 local function wrap_require_fn_call(mod, f)
   local function _1_(...)
-    return require(mod)[f](unpack(...))
+    return require(mod)[f](...)
   end
   return _1_
 end
