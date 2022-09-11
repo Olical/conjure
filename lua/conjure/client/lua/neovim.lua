@@ -31,11 +31,6 @@ _2amodule_2a["comment-prefix"] = comment_prefix
 config.merge({client = {lua = {neovim = {mapping = {reset_env = "rr", reset_all_envs = "ra"}, persistent = "debug"}}}})
 local cfg = config["get-in-fn"]({"client", "lua", "neovim"})
 do end (_2amodule_locals_2a)["cfg"] = cfg
-local function on_filetype()
-  mapping.buf("n", "LuaResetEnv", cfg({"mapping", "reset_env"}), _2amodule_name_2a, "reset-env")
-  return mapping.buf("n", "LuaResetAllEnvs", cfg({"mapping", "reset_all_envs"}), _2amodule_name_2a, "reset-all-envs")
-end
-_2amodule_2a["on-filetype"] = on_filetype
 local repls = ((_2amodule_2a).repls or {})
 do end (_2amodule_locals_2a)["repls"] = repls
 local function reset_env(filename)
@@ -53,23 +48,34 @@ local function reset_all_envs()
   return log.append({(comment_prefix .. "Reset all environments")}, {["break?"] = true})
 end
 _2amodule_2a["reset-all-envs"] = reset_all_envs
+local function on_filetype()
+  local function _2_()
+    return reset_env()
+  end
+  mapping.buf2("LuaResetEnv", cfg({"mapping", "reset_env"}), _2_)
+  local function _3_()
+    return reset_all_envs()
+  end
+  return mapping.buf2("LuaResetAllEnvs", cfg({"mapping", "reset_all_envs"}), _3_)
+end
+_2amodule_2a["on-filetype"] = on_filetype
 local function display(out, ret, err)
   local outs
-  local function _2_(_241)
-    return (comment_prefix .. "(out) " .. _241)
-  end
-  local function _3_(_241)
-    return ("" ~= _241)
-  end
-  outs = a.map(_2_, a.filter(_3_, str.split((out or ""), "\n")))
-  local errs
   local function _4_(_241)
-    return (comment_prefix .. "(err) " .. _241)
+    return (comment_prefix .. "(out) " .. _241)
   end
   local function _5_(_241)
     return ("" ~= _241)
   end
-  errs = a.map(_4_, a.filter(_5_, str.split((err or ""), "\n")))
+  outs = a.map(_4_, a.filter(_5_, str.split((out or ""), "\n")))
+  local errs
+  local function _6_(_241)
+    return (comment_prefix .. "(err) " .. _241)
+  end
+  local function _7_(_241)
+    return ("" ~= _241)
+  end
+  errs = a.map(_6_, a.filter(_7_, str.split((err or ""), "\n")))
   log.append(outs)
   log.append(errs)
   return log.append(str.split(("res = " .. vim.inspect(ret)), "\n"))
@@ -91,22 +97,22 @@ _2amodule_locals_2a["lua-compile"] = lua_compile
 local function default_env()
   local base = setmetatable({["REDIRECTED-OUTPUT"] = "", io = setmetatable({}, {__index = _G.io})}, {__index = _G})
   local print_redirected
-  local function _8_(...)
+  local function _10_(...)
     base["REDIRECTED-OUTPUT"] = (base["REDIRECTED-OUTPUT"] .. str.join("\9", {...}) .. "\n")
     return nil
   end
-  print_redirected = _8_
+  print_redirected = _10_
   local io_write_redirected
-  local function _9_(...)
+  local function _11_(...)
     base["REDIRECTED-OUTPUT"] = (base["REDIRECTED-OUTPUT"] .. str.join({...}))
     return nil
   end
-  io_write_redirected = _9_
+  io_write_redirected = _11_
   local io_read_redirected
-  local function _10_()
+  local function _12_()
     return ((extract.prompt("Input required: ") or "") .. "\n")
   end
-  io_read_redirected = _10_
+  io_read_redirected = _12_
   base["print"] = print_redirected
   base.io["write"] = io_write_redirected
   base.io["read"] = io_read_redirected
@@ -126,7 +132,7 @@ local function pcall_persistent_debug(file, f)
   do end (repls[file].env)["REDIRECTED-OUTPUT"] = ""
   setfenv(f, repls[file].env)
   local collect_env
-  local function _11_(_0, _1)
+  local function _13_(_0, _1)
     debug.sethook()
     local i = 1
     local n = true
@@ -141,7 +147,7 @@ local function pcall_persistent_debug(file, f)
     end
     return nil
   end
-  collect_env = _11_
+  collect_env = _13_
   debug.sethook(collect_env, "r")
   local status, ret = pcall(f)
   return status, ret, repls[file].env["REDIRECTED-OUTPUT"]
@@ -152,15 +158,15 @@ local function lua_eval(opts)
   if f then
     local pcall_custom
     do
-      local _13_ = cfg({"persistent"})
-      if (_13_ == "debug") then
-        local _14_ = opts["file-path"]
-        local function _15_(...)
-          return pcall_persistent_debug(_14_, ...)
+      local _15_ = cfg({"persistent"})
+      if (_15_ == "debug") then
+        local _16_ = opts["file-path"]
+        local function _17_(...)
+          return pcall_persistent_debug(_16_, ...)
         end
-        pcall_custom = _15_
+        pcall_custom = _17_
       elseif true then
-        local _0 = _13_
+        local _0 = _15_
         pcall_custom = pcall_default
       else
         pcall_custom = nil

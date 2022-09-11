@@ -25,12 +25,6 @@
 
 (def- cfg (config.get-in-fn [:client :lua :neovim]))
 
-(defn on-filetype []
-  (mapping.buf :n :LuaResetEnv
-               (cfg [:mapping :reset_env]) *module-name* :reset-env)
-  (mapping.buf :n :LuaResetAllEnvs
-               (cfg [:mapping :reset_all_envs]) *module-name* :reset-all-envs))
-
 (defonce- repls {})
 
 ;; Two following functions are modified client/fennel/aniseed.fnl
@@ -45,6 +39,15 @@
       (tset repls filename nil))
     (a.keys repls))
   (log.append [(.. comment-prefix "Reset all environments")] {:break? true}))
+
+(defn on-filetype []
+  (mapping.buf2
+    :LuaResetEnv (cfg [:mapping :reset_env])
+    #(reset-env))
+
+  (mapping.buf2
+    :LuaResetAllEnvs (cfg [:mapping :reset_all_envs])
+    #(reset-all-envs)))
 
 (defn- display [out ret err]
   (let [outs (->> (str.split (or out "") "\n")
