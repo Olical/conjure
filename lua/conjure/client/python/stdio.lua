@@ -140,7 +140,9 @@ local function eval_str(opts)
     local function _13_(msgs)
       log_repl_output(msgs)
       if opts["on-result"] then
-        return opts["on-result"](str.join(" ", msgs))
+        local msgs0 = format_msg(unbatch(msgs))
+        local cmd_result = get_expression_result(msgs0)
+        return opts["on-result"](cmd_result)
       else
         return nil
       end

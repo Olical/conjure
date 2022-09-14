@@ -154,7 +154,9 @@
         (fn [msgs]
           (log-repl-output msgs)
           (when opts.on-result
-            (opts.on-result (str.join " " msgs))))
+            (let [msgs (-> msgs unbatch format-msg)
+                  cmd-result (get-expression-result msgs)]
+              (opts.on-result cmd-result))))
         {:batch? true}))))
 
 (defn eval-file [opts]
