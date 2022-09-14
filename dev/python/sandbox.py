@@ -19,6 +19,9 @@ print(a)
 a, b = [1, 2]
 
 def print_things_then_return():
+    """
+    Print things then return!
+    """
     for i in range(4):
         print(i)
     return "all done!"

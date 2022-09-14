@@ -156,6 +156,18 @@ local function eval_file(opts)
   return eval_str(a.assoc(opts, "code", a.slurp(opts["file-path"])))
 end
 _2amodule_2a["eval-file"] = eval_file
+local function get_help(code)
+  return str.join("", {"help(", str.trim(code), ")"})
+end
+_2amodule_2a["get-help"] = get_help
+local function doc_str(opts)
+  if str_is_python_expr_3f(opts.code) then
+    return eval_str(a.assoc(opts, "code", get_help(opts.code)))
+  else
+    return nil
+  end
+end
+_2amodule_2a["doc-str"] = doc_str
 local function display_repl_status(status)
   local repl = state("repl")
   if repl then
@@ -182,25 +194,25 @@ local function start()
   if state("repl") then
     return log.append({(comment_prefix .. "Can't start, REPL is already running."), (comment_prefix .. "Stop the REPL with " .. config["get-in"]({"mapping", "prefix"}) .. cfg({"mapping", "stop"}))}, {["break?"] = true})
   else
-    local function _17_()
+    local function _18_()
       return vim.treesitter.require_language("python")
     end
-    if not pcall(_17_) then
+    if not pcall(_18_) then
       return log.append({(comment_prefix .. "(error) The python client requires a python treesitter parser in order to function."), (comment_prefix .. "(error) See https://github.com/nvim-treesitter/nvim-treesitter"), (comment_prefix .. "(error) for installation instructions.")})
     else
-      local function _18_()
-        local function _19_(repl)
-          local function _20_(msgs)
+      local function _19_()
+        local function _20_(repl)
+          local function _21_(msgs)
             return nil
           end
-          return repl.send(prep_code(update_python_displayhook), _20_, nil)
+          return repl.send(prep_code(update_python_displayhook), _21_, nil)
         end
-        return display_repl_status("started", with_repl_or_warn(_19_))
+        return display_repl_status("started", with_repl_or_warn(_20_))
       end
-      local function _21_(err)
+      local function _22_(err)
         return display_repl_status(err)
       end
-      local function _22_(code, signal)
+      local function _23_(code, signal)
         if (("number" == type(code)) and (code > 0)) then
           log.append({(comment_prefix .. "process exited with code " .. code)})
         else
@@ -211,10 +223,10 @@ local function start()
         end
         return stop()
       end
-      local function _25_(msg)
+      local function _26_(msg)
         return log.dbg(format_msg(unbatch({msg})), {["join-first?"] = true})
       end
-      return a.assoc(state(), "repl", stdio.start({["prompt-pattern"] = cfg({"prompt-pattern"}), cmd = cfg({"command"}), ["delay-stderr-ms"] = cfg({"delay-stderr-ms"}), ["on-success"] = _18_, ["on-error"] = _21_, ["on-exit"] = _22_, ["on-stray-output"] = _25_}))
+      return a.assoc(state(), "repl", stdio.start({["prompt-pattern"] = cfg({"prompt-pattern"}), cmd = cfg({"command"}), ["delay-stderr-ms"] = cfg({"delay-stderr-ms"}), ["on-success"] = _19_, ["on-error"] = _22_, ["on-exit"] = _23_, ["on-stray-output"] = _26_}))
     end
   end
 end
@@ -228,11 +240,11 @@ local function on_exit()
 end
 _2amodule_2a["on-exit"] = on_exit
 local function interrupt()
-  local function _28_(repl)
+  local function _29_(repl)
     local uv = vim.loop
     return uv.kill(repl.pid, uv.constants.SIGINT)
   end
-  return with_repl_or_warn(_28_)
+  return with_repl_or_warn(_29_)
 end
 _2amodule_2a["interrupt"] = interrupt
 local function on_filetype()

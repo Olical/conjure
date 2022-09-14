@@ -162,6 +162,13 @@
 (defn eval-file [opts]
   (eval-str (a.assoc opts :code (a.slurp opts.file-path))))
 
+(defn get-help [code]
+  (str.join "" ["help(" (str.trim code) ")"]))
+
+(defn doc-str [opts]
+  (when (str-is-python-expr? opts.code)
+    (eval-str (a.assoc opts :code (get-help opts.code)))))
+
 (defn- display-repl-status [status]
   (let [repl (state :repl)]
     (when repl
