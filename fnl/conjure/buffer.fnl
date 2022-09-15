@@ -19,7 +19,9 @@
     (if (or (= -1 buf) (not loaded?))
       (let [buf (if loaded?
                   buf
-                  (nvim.fn.bufadd buf-name))]
+                  (let [buf (nvim.fn.bufadd buf-name)]
+                    (nvim.fn.bufload buf)
+                    buf))]
         (nvim.buf_set_option buf :buftype :nofile)
         (nvim.buf_set_option buf :bufhidden :hide)
         (nvim.buf_set_option buf :swapfile false)
