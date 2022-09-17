@@ -15,39 +15,6 @@
 (defn- cfg [k]
   (config.get-in [:mapping k]))
 
-(def- mapping-descriptions
-  {:log_split "Open log in new horizontal split window"
-   :log_vsplit "Open log in new vertical split window"
-   :log_tab "Open log in new tab"
-   :log_buf "Open log in new buffer"
-   :log_toggle "Toggle log buffer"
-   :log_close_visible "Close all visible log windows"
-   :log_reset_soft "Soft reset log"
-   :log_reset_hard "Hard reset log"
-   :log_jump_to_latest "Jump to latest part of log"
-
-   :eval_current_form "Evaluate current form"
-   :eval_comment_current_form "Evaluate current form and comment result"
-
-   :eval_root_form "Evaluate root form"
-   :eval_comment_root_form "Evaluate root form and comment result"
-
-   :eval_word "Evaluate word"
-   :eval_comment_word "Evaluate word and comment result"
-
-   :eval_replace_form "Evaluate form and replace with result"
-   :eval_marked_form "Evaluate marked form"
-   :eval_file "Evaluate file"
-   :eval_buf "Evaluate buffer"
-   :eval_visual "Evaluate visual select"
-   :eval_motion "Evaluate motion"
-   :def_word "Get definition under cursor"
-   :doc_word "Get documentation under cursor"
-   })
-
-(defn- desc [k]
-  (a.get mapping-descriptions k))
-
 (defn- vim-repeat [mapping]
   (.. "repeat#set(\"" (nvim.fn.escape mapping "\"") "\", 1)"))
 
@@ -127,47 +94,47 @@
   (buf2
     :LogSplit (cfg :log_split)
     (util.wrap-require-fn-call :conjure.log :split)
-    {:desc (desc :log_split)})
+    {:desc "Open log in new horizontal split window"})
 
   (buf2
     :LogVSplit (cfg :log_vsplit)
     (util.wrap-require-fn-call :conjure.log :vsplit)
-    {:desc (desc :log_vsplit)})
+    {:desc "Open log in new vertical split window"})
 
   (buf2
     :LogTab (cfg :log_tab)
     (util.wrap-require-fn-call :conjure.log :tab)
-    {:desc (desc :log_tab)})
+    {:desc "Open log in new tab"})
 
   (buf2
     :LogBuf (cfg :log_buf)
     (util.wrap-require-fn-call :conjure.log :buf)
-    {:desc (desc :log_buf)})
+    {:desc "Open log in new buffer"})
 
   (buf2
     :LogToggle (cfg :log_toggle)
     (util.wrap-require-fn-call :conjure.log :toggle)
-    {:desc (desc :log_toggle)})
+    {:desc "Toggle log buffer"})
 
   (buf2
     :LogCloseVisible (cfg :log_close_visible)
     (util.wrap-require-fn-call :conjure.log :close-visible)
-    {:desc (desc :log_close_visible)})
+    {:desc "Close all visible log windows"})
 
   (buf2
     :LogResetSoft (cfg :log_reset_soft)
     (util.wrap-require-fn-call :conjure.log :reset-soft)
-    {:desc (desc :log_reset_soft)})
+    {:desc "Soft reset log"})
 
   (buf2
     :LogResetHard (cfg :log_reset_hard)
     (util.wrap-require-fn-call :conjure.log :reset-hard)
-    {:desc (desc :log_reset_hard)})
+    {:desc "Hard reset log"})
 
   (buf2
     :LogJumpToLatest (cfg :log_jump_to_latest)
     (util.wrap-require-fn-call :conjure.log :jump-to-latest)
-    {:desc (desc :log_jump_to_latest)})
+    {:desc "Jump to latest part of log"})
 
   (buf2
     :EvalMotion (cfg :eval_motion)
@@ -176,75 +143,75 @@
 
       ;; Doesn't work unless we schedule it :( this might break some things.
       (client.schedule #(nvim.feedkeys "g@" :m false)))
-    {:desc (desc :eval_motion)})
+    {:desc "Evaluate motion"})
 
   (buf2
     :EvalCurrentForm (cfg :eval_current_form)
     (util.wrap-require-fn-call :conjure.eval :current-form)
-    {:desc (desc :eval_current_form)})
+    {:desc "Evaluate current form"})
 
   (buf2
     :EvalCommentCurrentForm (cfg :eval_comment_current_form)
     (util.wrap-require-fn-call :conjure.eval :comment-current-form)
-    {:desc (desc :eval_comment_current_form)})
+    {:desc "Evaluate current form and comment result"})
 
   (buf2
     :EvalRootForm (cfg :eval_root_form)
     (util.wrap-require-fn-call :conjure.eval :root-form)
-    {:desc (desc :eval_root_form)})
+    {:desc "Evaluate root form"})
 
   (buf2
     :EvalCommentRootForm (cfg :eval_comment_root_form)
     (util.wrap-require-fn-call :conjure.eval :comment-root-form)
-    {:desc (desc :eval_comment_root_form)})
+    {:desc "Evaluate root form and comment result"})
 
   (buf2
     :EvalWord (cfg :eval_word)
     (util.wrap-require-fn-call :conjure.eval :word)
-    {:desc (desc :eval_word)})
+    {:desc "Evaluate word"})
 
   (buf2
     :EvalCommentWord (cfg :eval_comment_word)
     (util.wrap-require-fn-call :conjure.eval :comment-word)
-    {:desc (desc :eval_comment_word)})
+    {:desc "Evaluate word and comment result"})
 
   (buf2
     :EvalReplaceForm (cfg :eval_replace_form)
     (util.wrap-require-fn-call :conjure.eval :replace-form)
-    {:desc (desc :eval_replace_form)})
+    {:desc "Evaluate form and replace with result"})
 
   (buf2
     :EvalMarkedForm (cfg :eval_marked_form)
     #(client.schedule eval.marked-form)
-    {:desc (desc :eval_marked_form)
+    {:desc "Evaluate marked form"
      :repeat? false})
 
   (buf2
     :EvalFile (cfg :eval_file)
     (util.wrap-require-fn-call :conjure.eval :file)
-    {:desc (desc :eval_file)})
+    {:desc "Evaluate file"})
 
   (buf2
     :EvalBuf (cfg :eval_buf)
     (util.wrap-require-fn-call :conjure.eval :buf)
-    {:desc (desc :eval_buf)})
+    {:desc "Evaluate buffer"})
 
   (buf2
     :EvalVisual (cfg :eval_visual)
     (util.wrap-require-fn-call :conjure.eval :selection)
-    {:desc (desc :eval_visual)
+    {:desc "Evaluate visual select"
      :mode :v
      :command-opts {:range true}})
 
   (buf2
     :DocWord (cfg :doc_word)
     (util.wrap-require-fn-call :conjure.eval :doc-word)
-    {:desc (desc :doc_word)})
+    {:desc "Get documentation under cursor"})
 
   (buf2
     :DefWord (cfg :def_word)
     (util.wrap-require-fn-call :conjure.eval :def-word)
-    {:desc (desc :def_word)})
+    {:desc "Get definition under cursor"})
 
   (let [fn-name (config.get-in [:completion :omnifunc])]
     (when fn-name
