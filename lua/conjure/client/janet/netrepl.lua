@@ -28,6 +28,8 @@ local comment_prefix = "# "
 _2amodule_2a["comment-prefix"] = comment_prefix
 local form_node_3f = ts["node-surrounded-by-form-pair-chars?"]
 _2amodule_2a["form-node?"] = form_node_3f
+local comment_node_3f = ts["lisp-comment-node?"]
+_2amodule_2a["comment-node?"] = comment_node_3f
 config.merge({client = {janet = {netrepl = {connection = {default_host = "127.0.0.1", default_port = "9365"}, mapping = {connect = "cc", disconnect = "cd"}}}}})
 local state
 local function _1_()

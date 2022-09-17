@@ -13,6 +13,7 @@
 (def buf-suffix ".janet")
 (def comment-prefix "# ")
 (def form-node? ts.node-surrounded-by-form-pair-chars?)
+(def comment-node? ts.lisp-comment-node?)
 
 (config.merge
   {:client
