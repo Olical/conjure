@@ -2,7 +2,6 @@
   {autoload {nvim conjure.aniseed.nvim
              a conjure.aniseed.core
              mapping conjure.mapping
-             bridge conjure.bridge
              eval conjure.eval
              str conjure.aniseed.string
              text conjure.text
@@ -246,25 +245,33 @@
     (util.wrap-require-fn-call :conjure.client.clojure.nrepl.action :refresh-clear)
     {:desc "Clear the refresh cache"})
 
-  (nvim.ex.command_
-    "-nargs=1 -buffer ConjureShadowSelect"
-    (bridge.viml->lua
-      :conjure.client.clojure.nrepl.action :shadow-select
-      {:args "<f-args>"}))
+  (nvim.buf_create_user_command
+    0
+    "ConjureShadowSelect"
+    #(action.shadow-select (a.get $ :args))
+    {:force true
+     :nargs 1})
 
-  (nvim.ex.command_
-    "-nargs=1 -buffer ConjurePiggieback"
-    (bridge.viml->lua
-      :conjure.client.clojure.nrepl.action :piggieback
-      {:args "<f-args>"}))
+  (nvim.buf_create_user_command
+    0
+    "ConjurePiggieback"
+    #(action.piggieback (a.get $ :args))
+    {:force true
+     :nargs 1})
 
-  (nvim.ex.command_
-    "-nargs=0 -buffer ConjureOutSubscribe"
-    (bridge.viml->lua :conjure.client.clojure.nrepl.action :out-subscribe {}))
+  (nvim.buf_create_user_command
+    0
+    "ConjureOutSubscribe"
+    action.out-subscribe
+    {:force true
+     :nargs 0})
 
-  (nvim.ex.command_
-    "-nargs=0 -buffer ConjureOutUnsubscribe"
-    (bridge.viml->lua :conjure.client.clojure.nrepl.action :out-unsubscribe {}))
+  (nvim.buf_create_user_command
+    0
+    "ConjureOutUnsubscribe"
+    action.out-unsubscribe
+    {:force true
+     :nargs 0})
 
   (nvim.buf_create_user_command
     0
