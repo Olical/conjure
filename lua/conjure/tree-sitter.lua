@@ -65,6 +65,10 @@ local function node__3estr(node)
   end
 end
 _2amodule_2a["node->str"] = node__3estr
+local function comment_form_3f(node)
+  return text["starts-with"](node__3estr(node), "(comment")
+end
+_2amodule_2a["comment-form?"] = comment_form_3f
 local function parent(node)
   if node then
     return node:parent()
@@ -94,7 +98,7 @@ local function get_root(node)
     return nil
   elseif document_3f(parent_node) then
     return node0
-  elseif client["optional-call"]("comment-form?", parent_node) then
+  elseif comment_form_3f(parent_node) then
     return node0
   else
     return get_root(parent_node)
