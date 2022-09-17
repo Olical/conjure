@@ -32,9 +32,6 @@
 (defn form-node? [node]
   (ts.node-surrounded-by-form-pair-chars? node reader-macro-pairs))
 
-(defn comment-form? [node]
-  (text.starts-with (ts.node->str node) "(comment"))
-
 (config.merge
   {:client
    {:clojure
