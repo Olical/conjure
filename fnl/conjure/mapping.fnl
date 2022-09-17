@@ -107,7 +107,7 @@
         (a.get opts :buf 0)
         (a.get opts :mode :n)
         mapping
-        ""
+        "" ;; nop because we're using a :callback function.
         (a.merge!
           {:silent true
            :noremap true
@@ -120,7 +120,7 @@
                            1))
 
                        ;; Have to call like this to pass visual selections through.
-                       (nvim.ex.normal_ ":" cmd (util.replace-termcodes "<cr>")))}
+                       (nvim.ex.normal_ (str.join [":" cmd (util.replace-termcodes "<cr>")])))}
           (a.get opts :mapping-opts {}))))))
 
 (defn on-filetype []
@@ -173,7 +173,9 @@
     :EvalMotion (cfg :eval_motion)
     (fn []
       (set nvim.o.opfunc :ConjureEvalMotionOpFunc)
-      (nvim.feedkeys "g@" :n false))
+
+      ;; Doesn't work unless we schedule it :( this might break some things.
+      (client.schedule #(nvim.feedkeys "g@" :m false)))
     {:desc (desc :eval_motion)})
 
   (buf2
@@ -213,7 +215,7 @@
 
   (buf2
     :EvalMarkedForm (cfg :eval_marked_form)
-    (util.wrap-require-fn-call :conjure.eval :marked-form)
+    #(client.schedule eval.marked-form)
     {:desc (desc :eval_marked_form)
      :repeat? false})
 
