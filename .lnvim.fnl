@@ -10,7 +10,7 @@
 ; (set nvim.g.conjure#client#scheme#stdio#prompt_pattern "\n-#;%d-> ")
 
 (set package.path (.. package.path ";test/lua/?.lua"))
-(set nvim.g.conjure#eval#gsubs {:do-comment ["^%(comment[%s%c]" "(do "]})
+; (set nvim.g.conjure#eval#gsubs {:do-comment ["^%(comment[%s%c]" "(do "]})
 
 (comment
   (nvim.ex.augroup :conjure_set_state_key_on_dir_changed)
