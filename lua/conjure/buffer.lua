@@ -32,7 +32,9 @@ local function upsert_hidden(buf_name, new_buf_fn)
     if loaded_3f then
       buf0 = buf
     else
-      buf0 = nvim.fn.bufadd(buf_name)
+      local buf1 = nvim.fn.bufadd(buf_name)
+      nvim.fn.bufload(buf1)
+      buf0 = buf1
     end
     nvim.buf_set_option(buf0, "buftype", "nofile")
     nvim.buf_set_option(buf0, "bufhidden", "hide")
