@@ -891,6 +891,11 @@ your dotfiles.
  - |conjure-client-racket-stdio|
  - |conjure-client-scheme-stdio|
  - |conjure-client-guile-socket|
+ - |conjure-client-julia-stdio|
+ - |conjure-client-lua-stdio|
+ - |conjure-client-python-stdio|
+ - |conjure-client-rust-evcxr|
+ - |conjure-client-common-lisp-swank|
 
 Language clients are simply Lua modules (which can be compiled from Fennel
 using Aniseed) that have a few essential properties and functions in them.

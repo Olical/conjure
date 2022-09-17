@@ -1,0 +1,73 @@
+                                                   *conjure-client-python-stdio*
+
+==============================================================================
+CONTENTS                                  *conjure-client-python-stdio-contents*
+
+    1. Introduction ........ |conjure-client-python-stdio-introduction|
+    2. Mappings ................ |conjure-client-python-stdio-mappings|
+    3. Configuration ...... |conjure-client-python-stdio-configuration|
+
+==============================================================================
+INTRODUCTION                          *conjure-client-python-stdio-introduction*
+>
+  Python is a programming language that lets you work more quickly and
+  integrate your systems more effectively.
+
+Conjure starts a Python REPL within Neovim when you first open a Python file.
+
+Once you have tree sitter installed and configured (remember to run
+`:TSInstall python`!) you should be able to evaluate forms just like you would
+in any other Conjure supported language.
+
+Check out `:ConjureSchool` if you're unsure about what evaluation operations
+you can perform.
+
+ * https://www.python.org/
+
+==============================================================================
+MAPPINGS                                  *conjure-client-python-stdio-mappings*
+
+These mappings are the defaults, you can change them as described in
+|conjure-mappings| and |conjure-configuration|.
+
+See |conjure-client-python-stdio-configuration| for specific configuration
+options relevant to these mappings.
+
+<localleader>cs          Start the Python REPL if it's not running already.
+
+<localleader>cS          Stop any existing Python REPL.
+
+<localleader>ei          Interrupt running command. Same as pressing Ctrl-C
+                         in a cmdline REPL.
+
+==============================================================================
+CONFIGURATION                        *conjure-client-python-stdio-configuration*
+
+All configuration can be set as described in |conjure-configuration|.
+
+
+                                 *g:conjure#client#python#stdio#mapping#start*
+`g:conjure#client#python#stdio#mapping#start`
+            Start the Python REPL if it's not running already.
+            Default: `"cs"`
+
+                                  *g:conjure#client#python#stdio#mapping#stop*
+`g:conjure#client#python#stdio#mapping#stop`
+            Stop any existing Python REPL.
+            Default: `"cS"`
+
+                                       *g:conjure#client#python#stdio#command*
+`g:conjure#client#python#stdio#command`
+            Command used to start the Python REPL, you can modify this to add
+            arguments or change the command entirely.
+            Default: `"python3 -iq"`
+
+                                *g:conjure#client#python#stdio#prompt_pattern*
+`g:conjure#client#python#stdio#prompt_pattern`
+            Lua pattern to identify a new REPL prompt. This match signals to
+            Conjure that the previous evaluation is complete and we're ready
+            to submit more code as well as collect all output prior to the
+            marker as the result.
+            Default: `">>> "`
+
+vim:tw=78:sw=2:ts=2:ft=help:norl:et:listchars=
