@@ -38,6 +38,9 @@
   * opts.cmd: Command to run to start the REPL.
   * opts.args: Arguments to pass to the REPL.
   * opts.on-error: Called with an error string when we receive a true error from the process.
+  * opts.delay-stderr-ms: If passed, delays the call to on-error for this many milliseconds. This
+                          is a workaround for clients like python whose prompt on stderr sometimes
+                          arrives before the previous command's output on stdout.
   * opts.on-stray-output: Called with stray output that don't match up to a callback.
   * opts.on-exit: Called on exit with the code and signal."
   (let [stdin (uv.new_pipe false)
@@ -92,7 +95,9 @@
       (on-message :out err chunk))
 
     (fn on-stderr [err chunk]
-      (on-message :err err chunk))
+      (if opts.delay-stderr-ms
+        (vim.defer_fn #(on-message :err err chunk) opts.delay-stderr-ms)
+        (on-message :err err chunk)))
 
     (fn send [code cb opts]
       (table.insert

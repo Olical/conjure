@@ -132,13 +132,20 @@ local function start(opts)
     return on_message("out", err, chunk)
   end
   local function on_stderr(err, chunk)
-    return on_message("err", err, chunk)
+    if opts["delay-stderr-ms"] then
+      local function _20_()
+        return on_message("err", err, chunk)
+      end
+      return vim.defer_fn(_20_, opts["delay-stderr-ms"])
+    else
+      return on_message("err", err, chunk)
+    end
   end
   local function send(code, cb, opts0)
-    local _20_
+    local _22_
     if a.get(opts0, "batch?") then
       local msgs = {}
-      local function _22_(msg)
+      local function _24_(msg)
         table.insert(msgs, msg)
         if msg["done?"] then
           return cb(msgs)
@@ -146,11 +153,11 @@ local function start(opts)
           return nil
         end
       end
-      _20_ = _22_
+      _22_ = _24_
     else
-      _20_ = cb
+      _22_ = cb
     end
-    table.insert(repl.queue, {code = code, cb = _20_})
+    table.insert(repl.queue, {code = code, cb = _22_})
     next_in_queue()
     return nil
   end
@@ -158,23 +165,23 @@ local function start(opts)
     uv.process_kill(repl.handle, signal)
     return nil
   end
-  local _let_25_ = parse_cmd(opts.cmd)
-  local cmd = _let_25_["cmd"]
-  local args = _let_25_["args"]
+  local _let_27_ = parse_cmd(opts.cmd)
+  local cmd = _let_27_["cmd"]
+  local args = _let_27_["args"]
   local handle, pid_or_err = uv.spawn(cmd, {stdio = {stdin, stdout, stderr}, args = args, env = extend_env(a["merge!"]({INPUTRC = "/dev/null", TERM = "dumb"}, opts.env))}, client["schedule-wrap"](on_exit))
   if handle then
     stdout:read_start(client["schedule-wrap"](on_stdout))
     stderr:read_start(client["schedule-wrap"](on_stderr))
-    local function _26_()
+    local function _28_()
       return opts["on-success"]()
     end
-    client.schedule(_26_)
+    client.schedule(_28_)
     return a["merge!"](repl, {handle = handle, pid = pid_or_err, send = send, opts = opts, ["send-signal"] = send_signal, destroy = destroy})
   else
-    local function _27_()
+    local function _29_()
       return opts["on-error"](pid_or_err)
     end
-    client.schedule(_27_)
+    client.schedule(_29_)
     return destroy()
   end
 end
