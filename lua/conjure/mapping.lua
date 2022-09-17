@@ -28,7 +28,7 @@ local function cfg(k)
   return config["get-in"]({"mapping", k})
 end
 _2amodule_locals_2a["cfg"] = cfg
-local mapping_descriptions = {log_split = "Open log in new horizontal split window", log_vsplit = "Open log in new vertical split window", log_tab = "Open log in new tab", log_buf = "Open log in new buffer", log_toggle = "Toggle log buffer", log_close_visible = "Close all visible log windows", log_reset_soft = "Soft reset log", log_reset_hard = "Hard reset log", log_jump_to_latest = "Jump to latest part of log"}
+local mapping_descriptions = {log_split = "Open log in new horizontal split window", log_vsplit = "Open log in new vertical split window", log_tab = "Open log in new tab", log_buf = "Open log in new buffer", log_toggle = "Toggle log buffer", log_close_visible = "Close all visible log windows", log_reset_soft = "Soft reset log", log_reset_hard = "Hard reset log", log_jump_to_latest = "Jump to latest part of log", eval_current_form = "Evaluate current form", eval_comment_current_form = "Evaluate current form and comment result", eval_root_form = "Evaluate root form", eval_comment_root_form = "Evaluate root form and comment result", eval_word = "Evaluate word", eval_comment_word = "Evaluate word and comment result", eval_replace_form = "Evaluate form and replace with result", eval_marked_form = "Evaluate marked form", eval_file = "Evaluate file", eval_buf = "Evaluate buffer", eval_visual = "Evaluate visual select", eval_motion = "Evaluate motion", def_word = "Get definition under cursor", doc_word = "Get documentation under cursor"}
 _2amodule_locals_2a["mapping-descriptions"] = mapping_descriptions
 local function desc(k)
   return a.get(mapping_descriptions, k)
