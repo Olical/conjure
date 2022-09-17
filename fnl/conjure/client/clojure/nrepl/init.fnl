@@ -12,6 +12,7 @@
              parse conjure.client.clojure.nrepl.parse
              debugger conjure.client.clojure.nrepl.debugger
              client conjure.client
+             util conjure.util
              ts conjure.tree-sitter}})
 
 (def buf-suffix ".cljc")
@@ -130,56 +131,120 @@
   (action.connect-host-port opts))
 
 (defn on-filetype []
-  (mapping.buf :n :CljDisconnect (cfg [:mapping :disconnect])
-               :conjure.client.clojure.nrepl.server :disconnect)
-  (mapping.buf :n :CljConnectPortFile (cfg [:mapping :connect_port_file])
-               :conjure.client.clojure.nrepl.action :connect-port-file)
-  (mapping.buf :n :CljInterrupt (cfg [:mapping :interrupt])
-               :conjure.client.clojure.nrepl.action :interrupt)
+  (mapping.buf2
+    :CljDisconnect (cfg [:mapping :disconnect])
+    (util.wrap-require-fn-call :conjure.client.clojure.nrepl.server :disconnect)
+    {:desc "Disconnect from the current REPL"})
 
-  (mapping.buf :n :CljLastException (cfg [:mapping :last_exception])
-               :conjure.client.clojure.nrepl.action :last-exception)
-  (mapping.buf :n :CljResult1 (cfg [:mapping :result_1])
-               :conjure.client.clojure.nrepl.action :result-1)
-  (mapping.buf :n :CljResult2 (cfg [:mapping :result_2])
-               :conjure.client.clojure.nrepl.action :result-2)
-  (mapping.buf :n :CljResult3 (cfg [:mapping :result_3])
-               :conjure.client.clojure.nrepl.action :result-3)
-  (mapping.buf :n :CljViewSource (cfg [:mapping :view_source])
-               :conjure.client.clojure.nrepl.action :view-source)
+  (mapping.buf2
+    :CljConnectPortFile (cfg [:mapping :connect_port_file])
+    (util.wrap-require-fn-call :conjure.client.clojure.nrepl.action :connect-port-file)
+    {:desc "Connect to port specified in .nrepl-port etc"})
 
-  (mapping.buf :n :CljSessionClone (cfg [:mapping :session_clone])
-               :conjure.client.clojure.nrepl.action :clone-current-session)
-  (mapping.buf :n :CljSessionFresh (cfg [:mapping :session_fresh])
-               :conjure.client.clojure.nrepl.action :clone-fresh-session)
-  (mapping.buf :n :CljSessionClose (cfg [:mapping :session_close])
-               :conjure.client.clojure.nrepl.action :close-current-session)
-  (mapping.buf :n :CljSessionCloseAll (cfg [:mapping :session_close_all])
-               :conjure.client.clojure.nrepl.action :close-all-sessions)
-  (mapping.buf :n :CljSessionList (cfg [:mapping :session_list])
-               :conjure.client.clojure.nrepl.action :display-sessions)
-  (mapping.buf :n :CljSessionNext (cfg [:mapping :session_next])
-               :conjure.client.clojure.nrepl.action :next-session)
-  (mapping.buf :n :CljSessionPrev (cfg [:mapping :session_prev])
-               :conjure.client.clojure.nrepl.action :prev-session)
-  (mapping.buf :n :CljSessionSelect (cfg [:mapping :session_select])
-               :conjure.client.clojure.nrepl.action :select-session-interactive)
+  (mapping.buf2
+    :CljInterrupt (cfg [:mapping :interrupt])
+    (util.wrap-require-fn-call :conjure.client.clojure.nrepl.action :interrupt)
+    {:desc "Interrupt the current evaluation"})
 
-  (mapping.buf :n :CljRunAllTests (cfg [:mapping :run_all_tests])
-               :conjure.client.clojure.nrepl.action :run-all-tests)
-  (mapping.buf :n :CljRunCurrentNsTests (cfg [:mapping :run_current_ns_tests])
-               :conjure.client.clojure.nrepl.action :run-current-ns-tests)
-  (mapping.buf :n :CljRunAlternateNsTests (cfg [:mapping :run_alternate_ns_tests])
-               :conjure.client.clojure.nrepl.action :run-alternate-ns-tests)
-  (mapping.buf :n :CljRunCurrentTest (cfg [:mapping :run_current_test])
-               :conjure.client.clojure.nrepl.action :run-current-test)
+  (mapping.buf2
+    :CljLastException (cfg [:mapping :last_exception])
+    (util.wrap-require-fn-call :conjure.client.clojure.nrepl.action :last-exception)
+    {:desc "Display the last exception in the log"})
 
-  (mapping.buf :n :CljRefreshChanged (cfg [:mapping :refresh_changed])
-               :conjure.client.clojure.nrepl.action :refresh-changed)
-  (mapping.buf :n :CljRefreshAll (cfg [:mapping :refresh_all])
-               :conjure.client.clojure.nrepl.action :refresh-all)
-  (mapping.buf :n :CljRefreshClear (cfg [:mapping :refresh_clear])
-               :conjure.client.clojure.nrepl.action :refresh-clear)
+  (mapping.buf2
+    :CljResult1 (cfg [:mapping :result_1])
+    (util.wrap-require-fn-call :conjure.client.clojure.nrepl.action :result-1)
+    {:desc "Display the most recent result"})
+
+  (mapping.buf2
+    :CljResult2 (cfg [:mapping :result_2])
+    (util.wrap-require-fn-call :conjure.client.clojure.nrepl.action :result-2)
+    {:desc "Display the second most recent result"})
+
+  (mapping.buf2
+    :CljResult3 (cfg [:mapping :result_3])
+    (util.wrap-require-fn-call :conjure.client.clojure.nrepl.action :result-3)
+    {:desc "Display the third most recent result"})
+
+  (mapping.buf2
+    :CljViewSource (cfg [:mapping :view_source])
+    (util.wrap-require-fn-call :conjure.client.clojure.nrepl.action :view-source)
+    {:desc "View the source of the function under the cursor"})
+
+  (mapping.buf2
+    :CljSessionClone (cfg [:mapping :session_clone])
+    (util.wrap-require-fn-call :conjure.client.clojure.nrepl.action :clone-current-session)
+    {:desc "Clone the current nREPL session"})
+
+  (mapping.buf2
+    :CljSessionFresh (cfg [:mapping :session_fresh])
+    (util.wrap-require-fn-call :conjure.client.clojure.nrepl.action :clone-fresh-session)
+    {:desc "Create a fresh nREPL session"})
+
+  (mapping.buf2
+    :CljSessionClose (cfg [:mapping :session_close])
+    (util.wrap-require-fn-call :conjure.client.clojure.nrepl.action :close-current-session)
+    {:desc "Close the current nREPL session"})
+
+  (mapping.buf2
+    :CljSessionCloseAll (cfg [:mapping :session_close_all])
+    (util.wrap-require-fn-call :conjure.client.clojure.nrepl.action :close-all-sessions)
+    {:desc "Close all nREPL sessions"})
+
+  (mapping.buf2
+    :CljSessionList (cfg [:mapping :session_list])
+    (util.wrap-require-fn-call :conjure.client.clojure.nrepl.action :display-sessions)
+    {:desc "List the current nREPL sessions"})
+
+  (mapping.buf2
+    :CljSessionNext (cfg [:mapping :session_next])
+    (util.wrap-require-fn-call :conjure.client.clojure.nrepl.action :next-session)
+    {:desc "Activate the next nREPL session"})
+
+  (mapping.buf2
+    :CljSessionPrev (cfg [:mapping :session_prev])
+    (util.wrap-require-fn-call :conjure.client.clojure.nrepl.action :prev-session)
+    {:desc "Activate the previous nREPL session"})
+
+  (mapping.buf2
+    :CljSessionSelect (cfg [:mapping :session_select])
+    (util.wrap-require-fn-call :conjure.client.clojure.nrepl.action :select-session-interactive)
+    {:desc "Prompt to select a nREPL session"})
+
+  (mapping.buf2
+    :CljRunAllTests (cfg [:mapping :run_all_tests])
+    (util.wrap-require-fn-call :conjure.client.clojure.nrepl.action :run-all-tests)
+    {:desc "Run all loaded tests"})
+
+  (mapping.buf2
+    :CljRunCurrentNsTests (cfg [:mapping :run_current_ns_tests])
+    (util.wrap-require-fn-call :conjure.client.clojure.nrepl.action :run-current-ns-tests)
+    {:desc "Run loaded tests in the current namespace"})
+
+  (mapping.buf2
+    :CljRunAlternateNsTests (cfg [:mapping :run_alternate_ns_tests])
+    (util.wrap-require-fn-call :conjure.client.clojure.nrepl.action :run-alternate-ns-tests)
+    {:desc "Run the tests in the *-test variant of your current namespace"})
+
+  (mapping.buf2
+    :CljRunCurrentTest (cfg [:mapping :run_current_test])
+    (util.wrap-require-fn-call :conjure.client.clojure.nrepl.action :run-current-test)
+    {:desc "Run the test under the cursor"})
+
+  (mapping.buf2
+    :CljRefreshChanged (cfg [:mapping :refresh_changed])
+    (util.wrap-require-fn-call :conjure.client.clojure.nrepl.action :refresh-changed)
+    {:desc "Refresh changed namespaces"})
+
+  (mapping.buf2
+    :CljRefreshAll (cfg [:mapping :refresh_all])
+    (util.wrap-require-fn-call :conjure.client.clojure.nrepl.action :refresh-all)
+    {:desc "Refresh all namespaces"})
+
+  (mapping.buf2
+    :CljRefreshClear (cfg [:mapping :refresh_clear])
+    (util.wrap-require-fn-call :conjure.client.clojure.nrepl.action :refresh-clear)
+    {:desc "Clear the refresh cache"})
 
   (nvim.ex.command_
     "-nargs=1 -buffer ConjureShadowSelect"
