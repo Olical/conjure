@@ -47,7 +47,7 @@ local function str(code, opts)
   ANISEED_STATIC_MODULES = (true == a.get(opts, "static?"))
   local fnl = fennel.impl()
   local function _4_()
-    return string.gsub(string.gsub(fnl.compileString(wrap_macros(code, opts), a["merge!"]({allowedGlobals = false, compilerEnv = _G}, opts)), (delete_marker_pat .. "\n"), "\n"), (delete_marker_pat .. "$"), "")
+    return string.gsub(string.gsub(fnl.compileString(wrap_macros(code, opts), a["merge!"]({compilerEnv = _G, allowedGlobals = false}, opts)), (delete_marker_pat .. "\n"), "\n"), (delete_marker_pat .. "$"), "")
   end
   return xpcall(_4_, fnl.traceback)
 end
