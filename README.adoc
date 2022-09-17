@@ -91,6 +91,10 @@ Modifications or mods are extra plugins that improve Conjure in various ways. Th
 
 == Tree sitter support
 
+____
+Warning! If you want to work with ANY language that isn't a Lisp dialect you will need to use tree sitter. If you do not use tree sitter only visual selection and vim motion based evaluations will work. You _need_ tree sitter if you wish to evaluate non Lisp languages with `<prefix>ee` and other such form based evaluation mappings.
+____
+
 When you ask Conjure to evaluate the form under your cursor it has to understand the code enough to be able to find the boundaries and extract the right characters from the buffer. This used to be done using Neovim's built in `findpairpos`, syntax highlighting regexes and exhaustive searching of the buffer. This is error prone, gets slow as the buffer grows and doesn't work with non-Lisp languages which lack clear boundaries.
 
 I highly recommend you set up tree sitter inside your Neovim configuration and `:TSInstall [language]` every language you're interested in working with. You should then keep those tree sitter modules up to date as you upgrade Neovim since the API seems to change slightly over time.
