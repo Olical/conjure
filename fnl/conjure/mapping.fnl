@@ -231,9 +231,7 @@
 
   (buf2
     :EvalVisual (cfg :eval_visual)
-    (fn [_opts]
-      ;; Behaves differently if it gets an arg, so we make sure it gets none.
-      (eval.selection))
+    (util.wrap-require-fn-call :conjure.eval :selection)
     {:desc (desc :eval_visual)
      :mode :v
      :command-opts {:range true}})

@@ -136,10 +136,7 @@ local function on_filetype()
   buf2("EvalMarkedForm", cfg("eval_marked_form"), _15_, {desc = desc("eval_marked_form"), ["repeat?"] = false})
   buf2("EvalFile", cfg("eval_file"), util["wrap-require-fn-call"]("conjure.eval", "file"), {desc = desc("eval_file")})
   buf2("EvalBuf", cfg("eval_buf"), util["wrap-require-fn-call"]("conjure.eval", "buf"), {desc = desc("eval_buf")})
-  local function _16_(_opts)
-    return eval.selection()
-  end
-  buf2("EvalVisual", cfg("eval_visual"), _16_, {desc = desc("eval_visual"), mode = "v", ["command-opts"] = {range = true}})
+  buf2("EvalVisual", cfg("eval_visual"), util["wrap-require-fn-call"]("conjure.eval", "selection"), {desc = desc("eval_visual"), mode = "v", ["command-opts"] = {range = true}})
   buf2("DocWord", cfg("doc_word"), util["wrap-require-fn-call"]("conjure.eval", "doc-word"), {desc = desc("doc_word")})
   buf2("DefWord", cfg("def_word"), util["wrap-require-fn-call"]("conjure.eval", "def-word"), {desc = desc("def_word")})
   do
@@ -153,10 +150,10 @@ local function on_filetype()
 end
 _2amodule_2a["on-filetype"] = on_filetype
 local function on_exit()
-  local function _18_()
+  local function _17_()
     return client["optional-call"]("on-exit")
   end
-  return client["each-loaded-client"](_18_)
+  return client["each-loaded-client"](_17_)
 end
 _2amodule_2a["on-exit"] = on_exit
 local function on_quit()
@@ -187,7 +184,7 @@ end
 _2amodule_2a["eval-ranged-command"] = eval_ranged_command
 local function connect_command(...)
   local args = {...}
-  local function _21_(...)
+  local function _20_(...)
     if (1 == a.count(args)) then
       local host, port = string.match(a.first(args), "([a-zA-Z%d\\.-]+):(%d+)$")
       if (host and port) then
@@ -199,7 +196,7 @@ local function connect_command(...)
       return {host = a.first(args), port = a.second(args)}
     end
   end
-  return client.call("connect", _21_(...))
+  return client.call("connect", _20_(...))
 end
 _2amodule_2a["connect-command"] = connect_command
 local function client_state_command(state_key)
@@ -212,11 +209,11 @@ end
 _2amodule_2a["client-state-command"] = client_state_command
 local function omnifunc(find_start_3f, base)
   if find_start_3f then
-    local _let_23_ = nvim.win_get_cursor(0)
-    local row = _let_23_[1]
-    local col = _let_23_[2]
-    local _let_24_ = nvim.buf_get_lines(0, a.dec(row), row, false)
-    local line = _let_24_[1]
+    local _let_22_ = nvim.win_get_cursor(0)
+    local row = _let_22_[1]
+    local col = _let_22_[2]
+    local _let_23_ = nvim.buf_get_lines(0, a.dec(row), row, false)
+    local line = _let_23_[1]
     return (col - a.count(nvim.fn.matchstr(string.sub(line, 1, col), "\\k\\+$")))
   else
     return eval["completions-sync"](base)
@@ -225,20 +222,20 @@ end
 _2amodule_2a["omnifunc"] = omnifunc
 nvim.ex.function_(str.join("\n", {"ConjureEvalMotionOpFunc(kind)", "call luaeval(\"require('conjure.eval')['selection'](_A)\", a:kind)", "endfunction"}))
 nvim.ex.function_(str.join("\n", {"ConjureOmnifunc(findstart, base)", "return luaeval(\"require('conjure.mapping')['omnifunc'](_A[1] == 1, _A[2])\", [a:findstart, a:base])", "endfunction"}))
-local function _26_(_241)
+local function _25_(_241)
   return eval_ranged_command((_241).line1, (_241).line2, (_241).args)
 end
-nvim.create_user_command("ConjureEval", _26_, {nargs = "?", range = true})
-local function _27_(_241)
+nvim.create_user_command("ConjureEval", _25_, {nargs = "?", range = true})
+local function _26_(_241)
   return connect_command(unpack((_241).fargs))
 end
-nvim.create_user_command("ConjureConnect", _27_, {nargs = "*", range = true, complete = "file"})
-local function _28_(_241)
+nvim.create_user_command("ConjureConnect", _26_, {nargs = "*", range = true, complete = "file"})
+local function _27_(_241)
   return client_state_command((_241).args)
 end
-nvim.create_user_command("ConjureClientState", _28_, {nargs = "?"})
-local function _29_()
+nvim.create_user_command("ConjureClientState", _27_, {nargs = "?"})
+local function _28_()
   return school.start()
 end
-nvim.create_user_command("ConjureSchool", _29_, {})
+nvim.create_user_command("ConjureSchool", _28_, {})
 return _2amodule_2a
