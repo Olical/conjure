@@ -24,6 +24,8 @@ _2amodule_locals_2a["str"] = str
 _2amodule_locals_2a["text"] = text
 _2amodule_locals_2a["ts"] = ts
 _2amodule_locals_2a["view"] = view
+local comment_node_3f = ts["lisp-comment-node?"]
+_2amodule_2a["comment-node?"] = comment_node_3f
 local function form_node_3f(node)
   return ts["node-surrounded-by-form-pair-chars?"](node, {{"#(", ")"}})
 end

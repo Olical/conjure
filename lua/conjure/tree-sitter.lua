@@ -65,10 +65,10 @@ local function node__3estr(node)
   end
 end
 _2amodule_2a["node->str"] = node__3estr
-local function comment_form_3f(node)
+local function lisp_comment_node_3f(node)
   return text["starts-with"](node__3estr(node), "(comment")
 end
-_2amodule_2a["comment-form?"] = comment_form_3f
+_2amodule_2a["lisp-comment-node?"] = lisp_comment_node_3f
 local function parent(node)
   if node then
     return node:parent()
@@ -98,7 +98,7 @@ local function get_root(node)
     return nil
   elseif document_3f(parent_node) then
     return node0
-  elseif comment_form_3f(parent_node) then
+  elseif client["optional-call"]("comment-node?", parent_node) then
     return node0
   else
     return get_root(parent_node)

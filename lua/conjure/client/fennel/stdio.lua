@@ -38,6 +38,8 @@ local comment_prefix = "; "
 _2amodule_2a["comment-prefix"] = comment_prefix
 local form_node_3f = ts["node-surrounded-by-form-pair-chars?"]
 _2amodule_2a["form-node?"] = form_node_3f
+local comment_node_3f = ts["lisp-comment-node?"]
+_2amodule_2a["comment-node?"] = comment_node_3f
 local function with_repl_or_warn(f, opts)
   local repl = state("repl")
   if repl then

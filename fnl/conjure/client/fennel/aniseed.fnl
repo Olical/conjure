@@ -12,6 +12,7 @@
              extract conjure.extract
              ts conjure.tree-sitter}})
 
+(def comment-node? ts.lisp-comment-node?)
 (defn form-node? [node]
   (ts.node-surrounded-by-form-pair-chars? node [["#(" ")"]]))
 

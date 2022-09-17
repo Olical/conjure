@@ -42,7 +42,7 @@
       (-> (vim.treesitter.query.get_node_text node)
           (->> (str.join "\n"))))))
 
-(defn comment-form? [node]
+(defn lisp-comment-node? [node]
   "Node is a (comment ...) form"
   (text.starts-with (node->str node) "(comment"))
 
@@ -71,7 +71,7 @@
     (if
       (document? node) nil
       (document? parent-node) node
-      (comment-form? parent-node) node
+      (client.optional-call :comment-node? parent-node) node
       (get-root parent-node))))
 
 (defn leaf? [node]

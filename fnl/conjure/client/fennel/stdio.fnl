@@ -28,6 +28,7 @@
 (def buf-suffix ".fnl")
 (def comment-prefix "; ")
 (def form-node? ts.node-surrounded-by-form-pair-chars?)
+(def comment-node? ts.lisp-comment-node?)
 
 (defn- with-repl-or-warn [f opts]
   (let [repl (state :repl)]

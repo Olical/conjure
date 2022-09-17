@@ -32,6 +32,8 @@
 (defn form-node? [node]
   (ts.node-surrounded-by-form-pair-chars? node reader-macro-pairs))
 
+(def comment-node? ts.lisp-comment-node?)
+
 (config.merge
   {:client
    {:clojure
