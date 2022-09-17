@@ -96,7 +96,7 @@
                     (.. (cfg :prefix) mapping-suffix)
                     (a.first mapping-suffix))
           cmd (.. :Conjure name-suffix)
-          desc (a.get opts :desc)]
+          desc (or (a.get opts :desc) (.. "Executes the " cmd " command"))]
       (nvim.create_user_command
         cmd handler-fn
         (a.merge!

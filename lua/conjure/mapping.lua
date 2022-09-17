@@ -90,7 +90,7 @@ local function buf2(name_suffix, mapping_suffix, handler_fn, opts)
       mapping = a.first(mapping_suffix)
     end
     local cmd = ("Conjure" .. name_suffix)
-    local desc0 = a.get(opts, "desc")
+    local desc0 = (a.get(opts, "desc") or ("Executes the " .. cmd .. " command"))
     nvim.create_user_command(cmd, handler_fn, a["merge!"]({force = true, desc = desc0}, a.get(opts, "command-opts", {})))
     local function _10_()
       if (false ~= a.get(opts, "repeat?")) then
