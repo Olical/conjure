@@ -143,6 +143,17 @@
         (uv.kill repl.pid uv.constants.SIGINT)))))
 
 (defn on-filetype []
-  (mapping.buf :n :JuliaStart (cfg [:mapping :start]) *module-name* :start)
-  (mapping.buf :n :JuliaStop (cfg [:mapping :stop]) *module-name* :stop)
-  (mapping.buf :n :JuliaInterrupt (cfg [:mapping :interrupt]) *module-name* :interrupt))
+  (mapping.buf2
+    :JuliaStart (cfg [:mapping :start])
+    start
+    {:desc "Start the REPL"})
+
+  (mapping.buf2
+    :JuliaStop (cfg [:mapping :stop])
+    stop
+    {:desc "Stop the REPL"})
+
+  (mapping.buf2
+    :JuliaInterrupt (cfg [:mapping :interrupt])
+    interrupt
+    {:desc "Interrupt the evaluation"}))

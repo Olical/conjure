@@ -192,10 +192,25 @@
   (wrapped-test ["; run-all-tests"] (ani :test :run-all)))
 
 (defn on-filetype []
-  (mapping.buf :n :FnlRunBufTests (cfg [:mapping :run_buf_tests]) *module-name* :run-buf-tests)
-  (mapping.buf :n :FnlRunAllTests (cfg [:mapping :run_all_tests]) *module-name* :run-all-tests)
-  (mapping.buf :n :FnlResetREPL (cfg [:mapping :reset_repl]) *module-name* :reset-repl)
-  (mapping.buf :n :FnlResetAllREPLs (cfg [:mapping :reset_all_repls]) *module-name* :reset-all-repls))
+  (mapping.buf2
+    :FnlRunBufTests (cfg [:mapping :run_buf_tests])
+    run-buf-tests
+    {:desc "Run loaded buffer tests"})
+
+  (mapping.buf2
+    :FnlRunAllTests (cfg [:mapping :run_all_tests])
+    run-all-tests
+    {:desc "Run all loaded tests"})
+
+  (mapping.buf2
+    :FnlResetREPL (cfg [:mapping :reset_repl])
+    reset-repl
+    {:desc "Reset the current REPL state"})
+
+  (mapping.buf2
+    :FnlResetAllREPLs (cfg [:mapping :reset_all_repls])
+    reset-all-repls
+    {:desc "Reset all REPL states"}))
 
 (defn value->completions [x]
   (when (= :table (type x))

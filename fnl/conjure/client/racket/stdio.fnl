@@ -146,9 +146,21 @@
   (augroup
     conjure-racket-stdio-bufenter
     (autocmd :BufEnter (.. :* buf-suffix) (viml->fn :enter)))
-  (mapping.buf :n :RktStart (cfg [:mapping :start]) *module-name* :start)
-  (mapping.buf :n :RktStop (cfg [:mapping :stop]) *module-name* :stop)
-  (mapping.buf :n :RktInterrupt (cfg [:mapping :interrupt]) *module-name* :interrupt))
+
+  (mapping.buf2
+    :RktStart (cfg [:mapping :start])
+    start
+    {:desc "Start the REPL"})
+
+  (mapping.buf2
+    :RktStop (cfg [:mapping :stop])
+    stop
+    {:desc "Stop the REPL"})
+
+  (mapping.buf2
+    :RktInterrupt (cfg [:mapping :interrupt])
+    interrupt
+    {:desc "Interrupt the current evaluation"}))
 
 (defn on-exit []
   (stop))

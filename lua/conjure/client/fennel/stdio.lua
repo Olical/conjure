@@ -158,9 +158,9 @@ local function on_exit()
 end
 _2amodule_2a["on-exit"] = on_exit
 local function on_filetype()
-  mapping.buf("n", "FnlStart", cfg({"mapping", "start"}), _2amodule_name_2a, "start")
-  mapping.buf("n", "FnlStop", cfg({"mapping", "stop"}), _2amodule_name_2a, "stop")
-  return mapping.buf("n", "FnlEvalReload", cfg({"mapping", "eval_reload"}), _2amodule_name_2a, "eval-reload")
+  mapping.buf2("FnlStart", cfg({"mapping", "start"}), start, {desc = "Start the REPL"})
+  mapping.buf2("FnlStop", cfg({"mapping", "stop"}), stop, {desc = "Stop the REPL"})
+  return mapping.buf2("FnlEvalReload", cfg({"mapping", "eval_reload"}), eval_reload, {desc = "Use ,reload on the file"})
 end
 _2amodule_2a["on-filetype"] = on_filetype
 return _2amodule_2a

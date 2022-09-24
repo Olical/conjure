@@ -119,12 +119,17 @@
                             "\" :env (fiber/getenv (fiber/current))) nil)"))))
 
 (defn on-filetype []
-  (mapping.buf :n :JanetDisconnect
-               (config.get-in [:client :janet :netrepl :mapping :disconnect])
-               :conjure.client.janet.netrepl :disconnect)
-  (mapping.buf :n :JanetConnect
-               (config.get-in [:client :janet :netrepl :mapping :connect])
-               :conjure.client.janet.netrepl :connect))
+  (mapping.buf2
+    :JanetDisconnect
+    (config.get-in [:client :janet :netrepl :mapping :disconnect])
+    disconnect
+    {:desc "Disconnect from the REPL"})
+
+  (mapping.buf2
+    :JanetConnect
+    (config.get-in [:client :janet :netrepl :mapping :connect])
+    #(connect)
+    {:desc "Connect to a REPL"}))
 
 (defn on-load []
   (connect {}))

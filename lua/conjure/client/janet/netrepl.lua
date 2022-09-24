@@ -149,8 +149,11 @@ local function eval_file(opts)
 end
 _2amodule_2a["eval-file"] = eval_file
 local function on_filetype()
-  mapping.buf("n", "JanetDisconnect", config["get-in"]({"client", "janet", "netrepl", "mapping", "disconnect"}), "conjure.client.janet.netrepl", "disconnect")
-  return mapping.buf("n", "JanetConnect", config["get-in"]({"client", "janet", "netrepl", "mapping", "connect"}), "conjure.client.janet.netrepl", "connect")
+  mapping.buf2("JanetDisconnect", config["get-in"]({"client", "janet", "netrepl", "mapping", "disconnect"}), disconnect, {desc = "Disconnect from the REPL"})
+  local function _18_()
+    return connect()
+  end
+  return mapping.buf2("JanetConnect", config["get-in"]({"client", "janet", "netrepl", "mapping", "connect"}), _18_, {desc = "Connect to a REPL"})
 end
 _2amodule_2a["on-filetype"] = on_filetype
 local function on_load()

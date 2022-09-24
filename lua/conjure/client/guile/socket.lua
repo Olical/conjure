@@ -186,8 +186,11 @@ local function on_exit()
 end
 _2amodule_2a["on-exit"] = on_exit
 local function on_filetype()
-  mapping.buf("n", "GuileConnect", cfg({"mapping", "connect"}), _2amodule_name_2a, "connect")
-  return mapping.buf("n", "GuileDisconnect", cfg({"mapping", "disconnect"}), _2amodule_name_2a, "disconnect")
+  local function _26_()
+    return connect()
+  end
+  mapping.buf2("GuileConnect", cfg({"mapping", "connect"}), _26_, {desc = "Connect to a REPL"})
+  return mapping.buf2("GuileDisconnect", cfg({"mapping", "disconnect"}), disconnect, {desc = "Disconnect from the REPL"})
 end
 _2amodule_2a["on-filetype"] = on_filetype
 return _2amodule_2a
