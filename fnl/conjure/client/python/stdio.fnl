@@ -195,7 +195,7 @@
                   "def format_output(val):"
                   "    print(repr(val))"
                   "sys.displayhook = format_output\n"]))
-                  
+
 (defn start []
   (if (state :repl)
     (log.append [(.. comment-prefix "Can't start, REPL is already running.")
@@ -253,6 +253,17 @@
         (uv.kill repl.pid uv.constants.SIGINT)))))
 
 (defn on-filetype []
-  (mapping.buf :n :PythonStart (cfg [:mapping :start]) *module-name* :start)
-  (mapping.buf :n :PythonStop (cfg [:mapping :stop]) *module-name* :stop)
-  (mapping.buf :n :PythonInterrupt (cfg [:mapping :interrupt]) *module-name* :interrupt))
+  (mapping.buf2
+    :PythonStart (cfg [:mapping :start])
+    start
+    {:desc "Start the Python REPL"})
+
+  (mapping.buf2
+    :PythonStop (cfg [:mapping :stop])
+    stop
+    {:desc "Stop the Python REPL"})
+
+  (mapping.buf2
+    :PythonInterrupt (cfg [:mapping :interrupt])
+    interrupt
+    {:desc "Interrupt the current evaluation"}))
