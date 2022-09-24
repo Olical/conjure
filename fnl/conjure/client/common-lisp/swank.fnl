@@ -261,13 +261,13 @@
     (a.assoc opts :code (.. "(load \"" opts.file-path "\")"))))
 
 (defn on-filetype []
-  (mapping.buf2
+  (mapping.buf
     :CommonLispDisconnect
     (config.get-in [:client :common_lisp :swank :mapping :disconnect])
     disconnect
     {:desc "Disconnect from the REPL"})
 
-  (mapping.buf2
+  (mapping.buf
     :CommonLispConnect
     (config.get-in [:client :common_lisp :swank :mapping :connect])
     #(connect {})

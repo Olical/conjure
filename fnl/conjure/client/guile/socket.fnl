@@ -148,12 +148,12 @@
   (disconnect))
 
 (defn on-filetype []
-  (mapping.buf2
+  (mapping.buf
     :GuileConnect (cfg [:mapping :connect])
     #(connect)
     {:desc "Connect to a REPL"})
 
-  (mapping.buf2
+  (mapping.buf
     :GuileDisconnect (cfg [:mapping :disconnect])
     disconnect
     {:desc "Disconnect from the REPL"}))

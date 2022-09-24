@@ -123,12 +123,12 @@
   (start))
 
 (defn on-filetype []
-  (mapping.buf2
+  (mapping.buf
     :SchemeStart (cfg [:mapping :start])
     start
     {:desc "Start the REPL"})
 
-  (mapping.buf2
+  (mapping.buf
     :SchemeStop (cfg [:mapping :stop])
     stop
     {:desc "Stop the REPL"}))

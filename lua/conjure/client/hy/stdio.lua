@@ -198,9 +198,9 @@ local function interrupt()
 end
 _2amodule_2a["interrupt"] = interrupt
 local function on_filetype()
-  mapping.buf2("HyStart", cfg({"mapping", "start"}), start, {desc = "Start the REPL"})
-  mapping.buf2("HyStop", cfg({"mapping", "stop"}), stop, {desc = "Stop the REPL"})
-  return mapping.buf2("HyInterrupt", cfg({"mapping", "interrupt"}), interrupt, {desc = "Interrupt the current evaluation"})
+  mapping.buf("HyStart", cfg({"mapping", "start"}), start, {desc = "Start the REPL"})
+  mapping.buf("HyStop", cfg({"mapping", "stop"}), stop, {desc = "Stop the REPL"})
+  return mapping.buf("HyInterrupt", cfg({"mapping", "interrupt"}), interrupt, {desc = "Interrupt the current evaluation"})
 end
 _2amodule_2a["on-filetype"] = on_filetype
 return _2amodule_2a

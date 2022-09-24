@@ -237,10 +237,10 @@ local function run_all_tests()
 end
 _2amodule_2a["run-all-tests"] = run_all_tests
 local function on_filetype()
-  mapping.buf2("FnlRunBufTests", cfg({"mapping", "run_buf_tests"}), run_buf_tests, {desc = "Run loaded buffer tests"})
-  mapping.buf2("FnlRunAllTests", cfg({"mapping", "run_all_tests"}), run_all_tests, {desc = "Run all loaded tests"})
-  mapping.buf2("FnlResetREPL", cfg({"mapping", "reset_repl"}), reset_repl, {desc = "Reset the current REPL state"})
-  return mapping.buf2("FnlResetAllREPLs", cfg({"mapping", "reset_all_repls"}), reset_all_repls, {desc = "Reset all REPL states"})
+  mapping.buf("FnlRunBufTests", cfg({"mapping", "run_buf_tests"}), run_buf_tests, {desc = "Run loaded buffer tests"})
+  mapping.buf("FnlRunAllTests", cfg({"mapping", "run_all_tests"}), run_all_tests, {desc = "Run all loaded tests"})
+  mapping.buf("FnlResetREPL", cfg({"mapping", "reset_repl"}), reset_repl, {desc = "Reset the current REPL state"})
+  return mapping.buf("FnlResetAllREPLs", cfg({"mapping", "reset_all_repls"}), reset_all_repls, {desc = "Reset all REPL states"})
 end
 _2amodule_2a["on-filetype"] = on_filetype
 local function value__3ecompletions(x)

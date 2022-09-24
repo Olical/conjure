@@ -52,11 +52,11 @@ local function on_filetype()
   local function _2_()
     return reset_env()
   end
-  mapping.buf2("LuaResetEnv", cfg({"mapping", "reset_env"}), _2_)
+  mapping.buf("LuaResetEnv", cfg({"mapping", "reset_env"}), _2_)
   local function _3_()
     return reset_all_envs()
   end
-  return mapping.buf2("LuaResetAllEnvs", cfg({"mapping", "reset_all_envs"}), _3_)
+  return mapping.buf("LuaResetAllEnvs", cfg({"mapping", "reset_all_envs"}), _3_)
 end
 _2amodule_2a["on-filetype"] = on_filetype
 local function display(out, ret, err)

@@ -279,11 +279,11 @@ local function eval_file(opts)
 end
 _2amodule_2a["eval-file"] = eval_file
 local function on_filetype()
-  mapping.buf2("CommonLispDisconnect", config["get-in"]({"client", "common_lisp", "swank", "mapping", "disconnect"}), disconnect, {desc = "Disconnect from the REPL"})
+  mapping.buf("CommonLispDisconnect", config["get-in"]({"client", "common_lisp", "swank", "mapping", "disconnect"}), disconnect, {desc = "Disconnect from the REPL"})
   local function _35_()
     return connect({})
   end
-  return mapping.buf2("CommonLispConnect", config["get-in"]({"client", "common_lisp", "swank", "mapping", "connect"}), _35_, {desc = "Connect to a REPL"})
+  return mapping.buf("CommonLispConnect", config["get-in"]({"client", "common_lisp", "swank", "mapping", "connect"}), _35_, {desc = "Connect to a REPL"})
 end
 _2amodule_2a["on-filetype"] = on_filetype
 local function on_load()

@@ -253,17 +253,17 @@
         (uv.kill repl.pid uv.constants.SIGINT)))))
 
 (defn on-filetype []
-  (mapping.buf2
+  (mapping.buf
     :PythonStart (cfg [:mapping :start])
     start
     {:desc "Start the Python REPL"})
 
-  (mapping.buf2
+  (mapping.buf
     :PythonStop (cfg [:mapping :stop])
     stop
     {:desc "Stop the Python REPL"})
 
-  (mapping.buf2
+  (mapping.buf
     :PythonInterrupt (cfg [:mapping :interrupt])
     interrupt
     {:desc "Interrupt the current evaluation"}))

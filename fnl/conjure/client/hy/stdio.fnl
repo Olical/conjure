@@ -156,17 +156,17 @@
         (uv.kill repl.pid uv.constants.SIGINT)))))
 
 (defn on-filetype []
-  (mapping.buf2
+  (mapping.buf
     :HyStart (cfg [:mapping :start])
     start
     {:desc "Start the REPL"})
 
-  (mapping.buf2
+  (mapping.buf
     :HyStop (cfg [:mapping :stop])
     stop
     {:desc "Stop the REPL"})
 
-  (mapping.buf2
+  (mapping.buf
     :HyInterrupt (cfg [:mapping :interrupt])
     interrupt
     {:desc "Interrupt the current evaluation"}))

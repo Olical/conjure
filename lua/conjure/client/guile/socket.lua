@@ -189,8 +189,8 @@ local function on_filetype()
   local function _26_()
     return connect()
   end
-  mapping.buf2("GuileConnect", cfg({"mapping", "connect"}), _26_, {desc = "Connect to a REPL"})
-  return mapping.buf2("GuileDisconnect", cfg({"mapping", "disconnect"}), disconnect, {desc = "Disconnect from the REPL"})
+  mapping.buf("GuileConnect", cfg({"mapping", "connect"}), _26_, {desc = "Connect to a REPL"})
+  return mapping.buf("GuileDisconnect", cfg({"mapping", "disconnect"}), disconnect, {desc = "Disconnect from the REPL"})
 end
 _2amodule_2a["on-filetype"] = on_filetype
 return _2amodule_2a

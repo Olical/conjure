@@ -133,8 +133,8 @@ local function on_load()
 end
 _2amodule_2a["on-load"] = on_load
 local function on_filetype()
-  mapping.buf2("SchemeStart", cfg({"mapping", "start"}), start, {desc = "Start the REPL"})
-  return mapping.buf2("SchemeStop", cfg({"mapping", "stop"}), stop, {desc = "Stop the REPL"})
+  mapping.buf("SchemeStart", cfg({"mapping", "start"}), start, {desc = "Start the REPL"})
+  return mapping.buf("SchemeStop", cfg({"mapping", "stop"}), stop, {desc = "Stop the REPL"})
 end
 _2amodule_2a["on-filetype"] = on_filetype
 local function on_exit()

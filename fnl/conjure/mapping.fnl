@@ -18,35 +18,7 @@
 (defn- vim-repeat [mapping]
   (.. "repeat#set(\"" (nvim.fn.escape mapping "\"") "\", 1)"))
 
-(defn buf [mode-or-opts cmd-suffix keys ...]
-  "Legacy buffer local mapping function, replaced by buf2."
-
-  (when keys
-    (let [[mode opts] (if (= :table (type mode-or-opts))
-                        [(a.get mode-or-opts :mode) mode-or-opts]
-                        [mode-or-opts {}])
-          args [...]
-          mapping (if (a.string? keys)
-                    (.. (cfg :prefix) keys)
-                    (a.first keys))
-          cmd (and cmd-suffix (.. :Conjure cmd-suffix))]
-      (when cmd
-        (nvim.ex.command_
-          (.. "-range " cmd)
-          (bridge.viml->lua (unpack args))))
-      (nvim.buf_set_keymap
-        0 mode
-        mapping
-        (if cmd
-          (.. ":" cmd "<cr>"
-              (if (not= false (a.get opts :repeat?))
-                (.. ":silent! call " (vim-repeat mapping) "<cr>")
-                ""))
-          (unpack args))
-        {:silent true
-         :noremap true}))))
-
-(defn buf2 [name-suffix mapping-suffix handler-fn opts]
+(defn buf [name-suffix mapping-suffix handler-fn opts]
   "Successor to buf, allows mapping to a Lua function.
   opts: {:desc ""
          :mode :n
@@ -91,52 +63,52 @@
           (a.get opts :mapping-opts {}))))))
 
 (defn on-filetype []
-  (buf2
+  (buf
     :LogSplit (cfg :log_split)
     (util.wrap-require-fn-call :conjure.log :split)
     {:desc "Open log in new horizontal split window"})
 
-  (buf2
+  (buf
     :LogVSplit (cfg :log_vsplit)
     (util.wrap-require-fn-call :conjure.log :vsplit)
     {:desc "Open log in new vertical split window"})
 
-  (buf2
+  (buf
     :LogTab (cfg :log_tab)
     (util.wrap-require-fn-call :conjure.log :tab)
     {:desc "Open log in new tab"})
 
-  (buf2
+  (buf
     :LogBuf (cfg :log_buf)
     (util.wrap-require-fn-call :conjure.log :buf)
     {:desc "Open log in new buffer"})
 
-  (buf2
+  (buf
     :LogToggle (cfg :log_toggle)
     (util.wrap-require-fn-call :conjure.log :toggle)
     {:desc "Toggle log buffer"})
 
-  (buf2
+  (buf
     :LogCloseVisible (cfg :log_close_visible)
     (util.wrap-require-fn-call :conjure.log :close-visible)
     {:desc "Close all visible log windows"})
 
-  (buf2
+  (buf
     :LogResetSoft (cfg :log_reset_soft)
     (util.wrap-require-fn-call :conjure.log :reset-soft)
     {:desc "Soft reset log"})
 
-  (buf2
+  (buf
     :LogResetHard (cfg :log_reset_hard)
     (util.wrap-require-fn-call :conjure.log :reset-hard)
     {:desc "Hard reset log"})
 
-  (buf2
+  (buf
     :LogJumpToLatest (cfg :log_jump_to_latest)
     (util.wrap-require-fn-call :conjure.log :jump-to-latest)
     {:desc "Jump to latest part of log"})
 
-  (buf2
+  (buf
     :EvalMotion (cfg :eval_motion)
     (fn []
       (set nvim.o.opfunc :ConjureEvalMotionOpFunc)
@@ -145,70 +117,70 @@
       (client.schedule #(nvim.feedkeys "g@" :m false)))
     {:desc "Evaluate motion"})
 
-  (buf2
+  (buf
     :EvalCurrentForm (cfg :eval_current_form)
     (util.wrap-require-fn-call :conjure.eval :current-form)
     {:desc "Evaluate current form"})
 
-  (buf2
+  (buf
     :EvalCommentCurrentForm (cfg :eval_comment_current_form)
     (util.wrap-require-fn-call :conjure.eval :comment-current-form)
     {:desc "Evaluate current form and comment result"})
 
-  (buf2
+  (buf
     :EvalRootForm (cfg :eval_root_form)
     (util.wrap-require-fn-call :conjure.eval :root-form)
     {:desc "Evaluate root form"})
 
-  (buf2
+  (buf
     :EvalCommentRootForm (cfg :eval_comment_root_form)
     (util.wrap-require-fn-call :conjure.eval :comment-root-form)
     {:desc "Evaluate root form and comment result"})
 
-  (buf2
+  (buf
     :EvalWord (cfg :eval_word)
     (util.wrap-require-fn-call :conjure.eval :word)
     {:desc "Evaluate word"})
 
-  (buf2
+  (buf
     :EvalCommentWord (cfg :eval_comment_word)
     (util.wrap-require-fn-call :conjure.eval :comment-word)
     {:desc "Evaluate word and comment result"})
 
-  (buf2
+  (buf
     :EvalReplaceForm (cfg :eval_replace_form)
     (util.wrap-require-fn-call :conjure.eval :replace-form)
     {:desc "Evaluate form and replace with result"})
 
-  (buf2
+  (buf
     :EvalMarkedForm (cfg :eval_marked_form)
     #(client.schedule eval.marked-form)
     {:desc "Evaluate marked form"
      :repeat? false})
 
-  (buf2
+  (buf
     :EvalFile (cfg :eval_file)
     (util.wrap-require-fn-call :conjure.eval :file)
     {:desc "Evaluate file"})
 
-  (buf2
+  (buf
     :EvalBuf (cfg :eval_buf)
     (util.wrap-require-fn-call :conjure.eval :buf)
     {:desc "Evaluate buffer"})
 
-  (buf2
+  (buf
     :EvalVisual (cfg :eval_visual)
     (util.wrap-require-fn-call :conjure.eval :selection)
     {:desc "Evaluate visual select"
      :mode :v
      :command-opts {:range true}})
 
-  (buf2
+  (buf
     :DocWord (cfg :doc_word)
     (util.wrap-require-fn-call :conjure.eval :doc-word)
     {:desc "Get documentation under cursor"})
 
-  (buf2
+  (buf
     :DefWord (cfg :def_word)
     (util.wrap-require-fn-call :conjure.eval :def-word)
     {:desc "Get definition under cursor"})

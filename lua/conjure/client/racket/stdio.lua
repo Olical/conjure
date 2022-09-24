@@ -178,9 +178,9 @@ local function on_filetype()
     nvim.ex.autocmd("BufEnter", ("*" .. buf_suffix), ("lua require('" .. _2amodule_name_2a .. "')['" .. "enter" .. "']()"))
     nvim.ex.augroup("END")
   end
-  mapping.buf2("RktStart", cfg({"mapping", "start"}), start, {desc = "Start the REPL"})
-  mapping.buf2("RktStop", cfg({"mapping", "stop"}), stop, {desc = "Stop the REPL"})
-  return mapping.buf2("RktInterrupt", cfg({"mapping", "interrupt"}), interrupt, {desc = "Interrupt the current evaluation"})
+  mapping.buf("RktStart", cfg({"mapping", "start"}), start, {desc = "Start the REPL"})
+  mapping.buf("RktStop", cfg({"mapping", "stop"}), stop, {desc = "Stop the REPL"})
+  return mapping.buf("RktInterrupt", cfg({"mapping", "interrupt"}), interrupt, {desc = "Interrupt the current evaluation"})
 end
 _2amodule_2a["on-filetype"] = on_filetype
 local function on_exit()

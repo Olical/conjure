@@ -41,11 +41,11 @@
   (log.append [(.. comment-prefix "Reset all environments")] {:break? true}))
 
 (defn on-filetype []
-  (mapping.buf2
+  (mapping.buf
     :LuaResetEnv (cfg [:mapping :reset_env])
     #(reset-env))
 
-  (mapping.buf2
+  (mapping.buf
     :LuaResetAllEnvs (cfg [:mapping :reset_all_envs])
     #(reset-all-envs)))
 

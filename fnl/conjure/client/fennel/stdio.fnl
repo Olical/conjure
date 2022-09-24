@@ -130,19 +130,19 @@
   (stop))
 
 (defn on-filetype []
-  (mapping.buf2
+  (mapping.buf
     :FnlStart
     (cfg [:mapping :start])
     start
     {:desc "Start the REPL"})
 
-  (mapping.buf2
+  (mapping.buf
     :FnlStop
     (cfg [:mapping :stop])
     stop
     {:desc "Stop the REPL"})
 
-  (mapping.buf2
+  (mapping.buf
     :FnlEvalReload
     (cfg [:mapping :eval_reload])
     eval-reload
