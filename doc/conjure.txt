@@ -246,8 +246,10 @@ Tip: Booleans in Vim Script are written as `v:true` and `v:false`.
             will not load if the file type is in this list but there isn't an
             equivalent `g:conjure#filetype#[filetype]` configuration value.
 
-            Default: `["clojure", "fennel", "janet", "racket", "scheme"]`
-
+            Default: >
+              ["clojure", "fennel", "janet", "hy", "julia", "racket",
+               "scheme", "lua", "lisp", "python", "rust"]
+<
                                                   *g:conjure#filetype#clojure*
 `g:conjure#filetype#clojure`
             Client to use for `clojure` buffers.
