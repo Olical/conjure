@@ -495,7 +495,7 @@
   (let [current-ns (extract.context)]
     (run-ns-tests
       (if (text.ends-with current-ns "-test")
-        (string.sub current-ns 1 -6)
+        current-ns
         (.. current-ns "-test")))))
 
 (defn extract-test-name-from-form [form]

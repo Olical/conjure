@@ -602,7 +602,7 @@ local function run_alternate_ns_tests()
   local current_ns = extract.context()
   local function _108_()
     if text["ends-with"](current_ns, "-test") then
-      return string.sub(current_ns, 1, -6)
+      return current_ns
     else
       return (current_ns .. "-test")
     end
