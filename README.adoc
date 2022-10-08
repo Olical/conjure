@@ -20,7 +20,7 @@ The core features of Conjure are language agnostic (although it's targeted at Li
  * https://lisp-lang.org/[Common Lisp] over https://www.cliki.net/SWANK[Swank] (https://github.com/Olical/conjure/wiki/Quick-start:-Common-Lisp-(Swank)[quickstart])
  * https://julialang.org/[Julia] over stdio (https://github.com/Olical/conjure/wiki/Quick-start:-Julia-(stdio)[quickstart])
  * https://www.rust-lang.org/[Rust] over stdio with https://github.com/google/evcxr[evcxr] (https://github.com/Olical/conjure/wiki/Quick-start:-Rust-(evcxr)[quickstart])
- * https://www.lua.org/[Lua] inside Neovim (https://github.com/Olical/conjure/wiki/Quick-start:-Lua-(stdio)[quickstart])
+ * https://www.lua.org/[Lua] inside Neovim (https://github.com/Olical/conjure/wiki/Quick-start:-Lua-(neovim)[quickstart])
  * https://www.python.org/[Python] over stdio (https://github.com/Olical/conjure/wiki/Quick-start:-Python-(stdio)[quickstart])
 
 You can learn more about the mappings and configuration inside Neovim with `:help conjure`. Each language client also has it's own specific help text under `:help conjure-client-{LANGUAGE}-{TRANSPORT}`, such as `:help conjure-client-clojure-nrepl`, which contains specific mappings and configuration for that client.
