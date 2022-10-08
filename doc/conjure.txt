@@ -298,6 +298,9 @@ Tip: Booleans in Vim Script are written as `v:true` and `v:false`.
             useful in the Scheme / Racket / Guile world where they share
             filetype strings and extentions in a lot of places, making it
             difficult to determine which client we should use.
+
+            If you wish to disable a suffix filter for any specific client,
+            set the value to `v:false` in VimL and `false` in Lua.
             Default: `nil`
 
                                           *g:conjure#filetype_suffixes#racket*
