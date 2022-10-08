@@ -4,7 +4,6 @@
 "anthony-khong"
 "beanpuppy"
 "BerkeleyTrue"
-"campbellr"
 "daveyarwood"
 "davidmh"
 "dharrigan"
