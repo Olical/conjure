@@ -132,16 +132,19 @@ local function run_all()
     end
     return totals
   end
-  return display_results(a.reduce(_21_, {tests = 0, ["tests-passed"] = 0, assertions = 0, ["assertions-passed"] = 0}, a.filter(a["table?"], a.map(run, a.keys(_G.package.loaded)))), "[total]")
+  local function _22_(_241)
+    return (a["table?"](_241) and a["nil?"](getmetatable(_241)))
+  end
+  return display_results(a.reduce(_21_, {tests = 0, ["tests-passed"] = 0, assertions = 0, ["assertions-passed"] = 0}, a.filter(_22_, a.map(run, a.keys(_G.package.loaded)))), "[total]")
 end
 _2amodule_2a["run-all"] = run_all
 local function suite()
   do
     local sep = fs["path-sep"]
-    local function _22_(path)
+    local function _23_(path)
       return require(string.gsub(string.match(path, ("^test" .. sep .. "fnl" .. sep .. "(.-).fnl$")), sep, "."))
     end
-    a["run!"](_22_, nvim.fn.globpath(("test" .. sep .. "fnl"), "**/*-test.fnl", false, true))
+    a["run!"](_23_, nvim.fn.globpath(("test" .. sep .. "fnl"), "**/*-test.fnl", false, true))
   end
   if ok_3f(run_all()) then
     return nvim.ex.q()
