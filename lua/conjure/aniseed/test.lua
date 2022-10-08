@@ -132,10 +132,11 @@ local function run_all()
     end
     return totals
   end
-  local function _22_(_241)
-    return (a["table?"](_241) and a["nil?"](getmetatable(_241)))
+  local function _22_(mod_name)
+    local mod = a.get(_G.package.loaded, mod_name)
+    return (not a["table?"](mod) or getmetatable(mod))
   end
-  return display_results(a.reduce(_21_, {tests = 0, ["tests-passed"] = 0, assertions = 0, ["assertions-passed"] = 0}, a.filter(_22_, a.map(run, a.keys(_G.package.loaded)))), "[total]")
+  return display_results(a.reduce(_21_, {tests = 0, ["tests-passed"] = 0, assertions = 0, ["assertions-passed"] = 0}, a.filter(a["table?"], a.map(run, a.remove(_22_, a.keys(_G.package.loaded))))), "[total]")
 end
 _2amodule_2a["run-all"] = run_all
 local function suite()
