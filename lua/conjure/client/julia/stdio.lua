@@ -79,7 +79,7 @@ local function eval_str(opts)
         return nil
       end
     end
-    return repl.send(prep_code(opts.code), _6_, {["batch?"] = true})
+    return repl.send(prep_code(string.gsub(opts.code, ";$", "; nothing;")), _6_, {["batch?"] = true})
   end
   return with_repl_or_warn(_5_)
 end

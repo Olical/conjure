@@ -44,7 +44,7 @@ local function enrich_status(msg)
 end
 _2amodule_2a["enrich-status"] = enrich_status
 local function connect(opts)
-  local state = {["message-queue"] = {}, bc = bencode.new(), msgs = {}, ["awaiting-process?"] = false}
+  local state = {["message-queue"] = {}, ["awaiting-process?"] = false, bc = bencode.new(), msgs = {}}
   local conn = {session = nil, state = state}
   local function send(msg, cb)
     local msg_id = uuid.v4()
