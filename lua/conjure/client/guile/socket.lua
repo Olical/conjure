@@ -152,12 +152,12 @@ _2amodule_2a["disconnect"] = disconnect
 local function parse_guile_result(s)
   if s:find("scheme@%([%w%-%s]+%)> ") then
     local ind1, ind2, result = s:find("%$%d+ = ([^\n]+)\n")
-    return {["done?"] = true, result = result, ["error?"] = false}
+    return {["done?"] = true, ["error?"] = false, result = result}
   else
     if s:find("scheme@%([%w%-%s]+%) %[%d+%]>") then
       return {["done?"] = true, ["error?"] = true, result = nil}
     else
-      return {result = s, ["done?"] = false, ["error?"] = false}
+      return {["done?"] = false, ["error?"] = false, result = s}
     end
   end
 end

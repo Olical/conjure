@@ -62,7 +62,7 @@
   (with-repl-or-warn
     (fn [repl]
       (repl.send
-        (prep-code opts.code)
+        (prep-code (string.gsub opts.code ";$" "; nothing;"))
         (fn [msgs]
           (let [msgs (-> msgs unbatch format-msg)]
              (log.append msgs)
