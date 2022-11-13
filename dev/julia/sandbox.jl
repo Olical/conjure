@@ -36,7 +36,7 @@ varargs(1, 2, 3)  # => (1,2,3)
 add([5,6]...)  # this is equivalent to add(5,6)
 
 x = (5, 6)  # => (5,6)
-add(x...)  # this is equivalent to add(5,6)
+add(x...);  # this is equivalent to add(5,6)
 
 
 # You can define functions with optional positional arguments
