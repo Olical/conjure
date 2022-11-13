@@ -10,6 +10,7 @@
              server conjure.client.clojure.nrepl.server
              parse conjure.client.clojure.nrepl.parse
              debugger conjure.client.clojure.nrepl.debugger
+             auto-repl conjure.client.clojure.nrepl.auto-repl
              client conjure.client
              util conjure.util
              ts conjure.tree-sitter}})
@@ -43,8 +44,8 @@
        :port_files [".nrepl-port" ".shadow-cljs/nrepl.port"]
        :auto_repl {:enabled true
                    :hidden false
-                   :cmd "bb nrepl-server localhost:8794"
-                   :port_file ".nrepl-port" :port "8794"}}
+                   :cmd "bb nrepl-server localhost:$port"
+                   :port_file ".nrepl-port"}}
 
       :eval
       {:pretty_print true
@@ -292,5 +293,5 @@
   (action.connect-port-file))
 
 (defn on-exit []
-  (action.delete-auto-repl-port-file)
+  (auto-repl.delete-auto-repl-port-file)
   (server.disconnect))

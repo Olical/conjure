@@ -5,18 +5,18 @@
              ll conjure.linked-list
              log conjure.log
              fs conjure.fs
-             process conjure.process
              client conjure.client
              eval conjure.aniseed.eval
              str conjure.aniseed.string
              nvim conjure.aniseed.nvim
              view conjure.aniseed.view
+             a conjure.aniseed.core
              config conjure.config
              server conjure.client.clojure.nrepl.server
              ui conjure.client.clojure.nrepl.ui
              state conjure.client.clojure.nrepl.state
              parse conjure.client.clojure.nrepl.parse
-             a conjure.aniseed.core
+             auto-repl conjure.client.clojure.nrepl.auto-repl
              nrepl conjure.remote.nrepl}})
 
 (defn- require-ns [ns]
@@ -31,36 +31,6 @@
   (when (and (cfg [:eval :auto_require])
              (server.connected?))
     (require-ns (extract.context))))
-
-(defn delete-auto-repl-port-file []
-  (let [port-file (cfg [:connection :auto_repl :port_file])
-        port (cfg [:connection :auto_repl :port])]
-    (when (and port-file port (= (a.slurp port-file) port))
-      (nvim.fn.delete port-file))))
-
-(defn- upsert-auto-repl-proc []
-  "Starts the auto REPL if executable and not already running."
-  (let [cmd (cfg [:connection :auto_repl :cmd])
-        port-file (cfg [:connection :auto_repl :port_file])
-        port (cfg [:connection :auto_repl :port])
-        enabled? (cfg [:connection :auto_repl :enabled])
-        hidden? (cfg [:connection :auto_repl :hidden])]
-
-    (when (and enabled?
-               (not (process.running? (state.get :auto-repl-proc)))
-               (process.executable? cmd))
-
-      (let [proc (process.execute
-                   cmd
-                   {:hidden? hidden?
-                    :on-exit (client.wrap
-                               delete-auto-repl-port-file)})]
-
-        (a.assoc (state.get) :auto-repl-proc proc)
-        (when (and port-file port)
-          (a.spit port-file port))
-        (log.append [(.. "; Starting auto-repl: " cmd)])
-        proc))))
 
 (defn connect-port-file [opts]
   (let [resolved-path (-?>> (cfg [:connection :port_files]) (fs.resolve-above))
@@ -81,7 +51,7 @@
                (passive-ns-require))})
       (when (not (a.get opts :silent?))
         (log.append ["; No nREPL port file found"] {:break? true})
-        (upsert-auto-repl-proc)))))
+        (auto-repl.upsert-auto-repl-proc)))))
 
 (defn- try-ensure-conn [cb]
   (if (not (server.connected?))
