@@ -62,6 +62,19 @@
       {:start [(a.inc sr) sc]
        :end [(a.inc er) (a.dec ec)]})))
 
+(defn node->table [node]
+  "If it is a node, convert it to a Lua table we can work with in Conjure. If
+  it's already a table with the right keys just return that."
+  (if
+    (and (a.get node :range) (a.get node :content))
+    node
+
+    node
+    {:range (range node)
+     :content (node->str node)}
+
+    nil))
+
 (defn get-root [node]
   "Get the root node below the entire document."
   (parse!)
@@ -102,7 +115,10 @@
         false)))
 
 (defn get-form [node]
-  "Get the current form under the cursor. Walks up until it finds a non-leaf."
+  "Get the current form under the cursor. Walks up until it finds a non-leaf.
+
+  Warning, this can return a table containing content and range! Use
+  node->table to normalise the types."
 
   ;; We assume we only use this argument in recursion, in which case we've
   ;; already called parse! and we shouldn't waste time calling it again, only
@@ -116,12 +132,47 @@
       (document? node)
       nil
 
-      ;; Something with 0 children or whatever the client defines as not
-      ;; a form-node isn't right. So we walk up further until we find a
-      ;; good form to work with.
+      ;; We don't treat leaves as forms. That could be a single paren or quote
+      ;; I think, so we walk upwards when we're on one.
+
+      ;; The client can also return `false` from form-node? to walk upwards by
+      ;; one level and try again. This is a strictly simpler and less powerful
+      ;; alternative to get-form-modifier which allows you to specify the exact
+      ;; node you wish to jump to. This is here for backwards compatibility and
+      ;; simpler use cases. I recommend using get-form-modifier for new use
+      ;; cases.
       (or (leaf? node)
           (= false (client.optional-call :form-node? node)))
       (get-form (parent node))
 
-      ;; If we make it this far we have a true form node.
-      node)))
+      ;; Each client gets to modify the form, this means they can traverse the
+      ;; tree until they find something they're happy with. The client should
+      ;; return `nil` or a :modifier of :none when they're happy.
+      (let [{: modifier &as res} (or (client.optional-call :get-form-modifier node) {})]
+        (if
+          ;; A client not participating,  explicitly returning `nil` or a
+          ;; :modifier of :none indicates that they're happy with the form and
+          ;; we can use it.
+          (or (not modifier) (= :none modifier))
+          node
+
+          ;; Walk upwards by one.
+          (= :parent modifier)
+          (get-form (parent node))
+
+          ;; An actual node! Use that one.
+          (= :node modifier)
+          (. res :node)
+
+          ;; A raw table response, skipping the tree sitter node entirely.
+          ;; Better hope people calling get-form can handle tree sitter AND
+          ;; table responses!
+          (= :raw modifier)
+          (. res :node-table)
+
+          ;; Otherwise we don't recognise this modifier.
+          ;; Try to keep things working but log a warning!
+          ;; This is a bug in the client and it needs to be fixed.
+          (do
+            (a.println "Warning: Conjure client returned an unknown get-form-modifier" res)
+            node))))))

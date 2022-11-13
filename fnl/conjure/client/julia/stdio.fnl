@@ -54,9 +54,22 @@
            (str.split "\n"))
        (a.filter #(~= "" $1))))
 
-(defn form-node? [node]
-  (-> node ts.node->str (string.match "julia>") not)
-  )
+(defn get-form-modifier [node]
+  ;; When the next sibling is a semi-colon it means we need to override the
+  ;; tree sitter response. We instead need to tell Conjure the exact text and
+  ;; range we're interested in since this is a pretty non-standard operation
+  ;; when it comes to Conjure clients.
+
+  ;; There's a risk the `;` is actually seperated by some spaces or something,
+  ;; that will cause this to behave a little weirdly but that should be a very
+  ;; rare edge case.
+  (when (= ";" (ts.node->str (node:next_sibling)))
+    {:modifier :raw
+     :node-table {;; Add a semi-colon to the end of the content.
+                  :content (.. (ts.node->str node) ";")
+
+                  ;; Increment the end of the range by one.
+                  :range (a.update-in (ts.range node) [:end 2] a.inc)}}))
 
 (defn eval-str [opts]
   (with-repl-or-warn

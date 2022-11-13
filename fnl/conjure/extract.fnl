@@ -10,12 +10,10 @@
 
 (defn form [opts]
   (if (ts.enabled?)
-    (let [node (if opts.root?
-                 (ts.get-root)
-                 (ts.get-form))]
-      (when node
-        {:range (ts.range node)
-         :content (ts.node->str node)}))
+    (ts.node->table
+      (if opts.root?
+        (ts.get-root)
+        (ts.get-form)))
     (searchpair.form opts)))
 
 ; https://stackoverflow.com/questions/15020143/vim-script-check-if-the-cursor-is-on-the-current-word/15058922

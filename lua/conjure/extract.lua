@@ -22,17 +22,14 @@ _2amodule_locals_2a["str"] = str
 _2amodule_locals_2a["ts"] = ts
 local function form(opts)
   if ts["enabled?"]() then
-    local node
-    if opts["root?"] then
-      node = ts["get-root"]()
-    else
-      node = ts["get-form"]()
+    local function _1_()
+      if opts["root?"] then
+        return ts["get-root"]()
+      else
+        return ts["get-form"]()
+      end
     end
-    if node then
-      return {range = ts.range(node), content = ts["node->str"](node)}
-    else
-      return nil
-    end
+    return ts["node->table"](_1_())
   else
     return searchpair.form(opts)
   end
@@ -76,18 +73,18 @@ local function buf()
 end
 _2amodule_2a["buf"] = buf
 local function getpos(expr)
-  local _let_6_ = nvim.fn.getpos(expr)
-  local _ = _let_6_[1]
-  local start = _let_6_[2]
-  local _end = _let_6_[3]
-  local _0 = _let_6_[4]
+  local _let_5_ = nvim.fn.getpos(expr)
+  local _ = _let_5_[1]
+  local start = _let_5_[2]
+  local _end = _let_5_[3]
+  local _0 = _let_5_[4]
   return {start, a.dec(_end)}
 end
 _2amodule_locals_2a["getpos"] = getpos
-local function selection(_7_)
-  local _arg_8_ = _7_
-  local kind = _arg_8_["kind"]
-  local visual_3f = _arg_8_["visual?"]
+local function selection(_6_)
+  local _arg_7_ = _6_
+  local kind = _arg_7_["kind"]
+  local visual_3f = _arg_7_["visual?"]
   local sel_backup = nvim.o.selection
   nvim.ex.let("g:conjure_selection_reg_backup = @@")
   nvim.o.selection = "inclusive"
@@ -110,10 +107,10 @@ local function context()
   local pat = client.get("context-pattern")
   local f
   if pat then
-    local function _10_(_241)
+    local function _9_(_241)
       return string.match(_241, pat)
     end
-    f = _10_
+    f = _9_
   else
     f = client.get("context")
   end
@@ -126,10 +123,10 @@ end
 _2amodule_2a["context"] = context
 local function prompt(prefix)
   local ok_3f, val = nil, nil
-  local function _13_()
+  local function _12_()
     return nvim.fn.input((prefix or ""))
   end
-  ok_3f, val = pcall(_13_)
+  ok_3f, val = pcall(_12_)
   if ok_3f then
     return val
   else

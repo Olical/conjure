@@ -90,6 +90,16 @@ local function range(node)
   end
 end
 _2amodule_2a["range"] = range
+local function node__3etable(node)
+  if (a.get(node, "range") and a.get(node, "content")) then
+    return node
+  elseif node then
+    return {range = range(node), content = node__3estr(node)}
+  else
+    return nil
+  end
+end
+_2amodule_2a["node->table"] = node__3etable
 local function get_root(node)
   parse_21()
   local node0 = (node or ts.get_node_at_cursor())
@@ -126,19 +136,19 @@ _2amodule_2a["get-leaf"] = get_leaf
 local function node_surrounded_by_form_pair_chars_3f(node, extra_pairs)
   local node_str = node__3estr(node)
   local first_and_last_chars = text["first-and-last-chars"](node_str)
-  local function _15_(_13_)
-    local _arg_14_ = _13_
-    local start = _arg_14_[1]
-    local _end = _arg_14_[2]
+  local function _16_(_14_)
+    local _arg_15_ = _14_
+    local start = _arg_15_[1]
+    local _end = _arg_15_[2]
     return (first_and_last_chars == (start .. _end))
   end
-  local function _18_(_16_)
-    local _arg_17_ = _16_
-    local start = _arg_17_[1]
-    local _end = _arg_17_[2]
+  local function _19_(_17_)
+    local _arg_18_ = _17_
+    local start = _arg_18_[1]
+    local _end = _arg_18_[2]
     return (text["starts-with"](node_str, start) and text["ends-with"](node_str, _end))
   end
-  return (a.some(_15_, config["get-in"]({"extract", "form_pairs"})) or a.some(_18_, extra_pairs) or false)
+  return (a.some(_16_, config["get-in"]({"extract", "form_pairs"})) or a.some(_19_, extra_pairs) or false)
 end
 _2amodule_2a["node-surrounded-by-form-pair-chars?"] = node_surrounded_by_form_pair_chars_3f
 local function get_form(node)
@@ -152,7 +162,21 @@ local function get_form(node)
   elseif (leaf_3f(node0) or (false == client["optional-call"]("form-node?", node0))) then
     return get_form(parent(node0))
   else
-    return node0
+    local _let_21_ = (client["optional-call"]("get-form-modifier", node0) or {})
+    local modifier = _let_21_["modifier"]
+    local res = _let_21_
+    if (not modifier or ("none" == modifier)) then
+      return node0
+    elseif ("parent" == modifier) then
+      return get_form(parent(node0))
+    elseif ("node" == modifier) then
+      return res.node
+    elseif ("raw" == modifier) then
+      return res["node-table"]
+    else
+      a.println("Warning: Conjure client returned an unknown get-form-modifier", res)
+      return node0
+    end
   end
 end
 _2amodule_2a["get-form"] = get_form

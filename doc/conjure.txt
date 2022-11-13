@@ -1079,6 +1079,23 @@ examples: https://github.com/Olical/conjure/wiki/Client-features
             want to reject any form that doesn't start with an opening
             parenthesis.
 
+`get-form-modifier`
+            Function(node)
+            The second iteration of `form-node?`, allows the client to return
+            an instruction for Conjure to handle. The return values look like
+            this:
+
+             * `nil` or `{:modifier :none}` if you're happy with the node.
+             * `{:modifier :parent}` if you want to go up one level and try the parent instead.
+               This is the same as returning false from `form-node?`.
+             * `{:modifier :node :node X}` uses the specified node `X`.
+             * `{:modifier :raw :node-table {:content "" :range {:start [0 0] :end [0 0]}}}`
+               Skips all of the tree-sitter things and takes your content and
+               range at face value. This is for rare edge cases. It's also
+               mixing up the return types of this system and may cause deep
+               regret at a later date but for now, it's pretty darn useful
+               when we really need it.
+
 `comment-node?`
             Function(node)
             When tree-sitter is in use this will be called with each node
