@@ -19,6 +19,7 @@
      {:mapping {:start "cs"
                 :stop "cS"
                 :interrupt "ei"}
+      :eval {:raw_out false}
       :command "hy --repl-output-fn=hy.repr"
       :prompt_pattern "=> "}}}})
 
@@ -41,7 +42,9 @@
                        (cfg [:mapping :start]))]))))
 
 (defn- display-result [msg]
-  (let [prefix (.. comment-prefix (if msg.err "(err)" "(out)") " ")]
+  (let [prefix (if (= true (cfg [:eval :raw_out]))
+                 ""
+                 (.. comment-prefix (if msg.err "(err)" "(out)") " "))]
     (->> (str.split (or msg.err msg.out) "\n")
          (a.filter #(~= "" $1))
          (a.map #(.. prefix $1))
