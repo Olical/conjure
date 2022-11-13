@@ -237,27 +237,39 @@ local function run_all_tests()
 end
 _2amodule_2a["run-all-tests"] = run_all_tests
 local function on_filetype()
-  mapping.buf("FnlRunBufTests", cfg({"mapping", "run_buf_tests"}), run_buf_tests, {desc = "Run loaded buffer tests"})
-  mapping.buf("FnlRunAllTests", cfg({"mapping", "run_all_tests"}), run_all_tests, {desc = "Run all loaded tests"})
-  mapping.buf("FnlResetREPL", cfg({"mapping", "reset_repl"}), reset_repl, {desc = "Reset the current REPL state"})
-  return mapping.buf("FnlResetAllREPLs", cfg({"mapping", "reset_all_repls"}), reset_all_repls, {desc = "Reset all REPL states"})
+  local function _28_()
+    return run_buf_tests()
+  end
+  mapping.buf("FnlRunBufTests", cfg({"mapping", "run_buf_tests"}), _28_, {desc = "Run loaded buffer tests"})
+  local function _29_()
+    return run_all_tests()
+  end
+  mapping.buf("FnlRunAllTests", cfg({"mapping", "run_all_tests"}), _29_, {desc = "Run all loaded tests"})
+  local function _30_()
+    return reset_repl()
+  end
+  mapping.buf("FnlResetREPL", cfg({"mapping", "reset_repl"}), _30_, {desc = "Reset the current REPL state"})
+  local function _31_()
+    return reset_all_repls()
+  end
+  return mapping.buf("FnlResetAllREPLs", cfg({"mapping", "reset_all_repls"}), _31_, {desc = "Reset all REPL states"})
 end
 _2amodule_2a["on-filetype"] = on_filetype
 local function value__3ecompletions(x)
   if ("table" == type(x)) then
-    local function _30_(_28_)
-      local _arg_29_ = _28_
-      local k = _arg_29_[1]
-      local v = _arg_29_[2]
+    local function _34_(_32_)
+      local _arg_33_ = _32_
+      local k = _arg_33_[1]
+      local v = _arg_33_[2]
       return {word = k, kind = type(v), menu = nil, info = nil}
     end
-    local function _33_(_31_)
-      local _arg_32_ = _31_
-      local k = _arg_32_[1]
-      local v = _arg_32_[2]
+    local function _37_(_35_)
+      local _arg_36_ = _35_
+      local k = _arg_36_[1]
+      local v = _arg_36_[2]
       return not text["starts-with"](k, "aniseed/")
     end
-    local function _34_()
+    local function _38_()
       if x["aniseed/autoload-enabled?"] then
         do local _ = x["trick-aniseed-into-loading-the-module"] end
         return x["aniseed/autoload-module"]
@@ -265,7 +277,7 @@ local function value__3ecompletions(x)
         return x
       end
     end
-    return a.map(_30_, a.filter(_33_, a["kv-pairs"](_34_())))
+    return a.map(_34_, a.filter(_37_, a["kv-pairs"](_38_())))
   else
     return nil
   end
@@ -283,10 +295,10 @@ local function completions(opts)
   local locals
   do
     local ok_3f, m = nil, nil
-    local function _37_()
+    local function _41_()
       return require(opts.context)
     end
-    ok_3f, m = pcall(_37_)
+    ok_3f, m = pcall(_41_)
     if ok_3f then
       locals = a.concat(value__3ecompletions(m), value__3ecompletions(a.get(m, "aniseed/locals")), mods)
     else
@@ -294,30 +306,30 @@ local function completions(opts)
     end
   end
   local result_fn
-  local function _39_(results)
+  local function _43_(results)
     local xs = a.first(results)
-    local function _42_()
+    local function _46_()
       if ("table" == type(xs)) then
-        local function _40_(x)
-          local function _41_(_241)
+        local function _44_(x)
+          local function _45_(_241)
             return (opts.prefix .. _241)
           end
-          return a.update(x, "word", _41_)
+          return a.update(x, "word", _45_)
         end
-        return a.concat(a.map(_40_, xs), locals)
+        return a.concat(a.map(_44_, xs), locals)
       else
         return locals
       end
     end
-    return opts.cb(_42_())
+    return opts.cb(_46_())
   end
-  result_fn = _39_
+  result_fn = _43_
   local ok_3f, err_or_res = nil, nil
   if code then
-    local function _43_()
+    local function _47_()
       return eval_str({["file-path"] = opts["file-path"], context = opts.context, code = code, ["passive?"] = true, ["on-result-raw"] = result_fn})
     end
-    ok_3f, err_or_res = pcall(_43_)
+    ok_3f, err_or_res = pcall(_47_)
   else
     ok_3f, err_or_res = nil
   end

@@ -194,22 +194,22 @@
 (defn on-filetype []
   (mapping.buf
     :FnlRunBufTests (cfg [:mapping :run_buf_tests])
-    run-buf-tests
+    #(run-buf-tests)
     {:desc "Run loaded buffer tests"})
 
   (mapping.buf
     :FnlRunAllTests (cfg [:mapping :run_all_tests])
-    run-all-tests
+    #(run-all-tests)
     {:desc "Run all loaded tests"})
 
   (mapping.buf
     :FnlResetREPL (cfg [:mapping :reset_repl])
-    reset-repl
+    #(reset-repl)
     {:desc "Reset the current REPL state"})
 
   (mapping.buf
     :FnlResetAllREPLs (cfg [:mapping :reset_all_repls])
-    reset-all-repls
+    #(reset-all-repls)
     {:desc "Reset all REPL states"}))
 
 (defn value->completions [x]
