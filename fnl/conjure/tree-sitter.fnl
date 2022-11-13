@@ -103,7 +103,12 @@
 
 (defn get-form [node]
   "Get the current form under the cursor. Walks up until it finds a non-leaf."
-  (parse!)
+
+  ;; We assume we only use this argument in recursion, in which case we've
+  ;; already called parse! and we shouldn't waste time calling it again, only
+  ;; the first time.
+  (when (not node)
+    (parse!))
 
   (let [node (or node (ts.get_node_at_cursor))]
     (if

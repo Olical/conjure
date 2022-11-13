@@ -142,7 +142,10 @@ local function node_surrounded_by_form_pair_chars_3f(node, extra_pairs)
 end
 _2amodule_2a["node-surrounded-by-form-pair-chars?"] = node_surrounded_by_form_pair_chars_3f
 local function get_form(node)
-  parse_21()
+  if not node then
+    parse_21()
+  else
+  end
   local node0 = (node or ts.get_node_at_cursor())
   if document_3f(node0) then
     return nil
