@@ -28,7 +28,6 @@
 "mamapitufo"
 "markwoodhall"
 "martinklepsch"
-"ngscheurich"
 "NickCellino"
 "nickcernis"
 "orestis"
