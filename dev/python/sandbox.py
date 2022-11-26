@@ -26,6 +26,9 @@ def print_things_then_return():
         print(i)
     return "all done!"
 
+def newline_in_function_bug():
+    return "hey" + "\n" + "ho"
+
 print_things_then_return()
 
 for i in range(20):
