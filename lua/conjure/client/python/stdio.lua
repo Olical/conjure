@@ -94,7 +94,7 @@ local function format_msg(msg)
   local function _6_(_241)
     return ("" ~= _241)
   end
-  return a.filter(_5_, a.filter(_6_, str.split(msg, "\n")))
+  return a.filter(_5_, a.filter(_6_, text["split-lines"](msg)))
 end
 _2amodule_2a["format-msg"] = format_msg
 local function get_console_output_msgs(msgs)

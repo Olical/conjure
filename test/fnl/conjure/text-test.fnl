@@ -15,7 +15,8 @@
 (deftest split-lines
   (t.pr= [""] (text.split-lines "") "nothing to nothing")
   (t.pr= ["foo" "bar"] (text.split-lines "foo\nbar") "basic split")
-  (t.pr= ["foo" "" "bar"] (text.split-lines "foo\n\nbar") "blank lines"))
+  (t.pr= ["foo" "" "bar"] (text.split-lines "foo\n\nbar") "blank lines")
+  (t.pr= ["foo" "bar"] (text.split-lines "foo\r\nbar") "Windows CRLF"))
 
 (deftest prefixed-lines
   (t.pr= ["; "] (text.prefixed-lines "" "; ") "nothing to nothing")

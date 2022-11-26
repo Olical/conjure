@@ -117,7 +117,7 @@
   (= (string.sub s 1 3) "..."))
 
 (defn format-msg [msg]
-  (->> (str.split msg "\n")
+  (->> (text.split-lines msg)
        (a.filter #(~= "" $1))
        (a.filter #(not (is-dots? $1)))))
 

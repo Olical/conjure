@@ -22,7 +22,7 @@
   (string.reverse (left-sample (string.reverse s) limit)))
 
 (defn split-lines [s]
-  (str.split s "\n"))
+  (str.split s "\r?\n"))
 
 (defn prefixed-lines [s prefix opts]
   (->> (split-lines s)

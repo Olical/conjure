@@ -39,7 +39,7 @@ local function right_sample(s, limit)
 end
 _2amodule_2a["right-sample"] = right_sample
 local function split_lines(s)
-  return str.split(s, "\n")
+  return str.split(s, "\13?\n")
 end
 _2amodule_2a["split-lines"] = split_lines
 local function prefixed_lines(s, prefix, opts)
