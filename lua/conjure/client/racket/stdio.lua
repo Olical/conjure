@@ -79,7 +79,7 @@ local function eval_str(opts)
         a["assoc-in"](msgs, {1, "out"}, (comment_prefix .. "Empty result."))
       else
       end
-      opts["on-result"](str.join("\n", format_message(a.last(msgs))))
+      opts["on-result"](str.join("\n", a.mapcat(format_message, msgs)))
       return a["run!"](display_result, msgs)
     end
     return repl.send(prep_code(opts.code), _6_, {["batch?"] = true})

@@ -64,7 +64,7 @@
                      (= "" (a.get-in msgs [1 :out])))
             (a.assoc-in msgs [1 :out] (.. comment-prefix "Empty result.")))
 
-          (opts.on-result (str.join "\n" (format-message (a.last msgs))))
+          (opts.on-result (str.join "\n" (a.mapcat format-message msgs)))
           (a.run! display-result msgs))
         {:batch? true}))))
 
