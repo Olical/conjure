@@ -15,6 +15,7 @@
   (server.send
     {:op :init-debugger}
     (fn [msg]
+      (log.append ["; CIDER debugger initialized"] {:break? true})
       (log.dbg "init-debugger response" msg)))
   nil)
 
