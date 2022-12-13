@@ -74,10 +74,10 @@ end
 _2amodule_2a["ends-with"] = ends_with
 local function first_and_last_chars(str0)
   if str0 then
-    if (1 == a.count(str0)) then
-      return str0
-    else
+    if (a.count(str0) > 1) then
       return (string.sub(str0, 1, 1) .. string.sub(str0, -1, -1))
+    else
+      return str0
     end
   else
     return nil

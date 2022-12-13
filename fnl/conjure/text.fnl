@@ -43,10 +43,10 @@
 
 (defn first-and-last-chars [str]
   (when str
-    (if (= 1 (a.count str))
-      str
+    (if (> (a.count str) 1)
       (.. (string.sub str 1 1)
-          (string.sub str -1 -1)))))
+          (string.sub str -1 -1))
+      str)))
 
 (defn strip-ansi-escape-sequences [s]
   (-> s
