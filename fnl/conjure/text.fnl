@@ -3,12 +3,10 @@
             str conjure.aniseed.string}})
 
 (defn trailing-newline? [s]
-  (= "\n" (string.sub s -1)))
+  (string.match s "\r?\n$"))
 
 (defn trim-last-newline [s]
-  (if (trailing-newline? s)
-    (string.sub s 1 -2)
-    s))
+  (string.gsub s "\r?\n$" ""))
 
 (defn left-sample [s limit]
   (let [flat (-> (string.gsub s "\n" " ")

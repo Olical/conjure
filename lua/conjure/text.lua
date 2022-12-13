@@ -14,15 +14,11 @@ local a, str = require("conjure.aniseed.core"), require("conjure.aniseed.string"
 do end (_2amodule_locals_2a)["a"] = a
 _2amodule_locals_2a["str"] = str
 local function trailing_newline_3f(s)
-  return ("\n" == string.sub(s, -1))
+  return string.match(s, "\13?\n$")
 end
 _2amodule_2a["trailing-newline?"] = trailing_newline_3f
 local function trim_last_newline(s)
-  if trailing_newline_3f(s) then
-    return string.sub(s, 1, -2)
-  else
-    return s
-  end
+  return string.gsub(s, "\13?\n$", "")
 end
 _2amodule_2a["trim-last-newline"] = trim_last_newline
 local function left_sample(s, limit)
@@ -43,17 +39,17 @@ local function split_lines(s)
 end
 _2amodule_2a["split-lines"] = split_lines
 local function prefixed_lines(s, prefix, opts)
-  local function _5_(_3_)
-    local _arg_4_ = _3_
-    local n = _arg_4_[1]
-    local line = _arg_4_[2]
+  local function _4_(_2_)
+    local _arg_3_ = _2_
+    local n = _arg_3_[1]
+    local line = _arg_3_[2]
     if ((1 == n) and a.get(opts, "skip-first?")) then
       return line
     else
       return (prefix .. line)
     end
   end
-  return a["map-indexed"](_5_, split_lines(s))
+  return a["map-indexed"](_4_, split_lines(s))
 end
 _2amodule_2a["prefixed-lines"] = prefixed_lines
 local function starts_with(str0, start)
