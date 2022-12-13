@@ -38,7 +38,7 @@ local function preview(opts)
       return text["left-sample"](opts.code, sample_limit)
     end
   end
-  return (client.get("comment-prefix") .. opts.action .. " (" .. opts.origin .. "): " .. _1_())
+  return str.join({client.get("comment-prefix"), opts.action, " (", opts.origin, "): ", _1_()})
 end
 _2amodule_locals_2a["preview"] = preview
 local function display_request(opts)
@@ -78,7 +78,7 @@ local function with_last_result_hook(opts)
     local function _7_(result)
       nvim.fn.setreg(config["get-in"]({"eval", "result_register"}), string.gsub(result, "%z", ""))
       if config["get-in"]({"eval", "inline_results"}) then
-        inline.display({buf = buf, text = (config["get-in"]({"eval", "inline", "prefix"}) .. result), line = line})
+        inline.display({buf = buf, text = str.join({config["get-in"]({"eval", "inline", "prefix"}), result}), line = line})
       else
       end
       if f then
@@ -233,10 +233,10 @@ local function marked_form(mark)
   end
   ok_3f, err = pcall(_29_)
   if ok_3f then
-    current_form({origin = ("marked-form [" .. mark0 .. "]")})
+    current_form({origin = str.join({"marked-form [", mark0, "]"})})
     editor["go-back"]()
   else
-    log.append({(comment_prefix .. "Couldn't eval form at mark: " .. mark0), (comment_prefix .. err)}, {["break?"] = true})
+    log.append({str.join({comment_prefix, "Couldn't eval form at mark: ", mark0}), str.join({comment_prefix, err})}, {["break?"] = true})
   end
   return mark0
 end
@@ -251,7 +251,7 @@ local function insert_result_comment(tag, input)
     local function _32_(result)
       return buffer["append-prefixed-line"](buf, range["end"], comment_prefix, result)
     end
-    eval_str({code = content, range = range, origin = ("comment-" .. tag), ["suppress-hud?"] = true, ["on-result"] = _32_})
+    eval_str({code = content, range = range, origin = str.join({"comment-", tag}), ["suppress-hud?"] = true, ["on-result"] = _32_})
     return input
   else
     return nil

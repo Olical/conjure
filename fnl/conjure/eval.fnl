@@ -20,11 +20,12 @@
 (defn- preview [opts]
   (let [sample-limit (editor.percent-width
                        (config.get-in [:preview :sample_limit]))]
-    (.. (client.get :comment-prefix)
-        opts.action " (" opts.origin "): "
-        (if (or (= :file opts.origin) (= :buf opts.origin))
-          (text.right-sample opts.file-path sample-limit)
-          (text.left-sample opts.code sample-limit)))))
+    (str.join
+      [(client.get :comment-prefix)
+       opts.action " (" opts.origin "): "
+       (if (or (= :file opts.origin) (= :buf opts.origin))
+         (text.right-sample opts.file-path sample-limit)
+         (text.left-sample opts.code sample-limit))])))
 
 (defn- display-request [opts]
   (log.append
@@ -75,8 +76,9 @@
           (when (config.get-in [:eval :inline_results])
             (inline.display
               {:buf buf
-               :text (.. (config.get-in [:eval :inline :prefix])
-                         result)
+               :text (str.join
+                       [(config.get-in [:eval :inline :prefix])
+                        result])
                :line line}))
           (when f (f result)))))))
 
@@ -216,10 +218,10 @@
         (ok? err) (pcall #(editor.go-to-mark mark))]
     (if ok?
       (do
-        (current-form {:origin (..  "marked-form [" mark "]")})
+        (current-form {:origin (str.join ["marked-form [" mark "]"])})
         (editor.go-back))
-      (log.append [(.. comment-prefix "Couldn't eval form at mark: " mark)
-                   (.. comment-prefix err)]
+      (log.append [(str.join [comment-prefix "Couldn't eval form at mark: " mark])
+                   (str.join [comment-prefix err])]
                   {:break? true}))
     mark))
 
@@ -233,7 +235,7 @@
         (eval-str
           {:code content
            :range range
-           :origin (.. :comment- tag)
+           :origin (str.join [:comment- tag])
            :suppress-hud? true
            :on-result
            (fn [result]
