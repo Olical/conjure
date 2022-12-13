@@ -21,6 +21,13 @@
 (def some-state (atom 20))
 @some-state
 
+^{:some-meta true}
+{:a 1} ;; <-- no result when I set cursor here and call :ConjureEvalCurrentForm
+
+{:a 1} ;; <-- works fine I set cursor here and call :ConjureEvalCurrentForm
+
+;; note that :ConjureEvalRootForm works fine
+
 #{:a :b :c}
 #?(:clj :hi-clojure :cljs :hi-cljs)
 #(+ 1 %)
