@@ -25,6 +25,7 @@ do end (_2amodule_2a)["state"] = state
 local function init()
   log.append({"; Initialising CIDER debugger"}, {["break?"] = true})
   local function _1_(msg)
+    log.append({"; CIDER debugger initialized"}, {["break?"] = true})
     return log.dbg("init-debugger response", msg)
   end
   server.send({op = "init-debugger"}, _1_)
