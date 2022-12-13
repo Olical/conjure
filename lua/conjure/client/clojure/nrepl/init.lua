@@ -35,8 +35,10 @@ local cfg = config["get-in-fn"]({"client", "clojure", "nrepl"})
 do end (_2amodule_locals_2a)["cfg"] = cfg
 local reader_macro_pairs = {{"#{", "}"}, {"#(", ")"}, {"#?(", ")"}, {"'(", ")"}, {"'[", "]"}, {"'{", "}"}, {"`(", ")"}, {"`[", "]"}, {"`{", "}"}}
 _2amodule_locals_2a["reader-macro-pairs"] = reader_macro_pairs
+local reader_macros = {"@"}
+_2amodule_locals_2a["reader-macros"] = reader_macros
 local function form_node_3f(node)
-  return ts["node-surrounded-by-form-pair-chars?"](node, reader_macro_pairs)
+  return (ts["node-surrounded-by-form-pair-chars?"](node, reader_macro_pairs) or ts["node-prefixed-by-chars?"](node, reader_macros))
 end
 _2amodule_2a["form-node?"] = form_node_3f
 local comment_node_3f = ts["lisp-comment-node?"]

@@ -151,6 +151,14 @@ local function node_surrounded_by_form_pair_chars_3f(node, extra_pairs)
   return (a.some(_16_, config["get-in"]({"extract", "form_pairs"})) or a.some(_19_, extra_pairs) or false)
 end
 _2amodule_2a["node-surrounded-by-form-pair-chars?"] = node_surrounded_by_form_pair_chars_3f
+local function node_prefixed_by_chars_3f(node, prefixes)
+  local node_str = node__3estr(node)
+  local function _20_(prefix)
+    return text["starts-with"](node_str, prefix)
+  end
+  return (a.some(_20_, prefixes) or false)
+end
+_2amodule_2a["node-prefixed-by-chars?"] = node_prefixed_by_chars_3f
 local function get_form(node)
   if not node then
     parse_21()
@@ -162,9 +170,9 @@ local function get_form(node)
   elseif (leaf_3f(node0) or (false == client["optional-call"]("form-node?", node0))) then
     return get_form(parent(node0))
   else
-    local _let_21_ = (client["optional-call"]("get-form-modifier", node0) or {})
-    local modifier = _let_21_["modifier"]
-    local res = _let_21_
+    local _let_22_ = (client["optional-call"]("get-form-modifier", node0) or {})
+    local modifier = _let_22_["modifier"]
+    local res = _let_22_
     if (not modifier or ("none" == modifier)) then
       return node0
     elseif ("parent" == modifier) then

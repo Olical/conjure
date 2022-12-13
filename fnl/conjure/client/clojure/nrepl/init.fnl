@@ -30,8 +30,12 @@
    ["`[" "]"]
    ["`{" "}"]])
 
+(def- reader-macros
+  ["@"])
+
 (defn form-node? [node]
-  (ts.node-surrounded-by-form-pair-chars? node reader-macro-pairs))
+  (or (ts.node-surrounded-by-form-pair-chars? node reader-macro-pairs)
+      (ts.node-prefixed-by-chars? node reader-macros)))
 
 (def comment-node? ts.lisp-comment-node?)
 

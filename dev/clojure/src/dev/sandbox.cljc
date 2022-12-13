@@ -18,6 +18,9 @@
 
 (rand-int 10)
 
+(def some-state (atom 20))
+@some-state
+
 #{:a :b :c}
 #?(:clj :hi-clojure :cljs :hi-cljs)
 #(+ 1 %)

@@ -114,6 +114,14 @@
           extra-pairs)
         false)))
 
+(defn node-prefixed-by-chars? [node prefixes]
+  (let [node-str (node->str node)]
+    (or (a.some
+          (fn [prefix]
+            (text.starts-with node-str prefix))
+          prefixes)
+        false)))
+
 (defn get-form [node]
   "Get the current form under the cursor. Walks up until it finds a non-leaf.
 
