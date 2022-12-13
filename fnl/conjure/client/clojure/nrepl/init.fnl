@@ -32,7 +32,8 @@
 
 (def- reader-macros
   ["@"
-   "^{"])
+   "^{"
+   "^:"])
 
 (defn form-node? [node]
   (or (ts.node-surrounded-by-form-pair-chars? node reader-macro-pairs)

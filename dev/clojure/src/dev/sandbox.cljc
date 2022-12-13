@@ -24,6 +24,8 @@
 ^{:some-meta true}
 {:a 1} ;; <-- no result when I set cursor here and call :ConjureEvalCurrentForm
 
+^:some-meta {:a 10}
+
 {:a 1} ;; <-- works fine I set cursor here and call :ConjureEvalCurrentForm
 
 ;; note that :ConjureEvalRootForm works fine
