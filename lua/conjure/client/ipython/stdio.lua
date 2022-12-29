@@ -168,6 +168,10 @@ local function doc_str(opts)
   end
 end
 _2amodule_2a["doc-str"] = doc_str
+local function get_form_modifier(node)
+  return print(node)
+end
+_2amodule_2a["get-form-modifier"] = get_form_modifier
 local function display_repl_status(status)
   local repl = state("repl")
   if repl then

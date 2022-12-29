@@ -169,6 +169,13 @@
   (when (str-is-python-expr? opts.code)
     (eval-str (a.assoc opts :code (get-help opts.code)))))
 
+(defn get-form-modifier [node]
+  (let [p (ts.parent node)]
+    (if (= "module" (p:type))
+      {:modifier :node
+       :node p}
+      {:modifier :parent})))
+
 (defn- display-repl-status [status]
   (let [repl (state :repl)]
     (when repl
@@ -267,4 +274,5 @@
     :IPythonInterrupt (cfg [:mapping :interrupt])
     interrupt
     {:desc "Interrupt the current evaluation"}))
+  
 
