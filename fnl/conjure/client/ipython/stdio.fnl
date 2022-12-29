@@ -1,4 +1,4 @@
-(module conjure.client.python.stdio
+(module conjure.client.ipython.stdio
   {autoload {a conjure.aniseed.core
              extract conjure.extract
              str conjure.aniseed.string
@@ -14,20 +14,20 @@
 
 (config.merge
   {:client
-   {:python
+   {:ipython
     {:stdio
      {:mapping {:start "cs"
                 :stop "cS"
                 :interrupt "ei"}
-      :command "python3 -iq"
+      :command "ipython --classic"
       :prompt-pattern ">>> "
       :delay-stderr-ms 10}}}})
 
-(def- cfg (config.get-in-fn [:client :python :stdio]))
+(def- cfg (config.get-in-fn [:client :ipython :stdio]))
 
 (defonce- state (client.new-state #(do {:repl nil})))
 
-(def buf-suffix ".py")
+(def buf-suffix ".ipynb")
 (def comment-prefix "# ")
 
 (defn- with-repl-or-warn [f opts]
@@ -254,17 +254,17 @@
 
 (defn on-filetype []
   (mapping.buf
-    :PythonStart (cfg [:mapping :start])
+    :IPythonStart (cfg [:mapping :start])
     start
     {:desc "Start the Python REPL"})
 
   (mapping.buf
-    :PythonStop (cfg [:mapping :stop])
+    :IPythonStop (cfg [:mapping :stop])
     stop
     {:desc "Stop the Python REPL"})
 
   (mapping.buf
-    :PythonInterrupt (cfg [:mapping :interrupt])
+    :IPythonInterrupt (cfg [:mapping :interrupt])
     interrupt
     {:desc "Interrupt the current evaluation"}))
 
