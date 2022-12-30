@@ -19,9 +19,11 @@
      {:mapping {:start "cs"
                 :stop "cS"
                 :interrupt "ei"}
-      :command "ipython --classic"
-      :prompt-pattern ">>> "
-      :delay-stderr-ms 10}}}})
+      :command "ipython --no-autoindent --colors=NoColor"
+      :prompt-pattern "In %[%d+%]: "
+      :delay-stderr-ms 10
+      :env {}}}}})
+
 
 (def- cfg (config.get-in-fn [:client :ipython :stdio]))
 
@@ -95,16 +97,20 @@
   [s]
   (string.gsub s "\"" "\\\""))
 
+(defn- remove-dots
+  [s]
+  (string.gsub s "... " ""))
+
 (defn- get-exec-str
   [s]
-  (.. "exec(\"\"\"\n" (escape-strs s) "\n\"\"\")\n"))
+  (.. "\"\"\"\n" (escape-strs s) "\n\"\"\")\n"))
 
 (defn- prep-code [s]
   (let [python-expr (str-is-python-expr? s)]
     (if python-expr
-      (.. s "\n")
-      (get-exec-str s))))
-
+      s
+      (.. (string.char 27) "[200~\n" "print(\"test\")\nprint(\"test\")\n" (string.char 27) "[201~\n"))))
+      
 ; If, after pressing newline, the python interpreter expects more
 ; input from you (as is the case after the first line of an if branch or for loop)
 ; the python interpreter will output "..." to show that it is waiting for more input.
@@ -114,12 +120,11 @@
 ; the output will be flagged as one of these special "dots" lines. This could probably
 ; be smarter, but will work for most normal cases for now.
 (defn- is-dots? [s]
-  (= (string.sub s 1 3) "..."))
+  (string.find s "..."))
 
 (defn format-msg [msg]
   (->> (text.split-lines msg)
-       (a.filter #(~= "" $1))
-       (a.filter #(not (is-dots? $1)))))
+       (a.filter #(~= "" $1))))
 
 (defn- get-console-output-msgs [msgs]
   (->> (a.butlast msgs)
@@ -190,19 +195,6 @@
       (display-repl-status :stopped)
       (a.assoc (state) :repl nil))))
 
-; By default, there is no way for us to tell the difference between
-; normal stdout log messages and the result of the expression we evaluated.
-; This is because if an expression results in the literal value None, the python
-; interpreter will not print out anything.
-; Replacing this hook ensures that the last line in the output after
-; sending a command is the result of the command.
-; Relevant docs: https://docs.python.org/3/library/sys.html#sys.displayhook
-(def update-python-displayhook
-  (str.join "\n" ["import sys"
-                  "def format_output(val):"
-                  "    print(repr(val))"
-                  "sys.displayhook = format_output\n"]))
-
 (defn start []
   (if (state :repl)
     (log.append [(.. comment-prefix "Can't start, REPL is already running.")
@@ -220,16 +212,11 @@
           {:prompt-pattern (cfg [:prompt-pattern])
            :cmd (cfg [:command])
            :delay-stderr-ms (cfg [:delay-stderr-ms])
+           :env {:INPUTRC "~/.inputrc"}
 
            :on-success
            (fn []
-             (display-repl-status :started
-              (with-repl-or-warn
-               (fn [repl]
-                 (repl.send
-                   (prep-code update-python-displayhook)
-                   (fn [msgs] nil)
-                   nil)))))
+             (display-repl-status :started))
 
            :on-error
            (fn [err]
@@ -245,6 +232,8 @@
 
            :on-stray-output
            (fn [msg]
+             (print "on-stray-output")
+             (print (a.pr-str msg))
              (log.dbg (-> [msg] unbatch format-msg) {:join-first? true}))})))))
 
 (defn on-load []
