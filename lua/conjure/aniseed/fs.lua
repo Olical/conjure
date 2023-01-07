@@ -41,10 +41,6 @@ local function glob_dir_newer_3f(a_dir, b_dir, expr, b_dir_path_fn)
   return newer_3f
 end
 _2amodule_2a["glob-dir-newer?"] = glob_dir_newer_3f
-local function macro_file_path_3f(path)
-  return a["string?"](string.match(path, "macros?.fnl$"))
-end
-_2amodule_2a["macro-file-path?"] = macro_file_path_3f
 local path_sep
 do
   local os = string.lower(jit.os)
@@ -55,4 +51,8 @@ do
   end
 end
 _2amodule_2a["path-sep"] = path_sep
+local function macro_file_path_3f(path)
+  return (a["string?"](string.match(path, "macros?.fnl$")) or a["string?"](string.match(path, (path_sep .. "macros?" .. path_sep))))
+end
+_2amodule_2a["macro-file-path?"] = macro_file_path_3f
 return _2amodule_2a
