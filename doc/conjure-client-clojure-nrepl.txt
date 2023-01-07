@@ -6,6 +6,7 @@ CONTENTS                               *conjure-client-clojure-nrepl-contents*
     1. Introduction ........ |conjure-client-clojure-nrepl-introduction|
     2. Mappings ................ |conjure-client-clojure-nrepl-mappings|
     3. Configuration ...... |conjure-client-clojure-nrepl-configuration|
+    4. Hooks .                ..... |conjure-client-clojure-nrepl-hooks|
 
 ==============================================================================
 INTRODUCTION                       *conjure-client-clojure-nrepl-introduction*
@@ -451,5 +452,36 @@ All configuration can be set as described in |conjure-configuration|.
             items). This can actually be a huge performance hit on slower
             machines in large buffers with lots of top level forms.
             Default: `false`
+
+==============================================================================
+HOOKS                                     *conjure-client-clojure-nrepl-hooks*
+
+See |conjure-hooks| for more general details on hooks and how to use them.
+Below are the hooks that this client defines and their behaviour.
+
+`(client-clojure-nrepl-passive-connect cb)`
+    Called when we don't currently have a connection but the user tried to do
+    something that required one. This will call
+    `conjure.client.clojure.nrepl.action/connect-port-file` providing the
+    callback (`cb`) as an argument to it.
+
+    If you're overriding this then you need to make sure `cb` is called if
+    it's not `nil`.
+
+    The original implementation returns the result of calling
+    `connect-port-file` which you could inspect to work out if a connection
+    attempt was made or not.
+
+    If you wish to check if the connection actually succeeded and didn't just
+    get attempted you'll need to call `connect-port-file` yourself and provide
+    some overrides for `nrepl.connect` under the `connect-opts` key in it's
+    `opts` argument. This allows you to set your own `on-failure` function
+    that replaces the default one from Conjure. In there you can perform
+    different actions such as starting your own REPL or cleaning up port
+    files.
+
+    I suggest you read the original source code for this to get a full
+    understanding, but this should be enough for you to get pretty creative
+    with it.
 
 vim:tw=78:sw=2:ts=2:ft=help:norl:et:listchars=

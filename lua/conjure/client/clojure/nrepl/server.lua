@@ -289,6 +289,7 @@ local function connect(_45_)
   local port = _arg_46_["port"]
   local cb = _arg_46_["cb"]
   local port_file_path = _arg_46_["port_file_path"]
+  local connect_opts = _arg_46_["connect-opts"]
   if state.get("conn") then
     disconnect()
   else
@@ -336,7 +337,7 @@ local function connect(_45_)
   local function _58_(msg)
     return ui["display-result"](msg)
   end
-  return a.assoc(state.get(), "conn", a["merge!"](nrepl.connect({host = host, port = port, ["on-failure"] = _48_, ["on-success"] = _49_, ["on-error"] = _50_, ["on-message"] = _52_, ["side-effect-callback"] = _55_, ["default-callback"] = _58_}), {["seen-ns"] = {}, port_file_path = port_file_path}))
+  return a.assoc(state.get(), "conn", a["merge!"](nrepl.connect(a.merge({host = host, port = port, ["on-failure"] = _48_, ["on-success"] = _49_, ["on-error"] = _50_, ["on-message"] = _52_, ["side-effect-callback"] = _55_, ["default-callback"] = _58_}, connect_opts)), {["seen-ns"] = {}, port_file_path = port_file_path}))
 end
 _2amodule_2a["connect"] = connect
 return _2amodule_2a

@@ -252,7 +252,7 @@
                 "\n")
      :session msg.session}))
 
-(defn connect [{: host : port : cb : port_file_path}]
+(defn connect [{: host : port : cb : port_file_path : connect-opts}]
   (when (state.get :conn)
     (disconnect))
 
@@ -260,46 +260,49 @@
     (state.get) :conn
     (a.merge!
       (nrepl.connect
-        {:host host
-         :port port
+        (a.merge
+          {:host host
+           :port port
 
-         :on-failure
-         (fn [err]
-           (display-conn-status err)
-           (disconnect))
-
-         :on-success
-         (fn []
-           (display-conn-status :connected)
-           (capture-describe)
-           (assume-or-create-session)
-           (eval-preamble cb))
-
-         :on-error
-         (fn [err]
-           (if err
+           :on-failure
+           (fn [err]
              (display-conn-status err)
-             (disconnect)))
+             (disconnect))
 
-         :on-message
-         (fn [msg]
-           (when msg.status.unknown-session
-             (log.append ["; Unknown session, correcting"])
-             (assume-or-create-session))
-           (when msg.status.namespace-not-found
-             (log.append [(str.join ["; Namespace not found: " msg.ns])])))
+           :on-success
+           (fn []
+             (display-conn-status :connected)
+             (capture-describe)
+             (assume-or-create-session)
+             (eval-preamble cb))
 
-         :side-effect-callback
-         (fn [msg]
-           (when msg.status.need-input
-             (client.schedule handle-input-request msg))
+           :on-error
+           (fn [err]
+             (if err
+               (display-conn-status err)
+               (disconnect)))
 
-           (when msg.status.need-debug-input
-             (client.schedule debugger.handle-input-request msg)))
+           :on-message
+           (fn [msg]
+             (when msg.status.unknown-session
+               (log.append ["; Unknown session, correcting"])
+               (assume-or-create-session))
+             (when msg.status.namespace-not-found
+               (log.append [(str.join ["; Namespace not found: " msg.ns])])))
 
-         :default-callback
-         (fn [msg]
-           (ui.display-result msg))})
+           :side-effect-callback
+           (fn [msg]
+             (when msg.status.need-input
+               (client.schedule handle-input-request msg))
+
+             (when msg.status.need-debug-input
+               (client.schedule debugger.handle-input-request msg)))
+
+           :default-callback
+           (fn [msg]
+             (ui.display-result msg))}
+
+          connect-opts))
 
       {:seen-ns {}
        :port_file_path port_file_path})))

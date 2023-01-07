@@ -5,6 +5,7 @@
              ll conjure.linked-list
              log conjure.log
              fs conjure.fs
+             hook conjure.hook
              client conjure.client
              eval conjure.aniseed.eval
              str conjure.aniseed.string
@@ -48,16 +49,22 @@
                (let [cb (a.get opts :cb)]
                  (when cb
                    (cb)))
-               (passive-ns-require))})
+               (passive-ns-require))
+         :connect-opts (a.get opts :connect-opts)})
       (when (not (a.get opts :silent?))
         (log.append ["; No nREPL port file found"] {:break? true})
         (auto-repl.upsert-auto-repl-proc)))))
 
-(defn- try-ensure-conn [cb]
-  (if (not (server.connected?))
+(hook.define
+  :client-clojure-nrepl-passive-connect
+  (fn [cb]
     (connect-port-file
       {:silent? true
-       :cb cb})
+       :cb cb})))
+
+(defn- try-ensure-conn [cb]
+  (if (not (server.connected?))
+    (hook.exec :client-clojure-nrepl-passive-connect cb)
     (when cb
       (cb))))
 
