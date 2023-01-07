@@ -4,6 +4,7 @@
              str conjure.aniseed.string
              buffer conjure.buffer
              client conjure.client
+             hook conjure.hook
              config conjure.config
              view conjure.aniseed.view
              text conjure.text
@@ -54,11 +55,16 @@
 (defn clear-close-hud-passive-timer []
   (a.update-in state [:hud :timer] timer.destroy))
 
+(hook.define
+  :close-hud
+  (fn []
+    (when state.hud.id
+      (pcall nvim.win_close state.hud.id true)
+      (set state.hud.id nil))))
+
 (defn close-hud []
   (clear-close-hud-passive-timer)
-  (when state.hud.id
-    (pcall nvim.win_close state.hud.id true)
-    (set state.hud.id nil)))
+  (hook.exec :close-hud))
 
 (defn hud-lifetime-ms []
   (- (vim.loop.now) state.hud.created-at-ms))
@@ -177,19 +183,9 @@
           {:break? true}))
       (a.assoc-in state [:hud :low-priority-spam :help-displayed?] true))))
 
-(defn- display-hud [opts]
-  (when (and (config.get-in [:log :hud :enabled])
-
-             ;; Don't display when the user is already doing something in a floating window.
-             (not (current-window-floating?))
-
-             ;; Don't display low priority messages if configured.
-             (or (not (config.get-in [:log :hud :ignore_low_priority]))
-                 (and (config.get-in [:log :hud :ignore_low_priority])
-                      (not (a.get opts :low-priority?)))))
-
-    (clear-close-hud-passive-timer)
-
+(hook.define
+  :display-hud
+  (fn [opts]
     (let [buf (upsert-buf)
           last-break (a.last (break-lines buf))
           line-count (nvim.buf_line_count buf)
@@ -234,6 +230,19 @@
                line-count)
              0]))
         (nvim.win_set_cursor state.hud.id [line-count 0])))))
+
+(defn- display-hud [opts]
+  (when (and (config.get-in [:log :hud :enabled])
+
+             ;; Don't display when the user is already doing something in a floating window.
+             (not (current-window-floating?))
+
+             ;; Don't display low priority messages if configured.
+             (or (not (config.get-in [:log :hud :ignore_low_priority]))
+                 (and (config.get-in [:log :hud :ignore_low_priority])
+                      (not (a.get opts :low-priority?)))))
+    (clear-close-hud-passive-timer)
+    (hook.exec :display-hud opts)))
 
 (defn- win-visible? [win]
   (= (nvim.fn.tabpagenr)
