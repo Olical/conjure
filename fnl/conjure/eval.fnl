@@ -47,10 +47,8 @@
         bufnr namespace (config.get-in [:highlight :group]) hl_start hl_end
         (unpack
           ;; https://github.com/neovim/neovim/issues/14090#issuecomment-1047205812
-          (if (= 1 (nvim.fn.has "nvim-0.7"))
-            [{:regtype :v
-              :inclusive true}]
-            [:v true])))
+          [{:regtype :v
+            :inclusive true}]))
 
       (timer.defer
         (fn []

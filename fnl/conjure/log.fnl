@@ -208,9 +208,8 @@
              :height size.height
              :focusable false
              :style :minimal
-             :zindex 10}
-            (when (= 1 (nvim.fn.has "nvim-0.5"))
-              {:border border}))]
+             :zindex 10
+             :border border})]
 
       (when (and state.hud.id (not (nvim.win_is_valid state.hud.id)))
         (close-hud))
