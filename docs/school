@@ -2,7 +2,14 @@
 
 PREFIX="/tmp/conjure-school"
 
+die() {
+  printf "\33[2K\r\033[1;31m%s\033[0m\n" "$*" >&2
+  exit 1
+}
+
 if [ ! -d $PREFIX ]; then
+  command -v curl >/dev/null || die "Curl not found. Please install it."
+  command -v unzip >/dev/null || die "Unzip not found. Please install it."
   echo "Downloading Conjure into $PREFIX..."
   curl -LJ https://github.com/Olical/conjure/archive/master.zip -o $PREFIX.zip
   unzip -qq $PREFIX.zip -d $PREFIX
