@@ -146,7 +146,7 @@
                  ["{" "}"]
                  ["[" "]" true]]
     :tree_sitter {:enabled true}
-    :force-legacy-word true}
+    :force_legacy_word false}
 
    :preview
    {:sample_limit 0.3}})

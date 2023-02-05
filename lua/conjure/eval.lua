@@ -281,10 +281,21 @@ local function word()
   end
 end
 _2amodule_2a["word"] = word
-local function doc_word()
-  local _let_36_ = extract.word()
+local function legacy_word()
+  local _let_36_ = extract["legacy-word"]()
   local content = _let_36_["content"]
   local range = _let_36_["range"]
+  if not a["empty?"](content) then
+    return eval_str({code = content, range = range, origin = "word"})
+  else
+    return nil
+  end
+end
+_2amodule_2a["legacy-word"] = legacy_word
+local function doc_word()
+  local _let_38_ = extract.word()
+  local content = _let_38_["content"]
+  local range = _let_38_["range"]
   if not a["empty?"](content) then
     return doc_str({code = content, range = range, origin = "word"})
   else
@@ -293,9 +304,9 @@ local function doc_word()
 end
 _2amodule_2a["doc-word"] = doc_word
 local function def_word()
-  local _let_38_ = extract.word()
-  local content = _let_38_["content"]
-  local range = _let_38_["range"]
+  local _let_40_ = extract.word()
+  local content = _let_40_["content"]
+  local range = _let_40_["range"]
   if not a["empty?"](content) then
     return def_str({code = content, range = range, origin = "word"})
   else
@@ -304,9 +315,9 @@ local function def_word()
 end
 _2amodule_2a["def-word"] = def_word
 local function buf()
-  local _let_40_ = extract.buf()
-  local content = _let_40_["content"]
-  local range = _let_40_["range"]
+  local _let_42_ = extract.buf()
+  local content = _let_42_["content"]
+  local range = _let_42_["range"]
   return eval_str({code = content, range = range, origin = "buf"})
 end
 _2amodule_2a["buf"] = buf
@@ -315,16 +326,16 @@ local function command(code)
 end
 _2amodule_2a["command"] = command
 local function range(start, _end)
-  local _let_41_ = extract.range(start, _end)
-  local content = _let_41_["content"]
-  local range0 = _let_41_["range"]
+  local _let_43_ = extract.range(start, _end)
+  local content = _let_43_["content"]
+  local range0 = _let_43_["range"]
   return eval_str({code = content, range = range0, origin = "range"})
 end
 _2amodule_2a["range"] = range
 local function selection(kind)
-  local _let_42_ = extract.selection({kind = (kind or nvim.fn.visualmode()), ["visual?"] = not kind})
-  local content = _let_42_["content"]
-  local range0 = _let_42_["range"]
+  local _let_44_ = extract.selection({kind = (kind or nvim.fn.visualmode()), ["visual?"] = not kind})
+  local content = _let_44_["content"]
+  local range0 = _let_44_["range"]
   return eval_str({code = content, range = range0, origin = "selection"})
 end
 _2amodule_2a["selection"] = selection
@@ -338,15 +349,15 @@ end
 _2amodule_locals_2a["wrap-completion-result"] = wrap_completion_result
 local function completions(prefix, cb)
   local function cb_wrap(results)
-    local function _44_()
-      local _45_ = config["get-in"]({"completion", "fallback"})
-      if (nil ~= _45_) then
-        return nvim.call_function(_45_, {0, prefix})
+    local function _46_()
+      local _47_ = config["get-in"]({"completion", "fallback"})
+      if (nil ~= _47_) then
+        return nvim.call_function(_47_, {0, prefix})
       else
-        return _45_
+        return _47_
       end
     end
-    return cb(a.map(wrap_completion_result, (results or _44_())))
+    return cb(a.map(wrap_completion_result, (results or _46_())))
   end
   if ("function" == type(client.get("completions"))) then
     return client.call("completions", assoc_context({["file-path"] = extract["file-path"](), prefix = prefix, cb = cb_wrap}))

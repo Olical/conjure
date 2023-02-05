@@ -44,7 +44,7 @@ local function legacy_word()
 end
 _2amodule_2a["legacy-word"] = legacy_word
 local function word()
-  if ts["enabled?"]() then
+  if (not config["get-in"]({"extract", "force_legacy_word"}) and ts["enabled?"]()) then
     local node = ts["get-leaf"]()
     if node then
       return {range = ts.range(node), content = ts["node->str"](node)}
