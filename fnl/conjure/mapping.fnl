@@ -143,6 +143,11 @@
     {:desc "Evaluate word"})
 
   (buf
+    :EvalLegacyWord (cfg :eval_legacy_word)
+    (util.wrap-require-fn-call :conjure.eval :legacy-word)
+    {:desc "Evaluate legacy word"})
+
+  (buf
     :EvalCommentWord (cfg :eval_comment_word)
     (util.wrap-require-fn-call :conjure.eval :comment-word)
     {:desc "Evaluate word and comment result"})

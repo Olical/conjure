@@ -31,7 +31,8 @@
             :end [line-num (+ cword-index (length cword) -1)]}}))
 
 (defn word []
-  (if (ts.enabled?)
+  (if (and (not (config.get-in [:extract :force-legacy-word])) 
+           (ts.enabled?))
     (if-let [node (ts.get-leaf)]
       {:range (ts.range node)
        :content (ts.node->str node)}

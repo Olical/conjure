@@ -96,6 +96,7 @@
     :eval_comment_root_form "ecr"
 
     :eval_word "ew"
+    :eval_legacy_word "eq"
     :eval_comment_word "ecw"
 
     :eval_replace_form "e!"
@@ -144,7 +145,8 @@
     :form_pairs [["(" ")"]
                  ["{" "}"]
                  ["[" "]" true]]
-    :tree_sitter {:enabled true}}
+    :tree_sitter {:enabled true}
+    :force-legacy-word true}
 
    :preview
    {:sample_limit 0.3}})

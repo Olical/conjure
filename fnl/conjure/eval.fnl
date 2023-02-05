@@ -263,6 +263,15 @@
          :range range
          :origin :word}))))
 
+
+(defn legacy-word []
+  (let [{: content : range} (extract.legacy-word)]
+    (when (not (a.empty? content))
+      (eval-str
+        {:code content
+         :range range
+         :origin :word}))))
+
 (defn doc-word []
   (let [{: content : range} (extract.word)]
     (when (not (a.empty? content))
