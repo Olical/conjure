@@ -93,11 +93,17 @@
 
 (defn- escape-strs
   [s]
-  (string.gsub s "\"" "\\\""))
+  ;; Split s into multiple lines based on newlines.
+  ;; Escape internal escaped newlines in each line if any.
+  ;; Return lines joined backed together with newlines as a single string.
+  (let [s2 (str.split s "\n")
+        lns (icollect [i val (ipairs s2)]
+              (string.gsub val "\\n" "\\\\n"))]
+    (.. (a.first lns) "\n" (str.join "\n" (a.rest lns)))))
 
 (defn- get-exec-str
   [s]
-  (.. "exec(\"\"\"\n" (escape-strs s) "\n\"\"\")\n"))
+  (.. "exec('''\n" (escape-strs s) "\n''')\n"))
 
 (defn- prep-code [s]
   (let [python-expr (str-is-python-expr? s)]
