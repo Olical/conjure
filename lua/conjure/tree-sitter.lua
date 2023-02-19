@@ -119,11 +119,23 @@ local function leaf_3f(node)
   end
 end
 _2amodule_2a["leaf?"] = leaf_3f
+local function multi_symbol_3f(node)
+  if node then
+    return ("multi_symbol" == node:type())
+  else
+    return nil
+  end
+end
+_2amodule_2a["multi-symbol?"] = multi_symbol_3f
 local function get_leaf(node)
   parse_21()
   local node0 = (node or ts.get_node_at_cursor())
   if leaf_3f(node0) then
-    return node0
+    if multi_symbol_3f(parent(node0)) then
+      return parent(node0)
+    else
+      return node0
+    end
   else
     return nil
   end
@@ -132,27 +144,27 @@ _2amodule_2a["get-leaf"] = get_leaf
 local function node_surrounded_by_form_pair_chars_3f(node, extra_pairs)
   local node_str = node__3estr(node)
   local first_and_last_chars = text["first-and-last-chars"](node_str)
-  local function _15_(_13_)
-    local _arg_14_ = _13_
-    local start = _arg_14_[1]
-    local _end = _arg_14_[2]
+  local function _17_(_15_)
+    local _arg_16_ = _15_
+    local start = _arg_16_[1]
+    local _end = _arg_16_[2]
     return (first_and_last_chars == (start .. _end))
   end
-  local function _18_(_16_)
-    local _arg_17_ = _16_
-    local start = _arg_17_[1]
-    local _end = _arg_17_[2]
+  local function _20_(_18_)
+    local _arg_19_ = _18_
+    local start = _arg_19_[1]
+    local _end = _arg_19_[2]
     return (text["starts-with"](node_str, start) and text["ends-with"](node_str, _end))
   end
-  return (a.some(_15_, config["get-in"]({"extract", "form_pairs"})) or a.some(_18_, extra_pairs) or false)
+  return (a.some(_17_, config["get-in"]({"extract", "form_pairs"})) or a.some(_20_, extra_pairs) or false)
 end
 _2amodule_2a["node-surrounded-by-form-pair-chars?"] = node_surrounded_by_form_pair_chars_3f
 local function node_prefixed_by_chars_3f(node, prefixes)
   local node_str = node__3estr(node)
-  local function _19_(prefix)
+  local function _21_(prefix)
     return text["starts-with"](node_str, prefix)
   end
-  return (a.some(_19_, prefixes) or false)
+  return (a.some(_21_, prefixes) or false)
 end
 _2amodule_2a["node-prefixed-by-chars?"] = node_prefixed_by_chars_3f
 local function get_form(node)
@@ -166,9 +178,9 @@ local function get_form(node)
   elseif (leaf_3f(node0) or (false == client["optional-call"]("form-node?", node0))) then
     return get_form(parent(node0))
   else
-    local _let_21_ = (client["optional-call"]("get-form-modifier", node0) or {})
-    local modifier = _let_21_["modifier"]
-    local res = _let_21_
+    local _let_23_ = (client["optional-call"]("get-form-modifier", node0) or {})
+    local modifier = _let_23_["modifier"]
+    local res = _let_23_
     if (not modifier or ("none" == modifier)) then
       return node0
     elseif ("parent" == modifier) then

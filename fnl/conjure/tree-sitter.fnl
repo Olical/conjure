@@ -89,13 +89,19 @@
   (when node
     (= 0 (node:child_count))))
 
+(defn multi-symbol? [node]
+  (when node
+    (= :multi_symbol (node:type))))
+
 (defn get-leaf [node]
   "Return the leaf node under the cursor or nothing at all."
   (parse!)
 
   (let [node (or node (ts.get_node_at_cursor))]
     (when (leaf? node)
-      node)))
+      (if (multi-symbol? (parent node))
+        (parent node)
+        node))))
 
 (defn node-surrounded-by-form-pair-chars? [node extra-pairs]
   (let [node-str (node->str node)
