@@ -42,7 +42,7 @@
 
                       (let [{: results : ok?} (eval! "(ohno)")]
                         (t.= false ok?)
-                        (t.= (contains? (a.first results) "unknown identifier in strict mode: ohno")))
+                        (t.= (contains? (a.first results) "Compile error: unknown identifier: ohno")))
 
 
                       (let [{: results : ok?} (eval! "(())")]
@@ -80,6 +80,6 @@
   (t.pr= {:raw [10] :result "10"} (eval! "(hi)"))
 
   (let [{: result : raw} (eval! "(ohno)")]
-    (t.= (contains? result "unknown identifier in strict mode: ohno")))
+    (t.= (contains? result "Compile error: unknown identifier: ohno")))
 
   (tset package.loaded :foo.bar nil))

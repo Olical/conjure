@@ -117,10 +117,17 @@
         (fn [mod-fn args]
           (if (seq? args)
             ;; If it's sequential, we execute the fn for side effects.
+            ;; Works for (require-macros :name) (deprecated in Fennel 0.4.0).
             (each [_ arg (ipairs args)]
-              (=> (sym :_) `(,mod-fn ,(tostring arg))))
+              ;; When arg is ALSO sequential it means we're sending multiple args for side effects.
+              ;; This works well for (import-macros bind :name)
+                (=> (sym :_)
+                    (if (seq? arg)
+                      `(,mod-fn ,(unpack arg))
+                      `(,mod-fn ,(tostring arg)))))
 
             ;; Otherwise we need to bind the execution to a name.
+            ;; Works for simple (require :name) calls, binding the result.
             (sorted-each
               (fn [bind arg]
                 (=> (ensure-sym bind) `(,mod-fn ,(tostring arg))))
