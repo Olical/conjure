@@ -9,7 +9,8 @@
              mapping conjure.mapping
              client conjure.client
              log conjure.log
-             ts conjure.tree-sitter}
+             ts conjure.tree-sitter
+             b64 conjure.remote.transport.base64}
    require-macros [conjure.macros]})
 
 (config.merge
@@ -91,19 +92,9 @@
     (and (= 1 (root:child_count))
          (is-expression? (root:child 0)))))
 
-(defn- escape-strs
-  [s]
-  ;; Split s into multiple lines based on newlines.
-  ;; Escape internal escaped newlines in each line if any.
-  ;; Return lines joined backed together with newlines as a single string.
-  (let [s2 (str.split s "\n")
-        lns (icollect [i val (ipairs s2)]
-              (string.gsub val "\\n" "\\\\n"))]
-    (.. (a.first lns) "\n" (str.join "\n" (a.rest lns)))))
-
 (defn- get-exec-str
   [s]
-  (.. "exec('''\n" (escape-strs s) "\n''')\n"))
+  (.. "import base64\nexec(base64.b64decode('" (b64.encode s) "'))\n"))
 
 (defn- prep-code [s]
   (let [python-expr (str-is-python-expr? s)]
