@@ -89,9 +89,11 @@
   (when node
     (= 0 (node:child_count))))
 
-(defn multi-symbol? [node]
+;; Some node types I've seen: sym_lit, symbol, multi_symbol...
+;; So I'm not sure if each language just picks a flavour, but this should cover all of our bases.
+(defn sym? [node]
   (when node
-    (= :multi_symbol (node:type))))
+    (string.find (node:type) :sym)))
 
 (defn get-leaf [node]
   "Return the leaf node under the cursor or nothing at all."
@@ -99,9 +101,10 @@
 
   (let [node (or node (ts.get_node_at_cursor))]
     (when (leaf? node)
-      (if (multi-symbol? (parent node))
-        (parent node)
-        node))))
+      (var node node)
+      (while (sym? (parent node))
+        (set node (parent node)))
+      node)))
 
 (defn node-surrounded-by-form-pair-chars? [node extra-pairs]
   (let [node-str (node->str node)
