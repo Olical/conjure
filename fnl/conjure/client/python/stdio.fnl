@@ -238,7 +238,10 @@
              (log.dbg (-> [msg] unbatch format-msg) {:join-first? true}))})))))
 
 (defn on-load []
-  (start))
+  (if (= "v:true" (config.get-in [:client_on_load]))
+    (do
+      (start))
+    (log.append ["Not starting repl"])))
 
 (defn on-exit []
   (stop))

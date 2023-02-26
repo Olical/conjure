@@ -229,7 +229,11 @@ local function start()
 end
 _2amodule_2a["start"] = start
 local function on_load()
-  return start()
+  if ("v:true" == config["get-in"]({"client_on_load"})) then
+    return start()
+  else
+    return log.append({"Not starting repl"})
+  end
 end
 _2amodule_2a["on-load"] = on_load
 local function on_exit()
@@ -237,11 +241,11 @@ local function on_exit()
 end
 _2amodule_2a["on-exit"] = on_exit
 local function interrupt()
-  local function _29_(repl)
+  local function _30_(repl)
     local uv = vim.loop
     return uv.kill(repl.pid, uv.constants.SIGINT)
   end
-  return with_repl_or_warn(_29_)
+  return with_repl_or_warn(_30_)
 end
 _2amodule_2a["interrupt"] = interrupt
 local function on_filetype()

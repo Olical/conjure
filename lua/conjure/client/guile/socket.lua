@@ -157,7 +157,7 @@ local function parse_guile_result(s)
     if s:find("scheme@%([%w%-%s]+%) %[%d+%]>") then
       return {["done?"] = true, ["error?"] = true, result = nil}
     else
-      return {result = s, ["error?"] = false, ["done?"] = false}
+      return {result = s, ["done?"] = false, ["error?"] = false}
     end
   end
 end
