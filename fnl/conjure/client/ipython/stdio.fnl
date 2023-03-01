@@ -94,57 +94,23 @@
     (and (= 1 (root:child_count))
          (is-expression? (root:child 0)))))
 
-(defn- escape-strs
-  [s]
-  (string.gsub s "\"" "\\\""))
-
-(defn- remove-dots
-  [s]
-  (string.gsub s "... " ""))
-
 (defn- get-exec-str
   [s]
-  (let [lines (text.split-lines s)]
-    (.. "import base64\nexec(base64.b64decode('" 
-        (->> (a.butlast lines)
-             (str.join "\n") 
-             (b64.encode)) 
-        "'))\n"
-        "eval('" (a.last lines) "')"
-        "\n")))
+  (.. "exec(base64.b64decode('" (b64.encode s) "'))\n"))
 
 (defn- prep-code [s]
   (let [python-expr (str-is-python-expr? s)]
     (if python-expr
-      s
+      (.. s "\n")
       (get-exec-str s))))
       
-; If, after pressing newline, the python interpreter expects more
-; input from you (as is the case after the first line of an if branch or for loop)
-; the python interpreter will output "..." to show that it is waiting for more input.
-; We want to detect these lines and ignore them.
-; Note: This is check will yield some false positives. For example if a user evaluates
-;   print("... <-- check out those dots")
-; the output will be flagged as one of these special "dots" lines. This could probably
-; be smarter, but will work for most normal cases for now.
-(defn- is-dots? [s]
-  (string.find s "..."))
-
 (defn format-msg [msg]
   (->> (text.split-lines msg)
        (a.filter #(~= "" $1))))
 
 (defn- get-console-output-msgs [msgs]
-  (log.dbg msgs)
-  (->> (a.butlast msgs)
+  (->> msgs
        (a.map #(.. comment-prefix "(out) " $1))))
-
-(defn- get-expression-result [msgs]
-  (let [result (a.last msgs)]
-    (if
-      (or (a.nil? result) (is-dots? result))
-      nil
-      result)))
 
 (defn unbatch [msgs]
   (->> msgs
@@ -152,13 +118,12 @@
        (str.join "")))
 
 (defn- log-repl-output [msgs]
+  (a.pr "log-repl-output")
+  (a.pr msgs)
   (let [msgs (-> msgs unbatch format-msg)
-        console-output-msgs (get-console-output-msgs msgs)
-        cmd-result (get-expression-result msgs)]
+        console-output-msgs (get-console-output-msgs msgs)]
     (when (not (a.empty? console-output-msgs))
-      (log.append console-output-msgs))
-    (when cmd-result
-      (log.append [cmd-result]))))
+      (log.append console-output-msgs))))
 
 (defn eval-str [opts]
   (with-repl-or-warn
@@ -166,11 +131,7 @@
       (repl.send
         (prep-code opts.code)
         (fn [msgs]
-          (log-repl-output msgs)
-          (when opts.on-result
-            (let [msgs (-> msgs unbatch format-msg)
-                  cmd-result (get-expression-result msgs)]
-              (opts.on-result cmd-result))))
+          (log-repl-output msgs))
         {:batch? true}))))
 
 (defn eval-file [opts]
@@ -225,7 +186,13 @@
 
            :on-success
            (fn []
-             (display-repl-status :started))
+             (display-repl-status :started)
+             (with-repl-or-warn
+               (fn [repl]
+                 (repl.send
+                   "import base64\n"
+                   (fn [msgs] nil)
+                   nil))))
 
            :on-error
            (fn [err]

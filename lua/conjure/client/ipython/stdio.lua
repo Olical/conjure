@@ -67,32 +67,19 @@ local function str_is_python_expr_3f(s)
   return ((1 == root:child_count()) and is_expression_3f(root:child(0)))
 end
 _2amodule_2a["str-is-python-expr?"] = str_is_python_expr_3f
-local function escape_strs(s)
-  return string.gsub(s, "\"", "\\\"")
-end
-_2amodule_locals_2a["escape-strs"] = escape_strs
-local function remove_dots(s)
-  return string.gsub(s, "... ", "")
-end
-_2amodule_locals_2a["remove-dots"] = remove_dots
 local function get_exec_str(s)
-  local lines = text["split-lines"](s)
-  return ("import base64\nexec(base64.b64decode('" .. b64.encode(str.join("\n", a.butlast(lines))) .. "'))\n" .. "eval('" .. a.last(lines) .. "')" .. "\n")
+  return ("exec(base64.b64decode('" .. b64.encode(s) .. "'))\n")
 end
 _2amodule_locals_2a["get-exec-str"] = get_exec_str
 local function prep_code(s)
   local python_expr = str_is_python_expr_3f(s)
   if python_expr then
-    return s
+    return (s .. "\n")
   else
     return get_exec_str(s)
   end
 end
 _2amodule_locals_2a["prep-code"] = prep_code
-local function is_dots_3f(s)
-  return string.find(s, "...")
-end
-_2amodule_locals_2a["is-dots?"] = is_dots_3f
 local function format_msg(msg)
   local function _5_(_241)
     return ("" ~= _241)
@@ -101,59 +88,39 @@ local function format_msg(msg)
 end
 _2amodule_2a["format-msg"] = format_msg
 local function get_console_output_msgs(msgs)
-  log.dbg(msgs)
   local function _6_(_241)
     return (comment_prefix .. "(out) " .. _241)
   end
-  return a.map(_6_, a.butlast(msgs))
+  return a.map(_6_, msgs)
 end
 _2amodule_locals_2a["get-console-output-msgs"] = get_console_output_msgs
-local function get_expression_result(msgs)
-  local result = a.last(msgs)
-  if (a["nil?"](result) or is_dots_3f(result)) then
-    return nil
-  else
-    return result
-  end
-end
-_2amodule_locals_2a["get-expression-result"] = get_expression_result
 local function unbatch(msgs)
-  local function _8_(_241)
+  local function _7_(_241)
     return (a.get(_241, "out") or a.get(_241, "err"))
   end
-  return str.join("", a.map(_8_, msgs))
+  return str.join("", a.map(_7_, msgs))
 end
 _2amodule_2a["unbatch"] = unbatch
 local function log_repl_output(msgs)
+  a.pr("log-repl-output")
+  a.pr(msgs)
   local msgs0 = format_msg(unbatch(msgs))
   local console_output_msgs = get_console_output_msgs(msgs0)
-  local cmd_result = get_expression_result(msgs0)
   if not a["empty?"](console_output_msgs) then
-    log.append(console_output_msgs)
-  else
-  end
-  if cmd_result then
-    return log.append({cmd_result})
+    return log.append(console_output_msgs)
   else
     return nil
   end
 end
 _2amodule_locals_2a["log-repl-output"] = log_repl_output
 local function eval_str(opts)
-  local function _11_(repl)
-    local function _12_(msgs)
-      log_repl_output(msgs)
-      if opts["on-result"] then
-        local msgs0 = format_msg(unbatch(msgs))
-        local cmd_result = get_expression_result(msgs0)
-        return opts["on-result"](cmd_result)
-      else
-        return nil
-      end
+  local function _9_(repl)
+    local function _10_(msgs)
+      return log_repl_output(msgs)
     end
-    return repl.send(prep_code(opts.code), _12_, {["batch?"] = true})
+    return repl.send(prep_code(opts.code), _10_, {["batch?"] = true})
   end
-  return with_repl_or_warn(_11_)
+  return with_repl_or_warn(_9_)
 end
 _2amodule_2a["eval-str"] = eval_str
 local function eval_file(opts)
@@ -205,19 +172,26 @@ local function start()
   if state("repl") then
     return log.append({(comment_prefix .. "Can't start, REPL is already running."), (comment_prefix .. "Stop the REPL with " .. config["get-in"]({"mapping", "prefix"}) .. cfg({"mapping", "stop"}))}, {["break?"] = true})
   else
-    local function _18_()
+    local function _15_()
       return vim.treesitter.require_language("python")
     end
-    if not pcall(_18_) then
+    if not pcall(_15_) then
       return log.append({(comment_prefix .. "(error) The python client requires a python treesitter parser in order to function."), (comment_prefix .. "(error) See https://github.com/nvim-treesitter/nvim-treesitter"), (comment_prefix .. "(error) for installation instructions.")})
     else
-      local function _19_()
-        return display_repl_status("started")
+      local function _16_()
+        display_repl_status("started")
+        local function _17_(repl)
+          local function _18_(msgs)
+            return nil
+          end
+          return repl.send("import base64\n", _18_, nil)
+        end
+        return with_repl_or_warn(_17_)
       end
-      local function _20_(err)
+      local function _19_(err)
         return display_repl_status(err)
       end
-      local function _21_(code, signal)
+      local function _20_(code, signal)
         if (("number" == type(code)) and (code > 0)) then
           log.append({(comment_prefix .. "process exited with code " .. code)})
         else
@@ -228,10 +202,10 @@ local function start()
         end
         return stop()
       end
-      local function _24_(msg)
+      local function _23_(msg)
         return log.append(format_msg(unbatch({msg})))
       end
-      return a.assoc(state(), "repl", stdio.start({["prompt-pattern"] = cfg({"prompt-pattern"}), cmd = cfg({"command"}), ["delay-stderr-ms"] = cfg({"delay-stderr-ms"}), env = {INPUTRC = "~/.inputrc"}, ["on-success"] = _19_, ["on-error"] = _20_, ["on-exit"] = _21_, ["on-stray-output"] = _24_}))
+      return a.assoc(state(), "repl", stdio.start({["prompt-pattern"] = cfg({"prompt-pattern"}), cmd = cfg({"command"}), ["delay-stderr-ms"] = cfg({"delay-stderr-ms"}), env = {INPUTRC = "~/.inputrc"}, ["on-success"] = _16_, ["on-error"] = _19_, ["on-exit"] = _20_, ["on-stray-output"] = _23_}))
     end
   end
 end
@@ -245,11 +219,11 @@ local function on_exit()
 end
 _2amodule_2a["on-exit"] = on_exit
 local function interrupt()
-  local function _27_(repl)
+  local function _26_(repl)
     local uv = vim.loop
     return uv.kill(repl.pid, uv.constants.SIGINT)
   end
-  return with_repl_or_warn(_27_)
+  return with_repl_or_warn(_26_)
 end
 _2amodule_2a["interrupt"] = interrupt
 local function on_filetype()
