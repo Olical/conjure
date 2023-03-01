@@ -55,11 +55,7 @@ end
 _2amodule_2a["parse!"] = parse_21
 local function node__3estr(node)
   if node then
-    if (1 == nvim.fn.has("nvim-0.7")) then
-      return vim.treesitter.query.get_node_text(node, nvim.get_current_buf())
-    else
-      return str.join("\n", vim.treesitter.query.get_node_text(node))
-    end
+    return vim.treesitter.query.get_node_text(node, nvim.get_current_buf())
   else
     return nil
   end
@@ -123,11 +119,23 @@ local function leaf_3f(node)
   end
 end
 _2amodule_2a["leaf?"] = leaf_3f
+local function sym_3f(node)
+  if node then
+    return string.find(node:type(), "sym")
+  else
+    return nil
+  end
+end
+_2amodule_2a["sym?"] = sym_3f
 local function get_leaf(node)
   parse_21()
   local node0 = (node or ts.get_node_at_cursor())
   if leaf_3f(node0) then
-    return node0
+    local node1 = node0
+    while sym_3f(parent(node1)) do
+      node1 = parent(node1)
+    end
+    return node1
   else
     return nil
   end

@@ -27,7 +27,10 @@ def print_things_then_return():
     return "all done!"
 
 def newline_in_function_bug():
-    return "hey" + "\n" + "ho"
+    return 'hey\n\n' + "\\n" + '\n' + 'ho'
+
+
+newline_in_function_bug()
 
 print_things_then_return()
 

@@ -11,8 +11,9 @@ do
   _2amodule_locals_2a = (_2amodule_2a)["aniseed/locals"]
 end
 local autoload = (require("conjure.aniseed.autoload")).autoload
-local a, client, config, extract, log, mapping, nvim, stdio, str, text, ts, _ = autoload("conjure.aniseed.core"), autoload("conjure.client"), autoload("conjure.config"), autoload("conjure.extract"), autoload("conjure.log"), autoload("conjure.mapping"), autoload("conjure.aniseed.nvim"), autoload("conjure.remote.stdio"), autoload("conjure.aniseed.string"), autoload("conjure.text"), autoload("conjure.tree-sitter"), nil
+local a, b64, client, config, extract, log, mapping, nvim, stdio, str, text, ts, _ = autoload("conjure.aniseed.core"), autoload("conjure.remote.transport.base64"), autoload("conjure.client"), autoload("conjure.config"), autoload("conjure.extract"), autoload("conjure.log"), autoload("conjure.mapping"), autoload("conjure.aniseed.nvim"), autoload("conjure.remote.stdio"), autoload("conjure.aniseed.string"), autoload("conjure.text"), autoload("conjure.tree-sitter"), nil
 _2amodule_locals_2a["a"] = a
+_2amodule_locals_2a["b64"] = b64
 _2amodule_locals_2a["client"] = client
 _2amodule_locals_2a["config"] = config
 _2amodule_locals_2a["extract"] = extract
@@ -66,12 +67,8 @@ local function str_is_python_expr_3f(s)
   return ((1 == root:child_count()) and is_expression_3f(root:child(0)))
 end
 _2amodule_2a["str-is-python-expr?"] = str_is_python_expr_3f
-local function escape_strs(s)
-  return string.gsub(s, "\"", "\\\"")
-end
-_2amodule_locals_2a["escape-strs"] = escape_strs
 local function get_exec_str(s)
-  return ("exec(\"\"\"\n" .. escape_strs(s) .. "\n\"\"\")\n")
+  return ("import base64\nexec(base64.b64decode('" .. b64.encode(s) .. "'))\n")
 end
 _2amodule_locals_2a["get-exec-str"] = get_exec_str
 local function prep_code(s)

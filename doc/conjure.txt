@@ -16,6 +16,7 @@ CONTENTS                                                    *conjure-contents*
     5. Log ............................................... |conjure-log|
     6. Autocmds ..................................... |conjure-autocmds|
     7. Clients ....................................... |conjure-clients|
+    8. Hooks ........................................... |conjure-hooks|
 
 ==============================================================================
 INTRODUCTION                                            *conjure-introduction*
@@ -1105,5 +1106,51 @@ examples: https://github.com/Olical/conjure/wiki/Client-features
             want to reject any form that begins with `(comment)` which means
             the user can use "eval root form" inside comment blocks to
             evaluate each entry in the comment.
+
+==============================================================================
+HOOKS                                                          *conjure-hooks*
+
+Hooks allow you to override parts of Conjure's functionality with more Lua
+code, allowing you to completely override behaviour or integrate other systems
+in ways that the original design ever anticipated.
+
+You manipulate hooks with the `conjure.hook` module, so you'll need to require
+that into your own Lua configuration code (probably aliased as `hook`) to
+continue. From there you may execute the `(hook.override *name* *fn*)` function to define
+your own hook overrides.
+
+If you need to also call the original code you can use `(hook.get *name*)` to
+fetch the original Conjure internal function which you may call at your
+discretion.
+
+So here's an example of overriding the HUD with a simple `print` statement:
+>
+  (module my.config
+    {autoload {hook conjure.hook}})
+
+  (hook.override :display-hud
+    (fn [opts]
+      (print "There's something new in the log, you might want to look."))
+
+See below for all of the possible hooks and their default implementations and
+arguments when executed, this list can be extended upon request and
+consideration.
+
+`(display-hud opts)`
+    Creates and displays the HUD floating window, scrolling the latest lines
+    into focus. The `opts` table may contain the key `low-priority?` which
+    indicates that this isn't so essential to display right away.
+
+    stdout and stderr should count as low priority most of the time when it
+    comes from clients that support this feature. This is because some
+    programs may spit out lots of stdio and we want to back off from HUD spam
+    if there is a LOT of low priority traffic. You can probably get away with
+    ignoring this feature though.
+
+`(close-hud)`
+    Called when the HUD should close, either by direct user interaction or
+    because the user did something indirect like moving their cursor after a
+    while. The passive and active closing behaviour is identical from the
+    perspective of this function.
 
 vim:tw=78:sw=2:ts=2:ft=help:norl:et:listchars=

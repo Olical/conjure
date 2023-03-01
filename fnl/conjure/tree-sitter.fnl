@@ -37,10 +37,7 @@
   "Turn the node into a string, nils flow through. Separate forms are joined by
   new lines."
   (when node
-    (if (= 1 (nvim.fn.has "nvim-0.7"))
-      (vim.treesitter.query.get_node_text node (nvim.get_current_buf))
-      (-> (vim.treesitter.query.get_node_text node)
-          (->> (str.join "\n"))))))
+    (vim.treesitter.query.get_node_text node (nvim.get_current_buf))))
 
 (defn lisp-comment-node? [node]
   "Node is a (comment ...) form"
@@ -92,12 +89,21 @@
   (when node
     (= 0 (node:child_count))))
 
+;; Some node types I've seen: sym_lit, symbol, multi_symbol...
+;; So I'm not sure if each language just picks a flavour, but this should cover all of our bases.
+(defn sym? [node]
+  (when node
+    (string.find (node:type) :sym)))
+
 (defn get-leaf [node]
   "Return the leaf node under the cursor or nothing at all."
   (parse!)
 
   (let [node (or node (ts.get_node_at_cursor))]
     (when (leaf? node)
+      (var node node)
+      (while (sym? (parent node))
+        (set node (parent node)))
       node)))
 
 (defn node-surrounded-by-form-pair-chars? [node extra-pairs]
