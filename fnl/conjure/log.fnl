@@ -240,11 +240,7 @@
              ;; Don't display low priority messages if configured.
              (or (not (config.get-in [:log :hud :ignore_low_priority]))
                  (and (config.get-in [:log :hud :ignore_low_priority])
-                      (not (a.get opts :low-priority?))))
-
-             ;; Don't display if g:conjure#log#hud#enabled is false.
-             (nvim.get_var :conjure#log#hud#enabled)
-             )
+                      (not (a.get opts :low-priority?)))))
     (clear-close-hud-passive-timer)
     (hook.exec :display-hud opts)))
 
