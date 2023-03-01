@@ -237,7 +237,7 @@ local function _22_(opts)
 end
 hook.define("display-hud", _22_)
 local function display_hud(opts)
-  if (config["get-in"]({"log", "hud", "enabled"}) and not current_window_floating_3f() and (not config["get-in"]({"log", "hud", "ignore_low_priority"}) or (config["get-in"]({"log", "hud", "ignore_low_priority"}) and not a.get(opts, "low-priority?"))) and nvim.get_var("conjure#log#hud#enabled")) then
+  if (config["get-in"]({"log", "hud", "enabled"}) and not current_window_floating_3f() and (not config["get-in"]({"log", "hud", "ignore_low_priority"}) or (config["get-in"]({"log", "hud", "ignore_low_priority"}) and not a.get(opts, "low-priority?")))) then
     clear_close_hud_passive_timer()
     return hook.exec("display-hud", opts)
   else

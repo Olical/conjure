@@ -229,7 +229,7 @@ local function start()
 end
 _2amodule_2a["start"] = start
 local function on_load()
-  if ("v:true" == config["get-in"]({"client_on_load"})) then
+  if config["get-in"]({"client_on_load"}) then
     return start()
   else
     return log.append({"Not starting repl"})
