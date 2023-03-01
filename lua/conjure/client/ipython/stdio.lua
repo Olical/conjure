@@ -11,8 +11,9 @@ do
   _2amodule_locals_2a = (_2amodule_2a)["aniseed/locals"]
 end
 local autoload = (require("conjure.aniseed.autoload")).autoload
-local a, client, config, extract, log, mapping, nvim, stdio, str, text, ts, _ = autoload("conjure.aniseed.core"), autoload("conjure.client"), autoload("conjure.config"), autoload("conjure.extract"), autoload("conjure.log"), autoload("conjure.mapping"), autoload("conjure.aniseed.nvim"), autoload("conjure.remote.stdio"), autoload("conjure.aniseed.string"), autoload("conjure.text"), autoload("conjure.tree-sitter"), nil
+local a, b64, client, config, extract, log, mapping, nvim, stdio, str, text, ts, _ = autoload("conjure.aniseed.core"), autoload("conjure.remote.transport.base64"), autoload("conjure.client"), autoload("conjure.config"), autoload("conjure.extract"), autoload("conjure.log"), autoload("conjure.mapping"), autoload("conjure.aniseed.nvim"), autoload("conjure.remote.stdio"), autoload("conjure.aniseed.string"), autoload("conjure.text"), autoload("conjure.tree-sitter"), nil
 _2amodule_locals_2a["a"] = a
+_2amodule_locals_2a["b64"] = b64
 _2amodule_locals_2a["client"] = client
 _2amodule_locals_2a["config"] = config
 _2amodule_locals_2a["extract"] = extract
@@ -75,7 +76,8 @@ local function remove_dots(s)
 end
 _2amodule_locals_2a["remove-dots"] = remove_dots
 local function get_exec_str(s)
-  return ("\"\"\"\n" .. escape_strs(s) .. "\n\"\"\")\n")
+  local lines = text["split-lines"](s)
+  return ("import base64\nexec(base64.b64decode('" .. b64.encode(str.join("\n", a.butlast(lines))) .. "'))\n" .. "eval('" .. a.last(lines) .. "')" .. "\n")
 end
 _2amodule_locals_2a["get-exec-str"] = get_exec_str
 local function prep_code(s)
@@ -83,7 +85,7 @@ local function prep_code(s)
   if python_expr then
     return s
   else
-    return (string.char(27) .. "[200~\n" .. "print(\"test\")\nprint(\"test\")\n" .. string.char(27) .. "[201~\n")
+    return get_exec_str(s)
   end
 end
 _2amodule_locals_2a["prep-code"] = prep_code
@@ -99,6 +101,7 @@ local function format_msg(msg)
 end
 _2amodule_2a["format-msg"] = format_msg
 local function get_console_output_msgs(msgs)
+  log.dbg(msgs)
   local function _6_(_241)
     return (comment_prefix .. "(out) " .. _241)
   end
@@ -226,9 +229,7 @@ local function start()
         return stop()
       end
       local function _24_(msg)
-        print("on-stray-output")
-        print(a["pr-str"](msg))
-        return log.dbg(format_msg(unbatch({msg})), {["join-first?"] = true})
+        return log.append(format_msg(unbatch({msg})))
       end
       return a.assoc(state(), "repl", stdio.start({["prompt-pattern"] = cfg({"prompt-pattern"}), cmd = cfg({"command"}), ["delay-stderr-ms"] = cfg({"delay-stderr-ms"}), env = {INPUTRC = "~/.inputrc"}, ["on-success"] = _19_, ["on-error"] = _20_, ["on-exit"] = _21_, ["on-stray-output"] = _24_}))
     end

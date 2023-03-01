@@ -9,7 +9,8 @@
              mapping conjure.mapping
              client conjure.client
              log conjure.log
-             ts conjure.tree-sitter}
+             ts conjure.tree-sitter
+             b64 conjure.remote.transport.base64}
    require-macros [conjure.macros]})
 
 (config.merge
@@ -103,13 +104,20 @@
 
 (defn- get-exec-str
   [s]
-  (.. "\"\"\"\n" (escape-strs s) "\n\"\"\")\n"))
+  (let [lines (text.split-lines s)]
+    (.. "import base64\nexec(base64.b64decode('" 
+        (->> (a.butlast lines)
+             (str.join "\n") 
+             (b64.encode)) 
+        "'))\n"
+        "eval('" (a.last lines) "')"
+        "\n")))
 
 (defn- prep-code [s]
   (let [python-expr (str-is-python-expr? s)]
     (if python-expr
       s
-      (.. (string.char 27) "[200~\n" "print(\"test\")\nprint(\"test\")\n" (string.char 27) "[201~\n"))))
+      (get-exec-str s))))
       
 ; If, after pressing newline, the python interpreter expects more
 ; input from you (as is the case after the first line of an if branch or for loop)
@@ -127,6 +135,7 @@
        (a.filter #(~= "" $1))))
 
 (defn- get-console-output-msgs [msgs]
+  (log.dbg msgs)
   (->> (a.butlast msgs)
        (a.map #(.. comment-prefix "(out) " $1))))
 
@@ -232,9 +241,7 @@
 
            :on-stray-output
            (fn [msg]
-             (print "on-stray-output")
-             (print (a.pr-str msg))
-             (log.dbg (-> [msg] unbatch format-msg) {:join-first? true}))})))))
+             (log.append (-> [msg] unbatch format-msg)))})))))
 
 (defn on-load []
   (start))
