@@ -85,6 +85,7 @@
 ; for this. Another option that I have seen used in some other similar projects is sending the statement
 ; as a "bracketed paste" (https://cirw.in/blog/bracketed-paste) so the REPL treats the input as if it were
 ; "pasted", but I couldn't get this working.
+; More context on bracketed paste issues in this PR discussion: https://github.com/Olical/conjure/pull/451
 (defn str-is-python-expr?
   [s]
   (let [parser (vim.treesitter.get_string_parser s "python")
@@ -106,6 +107,7 @@
       
 (defn format-msg [msg]
   (->> (text.split-lines msg)
+       (a.map #(string.gsub $1 "Out%[%d+%]: " ""))
        (a.filter #(~= "" $1))))
 
 (defn- get-console-output-msgs [msgs]
@@ -118,8 +120,6 @@
        (str.join "")))
 
 (defn- log-repl-output [msgs]
-  (a.pr "log-repl-output")
-  (a.pr msgs)
   (let [msgs (-> msgs unbatch format-msg)
         console-output-msgs (get-console-output-msgs msgs)]
     (when (not (a.empty? console-output-msgs))
@@ -133,9 +133,6 @@
         (fn [msgs]
           (log-repl-output msgs))
         {:batch? true}))))
-
-(defn eval-file [opts]
-  (eval-str (a.assoc opts :code (a.slurp opts.file-path))))
 
 (defn get-help [code]
   (str.join "" ["help(" (str.trim code) ")"]))
