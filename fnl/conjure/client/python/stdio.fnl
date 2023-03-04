@@ -31,6 +31,16 @@
 (def buf-suffix ".py")
 (def comment-prefix "# ")
 
+; These types of nodes are roughly equivalent to Lisp forms.
+; This should make it more intuitive to use <localLeader>ee to evaluate the
+; "current form" and not be surprised that it wasn't what you thought.
+(defn form-node?
+  [node]
+  (or (= "expression_statement" (node:type))
+      (= "function_definition" (node:type))
+      (= "for_statement" (node:type))
+      (= "call" (node:type))))
+
 (defn- with-repl-or-warn [f opts]
   (let [repl (state :repl)]
     (if repl

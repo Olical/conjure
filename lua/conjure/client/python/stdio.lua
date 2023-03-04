@@ -38,6 +38,10 @@ local buf_suffix = ".py"
 _2amodule_2a["buf-suffix"] = buf_suffix
 local comment_prefix = "# "
 _2amodule_2a["comment-prefix"] = comment_prefix
+local function form_node_3f(node)
+  return (("expression_statement" == node:type()) or ("function_definition" == node:type()) or ("for_statement" == node:type()) or ("call" == node:type()))
+end
+_2amodule_2a["form-node?"] = form_node_3f
 local function with_repl_or_warn(f, opts)
   local repl = state("repl")
   if repl then
