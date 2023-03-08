@@ -253,7 +253,7 @@
 
 (defn doc-str [opts]
   (try-ensure-conn)
-  (eval-str (a.update opts :code #(.. "(describe #'" $1 ")"))))
+  (eval-str (a.update opts :code #(.. "(describe '" $1 ")"))))
 
 (defn eval-file [opts]
   (try-ensure-conn)
