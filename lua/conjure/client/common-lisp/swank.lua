@@ -268,7 +268,7 @@ _2amodule_2a["eval-str"] = eval_str
 local function doc_str(opts)
   try_ensure_conn()
   local function _34_(_241)
-    return ("(describe #'" .. _241 .. ")")
+    return ("(describe '" .. _241 .. ")")
   end
   return eval_str(a.update(opts, "code", _34_))
 end
