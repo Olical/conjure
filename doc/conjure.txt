@@ -263,6 +263,8 @@ Tip: Booleans in Vim Script are written as `v:true` and `v:false`.
             alternative `"conjure.client.fennel.stdio"` client which allows
             you to work with Fennel (without Aniseed) outside of Neovim in an
             external Lua process.
+            This default Fennel client implementation uses a vendored copy of
+            Aniseed (which contains a vendored Fennel compiler) for all evaluations.
             Help: |conjure-client-fennel-aniseed|, |conjure-client-fennel-stdio|
             Default: `"conjure.client.fennel.aniseed"`
 

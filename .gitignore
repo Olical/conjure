@@ -1,3 +1,4 @@
+/.clj-kondo/
 /deps/
 /.lnvim.lua
 /test/lua/
