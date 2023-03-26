@@ -37,6 +37,9 @@
 (defn form-node?
   [node]
   (or (= "expression_statement" (node:type))
+      (= "import_statement" (node:type))
+      (= "import_from_statement" (node:type))
+      (= "with_statement" (node:type))
       (= "function_definition" (node:type))
       (= "for_statement" (node:type))
       (= "call" (node:type))))
