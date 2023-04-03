@@ -59,7 +59,10 @@
                            1))
 
                        ;; Have to call like this to pass visual selections through.
-                       (nvim.ex.normal_ (str.join [":" cmd (util.replace-termcodes "<cr>")])))}
+                       (nvim.ex.normal_ (str.join
+                                          [(util.replace-termcodes "<cmd>")
+                                           cmd
+                                           (util.replace-termcodes "<cr>")])))}
           (a.get opts :mapping-opts {}))))))
 
 (defn on-filetype []

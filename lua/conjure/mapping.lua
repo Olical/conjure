@@ -48,7 +48,7 @@ local function buf(name_suffix, mapping_suffix, handler_fn, opts)
         pcall(nvim.fn["repeat#set"], util["replace-termcodes"](mapping), 1)
       else
       end
-      return nvim.ex.normal_(str.join({":", cmd, util["replace-termcodes"]("<cr>")}))
+      return nvim.ex.normal_(str.join({util["replace-termcodes"]("<cmd>"), cmd, util["replace-termcodes"]("<cr>")}))
     end
     return nvim.buf_set_keymap(a.get(opts, "buf", 0), a.get(opts, "mode", "n"), mapping, "", a["merge!"]({silent = true, noremap = true, desc = desc, callback = _2_}, a.get(opts, "mapping-opts", {})))
   else
