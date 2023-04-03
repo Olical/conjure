@@ -88,8 +88,8 @@ Modifications or mods are extra plugins that improve Conjure in various ways. Th
 
  * https://github.com/jlesquembre/coc-conjure[jlesquembre/coc-conjure]: Conjure completion support for https://github.com/neoclide/coc.nvim[coc.nvim].
  * https://github.com/PaterJason/cmp-conjure[PaterJason/cmp-conjure]: https://github.com/hrsh7th/nvim-cmp[nvim-cmp] source for Conjure.
- * https://github.com/Invertisment/conjure-clj-additions-nrepl[Invertisment/conjure-clj-additions-nrepl]: Jump to failing Clojure test and more.
- * https://github.com/Invertisment/conjure-clj-additions-vanilla[Invertisment/conjure-clj-additions-vanilla]: Jump to failing Clojure test for Conjure when not using nREPL.
+ * https://gitlab.com/invertisment/conjure-clj-additions-cider-nrepl-mw[Invertisment/conjure-clj-additions-nrepl]: Jump to failing Clojure test and more.
+ * https://gitlab.com/invertisment/conjure-clj-additions-vanilla[Invertisment/conjure-clj-additions-vanilla]: Jump to failing Clojure test for Conjure when not using nREPL.
 
 == Tree sitter support
 
