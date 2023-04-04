@@ -42,15 +42,22 @@ local function buf(name_suffix, mapping_suffix, handler_fn, opts)
     end
     local cmd = ("Conjure" .. name_suffix)
     local desc = (a.get(opts, "desc") or ("Executes the " .. cmd .. " command"))
+    local mode = a.get(opts, "mode", "n")
     nvim.create_user_command(cmd, handler_fn, a["merge!"]({force = true, desc = desc}, a.get(opts, "command-opts", {})))
     local function _2_()
       if (false ~= a.get(opts, "repeat?")) then
         pcall(nvim.fn["repeat#set"], util["replace-termcodes"](mapping), 1)
       else
       end
-      return nvim.ex.normal_(str.join({util["replace-termcodes"]("<cmd>"), cmd, util["replace-termcodes"]("<cr>")}))
+      local _4_
+      if ("n" == mode) then
+        _4_ = util["replace-termcodes"]("<cmd>")
+      else
+        _4_ = ":"
+      end
+      return nvim.ex.normal_(str.join({_4_, cmd, util["replace-termcodes"]("<cr>")}))
     end
-    return nvim.buf_set_keymap(a.get(opts, "buf", 0), a.get(opts, "mode", "n"), mapping, "", a["merge!"]({silent = true, noremap = true, desc = desc, callback = _2_}, a.get(opts, "mapping-opts", {})))
+    return nvim.buf_set_keymap(a.get(opts, "buf", 0), mode, mapping, "", a["merge!"]({silent = true, noremap = true, desc = desc, callback = _2_}, a.get(opts, "mapping-opts", {})))
   else
     return nil
   end
@@ -66,14 +73,14 @@ local function on_filetype()
   buf("LogResetSoft", cfg("log_reset_soft"), util["wrap-require-fn-call"]("conjure.log", "reset-soft"), {desc = "Soft reset log"})
   buf("LogResetHard", cfg("log_reset_hard"), util["wrap-require-fn-call"]("conjure.log", "reset-hard"), {desc = "Hard reset log"})
   buf("LogJumpToLatest", cfg("log_jump_to_latest"), util["wrap-require-fn-call"]("conjure.log", "jump-to-latest"), {desc = "Jump to latest part of log"})
-  local function _5_()
+  local function _7_()
     nvim.o.opfunc = "ConjureEvalMotionOpFunc"
-    local function _6_()
+    local function _8_()
       return nvim.feedkeys("g@", "m", false)
     end
-    return client.schedule(_6_)
+    return client.schedule(_8_)
   end
-  buf("EvalMotion", cfg("eval_motion"), _5_, {desc = "Evaluate motion"})
+  buf("EvalMotion", cfg("eval_motion"), _7_, {desc = "Evaluate motion"})
   buf("EvalCurrentForm", cfg("eval_current_form"), util["wrap-require-fn-call"]("conjure.eval", "current-form"), {desc = "Evaluate current form"})
   buf("EvalCommentCurrentForm", cfg("eval_comment_current_form"), util["wrap-require-fn-call"]("conjure.eval", "comment-current-form"), {desc = "Evaluate current form and comment result"})
   buf("EvalRootForm", cfg("eval_root_form"), util["wrap-require-fn-call"]("conjure.eval", "root-form"), {desc = "Evaluate root form"})
@@ -81,10 +88,10 @@ local function on_filetype()
   buf("EvalWord", cfg("eval_word"), util["wrap-require-fn-call"]("conjure.eval", "word"), {desc = "Evaluate word"})
   buf("EvalCommentWord", cfg("eval_comment_word"), util["wrap-require-fn-call"]("conjure.eval", "comment-word"), {desc = "Evaluate word and comment result"})
   buf("EvalReplaceForm", cfg("eval_replace_form"), util["wrap-require-fn-call"]("conjure.eval", "replace-form"), {desc = "Evaluate form and replace with result"})
-  local function _7_()
+  local function _9_()
     return client.schedule(eval["marked-form"])
   end
-  buf("EvalMarkedForm", cfg("eval_marked_form"), _7_, {desc = "Evaluate marked form", ["repeat?"] = false})
+  buf("EvalMarkedForm", cfg("eval_marked_form"), _9_, {desc = "Evaluate marked form", ["repeat?"] = false})
   buf("EvalFile", cfg("eval_file"), util["wrap-require-fn-call"]("conjure.eval", "file"), {desc = "Evaluate file"})
   buf("EvalBuf", cfg("eval_buf"), util["wrap-require-fn-call"]("conjure.eval", "buf"), {desc = "Evaluate buffer"})
   buf("EvalVisual", cfg("eval_visual"), util["wrap-require-fn-call"]("conjure.eval", "selection"), {desc = "Evaluate visual select", mode = "v", ["command-opts"] = {range = true}})
@@ -101,10 +108,10 @@ local function on_filetype()
 end
 _2amodule_2a["on-filetype"] = on_filetype
 local function on_exit()
-  local function _9_()
+  local function _11_()
     return client["optional-call"]("on-exit")
   end
-  return client["each-loaded-client"](_9_)
+  return client["each-loaded-client"](_11_)
 end
 _2amodule_2a["on-exit"] = on_exit
 local function on_quit()
@@ -135,7 +142,7 @@ end
 _2amodule_2a["eval-ranged-command"] = eval_ranged_command
 local function connect_command(...)
   local args = {...}
-  local function _12_(...)
+  local function _14_(...)
     if (1 == a.count(args)) then
       local host, port = string.match(a.first(args), "([a-zA-Z%d\\.-]+):(%d+)$")
       if (host and port) then
@@ -147,7 +154,7 @@ local function connect_command(...)
       return {host = a.first(args), port = a.second(args)}
     end
   end
-  return client.call("connect", _12_(...))
+  return client.call("connect", _14_(...))
 end
 _2amodule_2a["connect-command"] = connect_command
 local function client_state_command(state_key)
@@ -160,11 +167,11 @@ end
 _2amodule_2a["client-state-command"] = client_state_command
 local function omnifunc(find_start_3f, base)
   if find_start_3f then
-    local _let_14_ = nvim.win_get_cursor(0)
-    local row = _let_14_[1]
-    local col = _let_14_[2]
-    local _let_15_ = nvim.buf_get_lines(0, a.dec(row), row, false)
-    local line = _let_15_[1]
+    local _let_16_ = nvim.win_get_cursor(0)
+    local row = _let_16_[1]
+    local col = _let_16_[2]
+    local _let_17_ = nvim.buf_get_lines(0, a.dec(row), row, false)
+    local line = _let_17_[1]
     return (col - a.count(nvim.fn.matchstr(string.sub(line, 1, col), "\\k\\+$")))
   else
     return eval["completions-sync"](base)
@@ -173,20 +180,20 @@ end
 _2amodule_2a["omnifunc"] = omnifunc
 nvim.ex.function_(str.join("\n", {"ConjureEvalMotionOpFunc(kind)", "call luaeval(\"require('conjure.eval')['selection'](_A)\", a:kind)", "endfunction"}))
 nvim.ex.function_(str.join("\n", {"ConjureOmnifunc(findstart, base)", "return luaeval(\"require('conjure.mapping')['omnifunc'](_A[1] == 1, _A[2])\", [a:findstart, a:base])", "endfunction"}))
-local function _17_(_241)
+local function _19_(_241)
   return eval_ranged_command((_241).line1, (_241).line2, (_241).args)
 end
-nvim.create_user_command("ConjureEval", _17_, {nargs = "?", range = true})
-local function _18_(_241)
+nvim.create_user_command("ConjureEval", _19_, {nargs = "?", range = true})
+local function _20_(_241)
   return connect_command(unpack((_241).fargs))
 end
-nvim.create_user_command("ConjureConnect", _18_, {nargs = "*", range = true, complete = "file"})
-local function _19_(_241)
+nvim.create_user_command("ConjureConnect", _20_, {nargs = "*", range = true, complete = "file"})
+local function _21_(_241)
   return client_state_command((_241).args)
 end
-nvim.create_user_command("ConjureClientState", _19_, {nargs = "?"})
-local function _20_()
+nvim.create_user_command("ConjureClientState", _21_, {nargs = "?"})
+local function _22_()
   return school.start()
 end
-nvim.create_user_command("ConjureSchool", _20_, {})
+nvim.create_user_command("ConjureSchool", _22_, {})
 return _2amodule_2a

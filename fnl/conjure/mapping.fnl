@@ -35,7 +35,8 @@
                     (.. (cfg :prefix) mapping-suffix)
                     (a.first mapping-suffix))
           cmd (.. :Conjure name-suffix)
-          desc (or (a.get opts :desc) (.. "Executes the " cmd " command"))]
+          desc (or (a.get opts :desc) (.. "Executes the " cmd " command"))
+          mode (a.get opts :mode :n)]
       (nvim.create_user_command
         cmd handler-fn
         (a.merge!
@@ -44,7 +45,7 @@
           (a.get opts :command-opts {})))
       (nvim.buf_set_keymap
         (a.get opts :buf 0)
-        (a.get opts :mode :n)
+        mode
         mapping
         "" ;; nop because we're using a :callback function.
         (a.merge!
@@ -60,7 +61,9 @@
 
                        ;; Have to call like this to pass visual selections through.
                        (nvim.ex.normal_ (str.join
-                                          [(util.replace-termcodes "<cmd>")
+                                          [(if (= :n mode)
+                                             (util.replace-termcodes "<cmd>")
+                                             ":")
                                            cmd
                                            (util.replace-termcodes "<cr>")])))}
           (a.get opts :mapping-opts {}))))))
