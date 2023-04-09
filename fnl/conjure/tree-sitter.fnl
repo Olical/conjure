@@ -37,7 +37,9 @@
   "Turn the node into a string, nils flow through. Separate forms are joined by
   new lines."
   (when node
-    (vim.treesitter.query.get_node_text node (nvim.get_current_buf))))
+    (if vim.treesitter.get_node_text
+      (vim.treesitter.get_node_text node (nvim.get_current_buf))
+      (vim.treesitter.query.get_node_text node (nvim.get_current_buf)))))
 
 (defn lisp-comment-node? [node]
   "Node is a (comment ...) form"

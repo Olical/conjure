@@ -55,7 +55,11 @@ end
 _2amodule_2a["parse!"] = parse_21
 local function node__3estr(node)
   if node then
-    return vim.treesitter.query.get_node_text(node, nvim.get_current_buf())
+    if vim.treesitter.get_node_text then
+      return vim.treesitter.get_node_text(node, nvim.get_current_buf())
+    else
+      return vim.treesitter.query.get_node_text(node, nvim.get_current_buf())
+    end
   else
     return nil
   end
