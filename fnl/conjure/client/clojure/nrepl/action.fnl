@@ -603,10 +603,10 @@
                                  : arglists}]
   {:word word
    :menu (str.join
+           " "
            [ns
             (when arglists
-              (str.join arglists " "))]
-           " ")
+              (str.join " " arglists ))])
    :info (when (= :string (type info))
            info)
    :kind (when (not (a.empty? kind))
