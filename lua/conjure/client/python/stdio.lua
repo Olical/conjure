@@ -196,7 +196,11 @@ local function start()
     return log.append({(comment_prefix .. "Can't start, REPL is already running."), (comment_prefix .. "Stop the REPL with " .. config["get-in"]({"mapping", "prefix"}) .. cfg({"mapping", "stop"}))}, {["break?"] = true})
   else
     local function _18_()
-      return vim.treesitter.require_language("python")
+      if vim.treesitter.language.require_language then
+        return vim.treesitter.language.require_language("python")
+      else
+        return vim.treesitter.require_language("python")
+      end
     end
     if not pcall(_18_) then
       return log.append({(comment_prefix .. "(error) The python client requires a python treesitter parser in order to function."), (comment_prefix .. "(error) See https://github.com/nvim-treesitter/nvim-treesitter"), (comment_prefix .. "(error) for installation instructions.")})

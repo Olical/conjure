@@ -213,7 +213,9 @@
                      (config.get-in [:mapping :prefix])
                      (cfg [:mapping :stop]))]
                 {:break? true})
-    (if (not (pcall #(vim.treesitter.require_language "python")))
+    (if (not (pcall #(if vim.treesitter.language.require_language
+                       (vim.treesitter.language.require_language "python")
+                       (vim.treesitter.require_language "python"))))
       (log.append [(.. comment-prefix "(error) The python client requires a python treesitter parser in order to function.")
                    (.. comment-prefix "(error) See https://github.com/nvim-treesitter/nvim-treesitter")
                    (.. comment-prefix "(error) for installation instructions.")])
