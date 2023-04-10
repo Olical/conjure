@@ -716,7 +716,7 @@ local function clojure__3evim_completion(_128_)
   local arglists = _arg_129_["arglists"]
   local function _130_()
     if arglists then
-      return table.concat(arglists, " ")
+      return str.join(arglists, " ")
     else
       return nil
     end
@@ -733,7 +733,7 @@ local function clojure__3evim_completion(_128_)
   else
     _133_ = nil
   end
-  return {word = word, menu = table.concat({ns, _130_()}, " "), info = _131_, kind = _133_}
+  return {word = word, menu = str.join({ns, _130_()}, " "), info = _131_, kind = _133_}
 end
 _2amodule_locals_2a["clojure->vim-completion"] = clojure__3evim_completion
 local function extract_completion_context(prefix)

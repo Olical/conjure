@@ -602,10 +602,10 @@
                                  :doc info
                                  : arglists}]
   {:word word
-   :menu (table.concat
+   :menu (str.join
            [ns
             (when arglists
-              (table.concat arglists " "))]
+              (str.join arglists " "))]
            " ")
    :info (when (= :string (type info))
            info)
