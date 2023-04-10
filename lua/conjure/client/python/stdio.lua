@@ -39,7 +39,7 @@ _2amodule_2a["buf-suffix"] = buf_suffix
 local comment_prefix = "# "
 _2amodule_2a["comment-prefix"] = comment_prefix
 local function form_node_3f(node)
-  return (("expression_statement" == node:type()) or ("function_definition" == node:type()) or ("for_statement" == node:type()) or ("call" == node:type()))
+  return (("expression_statement" == node:type()) or ("import_statement" == node:type()) or ("import_from_statement" == node:type()) or ("with_statement" == node:type()) or ("function_definition" == node:type()) or ("for_statement" == node:type()) or ("call" == node:type()))
 end
 _2amodule_2a["form-node?"] = form_node_3f
 local function with_repl_or_warn(f, opts)
@@ -205,19 +205,19 @@ local function start()
     if not pcall(_18_) then
       return log.append({(comment_prefix .. "(error) The python client requires a python treesitter parser in order to function."), (comment_prefix .. "(error) See https://github.com/nvim-treesitter/nvim-treesitter"), (comment_prefix .. "(error) for installation instructions.")})
     else
-      local function _19_()
-        local function _20_(repl)
-          local function _21_(msgs)
+      local function _20_()
+        local function _21_(repl)
+          local function _22_(msgs)
             return nil
           end
-          return repl.send(prep_code(update_python_displayhook), _21_, nil)
+          return repl.send(prep_code(update_python_displayhook), _22_, nil)
         end
-        return display_repl_status("started", with_repl_or_warn(_20_))
+        return display_repl_status("started", with_repl_or_warn(_21_))
       end
-      local function _22_(err)
+      local function _23_(err)
         return display_repl_status(err)
       end
-      local function _23_(code, signal)
+      local function _24_(code, signal)
         if (("number" == type(code)) and (code > 0)) then
           log.append({(comment_prefix .. "process exited with code " .. code)})
         else
@@ -228,10 +228,10 @@ local function start()
         end
         return stop()
       end
-      local function _26_(msg)
+      local function _27_(msg)
         return log.dbg(format_msg(unbatch({msg})), {["join-first?"] = true})
       end
-      return a.assoc(state(), "repl", stdio.start({["prompt-pattern"] = cfg({"prompt-pattern"}), cmd = cfg({"command"}), ["delay-stderr-ms"] = cfg({"delay-stderr-ms"}), ["on-success"] = _19_, ["on-error"] = _22_, ["on-exit"] = _23_, ["on-stray-output"] = _26_}))
+      return a.assoc(state(), "repl", stdio.start({["prompt-pattern"] = cfg({"prompt-pattern"}), cmd = cfg({"command"}), ["delay-stderr-ms"] = cfg({"delay-stderr-ms"}), ["on-success"] = _20_, ["on-error"] = _23_, ["on-exit"] = _24_, ["on-stray-output"] = _27_}))
     end
   end
 end
@@ -249,11 +249,11 @@ local function on_exit()
 end
 _2amodule_2a["on-exit"] = on_exit
 local function interrupt()
-  local function _30_(repl)
+  local function _31_(repl)
     local uv = vim.loop
     return uv.kill(repl.pid, uv.constants.SIGINT)
   end
-  return with_repl_or_warn(_30_)
+  return with_repl_or_warn(_31_)
 end
 _2amodule_2a["interrupt"] = interrupt
 local function on_filetype()
