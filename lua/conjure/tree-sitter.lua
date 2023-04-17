@@ -125,7 +125,7 @@ end
 _2amodule_2a["leaf?"] = leaf_3f
 local function sym_3f(node)
   if node then
-    return (string.find(node:type(), "sym") or string.find(node:type(), "kwd"))
+    return (string.find(node:type(), "sym") or client["optional-call"]("symbol-node?", node))
   else
     return nil
   end
@@ -134,7 +134,7 @@ _2amodule_2a["sym?"] = sym_3f
 local function get_leaf(node)
   parse_21()
   local node0 = (node or ts.get_node_at_cursor())
-  if leaf_3f(node0) then
+  if (leaf_3f(node0) or sym_3f(node0)) then
     local node1 = node0
     while sym_3f(parent(node1)) do
       node1 = parent(node1)

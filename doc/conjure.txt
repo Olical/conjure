@@ -1082,6 +1082,16 @@ examples: https://github.com/Olical/conjure/wiki/Client-features
             want to reject any form that doesn't start with an opening
             parenthesis.
 
+`symbol-node?`
+            Function(node)
+            When tree-sitter is in use this will be called with each node
+            considered when looking for "symbol" nodes under the cursor with
+            the "eval word" pneumonic mapping.
+            returning `true` or `false`. For example, the Clojure client is
+            looking for nodes with "sym" in their type (part of the built in
+            shared behaviour between clients) and additionally "kwd" (short
+            for keyword and specialised for Clojure).
+
 `get-form-modifier`
             Function(node)
             The second iteration of `form-node?`, allows the client to return

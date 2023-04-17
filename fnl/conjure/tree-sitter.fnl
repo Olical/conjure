@@ -93,17 +93,18 @@
 
 ;; Some node types I've seen: sym_lit, symbol, multi_symbol...
 ;; So I'm not sure if each language just picks a flavour, but this should cover all of our bases.
+;; Clients can also opt in and hint with their own symbol-node? functions now too.
 (defn sym? [node]
   (when node
     (or (string.find (node:type) :sym)
-        (string.find (node:type) :kwd))))
+        (client.optional-call :symbol-node? node))))
 
 (defn get-leaf [node]
   "Return the leaf node under the cursor or nothing at all."
   (parse!)
 
   (let [node (or node (ts.get_node_at_cursor))]
-    (when (leaf? node)
+    (when (or (leaf? node) (sym? node))
       (var node node)
       (while (sym? (parent node))
         (set node (parent node)))

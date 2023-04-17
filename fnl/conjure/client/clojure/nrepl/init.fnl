@@ -39,6 +39,9 @@
   (or (ts.node-surrounded-by-form-pair-chars? node reader-macro-pairs)
       (ts.node-prefixed-by-chars? node reader-macros)))
 
+(defn symbol-node? [node]
+  (string.find (node:type) :kwd))
+
 (def comment-node? ts.lisp-comment-node?)
 
 (config.merge
