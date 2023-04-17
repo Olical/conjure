@@ -95,7 +95,8 @@
 ;; So I'm not sure if each language just picks a flavour, but this should cover all of our bases.
 (defn sym? [node]
   (when node
-    (string.find (node:type) :sym)))
+    (or (string.find (node:type) :sym)
+        (string.find (node:type) :kwd))))
 
 (defn get-leaf [node]
   "Return the leaf node under the cursor or nothing at all."

@@ -125,7 +125,7 @@ end
 _2amodule_2a["leaf?"] = leaf_3f
 local function sym_3f(node)
   if node then
-    return string.find(node:type(), "sym")
+    return (string.find(node:type(), "sym") or string.find(node:type(), "kwd"))
   else
     return nil
   end

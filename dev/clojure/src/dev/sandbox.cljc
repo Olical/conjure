@@ -8,6 +8,8 @@
 
 #?(:clj (log/info "Logging!"))
 
+:some-namespaced/keyword
+
 (defn add
   "Hello, World!
   This is a function."
