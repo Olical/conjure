@@ -6,7 +6,7 @@
              config conjure.config
              text conjure.text}})
 
-;; From https://github.com/savq/conjure-julia <3
+;; Initially based on https://github.com/savq/conjure-julia <3
 
 (def- ts
   (let [(ok? x) (pcall #(require :nvim-treesitter.ts_utils))]
