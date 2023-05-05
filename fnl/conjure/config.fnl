@@ -66,7 +66,7 @@
               :python :conjure.client.python.stdio
               :rust :conjure.client.rust.evcxr}
    :filetype_suffixes {:racket [:rkt]
-                       :scheme [:scm]}
+                       :scheme [:scm :ss]}
 
    :eval
    {:result_register "c"
