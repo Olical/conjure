@@ -15,6 +15,16 @@
 (def buf-suffix ".lua")
 (def comment-prefix "-- ")
 
+; These types of nodes are roughly equivalent to Lisp forms. This should make
+; it more intuitive when using <localleader>ee to evaluate the "current form".
+(defn form-node? [node]
+  (or (= "function_call" (node:type))
+      (= "function_definition" (node:type))
+      (= "function_declaration" (node:type))
+      (= "local_declaration" (node:type))
+      (= "variable_declaration" (node:type))
+      (= "if_statement" (node:type))))
+
 (config.merge
   {:client
    {:lua
