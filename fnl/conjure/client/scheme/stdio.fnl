@@ -15,8 +15,7 @@
    {:scheme
     {:stdio
      {:mapping {:start "cs"
-                :stop "cS"
-                :interrupt "ei"}
+                :stop "cS"}
       :command "mit-scheme"
       ;; Match "]=> " or "error> "
       :prompt_pattern "[%]e][=r]r?o?r?> "
@@ -120,12 +119,6 @@
          (fn [msg]
            (log.append (format-msg msg)))}))))
 
-(defn interrupt []
-  (with-repl-or-warn
-    (fn [repl]
-      (log.append ["; Sending interrupt signal."] {:break? true})
-      (repl.send-signal 2))))
-
 (defn on-load []
   (start))
 
@@ -138,13 +131,7 @@
   (mapping.buf
     :SchemeStop (cfg [:mapping :stop])
     stop
-    {:desc "Stop the REPL"})
-
-  (mapping.buf
-    :SchemeInterrupt (cfg [:mapping :interrupt])
-    interrupt
-    {:desc "Interrupt the REPL"}))
+    {:desc "Stop the REPL"}))
 
 (defn on-exit []
   (stop))
-
