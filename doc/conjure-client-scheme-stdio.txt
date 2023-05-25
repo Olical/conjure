@@ -37,6 +37,9 @@ options relevant to these mappings.
 
 <localleader>cS          Stop any existing Scheme REPL.
 
+<localleader>ei          Interrupt running command. Same as pressing Ctrl-C
+                         in a cmdline REPL.
+
 ==============================================================================
 CONFIGURATION                      *conjure-client-scheme-stdio-configuration*
 
