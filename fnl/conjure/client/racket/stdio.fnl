@@ -71,11 +71,8 @@
 (defn interrupt []
   (with-repl-or-warn
     (fn [repl]
-      (log.append ["; Sending interrupt signal."] {:break? true})
-
-      ;; SIGINT C-c
-      ;; https://github.com/Olical/conjure/issues/213
-      (repl.send-signal 2))))
+      (log.append [(.. comment-prefix " Sending interrupt signal.")] {:break? true})
+      (repl.send-signal vim.loop.constants.SIGINT))))
 
 (defn eval-file [opts]
   (eval-str (a.assoc opts :code (.. ",require-reloadable " opts.file-path))))

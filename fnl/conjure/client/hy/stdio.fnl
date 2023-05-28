@@ -155,8 +155,9 @@
   (log.dbg "sending interrupt message" "")
   (with-repl-or-warn
     (fn [repl]
-      (let [uv vim.loop]
-        (uv.kill repl.pid uv.constants.SIGINT)))))
+      (log.append [(.. comment-prefix " Sending interrupt signal.")] {:break? true})
+      (log.append ["; Sending interrupt signal."] {:break? true})
+      (repl.send-signal vim.loop.constants.SIGINT))))
 
 (defn on-filetype []
   (mapping.buf
