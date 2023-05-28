@@ -34,7 +34,6 @@
 "rafaeldelboni"
 "rbatista"
 "rgm"
-"russtoku"
 "stelcodes"
 "thiru"
 "TimoKramer"
