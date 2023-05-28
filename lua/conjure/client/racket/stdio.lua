@@ -89,8 +89,8 @@ end
 _2amodule_2a["eval-str"] = eval_str
 local function interrupt()
   local function _8_(repl)
-    log.append({"; Sending interrupt signal."}, {["break?"] = true})
-    return repl["send-signal"](2)
+    log.append({(comment_prefix .. " Sending interrupt signal.")}, {["break?"] = true})
+    return repl["send-signal"](vim.loop.constants.SIGINT)
   end
   return with_repl_or_warn(_8_)
 end

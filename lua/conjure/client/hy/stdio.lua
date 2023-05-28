@@ -195,8 +195,9 @@ _2amodule_2a["on-exit"] = on_exit
 local function interrupt()
   log.dbg("sending interrupt message", "")
   local function _26_(repl)
-    local uv = vim.loop
-    return uv.kill(repl.pid, uv.constants.SIGINT)
+    log.append({(comment_prefix .. " Sending interrupt signal.")}, {["break?"] = true})
+    log.append({"; Sending interrupt signal."}, {["break?"] = true})
+    return repl["send-signal"](vim.loop.constants.SIGINT)
   end
   return with_repl_or_warn(_26_)
 end
