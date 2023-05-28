@@ -28,6 +28,10 @@ local buf_suffix = ".lua"
 _2amodule_2a["buf-suffix"] = buf_suffix
 local comment_prefix = "-- "
 _2amodule_2a["comment-prefix"] = comment_prefix
+local function form_node_3f(node)
+  return (("function_call" == node:type()) or ("function_definition" == node:type()) or ("function_declaration" == node:type()) or ("local_declaration" == node:type()) or ("variable_declaration" == node:type()) or ("if_statement" == node:type()))
+end
+_2amodule_2a["form-node?"] = form_node_3f
 config.merge({client = {lua = {neovim = {mapping = {reset_env = "rr", reset_all_envs = "ra"}, persistent = "debug"}}}})
 local cfg = config["get-in-fn"]({"client", "lua", "neovim"})
 do end (_2amodule_locals_2a)["cfg"] = cfg
