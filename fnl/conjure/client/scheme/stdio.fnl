@@ -123,8 +123,8 @@
 (defn interrupt []
   (with-repl-or-warn
     (fn [repl]
-      (log.append ["; Sending interrupt signal."] {:break? true})
-      (repl.send-signal 2))))
+      (log.append [(.. comment-prefix " Sending interrupt signal.")] {:break? true})
+      (repl.send-signal vim.loop.constants.SIGINT))))
 
 (defn on-load []
   (start))
