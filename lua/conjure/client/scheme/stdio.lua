@@ -22,7 +22,7 @@ _2amodule_locals_2a["stdio"] = stdio
 _2amodule_locals_2a["str"] = str
 _2amodule_locals_2a["ts"] = ts
 _2amodule_locals_2a["_"] = _
-config.merge({client = {scheme = {stdio = {mapping = {start = "cs", stop = "cS"}, command = "mit-scheme", prompt_pattern = "[%]e][=r]r?o?r?> ", value_prefix_pattern = "^;Value: "}}}})
+config.merge({client = {scheme = {stdio = {mapping = {start = "cs", stop = "cS", interrupt = "ei"}, command = "mit-scheme", prompt_pattern = "[%]e][=r]r?o?r?> ", value_prefix_pattern = "^;Value: "}}}})
 local cfg = config["get-in-fn"]({"client", "scheme", "stdio"})
 do end (_2amodule_locals_2a)["cfg"] = cfg
 local state
@@ -128,13 +128,22 @@ local function start()
   end
 end
 _2amodule_2a["start"] = start
+local function interrupt()
+  local function _17_(repl)
+    log.append({"; Sending interrupt signal."}, {["break?"] = true})
+    return repl["send-signal"](2)
+  end
+  return with_repl_or_warn(_17_)
+end
+_2amodule_2a["interrupt"] = interrupt
 local function on_load()
   return start()
 end
 _2amodule_2a["on-load"] = on_load
 local function on_filetype()
   mapping.buf("SchemeStart", cfg({"mapping", "start"}), start, {desc = "Start the REPL"})
-  return mapping.buf("SchemeStop", cfg({"mapping", "stop"}), stop, {desc = "Stop the REPL"})
+  mapping.buf("SchemeStop", cfg({"mapping", "stop"}), stop, {desc = "Stop the REPL"})
+  return mapping.buf("SchemeInterrupt", cfg({"mapping", "interrupt"}), interrupt, {desc = "Interrupt the REPL"})
 end
 _2amodule_2a["on-filetype"] = on_filetype
 local function on_exit()
