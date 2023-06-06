@@ -233,6 +233,15 @@ You can disable a mapping entirely by setting it to `v:false` like so.
 These need to be set before you enter a relevant buffer since the mappings are
 defined as you enter a buffer and can't be altered after the fact.
 
+Conjure sets up filetype-specific mappings for each of the filetypes listed in
+`g:conjure#filetypes`. These mappings are determined by the client filetype
+and set when that filetype is loaded.
+
+You can disable all of the filetype-specific default mappings by setting
+`g:conjure#mapping#enable_ft_mappings` to `v:false` like so.
+
+    `:let g:conjure#mapping#enable_ft_mappings  = v:false`
+
 Tip: Booleans in Vim Script are written as `v:true` and `v:false`.
 
                                                          *g:conjure#filetypes*

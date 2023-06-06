@@ -105,7 +105,9 @@
     :eval_visual "E"
     :eval_motion "E"
     :def_word "gd"
-    :doc_word ["K"]}
+    :doc_word ["K"]
+
+    :enable_ft_mappings true}
 
    :completion
    {:omnifunc :ConjureOmnifunc
