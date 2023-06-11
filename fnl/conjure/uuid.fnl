@@ -1,5 +1,6 @@
 (module conjure.uuid
-  {autoload {a conjure.aniseed.core}})
+  {autoload {a conjure.aniseed.core
+             str conjure.aniseed.string}})
 
 ;; Adapted from https://gist.github.com/jrus/3197011
 
@@ -63,8 +64,10 @@
 (defn pretty [id]
   "Turns a UUID into something human readable. This MASSIVELY reduces the
   entropy but it should be good enough for a bunch of various UI / UX cases."
-  (let [n (tonumber (string.sub id 1 8) 16)]
-    (a.get cats-and-dogs (a.inc (% n (a.count cats-and-dogs))))))
+  (if (a.string? id)
+    (let [n (tonumber (string.sub id 1 8) 16)]
+      (a.get cats-and-dogs (a.inc (% n (a.count cats-and-dogs)))))
+    (str.join ["<" (type id) ", not uuid string>"])))
 
 (comment
   (v4)
