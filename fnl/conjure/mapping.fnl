@@ -206,9 +206,10 @@
 (defn init [filetypes]
   (nvim.ex.augroup :conjure_init_filetypes)
   (nvim.ex.autocmd_)
-  (nvim.ex.autocmd
-    :FileType (str.join "," filetypes)
-    (bridge.viml->lua :conjure.mapping :on-filetype {}))
+  (when (= true (config.get-in [:mapping :enable_ft_mappings]))
+    (nvim.ex.autocmd
+      :FileType (str.join "," filetypes)
+      (bridge.viml->lua :conjure.mapping :on-filetype {})))
 
   (nvim.ex.autocmd
     :CursorMoved :*
