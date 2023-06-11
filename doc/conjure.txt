@@ -242,7 +242,8 @@ You can disable all of the filetype-specific default mappings by setting
 
     `:let g:conjure#mapping#enable_ft_mappings  = v:false`
 
-Tip: Booleans in Vim Script are written as `v:true` and `v:false`.
+Tip: Booleans in Vim Script are written as `v:true` and `v:false`. If you're
+configuring these values from Lua it's just `true` and `false`.
 
                                                          *g:conjure#filetypes*
 `g:conjure#filetypes`
