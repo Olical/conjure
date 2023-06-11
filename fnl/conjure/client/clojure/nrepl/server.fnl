@@ -169,16 +169,18 @@
           (cb [])
           (a.run!
             (fn [id]
-              (enrich-session-id
-                id
-                (fn [t]
-                  (table.insert rich t)
-                  (when (= total (a.count rich))
-                    (table.sort
-                      rich
-                      #(< (a.get $1 :name)
-                          (a.get $2 :name)))
-                    (cb rich)))))
+              (log.dbg "with-sessions id for enrichment" id)
+              (when id
+                (enrich-session-id
+                  id
+                  (fn [t]
+                    (table.insert rich t)
+                    (when (= total (a.count rich))
+                      (table.sort
+                        rich
+                        #(< (a.get $1 :name)
+                            (a.get $2 :name)))
+                      (cb rich))))))
             sess-ids))))))
 
 (defn clone-session [session]
@@ -187,9 +189,10 @@
      :session (a.get session :id)}
     (nrepl.with-all-msgs-fn
       (fn [msgs]
-        (enrich-session-id
-          (a.some #(a.get $1 :new-session) msgs)
-          assume-session)))))
+        (let [session-id (a.some #(a.get $1 :new-session) msgs)]
+          (log.dbg "clone-session id for enrichment" id)
+          (when session-id
+            (enrich-session-id session-id assume-session)))))))
 
 (defn assume-or-create-session []
   (a.assoc (state.get :conn) :session nil)
