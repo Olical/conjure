@@ -28,7 +28,7 @@ local function pretty(id)
     local n = tonumber(string.sub(id, 1, 8), 16)
     return a.get(cats_and_dogs, a.inc((n % a.count(cats_and_dogs))))
   else
-    return str.join({"<", type(id), ", not uuid string>"})
+    return str.join({"<conjure.uuid: got ", type(id), " not string, this is a bug!>"})
   end
 end
 _2amodule_2a["pretty"] = pretty

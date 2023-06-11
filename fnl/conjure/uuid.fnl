@@ -67,7 +67,7 @@
   (if (a.string? id)
     (let [n (tonumber (string.sub id 1 8) 16)]
       (a.get cats-and-dogs (a.inc (% n (a.count cats-and-dogs)))))
-    (str.join ["<" (type id) ", not uuid string>"])))
+    (str.join ["<conjure.uuid: got " (type id) " not string, this is a bug!>"])))
 
 (comment
   (v4)
