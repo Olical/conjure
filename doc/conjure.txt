@@ -259,7 +259,7 @@ configuring these values from Lua it's just `true` and `false`.
 
             Default: >
               ["clojure", "fennel", "janet", "hy", "julia", "racket",
-               "scheme", "lua", "lisp", "python", "rust"]
+               "scheme", "lua", "lisp", "python", "rust", "sql"]
 <
                                                   *g:conjure#filetype#clojure*
 `g:conjure#filetype#clojure`
@@ -303,6 +303,12 @@ configuring these values from Lua it's just `true` and `false`.
             Client to use for `racket` buffers.
             Help: |conjure-client-racket-stdio|
             Default: `"conjure.client.racket.stdio"`
+
+                                                   *g:conjure#filetype#sql*
+`g:conjure#filetype#racket`
+            Client to use for `SQL` buffers.
+            Help: |conjure-client-sql-stdio|
+            Default: `"conjure.client.sql.stdio"`
 
                                       *g:conjure#filetype_suffixes#[filetype]*
 `g:conjure#filetype_suffixes#[filetype]`
@@ -912,6 +918,7 @@ your dotfiles.
  - |conjure-client-julia-stdio|
  - |conjure-client-lua-stdio|
  - |conjure-client-python-stdio|
+ - |conjure-client-sql-stdio|
  - |conjure-client-rust-evcxr|
  - |conjure-client-common-lisp-swank|
 

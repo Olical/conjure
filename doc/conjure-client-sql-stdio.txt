@@ -1,0 +1,91 @@
+
+                                                 *conjure-client-sql-stdio*
+
+==============================================================================
+CONTENTS                                *conjure-client-sql-stdio-contents*
+
+    1. Introduction ........ |conjure-client-sql-stdio-introduction|
+    2. Mappings ................ |conjure-client-sql-stdio-mappings|
+    3. Configuration ...... |conjure-client-sql-stdio-configuration|
+
+==============================================================================
+INTRODUCTION                        *conjure-client-sql-stdio-introduction*
+>
+  SQL is a programming language for working with relational database
+  management systems (RDBMS).
+
+Conjure starts a SQL REPL within Neovim when you first open a SQL file unless
+you set `conjure#client_on_load` to `v:false`.
+
+This client was initially developed using PostgresQL's `psql` command line
+client. Thus, the default configuration values for the `command` and `prompt
+`pattern` are set for `psql` set up with a `~/.pgpass` password file for
+a PostgresQL server running on your local computer listening on the default
+port, a `postgres` database, and a `blogger` database user with a password of
+`secret`. Please note that connecting to databases can be a security risk so
+consult the appropriate people for your particular situation and environment.
+  
+ - https://www.postgresql.org/docs/14/libpq-pgpass.html
+
+See |conjure-client-sql-stdio-configuration| and the documentation for the SQL
+command line client that you want to use.
+
+Once configured, you should be able to evaluate files and forms as you would
+with other Conjure supported languages.
+
+Check out `:ConjureSchool` if you're unsure about what evaluation operations
+you can perform.
+
+ * https://en.wikipedia.org/wiki/SQL
+
+==============================================================================
+MAPPINGS                                *conjure-client-sql-stdio-mappings*
+
+These mappings are the defaults, you can change them as described in
+|conjure-mappings| and |conjure-configuration|.
+
+See |conjure-client-sql-stdio-configuration| for specific configuration
+options relevant to these mappings.
+
+<localleader>cs          Start the SQL REPL if it's not running already.
+
+<localleader>cS          Stop any existing SQL REPL.
+
+<localleader>ei          Interrupt the current SQL REPL. May need restart.
+
+==============================================================================
+CONFIGURATION                      *conjure-client-sql-stdio-configuration*
+
+All configuration can be set as described in |conjure-configuration|.
+
+
+                                 *g:conjure#client#sql#stdio#mapping#start*
+`g:conjure#client#sql#stdio#mapping#start`
+            Start the SQL REPL if it's not running already.
+            Default: `"cs"`
+
+                                  *g:conjure#client#sql#stdio#mapping#stop*
+`g:conjure#client#sql#stdio#mapping#stop`
+            Stop any existing SQL REPL.
+            Default: `"cS"`
+
+                           *g:conjure#client#sql#stdio#mapping#eval_reload*
+`g:conjure#client#sql#stdio#mapping#interrupt`
+            Interrupt the SQL REPL.
+            Default: `"ei"`
+
+                                       *g:conjure#client#sql#stdio#command*
+`g:conjure#client#sql#stdio#command`
+            Command used to start the SQL REPL, you can modify this to add
+            arguments or change the command entirely.
+            Default: `"psql -U blogger postgres"`
+
+                                *g:conjure#client#sql#stdio#prompt_pattern*
+`g:conjure#client#sql#stdio#prompt_pattern`
+            Lua pattern to identify a new REPL prompt. This match signals to
+            Conjure that the previous evaluation is complete and we're ready
+            to submit more code as well as collect all output prior to the
+            marker as the result.
+            Default: `"=> "`
+
+vim:tw=78:sw=2:ts=2:ft=help:norl:et:listchars=
