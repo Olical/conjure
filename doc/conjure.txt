@@ -305,7 +305,7 @@ configuring these values from Lua it's just `true` and `false`.
             Default: `"conjure.client.racket.stdio"`
 
                                                    *g:conjure#filetype#sql*
-`g:conjure#filetype#racket`
+`g:conjure#filetype#sql`
             Client to use for `SQL` buffers.
             Help: |conjure-client-sql-stdio|
             Default: `"conjure.client.sql.stdio"`
