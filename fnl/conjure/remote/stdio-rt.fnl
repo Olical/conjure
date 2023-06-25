@@ -70,18 +70,15 @@
       (client.schedule opts.on-exit code signal))
 
     (fn next-in-queue []
-      (log.dbg "stdio.next-in-queue: # msgs in queue:" (a.count repl.queue))
-      (log.dbg "  stdio.next-in-queue: queue:" (a.pr-str repl.queue))
-      (log.dbg "  stdio.next-in-queue: current:" (a.pr-str repl.current))
       (let [next-msg (a.first repl.queue)]
         (when next-msg
           (table.remove repl.queue 1)
           (a.assoc repl :current next-msg)
-          (log.dbg "  stdio.next-in-queue: send" next-msg.code)
+          (log.dbg "send" next-msg.code)
           (stdin:write next-msg.code))))
 
     (fn on-message [source err chunk]
-      (log.dbg "stdio.on-message: receive [source err chunk]" source err chunk)
+      (log.dbg "receive" source err chunk)
       (if err
         (do
           (opts.on-error err)
@@ -89,11 +86,7 @@
         (when chunk
           (let [(done? result) (parse-prompt chunk opts.prompt-pattern)
                 cb (a.get-in repl [:current :cb] opts.on-stray-output)]
-            (log.dbg "  stdio.on-message: opts.prompt-pattern" opts.prompt-pattern)
-            (log.dbg "  stdio.on-message: [done? result]" done? result)
             (when cb
-              (log.dbg "  stdio.on-message: current:" (a.pr-str repl.current))
-              (log.dbg "  stdio.on-message: calling cb [repl.current]")
               (pcall #(cb {source result
                            :done? done?})))
             (when done? ; never gets here because done? is always false
@@ -109,20 +102,16 @@
         (on-message :err err chunk)))
 
     (fn send [code cb opts]
-      (log.dbg "stdio.send called [opts] " (a.pr-str opts))
-      (log.dbg "  stdio.send adding task")
       (table.insert
         repl.queue
         {:code code
          :cb (if (a.get opts :batch?)
                (let [msgs []]
                  (fn [msg]
-                   (log.dbg "  stdio.send cb for batch?: accumulate " msg)
                    (table.insert msgs msg)
                    (when msg.done?
                      (cb msgs))))
                cb)})
-      (log.dbg "  stdio.send calling next-in-queue")
       (next-in-queue)
       nil)
 

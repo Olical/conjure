@@ -54,12 +54,10 @@ local function with_repl_or_warn(f, opts)
 end
 _2amodule_locals_2a["with-repl-or-warn"] = with_repl_or_warn
 local function format_message(msg)
-  log.dbg((comment_prefix .. "  sql.format-message [msg]"), a["pr-str"](msg))
   return str.split((msg.out or msg.err), "\n")
 end
 _2amodule_locals_2a["format-message"] = format_message
 local function remove_blank_lines(msg)
-  log.dbg((comment_prefix .. "  sql.remove-blank-lines [msg]"), a["pr-str"](msg))
   local function _3_(_241)
     return not ("" == _241)
   end
@@ -67,7 +65,6 @@ local function remove_blank_lines(msg)
 end
 _2amodule_locals_2a["remove-blank-lines"] = remove_blank_lines
 local function display_result(msg)
-  log.dbg((comment_prefix .. "  sql.display-result [msg]"), a["pr-str"](msg))
   return log.append(remove_blank_lines(msg))
 end
 _2amodule_locals_2a["display-result"] = display_result
@@ -80,11 +77,8 @@ local function __3elist(s)
 end
 _2amodule_2a["->list"] = __3elist
 local function eval_str(opts)
-  log.dbg((comment_prefix .. "eval-str [opts] "), a["pr-str"](opts))
   local function _5_(repl)
     local function _6_(msgs)
-      log.dbg((comment_prefix .. "  sql.eval-str in cb [opts]"), a["pr-str"](opts))
-      log.dbg((comment_prefix .. "  sql.eval-str in cb [msgs]"), a["pr-str"](msgs))
       local msgs0 = __3elist(msgs)
       if opts["on-result"] then
         opts["on-result"](str.join("\n", remove_blank_lines(a.last(msgs0))))
@@ -98,7 +92,6 @@ local function eval_str(opts)
 end
 _2amodule_2a["eval-str"] = eval_str
 local function eval_file(opts)
-  log.dbg((comment_prefix .. "eval-file [opts] "), a["pr-str"](opts))
   return eval_str(a.assoc(opts, "code", a.slurp(opts["file-path"])))
 end
 _2amodule_2a["eval-file"] = eval_file

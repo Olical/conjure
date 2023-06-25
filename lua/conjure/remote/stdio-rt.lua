@@ -91,21 +91,18 @@ local function start(opts)
     return client.schedule(opts["on-exit"], code, signal)
   end
   local function next_in_queue()
-    log.dbg("stdio.next-in-queue: # msgs in queue:", a.count(repl.queue))
-    log.dbg("  stdio.next-in-queue: queue:", a["pr-str"](repl.queue))
-    log.dbg("  stdio.next-in-queue: current:", a["pr-str"](repl.current))
     local next_msg = a.first(repl.queue)
     if next_msg then
       table.remove(repl.queue, 1)
       a.assoc(repl, "current", next_msg)
-      log.dbg("  stdio.next-in-queue: send", next_msg.code)
+      log.dbg("send", next_msg.code)
       return stdin:write(next_msg.code)
     else
       return nil
     end
   end
   local function on_message(source, err, chunk)
-    log.dbg("stdio.on-message: receive [source err chunk]", source, err, chunk)
+    log.dbg("receive", source, err, chunk)
     if err then
       opts["on-error"](err)
       return destroy()
@@ -113,11 +110,7 @@ local function start(opts)
       if chunk then
         local done_3f, result = parse_prompt(chunk, opts["prompt-pattern"])
         local cb = a["get-in"](repl, {"current", "cb"}, opts["on-stray-output"])
-        log.dbg("  stdio.on-message: opts.prompt-pattern", opts["prompt-pattern"])
-        log.dbg("  stdio.on-message: [done? result]", done_3f, result)
         if cb then
-          log.dbg("  stdio.on-message: current:", a["pr-str"](repl.current))
-          log.dbg("  stdio.on-message: calling cb [repl.current]")
           local function _15_()
             return cb({[source] = result, ["done?"] = done_3f})
           end
@@ -149,13 +142,10 @@ local function start(opts)
     end
   end
   local function send(code, cb, opts0)
-    log.dbg("stdio.send called [opts] ", a["pr-str"](opts0))
-    log.dbg("  stdio.send adding task")
     local _22_
     if a.get(opts0, "batch?") then
       local msgs = {}
       local function _24_(msg)
-        log.dbg("  stdio.send cb for batch?: accumulate ", msg)
         table.insert(msgs, msg)
         if msg["done?"] then
           return cb(msgs)
@@ -168,7 +158,6 @@ local function start(opts)
       _22_ = cb
     end
     table.insert(repl.queue, {code = code, cb = _22_})
-    log.dbg("  stdio.send calling next-in-queue")
     next_in_queue()
     return nil
   end

@@ -12,21 +12,6 @@
    require-macros [conjure.macros]})
 
 ;;------------------------------------------------------------
-;; Set-up:
-;; ✅ 1. Copy from client/fennel/stdio.fnl.
-;; ❌ 2. Also, try client/python/stdio.fnl which differs in the eval-str
-;;       function and its helpers.
-;;
-;; Problems:
-;; ✅ 1. Only the first send (,ee) works. Subsequent ones don't have any effect.
-;; ✅ 2. The response from a send is not displayed in the log buffer.
-;;    3. I don't see the prompt from REPL in the debug log.
-;;         - Should we be waiting to see the prompt before acting on the next
-;;           message in queue?
-;;
-;;------------------------------------------------------------
-
-;;------------------------------------------------------------
 ;; Based on fnl/conjure/client/fennel/stdio.fnl.
 ;;
 ;; May work with other command line SQL clients besides PostgresQL's psql.
@@ -73,46 +58,36 @@
       (log.append [(.. comment-prefix "No REPL running")]))))
 
 ;;;;-------- from client/fennel/stdio.fnl ----------------------
-; source is :out or :err
 (defn- format-message [msg]
-  (log.dbg (.. comment-prefix "  sql.format-message [msg]") (a.pr-str msg))
   (str.split (or msg.out msg.err) "\n"))
 
 (defn- remove-blank-lines [msg]
-  (log.dbg (.. comment-prefix "  sql.remove-blank-lines [msg]") (a.pr-str msg))
   (->> (format-message msg)
        (a.filter #(not (= "" $1)))))
 
 (defn- display-result [msg]
-  (log.dbg (.. comment-prefix "  sql.display-result [msg]") (a.pr-str msg))
   (log.append (remove-blank-lines msg)))
 
-; Helper: Convert arg to a list.
 (defn ->list [s]
   (if (a.first s)
     s
     [s]))
 
-; From client/fennel/stdio.fnl
 (defn eval-str [opts]
-  (log.dbg (.. comment-prefix "eval-str [opts] ") (a.pr-str opts))
   (with-repl-or-warn
     (fn [repl]
       (repl.send
         (.. opts.code "\n")
         (fn [msgs]
-          (log.dbg (.. comment-prefix "  sql.eval-str in cb [opts]") (a.pr-str opts))
-          (log.dbg (.. comment-prefix "  sql.eval-str in cb [msgs]") (a.pr-str msgs))
           (let [msgs (->list msgs)]
-            (when opts.on-result ; eval.fnl sets this to display results in source buffer
+            (when opts.on-result
               (opts.on-result (str.join "\n" (remove-blank-lines (a.last msgs)))))
-            (a.run! display-result msgs)) ; in log buffer
-          ) ; (fn [msgs]...
-        {:batch? false})))) ; should probably be false
+            (a.run! display-result msgs))
+          )
+        {:batch? false}))))
 ;;;;-------- End from client/fennel/stdio.fnl ------------------
 
 (defn eval-file [opts]
-  (log.dbg (.. comment-prefix "eval-file [opts] ") (a.pr-str opts))
   (eval-str (a.assoc opts :code (a.slurp opts.file-path))))
 
 (defn interrupt []
