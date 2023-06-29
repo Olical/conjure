@@ -96,36 +96,7 @@ To take advantage of lazy loading, a bit more involved configuration is required
 ----
 return {
     "Olical/conjure",
-    cmd = {
-        "ConjureEval",
-        "ConjureSchool",
-        "ConjureConnect",
-        "ConjureClientState",
-        --
-        "ConjureLogSplit",
-        "ConjureLogVSplit",
-        "ConjureLogTab",
-        "ConjureLogBuf",
-        "ConjureLogToggle",
-        "ConjureLogResetSoft",
-        "ConjureLogResetHard",
-        "ConjureLogJumpToLatest",
-        "ConjureLogCloseVisible",
-        --
-        "ConjureEvalCurrentForm",
-        "ConjureEvalCommentCurrentForm",
-        "ConjureEvalRootForm",
-        "ConjureEvalCommentRootForm",
-        "ConjureEvalWord",
-        "ConjureEvalCommentWord",
-        "ConjureEvalReplaceForm",
-        "ConjureEvalMarkedForm",
-        "ConjureEvalCommentForm",
-        "ConjureEvalFile",
-        "ConjureEvalBuf",
-        "ConjureEvalMotion",
-        "ConjureEvalVisual",
-    },
+    keys = { "<localleader>r" },
     -- [Optional] cmp-conjure for cmp
     dependencies = {
         {
