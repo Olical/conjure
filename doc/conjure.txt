@@ -486,12 +486,6 @@ configuring these values from Lua it's just `true` and `false`.
             Evaluates the form at the marks location.
             Default: `"em"`
 
-                                         *g:conjure#mapping#eval_comment_form*
-`g:conjure#mapping#eval_comment_form`
-            Evaluates the form under the cursor and displays the result as a
-            comment at the end of the current line or below the current line.
-            Default: `"ec"`
-
                                                  *g:conjure#mapping#eval_file*
 `g:conjure#mapping#eval_file`
             Evaluates the file from disk.
