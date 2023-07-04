@@ -61,11 +61,14 @@
       (pcall #(stderr:close))
       (pcall #(stdin:close))
       (when repl.handle
-        (pcall #(uv.process_kill repl.handle))
-        (pcall #(repl.handle:close)))
+        ;; On macos, when handle:close is called, it leaves a zombie process
+        ;; behind. Just calling process_kill does the job because the handle
+        ;; will be closed automatically.
+        (pcall #(uv.process_kill repl.handle uv.constants.SIGINT)))
       nil)
 
     (fn on-exit [code signal]
+      (log.dbg "on-exit called")
       (destroy)
       (client.schedule opts.on-exit code signal))
 

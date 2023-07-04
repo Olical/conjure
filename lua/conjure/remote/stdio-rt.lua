@@ -75,18 +75,15 @@ local function start(opts)
     pcall(_10_)
     if repl.handle then
       local function _11_()
-        return uv.process_kill(repl.handle)
+        return uv.process_kill(repl.handle, uv.constants.SIGINT)
       end
       pcall(_11_)
-      local function _12_()
-        return (repl.handle):close()
-      end
-      pcall(_12_)
     else
     end
     return nil
   end
   local function on_exit(code, signal)
+    log.dbg("on-exit called")
     destroy()
     return client.schedule(opts["on-exit"], code, signal)
   end
@@ -111,10 +108,10 @@ local function start(opts)
         local done_3f, result = parse_prompt(chunk, opts["prompt-pattern"])
         local cb = a["get-in"](repl, {"current", "cb"}, opts["on-stray-output"])
         if cb then
-          local function _15_()
+          local function _14_()
             return cb({[source] = result, ["done?"] = done_3f})
           end
-          pcall(_15_)
+          pcall(_14_)
         else
         end
         if done_3f then
@@ -133,19 +130,19 @@ local function start(opts)
   end
   local function on_stderr(err, chunk)
     if opts["delay-stderr-ms"] then
-      local function _20_()
+      local function _19_()
         return on_message("err", err, chunk)
       end
-      return vim.defer_fn(_20_, opts["delay-stderr-ms"])
+      return vim.defer_fn(_19_, opts["delay-stderr-ms"])
     else
       return on_message("err", err, chunk)
     end
   end
   local function send(code, cb, opts0)
-    local _22_
+    local _21_
     if a.get(opts0, "batch?") then
       local msgs = {}
-      local function _24_(msg)
+      local function _23_(msg)
         table.insert(msgs, msg)
         if msg["done?"] then
           return cb(msgs)
@@ -153,11 +150,11 @@ local function start(opts)
           return nil
         end
       end
-      _22_ = _24_
+      _21_ = _23_
     else
-      _22_ = cb
+      _21_ = cb
     end
-    table.insert(repl.queue, {code = code, cb = _22_})
+    table.insert(repl.queue, {code = code, cb = _21_})
     next_in_queue()
     return nil
   end
@@ -165,23 +162,23 @@ local function start(opts)
     uv.process_kill(repl.handle, signal)
     return nil
   end
-  local _let_27_ = parse_cmd(opts.cmd)
-  local cmd = _let_27_["cmd"]
-  local args = _let_27_["args"]
+  local _let_26_ = parse_cmd(opts.cmd)
+  local cmd = _let_26_["cmd"]
+  local args = _let_26_["args"]
   local handle, pid_or_err = uv.spawn(cmd, {stdio = {stdin, stdout, stderr}, args = args, env = extend_env(a["merge!"]({INPUTRC = "/dev/null", TERM = "dumb"}, opts.env))}, client["schedule-wrap"](on_exit))
   if handle then
     stdout:read_start(client["schedule-wrap"](on_stdout))
     stderr:read_start(client["schedule-wrap"](on_stderr))
-    local function _28_()
+    local function _27_()
       return opts["on-success"]()
     end
-    client.schedule(_28_)
+    client.schedule(_27_)
     return a["merge!"](repl, {handle = handle, pid = pid_or_err, send = send, opts = opts, ["send-signal"] = send_signal, destroy = destroy})
   else
-    local function _29_()
+    local function _28_()
       return opts["on-error"](pid_or_err)
     end
-    client.schedule(_29_)
+    client.schedule(_28_)
     return destroy()
   end
 end

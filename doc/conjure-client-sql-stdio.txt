@@ -51,7 +51,13 @@ options relevant to these mappings.
 
 <localleader>cS          Stop any existing SQL REPL.
 
-<localleader>ei          Interrupt the current SQL REPL. May need restart.
+<localleader>ei          Interrupt the current SQL REPL.
+
+                         *NOTE:* This depends on the program you run for
+                         a REPL. On macos, when running a `\watch`
+                         meta-command in `psql`, this works to stop it. But
+                         during normal interaction, this will kill the REPL so
+                         you will need to restart it.
 
 ==============================================================================
 CONFIGURATION                      *conjure-client-sql-stdio-configuration*
@@ -76,8 +82,7 @@ All configuration can be set as described in |conjure-configuration|.
 
                                        *g:conjure#client#sql#stdio#command*
 `g:conjure#client#sql#stdio#command`
-            Command used to start the SQL REPL, you can modify this to add
-            arguments or change the command entirely.
+            Command used to start the SQL REPL, modify to meet your needs.
             Default: `"psql -U blogger postgres"`
 
                                 *g:conjure#client#sql#stdio#prompt_pattern*
