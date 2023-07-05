@@ -326,9 +326,13 @@ local function def_str(opts)
   return try_ensure_conn(_54_)
 end
 _2amodule_2a["def-str"] = def_str
+local function escape_backslashes(s)
+  return s:gsub("\\", "\\\\")
+end
+_2amodule_2a["escape-backslashes"] = escape_backslashes
 local function eval_file(opts)
   local function _59_()
-    return server.eval(a.assoc(opts, "code", ("(#?(:cljs cljs.core/load-file" .. " :default clojure.core/load-file)" .. " \"" .. opts["file-path"] .. "\")")), eval_cb_fn(opts))
+    return server.eval(a.assoc(opts, "code", ("(#?(:cljs cljs.core/load-file" .. " :default clojure.core/load-file)" .. " \"" .. escape_backslashes(opts["file-path"]) .. "\")")), eval_cb_fn(opts))
   end
   return try_ensure_conn(_59_)
 end
