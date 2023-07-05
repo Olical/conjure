@@ -96,7 +96,7 @@ To take advantage of lazy loading, a bit more involved configuration is required
 ----
 return {
     "Olical/conjure",
-    keys = { "<localleader>r" },
+    ft = { "clojure", "fennel", "python" }, -- etc
     -- [Optional] cmp-conjure for cmp
     dependencies = {
         {
@@ -121,8 +121,8 @@ return {
         require("conjure.mapping")["on-filetype"]()
     end,
     init = function()
-	-- Set configuration options here
-        vim.g["conjure#mapping#prefix"] = "<localleader>r"
+	       -- Set configuration options here
+        vim.g["conjure#debug"] = true
     end,
 }
 ----
