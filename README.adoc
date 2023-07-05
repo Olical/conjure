@@ -82,6 +82,52 @@ use 'Olical/conjure'
 Plug 'Olical/conjure'
 ----
 
+=== https://github.com/folke/lazy.nvim[lazy.nvim]
+
+[source,lua]
+----
+return { "Olical/conjure" }
+----
+
+To take advantage of lazy loading, a bit more involved configuration is required:
+[%collapsible]
+====
+[source,lua]
+----
+return {
+    "Olical/conjure",
+    keys = { "<localleader>r" },
+    -- [Optional] cmp-conjure for cmp
+    dependencies = {
+        {
+            "PaterJason/cmp-conjure",
+            config = function()
+                local cmp = require("cmp")
+                local config = cmp.get_config()
+                table.insert(config.sources, {
+                    name = "buffer",
+                    option = {
+                        sources = {
+                            { name = "conjure" },
+                        },
+                    },
+                })
+                cmp.setup(config)
+            end,
+        },
+    },
+    config = function(_, opts)
+        require("conjure.main").main()
+        require("conjure.mapping")["on-filetype"]()
+    end,
+    init = function()
+	-- Set configuration options here
+        vim.g["conjure#mapping#prefix"] = "<localleader>r"
+    end,
+}
+----
+====
+
 == Mods
 
 Modifications or mods are extra plugins that improve Conjure in various ways. They may add completion plugin support, entire language clients or new mappings that do fun and interesting things. You can learn about creating your own by reading the source code of the projects listed below as well as https://github.com/Olical/conjure/wiki/Using-Conjure-programatically-(API)["Using Conjure programatically (API)"] and https://github.com/Olical/conjure/wiki/Client-features["Client features"].
