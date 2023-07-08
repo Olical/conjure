@@ -60,7 +60,8 @@
               :hy :conjure.client.hy.stdio
               :julia :conjure.client.julia.stdio
               :racket :conjure.client.racket.stdio
-              :scheme :conjure.client.scheme.stdio
+              ;;:scheme :conjure.client.scheme.stdio
+              :scheme :conjure.client.snd-s7.stdio
               :lua :conjure.client.lua.neovim
               :lisp :conjure.client.common-lisp.swank
               :python :conjure.client.python.stdio
