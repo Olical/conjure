@@ -1,0 +1,81 @@
+
+                                                 *conjure-client-snd-s7-stdio*
+
+==============================================================================
+CONTENTS                                *conjure-client-snd-s7-stdio-contents*
+
+    1. Introduction ............ |conjure-client-snd-s7-stdio-introduction|
+    2. Mappings .................... |conjure-client-snd-s7-stdio-mappings|
+    3. Configuration .......... |conjure-client-snd-s7-stdio-configuration|
+
+==============================================================================
+INTRODUCTION                        *conjure-client-snd-s7-stdio-introduction*
+>
+  Snd is a sound editor created by Bill Schottstaedt <bil@ccrma.stanford.edu>
+  of the Center for Computer Research in Music and Acoustics (CCRMA). It can
+  be scripted or extended using the S7 Scheme interpreter built into it. In
+  this document, snd-s7 is used to refer to the program which is named snd.
+
+Conjure starts a snd-s7 REPL within Neovim when you first open a snd-s7
+(`.scm`) file. You can configure how the snd-s7 REPL is launched with the
+`g:conjure#client#snd-s7#stdio#command` configuration option.
+
+You should be able to evaluate files and forms as you would with other Conjure
+supported languages right away.
+
+Check out `:ConjureSchool` if you're unsure about what evaluation operations
+you can perform.
+
+ * https://ccrma.stanford.edu/software/snd/snd/snd.html
+ * https://ccrma.stanford.edu/software/snd/snd/s7.html
+ * https://ccrma.stanford.edu/
+
+==============================================================================
+MAPPINGS                                *conjure-client-snd-s7-stdio-mappings*
+
+These mappings are the defaults, you can change them as described in
+|conjure-mappings| and |conjure-configuration|.
+
+See |conjure-client-snd-s7-stdio-configuration| for specific configuration
+options relevant to these mappings.
+
+<localleader>cs          Start the snd-s7 REPL if it's not running already.
+
+<localleader>cS          Stop any existing snd-s7 REPL.
+
+<localleader>ei          Interrupt running command. Same as pressing Ctrl-C
+                         in a cmdline REPL. This may actually stop the REPL.
+
+==============================================================================
+CONFIGURATION                      *conjure-client-snd-s7-stdio-configuration*
+
+All configuration can be set as described in |conjure-configuration|.
+
+                                 *g:conjure#client#snd-s7#stdio#mapping#start*
+`g:conjure#client#snd-s7#stdio#mapping#start`
+            Start the snd-s7 REPL if it's not running already.
+            Default: `"cs"`
+
+                                  *g:conjure#client#snd-s7#stdio#mapping#stop*
+`g:conjure#client#snd-s7#stdio#mapping#stop`
+            Stop any existing snd-s7 REPL.
+            Default: `"cS"`
+
+                                       *g:conjure#client#snd-s7#stdio#command*
+`g:conjure#client#snd-s7#stdio#command`
+            Command used to start the snd-s7 REPL, you can modify this to add
+            arguments or change the command entirely.
+
+            When using a different REPL you'll probably have to change the
+            `prompt_pattern` too! Have a look at the default REPL output and
+            write a Lua pattern that will match that prompt string as best as
+            you can.
+
+            Default: `"snd"`
+
+                                *g:conjure#client#snd-s7#stdio#prompt_pattern*
+`g:conjure#client#snd-s7#stdio#prompt_pattern`
+            This is not used by this client module.
+            Default: `"> "`
+
+vim:tw=78:sw=2:ts=2:ft=help:norl:et:listchars=
