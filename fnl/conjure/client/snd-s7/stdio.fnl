@@ -4,10 +4,13 @@
 ;; Based on: fnl/conjure/client/scheme/stdio.fnl
 ;;           fnl/conjure/client/sql/stdio.fnl
 ;;
+;; Uses fnl/conjure/remote/stdio-rt.fnl; not fnl/conjure/remote/stdio.fnl.
+;;
 ;; The `snd` program should be runnable on the command line.
 ;;
 ;; NOTE: Conflicts with the Scheme client due to the same filetype suffix.
-;;       For testing the proof-of-concept, this client replaces the Scheme
+;;       To use this instead of the default Scheme client, set
+;;       `g:conjure#filetype#scheme` to `"conjure.client.snd-s7.stdio"`.
 ;;       client in fnl/conjure/config.fnl.
 ;;
 ;;------------------------------------------------------------
@@ -76,46 +79,7 @@
             (a.run! display-result msgs))
           )
         {:batch? false}))))
-
 ;;;;-------- End from client/sql/stdio.fnl ------------------
-
-;;;;-------- from client/scheme/stdio.fnl -------------------
-; (defn unbatch [msgs]
-;   {:out (->> msgs
-;           (a.map #(or (a.get $1 :out) (a.get $1 :err)))
-;           (str.join ""))})
-; 
-; (defn format-msg [msg]
-;   (->> (-> msg
-;            (a.get :out)
-;            (string.gsub "^%s*" "")
-;            (string.gsub "%s+%d+%s*$" "")
-;            (str.split "\n"))
-;        (a.map
-;          (fn [line]
-;            (if
-;              (not (cfg [:value_prefix_pattern]))
-;              line
-; 
-;              (string.match line (cfg [:value_prefix_pattern]))
-;              (string.gsub line (cfg [:value_prefix_pattern]) "")
-; 
-;              (.. comment-prefix "(out) " line))))
-;        (a.filter #(not (str.blank? $1)))))
-; 
-; 
-; (defn eval-str [opts]
-;   (with-repl-or-warn
-;     (fn [repl]
-;       (repl.send
-;         (.. opts.code "\n")
-;         (fn [msgs]
-;           (let [msgs (-> msgs unbatch format-msg)]
-;             (opts.on-result (a.last msgs))
-;             (log.append msgs)))
-;         {:batch? true}))))
-; 
-;;;;-------- End from client/scheme/stdio.fnl ---------------
 
 (defn eval-file [opts]
   (eval-str (a.assoc opts :code (.. "(load \"" opts.file-path "\")"))))

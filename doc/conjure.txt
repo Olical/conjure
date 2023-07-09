@@ -294,8 +294,10 @@ configuring these values from Lua it's just `true` and `false`.
 `g:conjure#filetype#scheme`
             Client to use for `scheme` buffers. You can use Guile over a
             socket file instead by setting this to
-            `"conjure.client.guile.socket"`.
-            Help: |conjure-client-scheme-stdio|, |conjure-client-guile-socket|
+            `"conjure.client.guile.socket"`. To edit scripts for the snd/s7
+            sound editor, set this to `"conjure.client.snd-s7.stdio"`.
+            Help: |conjure-client-scheme-stdio|,
+            |conjure-client-guile-socket|, or |conjure-client-snd-s7-stdio.
             Default: `"conjure.client.scheme.stdio"`
 
                                                    *g:conjure#filetype#racket*
@@ -912,6 +914,7 @@ your dotfiles.
  - |conjure-client-julia-stdio|
  - |conjure-client-lua-stdio|
  - |conjure-client-python-stdio|
+ - |conjure-client-snd-s7-stdio|
  - |conjure-client-sql-stdio|
  - |conjure-client-rust-evcxr|
  - |conjure-client-common-lisp-swank|
