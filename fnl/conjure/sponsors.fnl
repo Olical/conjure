@@ -15,7 +15,6 @@
 "edlandm"
 "emilaasa"
 "extradosages"
-"Fedreg"
 "frenchy64"
 "fuadsaud"
 "harrisoncramer"
