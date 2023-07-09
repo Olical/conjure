@@ -3,6 +3,7 @@
              str conjure.aniseed.string
              nvim conjure.aniseed.nvim
              stdio conjure.remote.stdio
+             afs conjure.aniseed.fs
              config conjure.config
              text conjure.text
              mapping conjure.mapping
@@ -65,7 +66,8 @@
 
 (defn eval-reload []
   (let [file-path (nvim.fn.expand "%")
-        module-path (nvim.fn.fnamemodify file-path ":.:r")]
+        relative-no-suf (nvim.fn.fnamemodify file-path ":.:r")
+        module-path (string.gsub relative-no-suf afs.path-sep ".")]
     (log.append [(.. comment-prefix ",reload " module-path)] {:break? true})
     (eval-str
       {:action :eval

@@ -11,8 +11,9 @@ do
   _2amodule_locals_2a = (_2amodule_2a)["aniseed/locals"]
 end
 local autoload = (require("conjure.aniseed.autoload")).autoload
-local a, client, config, log, mapping, nvim, stdio, str, text, ts, _ = autoload("conjure.aniseed.core"), autoload("conjure.client"), autoload("conjure.config"), autoload("conjure.log"), autoload("conjure.mapping"), autoload("conjure.aniseed.nvim"), autoload("conjure.remote.stdio"), autoload("conjure.aniseed.string"), autoload("conjure.text"), autoload("conjure.tree-sitter"), nil
+local a, afs, client, config, log, mapping, nvim, stdio, str, text, ts, _ = autoload("conjure.aniseed.core"), autoload("conjure.aniseed.fs"), autoload("conjure.client"), autoload("conjure.config"), autoload("conjure.log"), autoload("conjure.mapping"), autoload("conjure.aniseed.nvim"), autoload("conjure.remote.stdio"), autoload("conjure.aniseed.string"), autoload("conjure.text"), autoload("conjure.tree-sitter"), nil
 _2amodule_locals_2a["a"] = a
+_2amodule_locals_2a["afs"] = afs
 _2amodule_locals_2a["client"] = client
 _2amodule_locals_2a["config"] = config
 _2amodule_locals_2a["log"] = log
@@ -89,7 +90,8 @@ end
 _2amodule_2a["eval-file"] = eval_file
 local function eval_reload()
   local file_path = nvim.fn.expand("%")
-  local module_path = nvim.fn.fnamemodify(file_path, ":.:r")
+  local relative_no_suf = nvim.fn.fnamemodify(file_path, ":.:r")
+  local module_path = string.gsub(relative_no_suf, afs["path-sep"], ".")
   log.append({(comment_prefix .. ",reload " .. module_path)}, {["break?"] = true})
   return eval_str({action = "eval", origin = "reload", ["file-path"] = file_path, code = (",reload " .. module_path)})
 end
