@@ -80,6 +80,7 @@ local function escape_string(_in)
 end
 _2amodule_locals_2a["escape-string"] = escape_string
 local function send(msg, context, cb)
+  log.dbg(("swank.send called with msg: " .. a["pr-str"](msg) .. ", context: " .. a["pr-str"](context)))
   local function _6_(conn)
     local eval_id = a.get(a.update(state(), "eval-id", a.inc), "eval-id")
     return remote.send(conn, str.join({"(:emacs-rex (swank:eval-and-grab-output \"", escape_string(msg), "\") \"", (context or ":common-lisp-user"), "\" t ", eval_id, ")"}), cb)
@@ -88,6 +89,7 @@ local function send(msg, context, cb)
 end
 _2amodule_locals_2a["send"] = send
 local function connect(opts)
+  log.dbg(("connect called with: " .. a["pr-str"](opts)))
   local opts0 = (opts or {})
   local host = (opts0.host or config["get-in"]({"client", "common_lisp", "swank", "connection", "default_host"}))
   local port = (opts0.port or config["get-in"]({"client", "common_lisp", "swank", "connection", "default_port"}))
@@ -234,6 +236,7 @@ local function parse_result(received)
 end
 _2amodule_2a["parse-result"] = parse_result
 local function eval_str(opts)
+  log.dbg(("eval-str() called with: " .. a["pr-str"](opts)))
   try_ensure_conn()
   if not a["empty?"](opts.code) then
     local _27_
@@ -294,4 +297,26 @@ local function on_exit()
   return disconnect()
 end
 _2amodule_2a["on-exit"] = on_exit
+local function completions(opts)
+  try_ensure_conn()
+  local code = ("(swank:simple-completions " .. a["pr-str"](opts.prefix) .. " " .. a["pr-str"](opts.context) .. ")")
+  local format_for_cmpl
+  local function _36_(rs)
+    local cmpls = parse_separated_list(rs)
+    local last = table.remove(cmpls)
+    table.insert(cmpls, 1, last)
+    return cmpls
+  end
+  format_for_cmpl = _36_
+  local result_fn
+  local function _37_(results)
+    local cmpl_list = format_for_cmpl(results)
+    return opts.cb(cmpl_list)
+  end
+  result_fn = _37_
+  a.assoc(opts, "code", code)
+  a.assoc(opts, "on-result", result_fn)
+  return eval_str(opts)
+end
+_2amodule_2a["completions"] = completions
 return _2amodule_2a

@@ -1,5 +1,7 @@
-;;;; Common Lisp Conjure Sandbox 
+;;;; Common Lisp Sandbox
 
+;;  Even when commented out, the defpackage form is searched for the package
+;;  name for this buffer by the Conjure Common Lisp client.
 (defpackage :sandbox
   (:use :cl))
 
@@ -16,8 +18,6 @@
   and adds the second two"
   (princ a)
   (+ b c))
-
-
 
 ;; Then we can call it: (press K for documentation
 (some-function 1 2 3)
@@ -54,4 +54,7 @@
 (defun next-prime (number)
   (loop for n from number when (primep n) return n))
 
-;; (then go back and run line 35 again
+;; Now, evaluating the do-primes form works.
+(do-primes (p -1 10)
+           (format t "~d " p))
+

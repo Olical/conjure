@@ -71,6 +71,7 @@
       (replace "\"" "\\\"")))
 
 (defn- send [msg context cb]
+  (log.dbg (.. "swank.send called with msg: " (a.pr-str msg) ", context: " (a.pr-str context)))
   (with-conn-or-warn
     (fn [conn]
       (let [eval-id (a.get (a.update (state) :eval-id a.inc) :eval-id)]
@@ -86,6 +87,7 @@
           cb)))))
 
 (defn connect [opts]
+  (log.dbg (.. "connect called with: " (a.pr-str opts)))
   (let [opts (or opts {})
         host (or opts.host (config.get-in [:client :common_lisp :swank :connection :default_host]))
         port (or opts.port (config.get-in [:client :common_lisp :swank :connection :default_port]))]
@@ -234,6 +236,7 @@
     (unpack (parse-separated-list (inner-results received)))))
 
 (defn eval-str [opts]
+  (log.dbg (.. "eval-str() called with: " (a.pr-str opts)))
   (try-ensure-conn)
 
   (when (not (a.empty? opts.code))
@@ -241,14 +244,14 @@
       opts.code
       (when (not (a.empty? opts.context))
         opts.context)
-      (fn [msg]
+      (fn [msg] ;; handle results from Swank server
         (let [(stdout result) (parse-result msg)]
           (display-stdout stdout)
           (when (not= nil result)
             (when opts.on-result
               (opts.on-result result))
 
-            (when (not opts.passive?)
+            (when (not opts.passive?) ;; log results when not true
               (log.append (text.split-lines result)))))))))
 
 (defn doc-str [opts]
@@ -278,3 +281,27 @@
 
 (defn on-exit []
   (disconnect))
+
+;; completions - partially copied from client/fennel/aniseed.fnl.
+(defn completions [opts]
+  ;(when (not= nil opts)
+  ;  (log.append [(.. "; completions() called with: " (a.pr-str opts))] {:break? true}))
+  (try-ensure-conn)
+  (let [code (.. "(swank:simple-completions " (a.pr-str opts.prefix) " " (a.pr-str opts.context) ")")
+        format-for-cmpl
+        (fn [rs]
+          (let [cmpls (parse-separated-list rs)
+                last (table.remove cmpls)]
+            (table.insert cmpls 1 last)
+            cmpls))
+        result-fn
+        (fn [results]
+          (let [cmpl-list (format-for-cmpl results)]
+            ;(log.append [(.. "; in completions()'s result-fn, called with: " (a.pr-str results))] )
+            ;(log.append [(..  "; in completions()'s result-fn, calling opts.cb with " (a.pr-str cmpl-list))])
+            (opts.cb cmpl-list) ; return the list of completions
+            ))
+        ]
+    (a.assoc opts :code code)
+    (a.assoc opts :on-result result-fn)
+    (eval-str opts)))
