@@ -316,6 +316,7 @@ local function completions(opts)
   result_fn = _37_
   a.assoc(opts, "code", code)
   a.assoc(opts, "on-result", result_fn)
+  a.assoc(opts, "passive?", true)
   return eval_str(opts)
 end
 _2amodule_2a["completions"] = completions

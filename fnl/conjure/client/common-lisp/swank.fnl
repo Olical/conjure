@@ -304,4 +304,5 @@
         ]
     (a.assoc opts :code code)
     (a.assoc opts :on-result result-fn)
+    (a.assoc opts :passive? true)
     (eval-str opts)))
