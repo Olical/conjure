@@ -92,9 +92,10 @@
       (with-last-result-hook opts))))
 
 (defn- assoc-context [opts]
-  (set opts.context
-       (or nvim.b.conjure#context
-           (extract.context)))
+  (when (not opts.context)
+    (set opts.context
+        (or nvim.b.conjure#context
+            (extract.context))))
   opts)
 
 (defn- client-exec-fn [action f-name base-opts]
