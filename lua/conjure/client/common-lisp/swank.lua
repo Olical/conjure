@@ -170,7 +170,7 @@ local function parse_separated_list(string_to_parse)
     if opened_quote then
       if not escaped then
         opened_quote = false
-        table.insert(vals, string.char(unpack(stack)))
+        table.insert(vals, str.join(a.map(string.char, stack)))
         stack = {}
       else
       end

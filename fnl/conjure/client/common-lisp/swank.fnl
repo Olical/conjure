@@ -184,8 +184,7 @@
           (set opened-quote false)
           (table.insert
             vals
-            (string.char
-              (unpack stack)))
+            (str.join (a.map string.char stack)))
           (set stack []))
         (when escaped
           ;; if we've escaped this quote, put it in.
