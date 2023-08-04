@@ -228,7 +228,7 @@
   (nvim.ex.autocmd
     :VimLeavePre :*
     (bridge.viml->lua :conjure.log :clear-close-hud-passive-timer {}))
-  (nvim.ex.autocmd :ExitPre :* (viml->fn on-exit))
+  (nvim.ex.autocmd :VimLeavePre :* (viml->fn on-exit))
   (nvim.ex.autocmd :QuitPre :* (viml->fn on-quit))
   (nvim.ex.augroup :END))
 
