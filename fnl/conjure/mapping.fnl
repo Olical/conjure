@@ -175,6 +175,11 @@
     {:desc "Evaluate buffer"})
 
   (buf
+    :EvalPrevious (cfg :eval_previous)
+    (util.wrap-require-fn-call :conjure.eval :previous)
+    {:desc "Evaluate previous evaluation"})
+
+  (buf
     :EvalVisual (cfg :eval_visual)
     (util.wrap-require-fn-call :conjure.eval :selection)
     {:desc "Evaluate visual select"

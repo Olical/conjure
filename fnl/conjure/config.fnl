@@ -105,6 +105,7 @@
     :eval_buf "eb"
     :eval_visual "E"
     :eval_motion "E"
+    :eval_previous "ep"
     :def_word "gd"
     :doc_word ["K"]
 

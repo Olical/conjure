@@ -478,6 +478,11 @@ configuring these values from Lua it's just `true` and `false`.
             Evaluates the word under the cursor.
             Default: `"ew"`
 
+                                             *g:conjure#mapping#eval_previous*
+`g:conjure#mapping#eval_previous`
+            Evaluates the previous evaluation again.
+            Default: `"ep"`
+
                                          *g:conjure#mapping#eval_comment_word*
 `g:conjure#mapping#eval_comment_word`
             Evaluates the word under the cursor and inserts the result as a

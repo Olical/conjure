@@ -160,6 +160,12 @@
      (with-last-result-hook opts)))
   nil)
 
+(defn previous []
+  (let [client-name (a.get (client.current-client-module-name) :module-name :unknown)
+        opts (a.get previous-evaluations client-name)]
+    (when opts
+      (eval-str opts))))
+
 (defn wrap-emit [name f]
   (fn [...]
     (event.emit name)
