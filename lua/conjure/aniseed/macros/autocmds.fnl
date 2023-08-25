@@ -19,7 +19,8 @@
   (table.insert cmds 'nil)
   `(let [,group
          (vim.api.nvim_create_augroup ,name {:clear true})]
-     ,cmds))
+     ,cmds
+     ,group))
 
 {:autocmd autocmd
  :autocmds autocmds
