@@ -80,10 +80,20 @@
           ;; So it's as if we set the options to [] which is _not_ good.
           :associative 1
 
-          :level (or (config.get-in [:client :clojure :nrepl :eval :print_options :level])
-                     nil)
-          :length (or (config.get-in [:client :clojure :nrepl :eval :print_options :length])
-                      nil)}
+          :level
+          (or
+            (config.get-in [:client :clojure :nrepl :eval :print_options :level])
+            nil)
+
+          :length
+          (or
+            (config.get-in [:client :clojure :nrepl :eval :print_options :length])
+            nil)
+
+          :right-margin
+          (or
+            (config.get-in [:client :clojure :nrepl :eval :print_options :right_margin])
+            nil)}
 
          :nrepl.middleware.print/quota
          (config.get-in [:client :clojure :nrepl :eval :print_quota])

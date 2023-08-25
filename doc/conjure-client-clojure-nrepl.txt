@@ -258,6 +258,11 @@ All configuration can be set as described in |conjure-configuration|.
             to `false` to disable this limit.
             Default: `500`
 
+                    *g:conjure#client#clojure#nrepl#eval#print_options#right_margin*
+`g:conjure#client#clojure#nrepl#eval#print_options#right_margin`
+            Pretty printing will try to avoid anything going beyond this column.
+            Default: `72`
+
                        *g:conjure#client#clojure#nrepl#interrupt#sample_limit*
 `g:conjure#client#clojure#nrepl#interrupt#sample_limit`
             How many characters to show of the code you just interrupted as a

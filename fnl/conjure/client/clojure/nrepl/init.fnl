@@ -62,7 +62,9 @@
        :auto_require true
        :print_quota nil
        :print_function :conjure.internal/pprint
-       :print_options {:length 500 :level 50}}
+       :print_options {:length 500
+                       :level 50
+                       :right_margin 72}}
 
       :interrupt
       {:sample_limit 0.3}
