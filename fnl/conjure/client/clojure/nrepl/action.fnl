@@ -394,7 +394,7 @@
                     (server.assume-session (a.get sessions n))
                     (log.append ["; Invalid session number."])))))))))))
 
-(def- test-runners
+(def test-runners
   {:clojure
    {:namespace "clojure.test"
     :all-fn "run-all-tests"
