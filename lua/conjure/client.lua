@@ -150,7 +150,7 @@ local function current_client_module_name()
   end
   return result
 end
-_2amodule_locals_2a["current-client-module-name"] = current_client_module_name
+_2amodule_2a["current-client-module-name"] = current_client_module_name
 local function current()
   local _let_21_ = current_client_module_name()
   local module_name = _let_21_["module-name"]

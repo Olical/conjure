@@ -149,7 +149,10 @@ local function apply_gsubs(code)
   end
 end
 _2amodule_locals_2a["apply-gsubs"] = apply_gsubs
+local previous_evaluations = ((_2amodule_2a)["previous-evaluations"] or {})
+do end (_2amodule_2a)["previous-evaluations"] = previous_evaluations
 local function eval_str(opts)
+  a.assoc(previous_evaluations, a.get(client["current-client-module-name"](), "module-name", "unknown"), opts)
   highlight_range(opts.range)
   event.emit("eval", "str")
   a.update(opts, "code", apply_gsubs)

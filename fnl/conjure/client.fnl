@@ -77,7 +77,7 @@
 (defn schedule [f ...]
   (vim.schedule (wrap f ...)))
 
-(defn- current-client-module-name []
+(defn current-client-module-name []
   (var result {:filetype (filetype)
                :extension (extension)
                :module-name nil})
