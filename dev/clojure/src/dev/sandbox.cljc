@@ -23,6 +23,8 @@
 (def some-state (atom 20))
 @some-state
 
+{:hello "world", :some "other", :stuff "that's", :pretty "printed", :more "stuff", :woo true}
+
 ^{:some-meta true}
 {:a 1} ;; <-- no result when I set cursor here and call :ConjureEvalCurrentForm
 
@@ -112,11 +114,11 @@
   (tap> :foo)
 
   (run!
-    (fn [_]
-      (print "=")
-      (flush)
-      (Thread/sleep 50))
-    (range 50))
+   (fn [_]
+     (print "=")
+     (flush)
+     (Thread/sleep 50))
+   (range 50))
 
   (read)
   (read-line)
@@ -141,10 +143,10 @@
 (defrecord Address [street city state zip])
 
 (def stu (Person. "Stu" "Halloway"
-           (Address. "200 N Mangum"
-                      "Durham"
-                      "NC"
-                      27701)))
+                  (Address. "200 N Mangum"
+                            "Durham"
+                            "NC"
+                            27701)))
 
 (comment
   (clojure.pprint/pprint stu)
