@@ -571,6 +571,13 @@ configuring these values from Lua it's just `true` and `false`.
             A float between 0.0 and 1.0.
             Default: `0.3`
 
+                                                    *g:conjure#log#hud#zindex*
+`g:conjure#log#hud#zindex`
+            The zindex of the HUD window, you may need to tweak this to get
+            the HUD to play nicely with other plugins that create floating
+            windows. The zindex must be a positive integer.
+            Default: `1`
+
                                                    *g:conjure#log#hud#enabled*
 `g:conjure#log#hud#enabled`
             Should the HUD be displayed at all.

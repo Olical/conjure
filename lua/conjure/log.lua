@@ -215,7 +215,7 @@ local function _22_(opts)
   local size = {width = editor["percent-width"](config["get-in"]({"log", "hud", "width"})), height = editor["percent-height"](config["get-in"]({"log", "hud", "height"}))}
   local pos = hud_window_pos(config["get-in"]({"log", "hud", "anchor"}), size)
   local border = config["get-in"]({"log", "hud", "border"})
-  local win_opts = a.merge({relative = "editor", row = pos.row, col = pos.col, anchor = pos.anchor, width = size.width, height = size.height, style = "minimal", zindex = 10, border = border, focusable = false})
+  local win_opts = a.merge({relative = "editor", row = pos.row, col = pos.col, anchor = pos.anchor, width = size.width, height = size.height, style = "minimal", zindex = config["get-in"]({"log", "hud", "zindex"}), border = border, focusable = false})
   if (state.hud.id and not nvim.win_is_valid(state.hud.id)) then
     close_hud()
   else

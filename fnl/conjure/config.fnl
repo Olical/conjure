@@ -124,6 +124,7 @@
    {:wrap false
     :hud {:width 0.42
           :height 0.3
+          :zindex 1
           :enabled true
           :passive_close_delay 0
           :minimum_lifetime_ms 20

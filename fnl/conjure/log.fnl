@@ -204,7 +204,7 @@
              :height size.height
              :focusable false
              :style :minimal
-             :zindex 10
+             :zindex (config.get-in [:log :hud :zindex])
              :border border})]
 
       (when (and state.hud.id (not (nvim.win_is_valid state.hud.id)))
