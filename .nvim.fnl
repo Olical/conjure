@@ -6,6 +6,8 @@
 
 ; (set vim.g.conjure#client#scheme#stdio#command "csi -quiet -:c")
 ; (set vim.g.conjure#client#scheme#stdio#prompt_pattern "\n-#;%d-> ")
+; (set vim.g.conjure#mapping#enable_defaults false)
+
 
 (set package.path (.. package.path ";test/lua/?.lua"))
 ; (set vim.g.conjure#eval#gsubs {:do-comment ["^%(comment[%s%c]" "(do "]})

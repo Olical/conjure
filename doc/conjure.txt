@@ -237,13 +237,22 @@ Conjure sets up filetype-specific mappings for each of the filetypes listed in
 `g:conjure#filetypes`. These mappings are determined by the client filetype
 and set when that filetype is loaded.
 
-You can disable all of the filetype-specific default mappings by setting
-`g:conjure#mapping#enable_ft_mappings` to `v:false` like so.
+You can disable all of the filetype code by setting
+`g:conjure#mapping#enable_ft_mappings` to `v:false` like so (the name is a
+little misleading, it will prevent Conjure from doing ANY filetype autocommand
+specific work, including setting up mappings).
 
     `:let g:conjure#mapping#enable_ft_mappings  = v:false`
 
 Tip: Booleans in Vim Script are written as `v:true` and `v:false`. If you're
 configuring these values from Lua it's just `true` and `false`.
+
+If you want to set all of the default mappings to `false` so you can just
+configure the ones you care about one at a time you can set:
+>
+    :let g:conjure#mapping#enable_defaults = v:false
+    vim.g["conjure#mapping#enable_defaults"] = false
+<
 
                                                          *g:conjure#filetypes*
 `g:conjure#filetypes`
@@ -403,6 +412,27 @@ configuring these values from Lua it's just `true` and `false`.
 `g:conjure#mapping#prefix`
             The key that proceeds most mappings.
             Default: `"<localleader>"`
+
+                                         *g:conjure#mapping#enable_ft_mappings*
+`g:conjure#mapping#enable_ft_mappings`
+            Toggles the `on-filetype` callback that is fired for the
+            `Filetype` autocommand fired for each supported language. By
+            disabling this you opt out of ALL Conjure mapping code and must
+            manually configure your mappings, the mapping configuration options listed
+            here will no longer work because they're entirely disabled.
+            Default: `true`
+
+                                            *g:conjure#mapping#enable_defaults*
+`g:conjure#mapping#enable_defaults`
+            Setting this to `false` will prevent all of the
+            `g:conjure#mapping#*` defaults from being configured, which means you
+            need to set the mappings you care about, Conjure will then hook
+            them up with it's mapping code but using your keys. This is a good
+            way to disable Conjure's mappings and opt into the ones you care
+            about gradually. This must be set BEFORE you first load a buffer
+            for a language you're working with because the configuration is
+            read at `Filetype` autocommand time.
+            Default: `true`
 
                                                  *g:conjure#mapping#log_split*
 `g:conjure#mapping#log_split`
