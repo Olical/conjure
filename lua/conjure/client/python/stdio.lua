@@ -25,14 +25,18 @@ _2amodule_locals_2a["str"] = str
 _2amodule_locals_2a["text"] = text
 _2amodule_locals_2a["ts"] = ts
 _2amodule_locals_2a["_"] = _
-config.merge({client = {python = {stdio = {mapping = {start = "cs", stop = "cS", interrupt = "ei"}, command = "python3 -iq", ["prompt-pattern"] = ">>> ", ["delay-stderr-ms"] = 10}}}})
+config.merge({client = {python = {stdio = {command = "python3 -iq", ["prompt-pattern"] = ">>> ", ["delay-stderr-ms"] = 10}}}})
+if config["get-in"]({"mapping", "enable_defaults"}) then
+  config.merge({client = {python = {stdio = {mapping = {start = "cs", stop = "cS", interrupt = "ei"}}}}})
+else
+end
 local cfg = config["get-in-fn"]({"client", "python", "stdio"})
 do end (_2amodule_locals_2a)["cfg"] = cfg
 local state
-local function _1_()
+local function _2_()
   return {repl = nil}
 end
-state = ((_2amodule_2a).state or client["new-state"](_1_))
+state = ((_2amodule_2a).state or client["new-state"](_2_))
 do end (_2amodule_locals_2a)["state"] = state
 local buf_suffix = ".py"
 _2amodule_2a["buf-suffix"] = buf_suffix
@@ -52,11 +56,11 @@ local function with_repl_or_warn(f, opts)
 end
 _2amodule_locals_2a["with-repl-or-warn"] = with_repl_or_warn
 local function is_assignment_3f(node)
-  local function _3_()
+  local function _4_()
     local child = node:child(0)
     return (child:type() == "assignment")
   end
-  return ((node:child_count() == 1) and _3_())
+  return ((node:child_count() == 1) and _4_())
 end
 _2amodule_2a["is-assignment?"] = is_assignment_3f
 local function is_expression_3f(node)
@@ -89,20 +93,20 @@ local function is_dots_3f(s)
 end
 _2amodule_locals_2a["is-dots?"] = is_dots_3f
 local function format_msg(msg)
-  local function _5_(_241)
+  local function _6_(_241)
     return not is_dots_3f(_241)
   end
-  local function _6_(_241)
+  local function _7_(_241)
     return ("" ~= _241)
   end
-  return a.filter(_5_, a.filter(_6_, text["split-lines"](msg)))
+  return a.filter(_6_, a.filter(_7_, text["split-lines"](msg)))
 end
 _2amodule_2a["format-msg"] = format_msg
 local function get_console_output_msgs(msgs)
-  local function _7_(_241)
+  local function _8_(_241)
     return (comment_prefix .. "(out) " .. _241)
   end
-  return a.map(_7_, a.butlast(msgs))
+  return a.map(_8_, a.butlast(msgs))
 end
 _2amodule_locals_2a["get-console-output-msgs"] = get_console_output_msgs
 local function get_expression_result(msgs)
@@ -115,10 +119,10 @@ local function get_expression_result(msgs)
 end
 _2amodule_locals_2a["get-expression-result"] = get_expression_result
 local function unbatch(msgs)
-  local function _9_(_241)
+  local function _10_(_241)
     return (a.get(_241, "out") or a.get(_241, "err"))
   end
-  return str.join("", a.map(_9_, msgs))
+  return str.join("", a.map(_10_, msgs))
 end
 _2amodule_2a["unbatch"] = unbatch
 local function log_repl_output(msgs)
@@ -137,8 +141,8 @@ local function log_repl_output(msgs)
 end
 _2amodule_locals_2a["log-repl-output"] = log_repl_output
 local function eval_str(opts)
-  local function _12_(repl)
-    local function _13_(msgs)
+  local function _13_(repl)
+    local function _14_(msgs)
       log_repl_output(msgs)
       if opts["on-result"] then
         local msgs0 = format_msg(unbatch(msgs))
@@ -148,9 +152,9 @@ local function eval_str(opts)
         return nil
       end
     end
-    return repl.send(prep_code(opts.code), _13_, {["batch?"] = true})
+    return repl.send(prep_code(opts.code), _14_, {["batch?"] = true})
   end
-  return with_repl_or_warn(_12_)
+  return with_repl_or_warn(_13_)
 end
 _2amodule_2a["eval-str"] = eval_str
 local function eval_file(opts)
@@ -195,29 +199,29 @@ local function start()
   if state("repl") then
     return log.append({(comment_prefix .. "Can't start, REPL is already running."), (comment_prefix .. "Stop the REPL with " .. config["get-in"]({"mapping", "prefix"}) .. cfg({"mapping", "stop"}))}, {["break?"] = true})
   else
-    local function _18_()
+    local function _19_()
       if vim.treesitter.language.require_language then
         return vim.treesitter.language.require_language("python")
       else
         return vim.treesitter.require_language("python")
       end
     end
-    if not pcall(_18_) then
+    if not pcall(_19_) then
       return log.append({(comment_prefix .. "(error) The python client requires a python treesitter parser in order to function."), (comment_prefix .. "(error) See https://github.com/nvim-treesitter/nvim-treesitter"), (comment_prefix .. "(error) for installation instructions.")})
     else
-      local function _20_()
-        local function _21_(repl)
-          local function _22_(msgs)
+      local function _21_()
+        local function _22_(repl)
+          local function _23_(msgs)
             return nil
           end
-          return repl.send(prep_code(update_python_displayhook), _22_, nil)
+          return repl.send(prep_code(update_python_displayhook), _23_, nil)
         end
-        return display_repl_status("started", with_repl_or_warn(_21_))
+        return display_repl_status("started", with_repl_or_warn(_22_))
       end
-      local function _23_(err)
+      local function _24_(err)
         return display_repl_status(err)
       end
-      local function _24_(code, signal)
+      local function _25_(code, signal)
         if (("number" == type(code)) and (code > 0)) then
           log.append({(comment_prefix .. "process exited with code " .. code)})
         else
@@ -228,10 +232,10 @@ local function start()
         end
         return stop()
       end
-      local function _27_(msg)
+      local function _28_(msg)
         return log.dbg(format_msg(unbatch({msg})), {["join-first?"] = true})
       end
-      return a.assoc(state(), "repl", stdio.start({["prompt-pattern"] = cfg({"prompt-pattern"}), cmd = cfg({"command"}), ["delay-stderr-ms"] = cfg({"delay-stderr-ms"}), ["on-success"] = _20_, ["on-error"] = _23_, ["on-exit"] = _24_, ["on-stray-output"] = _27_}))
+      return a.assoc(state(), "repl", stdio.start({["prompt-pattern"] = cfg({"prompt-pattern"}), cmd = cfg({"command"}), ["delay-stderr-ms"] = cfg({"delay-stderr-ms"}), ["on-success"] = _21_, ["on-error"] = _24_, ["on-exit"] = _25_, ["on-stray-output"] = _28_}))
     end
   end
 end
@@ -249,11 +253,11 @@ local function on_exit()
 end
 _2amodule_2a["on-exit"] = on_exit
 local function interrupt()
-  local function _31_(repl)
+  local function _32_(repl)
     log.append({(comment_prefix .. " Sending interrupt signal.")}, {["break?"] = true})
     return repl["send-signal"](vim.loop.constants.SIGINT)
   end
-  return with_repl_or_warn(_31_)
+  return with_repl_or_warn(_32_)
 end
 _2amodule_2a["interrupt"] = interrupt
 local function on_filetype()

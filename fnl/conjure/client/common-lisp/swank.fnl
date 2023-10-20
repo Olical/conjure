@@ -27,9 +27,15 @@
    {:common_lisp
     {:swank
      {:connection {:default_host "127.0.0.1"
-                   :default_port "4005"}
-      :mapping {:connect "cc"
-                :disconnect "cd"}}}}})
+                   :default_port "4005"}}}}})
+
+(when (config.get-in [:mapping :enable_defaults])
+  (config.merge
+   {:client
+    {:common_lisp
+     {:swank
+      {:mapping {:connect "cc"
+                 :disconnect "cd"}}}}}))
 
 (defonce- state (client.new-state
                   #(do

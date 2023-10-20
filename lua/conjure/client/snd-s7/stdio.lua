@@ -22,14 +22,18 @@ _2amodule_locals_2a["stdio"] = stdio
 _2amodule_locals_2a["str"] = str
 _2amodule_locals_2a["ts"] = ts
 _2amodule_locals_2a["_"] = _
-config.merge({client = {["snd-s7"] = {stdio = {mapping = {start = "cs", stop = "cS", interrupt = "ei"}, command = "snd", prompt_pattern = "> "}}}})
+config.merge({client = {["snd-s7"] = {stdio = {command = "snd", prompt_pattern = "> "}}}})
+if config["get-in"]({"mapping", "enable_defaults"}) then
+  config.merge({client = {["snd-s7"] = {stdio = {mapping = {start = "cs", stop = "cS", interrupt = "ei"}}}}})
+else
+end
 local cfg = config["get-in-fn"]({"client", "snd-s7", "stdio"})
 do end (_2amodule_locals_2a)["cfg"] = cfg
 local state
-local function _1_()
+local function _2_()
   return {repl = nil}
 end
-state = ((_2amodule_2a).state or client["new-state"](_1_))
+state = ((_2amodule_2a).state or client["new-state"](_2_))
 do end (_2amodule_locals_2a)["state"] = state
 local buf_suffix = ".scm"
 _2amodule_2a["buf-suffix"] = buf_suffix
@@ -51,10 +55,10 @@ local function format_message(msg)
 end
 _2amodule_locals_2a["format-message"] = format_message
 local function remove_blank_lines(msg)
-  local function _3_(_241)
+  local function _4_(_241)
     return not ("" == _241)
   end
-  return a.filter(_3_, format_message(msg))
+  return a.filter(_4_, format_message(msg))
 end
 _2amodule_locals_2a["remove-blank-lines"] = remove_blank_lines
 local function display_result(msg)
@@ -70,8 +74,8 @@ local function __3elist(s)
 end
 _2amodule_2a["->list"] = __3elist
 local function eval_str(opts)
-  local function _5_(repl)
-    local function _6_(msgs)
+  local function _6_(repl)
+    local function _7_(msgs)
       local msgs0 = __3elist(msgs)
       if opts["on-result"] then
         opts["on-result"](str.join("\n", remove_blank_lines(a.last(msgs0))))
@@ -79,9 +83,9 @@ local function eval_str(opts)
       end
       return a["run!"](display_result, msgs0)
     end
-    return repl.send((opts.code .. "\n"), _6_, {["batch?"] = false})
+    return repl.send((opts.code .. "\n"), _7_, {["batch?"] = false})
   end
-  return with_repl_or_warn(_5_)
+  return with_repl_or_warn(_6_)
 end
 _2amodule_2a["eval-str"] = eval_str
 local function eval_file(opts)
@@ -89,11 +93,11 @@ local function eval_file(opts)
 end
 _2amodule_2a["eval-file"] = eval_file
 local function interrupt()
-  local function _8_(repl)
+  local function _9_(repl)
     log.append({(comment_prefix .. " Sending interrupt signal.")}, {["break?"] = true})
     return repl["send-signal"](vim.loop.constants.SIGINT)
   end
-  return with_repl_or_warn(_8_)
+  return with_repl_or_warn(_9_)
 end
 _2amodule_2a["interrupt"] = interrupt
 local function display_repl_status(status)
@@ -115,13 +119,13 @@ local function start()
   if state("repl") then
     return log.append({(comment_prefix .. "Can't start, REPL is already running."), (comment_prefix .. "Stop the REPL with " .. config["get-in"]({"mapping", "prefix"}) .. cfg({"mapping", "stop"}))}, {["break?"] = true})
   else
-    local function _10_()
+    local function _11_()
       return display_repl_status("started")
     end
-    local function _11_(err)
+    local function _12_(err)
       return display_repl_status(err)
     end
-    local function _12_(code, signal)
+    local function _13_(code, signal)
       if (("number" == type(code)) and (code > 0)) then
         log.append({(comment_prefix .. "process exited with code " .. code)})
       else
@@ -132,10 +136,10 @@ local function start()
       end
       return stop()
     end
-    local function _15_(msg)
+    local function _16_(msg)
       return log.append(__fnl_global__format_2dmsg(msg))
     end
-    return a.assoc(state(), "repl", stdio.start({["prompt-pattern"] = cfg({"prompt_pattern"}), cmd = cfg({"command"}), ["on-success"] = _10_, ["on-error"] = _11_, ["on-exit"] = _12_, ["on-stray-output"] = _15_}))
+    return a.assoc(state(), "repl", stdio.start({["prompt-pattern"] = cfg({"prompt_pattern"}), cmd = cfg({"command"}), ["on-success"] = _11_, ["on-error"] = _12_, ["on-exit"] = _13_, ["on-stray-output"] = _16_}))
   end
 end
 _2amodule_2a["start"] = start

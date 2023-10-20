@@ -24,14 +24,18 @@ _2amodule_locals_2a["str"] = str
 _2amodule_locals_2a["text"] = text
 _2amodule_locals_2a["ts"] = ts
 _2amodule_locals_2a["_"] = _
-config.merge({client = {guile = {socket = {mapping = {connect = "cc", disconnect = "cd"}, pipename = nil}}}})
+config.merge({client = {guile = {socket = {pipename = nil}}}})
+if config["get-in"]({"mapping", "enable_defaults"}) then
+  config.merge({client = {guile = {socket = {mapping = {connect = "cc", disconnect = "cd"}}}}})
+else
+end
 local cfg = config["get-in-fn"]({"client", "guile", "socket"})
 do end (_2amodule_locals_2a)["cfg"] = cfg
 local state
-local function _1_()
+local function _2_()
   return {repl = nil}
 end
-state = ((_2amodule_2a).state or client["new-state"](_1_))
+state = ((_2amodule_2a).state or client["new-state"](_2_))
 do end (_2amodule_locals_2a)["state"] = state
 local buf_suffix = ".scm"
 _2amodule_2a["buf-suffix"] = buf_suffix
@@ -61,10 +65,10 @@ local function format_message(msg)
 end
 _2amodule_locals_2a["format-message"] = format_message
 local function display_result(msg)
-  local function _4_(_241)
+  local function _5_(_241)
     return ("" ~= _241)
   end
-  return log.append(a.filter(_4_, format_message(msg)))
+  return log.append(a.filter(_5_, format_message(msg)))
 end
 _2amodule_locals_2a["display-result"] = display_result
 local function clean_input_code(code)
@@ -77,12 +81,12 @@ local function clean_input_code(code)
 end
 _2amodule_locals_2a["clean-input-code"] = clean_input_code
 local function eval_str(opts)
-  local function _6_(repl)
-    local _7_ = (",m " .. (opts.context or "(guile-user)") .. "\n" .. opts.code)
-    if (nil ~= _7_) then
-      local _8_ = clean_input_code(_7_)
-      if (nil ~= _8_) then
-        local function _9_(msgs)
+  local function _7_(repl)
+    local _8_ = (",m " .. (opts.context or "(guile-user)") .. "\n" .. opts.code)
+    if (nil ~= _8_) then
+      local _9_ = clean_input_code(_8_)
+      if (nil ~= _9_) then
+        local function _10_(msgs)
           if ((1 == a.count(msgs)) and ("" == a["get-in"](msgs, {1, "out"}))) then
             a["assoc-in"](msgs, {1, "out"}, (comment_prefix .. "Empty result"))
           else
@@ -90,15 +94,15 @@ local function eval_str(opts)
           opts["on-result"](str.join("\n", format_message(a.last(msgs))))
           return a["run!"](display_result, msgs)
         end
-        return repl.send(_8_, _9_, {["batch?"] = true})
+        return repl.send(_9_, _10_, {["batch?"] = true})
       else
-        return _8_
+        return _9_
       end
     else
-      return _7_
+      return _8_
     end
   end
-  return with_repl_or_warn(_6_)
+  return with_repl_or_warn(_7_)
 end
 _2amodule_2a["eval-str"] = eval_str
 local function eval_file(opts)
@@ -106,16 +110,16 @@ local function eval_file(opts)
 end
 _2amodule_2a["eval-file"] = eval_file
 local function doc_str(opts)
-  local function _13_(_241)
+  local function _14_(_241)
     return ("(procedure-documentation " .. _241 .. ")")
   end
-  return eval_str(a.update(opts, "code", _13_))
+  return eval_str(a.update(opts, "code", _14_))
 end
 _2amodule_2a["doc-str"] = doc_str
 local function display_repl_status()
   local repl = state("repl")
   if repl then
-    local function _14_()
+    local function _15_()
       local pipename = a["get-in"](repl, {"opts", "pipename"})
       if pipename then
         return (pipename .. " ")
@@ -123,7 +127,7 @@ local function display_repl_status()
         return ""
       end
     end
-    local function _16_()
+    local function _17_()
       local err = a.get(repl, "err")
       if err then
         return (" " .. err)
@@ -131,7 +135,7 @@ local function display_repl_status()
         return ""
       end
     end
-    return log.append({(comment_prefix .. _14_() .. "(" .. repl.status .. _16_() .. ")")}, {["break?"] = true})
+    return log.append({(comment_prefix .. _15_() .. "(" .. repl.status .. _17_() .. ")")}, {["break?"] = true})
   else
     return nil
   end
@@ -157,7 +161,7 @@ local function parse_guile_result(s)
     if s:find("scheme@%([%w%-%s]+%) %[%d+%]>") then
       return {["done?"] = true, ["error?"] = true, result = nil}
     else
-      return {result = s, ["error?"] = false, ["done?"] = false}
+      return {result = s, ["done?"] = false, ["error?"] = false}
     end
   end
 end
@@ -168,16 +172,16 @@ local function connect(opts)
   if ("string" ~= type(pipename)) then
     return log.append({(comment_prefix .. "g:conjure#client#guile#socket#pipename is not specified"), (comment_prefix .. "Please set it to the name of your Guile REPL pipe or pass it to :ConjureConnect [pipename]")})
   else
-    local function _22_()
+    local function _23_()
       return display_repl_status()
     end
-    local function _23_(msg, repl)
+    local function _24_(msg, repl)
       display_result(msg)
-      local function _24_()
+      local function _25_()
       end
-      return repl.send(",q\n", _24_)
+      return repl.send(",q\n", _25_)
     end
-    return a.assoc(state(), "repl", socket.start({["parse-output"] = parse_guile_result, pipename = pipename, ["on-success"] = _22_, ["on-error"] = _23_, ["on-failure"] = disconnect, ["on-close"] = disconnect, ["on-stray-output"] = display_result}))
+    return a.assoc(state(), "repl", socket.start({["parse-output"] = parse_guile_result, pipename = pipename, ["on-success"] = _23_, ["on-error"] = _24_, ["on-failure"] = disconnect, ["on-close"] = disconnect, ["on-stray-output"] = display_result}))
   end
 end
 _2amodule_2a["connect"] = connect
@@ -186,10 +190,10 @@ local function on_exit()
 end
 _2amodule_2a["on-exit"] = on_exit
 local function on_filetype()
-  local function _26_()
+  local function _27_()
     return connect()
   end
-  mapping.buf("GuileConnect", cfg({"mapping", "connect"}), _26_, {desc = "Connect to a REPL"})
+  mapping.buf("GuileConnect", cfg({"mapping", "connect"}), _27_, {desc = "Connect to a REPL"})
   return mapping.buf("GuileDisconnect", cfg({"mapping", "disconnect"}), disconnect, {desc = "Disconnect from the REPL"})
 end
 _2amodule_2a["on-filetype"] = on_filetype

@@ -24,14 +24,18 @@ _2amodule_locals_2a["str"] = str
 _2amodule_locals_2a["text"] = text
 _2amodule_locals_2a["ts"] = ts
 _2amodule_locals_2a["_"] = _
-config.merge({client = {fennel = {stdio = {mapping = {start = "cs", stop = "cS", eval_reload = "eF"}, command = "fennel", prompt_pattern = ">> "}}}})
+config.merge({client = {fennel = {stdio = {command = "fennel", prompt_pattern = ">> "}}}})
+if config["get-in"]({"mapping", "enable_defaults"}) then
+  config.merge({client = {fennel = {stdio = {mapping = {start = "cs", stop = "cS", eval_reload = "eF"}}}}})
+else
+end
 local cfg = config["get-in-fn"]({"client", "fennel", "stdio"})
 do end (_2amodule_locals_2a)["cfg"] = cfg
 local state
-local function _1_()
+local function _2_()
   return {repl = nil}
 end
-state = ((_2amodule_2a).state or client["new-state"](_1_))
+state = ((_2amodule_2a).state or client["new-state"](_2_))
 do end (_2amodule_locals_2a)["state"] = state
 local buf_suffix = ".fnl"
 _2amodule_2a["buf-suffix"] = buf_suffix
@@ -55,33 +59,33 @@ local function format_message(msg)
 end
 _2amodule_locals_2a["format-message"] = format_message
 local function display_result(msg)
-  local function _3_(_241)
+  local function _4_(_241)
     return not ("" == _241)
   end
-  return log.append(a.filter(_3_, format_message(msg)))
+  return log.append(a.filter(_4_, format_message(msg)))
 end
 _2amodule_locals_2a["display-result"] = display_result
 local function eval_str(opts)
-  local function _4_(repl)
-    local function _5_(msgs)
+  local function _5_(repl)
+    local function _6_(msgs)
       if ((1 == a.count(msgs)) and ("" == a["get-in"](msgs, {1, "out"}))) then
         a["assoc-in"](msgs, {1, "out"}, (comment_prefix .. "Empty result."))
       else
       end
       local msgs0
-      local function _7_(_241)
+      local function _8_(_241)
         return (".." ~= (_241).out)
       end
-      msgs0 = a.filter(_7_, msgs)
+      msgs0 = a.filter(_8_, msgs)
       if opts["on-result"] then
         opts["on-result"](str.join("\n", format_message(a.last(msgs0))))
       else
       end
       return a["run!"](display_result, msgs0)
     end
-    return repl.send((opts.code .. "\n"), _5_, {["batch?"] = true})
+    return repl.send((opts.code .. "\n"), _6_, {["batch?"] = true})
   end
-  return with_repl_or_warn(_4_)
+  return with_repl_or_warn(_5_)
 end
 _2amodule_2a["eval-str"] = eval_str
 local function eval_file(opts)
@@ -97,10 +101,10 @@ local function eval_reload()
 end
 _2amodule_2a["eval-reload"] = eval_reload
 local function doc_str(opts)
-  local function _9_(_241)
+  local function _10_(_241)
     return (",doc " .. _241 .. "\n")
   end
-  return eval_str(a.update(opts, "code", _9_))
+  return eval_str(a.update(opts, "code", _10_))
 end
 _2amodule_2a["doc-str"] = doc_str
 local function display_repl_status(status)
@@ -127,13 +131,13 @@ local function start()
   if state("repl") then
     return log.append({(comment_prefix .. "Can't start, REPL is already running."), (comment_prefix .. "Stop the REPL with " .. config["get-in"]({"mapping", "prefix"}) .. cfg({"mapping", "stop"}))}, {["break?"] = true})
   else
-    local function _12_()
+    local function _13_()
       return display_repl_status("started")
     end
-    local function _13_(err)
+    local function _14_(err)
       return display_repl_status(err)
     end
-    local function _14_(code, signal)
+    local function _15_(code, signal)
       if (("number" == type(code)) and (code > 0)) then
         log.append({(comment_prefix .. "process exited with code " .. code)})
       else
@@ -144,10 +148,10 @@ local function start()
       end
       return stop()
     end
-    local function _17_(msg)
+    local function _18_(msg)
       return display_result(msg)
     end
-    return a.assoc(state(), "repl", stdio.start({["prompt-pattern"] = cfg({"prompt_pattern"}), cmd = cfg({"command"}), ["on-success"] = _12_, ["on-error"] = _13_, ["on-exit"] = _14_, ["on-stray-output"] = _17_}))
+    return a.assoc(state(), "repl", stdio.start({["prompt-pattern"] = cfg({"prompt_pattern"}), cmd = cfg({"command"}), ["on-success"] = _13_, ["on-error"] = _14_, ["on-exit"] = _15_, ["on-stray-output"] = _18_}))
   end
 end
 _2amodule_2a["start"] = start

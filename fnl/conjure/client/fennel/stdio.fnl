@@ -16,11 +16,17 @@
   {:client
    {:fennel
     {:stdio
-     {:mapping {:start "cs"
-                :stop "cS"
-                :eval_reload "eF"}
-      :command "fennel"
+     {:command "fennel"
       :prompt_pattern ">> "}}}})
+
+(when (config.get-in [:mapping :enable_defaults])
+  (config.merge
+    {:client
+     {:fennel
+      {:stdio
+       {:mapping {:start "cs"
+                  :stop "cS"
+                  :eval_reload "eF"}}}}}))
 
 (def- cfg (config.get-in-fn [:client :fennel :stdio]))
 

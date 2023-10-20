@@ -29,9 +29,15 @@
   {:client
    {:lua
     {:neovim
-     {:mapping {:reset_env "rr"
-                :reset_all_envs "ra"}
-      :persistent :debug}}}}) ;persistent can be either :debug or nil
+     {:persistent :debug}}}}) ;persistent can be either :debug or nil
+
+(when (config.get-in [:mapping :enable_defaults])
+  (config.merge
+    {:client
+     {:lua
+      {:neovim
+       {:mapping {:reset_env "rr"
+                  :reset_all_envs "ra"}}}}}))
 
 (def- cfg (config.get-in-fn [:client :lua :neovim]))
 

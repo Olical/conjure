@@ -14,13 +14,19 @@
   {:client
    {:scheme
     {:stdio
-     {:mapping {:start "cs"
-                :stop "cS"
-                :interrupt "ei"}
-      :command "mit-scheme"
+     {:command "mit-scheme"
       ;; Match "]=> " or "error> "
       :prompt_pattern "[%]e][=r]r?o?r?> "
       :value_prefix_pattern "^;Value: "}}}})
+
+(when (config.get-in [:mapping :enable_defaults])
+  (config.merge
+    {:client
+     {:scheme
+      {:stdio
+       {:mapping {:start "cs"
+                  :stop "cS"
+                  :interrupt "ei"}}}}}))
 
 (def- cfg (config.get-in-fn [:client :scheme :stdio]))
 

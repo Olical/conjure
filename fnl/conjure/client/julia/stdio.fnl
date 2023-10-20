@@ -17,11 +17,17 @@
   {:client
    {:julia
     {:stdio
-     {:mapping {:start "cs"
-                :stop "cS"
-                :interrupt "ei"}
-      :command "julia --banner=no --color=no -i"
+     {:command "julia --banner=no --color=no -i"
       :prompt_pattern ""}}}})
+
+(when (config.get-in [:mapping :enable_defaults])
+  (config.merge
+    {:client
+     {:julia
+      {:stdio
+       {:mapping {:start "cs"
+                  :stop "cS"
+                  :interrupt "ei"}}}}}))
 
 (def- cfg (config.get-in-fn [:client :julia :stdio]))
 

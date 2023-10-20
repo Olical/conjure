@@ -16,9 +16,15 @@
   {:client
    {:guile
     {:socket
-     {:mapping {:connect "cc"
-                :disconnect "cd"}
-      :pipename nil}}}})
+     {:pipename nil}}}})
+
+(when (config.get-in [:mapping :enable_defaults])
+  (config.merge
+    {:client
+     {:guile
+      {:socket
+       {:mapping {:connect "cc"
+                  :disconnect "cd"}}}}}))
 
 (def- cfg (config.get-in-fn [:client :guile :socket]))
 

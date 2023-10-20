@@ -31,12 +31,16 @@ local comment_prefix = "; "
 _2amodule_2a["comment-prefix"] = comment_prefix
 local form_node_3f = ts["node-surrounded-by-form-pair-chars?"]
 _2amodule_2a["form-node?"] = form_node_3f
-config.merge({client = {common_lisp = {swank = {connection = {default_host = "127.0.0.1", default_port = "4005"}, mapping = {connect = "cc", disconnect = "cd"}}}}})
+config.merge({client = {common_lisp = {swank = {connection = {default_host = "127.0.0.1", default_port = "4005"}}}}})
+if config["get-in"]({"mapping", "enable_defaults"}) then
+  config.merge({client = {common_lisp = {swank = {mapping = {connect = "cc", disconnect = "cd"}}}}})
+else
+end
 local state
-local function _1_()
+local function _2_()
   return {conn = nil, ["eval-id"] = 0}
 end
-state = ((_2amodule_2a).state or client["new-state"](_1_))
+state = ((_2amodule_2a).state or client["new-state"](_2_))
 do end (_2amodule_locals_2a)["state"] = state
 local function with_conn_or_warn(f, opts)
   local conn = state("conn")
@@ -56,19 +60,19 @@ local function connected_3f()
 end
 _2amodule_locals_2a["connected?"] = connected_3f
 local function display_conn_status(status)
-  local function _4_(conn)
+  local function _5_(conn)
     return log.append({("; " .. conn.host .. ":" .. conn.port .. " (" .. status .. ")")}, {["break?"] = true})
   end
-  return with_conn_or_warn(_4_)
+  return with_conn_or_warn(_5_)
 end
 _2amodule_locals_2a["display-conn-status"] = display_conn_status
 local function disconnect()
-  local function _5_(conn)
+  local function _6_(conn)
     conn.destroy()
     display_conn_status("disconnected")
     return a.assoc(state(), "conn", nil)
   end
-  return with_conn_or_warn(_5_)
+  return with_conn_or_warn(_6_)
 end
 _2amodule_2a["disconnect"] = disconnect
 local function escape_string(_in)
@@ -81,11 +85,11 @@ end
 _2amodule_locals_2a["escape-string"] = escape_string
 local function send(msg, context, cb)
   log.dbg(("swank.send called with msg: " .. a["pr-str"](msg) .. ", context: " .. a["pr-str"](context)))
-  local function _6_(conn)
+  local function _7_(conn)
     local eval_id = a.get(a.update(state(), "eval-id", a.inc), "eval-id")
     return remote.send(conn, str.join({"(:emacs-rex (swank:eval-and-grab-output \"", escape_string(msg), "\") \"", (context or ":common-lisp-user"), "\" t ", eval_id, ")"}), cb)
   end
-  return with_conn_or_warn(_6_)
+  return with_conn_or_warn(_7_)
 end
 _2amodule_locals_2a["send"] = send
 local function connect(opts)
@@ -97,24 +101,24 @@ local function connect(opts)
     disconnect()
   else
   end
-  local function _8_(err)
+  local function _9_(err)
     display_conn_status(err)
     return disconnect()
   end
-  local function _9_()
+  local function _10_()
     return display_conn_status("connected")
   end
-  local function _10_(err)
+  local function _11_(err)
     if err then
       return display_conn_status(err)
     else
       return disconnect()
     end
   end
-  a.assoc(state(), "conn", remote.connect({host = host, port = port, ["on-failure"] = _8_, ["on-success"] = _9_, ["on-error"] = _10_}))
-  local function _12_(_)
+  a.assoc(state(), "conn", remote.connect({host = host, port = port, ["on-failure"] = _9_, ["on-success"] = _10_, ["on-error"] = _11_}))
+  local function _13_(_)
   end
-  return send(":ok", _12_)
+  return send(":ok", _13_)
 end
 _2amodule_2a["connect"] = connect
 local function try_ensure_conn()
@@ -127,12 +131,12 @@ end
 _2amodule_locals_2a["try-ensure-conn"] = try_ensure_conn
 local function string_stream(str0)
   local index = 1
-  local function _14_()
+  local function _15_()
     local r = str0:byte(index)
     index = (index + 1)
     return r
   end
-  return _14_
+  return _15_
 end
 _2amodule_locals_2a["string-stream"] = string_stream
 local function display_stdout(msg)
@@ -197,13 +201,13 @@ local function parse_separated_list(string_to_parse)
     end
   end
   local function dispatch(b)
-    local _22_ = b
-    if (_22_ == slash_byte) then
+    local _23_ = b
+    if (_23_ == slash_byte) then
       return slash_escape(b)
-    elseif (_22_ == quote_byte) then
+    elseif (_23_ == quote_byte) then
       return maybe_close(b)
     elseif true then
-      local _ = _22_
+      local _ = _23_
       return maybe_insert(b)
     else
       return nil
@@ -222,8 +226,8 @@ local function parse_result(received)
   if not result_3f(received) then
     local msg
     do
-      local _24_ = parse_separated_list(received)
-      msg = _24_
+      local _25_ = parse_separated_list(received)
+      msg = _25_
     end
     display_stdout(msg[1])
   else
@@ -239,13 +243,13 @@ local function eval_str(opts)
   log.dbg(("eval-str() called with: " .. a["pr-str"](opts)))
   try_ensure_conn()
   if not a["empty?"](opts.code) then
-    local _27_
+    local _28_
     if not a["empty?"](opts.context) then
-      _27_ = opts.context
+      _28_ = opts.context
     else
-      _27_ = nil
+      _28_ = nil
     end
-    local function _29_(msg)
+    local function _30_(msg)
       local stdout, result = parse_result(msg)
       display_stdout(stdout)
       if (nil ~= result) then
@@ -262,7 +266,7 @@ local function eval_str(opts)
         return nil
       end
     end
-    return send(opts.code, _27_, _29_)
+    return send(opts.code, _28_, _30_)
   else
     return nil
   end
@@ -270,10 +274,10 @@ end
 _2amodule_2a["eval-str"] = eval_str
 local function doc_str(opts)
   try_ensure_conn()
-  local function _34_(_241)
+  local function _35_(_241)
     return ("(describe '" .. _241 .. ")")
   end
-  return eval_str(a.update(opts, "code", _34_))
+  return eval_str(a.update(opts, "code", _35_))
 end
 _2amodule_2a["doc-str"] = doc_str
 local function eval_file(opts)
@@ -283,10 +287,10 @@ end
 _2amodule_2a["eval-file"] = eval_file
 local function on_filetype()
   mapping.buf("CommonLispDisconnect", config["get-in"]({"client", "common_lisp", "swank", "mapping", "disconnect"}), disconnect, {desc = "Disconnect from the REPL"})
-  local function _35_()
+  local function _36_()
     return connect({})
   end
-  return mapping.buf("CommonLispConnect", config["get-in"]({"client", "common_lisp", "swank", "mapping", "connect"}), _35_, {desc = "Connect to a REPL"})
+  return mapping.buf("CommonLispConnect", config["get-in"]({"client", "common_lisp", "swank", "mapping", "connect"}), _36_, {desc = "Connect to a REPL"})
 end
 _2amodule_2a["on-filetype"] = on_filetype
 local function on_load()
@@ -301,19 +305,19 @@ local function completions(opts)
   try_ensure_conn()
   local code = ("(swank:simple-completions " .. a["pr-str"](opts.prefix) .. " " .. a["pr-str"](opts.context) .. ")")
   local format_for_cmpl
-  local function _36_(rs)
+  local function _37_(rs)
     local cmpls = parse_separated_list(rs)
     local last = table.remove(cmpls)
     table.insert(cmpls, 1, last)
     return cmpls
   end
-  format_for_cmpl = _36_
+  format_for_cmpl = _37_
   local result_fn
-  local function _37_(results)
+  local function _38_(results)
     local cmpl_list = format_for_cmpl(results)
     return opts.cb(cmpl_list)
   end
-  result_fn = _37_
+  result_fn = _38_
   a.assoc(opts, "code", code)
   a.assoc(opts, "on-result", result_fn)
   a.assoc(opts, "passive?", true)

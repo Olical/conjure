@@ -29,12 +29,17 @@
   {:client
    {:sql
     {:stdio
-     {:mapping {:start "cs"
-                :stop "cS"
-                :interrupt "ei"}
-      :command "psql -U blogger postgres"
-      :prompt_pattern "=> "
-      }}}})
+     {:command "psql -U blogger postgres"
+      :prompt_pattern "=> "}}}})
+
+(when (config.get-in [:mapping :enable_defaults])
+  (config.merge
+    {:client
+     {:sql
+      {:stdio
+       {:mapping {:start "cs"
+                  :stop "cS"
+                  :interrupt "ei"}}}}}))
 
 (def- cfg (config.get-in-fn [:client :sql :stdio]))
 

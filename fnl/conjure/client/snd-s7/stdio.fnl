@@ -31,11 +31,17 @@
   {:client
    {:snd-s7
     {:stdio
-     {:mapping {:start "cs"
-                :stop "cS"
-                :interrupt "ei"}
-      :command "snd"
+     {:command "snd"
       :prompt_pattern "> "}}}})
+
+(when (config.get-in [:mapping :enable_defaults])
+  (config.merge
+    {:client
+     {:snd-s7
+      {:stdio
+       {:mapping {:start "cs"
+                  :stop "cS"
+                  :interrupt "ei"}}}}}))
 
 (def- cfg (config.get-in-fn [:client :snd-s7 :stdio]))
 

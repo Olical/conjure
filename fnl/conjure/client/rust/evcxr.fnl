@@ -15,12 +15,17 @@
   {:client
    {:rust
     {:evcxr
-     {:mapping {:start "cs"
-                :stop "cS"
-                :interrupt "ei"}
-      :command "evcxr"
+     {:command "evcxr"
       :prompt_pattern ">> "}}}})
 
+(when (config.get-in [:mapping :enable_defaults])
+  (config.merge
+    {:client
+     {:rust
+      {:evcxr
+       {:mapping {:start "cs"
+                  :stop "cS"
+                  :interrupt "ei"}}}}}))
 
 (def- cfg (config.get-in-fn [:client :rust :evcxr]))
 

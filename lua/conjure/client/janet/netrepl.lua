@@ -30,12 +30,16 @@ local form_node_3f = ts["node-surrounded-by-form-pair-chars?"]
 _2amodule_2a["form-node?"] = form_node_3f
 local comment_node_3f = ts["lisp-comment-node?"]
 _2amodule_2a["comment-node?"] = comment_node_3f
-config.merge({client = {janet = {netrepl = {connection = {default_host = "127.0.0.1", default_port = "9365"}, mapping = {connect = "cc", disconnect = "cd"}}}}})
+config.merge({client = {janet = {netrepl = {connection = {default_host = "127.0.0.1", default_port = "9365"}}}}})
+if config["get-in"]({"mapping", "enable_defaults"}) then
+  config.merge({client = {janet = {netrepl = {mapping = {connect = "cc", disconnect = "cd"}}}}})
+else
+end
 local state
-local function _1_()
+local function _2_()
   return {conn = nil}
 end
-state = ((_2amodule_2a).state or client["new-state"](_1_))
+state = ((_2amodule_2a).state or client["new-state"](_2_))
 do end (_2amodule_locals_2a)["state"] = state
 local function with_conn_or_warn(f, opts)
   local conn = state("conn")
@@ -55,34 +59,34 @@ local function connected_3f()
 end
 _2amodule_locals_2a["connected?"] = connected_3f
 local function display_conn_status(status)
-  local function _4_(conn)
+  local function _5_(conn)
     return log.append({("# " .. conn.host .. ":" .. conn.port .. " (" .. status .. ")")}, {["break?"] = true})
   end
-  return with_conn_or_warn(_4_)
+  return with_conn_or_warn(_5_)
 end
 _2amodule_locals_2a["display-conn-status"] = display_conn_status
 local function disconnect()
-  local function _5_(conn)
+  local function _6_(conn)
     conn.destroy()
     display_conn_status("disconnected")
     return a.assoc(state(), "conn", nil)
   end
-  return with_conn_or_warn(_5_)
+  return with_conn_or_warn(_6_)
 end
 _2amodule_2a["disconnect"] = disconnect
 local function send(opts)
-  local _let_6_ = opts
-  local msg = _let_6_["msg"]
-  local cb = _let_6_["cb"]
-  local row = _let_6_["row"]
-  local col = _let_6_["col"]
-  local file_path = _let_6_["file-path"]
-  local function _7_(conn)
+  local _let_7_ = opts
+  local msg = _let_7_["msg"]
+  local cb = _let_7_["cb"]
+  local row = _let_7_["row"]
+  local col = _let_7_["col"]
+  local file_path = _let_7_["file-path"]
+  local function _8_(conn)
     remote.send(conn, ("\255(parser/where (dyn :parser) " .. row .. " " .. col .. ")"))
     remote.send(conn, ("\254source \"" .. string.gsub(file_path, "\\", "\\\\") .. "\""), nil, true)
     return remote.send(conn, msg, cb, true)
   end
-  return with_conn_or_warn(_7_)
+  return with_conn_or_warn(_8_)
 end
 _2amodule_locals_2a["send"] = send
 local function connect(opts)
@@ -93,21 +97,21 @@ local function connect(opts)
     disconnect()
   else
   end
-  local function _9_(err)
+  local function _10_(err)
     display_conn_status(err)
     return disconnect()
   end
-  local function _10_()
+  local function _11_()
     return display_conn_status("connected")
   end
-  local function _11_(err)
+  local function _12_(err)
     if err then
       return display_conn_status(err)
     else
       return disconnect()
     end
   end
-  return a.assoc(state(), "conn", remote.connect({host = host, port = port, ["on-failure"] = _9_, ["on-success"] = _10_, ["on-error"] = _11_}))
+  return a.assoc(state(), "conn", remote.connect({host = host, port = port, ["on-failure"] = _10_, ["on-success"] = _11_, ["on-error"] = _12_}))
 end
 _2amodule_2a["connect"] = connect
 local function try_ensure_conn()
@@ -120,7 +124,7 @@ end
 _2amodule_locals_2a["try-ensure-conn"] = try_ensure_conn
 local function eval_str(opts)
   try_ensure_conn()
-  local function _14_(msg)
+  local function _15_(msg)
     local clean = text["trim-last-newline"](msg)
     if opts["on-result"] then
       opts["on-result"](text["strip-ansi-escape-sequences"](clean))
@@ -132,15 +136,15 @@ local function eval_str(opts)
       return nil
     end
   end
-  return send({msg = (opts.code .. "\n"), cb = _14_, row = a["get-in"](opts.range, {"start", 1}, 1), col = a["get-in"](opts.range, {"start", 2}, 1), ["file-path"] = opts["file-path"]})
+  return send({msg = (opts.code .. "\n"), cb = _15_, row = a["get-in"](opts.range, {"start", 1}, 1), col = a["get-in"](opts.range, {"start", 2}, 1), ["file-path"] = opts["file-path"]})
 end
 _2amodule_2a["eval-str"] = eval_str
 local function doc_str(opts)
   try_ensure_conn()
-  local function _17_(_241)
+  local function _18_(_241)
     return ("(doc " .. _241 .. ")")
   end
-  return eval_str(a.update(opts, "code", _17_))
+  return eval_str(a.update(opts, "code", _18_))
 end
 _2amodule_2a["doc-str"] = doc_str
 local function eval_file(opts)
@@ -150,10 +154,10 @@ end
 _2amodule_2a["eval-file"] = eval_file
 local function on_filetype()
   mapping.buf("JanetDisconnect", config["get-in"]({"client", "janet", "netrepl", "mapping", "disconnect"}), disconnect, {desc = "Disconnect from the REPL"})
-  local function _18_()
+  local function _19_()
     return connect()
   end
-  return mapping.buf("JanetConnect", config["get-in"]({"client", "janet", "netrepl", "mapping", "connect"}), _18_, {desc = "Connect to a REPL"})
+  return mapping.buf("JanetConnect", config["get-in"]({"client", "janet", "netrepl", "mapping", "connect"}), _19_, {desc = "Connect to a REPL"})
 end
 _2amodule_2a["on-filetype"] = on_filetype
 local function on_load()

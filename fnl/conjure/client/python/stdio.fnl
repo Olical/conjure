@@ -17,12 +17,18 @@
   {:client
    {:python
     {:stdio
-     {:mapping {:start "cs"
-                :stop "cS"
-                :interrupt "ei"}
-      :command "python3 -iq"
+     {:command "python3 -iq"
       :prompt-pattern ">>> "
       :delay-stderr-ms 10}}}})
+
+(when (config.get-in [:mapping :enable_defaults])
+  (config.merge
+    {:client
+     {:python
+      {:stdio
+       {:mapping {:start "cs"
+                  :stop "cS"
+                  :interrupt "ei"}}}}}))
 
 (def- cfg (config.get-in-fn [:client :python :stdio]))
 

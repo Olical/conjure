@@ -24,12 +24,18 @@
   {:client
    {:fennel
     {:aniseed
-     {:mapping {:run_buf_tests "tt"
-                :run_all_tests "ta"
-                :reset_repl "rr"
-                :reset_all_repls "ra"}
-      :aniseed_module_prefix :conjure.aniseed.
+     {:aniseed_module_prefix :conjure.aniseed.
       :use_metadata true}}}})
+
+(when (config.get-in [:mapping :enable_defaults])
+  (config.merge
+   {:client
+    {:fennel
+     {:aniseed
+      {:mapping {:run_buf_tests "tt"
+                 :run_all_tests "ta"
+                 :reset_repl "rr"
+                 :reset_all_repls "ra"}}}}}))
 
 (def- cfg (config.get-in-fn [:client :fennel :aniseed]))
 

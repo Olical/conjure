@@ -24,14 +24,18 @@ _2amodule_locals_2a["str"] = str
 _2amodule_locals_2a["text"] = text
 _2amodule_locals_2a["ts"] = ts
 _2amodule_locals_2a["_"] = _
-config.merge({client = {hy = {stdio = {mapping = {start = "cs", stop = "cS", interrupt = "ei"}, eval = {raw_out = false}, command = "hy --repl-output-fn=hy.repr", prompt_pattern = "=> "}}}})
+config.merge({client = {hy = {stdio = {eval = {raw_out = false}, command = "hy --repl-output-fn=hy.repr", prompt_pattern = "=> "}}}})
+if config["get-in"]({"mapping", "enable_defaults"}) then
+  config.merge({client = {hy = {stdio = {mapping = {start = "cs", stop = "cS", interrupt = "ei"}}}}})
+else
+end
 local cfg = config["get-in-fn"]({"client", "hy", "stdio"})
 do end (_2amodule_locals_2a)["cfg"] = cfg
 local state
-local function _1_()
+local function _2_()
   return {repl = nil}
 end
-state = ((_2amodule_2a).state or client["new-state"](_1_))
+state = ((_2amodule_2a).state or client["new-state"](_2_))
 do end (_2amodule_locals_2a)["state"] = state
 local buf_suffix = ".hy"
 _2amodule_2a["buf-suffix"] = buf_suffix
@@ -53,22 +57,22 @@ local function display_result(msg)
   if (true == cfg({"eval", "raw_out"})) then
     prefix = ""
   else
-    local function _3_()
+    local function _4_()
       if msg.err then
         return "(err)"
       else
         return "(out)"
       end
     end
-    prefix = (comment_prefix .. _3_() .. " ")
-  end
-  local function _5_(_241)
-    return (prefix .. _241)
+    prefix = (comment_prefix .. _4_() .. " ")
   end
   local function _6_(_241)
+    return (prefix .. _241)
+  end
+  local function _7_(_241)
     return ("" ~= _241)
   end
-  return log.append(a.map(_5_, a.filter(_6_, str.split((msg.err or msg.out), "\n"))))
+  return log.append(a.map(_6_, a.filter(_7_, str.split((msg.err or msg.out), "\n"))))
 end
 _2amodule_locals_2a["display-result"] = display_result
 local function prep_code(s)
@@ -77,14 +81,14 @@ end
 _2amodule_locals_2a["prep-code"] = prep_code
 local function eval_str(opts)
   local last_value = nil
-  local function _7_(repl)
-    local function _8_(msg)
+  local function _8_(repl)
+    local function _9_(msg)
       log.dbg("msg", msg)
       local msgs
-      local function _9_(_241)
+      local function _10_(_241)
         return not ("" == _241)
       end
-      msgs = a.filter(_9_, str.split((msg.err or msg.out), "\n"))
+      msgs = a.filter(_10_, str.split((msg.err or msg.out), "\n"))
       last_value = (a.last(msgs) or last_value)
       display_result(msg)
       if msg["done?"] then
@@ -98,9 +102,9 @@ local function eval_str(opts)
         return nil
       end
     end
-    return repl.send(prep_code(opts.code), _8_)
+    return repl.send(prep_code(opts.code), _9_)
   end
-  return with_repl_or_warn(_7_)
+  return with_repl_or_warn(_8_)
 end
 _2amodule_2a["eval-str"] = eval_str
 local function eval_file(opts)
@@ -116,20 +120,20 @@ local function doc_str(opts)
   end
   local obj0 = ((obj or "") .. opts.code)
   local code = ("(if (in (mangle '" .. obj0 .. ") --macros--)\n                    (doc " .. obj0 .. ")\n                    (help " .. obj0 .. "))")
-  local function _13_(repl)
-    local function _14_(msg)
-      local function _15_()
+  local function _14_(repl)
+    local function _15_(msg)
+      local function _16_()
         if msg.err then
           return "(err) "
         else
           return "(doc) "
         end
       end
-      return log.append(text["prefixed-lines"]((msg.err or msg.out), (comment_prefix .. _15_())))
+      return log.append(text["prefixed-lines"]((msg.err or msg.out), (comment_prefix .. _16_())))
     end
-    return repl.send(prep_code(code), _14_)
+    return repl.send(prep_code(code), _15_)
   end
-  return with_repl_or_warn(_13_)
+  return with_repl_or_warn(_14_)
 end
 _2amodule_2a["doc-str"] = doc_str
 local function display_repl_status(status)
@@ -156,17 +160,17 @@ local function start()
   if state("repl") then
     return log.append({(comment_prefix .. "Can't start, REPL is already running."), (comment_prefix .. "Stop the REPL with " .. config["get-in"]({"mapping", "prefix"}) .. cfg({"mapping", "stop"}))}, {["break?"] = true})
   else
-    local function _18_()
+    local function _19_()
       display_repl_status("started")
-      local function _19_(repl)
+      local function _20_(repl)
         return repl.send(prep_code("(import sys) (setv sys.ps2 \"\") (del sys)"))
       end
-      return with_repl_or_warn(_19_)
+      return with_repl_or_warn(_20_)
     end
-    local function _20_(err)
+    local function _21_(err)
       return display_repl_status(err)
     end
-    local function _21_(code, signal)
+    local function _22_(code, signal)
       if (("number" == type(code)) and (code > 0)) then
         log.append({(comment_prefix .. "process exited with code " .. code)})
       else
@@ -177,10 +181,10 @@ local function start()
       end
       return stop()
     end
-    local function _24_(msg)
+    local function _25_(msg)
       return display_result(msg)
     end
-    return a.assoc(state(), "repl", stdio.start({["prompt-pattern"] = cfg({"prompt_pattern"}), cmd = cfg({"command"}), ["on-success"] = _18_, ["on-error"] = _20_, ["on-exit"] = _21_, ["on-stray-output"] = _24_}))
+    return a.assoc(state(), "repl", stdio.start({["prompt-pattern"] = cfg({"prompt_pattern"}), cmd = cfg({"command"}), ["on-success"] = _19_, ["on-error"] = _21_, ["on-exit"] = _22_, ["on-stray-output"] = _25_}))
   end
 end
 _2amodule_2a["start"] = start
@@ -194,11 +198,11 @@ end
 _2amodule_2a["on-exit"] = on_exit
 local function interrupt()
   log.dbg("sending interrupt message", "")
-  local function _26_(repl)
+  local function _27_(repl)
     log.append({(comment_prefix .. " Sending interrupt signal.")}, {["break?"] = true})
     return repl["send-signal"](vim.loop.constants.SIGINT)
   end
-  return with_repl_or_warn(_26_)
+  return with_repl_or_warn(_27_)
 end
 _2amodule_2a["interrupt"] = interrupt
 local function on_filetype()

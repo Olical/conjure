@@ -15,11 +15,17 @@
   {:client
    {:racket
     {:stdio
-     {:mapping {:start "cs"
-                :stop "cS"
-                :interrupt "ei"}
-      :command "racket"
+     {:command "racket"
       :prompt_pattern "\n?[\"%w%-./_]*> "}}}})
+
+(when (config.get-in [:mapping :enable_defaults])
+  (config.merge
+    {:client
+     {:racket
+      {:stdio
+       {:mapping {:start "cs"
+                  :stop "cS"
+                  :interrupt "ei"}}}}}))
 
 (def- cfg (config.get-in-fn [:client :racket :stdio]))
 

@@ -16,12 +16,18 @@
   {:client
    {:hy
     {:stdio
-     {:mapping {:start "cs"
-                :stop "cS"
-                :interrupt "ei"}
-      :eval {:raw_out false}
+     {:eval {:raw_out false}
       :command "hy --repl-output-fn=hy.repr"
       :prompt_pattern "=> "}}}})
+
+(when (config.get-in [:mapping :enable_defaults])
+  (config.merge
+    {:client
+     {:hy
+      {:stdio
+       {:mapping {:start "cs"
+                  :stop "cS"
+                  :interrupt "ei"}}}}}))
 
 (def- cfg (config.get-in-fn [:client :hy :stdio]))
 

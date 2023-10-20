@@ -22,14 +22,18 @@ _2amodule_locals_2a["stdio"] = stdio
 _2amodule_locals_2a["str"] = str
 _2amodule_locals_2a["ts"] = ts
 _2amodule_locals_2a["_"] = _
-config.merge({client = {scheme = {stdio = {mapping = {start = "cs", stop = "cS", interrupt = "ei"}, command = "mit-scheme", prompt_pattern = "[%]e][=r]r?o?r?> ", value_prefix_pattern = "^;Value: "}}}})
+config.merge({client = {scheme = {stdio = {command = "mit-scheme", prompt_pattern = "[%]e][=r]r?o?r?> ", value_prefix_pattern = "^;Value: "}}}})
+if config["get-in"]({"mapping", "enable_defaults"}) then
+  config.merge({client = {scheme = {stdio = {mapping = {start = "cs", stop = "cS", interrupt = "ei"}}}}})
+else
+end
 local cfg = config["get-in-fn"]({"client", "scheme", "stdio"})
 do end (_2amodule_locals_2a)["cfg"] = cfg
 local state
-local function _1_()
+local function _2_()
   return {repl = nil}
 end
-state = ((_2amodule_2a).state or client["new-state"](_1_))
+state = ((_2amodule_2a).state or client["new-state"](_2_))
 do end (_2amodule_locals_2a)["state"] = state
 local buf_suffix = ".scm"
 _2amodule_2a["buf-suffix"] = buf_suffix
@@ -47,17 +51,17 @@ local function with_repl_or_warn(f, opts)
 end
 _2amodule_locals_2a["with-repl-or-warn"] = with_repl_or_warn
 local function unbatch(msgs)
-  local function _3_(_241)
+  local function _4_(_241)
     return (a.get(_241, "out") or a.get(_241, "err"))
   end
-  return {out = str.join("", a.map(_3_, msgs))}
+  return {out = str.join("", a.map(_4_, msgs))}
 end
 _2amodule_2a["unbatch"] = unbatch
 local function format_msg(msg)
-  local function _4_(_241)
+  local function _5_(_241)
     return not str["blank?"](_241)
   end
-  local function _5_(line)
+  local function _6_(line)
     if not cfg({"value_prefix_pattern"}) then
       return line
     elseif string.match(line, cfg({"value_prefix_pattern"})) then
@@ -66,19 +70,19 @@ local function format_msg(msg)
       return (comment_prefix .. "(out) " .. line)
     end
   end
-  return a.filter(_4_, a.map(_5_, str.split(string.gsub(string.gsub(a.get(msg, "out"), "^%s*", ""), "%s+%d+%s*$", ""), "\n")))
+  return a.filter(_5_, a.map(_6_, str.split(string.gsub(string.gsub(a.get(msg, "out"), "^%s*", ""), "%s+%d+%s*$", ""), "\n")))
 end
 _2amodule_2a["format-msg"] = format_msg
 local function eval_str(opts)
-  local function _7_(repl)
-    local function _8_(msgs)
+  local function _8_(repl)
+    local function _9_(msgs)
       local msgs0 = format_msg(unbatch(msgs))
       opts["on-result"](a.last(msgs0))
       return log.append(msgs0)
     end
-    return repl.send((opts.code .. "\n"), _8_, {["batch?"] = true})
+    return repl.send((opts.code .. "\n"), _9_, {["batch?"] = true})
   end
-  return with_repl_or_warn(_7_)
+  return with_repl_or_warn(_8_)
 end
 _2amodule_2a["eval-str"] = eval_str
 local function eval_file(opts)
@@ -104,13 +108,13 @@ local function start()
   if state("repl") then
     return log.append({(comment_prefix .. "Can't start, REPL is already running."), (comment_prefix .. "Stop the REPL with " .. config["get-in"]({"mapping", "prefix"}) .. cfg({"mapping", "stop"}))}, {["break?"] = true})
   else
-    local function _10_()
+    local function _11_()
       return display_repl_status("started")
     end
-    local function _11_(err)
+    local function _12_(err)
       return display_repl_status(err)
     end
-    local function _12_(code, signal)
+    local function _13_(code, signal)
       if (("number" == type(code)) and (code > 0)) then
         log.append({(comment_prefix .. "process exited with code " .. code)})
       else
@@ -121,19 +125,19 @@ local function start()
       end
       return stop()
     end
-    local function _15_(msg)
+    local function _16_(msg)
       return log.append(format_msg(msg))
     end
-    return a.assoc(state(), "repl", stdio.start({["prompt-pattern"] = cfg({"prompt_pattern"}), cmd = cfg({"command"}), ["on-success"] = _10_, ["on-error"] = _11_, ["on-exit"] = _12_, ["on-stray-output"] = _15_}))
+    return a.assoc(state(), "repl", stdio.start({["prompt-pattern"] = cfg({"prompt_pattern"}), cmd = cfg({"command"}), ["on-success"] = _11_, ["on-error"] = _12_, ["on-exit"] = _13_, ["on-stray-output"] = _16_}))
   end
 end
 _2amodule_2a["start"] = start
 local function interrupt()
-  local function _17_(repl)
+  local function _18_(repl)
     log.append({(comment_prefix .. " Sending interrupt signal.")}, {["break?"] = true})
     return repl["send-signal"](vim.loop.constants.SIGINT)
   end
-  return with_repl_or_warn(_17_)
+  return with_repl_or_warn(_18_)
 end
 _2amodule_2a["interrupt"] = interrupt
 local function on_load()

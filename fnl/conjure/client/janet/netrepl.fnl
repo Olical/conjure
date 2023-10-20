@@ -20,9 +20,15 @@
    {:janet
     {:netrepl
      {:connection {:default_host "127.0.0.1"
-                   :default_port "9365"}
-      :mapping {:connect "cc"
-                :disconnect "cd"}}}}})
+                   :default_port "9365"}}}}})
+
+(when (config.get-in [:mapping :enable_defaults])
+  (config.merge
+    {:client
+     {:janet
+      {:netrepl
+       {:mapping {:connect "cc"
+                  :disconnect "cd"}}}}}))
 
 (defonce- state (client.new-state #(do {:conn nil})))
 
