@@ -79,7 +79,7 @@ local function send(opts)
   local file_path = _let_6_["file-path"]
   local function _7_(conn)
     remote.send(conn, ("\255(parser/where (dyn :parser) " .. row .. " " .. col .. ")"))
-    remote.send(conn, ("\254source \"" .. file_path .. "\""), nil, true)
+    remote.send(conn, ("\254source \"" .. string.gsub(file_path, "\\", "\\\\") .. "\""), nil, true)
     return remote.send(conn, msg, cb, true)
   end
   return with_conn_or_warn(_7_)

@@ -56,7 +56,11 @@
     (with-conn-or-warn
       (fn [conn]
         (remote.send conn (.. "\xFF(parser/where (dyn :parser) " row " " col ")"))
-        (remote.send conn (.. "\xFEsource \"" file-path "\"") nil true)
+        (remote.send conn
+                     (.. "\xFEsource \""
+                         (string.gsub file-path "\\" "\\\\")
+                         "\"")
+                     nil true)
         (remote.send conn msg cb true)))))
 
 (defn connect [opts]
