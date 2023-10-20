@@ -77,8 +77,7 @@
     (when (state :conn)
       (disconnect))
 
-    (a.assoc
-      (state) :conn
+    (local conn
       (remote.connect
         {:host host
          :port port
@@ -90,6 +89,7 @@
 
          :on-success
          (fn []
+           (a.assoc (state) :conn conn)
            (display-conn-status :connected))
 
          :on-error
