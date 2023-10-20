@@ -80,39 +80,44 @@
        :runner "clojure"
        :call_suffix nil}
 
-      :mapping
-      {:disconnect "cd"
-       :connect_port_file "cf"
-
-       :interrupt "ei"
-
-       :last_exception "ve"
-       :result_1 "v1"
-       :result_2 "v2"
-       :result_3 "v3"
-       :view_source "vs"
-
-       :session_clone "sc"
-       :session_fresh "sf"
-       :session_close "sq"
-       :session_close_all "sQ"
-       :session_list "sl"
-       :session_next "sn"
-       :session_prev "sp"
-       :session_select "ss"
-
-       :run_all_tests "ta"
-       :run_current_ns_tests "tn"
-       :run_alternate_ns_tests "tN"
-       :run_current_test "tc"
-
-       :refresh_changed "rr"
-       :refresh_all "ra"
-       :refresh_clear "rc"}
-
       :completion
       {:cljs {:use_suitable true}
        :with_context false}}}}})
+
+(when (config.get-in [:mapping :enable_defaults])
+  (config.merge
+   {:client
+    {:clojure
+     {:nrepl
+      {:mapping
+       {:disconnect "cd"
+        :connect_port_file "cf"
+
+        :interrupt "ei"
+
+        :last_exception "ve"
+        :result_1 "v1"
+        :result_2 "v2"
+        :result_3 "v3"
+        :view_source "vs"
+
+        :session_clone "sc"
+        :session_fresh "sf"
+        :session_close "sq"
+        :session_close_all "sQ"
+        :session_list "sl"
+        :session_next "sn"
+        :session_prev "sp"
+        :session_select "ss"
+
+        :run_all_tests "ta"
+        :run_current_ns_tests "tn"
+        :run_alternate_ns_tests "tN"
+        :run_current_test "tc"
+
+        :refresh_changed "rr"
+        :refresh_all "ra"
+        :refresh_clear "rc"}}}}}))
 
 (defn context [header]
   (-?> header

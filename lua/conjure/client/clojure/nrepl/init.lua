@@ -47,38 +47,42 @@ end
 _2amodule_2a["symbol-node?"] = symbol_node_3f
 local comment_node_3f = ts["lisp-comment-node?"]
 _2amodule_2a["comment-node?"] = comment_node_3f
-config.merge({client = {clojure = {nrepl = {connection = {default_host = "localhost", port_files = {".nrepl-port", ".shadow-cljs/nrepl.port"}, auto_repl = {enabled = true, cmd = "bb nrepl-server localhost:$port", port_file = ".nrepl-port", hidden = false}}, eval = {pretty_print = true, auto_require = true, print_quota = nil, print_function = "conjure.internal/pprint", print_options = {length = 500, level = 50, right_margin = 72}, raw_out = false}, interrupt = {sample_limit = 0.3}, refresh = {after = nil, before = nil, dirs = nil}, test = {current_form_names = {"deftest"}, runner = "clojure", call_suffix = nil, raw_out = false}, mapping = {disconnect = "cd", connect_port_file = "cf", interrupt = "ei", last_exception = "ve", result_1 = "v1", result_2 = "v2", result_3 = "v3", view_source = "vs", session_clone = "sc", session_fresh = "sf", session_close = "sq", session_close_all = "sQ", session_list = "sl", session_next = "sn", session_prev = "sp", session_select = "ss", run_all_tests = "ta", run_current_ns_tests = "tn", run_alternate_ns_tests = "tN", run_current_test = "tc", refresh_changed = "rr", refresh_all = "ra", refresh_clear = "rc"}, completion = {cljs = {use_suitable = true}, with_context = false}}}}})
+config.merge({client = {clojure = {nrepl = {connection = {default_host = "localhost", port_files = {".nrepl-port", ".shadow-cljs/nrepl.port"}, auto_repl = {enabled = true, cmd = "bb nrepl-server localhost:$port", port_file = ".nrepl-port", hidden = false}}, eval = {pretty_print = true, auto_require = true, print_quota = nil, print_function = "conjure.internal/pprint", print_options = {length = 500, level = 50, right_margin = 72}, raw_out = false}, interrupt = {sample_limit = 0.3}, refresh = {after = nil, before = nil, dirs = nil}, test = {current_form_names = {"deftest"}, runner = "clojure", call_suffix = nil, raw_out = false}, completion = {cljs = {use_suitable = true}, with_context = false}}}}})
+if config["get-in"]({"mapping", "enable_defaults"}) then
+  config.merge({client = {clojure = {nrepl = {mapping = {disconnect = "cd", connect_port_file = "cf", interrupt = "ei", last_exception = "ve", result_1 = "v1", result_2 = "v2", result_3 = "v3", view_source = "vs", session_clone = "sc", session_fresh = "sf", session_close = "sq", session_close_all = "sQ", session_list = "sl", session_next = "sn", session_prev = "sp", session_select = "ss", run_all_tests = "ta", run_current_ns_tests = "tn", run_alternate_ns_tests = "tN", run_current_test = "tc", refresh_changed = "rr", refresh_all = "ra", refresh_clear = "rc"}}}}})
+else
+end
 local function context(header)
-  local _1_ = header
-  if (nil ~= _1_) then
-    local _2_ = parse["strip-shebang"](_1_)
-    if (nil ~= _2_) then
-      local _3_ = parse["strip-meta"](_2_)
-      if (nil ~= _3_) then
-        local _4_ = parse["strip-comments"](_3_)
-        if (nil ~= _4_) then
-          local _5_ = string.match(_4_, "%(%s*ns%s+([^)]*)")
-          if (nil ~= _5_) then
-            local _6_ = str.split(_5_, "%s+")
-            if (nil ~= _6_) then
-              return a.first(_6_)
+  local _2_ = header
+  if (nil ~= _2_) then
+    local _3_ = parse["strip-shebang"](_2_)
+    if (nil ~= _3_) then
+      local _4_ = parse["strip-meta"](_3_)
+      if (nil ~= _4_) then
+        local _5_ = parse["strip-comments"](_4_)
+        if (nil ~= _5_) then
+          local _6_ = string.match(_5_, "%(%s*ns%s+([^)]*)")
+          if (nil ~= _6_) then
+            local _7_ = str.split(_6_, "%s+")
+            if (nil ~= _7_) then
+              return a.first(_7_)
             else
-              return _6_
+              return _7_
             end
           else
-            return _5_
+            return _6_
           end
         else
-          return _4_
+          return _5_
         end
       else
-        return _3_
+        return _4_
       end
     else
-      return _2_
+      return _3_
     end
   else
-    return _1_
+    return _2_
   end
 end
 _2amodule_2a["context"] = context
@@ -130,14 +134,14 @@ local function on_filetype()
   mapping.buf("CljRefreshChanged", cfg({"mapping", "refresh_changed"}), util["wrap-require-fn-call"]("conjure.client.clojure.nrepl.action", "refresh-changed"), {desc = "Refresh changed namespaces"})
   mapping.buf("CljRefreshAll", cfg({"mapping", "refresh_all"}), util["wrap-require-fn-call"]("conjure.client.clojure.nrepl.action", "refresh-all"), {desc = "Refresh all namespaces"})
   mapping.buf("CljRefreshClear", cfg({"mapping", "refresh_clear"}), util["wrap-require-fn-call"]("conjure.client.clojure.nrepl.action", "refresh-clear"), {desc = "Clear the refresh cache"})
-  local function _13_(_241)
+  local function _14_(_241)
     return action["shadow-select"](a.get(_241, "args"))
   end
-  nvim.buf_create_user_command(0, "ConjureShadowSelect", _13_, {force = true, nargs = 1})
-  local function _14_(_241)
+  nvim.buf_create_user_command(0, "ConjureShadowSelect", _14_, {force = true, nargs = 1})
+  local function _15_(_241)
     return action.piggieback(a.get(_241, "args"))
   end
-  nvim.buf_create_user_command(0, "ConjurePiggieback", _14_, {force = true, nargs = 1})
+  nvim.buf_create_user_command(0, "ConjurePiggieback", _15_, {force = true, nargs = 1})
   nvim.buf_create_user_command(0, "ConjureOutSubscribe", action["out-subscribe"], {force = true, nargs = 0})
   nvim.buf_create_user_command(0, "ConjureOutUnsubscribe", action["out-unsubscribe"], {force = true, nargs = 0})
   nvim.buf_create_user_command(0, "ConjureCljDebugInit", debugger.init, {force = true})
