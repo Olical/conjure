@@ -52,10 +52,10 @@
                       (opts.on-failure err)
 
                       (do
+                        (send conn (or opts.name "Conjure"))
                         (conn.sock:read_start (client.schedule-wrap handle-message))
                         (opts.on-success)))))})))
 
-  (send conn (or opts.name "Conjure"))
   conn)
 
 ;; Example:

@@ -50,12 +50,12 @@ local function connect(opts)
     if err then
       return opts["on-failure"](err)
     else
+      send(conn, (opts.name or "Conjure"))
       do end (conn.sock):read_start(client["schedule-wrap"](handle_message))
       return opts["on-success"]()
     end
   end
   conn = a.merge(conn, net.connect({host = opts.host, port = opts.port, cb = client["schedule-wrap"](_5_)}))
-  send(conn, (opts.name or "Conjure"))
   return conn
 end
 _2amodule_2a["connect"] = connect
