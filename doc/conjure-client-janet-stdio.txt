@@ -1,0 +1,77 @@
+                                                 *conjure-client-janet-stdio*
+
+==============================================================================
+CONTENTS                                *conjure-client-janet-stdio-contents*
+
+    1. Introduction ........ |conjure-client-janet-stdio-introduction|
+    2. Mappings ................ |conjure-client-janet-stdio-mappings|
+    3. Configuration ...... |conjure-client-janet-stdio-configuration|
+
+==============================================================================
+INTRODUCTION                        *conjure-client-janet-stdio-introduction*
+>
+  Janet is a functional and imperative programming language. It runs on
+  Windows, Linux, macOS, BSDs, and should run on other systems with some
+  porting. The entire language (core library, interpreter, compiler,
+  assembler, PEG) is less than 1MB. You can also add Janet scripting to an
+  application by embedding a single C file and two headers.
+
+Conjure starts a Janet REPL within Neovim when you first open a Janet file.
+
+The default Janet filetype client is `conjure.client.janet.netrepl`, to use
+this client instead you must override the configuration.
+>
+  let g:conjure#filetype#janet = "conjure.client.janet.stdio"
+
+You should be able to evaluate files and forms as you would with other Conjure
+supported languages right away.
+
+Check out `:ConjureSchool` if you're unsure about what evaluation operations
+you can perform.
+
+ * https://janet-lang.org/
+
+==============================================================================
+MAPPINGS                                *conjure-client-janet-stdio-mappings*
+
+These mappings are the defaults, you can change them as described in
+|conjure-mappings| and |conjure-configuration|.
+
+See |conjure-client-janet-stdio-configuration| for specific configuration
+options relevant to these mappings.
+
+<localleader>cs          Start the Janet REPL if it's not running already.
+
+<localleader>cS          Stop any existing Janet REPL.
+
+==============================================================================
+CONFIGURATION                      *conjure-client-janet-stdio-configuration*
+
+All configuration can be set as described in |conjure-configuration|.
+
+
+                                 *g:conjure#client#janet#stdio#mapping#start*
+`g:conjure#client#janet#stdio#mapping#start`
+            Start the Janet REPL if it's not running already.
+            Default: `"cs"`
+
+                                  *g:conjure#client#janet#stdio#mapping#stop*
+`g:conjure#client#janet#stdio#mapping#stop`
+            Stop any existing Janet REPL.
+            Default: `"cS"`
+
+                                       *g:conjure#client#janet#stdio#command*
+`g:conjure#client#janet#stdio#command`
+            Command used to start the Janet REPL, you can modify this to add
+            arguments or change the command entirely.
+            Default: `"janet -n -s"`
+
+                                *g:conjure#client#janet#stdio#prompt_pattern*
+`g:conjure#client#janet#stdio#prompt_pattern`
+            Lua pattern to identify a new REPL prompt. This match signals to
+            Conjure that the previous evaluation is complete and we're ready
+            to submit more code as well as collect all output prior to the
+            marker as the result.
+            Default: `"repl:[0-9]+:[^>]*> "`
+
+vim:tw=78:sw=2:ts=2:ft=help:norl:et:listchars=
