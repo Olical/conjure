@@ -330,8 +330,8 @@ local function append(lines, opts)
     local buf = upsert_buf()
     local join_first_3f = a.get(opts, "join-first?")
     local lines0
-    local function _39_(s)
-      return s:gsub("\n", "\226\134\181")
+    local function _39_(line)
+      return string.gsub(tostring(line), "\n", "\226\134\181")
     end
     lines0 = a.map(_39_, lines)
     local lines1
