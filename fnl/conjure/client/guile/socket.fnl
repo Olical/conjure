@@ -114,18 +114,23 @@
       (a.assoc (state) :repl nil))))
 
 (defn- parse-guile-result [s]
-  (if (s:find "scheme@%([%w%-%s]+%)> ")
-    (let [(ind1 ind2 result) (s:find "%$%d+ = ([^\n]+)\n")]
-      {:done? true
-       :error? false
-       :result result})
-    (if (s:find "scheme@%([%w%-%s]+%) %[%d+%]>")
-      {:done? true
-       :error? true
-       :result nil}
-      {:done? false
-       :error? false
-       :result s})))
+  (let [prompt (s:find "scheme@%([%w%-%s]+%)> ")]
+    (if prompt
+      (let [(ind1 ind2 result) (s:find "%$%d+ = ([^\n]+)\n")]
+        (if result
+          {:done? true
+           :error? false
+           :result result}
+          {:done? true
+           :error? false
+           :result (s:sub 1 (- prompt 1))}))
+      (if (s:find "scheme@%([%w%-%s]+%) %[%d+%]>")
+        {:done? true
+         :error? true
+         :result nil}
+        {:done? false
+         :error? false
+         :result s}))))
 
 (defn connect [opts]
   (disconnect)

@@ -154,9 +154,14 @@ local function disconnect()
 end
 _2amodule_2a["disconnect"] = disconnect
 local function parse_guile_result(s)
-  if s:find("scheme@%([%w%-%s]+%)> ") then
+  local prompt = s:find("scheme@%([%w%-%s]+%)> ")
+  if prompt then
     local ind1, ind2, result = s:find("%$%d+ = ([^\n]+)\n")
-    return {["done?"] = true, result = result, ["error?"] = false}
+    if result then
+      return {["done?"] = true, result = result, ["error?"] = false}
+    else
+      return {["done?"] = true, result = s:sub(1, (prompt - 1)), ["error?"] = false}
+    end
   else
     if s:find("scheme@%([%w%-%s]+%) %[%d+%]>") then
       return {["done?"] = true, ["error?"] = true, result = nil}
@@ -172,16 +177,16 @@ local function connect(opts)
   if ("string" ~= type(pipename)) then
     return log.append({(comment_prefix .. "g:conjure#client#guile#socket#pipename is not specified"), (comment_prefix .. "Please set it to the name of your Guile REPL pipe or pass it to :ConjureConnect [pipename]")})
   else
-    local function _23_()
+    local function _24_()
       return display_repl_status()
     end
-    local function _24_(msg, repl)
+    local function _25_(msg, repl)
       display_result(msg)
-      local function _25_()
+      local function _26_()
       end
-      return repl.send(",q\n", _25_)
+      return repl.send(",q\n", _26_)
     end
-    return a.assoc(state(), "repl", socket.start({["parse-output"] = parse_guile_result, pipename = pipename, ["on-success"] = _23_, ["on-error"] = _24_, ["on-failure"] = disconnect, ["on-close"] = disconnect, ["on-stray-output"] = display_result}))
+    return a.assoc(state(), "repl", socket.start({["parse-output"] = parse_guile_result, pipename = pipename, ["on-success"] = _24_, ["on-error"] = _25_, ["on-failure"] = disconnect, ["on-close"] = disconnect, ["on-stray-output"] = display_result}))
   end
 end
 _2amodule_2a["connect"] = connect
@@ -190,10 +195,10 @@ local function on_exit()
 end
 _2amodule_2a["on-exit"] = on_exit
 local function on_filetype()
-  local function _27_()
+  local function _28_()
     return connect()
   end
-  mapping.buf("GuileConnect", cfg({"mapping", "connect"}), _27_, {desc = "Connect to a REPL"})
+  mapping.buf("GuileConnect", cfg({"mapping", "connect"}), _28_, {desc = "Connect to a REPL"})
   return mapping.buf("GuileDisconnect", cfg({"mapping", "disconnect"}), disconnect, {desc = "Disconnect from the REPL"})
 end
 _2amodule_2a["on-filetype"] = on_filetype
