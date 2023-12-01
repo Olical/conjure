@@ -1,16 +1,16 @@
-local _2afile_2a = "fnl/conjure/remote/swank.fnl"
+-- [nfnl] Compiled from fnl/conjure/remote/swank.fnl by https://github.com/Olical/nfnl, do not edit.
 local _2amodule_name_2a = "conjure.remote.swank"
 local _2amodule_2a
 do
-  package.loaded[_2amodule_name_2a] = {}
-  _2amodule_2a = package.loaded[_2amodule_name_2a]
+  _G.package.loaded[_2amodule_name_2a] = {}
+  _2amodule_2a = _G.package.loaded[_2amodule_name_2a]
 end
 local _2amodule_locals_2a
 do
   _2amodule_2a["aniseed/locals"] = {}
   _2amodule_locals_2a = (_2amodule_2a)["aniseed/locals"]
 end
-local autoload = (require("conjure.aniseed.autoload")).autoload
+local autoload = (require("aniseed.autoload")).autoload
 local a, client, log, net, nvim, trn = autoload("conjure.aniseed.core"), autoload("conjure.client"), autoload("conjure.log"), autoload("conjure.net"), autoload("conjure.aniseed.nvim"), autoload("conjure.remote.transport.swank")
 do end (_2amodule_locals_2a)["a"] = a
 _2amodule_locals_2a["client"] = client
@@ -18,12 +18,14 @@ _2amodule_locals_2a["log"] = log
 _2amodule_locals_2a["net"] = net
 _2amodule_locals_2a["nvim"] = nvim
 _2amodule_locals_2a["trn"] = trn
+do local _ = {nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil} end
 local function send(conn, msg, cb)
   table.insert(conn.queue, 1, (cb or false))
   do end (conn.sock):write(trn.encode(msg))
   return nil
 end
 _2amodule_2a["send"] = send
+do local _ = {send, nil} end
 local function connect(opts)
   local conn = {decode = trn.decode, queue = {}}
   local function handle_message(err, chunk)
@@ -53,4 +55,5 @@ local function connect(opts)
   return conn
 end
 _2amodule_2a["connect"] = connect
+do local _ = {connect, nil} end
 return _2amodule_2a

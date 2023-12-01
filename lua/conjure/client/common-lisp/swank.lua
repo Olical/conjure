@@ -1,9 +1,9 @@
-local _2afile_2a = "fnl/conjure/client/common-lisp/swank.fnl"
+-- [nfnl] Compiled from fnl/conjure/client/common-lisp/swank.fnl by https://github.com/Olical/nfnl, do not edit.
 local _2amodule_name_2a = "conjure.client.common-lisp.swank"
 local _2amodule_2a
 do
-  package.loaded[_2amodule_name_2a] = {}
-  _2amodule_2a = package.loaded[_2amodule_name_2a]
+  _G.package.loaded[_2amodule_name_2a] = {}
+  _2amodule_2a = _G.package.loaded[_2amodule_name_2a]
 end
 local _2amodule_locals_2a
 do
@@ -28,6 +28,7 @@ local buf_suffix = ".lisp"
 _2amodule_2a["buf-suffix"] = buf_suffix
 local comment_prefix = "; "
 _2amodule_2a["comment-prefix"] = comment_prefix
+do local _ = {nil, nil} end
 local form_node_3f = ts["node-surrounded-by-form-pair-chars?"]
 _2amodule_2a["form-node?"] = form_node_3f
 local function iterate_backwards(f, lines)
@@ -64,6 +65,7 @@ local function _5_()
 end
 state = ((_2amodule_2a).state or client["new-state"](_5_))
 do end (_2amodule_locals_2a)["state"] = state
+do local _ = {nil, nil} end
 local function with_conn_or_warn(f, opts)
   local conn = state("conn")
   if conn then
@@ -73,6 +75,7 @@ local function with_conn_or_warn(f, opts)
   end
 end
 _2amodule_locals_2a["with-conn-or-warn"] = with_conn_or_warn
+do local _ = {with_conn_or_warn, nil} end
 local function connected_3f()
   if state("conn") then
     return true
@@ -81,6 +84,7 @@ local function connected_3f()
   end
 end
 _2amodule_locals_2a["connected?"] = connected_3f
+do local _ = {connected_3f, nil} end
 local function display_conn_status(status)
   local function _8_(conn)
     return log.append({("; " .. conn.host .. ":" .. conn.port .. " (" .. status .. ")")}, {["break?"] = true})
@@ -88,6 +92,7 @@ local function display_conn_status(status)
   return with_conn_or_warn(_8_)
 end
 _2amodule_locals_2a["display-conn-status"] = display_conn_status
+do local _ = {display_conn_status, nil} end
 local function disconnect()
   local function _9_(conn)
     conn.destroy()
@@ -97,6 +102,7 @@ local function disconnect()
   return with_conn_or_warn(_9_)
 end
 _2amodule_2a["disconnect"] = disconnect
+do local _ = {disconnect, nil} end
 local function escape_string(_in)
   local function replace(_in0, pat, rep)
     local s, c = string.gsub(_in0, pat, rep)
@@ -114,6 +120,7 @@ local function send(msg, context0, cb)
   return with_conn_or_warn(_10_)
 end
 _2amodule_locals_2a["send"] = send
+do local _ = {send, nil} end
 local function connect(opts)
   log.dbg(("connect called with: " .. a["pr-str"](opts)))
   local opts0 = (opts or {})
@@ -143,6 +150,7 @@ local function connect(opts)
   return send(":ok", _16_)
 end
 _2amodule_2a["connect"] = connect
+do local _ = {connect, nil} end
 local function try_ensure_conn()
   if not connected_3f() then
     return connect({["silent?"] = true})
@@ -151,6 +159,7 @@ local function try_ensure_conn()
   end
 end
 _2amodule_locals_2a["try-ensure-conn"] = try_ensure_conn
+do local _ = {try_ensure_conn, nil} end
 local function string_stream(str0)
   local index = 1
   local function _18_()
@@ -161,6 +170,7 @@ local function string_stream(str0)
   return _18_
 end
 _2amodule_locals_2a["string-stream"] = string_stream
+do local _ = {string_stream, nil} end
 local function display_stdout(msg)
   if ((nil ~= msg) and ("" ~= msg)) then
     return log.append(text["prefixed-lines"](msg, comment_prefix))
@@ -169,6 +179,7 @@ local function display_stdout(msg)
   end
 end
 _2amodule_locals_2a["display-stdout"] = display_stdout
+do local _ = {display_stdout, nil} end
 local function inner_results(received)
   local search_string = "(:return (:ok ("
   local tail_size = 5
@@ -176,6 +187,7 @@ local function inner_results(received)
   return string.sub(received, (idx + len), (string.len(received) - tail_size))
 end
 _2amodule_locals_2a["inner-results"] = inner_results
+do local _ = {inner_results, nil} end
 local function parse_separated_list(string_to_parse)
   local opened_quote = nil
   local escaped = false
@@ -241,6 +253,7 @@ local function parse_separated_list(string_to_parse)
   return vals
 end
 _2amodule_locals_2a["parse-separated-list"] = parse_separated_list
+do local _ = {parse_separated_list, nil} end
 local function parse_result(received)
   local function result_3f(response)
     return text["starts-with"](response, "(:return (:ok (")
@@ -261,6 +274,7 @@ local function parse_result(received)
   end
 end
 _2amodule_2a["parse-result"] = parse_result
+do local _ = {parse_result, nil} end
 local function eval_str(opts)
   log.dbg(("eval-str() called with: " .. a["pr-str"](opts)))
   try_ensure_conn()
@@ -294,6 +308,7 @@ local function eval_str(opts)
   end
 end
 _2amodule_2a["eval-str"] = eval_str
+do local _ = {eval_str, nil} end
 local function doc_str(opts)
   try_ensure_conn()
   local function _38_(_241)
@@ -302,11 +317,13 @@ local function doc_str(opts)
   return eval_str(a.update(opts, "code", _38_))
 end
 _2amodule_2a["doc-str"] = doc_str
+do local _ = {doc_str, nil} end
 local function eval_file(opts)
   try_ensure_conn()
   return eval_str(a.assoc(opts, "code", ("(load \"" .. opts["file-path"] .. "\")")))
 end
 _2amodule_2a["eval-file"] = eval_file
+do local _ = {eval_file, nil} end
 local function on_filetype()
   mapping.buf("CommonLispDisconnect", config["get-in"]({"client", "common_lisp", "swank", "mapping", "disconnect"}), disconnect, {desc = "Disconnect from the REPL"})
   local function _39_()
@@ -315,14 +332,17 @@ local function on_filetype()
   return mapping.buf("CommonLispConnect", config["get-in"]({"client", "common_lisp", "swank", "mapping", "connect"}), _39_, {desc = "Connect to a REPL"})
 end
 _2amodule_2a["on-filetype"] = on_filetype
+do local _ = {on_filetype, nil} end
 local function on_load()
   return connect({})
 end
 _2amodule_2a["on-load"] = on_load
+do local _ = {on_load, nil} end
 local function on_exit()
   return disconnect()
 end
 _2amodule_2a["on-exit"] = on_exit
+do local _ = {on_exit, nil} end
 local function completions(opts)
   try_ensure_conn()
   local code = ("(swank:simple-completions " .. a["pr-str"](opts.prefix) .. " " .. a["pr-str"](opts.context) .. ")")
@@ -346,4 +366,5 @@ local function completions(opts)
   return eval_str(opts)
 end
 _2amodule_2a["completions"] = completions
+do local _ = {completions, nil} end
 return _2amodule_2a

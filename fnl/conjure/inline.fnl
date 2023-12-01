@@ -1,3 +1,5 @@
+(import-macros {: module : def : defn : defonce : def- : defn- : defonce- : wrap-last-expr : wrap-module-body : deftest} :nfnl.macros.aniseed)
+
 (module conjure.inline
   {autoload {a conjure.aniseed.core
              config conjure.config
@@ -27,3 +29,5 @@
         (a.get opts :buf 0) ns-id opts.line
         [[(sanitise-text opts.text) hl-group]]
         {}))))
+
+*module*

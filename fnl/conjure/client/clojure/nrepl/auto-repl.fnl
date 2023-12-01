@@ -1,3 +1,5 @@
+(import-macros {: module : def : defn : defonce : def- : defn- : defonce- : wrap-last-expr : wrap-module-body : deftest} :nfnl.macros.aniseed)
+
 (module conjure.client.clojure.nrepl.auto-repl
   {autoload {str conjure.aniseed.string
              nvim conjure.aniseed.nvim
@@ -52,3 +54,5 @@
           (a.spit port-file port))
         (log.append [(.. "; Starting auto-repl: " cmd)])
         proc))))
+
+*module*

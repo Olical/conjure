@@ -1,22 +1,23 @@
-local _2afile_2a = "fnl/conjure/remote/netrepl.fnl"
+-- [nfnl] Compiled from fnl/conjure/remote/netrepl.fnl by https://github.com/Olical/nfnl, do not edit.
 local _2amodule_name_2a = "conjure.remote.netrepl"
 local _2amodule_2a
 do
-  package.loaded[_2amodule_name_2a] = {}
-  _2amodule_2a = package.loaded[_2amodule_name_2a]
+  _G.package.loaded[_2amodule_name_2a] = {}
+  _2amodule_2a = _G.package.loaded[_2amodule_name_2a]
 end
 local _2amodule_locals_2a
 do
   _2amodule_2a["aniseed/locals"] = {}
   _2amodule_locals_2a = (_2amodule_2a)["aniseed/locals"]
 end
-local autoload = (require("conjure.aniseed.autoload")).autoload
+local autoload = (require("aniseed.autoload")).autoload
 local a, client, log, net, trn = autoload("conjure.aniseed.core"), autoload("conjure.client"), autoload("conjure.log"), autoload("conjure.net"), autoload("conjure.remote.transport.netrepl")
 do end (_2amodule_locals_2a)["a"] = a
 _2amodule_locals_2a["client"] = client
 _2amodule_locals_2a["log"] = log
 _2amodule_locals_2a["net"] = net
 _2amodule_locals_2a["trn"] = trn
+do local _ = {nil, nil, nil, nil, nil, nil, nil, nil, nil, nil} end
 local function send(conn, msg, cb, prompt_3f)
   log.dbg("send", msg)
   table.insert(conn.queue, 1, (cb or false))
@@ -28,6 +29,7 @@ local function send(conn, msg, cb, prompt_3f)
   return nil
 end
 _2amodule_2a["send"] = send
+do local _ = {send, nil} end
 local function connect(opts)
   local conn = {decode = trn.decoder(), queue = {}}
   local function handle_message(err, chunk)
@@ -59,4 +61,5 @@ local function connect(opts)
   return conn
 end
 _2amodule_2a["connect"] = connect
+do local _ = {connect, nil} end
 return _2amodule_2a

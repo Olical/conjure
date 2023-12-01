@@ -1,3 +1,5 @@
+(import-macros {: module : def : defn : defonce : def- : defn- : defonce- : wrap-last-expr : wrap-module-body : deftest} :nfnl.macros.aniseed)
+
 (module conjure.client.clojure.nrepl.action
   {autoload {text conjure.text
              extract conjure.extract
@@ -697,3 +699,5 @@
     [:out-unsubscribe]
     (fn [conn]
       (server.send {:op :out-unsubscribe}))))
+
+*module*

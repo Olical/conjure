@@ -1,16 +1,16 @@
-local _2afile_2a = "fnl/conjure/mapping.fnl"
+-- [nfnl] Compiled from fnl/conjure/mapping.fnl by https://github.com/Olical/nfnl, do not edit.
 local _2amodule_name_2a = "conjure.mapping"
 local _2amodule_2a
 do
-  package.loaded[_2amodule_name_2a] = {}
-  _2amodule_2a = package.loaded[_2amodule_name_2a]
+  _G.package.loaded[_2amodule_name_2a] = {}
+  _2amodule_2a = _G.package.loaded[_2amodule_name_2a]
 end
 local _2amodule_locals_2a
 do
   _2amodule_2a["aniseed/locals"] = {}
   _2amodule_locals_2a = (_2amodule_2a)["aniseed/locals"]
 end
-local autoload = (require("conjure.aniseed.autoload")).autoload
+local autoload = (require("aniseed.autoload")).autoload
 local a, bridge, client, config, eval, extract, log, nvim, school, str, util, _ = autoload("conjure.aniseed.core"), autoload("conjure.bridge"), autoload("conjure.client"), autoload("conjure.config"), autoload("conjure.eval"), autoload("conjure.extract"), autoload("conjure.log"), autoload("conjure.aniseed.nvim"), autoload("conjure.school"), autoload("conjure.aniseed.string"), autoload("conjure.util"), nil
 _2amodule_locals_2a["a"] = a
 _2amodule_locals_2a["bridge"] = bridge
@@ -24,14 +24,17 @@ _2amodule_locals_2a["school"] = school
 _2amodule_locals_2a["str"] = str
 _2amodule_locals_2a["util"] = util
 _2amodule_locals_2a["_"] = _
+do local _ = {nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil} end
 local function cfg(k)
   return config["get-in"]({"mapping", k})
 end
 _2amodule_locals_2a["cfg"] = cfg
+do local _ = {cfg, nil} end
 local function vim_repeat(mapping)
   return ("repeat#set(\"" .. nvim.fn.escape(mapping, "\"") .. "\", 1)")
 end
 _2amodule_locals_2a["vim-repeat"] = vim_repeat
+do local _ = {vim_repeat, nil} end
 local function buf(name_suffix, mapping_suffix, handler_fn, opts)
   if mapping_suffix then
     local mapping
@@ -63,6 +66,7 @@ local function buf(name_suffix, mapping_suffix, handler_fn, opts)
   end
 end
 _2amodule_2a["buf"] = buf
+do local _ = {buf, nil} end
 local function on_filetype()
   buf("LogSplit", cfg("log_split"), util["wrap-require-fn-call"]("conjure.log", "split"), {desc = "Open log in new horizontal split window"})
   buf("LogVSplit", cfg("log_vsplit"), util["wrap-require-fn-call"]("conjure.log", "vsplit"), {desc = "Open log in new vertical split window"})
@@ -108,6 +112,7 @@ local function on_filetype()
   return client["optional-call"]("on-filetype")
 end
 _2amodule_2a["on-filetype"] = on_filetype
+do local _ = {on_filetype, nil} end
 local function on_exit()
   local function _11_()
     return client["optional-call"]("on-exit")
@@ -115,10 +120,12 @@ local function on_exit()
   return client["each-loaded-client"](_11_)
 end
 _2amodule_2a["on-exit"] = on_exit
+do local _ = {on_exit, nil} end
 local function on_quit()
   return log["close-hud"]()
 end
 _2amodule_2a["on-quit"] = on_quit
+do local _ = {on_quit, nil} end
 local function init(filetypes)
   nvim.ex.augroup("conjure_init_filetypes")
   nvim.ex.autocmd_()
@@ -143,6 +150,7 @@ local function init(filetypes)
   return nvim.ex.augroup("END")
 end
 _2amodule_2a["init"] = init
+do local _ = {init, nil} end
 local function eval_ranged_command(start, _end, code)
   if ("" == code) then
     return eval.range(a.dec(start), _end)
@@ -151,6 +159,7 @@ local function eval_ranged_command(start, _end, code)
   end
 end
 _2amodule_2a["eval-ranged-command"] = eval_ranged_command
+do local _ = {eval_ranged_command, nil} end
 local function connect_command(...)
   local args = {...}
   local function _17_(...)
@@ -168,6 +177,7 @@ local function connect_command(...)
   return client.call("connect", _17_(...))
 end
 _2amodule_2a["connect-command"] = connect_command
+do local _ = {connect_command, nil} end
 local function client_state_command(state_key)
   if a["empty?"](state_key) then
     return a.println(client["state-key"]())
@@ -176,6 +186,7 @@ local function client_state_command(state_key)
   end
 end
 _2amodule_2a["client-state-command"] = client_state_command
+do local _ = {client_state_command, nil} end
 local function omnifunc(find_start_3f, base)
   if find_start_3f then
     local _let_19_ = nvim.win_get_cursor(0)
@@ -189,6 +200,7 @@ local function omnifunc(find_start_3f, base)
   end
 end
 _2amodule_2a["omnifunc"] = omnifunc
+do local _ = {omnifunc, nil} end
 nvim.ex.function_(str.join("\n", {"ConjureEvalMotionOpFunc(kind)", "call luaeval(\"require('conjure.eval')['selection'](_A)\", a:kind)", "endfunction"}))
 nvim.ex.function_(str.join("\n", {"ConjureOmnifunc(findstart, base)", "return luaeval(\"require('conjure.mapping')['omnifunc'](_A[1] == 1, _A[2])\", [a:findstart, a:base])", "endfunction"}))
 local function _22_(_241)

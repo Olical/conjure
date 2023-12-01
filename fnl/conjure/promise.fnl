@@ -1,3 +1,5 @@
+(import-macros {: module : def : defn : defonce : def- : defn- : defonce- : wrap-last-expr : wrap-module-body : deftest} :nfnl.macros.aniseed)
+
 (module conjure.promise
   {autoload {a conjure.aniseed.core
              nvim conjure.aniseed.nvim
@@ -36,3 +38,5 @@
     (a.get opts :timeout 10000)
     (.. "luaeval(\"require('conjure.promise')['done?']('" id "')\")")
     (a.get opts :interval 50)))
+
+*module*

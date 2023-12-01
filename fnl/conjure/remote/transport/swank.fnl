@@ -1,3 +1,5 @@
+(import-macros {: module : def : defn : defonce : def- : defn- : defonce- : wrap-last-expr : wrap-module-body : deftest} :nfnl.macros.aniseed)
+
 (module conjure.remote.transport.swank
   {autoload {a conjure.aniseed.core
              log conjure.log}})
@@ -11,3 +13,5 @@
   (let [len (tonumber (string.sub msg 1 7) 16)
         cmd (string.sub msg 7 len)]
     cmd))
+
+*module*

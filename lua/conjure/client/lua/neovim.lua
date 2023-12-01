@@ -1,16 +1,16 @@
-local _2afile_2a = "fnl/conjure/client/lua/neovim.fnl"
+-- [nfnl] Compiled from fnl/conjure/client/lua/neovim.fnl by https://github.com/Olical/nfnl, do not edit.
 local _2amodule_name_2a = "conjure.client.lua.neovim"
 local _2amodule_2a
 do
-  package.loaded[_2amodule_name_2a] = {}
-  _2amodule_2a = package.loaded[_2amodule_name_2a]
+  _G.package.loaded[_2amodule_name_2a] = {}
+  _2amodule_2a = _G.package.loaded[_2amodule_name_2a]
 end
 local _2amodule_locals_2a
 do
   _2amodule_2a["aniseed/locals"] = {}
   _2amodule_locals_2a = (_2amodule_2a)["aniseed/locals"]
 end
-local autoload = (require("conjure.aniseed.autoload")).autoload
+local autoload = (require("aniseed.autoload")).autoload
 local a, client, config, extract, fs, log, mapping, nvim, stdio, str, text, _ = autoload("conjure.aniseed.core"), autoload("conjure.client"), autoload("conjure.config"), autoload("conjure.extract"), autoload("conjure.fs"), autoload("conjure.log"), autoload("conjure.mapping"), autoload("conjure.aniseed.nvim"), autoload("conjure.remote.stdio"), autoload("conjure.aniseed.string"), autoload("conjure.text"), nil
 _2amodule_locals_2a["a"] = a
 _2amodule_locals_2a["client"] = client
@@ -24,14 +24,18 @@ _2amodule_locals_2a["stdio"] = stdio
 _2amodule_locals_2a["str"] = str
 _2amodule_locals_2a["text"] = text
 _2amodule_locals_2a["_"] = _
+do local _ = {nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil} end
 local buf_suffix = ".lua"
 _2amodule_2a["buf-suffix"] = buf_suffix
+do local _ = {nil, nil} end
 local comment_prefix = "-- "
 _2amodule_2a["comment-prefix"] = comment_prefix
+do local _ = {nil, nil} end
 local function form_node_3f(node)
   return (("function_call" == node:type()) or ("function_definition" == node:type()) or ("function_declaration" == node:type()) or ("local_declaration" == node:type()) or ("variable_declaration" == node:type()) or ("if_statement" == node:type()))
 end
 _2amodule_2a["form-node?"] = form_node_3f
+do local _ = {form_node_3f, nil} end
 config.merge({client = {lua = {neovim = {persistent = "debug"}}}})
 if config["get-in"]({"mapping", "enable_defaults"}) then
   config.merge({client = {lua = {neovim = {mapping = {reset_env = "rr", reset_all_envs = "ra"}}}}})
@@ -39,14 +43,17 @@ else
 end
 local cfg = config["get-in-fn"]({"client", "lua", "neovim"})
 do end (_2amodule_locals_2a)["cfg"] = cfg
+do local _ = {nil, nil} end
 local repls = ((_2amodule_2a).repls or {})
 do end (_2amodule_locals_2a)["repls"] = repls
+do local _ = {nil, nil} end
 local function reset_env(filename)
   local filename0 = (filename or fs["localise-path"](extract["file-path"]()))
   do end (repls)[filename0] = nil
   return log.append({(comment_prefix .. "Reset environment for " .. filename0)}, {["break?"] = true})
 end
 _2amodule_2a["reset-env"] = reset_env
+do local _ = {reset_env, nil} end
 local function reset_all_envs()
   local function _2_(filename)
     repls[filename] = nil
@@ -56,6 +63,7 @@ local function reset_all_envs()
   return log.append({(comment_prefix .. "Reset all environments")}, {["break?"] = true})
 end
 _2amodule_2a["reset-all-envs"] = reset_all_envs
+do local _ = {reset_all_envs, nil} end
 local function on_filetype()
   local function _3_()
     return reset_env()
@@ -67,6 +75,7 @@ local function on_filetype()
   return mapping.buf("LuaResetAllEnvs", cfg({"mapping", "reset_all_envs"}), _4_)
 end
 _2amodule_2a["on-filetype"] = on_filetype
+do local _ = {on_filetype, nil} end
 local function display(out, ret, err)
   local outs
   local function _5_(_241)
@@ -89,6 +98,7 @@ local function display(out, ret, err)
   return log.append(str.split(("res = " .. vim.inspect(ret)), "\n"))
 end
 _2amodule_locals_2a["display"] = display
+do local _ = {display, nil} end
 local function lua_compile(opts)
   if (opts.origin == "file") then
     return loadfile(opts["file-path"])
@@ -102,6 +112,7 @@ local function lua_compile(opts)
   end
 end
 _2amodule_locals_2a["lua-compile"] = lua_compile
+do local _ = {lua_compile, nil} end
 local function default_env()
   local base = setmetatable({["REDIRECTED-OUTPUT"] = "", io = setmetatable({}, {__index = _G.io})}, {__index = _G})
   local print_redirected
@@ -127,6 +138,7 @@ local function default_env()
   return base
 end
 _2amodule_2a["default-env"] = default_env
+do local _ = {default_env, nil} end
 local function pcall_default(f)
   local env = default_env()
   setfenv(f, env)
@@ -134,6 +146,7 @@ local function pcall_default(f)
   return status, ret, env["REDIRECTED-OUTPUT"]
 end
 _2amodule_locals_2a["pcall-default"] = pcall_default
+do local _ = {pcall_default, nil} end
 local function pcall_persistent_debug(file, f)
   repls[file] = (repls[file] or {})
   do end (repls[file])["env"] = (repls[file].env or default_env())
@@ -161,6 +174,7 @@ local function pcall_persistent_debug(file, f)
   return status, ret, repls[file].env["REDIRECTED-OUTPUT"]
 end
 _2amodule_locals_2a["pcall-persistent-debug"] = pcall_persistent_debug
+do local _ = {pcall_persistent_debug, nil} end
 local function lua_eval(opts)
   local f, e = lua_compile(opts)
   if f then
@@ -191,6 +205,7 @@ local function lua_eval(opts)
   end
 end
 _2amodule_locals_2a["lua-eval"] = lua_eval
+do local _ = {lua_eval, nil} end
 local function eval_str(opts)
   local out, ret, err = lua_eval(opts)
   display(out, ret, err)
@@ -201,6 +216,7 @@ local function eval_str(opts)
   end
 end
 _2amodule_2a["eval-str"] = eval_str
+do local _ = {eval_str, nil} end
 local function eval_file(opts)
   reset_env(opts["file-path"])
   local out, ret, err = lua_eval(opts)
@@ -212,4 +228,5 @@ local function eval_file(opts)
   end
 end
 _2amodule_2a["eval-file"] = eval_file
+do local _ = {eval_file, nil} end
 return _2amodule_2a

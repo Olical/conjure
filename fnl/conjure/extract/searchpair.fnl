@@ -1,3 +1,5 @@
+(import-macros {: module : def : defn : defonce : def- : defn- : defonce- : wrap-last-expr : wrap-module-body : deftest} :nfnl.macros.aniseed)
+
 (module conjure.extract.searchpair
   {autoload {a conjure.aniseed.core
              nvim conjure.aniseed.nvim
@@ -115,3 +117,5 @@
   (if opts.root?
     (a.last forms)
     (a.first forms)))
+
+*module*

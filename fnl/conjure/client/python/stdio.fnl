@@ -1,3 +1,5 @@
+(import-macros {: module : def : defn : defonce : def- : defn- : defonce- : wrap-last-expr : wrap-module-body : deftest} :nfnl.macros.aniseed)
+
 (module conjure.client.python.stdio
   {autoload {a conjure.aniseed.core
              extract conjure.extract
@@ -293,3 +295,5 @@
     :PythonInterrupt (cfg [:mapping :interrupt])
     interrupt
     {:desc "Interrupt the current evaluation"}))
+
+*module*

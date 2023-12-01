@@ -1,3 +1,5 @@
+(import-macros {: module : def : defn : defonce : def- : defn- : defonce- : wrap-last-expr : wrap-module-body : deftest} :nfnl.macros.aniseed)
+
 (module conjure.remote.transport.netrepl
   {autoload {bit bit
              a conjure.aniseed.core
@@ -66,3 +68,5 @@
       (let [(n rem) (split chunk)]
         (set awaiting n)
         (decode rem acc)))))
+
+*module*

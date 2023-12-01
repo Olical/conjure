@@ -1,16 +1,16 @@
-local _2afile_2a = "fnl/conjure/tree-sitter.fnl"
+-- [nfnl] Compiled from fnl/conjure/tree-sitter.fnl by https://github.com/Olical/nfnl, do not edit.
 local _2amodule_name_2a = "conjure.tree-sitter"
 local _2amodule_2a
 do
-  package.loaded[_2amodule_name_2a] = {}
-  _2amodule_2a = package.loaded[_2amodule_name_2a]
+  _G.package.loaded[_2amodule_name_2a] = {}
+  _2amodule_2a = _G.package.loaded[_2amodule_name_2a]
 end
 local _2amodule_locals_2a
 do
   _2amodule_2a["aniseed/locals"] = {}
   _2amodule_locals_2a = (_2amodule_2a)["aniseed/locals"]
 end
-local autoload = (require("conjure.aniseed.autoload")).autoload
+local autoload = (require("aniseed.autoload")).autoload
 local a, client, config, nvim, str, text = autoload("conjure.aniseed.core"), autoload("conjure.client"), autoload("conjure.config"), autoload("conjure.aniseed.nvim"), autoload("conjure.aniseed.string"), autoload("conjure.text")
 do end (_2amodule_locals_2a)["a"] = a
 _2amodule_locals_2a["client"] = client
@@ -18,6 +18,7 @@ _2amodule_locals_2a["config"] = config
 _2amodule_locals_2a["nvim"] = nvim
 _2amodule_locals_2a["str"] = str
 _2amodule_locals_2a["text"] = text
+do local _ = {nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil} end
 local ts
 do
   local ok_3f, x = nil, nil
@@ -32,6 +33,7 @@ do
   end
 end
 _2amodule_locals_2a["ts"] = ts
+do local _ = {nil, nil} end
 local function enabled_3f()
   local function _3_()
     local ok_3f, parser = pcall(vim.treesitter.get_parser)
@@ -44,6 +46,7 @@ local function enabled_3f()
   end
 end
 _2amodule_2a["enabled?"] = enabled_3f
+do local _ = {enabled_3f, nil} end
 local function parse_21()
   local ok_3f, parser = pcall(vim.treesitter.get_parser)
   if ok_3f then
@@ -53,6 +56,7 @@ local function parse_21()
   end
 end
 _2amodule_2a["parse!"] = parse_21
+do local _ = {parse_21, nil} end
 local function node__3estr(node)
   if node then
     if vim.treesitter.get_node_text then
@@ -65,10 +69,12 @@ local function node__3estr(node)
   end
 end
 _2amodule_2a["node->str"] = node__3estr
+do local _ = {node__3estr, nil} end
 local function lisp_comment_node_3f(node)
   return text["starts-with"](node__3estr(node), "(comment")
 end
 _2amodule_2a["lisp-comment-node?"] = lisp_comment_node_3f
+do local _ = {lisp_comment_node_3f, nil} end
 local function parent(node)
   if node then
     return node:parent()
@@ -77,10 +83,12 @@ local function parent(node)
   end
 end
 _2amodule_2a["parent"] = parent
+do local _ = {parent, nil} end
 local function document_3f(node)
   return not parent(node)
 end
 _2amodule_2a["document?"] = document_3f
+do local _ = {document_3f, nil} end
 local function range(node)
   if node then
     local sr, sc, er, ec = node:range()
@@ -90,6 +98,7 @@ local function range(node)
   end
 end
 _2amodule_2a["range"] = range
+do local _ = {range, nil} end
 local function node__3etable(node)
   if (a.get(node, "range") and a.get(node, "content")) then
     return node
@@ -100,6 +109,7 @@ local function node__3etable(node)
   end
 end
 _2amodule_2a["node->table"] = node__3etable
+do local _ = {node__3etable, nil} end
 local function get_root(node)
   parse_21()
   local node0 = (node or ts.get_node_at_cursor())
@@ -115,6 +125,7 @@ local function get_root(node)
   end
 end
 _2amodule_2a["get-root"] = get_root
+do local _ = {get_root, nil} end
 local function leaf_3f(node)
   if node then
     return (0 == node:child_count())
@@ -123,6 +134,7 @@ local function leaf_3f(node)
   end
 end
 _2amodule_2a["leaf?"] = leaf_3f
+do local _ = {leaf_3f, nil} end
 local function sym_3f(node)
   if node then
     return (string.find(node:type(), "sym") or client["optional-call"]("symbol-node?", node))
@@ -131,6 +143,7 @@ local function sym_3f(node)
   end
 end
 _2amodule_2a["sym?"] = sym_3f
+do local _ = {sym_3f, nil} end
 local function get_leaf(node)
   parse_21()
   local node0 = (node or ts.get_node_at_cursor())
@@ -145,6 +158,7 @@ local function get_leaf(node)
   end
 end
 _2amodule_2a["get-leaf"] = get_leaf
+do local _ = {get_leaf, nil} end
 local function node_surrounded_by_form_pair_chars_3f(node, extra_pairs)
   local node_str = node__3estr(node)
   local first_and_last_chars = text["first-and-last-chars"](node_str)
@@ -163,6 +177,7 @@ local function node_surrounded_by_form_pair_chars_3f(node, extra_pairs)
   return (a.some(_17_, config["get-in"]({"extract", "form_pairs"})) or a.some(_20_, extra_pairs) or false)
 end
 _2amodule_2a["node-surrounded-by-form-pair-chars?"] = node_surrounded_by_form_pair_chars_3f
+do local _ = {node_surrounded_by_form_pair_chars_3f, nil} end
 local function node_prefixed_by_chars_3f(node, prefixes)
   local node_str = node__3estr(node)
   local function _21_(prefix)
@@ -171,6 +186,7 @@ local function node_prefixed_by_chars_3f(node, prefixes)
   return (a.some(_21_, prefixes) or false)
 end
 _2amodule_2a["node-prefixed-by-chars?"] = node_prefixed_by_chars_3f
+do local _ = {node_prefixed_by_chars_3f, nil} end
 local function get_form(node)
   if not node then
     parse_21()
@@ -200,4 +216,5 @@ local function get_form(node)
   end
 end
 _2amodule_2a["get-form"] = get_form
+do local _ = {get_form, nil} end
 return _2amodule_2a

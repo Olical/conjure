@@ -1,16 +1,16 @@
-local _2afile_2a = "fnl/conjure/eval.fnl"
+-- [nfnl] Compiled from fnl/conjure/eval.fnl by https://github.com/Olical/nfnl, do not edit.
 local _2amodule_name_2a = "conjure.eval"
 local _2amodule_2a
 do
-  package.loaded[_2amodule_name_2a] = {}
-  _2amodule_2a = package.loaded[_2amodule_name_2a]
+  _G.package.loaded[_2amodule_name_2a] = {}
+  _2amodule_2a = _G.package.loaded[_2amodule_name_2a]
 end
 local _2amodule_locals_2a
 do
   _2amodule_2a["aniseed/locals"] = {}
   _2amodule_locals_2a = (_2amodule_2a)["aniseed/locals"]
 end
-local autoload = (require("conjure.aniseed.autoload")).autoload
+local autoload = (require("aniseed.autoload")).autoload
 local a, buffer, client, config, editor, event, extract, fs, inline, log, nu, nvim, promise, str, text, timer, uuid = autoload("conjure.aniseed.core"), autoload("conjure.buffer"), autoload("conjure.client"), autoload("conjure.config"), autoload("conjure.editor"), autoload("conjure.event"), autoload("conjure.extract"), autoload("conjure.fs"), autoload("conjure.inline"), autoload("conjure.log"), autoload("conjure.aniseed.nvim.util"), autoload("conjure.aniseed.nvim"), autoload("conjure.promise"), autoload("conjure.aniseed.string"), autoload("conjure.text"), autoload("conjure.timer"), autoload("conjure.uuid")
 do end (_2amodule_locals_2a)["a"] = a
 _2amodule_locals_2a["buffer"] = buffer
@@ -29,6 +29,7 @@ _2amodule_locals_2a["str"] = str
 _2amodule_locals_2a["text"] = text
 _2amodule_locals_2a["timer"] = timer
 _2amodule_locals_2a["uuid"] = uuid
+do local _ = {nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil} end
 local function preview(opts)
   local sample_limit = editor["percent-width"](config["get-in"]({"preview", "sample_limit"}))
   local function _1_()
@@ -41,10 +42,12 @@ local function preview(opts)
   return str.join({client.get("comment-prefix"), opts.action, " (", opts.origin, "): ", _1_()})
 end
 _2amodule_locals_2a["preview"] = preview
+do local _ = {preview, nil} end
 local function display_request(opts)
   return log.append({opts.preview}, a.merge(opts, {["break?"] = true}))
 end
 _2amodule_locals_2a["display-request"] = display_request
+do local _ = {display_request, nil} end
 local function highlight_range(range)
   if (config["get-in"]({"highlight", "enabled"}) and vim.highlight and range) then
     local bufnr = (range.bufnr or nvim.buf.nr())
@@ -64,6 +67,7 @@ local function highlight_range(range)
   end
 end
 _2amodule_locals_2a["highlight-range"] = highlight_range
+do local _ = {highlight_range, nil} end
 local function with_last_result_hook(opts)
   local buf = nvim.win_get_buf(0)
   local line = a.dec(a.first(nvim.win_get_cursor(0)))
@@ -85,6 +89,7 @@ local function with_last_result_hook(opts)
   return a.update(opts, "on-result", _5_)
 end
 _2amodule_locals_2a["with-last-result-hook"] = with_last_result_hook
+do local _ = {with_last_result_hook, nil} end
 local function file()
   event.emit("eval", "file")
   local opts = {["file-path"] = fs["localise-path"](extract["file-path"]()), origin = "file", action = "eval"}
@@ -93,6 +98,7 @@ local function file()
   return client.call("eval-file", with_last_result_hook(opts))
 end
 _2amodule_2a["file"] = file
+do local _ = {file, nil} end
 local function assoc_context(opts)
   if not opts.context then
     opts.context = (nvim.b["conjure#context"] or extract.context())
@@ -101,6 +107,7 @@ local function assoc_context(opts)
   return opts
 end
 _2amodule_locals_2a["assoc-context"] = assoc_context
+do local _ = {assoc_context, nil} end
 local function client_exec_fn(action, f_name, base_opts)
   local function _10_(opts)
     local opts0 = a.merge(opts, base_opts, {action = action, ["file-path"] = extract["file-path"]()})
@@ -127,6 +134,7 @@ local function client_exec_fn(action, f_name, base_opts)
   return _10_
 end
 _2amodule_locals_2a["client-exec-fn"] = client_exec_fn
+do local _ = {client_exec_fn, nil} end
 local function apply_gsubs(code)
   if code then
     local function _17_(code0, _14_)
@@ -149,8 +157,10 @@ local function apply_gsubs(code)
   end
 end
 _2amodule_locals_2a["apply-gsubs"] = apply_gsubs
+do local _ = {apply_gsubs, nil} end
 local previous_evaluations = ((_2amodule_2a)["previous-evaluations"] or {})
 do end (_2amodule_2a)["previous-evaluations"] = previous_evaluations
+do local _ = {nil, nil} end
 local function eval_str(opts)
   a.assoc(previous_evaluations, a.get(client["current-client-module-name"](), "module-name", "unknown"), opts)
   highlight_range(opts.range)
@@ -167,6 +177,7 @@ local function eval_str(opts)
   return nil
 end
 _2amodule_2a["eval-str"] = eval_str
+do local _ = {eval_str, nil} end
 local function previous()
   local client_name = a.get(client["current-client-module-name"](), "module-name", "unknown")
   local opts = a.get(previous_evaluations, client_name)
@@ -177,6 +188,7 @@ local function previous()
   end
 end
 _2amodule_2a["previous"] = previous
+do local _ = {previous, nil} end
 local function wrap_emit(name, f)
   local function _22_(...)
     event.emit(name)
@@ -185,10 +197,13 @@ local function wrap_emit(name, f)
   return _22_
 end
 _2amodule_2a["wrap-emit"] = wrap_emit
+do local _ = {wrap_emit, nil} end
 local doc_str = wrap_emit("doc", client_exec_fn("doc", "doc-str"))
 do end (_2amodule_locals_2a)["doc-str"] = doc_str
+do local _ = {nil, nil} end
 local def_str = wrap_emit("def", client_exec_fn("def", "def-str", {["suppress-hud?"] = true, ["jumping?"] = true}))
 do end (_2amodule_locals_2a)["def-str"] = def_str
+do local _ = {nil, nil} end
 local function current_form(extra_opts)
   local form = extract.form({})
   if form then
@@ -202,6 +217,7 @@ local function current_form(extra_opts)
   end
 end
 _2amodule_2a["current-form"] = current_form
+do local _ = {current_form, nil} end
 local function replace_form()
   local buf = nvim.win_get_buf(0)
   local win = nvim.tabpage_get_win(0)
@@ -221,6 +237,7 @@ local function replace_form()
   end
 end
 _2amodule_2a["replace-form"] = replace_form
+do local _ = {replace_form, nil} end
 local function root_form()
   local form = extract.form({["root?"] = true})
   if form then
@@ -233,6 +250,7 @@ local function root_form()
   end
 end
 _2amodule_2a["root-form"] = root_form
+do local _ = {root_form, nil} end
 local function marked_form(mark)
   local comment_prefix = client.get("comment-prefix")
   local mark0 = (mark or extract["prompt-char"]())
@@ -250,6 +268,7 @@ local function marked_form(mark)
   return mark0
 end
 _2amodule_2a["marked-form"] = marked_form
+do local _ = {marked_form, nil} end
 local function insert_result_comment(tag, input)
   local buf = nvim.win_get_buf(0)
   local comment_prefix = (config["get-in"]({"eval", "comment_prefix"}) or client.get("comment-prefix"))
@@ -267,18 +286,22 @@ local function insert_result_comment(tag, input)
   end
 end
 _2amodule_locals_2a["insert-result-comment"] = insert_result_comment
+do local _ = {insert_result_comment, nil} end
 local function comment_current_form()
   return insert_result_comment("current-form", extract.form({}))
 end
 _2amodule_2a["comment-current-form"] = comment_current_form
+do local _ = {comment_current_form, nil} end
 local function comment_root_form()
   return insert_result_comment("root-form", extract.form({["root?"] = true}))
 end
 _2amodule_2a["comment-root-form"] = comment_root_form
+do local _ = {comment_root_form, nil} end
 local function comment_word()
   return insert_result_comment("word", extract.word())
 end
 _2amodule_2a["comment-word"] = comment_word
+do local _ = {comment_word, nil} end
 local function word()
   local _let_35_ = extract.word()
   local content = _let_35_["content"]
@@ -290,6 +313,7 @@ local function word()
   end
 end
 _2amodule_2a["word"] = word
+do local _ = {word, nil} end
 local function doc_word()
   local _let_37_ = extract.word()
   local content = _let_37_["content"]
@@ -301,6 +325,7 @@ local function doc_word()
   end
 end
 _2amodule_2a["doc-word"] = doc_word
+do local _ = {doc_word, nil} end
 local function def_word()
   local _let_39_ = extract.word()
   local content = _let_39_["content"]
@@ -312,6 +337,7 @@ local function def_word()
   end
 end
 _2amodule_2a["def-word"] = def_word
+do local _ = {def_word, nil} end
 local function buf()
   local _let_41_ = extract.buf()
   local content = _let_41_["content"]
@@ -319,10 +345,12 @@ local function buf()
   return eval_str({code = content, range = range, origin = "buf"})
 end
 _2amodule_2a["buf"] = buf
+do local _ = {buf, nil} end
 local function command(code)
   return eval_str({code = code, origin = "command"})
 end
 _2amodule_2a["command"] = command
+do local _ = {command, nil} end
 local function range(start, _end)
   local _let_42_ = extract.range(start, _end)
   local content = _let_42_["content"]
@@ -330,6 +358,7 @@ local function range(start, _end)
   return eval_str({code = content, range = range0, origin = "range"})
 end
 _2amodule_2a["range"] = range
+do local _ = {range, nil} end
 local function selection(kind)
   local _let_43_ = extract.selection({kind = (kind or nvim.fn.visualmode()), ["visual?"] = not kind})
   local content = _let_43_["content"]
@@ -337,6 +366,7 @@ local function selection(kind)
   return eval_str({code = content, range = range0, origin = "selection"})
 end
 _2amodule_2a["selection"] = selection
+do local _ = {selection, nil} end
 local function wrap_completion_result(result)
   if a["string?"](result) then
     return {word = result}
@@ -345,6 +375,7 @@ local function wrap_completion_result(result)
   end
 end
 _2amodule_locals_2a["wrap-completion-result"] = wrap_completion_result
+do local _ = {wrap_completion_result, nil} end
 local function completions(prefix, cb)
   local function cb_wrap(results)
     local function _45_()
@@ -364,16 +395,19 @@ local function completions(prefix, cb)
   end
 end
 _2amodule_2a["completions"] = completions
+do local _ = {completions, nil} end
 local function completions_promise(prefix)
   local p = promise.new()
   completions(prefix, promise["deliver-fn"](p))
   return p
 end
 _2amodule_2a["completions-promise"] = completions_promise
+do local _ = {completions_promise, nil} end
 local function completions_sync(prefix)
   local p = completions_promise(prefix)
   promise.await(p)
   return promise.close(p)
 end
 _2amodule_2a["completions-sync"] = completions_sync
+do local _ = {completions_sync, nil} end
 return _2amodule_2a

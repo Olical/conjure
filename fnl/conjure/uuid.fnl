@@ -1,3 +1,5 @@
+(import-macros {: module : def : defn : defonce : def- : defn- : defonce- : wrap-last-expr : wrap-module-body : deftest} :nfnl.macros.aniseed)
+
 (module conjure.uuid
   {autoload {a conjure.aniseed.core
              str conjure.aniseed.string}})
@@ -72,3 +74,5 @@
 (comment
   (v4)
   (pretty (v4)))
+
+*module*

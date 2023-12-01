@@ -1,25 +1,27 @@
-local _2afile_2a = "fnl/conjure/extract/searchpair.fnl"
+-- [nfnl] Compiled from fnl/conjure/extract/searchpair.fnl by https://github.com/Olical/nfnl, do not edit.
 local _2amodule_name_2a = "conjure.extract.searchpair"
 local _2amodule_2a
 do
-  package.loaded[_2amodule_name_2a] = {}
-  _2amodule_2a = package.loaded[_2amodule_name_2a]
+  _G.package.loaded[_2amodule_name_2a] = {}
+  _2amodule_2a = _G.package.loaded[_2amodule_name_2a]
 end
 local _2amodule_locals_2a
 do
   _2amodule_2a["aniseed/locals"] = {}
   _2amodule_locals_2a = (_2amodule_2a)["aniseed/locals"]
 end
-local autoload = (require("conjure.aniseed.autoload")).autoload
+local autoload = (require("aniseed.autoload")).autoload
 local a, config, nvim, str = autoload("conjure.aniseed.core"), autoload("conjure.config"), autoload("conjure.aniseed.nvim"), autoload("conjure.aniseed.string")
 do end (_2amodule_locals_2a)["a"] = a
 _2amodule_locals_2a["config"] = config
 _2amodule_locals_2a["nvim"] = nvim
 _2amodule_locals_2a["str"] = str
+do local _ = {nil, nil, nil, nil, nil, nil, nil, nil, nil} end
 local function nil_pos_3f(pos)
   return (not pos or (0 == unpack(pos)))
 end
 _2amodule_locals_2a["nil-pos?"] = nil_pos_3f
+do local _ = {nil_pos_3f, nil} end
 local function read_range(_1_, _3_)
   local _arg_2_ = _1_
   local srow = _arg_2_[1]
@@ -37,6 +39,7 @@ local function read_range(_1_, _3_)
   return str.join("\n", a.update(a.update(lines, #lines, _5_), 1, _6_))
 end
 _2amodule_locals_2a["read-range"] = read_range
+do local _ = {read_range, nil} end
 local function skip_match_3f()
   local _let_7_ = nvim.win_get_cursor(0)
   local row = _let_7_[1]
@@ -54,6 +57,7 @@ local function skip_match_3f()
   end
 end
 _2amodule_2a["skip-match?"] = skip_match_3f
+do local _ = {skip_match_3f, nil} end
 local function current_char()
   local _let_10_ = nvim.win_get_cursor(0)
   local row = _let_10_[1]
@@ -64,6 +68,7 @@ local function current_char()
   return string.sub(line, char, char)
 end
 _2amodule_locals_2a["current-char"] = current_char
+do local _ = {current_char, nil} end
 local function form_2a(_12_, _14_)
   local _arg_13_ = _12_
   local start_char = _arg_13_[1]
@@ -118,6 +123,7 @@ local function form_2a(_12_, _14_)
   end
 end
 _2amodule_locals_2a["form*"] = form_2a
+do local _ = {form_2a, nil} end
 local function distance_gt(_22_, _24_)
   local _arg_23_ = _22_
   local al = _arg_23_[1]
@@ -128,6 +134,7 @@ local function distance_gt(_22_, _24_)
   return ((al > bl) or ((al == bl) and (ac > bc)))
 end
 _2amodule_locals_2a["distance-gt"] = distance_gt
+do local _ = {distance_gt, nil} end
 local function range_distance(range)
   local _let_26_ = range.start
   local sl = _let_26_[1]
@@ -138,6 +145,7 @@ local function range_distance(range)
   return {(sl - el), (sc - ec)}
 end
 _2amodule_locals_2a["range-distance"] = range_distance
+do local _ = {range_distance, nil} end
 local function form(opts)
   local forms
   local function _28_(_241)
@@ -155,4 +163,5 @@ local function form(opts)
   end
 end
 _2amodule_2a["form"] = form
+do local _ = {form, nil} end
 return _2amodule_2a

@@ -1,3 +1,5 @@
+(import-macros {: module : def : defn : defonce : def- : defn- : defonce- : wrap-last-expr : wrap-module-body : deftest} :nfnl.macros.aniseed)
+
 ;;------------------------------------------------------------
 ;; A client for snd/s7 (sound editor with s7 scheme scripting)
 ;;
@@ -164,3 +166,5 @@
     :SdnInterrupt (cfg [:mapping :interrupt])
     interrupt
     {:desc "Interrupt the REPL"}))
+
+*module*

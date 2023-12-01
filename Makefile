@@ -17,10 +17,10 @@ sponsors:
 	echo "]" >> fnl/conjure/sponsors.fnl
 
 compile:
-	rm -rf lua
+	# rm -rf lua
 	deps/aniseed/scripts/embed.sh aniseed conjure
-	ANISEED_EMBED_PREFIX=conjure deps/aniseed/scripts/compile.sh
-	cp deps/bencode/bencode.lua lua/conjure/remote/transport/bencode/impl.lua
+	# ANISEED_EMBED_PREFIX=conjure deps/aniseed/scripts/compile.sh
+	# cp deps/bencode/bencode.lua lua/conjure/remote/transport/bencode/impl.lua
 
 test:
 	rm -rf test/lua

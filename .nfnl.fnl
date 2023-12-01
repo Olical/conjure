@@ -1,5 +1,7 @@
-; ((. (require :nfnl.config) :default))
+(local core (require :nfnl.core))
+(local config (require :nfnl.config))
 
-;; Restricting to dir local config for now, will be expanded to the rest of the
-;; repo eventually.
-{:source-file-patterns [".nvim.fnl"]}
+{:compiler-options (core.merge
+                     (config.default)
+                     {:compilerEnv _G})
+ :source-file-patterns [".nvim.fnl" "fnl/**/*.fnl"]}

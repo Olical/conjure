@@ -1,16 +1,16 @@
-local _2afile_2a = "fnl/conjure/client/guile/socket.fnl"
+-- [nfnl] Compiled from fnl/conjure/client/guile/socket.fnl by https://github.com/Olical/nfnl, do not edit.
 local _2amodule_name_2a = "conjure.client.guile.socket"
 local _2amodule_2a
 do
-  package.loaded[_2amodule_name_2a] = {}
-  _2amodule_2a = package.loaded[_2amodule_name_2a]
+  _G.package.loaded[_2amodule_name_2a] = {}
+  _2amodule_2a = _G.package.loaded[_2amodule_name_2a]
 end
 local _2amodule_locals_2a
 do
   _2amodule_2a["aniseed/locals"] = {}
   _2amodule_locals_2a = (_2amodule_2a)["aniseed/locals"]
 end
-local autoload = (require("conjure.aniseed.autoload")).autoload
+local autoload = (require("aniseed.autoload")).autoload
 local a, client, config, extract, log, mapping, nvim, socket, str, text, ts, _ = autoload("conjure.aniseed.core"), autoload("conjure.client"), autoload("conjure.config"), autoload("conjure.extract"), autoload("conjure.log"), autoload("conjure.mapping"), autoload("conjure.aniseed.nvim"), autoload("conjure.remote.socket"), autoload("conjure.aniseed.string"), autoload("conjure.text"), autoload("conjure.tree-sitter"), nil
 _2amodule_locals_2a["a"] = a
 _2amodule_locals_2a["client"] = client
@@ -24,6 +24,7 @@ _2amodule_locals_2a["str"] = str
 _2amodule_locals_2a["text"] = text
 _2amodule_locals_2a["ts"] = ts
 _2amodule_locals_2a["_"] = _
+do local _ = {nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil} end
 config.merge({client = {guile = {socket = {pipename = nil}}}})
 if config["get-in"]({"mapping", "enable_defaults"}) then
   config.merge({client = {guile = {socket = {mapping = {connect = "cc", disconnect = "cd"}}}}})
@@ -31,20 +32,26 @@ else
 end
 local cfg = config["get-in-fn"]({"client", "guile", "socket"})
 do end (_2amodule_locals_2a)["cfg"] = cfg
+do local _ = {nil, nil} end
 local state
 local function _2_()
   return {repl = nil}
 end
 state = ((_2amodule_2a).state or client["new-state"](_2_))
 do end (_2amodule_locals_2a)["state"] = state
+do local _ = {nil, nil} end
 local buf_suffix = ".scm"
 _2amodule_2a["buf-suffix"] = buf_suffix
+do local _ = {nil, nil} end
 local comment_prefix = "; "
 _2amodule_2a["comment-prefix"] = comment_prefix
+do local _ = {nil, nil} end
 local context_pattern = "%(define%-module%s+(%([%g%s]-%))"
 _2amodule_2a["context-pattern"] = context_pattern
+do local _ = {nil, nil} end
 local form_node_3f = ts["node-surrounded-by-form-pair-chars?"]
 _2amodule_2a["form-node?"] = form_node_3f
+do local _ = {nil, nil} end
 local function with_repl_or_warn(f, opts)
   local repl = state("repl")
   if (repl and ("connected" == repl.status)) then
@@ -54,6 +61,7 @@ local function with_repl_or_warn(f, opts)
   end
 end
 _2amodule_locals_2a["with-repl-or-warn"] = with_repl_or_warn
+do local _ = {with_repl_or_warn, nil} end
 local function format_message(msg)
   if msg.out then
     return text["split-lines"](msg.out)
@@ -64,6 +72,7 @@ local function format_message(msg)
   end
 end
 _2amodule_locals_2a["format-message"] = format_message
+do local _ = {format_message, nil} end
 local function display_result(msg)
   local function _5_(_241)
     return ("" ~= _241)
@@ -71,6 +80,7 @@ local function display_result(msg)
   return log.append(a.filter(_5_, format_message(msg)))
 end
 _2amodule_locals_2a["display-result"] = display_result
+do local _ = {display_result, nil} end
 local function clean_input_code(code)
   local clean = str.trim(code)
   if not str["blank?"](clean) then
@@ -80,6 +90,7 @@ local function clean_input_code(code)
   end
 end
 _2amodule_locals_2a["clean-input-code"] = clean_input_code
+do local _ = {clean_input_code, nil} end
 local function eval_str(opts)
   local function _7_(repl)
     local _8_ = (",m " .. (opts.context or "(guile-user)") .. "\n" .. opts.code)
@@ -108,10 +119,12 @@ local function eval_str(opts)
   return with_repl_or_warn(_7_)
 end
 _2amodule_2a["eval-str"] = eval_str
+do local _ = {eval_str, nil} end
 local function eval_file(opts)
   return eval_str(a.assoc(opts, "code", ("(load \"" .. opts["file-path"] .. "\")")))
 end
 _2amodule_2a["eval-file"] = eval_file
+do local _ = {eval_file, nil} end
 local function doc_str(opts)
   local function _15_(_241)
     return ("(procedure-documentation " .. _241 .. ")")
@@ -119,6 +132,7 @@ local function doc_str(opts)
   return eval_str(a.update(opts, "code", _15_))
 end
 _2amodule_2a["doc-str"] = doc_str
+do local _ = {doc_str, nil} end
 local function display_repl_status()
   local repl = state("repl")
   if repl then
@@ -144,6 +158,7 @@ local function display_repl_status()
   end
 end
 _2amodule_locals_2a["display-repl-status"] = display_repl_status
+do local _ = {display_repl_status, nil} end
 local function disconnect()
   local repl = state("repl")
   if repl then
@@ -156,6 +171,7 @@ local function disconnect()
   end
 end
 _2amodule_2a["disconnect"] = disconnect
+do local _ = {disconnect, nil} end
 local function parse_guile_result(s)
   local prompt = s:find("scheme@%([%w%-%s]+%)> ")
   if prompt then
@@ -181,6 +197,7 @@ local function parse_guile_result(s)
   end
 end
 _2amodule_locals_2a["parse-guile-result"] = parse_guile_result
+do local _ = {parse_guile_result, nil} end
 local function connect(opts)
   disconnect()
   local pipename = (cfg({"pipename"}) or a.get(opts, "port"))
@@ -200,10 +217,12 @@ local function connect(opts)
   end
 end
 _2amodule_2a["connect"] = connect
+do local _ = {connect, nil} end
 local function on_exit()
   return disconnect()
 end
 _2amodule_2a["on-exit"] = on_exit
+do local _ = {on_exit, nil} end
 local function on_filetype()
   local function _29_()
     return connect()
@@ -212,4 +231,5 @@ local function on_filetype()
   return mapping.buf("GuileDisconnect", cfg({"mapping", "disconnect"}), disconnect, {desc = "Disconnect from the REPL"})
 end
 _2amodule_2a["on-filetype"] = on_filetype
+do local _ = {on_filetype, nil} end
 return _2amodule_2a

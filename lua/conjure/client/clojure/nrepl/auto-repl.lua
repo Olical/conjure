@@ -1,16 +1,16 @@
-local _2afile_2a = "fnl/conjure/client/clojure/nrepl/auto-repl.fnl"
+-- [nfnl] Compiled from fnl/conjure/client/clojure/nrepl/auto-repl.fnl by https://github.com/Olical/nfnl, do not edit.
 local _2amodule_name_2a = "conjure.client.clojure.nrepl.auto-repl"
 local _2amodule_2a
 do
-  package.loaded[_2amodule_name_2a] = {}
-  _2amodule_2a = package.loaded[_2amodule_name_2a]
+  _G.package.loaded[_2amodule_name_2a] = {}
+  _2amodule_2a = _G.package.loaded[_2amodule_name_2a]
 end
 local _2amodule_locals_2a
 do
   _2amodule_2a["aniseed/locals"] = {}
   _2amodule_locals_2a = (_2amodule_2a)["aniseed/locals"]
 end
-local autoload = (require("conjure.aniseed.autoload")).autoload
+local autoload = (require("aniseed.autoload")).autoload
 local a, client, config, log, nvim, process, state, str = autoload("conjure.aniseed.core"), autoload("conjure.client"), autoload("conjure.config"), autoload("conjure.log"), autoload("conjure.aniseed.nvim"), autoload("conjure.process"), autoload("conjure.client.clojure.nrepl.state"), autoload("conjure.aniseed.string")
 do end (_2amodule_locals_2a)["a"] = a
 _2amodule_locals_2a["client"] = client
@@ -20,8 +20,10 @@ _2amodule_locals_2a["nvim"] = nvim
 _2amodule_locals_2a["process"] = process
 _2amodule_locals_2a["state"] = state
 _2amodule_locals_2a["str"] = str
+do local _ = {nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil} end
 local cfg = config["get-in-fn"]({"client", "clojure", "nrepl"})
 do end (_2amodule_locals_2a)["cfg"] = cfg
+do local _ = {nil, nil} end
 local function enportify(subject)
   if subject:find("$port") then
     local server = nvim.fn.serverstart("localhost:0")
@@ -33,6 +35,7 @@ local function enportify(subject)
   end
 end
 _2amodule_2a["enportify"] = enportify
+do local _ = {enportify, nil} end
 local function delete_auto_repl_port_file()
   local port_file = cfg({"connection", "auto_repl", "port_file"})
   local port = state.get("auto-repl-port")
@@ -43,6 +46,7 @@ local function delete_auto_repl_port_file()
   end
 end
 _2amodule_2a["delete-auto-repl-port-file"] = delete_auto_repl_port_file
+do local _ = {delete_auto_repl_port_file, nil} end
 local function upsert_auto_repl_proc()
   local _let_3_ = enportify(cfg({"connection", "auto_repl", "cmd"}))
   local cmd = _let_3_["subject"]
@@ -65,4 +69,5 @@ local function upsert_auto_repl_proc()
   end
 end
 _2amodule_2a["upsert-auto-repl-proc"] = upsert_auto_repl_proc
+do local _ = {upsert_auto_repl_proc, nil} end
 return _2amodule_2a

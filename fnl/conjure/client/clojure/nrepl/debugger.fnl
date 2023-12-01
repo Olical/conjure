@@ -1,3 +1,5 @@
+(import-macros {: module : def : defn : defonce : def- : defn- : defonce- : wrap-last-expr : wrap-module-body : deftest} :nfnl.macros.aniseed)
+
 (module conjure.client.clojure.nrepl.debugger
   {autoload {log conjure.log
              extract conjure.extract
@@ -80,3 +82,5 @@
     (send {:input (.. ":" opts.args)})
     (log.append
       [(.. "; Valid inputs: " (str.join ", " (valid-inputs)))])))
+
+*module*

@@ -1,3 +1,5 @@
+(import-macros {: module : def : defn : defonce : def- : defn- : defonce- : wrap-last-expr : wrap-module-body : deftest} :nfnl.macros.aniseed)
+
 (module conjure.extract
   {autoload {a conjure.aniseed.core
              nvim conjure.aniseed.nvim
@@ -93,3 +95,5 @@
 
 (defn prompt-char []
   (nvim.fn.nr2char (nvim.fn.getchar)))
+
+*module*

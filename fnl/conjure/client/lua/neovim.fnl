@@ -1,3 +1,5 @@
+(import-macros {: module : def : defn : defonce : def- : defn- : defonce- : wrap-last-expr : wrap-module-body : deftest} :nfnl.macros.aniseed)
+
 (module conjure.client.lua.neovim
   {autoload {a conjure.aniseed.core
              str conjure.aniseed.string
@@ -154,3 +156,5 @@
     (display out ret err)
     (when opts.on-result
       (opts.on-result (vim.inspect ret)))))
+
+*module*

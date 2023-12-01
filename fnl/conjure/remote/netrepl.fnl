@@ -1,3 +1,5 @@
+(import-macros {: module : def : defn : defonce : def- : defn- : defonce- : wrap-last-expr : wrap-module-body : deftest} :nfnl.macros.aniseed)
+
 (module conjure.remote.netrepl
   {autoload {a conjure.aniseed.core
             net conjure.net
@@ -67,3 +69,5 @@
 ;           :on-error (fn [err] (a.println "uh oh :(" err))}))
 ; (send c "{:hello :world}" a.println)
 ; (c.destroy)
+
+*module*

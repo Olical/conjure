@@ -1,3 +1,5 @@
+(import-macros {: module : def : defn : defonce : def- : defn- : defonce- : wrap-last-expr : wrap-module-body : deftest} :nfnl.macros.aniseed)
+
 (module conjure.client.rust.evcxr
   {autoload {a conjure.aniseed.core
              promise conjure.promise
@@ -145,3 +147,5 @@
 
 (defn eval-file [opts]
   (eval-str (a.assoc opts :code (a.slurp opts.file-path))))
+
+*module*

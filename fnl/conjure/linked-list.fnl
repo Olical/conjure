@@ -1,3 +1,5 @@
+(import-macros {: module : def : defn : defonce : def- : defn- : defonce- : wrap-last-expr : wrap-module-body : deftest} :nfnl.macros.aniseed)
+
 (module conjure.linked-list
   {autoload {a conjure.aniseed.core}})
 
@@ -47,3 +49,5 @@
     (a.assoc start :prev end)
     (a.assoc end :next start)
     l))
+
+*module*

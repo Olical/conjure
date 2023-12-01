@@ -1,3 +1,5 @@
+(import-macros {: module : def : defn : defonce : def- : defn- : defonce- : wrap-last-expr : wrap-module-body : deftest} :nfnl.macros.aniseed)
+
 (module conjure.event
   {autoload {nvim conjure.aniseed.nvim
              a conjure.aniseed.core
@@ -13,3 +15,5 @@
           (nvim.ex.doautocmd :User (.. :Conjure (str.join names)))
           (table.remove names)))))
   nil)
+
+*module*

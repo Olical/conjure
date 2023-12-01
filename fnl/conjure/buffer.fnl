@@ -1,3 +1,5 @@
+(import-macros {: module : def : defn : defonce : def- : defn- : defonce- : wrap-last-expr : wrap-module-body : deftest} :nfnl.macros.aniseed)
+
 (module conjure.buffer
   {autoload {nvim conjure.aniseed.nvim
              a conjure.aniseed.core
@@ -103,3 +105,5 @@
           (a.concat
             [head-line]
             to-append))))))
+
+*module*

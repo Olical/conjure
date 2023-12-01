@@ -1,3 +1,5 @@
+(import-macros {: module : def : defn : defonce : def- : defn- : defonce- : wrap-last-expr : wrap-module-body : deftest} :nfnl.macros.aniseed)
+
 (module conjure.client.clojure.nrepl.ui
   {autoload {log conjure.log
              text conjure.text
@@ -60,3 +62,5 @@
       {:break? true})
     (when cb
       (cb))))
+
+*module*

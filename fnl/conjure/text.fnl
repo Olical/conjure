@@ -1,3 +1,5 @@
+(import-macros {: module : def : defn : defonce : def- : defn- : defonce- : wrap-last-expr : wrap-module-body : deftest} :nfnl.macros.aniseed)
+
 (module conjure.text
   {require {a conjure.aniseed.core
             str conjure.aniseed.string}})
@@ -64,3 +66,5 @@
 (defn upper-first [s]
   (when s
     (s:gsub "^%l" string.upper)))
+
+*module*

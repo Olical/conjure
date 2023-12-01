@@ -1,16 +1,16 @@
-local _2afile_2a = "fnl/conjure/remote/socket.fnl"
+-- [nfnl] Compiled from fnl/conjure/remote/socket.fnl by https://github.com/Olical/nfnl, do not edit.
 local _2amodule_name_2a = "conjure.remote.socket"
 local _2amodule_2a
 do
-  package.loaded[_2amodule_name_2a] = {}
-  _2amodule_2a = package.loaded[_2amodule_name_2a]
+  _G.package.loaded[_2amodule_name_2a] = {}
+  _2amodule_2a = _G.package.loaded[_2amodule_name_2a]
 end
 local _2amodule_locals_2a
 do
   _2amodule_2a["aniseed/locals"] = {}
   _2amodule_locals_2a = (_2amodule_2a)["aniseed/locals"]
 end
-local autoload = (require("conjure.aniseed.autoload")).autoload
+local autoload = (require("aniseed.autoload")).autoload
 local a, client, log, nvim, str, text = autoload("conjure.aniseed.core"), autoload("conjure.client"), autoload("conjure.log"), autoload("conjure.aniseed.nvim"), autoload("conjure.aniseed.string"), autoload("conjure.text")
 do end (_2amodule_locals_2a)["a"] = a
 _2amodule_locals_2a["client"] = client
@@ -18,12 +18,15 @@ _2amodule_locals_2a["log"] = log
 _2amodule_locals_2a["nvim"] = nvim
 _2amodule_locals_2a["str"] = str
 _2amodule_locals_2a["text"] = text
+do local _ = {nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil} end
 local uv = vim.loop
 _2amodule_locals_2a["uv"] = uv
+do local _ = {nil, nil} end
 local function strip_unprintable(s)
   return string.gsub(text["strip-ansi-escape-sequences"](s), "[\1\2]", "")
 end
 _2amodule_locals_2a["strip-unprintable"] = strip_unprintable
+do local _ = {strip_unprintable, nil} end
 local function start(opts)
   local repl_pipe = uv.new_pipe(true)
   local repl = {status = "pending", queue = {}, current = nil, buffer = ""}
@@ -124,4 +127,5 @@ local function start(opts)
   return a["merge!"](repl, {opts = opts, destroy = destroy, send = send})
 end
 _2amodule_2a["start"] = start
+do local _ = {start, nil} end
 return _2amodule_2a

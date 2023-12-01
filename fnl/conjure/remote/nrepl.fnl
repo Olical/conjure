@@ -1,3 +1,5 @@
+(import-macros {: module : def : defn : defonce : def- : defn- : defonce- : wrap-last-expr : wrap-module-body : deftest} :nfnl.macros.aniseed)
+
 (module conjure.remote.nrepl
   {autoload {a conjure.aniseed.core
              net conjure.net
@@ -123,3 +125,5 @@
               :cb (handle-connect-fn)})))
 
     conn))
+
+*module*

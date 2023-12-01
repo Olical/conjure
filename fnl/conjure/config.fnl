@@ -1,3 +1,5 @@
+(import-macros {: module : def : defn : defonce : def- : defn- : defonce- : wrap-last-expr : wrap-module-body : deftest} :nfnl.macros.aniseed)
+
 (module conjure.config
   {autoload {nvim conjure.aniseed.nvim
              a conjure.aniseed.core
@@ -158,3 +160,5 @@
       :eval_previous "ep"
       :def_word "gd"
       :doc_word ["K"]}}))
+
+*module*

@@ -1,24 +1,26 @@
-local _2afile_2a = "fnl/conjure/config.fnl"
+-- [nfnl] Compiled from fnl/conjure/config.fnl by https://github.com/Olical/nfnl, do not edit.
 local _2amodule_name_2a = "conjure.config"
 local _2amodule_2a
 do
-  package.loaded[_2amodule_name_2a] = {}
-  _2amodule_2a = package.loaded[_2amodule_name_2a]
+  _G.package.loaded[_2amodule_name_2a] = {}
+  _2amodule_2a = _G.package.loaded[_2amodule_name_2a]
 end
 local _2amodule_locals_2a
 do
   _2amodule_2a["aniseed/locals"] = {}
   _2amodule_locals_2a = (_2amodule_2a)["aniseed/locals"]
 end
-local autoload = (require("conjure.aniseed.autoload")).autoload
+local autoload = (require("aniseed.autoload")).autoload
 local a, nvim, str = autoload("conjure.aniseed.core"), autoload("conjure.aniseed.nvim"), autoload("conjure.aniseed.string")
 do end (_2amodule_locals_2a)["a"] = a
 _2amodule_locals_2a["nvim"] = nvim
 _2amodule_locals_2a["str"] = str
+do local _ = {nil, nil, nil, nil, nil, nil, nil, nil} end
 local function ks__3evar(ks)
   return ("conjure#" .. str.join("#", ks))
 end
 _2amodule_locals_2a["ks->var"] = ks__3evar
+do local _ = {ks__3evar, nil} end
 local function get_in(ks)
   local key = ks__3evar(ks)
   local v = (a.get(nvim.b, key) or a.get(nvim.g, key))
@@ -29,10 +31,12 @@ local function get_in(ks)
   end
 end
 _2amodule_2a["get-in"] = get_in
+do local _ = {get_in, nil} end
 local function filetypes()
   return get_in({"filetypes"})
 end
 _2amodule_2a["filetypes"] = filetypes
+do local _ = {filetypes, nil} end
 local function get_in_fn(prefix_ks)
   local function _2_(ks)
     return get_in(a.concat(prefix_ks, ks))
@@ -40,11 +44,13 @@ local function get_in_fn(prefix_ks)
   return _2_
 end
 _2amodule_2a["get-in-fn"] = get_in_fn
+do local _ = {get_in_fn, nil} end
 local function assoc_in(ks, v)
   a.assoc(nvim.g, ks__3evar(ks), v)
   return v
 end
 _2amodule_2a["assoc-in"] = assoc_in
+do local _ = {assoc_in, nil} end
 local function merge(tbl, opts, ks)
   local ks0 = (ks or {})
   local opts0 = (opts or {})

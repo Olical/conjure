@@ -1,3 +1,5 @@
+(import-macros {: module : def : defn : defonce : def- : defn- : defonce- : wrap-last-expr : wrap-module-body : deftest} :nfnl.macros.aniseed)
+
 (module conjure.net
   {autoload {a conjure.aniseed.core
              nvim conjure.aniseed.nvim
@@ -47,3 +49,5 @@
 (augroup
   conjure-net-sock-cleanup
   (autocmd :VimLeavePre :* (viml->fn :destroy-all-socks)))
+
+*module*

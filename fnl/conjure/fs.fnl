@@ -1,3 +1,5 @@
+(import-macros {: module : def : defn : defonce : def- : defn- : defonce- : wrap-last-expr : wrap-module-body : deftest} :nfnl.macros.aniseed)
+
 (module conjure.fs
   {autoload {nvim conjure.aniseed.nvim
              a conjure.aniseed.core
@@ -131,3 +133,5 @@
                   (text.ends-with file-path (.. mod-path "/init.fnl")))
             mod-name)))
       (a.keys package.loaded))))
+
+*module*

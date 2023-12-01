@@ -1,3 +1,5 @@
+(import-macros {: module : def : defn : defonce : def- : defn- : defonce- : wrap-last-expr : wrap-module-body : deftest} :nfnl.macros.aniseed)
+
 (module conjure.eval
   {autoload {a conjure.aniseed.core
              str conjure.aniseed.string
@@ -351,3 +353,5 @@
   (let [p (completions-promise prefix)]
     (promise.await p)
     (promise.close p)))
+
+*module*

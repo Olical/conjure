@@ -1,3 +1,5 @@
+(import-macros {: module : def : defn : defonce : def- : defn- : defonce- : wrap-last-expr : wrap-module-body : deftest} :nfnl.macros.aniseed)
+
 (module conjure.remote.stdio-rt
   {autoload {a conjure.aniseed.core
              nvim conjure.aniseed.nvim
@@ -151,3 +153,5 @@
         (do
           (client.schedule #(opts.on-error pid-or-err))
           (destroy))))))
+
+*module*

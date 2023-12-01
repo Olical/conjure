@@ -1,16 +1,16 @@
-local _2afile_2a = "fnl/conjure/remote/nrepl.fnl"
+-- [nfnl] Compiled from fnl/conjure/remote/nrepl.fnl by https://github.com/Olical/nfnl, do not edit.
 local _2amodule_name_2a = "conjure.remote.nrepl"
 local _2amodule_2a
 do
-  package.loaded[_2amodule_name_2a] = {}
-  _2amodule_2a = package.loaded[_2amodule_name_2a]
+  _G.package.loaded[_2amodule_name_2a] = {}
+  _2amodule_2a = _G.package.loaded[_2amodule_name_2a]
 end
 local _2amodule_locals_2a
 do
   _2amodule_2a["aniseed/locals"] = {}
   _2amodule_locals_2a = (_2amodule_2a)["aniseed/locals"]
 end
-local autoload = (require("conjure.aniseed.autoload")).autoload
+local autoload = (require("aniseed.autoload")).autoload
 local a, bencode, client, log, net, timer, uuid = autoload("conjure.aniseed.core"), autoload("conjure.remote.transport.bencode"), autoload("conjure.client"), autoload("conjure.log"), autoload("conjure.net"), autoload("conjure.timer"), autoload("conjure.uuid")
 do end (_2amodule_locals_2a)["a"] = a
 _2amodule_locals_2a["bencode"] = bencode
@@ -19,6 +19,7 @@ _2amodule_locals_2a["log"] = log
 _2amodule_locals_2a["net"] = net
 _2amodule_locals_2a["timer"] = timer
 _2amodule_locals_2a["uuid"] = uuid
+do local _ = {nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil} end
 local function with_all_msgs_fn(cb)
   local acc = {}
   local function _1_(msg)
@@ -32,6 +33,7 @@ local function with_all_msgs_fn(cb)
   return _1_
 end
 _2amodule_2a["with-all-msgs-fn"] = with_all_msgs_fn
+do local _ = {with_all_msgs_fn, nil} end
 local function enrich_status(msg)
   local ks = a.get(msg, "status")
   local status = {}
@@ -43,6 +45,7 @@ local function enrich_status(msg)
   return msg
 end
 _2amodule_2a["enrich-status"] = enrich_status
+do local _ = {enrich_status, nil} end
 local function connect(opts)
   local state = {["message-queue"] = {}, bc = bencode.new(), msgs = {}, ["awaiting-process?"] = false}
   local conn = {session = nil, state = state}
@@ -132,4 +135,5 @@ local function connect(opts)
   return conn
 end
 _2amodule_2a["connect"] = connect
+do local _ = {connect, nil} end
 return _2amodule_2a

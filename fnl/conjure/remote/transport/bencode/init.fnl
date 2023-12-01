@@ -1,3 +1,5 @@
+(import-macros {: module : def : defn : defonce : def- : defn- : defonce- : wrap-last-expr : wrap-module-body : deftest} :nfnl.macros.aniseed)
+
 (module conjure.remote.transport.bencode
   {autoload {impl conjure.remote.transport.bencode.impl
              a conjure.aniseed.core}})
@@ -22,3 +24,5 @@
 
 (defn encode [...]
   (impl.encode ...))
+
+*module*

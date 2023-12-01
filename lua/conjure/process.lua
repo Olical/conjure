@@ -1,24 +1,26 @@
-local _2afile_2a = "fnl/conjure/process.fnl"
+-- [nfnl] Compiled from fnl/conjure/process.fnl by https://github.com/Olical/nfnl, do not edit.
 local _2amodule_name_2a = "conjure.process"
 local _2amodule_2a
 do
-  package.loaded[_2amodule_name_2a] = {}
-  _2amodule_2a = package.loaded[_2amodule_name_2a]
+  _G.package.loaded[_2amodule_name_2a] = {}
+  _2amodule_2a = _G.package.loaded[_2amodule_name_2a]
 end
 local _2amodule_locals_2a
 do
   _2amodule_2a["aniseed/locals"] = {}
   _2amodule_locals_2a = (_2amodule_2a)["aniseed/locals"]
 end
-local autoload = (require("conjure.aniseed.autoload")).autoload
+local autoload = (require("aniseed.autoload")).autoload
 local a, nvim, str = autoload("conjure.aniseed.core"), autoload("conjure.aniseed.nvim"), autoload("conjure.aniseed.string")
 do end (_2amodule_locals_2a)["a"] = a
 _2amodule_locals_2a["nvim"] = nvim
 _2amodule_locals_2a["str"] = str
+do local _ = {nil, nil, nil, nil, nil, nil, nil, nil} end
 local function executable_3f(cmd)
   return (1 == nvim.fn.executable(a.first(str.split(cmd, "%s+"))))
 end
 _2amodule_2a["executable?"] = executable_3f
+do local _ = {executable_3f, nil} end
 local function running_3f(proc)
   if proc then
     return proc["running?"]
@@ -27,8 +29,10 @@ local function running_3f(proc)
   end
 end
 _2amodule_2a["running?"] = running_3f
+do local _ = {running_3f, nil} end
 local state = ((_2amodule_2a).state or {jobs = {}})
 do end (_2amodule_locals_2a)["state"] = state
+do local _ = {nil, nil} end
 local function on_exit(job_id)
   local proc = state.jobs[job_id]
   if running_3f(proc) then
@@ -46,6 +50,7 @@ local function on_exit(job_id)
   end
 end
 _2amodule_2a["on-exit"] = on_exit
+do local _ = {on_exit, nil} end
 nvim.ex.function_(str.join("\n", {"ConjureProcessOnExit(...)", "call luaeval(\"require('conjure.process')['on-exit'](unpack(_A))\", a:000)", "endfunction"}))
 local function execute(cmd, opts)
   local win = nvim.tabpage_get_win(0)
@@ -81,6 +86,7 @@ local function execute(cmd, opts)
   return a.assoc(proc, "job-id", job_id)
 end
 _2amodule_2a["execute"] = execute
+do local _ = {execute, nil} end
 local function stop(proc)
   if running_3f(proc) then
     nvim.fn.jobstop(proc["job-id"])
@@ -90,4 +96,5 @@ local function stop(proc)
   return proc
 end
 _2amodule_2a["stop"] = stop
+do local _ = {stop, nil} end
 return _2amodule_2a

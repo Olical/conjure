@@ -1,3 +1,5 @@
+(import-macros {: module : def : defn : defonce : def- : defn- : defonce- : wrap-last-expr : wrap-module-body : deftest} :nfnl.macros.aniseed)
+
 (module conjure.remote.transport.base64)
 
 ;; From https://stackoverflow.com/a/35303321/455137
@@ -58,3 +60,5 @@
                  (or (and (= (x:sub i i) :1) (^ 2 (- 8 i)))
                      0))))
        (string.char c))))
+
+*module*

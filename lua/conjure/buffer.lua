@@ -1,29 +1,32 @@
-local _2afile_2a = "fnl/conjure/buffer.fnl"
+-- [nfnl] Compiled from fnl/conjure/buffer.fnl by https://github.com/Olical/nfnl, do not edit.
 local _2amodule_name_2a = "conjure.buffer"
 local _2amodule_2a
 do
-  package.loaded[_2amodule_name_2a] = {}
-  _2amodule_2a = package.loaded[_2amodule_name_2a]
+  _G.package.loaded[_2amodule_name_2a] = {}
+  _2amodule_2a = _G.package.loaded[_2amodule_name_2a]
 end
 local _2amodule_locals_2a
 do
   _2amodule_2a["aniseed/locals"] = {}
   _2amodule_locals_2a = (_2amodule_2a)["aniseed/locals"]
 end
-local autoload = (require("conjure.aniseed.autoload")).autoload
+local autoload = (require("aniseed.autoload")).autoload
 local a, nvim, str, text = autoload("conjure.aniseed.core"), autoload("conjure.aniseed.nvim"), autoload("conjure.aniseed.string"), autoload("conjure.text")
 do end (_2amodule_locals_2a)["a"] = a
 _2amodule_locals_2a["nvim"] = nvim
 _2amodule_locals_2a["str"] = str
 _2amodule_locals_2a["text"] = text
+do local _ = {nil, nil, nil, nil, nil, nil, nil, nil, nil} end
 local function unlist(buf)
   return nvim.buf_set_option(buf, "buflisted", false)
 end
 _2amodule_2a["unlist"] = unlist
+do local _ = {unlist, nil} end
 local function resolve(buf_name)
   return nvim.buf_get_name(nvim.fn.bufnr(buf_name))
 end
 _2amodule_2a["resolve"] = resolve
+do local _ = {resolve, nil} end
 local function upsert_hidden(buf_name, new_buf_fn)
   local ok_3f, buf = pcall(nvim.fn.bufnr, buf_name)
   local loaded_3f = (ok_3f and nvim.buf_is_loaded(buf))
@@ -54,10 +57,12 @@ local function upsert_hidden(buf_name, new_buf_fn)
   end
 end
 _2amodule_2a["upsert-hidden"] = upsert_hidden
+do local _ = {upsert_hidden, nil} end
 local function empty_3f(buf)
   return ((nvim.buf_line_count(buf) <= 1) and (0 == a.count(a.first(nvim.buf_get_lines(buf, 0, -1, false)))))
 end
 _2amodule_2a["empty?"] = empty_3f
+do local _ = {empty_3f, nil} end
 local function replace_range(buf, range, s)
   local start_line = a.dec(a["get-in"](range, {"start", 1}))
   local end_line = a["get-in"](range, {"end", 1})
@@ -78,6 +83,7 @@ local function replace_range(buf, range, s)
   return nvim.buf_set_lines(buf, start_line, end_line, false, new_lines)
 end
 _2amodule_2a["replace-range"] = replace_range
+do local _ = {replace_range, nil} end
 local function take_while(f, xs)
   local acc = {}
   local done_3f = false
@@ -131,4 +137,5 @@ local function append_prefixed_line(buf, _8_, prefix, body)
   end
 end
 _2amodule_2a["append-prefixed-line"] = append_prefixed_line
+do local _ = {append_prefixed_line, nil} end
 return _2amodule_2a

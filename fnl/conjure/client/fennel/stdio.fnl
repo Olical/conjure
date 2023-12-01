@@ -1,3 +1,5 @@
+(import-macros {: module : def : defn : defonce : def- : defn- : defonce- : wrap-last-expr : wrap-module-body : deftest} :nfnl.macros.aniseed)
+
 (module conjure.client.fennel.stdio
   {autoload {a conjure.aniseed.core
              str conjure.aniseed.string
@@ -155,3 +157,5 @@
     (cfg [:mapping :eval_reload])
     eval-reload
     {:desc "Use ,reload on the file"}))
+
+*module*

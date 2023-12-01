@@ -1,16 +1,16 @@
-local _2afile_2a = "fnl/conjure/client/clojure/nrepl/action.fnl"
+-- [nfnl] Compiled from fnl/conjure/client/clojure/nrepl/action.fnl by https://github.com/Olical/nfnl, do not edit.
 local _2amodule_name_2a = "conjure.client.clojure.nrepl.action"
 local _2amodule_2a
 do
-  package.loaded[_2amodule_name_2a] = {}
-  _2amodule_2a = package.loaded[_2amodule_name_2a]
+  _G.package.loaded[_2amodule_name_2a] = {}
+  _2amodule_2a = _G.package.loaded[_2amodule_name_2a]
 end
 local _2amodule_locals_2a
 do
   _2amodule_2a["aniseed/locals"] = {}
   _2amodule_locals_2a = (_2amodule_2a)["aniseed/locals"]
 end
-local autoload = (require("conjure.aniseed.autoload")).autoload
+local autoload = (require("aniseed.autoload")).autoload
 local a, auto_repl, client, config, editor, eval, extract, fs, hook, ll, log, nrepl, nvim, parse, server, state, str, text, ui, view = autoload("conjure.aniseed.core"), autoload("conjure.client.clojure.nrepl.auto-repl"), autoload("conjure.client"), autoload("conjure.config"), autoload("conjure.editor"), autoload("conjure.aniseed.eval"), autoload("conjure.extract"), autoload("conjure.fs"), autoload("conjure.hook"), autoload("conjure.linked-list"), autoload("conjure.log"), autoload("conjure.remote.nrepl"), autoload("conjure.aniseed.nvim"), autoload("conjure.client.clojure.nrepl.parse"), autoload("conjure.client.clojure.nrepl.server"), autoload("conjure.client.clojure.nrepl.state"), autoload("conjure.aniseed.string"), autoload("conjure.text"), autoload("conjure.client.clojure.nrepl.ui"), autoload("conjure.aniseed.view")
 do end (_2amodule_locals_2a)["a"] = a
 _2amodule_locals_2a["auto-repl"] = auto_repl
@@ -32,6 +32,7 @@ _2amodule_locals_2a["str"] = str
 _2amodule_locals_2a["text"] = text
 _2amodule_locals_2a["ui"] = ui
 _2amodule_locals_2a["view"] = view
+do local _ = {nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil} end
 local function require_ns(ns)
   if ns then
     local function _1_()
@@ -42,8 +43,10 @@ local function require_ns(ns)
   end
 end
 _2amodule_locals_2a["require-ns"] = require_ns
+do local _ = {require_ns, nil} end
 local cfg = config["get-in-fn"]({"client", "clojure", "nrepl"})
 do end (_2amodule_locals_2a)["cfg"] = cfg
+do local _ = {nil, nil} end
 local function passive_ns_require()
   if (cfg({"eval", "auto_require"}) and server["connected?"]()) then
     return require_ns(extract.context())
@@ -52,6 +55,7 @@ local function passive_ns_require()
   end
 end
 _2amodule_2a["passive-ns-require"] = passive_ns_require
+do local _ = {passive_ns_require, nil} end
 local function connect_port_file(opts)
   local resolved_path
   do
@@ -113,6 +117,7 @@ local function connect_port_file(opts)
   end
 end
 _2amodule_2a["connect-port-file"] = connect_port_file
+do local _ = {connect_port_file, nil} end
 local function _18_(cb)
   return connect_port_file({["silent?"] = true, cb = cb})
 end
@@ -129,6 +134,7 @@ local function try_ensure_conn(cb)
   end
 end
 _2amodule_locals_2a["try-ensure-conn"] = try_ensure_conn
+do local _ = {try_ensure_conn, nil} end
 local function connect_host_port(opts)
   if (not opts.host and not opts.port) then
     return connect_port_file()
@@ -147,6 +153,7 @@ local function connect_host_port(opts)
   end
 end
 _2amodule_2a["connect-host-port"] = connect_host_port
+do local _ = {connect_host_port, nil} end
 local function eval_cb_fn(opts)
   local function _24_(resp)
     if (a.get(opts, "on-result") and a.get(resp, "value")) then
@@ -167,6 +174,7 @@ local function eval_cb_fn(opts)
   return _24_
 end
 _2amodule_locals_2a["eval-cb-fn"] = eval_cb_fn
+do local _ = {eval_cb_fn, nil} end
 local function eval_str(opts)
   local function _28_()
     local function _29_(conn)
@@ -184,6 +192,7 @@ local function eval_str(opts)
   return try_ensure_conn(_28_)
 end
 _2amodule_2a["eval-str"] = eval_str
+do local _ = {eval_str, nil} end
 local function with_info(opts, f)
   local function _32_(conn, ops)
     local _33_
@@ -209,6 +218,7 @@ local function with_info(opts, f)
   return server["with-conn-and-ops-or-warn"]({"info", "lookup"}, _32_)
 end
 _2amodule_locals_2a["with-info"] = with_info
+do local _ = {with_info, nil} end
 local function java_info__3elines(_37_)
   local _arg_38_ = _37_
   local arglists_str = _arg_38_["arglists-str"]
@@ -238,6 +248,7 @@ local function java_info__3elines(_37_)
   return a.concat({str.join(a.concat({"; ", class}, _39_()))}, _40_, _42_())
 end
 _2amodule_locals_2a["java-info->lines"] = java_info__3elines
+do local _ = {java_info__3elines, nil} end
 local function doc_str(opts)
   local function _43_()
     require_ns("clojure.repl")
@@ -271,6 +282,7 @@ local function doc_str(opts)
   return try_ensure_conn(_43_)
 end
 _2amodule_2a["doc-str"] = doc_str
+do local _ = {doc_str, nil} end
 local function nrepl__3envim_path(path)
   if text["starts-with"](path, "jar:file:") then
     local function _50_(zip, file)
@@ -291,6 +303,7 @@ local function nrepl__3envim_path(path)
   end
 end
 _2amodule_locals_2a["nrepl->nvim-path"] = nrepl__3envim_path
+do local _ = {nrepl__3envim_path, nil} end
 local function def_str(opts)
   local function _54_()
     local function _55_(info)
@@ -326,10 +339,12 @@ local function def_str(opts)
   return try_ensure_conn(_54_)
 end
 _2amodule_2a["def-str"] = def_str
+do local _ = {def_str, nil} end
 local function escape_backslashes(s)
   return s:gsub("\\", "\\\\")
 end
 _2amodule_2a["escape-backslashes"] = escape_backslashes
+do local _ = {escape_backslashes, nil} end
 local function eval_file(opts)
   local function _59_()
     return server.eval(a.assoc(opts, "code", ("(#?(:cljs cljs.core/load-file" .. " :default clojure.core/load-file)" .. " \"" .. escape_backslashes(opts["file-path"]) .. "\")")), eval_cb_fn(opts))
@@ -337,6 +352,7 @@ local function eval_file(opts)
   return try_ensure_conn(_59_)
 end
 _2amodule_2a["eval-file"] = eval_file
+do local _ = {eval_file, nil} end
 local function interrupt()
   local function _60_()
     local function _61_(conn)
@@ -380,6 +396,7 @@ local function interrupt()
   return try_ensure_conn(_60_)
 end
 _2amodule_2a["interrupt"] = interrupt
+do local _ = {interrupt, nil} end
 local function eval_str_fn(code)
   local function _70_()
     return nvim.ex.ConjureEval(code)
@@ -387,16 +404,22 @@ local function eval_str_fn(code)
   return _70_
 end
 _2amodule_locals_2a["eval-str-fn"] = eval_str_fn
+do local _ = {eval_str_fn, nil} end
 local last_exception = eval_str_fn("*e")
 do end (_2amodule_2a)["last-exception"] = last_exception
+do local _ = {nil, nil} end
 local result_1 = eval_str_fn("*1")
 do end (_2amodule_2a)["result-1"] = result_1
+do local _ = {nil, nil} end
 local result_2 = eval_str_fn("*2")
 do end (_2amodule_2a)["result-2"] = result_2
+do local _ = {nil, nil} end
 local result_3 = eval_str_fn("*3")
 do end (_2amodule_2a)["result-3"] = result_3
+do local _ = {nil, nil} end
 local view_tap = eval_str_fn("(conjure.internal/dump-tap-queue!)")
 do end (_2amodule_2a)["view-tap"] = view_tap
+do local _ = {nil, nil} end
 local function view_source()
   local function _71_()
     local word = a.get(extract.word(), "content")
@@ -414,6 +437,7 @@ local function view_source()
   return try_ensure_conn(_71_)
 end
 _2amodule_2a["view-source"] = view_source
+do local _ = {view_source, nil} end
 local function clone_current_session()
   local function _74_()
     local function _75_(conn)
@@ -424,6 +448,7 @@ local function clone_current_session()
   return try_ensure_conn(_74_)
 end
 _2amodule_2a["clone-current-session"] = clone_current_session
+do local _ = {clone_current_session, nil} end
 local function clone_fresh_session()
   local function _76_()
     local function _77_(conn)
@@ -434,6 +459,7 @@ local function clone_fresh_session()
   return try_ensure_conn(_76_)
 end
 _2amodule_2a["clone-fresh-session"] = clone_fresh_session
+do local _ = {clone_fresh_session, nil} end
 local function close_current_session()
   local function _78_()
     local function _79_(conn)
@@ -452,6 +478,7 @@ local function close_current_session()
   return try_ensure_conn(_78_)
 end
 _2amodule_2a["close-current-session"] = close_current_session
+do local _ = {close_current_session, nil} end
 local function display_sessions(cb)
   local function _82_()
     local function _83_(sessions)
@@ -462,6 +489,7 @@ local function display_sessions(cb)
   return try_ensure_conn(_82_)
 end
 _2amodule_2a["display-sessions"] = display_sessions
+do local _ = {display_sessions, nil} end
 local function close_all_sessions()
   local function _84_()
     local function _85_(sessions)
@@ -474,6 +502,7 @@ local function close_all_sessions()
   return try_ensure_conn(_84_)
 end
 _2amodule_2a["close-all-sessions"] = close_all_sessions
+do local _ = {close_all_sessions, nil} end
 local function cycle_session(f)
   local function _86_()
     local function _87_(conn)
@@ -495,6 +524,7 @@ local function cycle_session(f)
   return try_ensure_conn(_86_)
 end
 _2amodule_locals_2a["cycle-session"] = cycle_session
+do local _ = {cycle_session, nil} end
 local function next_session()
   local function _91_(current, node)
     return (current == a.get(ll.val(ll.prev(node)), "id"))
@@ -502,6 +532,7 @@ local function next_session()
   return cycle_session(_91_)
 end
 _2amodule_2a["next-session"] = next_session
+do local _ = {next_session, nil} end
 local function prev_session()
   local function _92_(current, node)
     return (current == a.get(ll.val(ll.next(node)), "id"))
@@ -509,6 +540,7 @@ local function prev_session()
   return cycle_session(_92_)
 end
 _2amodule_2a["prev-session"] = prev_session
+do local _ = {prev_session, nil} end
 local function select_session_interactive()
   local function _93_()
     local function _94_(sessions)
@@ -532,21 +564,26 @@ local function select_session_interactive()
   return try_ensure_conn(_93_)
 end
 _2amodule_2a["select-session-interactive"] = select_session_interactive
+do local _ = {select_session_interactive, nil} end
 local test_runners = {clojure = {namespace = "clojure.test", ["all-fn"] = "run-all-tests", ["ns-fn"] = "run-tests", ["single-fn"] = "test-vars", ["default-call-suffix"] = "", ["name-prefix"] = "[(resolve '", ["name-suffix"] = ")]"}, clojurescript = {namespace = "cljs.test", ["all-fn"] = "run-all-tests", ["ns-fn"] = "run-tests", ["single-fn"] = "test-vars", ["default-call-suffix"] = "", ["name-prefix"] = "[(resolve '", ["name-suffix"] = ")]"}, kaocha = {namespace = "kaocha.repl", ["all-fn"] = "run-all", ["ns-fn"] = "run", ["single-fn"] = "run", ["default-call-suffix"] = "{:kaocha/color? false}", ["name-prefix"] = "#'", ["name-suffix"] = ""}}
 _2amodule_2a["test-runners"] = test_runners
+do local _ = {nil, nil} end
 local function test_cfg(k)
   local runner = cfg({"test", "runner"})
   return (a["get-in"](test_runners, {runner, k}) or error(str.join({"No test-runners configuration for ", runner, " / ", k})))
 end
 _2amodule_locals_2a["test-cfg"] = test_cfg
+do local _ = {test_cfg, nil} end
 local function require_test_runner()
   return require_ns(test_cfg("namespace"))
 end
 _2amodule_locals_2a["require-test-runner"] = require_test_runner
+do local _ = {require_test_runner, nil} end
 local function test_runner_code(fn_config_name, ...)
   return ("(" .. str.join(" ", {(test_cfg("namespace") .. "/" .. test_cfg((fn_config_name .. "-fn"))), ...}) .. (cfg({"test", "call_suffix"}) or test_cfg("default-call-suffix")) .. ")")
 end
 _2amodule_locals_2a["test-runner-code"] = test_runner_code
+do local _ = {test_runner_code, nil} end
 local function run_all_tests()
   local function _101_()
     log.append({"; run-all-tests"}, {["break?"] = true})
@@ -559,6 +596,7 @@ local function run_all_tests()
   return try_ensure_conn(_101_)
 end
 _2amodule_2a["run-all-tests"] = run_all_tests
+do local _ = {run_all_tests, nil} end
 local function run_ns_tests(ns)
   local function _103_()
     if ns then
@@ -575,10 +613,12 @@ local function run_ns_tests(ns)
   return try_ensure_conn(_103_)
 end
 _2amodule_locals_2a["run-ns-tests"] = run_ns_tests
+do local _ = {run_ns_tests, nil} end
 local function run_current_ns_tests()
   return run_ns_tests(extract.context())
 end
 _2amodule_2a["run-current-ns-tests"] = run_current_ns_tests
+do local _ = {run_current_ns_tests, nil} end
 local function run_alternate_ns_tests()
   local current_ns = extract.context()
   local function _106_()
@@ -591,6 +631,7 @@ local function run_alternate_ns_tests()
   return run_ns_tests(_106_())
 end
 _2amodule_2a["run-alternate-ns-tests"] = run_alternate_ns_tests
+do local _ = {run_alternate_ns_tests, nil} end
 local function extract_test_name_from_form(form)
   local seen_deftest_3f = false
   local function _107_(part)
@@ -609,6 +650,7 @@ local function extract_test_name_from_form(form)
   return a.some(_107_, str.split(parse["strip-meta"](form), "%s+"))
 end
 _2amodule_2a["extract-test-name-from-form"] = extract_test_name_from_form
+do local _ = {extract_test_name_from_form, nil} end
 local function run_current_test()
   local function _110_()
     local form = extract.form({["root?"] = true})
@@ -638,6 +680,7 @@ local function run_current_test()
   return try_ensure_conn(_110_)
 end
 _2amodule_2a["run-current-test"] = run_current_test
+do local _ = {run_current_test, nil} end
 local function refresh_impl(op)
   local function _116_(conn)
     local function _117_(msg)
@@ -684,6 +727,7 @@ local function refresh_changed()
   return try_ensure_conn(_119_)
 end
 _2amodule_2a["refresh-changed"] = refresh_changed
+do local _ = {refresh_changed, nil} end
 local function refresh_all()
   local use_clj_reload_3f = use_clj_reload_backend_3f()
   local function _123_()
@@ -706,6 +750,7 @@ local function refresh_all()
   return try_ensure_conn(_123_)
 end
 _2amodule_2a["refresh-all"] = refresh_all
+do local _ = {refresh_all, nil} end
 local function refresh_clear()
   local use_clj_reload_3f = use_clj_reload_backend_3f()
   local function _127_()
@@ -733,6 +778,7 @@ local function refresh_clear()
   return try_ensure_conn(_127_)
 end
 _2amodule_2a["refresh-clear"] = refresh_clear
+do local _ = {refresh_clear, nil} end
 local function shadow_select(build)
   local function _134_()
     local function _135_(conn)
@@ -745,6 +791,7 @@ local function shadow_select(build)
   return try_ensure_conn(_134_)
 end
 _2amodule_2a["shadow-select"] = shadow_select
+do local _ = {shadow_select, nil} end
 local function piggieback(code)
   local function _136_()
     local function _137_(conn)
@@ -787,6 +834,7 @@ local function clojure__3evim_completion(_138_)
   return {word = word, menu = str.join(" ", {ns, _140_()}), info = _141_, kind = _143_}
 end
 _2amodule_locals_2a["clojure->vim-completion"] = clojure__3evim_completion
+do local _ = {clojure__3evim_completion, nil} end
 local function extract_completion_context(prefix)
   local root_form = extract.form({["root?"] = true})
   if root_form then
@@ -813,10 +861,12 @@ local function extract_completion_context(prefix)
   end
 end
 _2amodule_locals_2a["extract-completion-context"] = extract_completion_context
+do local _ = {extract_completion_context, nil} end
 local function enhanced_cljs_completion_3f()
   return cfg({"completion", "cljs", "use_suitable"})
 end
 _2amodule_locals_2a["enhanced-cljs-completion?"] = enhanced_cljs_completion_3f
+do local _ = {enhanced_cljs_completion_3f, nil} end
 local function completions(opts)
   local function _149_(conn, ops)
     local _150_
@@ -847,6 +897,7 @@ local function completions(opts)
   return server["with-conn-and-ops-or-warn"]({"complete", "completions"}, _149_, {["silent?"] = true, ["else"] = opts.cb})
 end
 _2amodule_2a["completions"] = completions
+do local _ = {completions, nil} end
 local function out_subscribe()
   try_ensure_conn()
   log.append({"; Subscribing to out"}, {["break?"] = true})
@@ -856,6 +907,7 @@ local function out_subscribe()
   return server["with-conn-and-ops-or-warn"]({"out-subscribe"}, _157_)
 end
 _2amodule_2a["out-subscribe"] = out_subscribe
+do local _ = {out_subscribe, nil} end
 local function out_unsubscribe()
   try_ensure_conn()
   log.append({"; Unsubscribing from out"}, {["break?"] = true})
@@ -865,4 +917,5 @@ local function out_unsubscribe()
   return server["with-conn-and-ops-or-warn"]({"out-unsubscribe"}, _158_)
 end
 _2amodule_2a["out-unsubscribe"] = out_unsubscribe
+do local _ = {out_unsubscribe, nil} end
 return _2amodule_2a

@@ -1,3 +1,5 @@
+(import-macros {: module : def : defn : defonce : def- : defn- : defonce- : wrap-last-expr : wrap-module-body : deftest} :nfnl.macros.aniseed)
+
 (module conjure.util
   {autoload {nvim conjure.aniseed.nvim}})
 
@@ -10,3 +12,5 @@
 
 (defn replace-termcodes [s]
   (nvim.replace_termcodes s true false true))
+
+*module*

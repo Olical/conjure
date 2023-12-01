@@ -1,3 +1,5 @@
+(import-macros {: module : def : defn : defonce : def- : defn- : defonce- : wrap-last-expr : wrap-module-body : deftest} :nfnl.macros.aniseed)
+
 (module conjure.client.racket.stdio
   {autoload {a conjure.aniseed.core
              str conjure.aniseed.string
@@ -167,3 +169,5 @@
 
 (defn on-exit []
   (stop))
+
+*module*

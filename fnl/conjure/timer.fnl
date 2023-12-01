@@ -1,3 +1,5 @@
+(import-macros {: module : def : defn : defonce : def- : defn- : defonce- : wrap-last-expr : wrap-module-body : deftest} :nfnl.macros.aniseed)
+
 (module conjure.timer
   {autoload {a conjure.aniseed.core
              nvim conjure.aniseed.nvim}})
@@ -12,3 +14,5 @@
     (t:stop)
     (t:close))
   nil)
+
+*module*

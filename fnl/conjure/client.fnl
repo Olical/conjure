@@ -1,3 +1,5 @@
+(import-macros {: module : def : defn : defonce : def- : defn- : defonce- : wrap-last-expr : wrap-module-body : deftest} :nfnl.macros.aniseed)
+
 (module conjure.client
   {autoload {a conjure.aniseed.core
              nvim conjure.aniseed.nvim
@@ -124,3 +126,5 @@
     (fn [{: filetype}]
       (with-filetype filetype f))
     (a.vals loaded)))
+
+*module*

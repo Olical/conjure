@@ -1,3 +1,5 @@
+(import-macros {: module : def : defn : defonce : def- : defn- : defonce- : wrap-last-expr : wrap-module-body : deftest} :nfnl.macros.aniseed)
+
 (module conjure.client.janet.netrepl
   {autoload {a conjure.aniseed.core
              nvim conjure.aniseed.nvim
@@ -146,3 +148,5 @@
 
 (defn on-exit []
   (disconnect))
+
+*module*

@@ -1,21 +1,22 @@
-local _2afile_2a = "fnl/conjure/net.fnl"
+-- [nfnl] Compiled from fnl/conjure/net.fnl by https://github.com/Olical/nfnl, do not edit.
 local _2amodule_name_2a = "conjure.net"
 local _2amodule_2a
 do
-  package.loaded[_2amodule_name_2a] = {}
-  _2amodule_2a = package.loaded[_2amodule_name_2a]
+  _G.package.loaded[_2amodule_name_2a] = {}
+  _2amodule_2a = _G.package.loaded[_2amodule_name_2a]
 end
 local _2amodule_locals_2a
 do
   _2amodule_2a["aniseed/locals"] = {}
   _2amodule_locals_2a = (_2amodule_2a)["aniseed/locals"]
 end
-local autoload = (require("conjure.aniseed.autoload")).autoload
+local autoload = (require("aniseed.autoload")).autoload
 local a, bridge, nvim, _ = autoload("conjure.aniseed.core"), autoload("conjure.bridge"), autoload("conjure.aniseed.nvim"), nil
 _2amodule_locals_2a["a"] = a
 _2amodule_locals_2a["bridge"] = bridge
 _2amodule_locals_2a["nvim"] = nvim
 _2amodule_locals_2a["_"] = _
+do local _ = {nil, nil, nil, nil, nil, nil, nil, nil, nil} end
 local function resolve(host)
   if (host == "::") then
     return host
@@ -27,8 +28,10 @@ local function resolve(host)
   end
 end
 _2amodule_2a["resolve"] = resolve
+do local _ = {resolve, nil} end
 local state = ((_2amodule_2a).state or {["sock-drawer"] = {}})
 do end (_2amodule_locals_2a)["state"] = state
+do local _ = {nil, nil} end
 local function destroy_sock(sock)
   if not sock:is_closing() then
     sock:read_stop()
@@ -43,6 +46,7 @@ local function destroy_sock(sock)
   return nil
 end
 _2amodule_locals_2a["destroy-sock"] = destroy_sock
+do local _ = {destroy_sock, nil} end
 local function connect(_5_)
   local _arg_6_ = _5_
   local host = _arg_6_["host"]
@@ -62,10 +66,12 @@ local function connect(_5_)
   return {sock = sock, ["resolved-host"] = resolved_host, destroy = _8_, host = host, port = port}
 end
 _2amodule_2a["connect"] = connect
+do local _ = {connect, nil} end
 local function destroy_all_socks()
   return a["run!"](destroy_sock, state["sock-drawer"])
 end
 _2amodule_2a["destroy-all-socks"] = destroy_all_socks
+do local _ = {destroy_all_socks, nil} end
 do
   nvim.ex.augroup("conjure-net-sock-cleanup")
   nvim.ex.autocmd_()

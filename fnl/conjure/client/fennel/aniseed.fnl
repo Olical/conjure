@@ -1,3 +1,5 @@
+(import-macros {: module : def : defn : defonce : def- : defn- : defonce- : wrap-last-expr : wrap-module-body : deftest} :nfnl.macros.aniseed)
+
 (module conjure.client.fennel.aniseed
   {autoload {nvim conjure.aniseed.nvim
              a conjure.aniseed.core
@@ -273,3 +275,5 @@
 
     (when (not ok?)
       (opts.cb locals))))
+
+*module*

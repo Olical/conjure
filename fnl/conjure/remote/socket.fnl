@@ -1,3 +1,5 @@
+(import-macros {: module : def : defn : defonce : def- : defn- : defonce- : wrap-last-expr : wrap-module-body : deftest} :nfnl.macros.aniseed)
+
 (module conjure.remote.socket
   {autoload {a conjure.aniseed.core
              nvim conjure.aniseed.nvim
@@ -115,3 +117,5 @@
       {:opts opts
        :destroy destroy
        :send send})))
+
+*module*

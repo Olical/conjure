@@ -1,3 +1,5 @@
+(import-macros {: module : def : defn : defonce : def- : defn- : defonce- : wrap-last-expr : wrap-module-body : deftest} :nfnl.macros.aniseed)
+
 (module conjure.editor
   {autoload {a conjure.aniseed.core
              nvim conjure.aniseed.nvim
@@ -41,3 +43,5 @@
 
 (defn has-filetype? [ft]
   (a.some #(= ft $1) (nvim.fn.getcompletion ft :filetype)))
+
+*module*

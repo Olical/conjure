@@ -1,3 +1,5 @@
+(import-macros {: module : def : defn : defonce : def- : defn- : defonce- : wrap-last-expr : wrap-module-body : deftest} :nfnl.macros.aniseed)
+
 (module conjure.process
   {autoload {nvim conjure.aniseed.nvim
              a conjure.aniseed.core
@@ -70,3 +72,5 @@
     (nvim.fn.jobstop proc.job-id)
     (on-exit proc.job-id))
   proc)
+
+*module*

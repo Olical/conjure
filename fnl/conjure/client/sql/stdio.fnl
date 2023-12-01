@@ -1,3 +1,5 @@
+(import-macros {: module : def : defn : defonce : def- : defn- : defonce- : wrap-last-expr : wrap-module-body : deftest} :nfnl.macros.aniseed)
+
 (module conjure.client.sql.stdio
   {autoload {a conjure.aniseed.core
              str conjure.aniseed.string
@@ -173,3 +175,5 @@
     :SqlInterrupt (cfg [:mapping :interrupt])
     interrupt
     {:desc "Interrupt the current REPL"}))
+
+*module*

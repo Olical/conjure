@@ -1,16 +1,16 @@
-local _2afile_2a = "fnl/conjure/client/clojure/nrepl/server.fnl"
+-- [nfnl] Compiled from fnl/conjure/client/clojure/nrepl/server.fnl by https://github.com/Olical/nfnl, do not edit.
 local _2amodule_name_2a = "conjure.client.clojure.nrepl.server"
 local _2amodule_2a
 do
-  package.loaded[_2amodule_name_2a] = {}
-  _2amodule_2a = package.loaded[_2amodule_name_2a]
+  _G.package.loaded[_2amodule_name_2a] = {}
+  _2amodule_2a = _G.package.loaded[_2amodule_name_2a]
 end
 local _2amodule_locals_2a
 do
   _2amodule_2a["aniseed/locals"] = {}
   _2amodule_locals_2a = (_2amodule_2a)["aniseed/locals"]
 end
-local autoload = (require("conjure.aniseed.autoload")).autoload
+local autoload = (require("aniseed.autoload")).autoload
 local a, client, config, debugger, extract, log, nrepl, state, str, timer, ui, uuid = autoload("conjure.aniseed.core"), autoload("conjure.client"), autoload("conjure.config"), autoload("conjure.client.clojure.nrepl.debugger"), autoload("conjure.extract"), autoload("conjure.log"), autoload("conjure.remote.nrepl"), autoload("conjure.client.clojure.nrepl.state"), autoload("conjure.aniseed.string"), autoload("conjure.timer"), autoload("conjure.client.clojure.nrepl.ui"), autoload("conjure.uuid")
 do end (_2amodule_locals_2a)["a"] = a
 _2amodule_locals_2a["client"] = client
@@ -24,6 +24,7 @@ _2amodule_locals_2a["str"] = str
 _2amodule_locals_2a["timer"] = timer
 _2amodule_locals_2a["ui"] = ui
 _2amodule_locals_2a["uuid"] = uuid
+do local _ = {nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil} end
 local function with_conn_or_warn(f, opts)
   local conn = state.get("conn")
   if conn then
@@ -41,6 +42,7 @@ local function with_conn_or_warn(f, opts)
   end
 end
 _2amodule_2a["with-conn-or-warn"] = with_conn_or_warn
+do local _ = {with_conn_or_warn, nil} end
 local function connected_3f()
   if state.get("conn") then
     return true
@@ -49,6 +51,7 @@ local function connected_3f()
   end
 end
 _2amodule_2a["connected?"] = connected_3f
+do local _ = {connected_3f, nil} end
 local function send(msg, cb)
   local function _5_(conn)
     return conn.send(msg, cb)
@@ -56,6 +59,7 @@ local function send(msg, cb)
   return with_conn_or_warn(_5_)
 end
 _2amodule_2a["send"] = send
+do local _ = {send, nil} end
 local function display_conn_status(status)
   local function _6_(conn)
     local function _7_()
@@ -70,6 +74,7 @@ local function display_conn_status(status)
   return with_conn_or_warn(_6_)
 end
 _2amodule_locals_2a["display-conn-status"] = display_conn_status
+do local _ = {display_conn_status, nil} end
 local function disconnect()
   local function _8_(conn)
     conn.destroy()
@@ -79,15 +84,18 @@ local function disconnect()
   return with_conn_or_warn(_8_)
 end
 _2amodule_2a["disconnect"] = disconnect
+do local _ = {disconnect, nil} end
 local function close_session(session, cb)
   return send({op = "close", session = a.get(session, "id")}, cb)
 end
 _2amodule_2a["close-session"] = close_session
+do local _ = {close_session, nil} end
 local function assume_session(session)
   a.assoc(state.get("conn"), "session", a.get(session, "id"))
   return log.append({str.join({"; Assumed session: ", session.str()})}, {["break?"] = true})
 end
 _2amodule_2a["assume-session"] = assume_session
+do local _ = {assume_session, nil} end
 local function un_comment(code)
   if code then
     return string.gsub(code, "^#_", "")
@@ -96,6 +104,7 @@ local function un_comment(code)
   end
 end
 _2amodule_2a["un-comment"] = un_comment
+do local _ = {un_comment, nil} end
 local function eval(opts, cb)
   local function _10_(_)
     local _12_
@@ -118,6 +127,7 @@ local function eval(opts, cb)
   return with_conn_or_warn(_10_)
 end
 _2amodule_2a["eval"] = eval
+do local _ = {eval, nil} end
 local function with_session_ids(cb)
   local function _16_(_)
     local function _17_(msg)
@@ -133,10 +143,12 @@ local function with_session_ids(cb)
   return with_conn_or_warn(_16_)
 end
 _2amodule_locals_2a["with-session-ids"] = with_session_ids
+do local _ = {with_session_ids, nil} end
 local function pretty_session_type(st)
   return a.get({clj = "Clojure", cljs = "ClojureScript", cljr = "ClojureCLR"}, st, "Unknown https://github.com/Olical/conjure/wiki/Frequently-asked-questions#what-does-unknown-mean-in-the-log-when-connecting-to-a-clojure-nrepl")
 end
 _2amodule_2a["pretty-session-type"] = pretty_session_type
+do local _ = {pretty_session_type, nil} end
 local function session_type(id, cb)
   local state0 = {["done?"] = false}
   local function _19_()
@@ -171,6 +183,7 @@ local function session_type(id, cb)
   return send({op = "eval", code = ("#?(" .. str.join(" ", {":clj 'clj", ":cljs 'cljs", ":cljr 'cljr", ":default 'unknown"}) .. ")"), session = id}, nrepl["with-all-msgs-fn"](_21_))
 end
 _2amodule_2a["session-type"] = session_type
+do local _ = {session_type, nil} end
 local function enrich_session_id(id, cb)
   local function _25_(st)
     local t = {id = id, type = st, ["pretty-type"] = pretty_session_type(st), name = uuid.pretty(id)}
@@ -183,6 +196,7 @@ local function enrich_session_id(id, cb)
   return session_type(id, _25_)
 end
 _2amodule_2a["enrich-session-id"] = enrich_session_id
+do local _ = {enrich_session_id, nil} end
 local function with_sessions(cb)
   local function _27_(sess_ids)
     local rich = {}
@@ -216,6 +230,7 @@ local function with_sessions(cb)
   return with_session_ids(_27_)
 end
 _2amodule_2a["with-sessions"] = with_sessions
+do local _ = {with_sessions, nil} end
 local function clone_session(session)
   local function _34_(msgs)
     local session_id
@@ -233,6 +248,7 @@ local function clone_session(session)
   return send({op = "clone", session = a.get(session, "id")}, nrepl["with-all-msgs-fn"](_34_))
 end
 _2amodule_2a["clone-session"] = clone_session
+do local _ = {clone_session, nil} end
 local function assume_or_create_session()
   a.assoc(state.get("conn"), "session", nil)
   local function _37_(sessions)
@@ -245,6 +261,7 @@ local function assume_or_create_session()
   return with_sessions(_37_)
 end
 _2amodule_2a["assume-or-create-session"] = assume_or_create_session
+do local _ = {assume_or_create_session, nil} end
 local function eval_preamble(cb)
   local queue_size = config["get-in"]({"client", "clojure", "nrepl", "tap", "queue_size"})
   local function _39_()
@@ -257,6 +274,7 @@ local function eval_preamble(cb)
   return send({op = "eval", code = str.join("\n", {"(create-ns 'conjure.internal)", "(intern 'conjure.internal 'initial-ns (symbol (str *ns*)))", "(ns conjure.internal", "  (:require [clojure.pprint :as pp] [clojure.test] [clojure.data] [clojure.string]))", "(defn pprint [val w opts]", "  (apply pp/write val", "    (mapcat identity (assoc opts :stream w))))", "(defn bounded-conj [queue x limit]", "  (->> x (conj queue) (take limit)))", ("(def tap-queue-size " .. queue_size .. ")"), "(defonce tap-queue! (atom (list)))", "(defonce enqueue-tap!", "  (fn [x] (swap! tap-queue! bounded-conj x tap-queue-size)))", "(when (resolve 'add-tap)", "  (remove-tap enqueue-tap!)", "  (add-tap enqueue-tap!))", "(defn dump-tap-queue! []", "  (reverse (first (reset-vals! tap-queue! (list)))))", "(defmethod clojure.test/report :fail [m]", "  (clojure.test/with-test-out", "    (clojure.test/inc-report-counter :fail)", "    (println \"\nFAIL in\" (clojure.test/testing-vars-str m))", "    (when (seq clojure.test/*testing-contexts*) (println (clojure.test/testing-contexts-str)))", "    (when-let [message (:message m)] (println message))", "    (print \"expected:\" (with-out-str (prn (:expected m))))", "    (print \"  actual:\" (with-out-str (prn (:actual m))))", "    (when (and (seq? (:actual m))", "               (= #'clojure.core/not (resolve (first (:actual m))))", "               (seq? (second (:actual m)))", "               (= #'clojure.core/= (resolve (first (second (:actual m)))))", "               (= 3 (count (second (:actual m)))))", "      (let [[missing extra _] (clojure.data/diff (second (second (:actual m))) (last (second (:actual m))))", "            missing-str (with-out-str (pp/pprint missing))", "            missing-lines (clojure.string/split-lines missing-str)", "            extra-str (with-out-str (pp/pprint extra))", "            extra-lines (clojure.string/split-lines extra-str)]", "        (when (some? missing) (doseq [m missing-lines] (println \"- \" m)))", "        (when (some? extra) (doseq [e extra-lines] (println \"+ \" e)))))))", "(in-ns initial-ns)"})}, _39_())
 end
 _2amodule_locals_2a["eval-preamble"] = eval_preamble
+do local _ = {eval_preamble, nil} end
 local function capture_describe()
   local function _40_(msg)
     return a.assoc(state.get("conn"), "describe", msg)
@@ -264,6 +282,7 @@ local function capture_describe()
   return send({op = "describe"}, _40_)
 end
 _2amodule_locals_2a["capture-describe"] = capture_describe
+do local _ = {capture_describe, nil} end
 local function with_conn_and_ops_or_warn(op_names, f, opts)
   local function _41_(conn)
     local found_ops
@@ -292,10 +311,12 @@ local function with_conn_and_ops_or_warn(op_names, f, opts)
   return with_conn_or_warn(_41_, opts)
 end
 _2amodule_2a["with-conn-and-ops-or-warn"] = with_conn_and_ops_or_warn
+do local _ = {with_conn_and_ops_or_warn, nil} end
 local function handle_input_request(msg)
   return send({op = "stdin", stdin = ((extract.prompt("Input required: ") or "") .. "\n"), session = msg.session})
 end
 _2amodule_2a["handle-input-request"] = handle_input_request
+do local _ = {handle_input_request, nil} end
 local function connect(_47_)
   local _arg_48_ = _47_
   local host = _arg_48_["host"]
@@ -353,4 +374,5 @@ local function connect(_47_)
   return a.assoc(state.get(), "conn", a["merge!"](nrepl.connect(a.merge({host = host, port = port, ["on-failure"] = _50_, ["on-success"] = _51_, ["on-error"] = _52_, ["on-message"] = _54_, ["side-effect-callback"] = _57_, ["default-callback"] = _60_}, connect_opts)), {["seen-ns"] = {}, port_file_path = port_file_path}))
 end
 _2amodule_2a["connect"] = connect
+do local _ = {connect, nil} end
 return _2amodule_2a

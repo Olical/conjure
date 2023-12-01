@@ -1,3 +1,5 @@
+(import-macros {: module : def : defn : defonce : def- : defn- : defonce- : wrap-last-expr : wrap-module-body : deftest} :nfnl.macros.aniseed)
+
 (module conjure.remote.stdio2
   {autoload {a conjure.aniseed.core
              nvim conjure.aniseed.nvim
@@ -15,3 +17,5 @@
 
     (a.string? x)
     (parse-cmd (str.split x "%s"))))
+
+*module*

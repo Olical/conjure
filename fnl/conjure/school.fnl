@@ -1,3 +1,5 @@
+(import-macros {: module : def : defn : defonce : def- : defn- : defonce- : wrap-last-expr : wrap-module-body : deftest} :nfnl.macros.aniseed)
+
 (module conjure.school
   {autoload {nvim conjure.aniseed.nvim
              buffer conjure.buffer
@@ -185,3 +187,5 @@
      ";; For example, conjure-client-fennel-aniseed or conjure-client-clojure-nrepl."
      ""
      ";; I hope you have a wonderful time in Conjure!"]))
+
+*module*

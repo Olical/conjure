@@ -1,16 +1,16 @@
-local _2afile_2a = "fnl/conjure/client.fnl"
+-- [nfnl] Compiled from fnl/conjure/client.fnl by https://github.com/Olical/nfnl, do not edit.
 local _2amodule_name_2a = "conjure.client"
 local _2amodule_2a
 do
-  package.loaded[_2amodule_name_2a] = {}
-  _2amodule_2a = package.loaded[_2amodule_name_2a]
+  _G.package.loaded[_2amodule_name_2a] = {}
+  _2amodule_2a = _G.package.loaded[_2amodule_name_2a]
 end
 local _2amodule_locals_2a
 do
   _2amodule_2a["aniseed/locals"] = {}
   _2amodule_locals_2a = (_2amodule_2a)["aniseed/locals"]
 end
-local autoload = (require("conjure.aniseed.autoload")).autoload
+local autoload = (require("aniseed.autoload")).autoload
 local a, config, dyn, fennel, nvim, str = autoload("conjure.aniseed.core"), autoload("conjure.config"), autoload("conjure.dynamic"), autoload("conjure.aniseed.fennel"), autoload("conjure.aniseed.nvim"), autoload("conjure.aniseed.string")
 do end (_2amodule_locals_2a)["a"] = a
 _2amodule_locals_2a["config"] = config
@@ -18,14 +18,17 @@ _2amodule_locals_2a["dyn"] = dyn
 _2amodule_locals_2a["fennel"] = fennel
 _2amodule_locals_2a["nvim"] = nvim
 _2amodule_locals_2a["str"] = str
+do local _ = {nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil} end
 local state_key
 local function _1_()
   return "default"
 end
 state_key = ((_2amodule_2a)["state-key"] or dyn.new(_1_))
 do end (_2amodule_2a)["state-key"] = state_key
+do local _ = {nil, nil} end
 local state = ((_2amodule_2a).state or {["state-key-set?"] = false})
 do end (_2amodule_locals_2a)["state"] = state
+do local _ = {nil, nil} end
 local function set_state_key_21(new_key)
   state["state-key-set?"] = true
   local function _2_()
@@ -34,10 +37,12 @@ local function set_state_key_21(new_key)
   return dyn["set-root!"](state_key, _2_)
 end
 _2amodule_2a["set-state-key!"] = set_state_key_21
+do local _ = {set_state_key_21, nil} end
 local function multiple_states_3f()
   return state["state-key-set?"]
 end
 _2amodule_2a["multiple-states?"] = multiple_states_3f
+do local _ = {multiple_states_3f, nil} end
 local function new_state(init_fn)
   local key__3estate = {}
   local function _3_(...)
@@ -56,8 +61,10 @@ local function new_state(init_fn)
   return _3_
 end
 _2amodule_2a["new-state"] = new_state
+do local _ = {new_state, nil} end
 local loaded = ((_2amodule_2a).loaded or {})
 do end (_2amodule_locals_2a)["loaded"] = loaded
+do local _ = {nil, nil} end
 local function load_module(ft, name)
   local fnl = fennel.impl()
   local ok_3f, result = nil, nil
@@ -80,18 +87,21 @@ local function load_module(ft, name)
   end
 end
 _2amodule_locals_2a["load-module"] = load_module
+do local _ = {load_module, nil} end
 local filetype
 local function _11_()
   return nvim.bo.filetype
 end
 filetype = dyn.new(_11_)
 do end (_2amodule_locals_2a)["filetype"] = filetype
+do local _ = {nil, nil} end
 local extension
 local function _12_()
   return nvim.fn.expand("%:e")
 end
 extension = dyn.new(_12_)
 do end (_2amodule_locals_2a)["extension"] = extension
+do local _ = {nil, nil} end
 local function with_filetype(ft, f, ...)
   local function _13_()
     return ft
@@ -102,6 +112,7 @@ local function with_filetype(ft, f, ...)
   return dyn.bind({[filetype] = _13_, [extension] = _14_}, f, ...)
 end
 _2amodule_2a["with-filetype"] = with_filetype
+do local _ = {with_filetype, nil} end
 local function wrap(f, ...)
   local opts = {[filetype] = a.constantly(filetype()), [state_key] = a.constantly(state_key())}
   local args = {...}
@@ -115,14 +126,17 @@ local function wrap(f, ...)
   return _15_
 end
 _2amodule_2a["wrap"] = wrap
+do local _ = {wrap, nil} end
 local function schedule_wrap(f, ...)
   return wrap(vim.schedule_wrap(f), ...)
 end
 _2amodule_2a["schedule-wrap"] = schedule_wrap
+do local _ = {schedule_wrap, nil} end
 local function schedule(f, ...)
   return vim.schedule(wrap(f, ...))
 end
 _2amodule_2a["schedule"] = schedule
+do local _ = {schedule, nil} end
 local function current_client_module_name()
   local result = {filetype = filetype(), extension = extension(), ["module-name"] = nil}
   do
@@ -151,6 +165,7 @@ local function current_client_module_name()
   return result
 end
 _2amodule_2a["current-client-module-name"] = current_client_module_name
+do local _ = {current_client_module_name, nil} end
 local function current()
   local _let_21_ = current_client_module_name()
   local module_name = _let_21_["module-name"]
@@ -163,10 +178,12 @@ local function current()
   end
 end
 _2amodule_2a["current"] = current
+do local _ = {current, nil} end
 local function get(...)
   return a["get-in"](current(), {...})
 end
 _2amodule_2a["get"] = get
+do local _ = {get, nil} end
 local function call(fn_name, ...)
   local f = get(fn_name)
   if f then
@@ -176,6 +193,7 @@ local function call(fn_name, ...)
   end
 end
 _2amodule_2a["call"] = call
+do local _ = {call, nil} end
 local function optional_call(fn_name, ...)
   local f = get(fn_name)
   if f then
@@ -185,6 +203,7 @@ local function optional_call(fn_name, ...)
   end
 end
 _2amodule_2a["optional-call"] = optional_call
+do local _ = {optional_call, nil} end
 local function each_loaded_client(f)
   local function _27_(_25_)
     local _arg_26_ = _25_
@@ -194,4 +213,5 @@ local function each_loaded_client(f)
   return a["run!"](_27_, a.vals(loaded))
 end
 _2amodule_2a["each-loaded-client"] = each_loaded_client
+do local _ = {each_loaded_client, nil} end
 return _2amodule_2a

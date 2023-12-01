@@ -1,3 +1,5 @@
+(import-macros {: module : def : defn : defonce : def- : defn- : defonce- : wrap-last-expr : wrap-module-body : deftest} :nfnl.macros.aniseed)
+
 (module conjure.dynamic
   {autoload {a conjure.aniseed.core}})
 
@@ -40,3 +42,5 @@
   (assert-value-function! new-value)
   (a.assoc (dyn get-stack-key) 1 new-value)
   nil)
+
+*module*

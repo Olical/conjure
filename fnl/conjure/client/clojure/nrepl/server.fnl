@@ -1,3 +1,5 @@
+(import-macros {: module : def : defn : defonce : def- : defn- : defonce- : wrap-last-expr : wrap-module-body : deftest} :nfnl.macros.aniseed)
+
 (module conjure.client.clojure.nrepl.server
   {autoload {a conjure.aniseed.core
              uuid conjure.uuid
@@ -370,3 +372,5 @@
 
       {:seen-ns {}
        :port_file_path port_file_path})))
+
+*module*

@@ -1,3 +1,5 @@
+(import-macros {: module : def : defn : defonce : def- : defn- : defonce- : wrap-last-expr : wrap-module-body : deftest} :nfnl.macros.aniseed)
+
 (module conjure.client.julia.stdio
   {autoload {a conjure.aniseed.core
              extract conjure.extract
@@ -176,3 +178,5 @@
     :JuliaInterrupt (cfg [:mapping :interrupt])
     interrupt
     {:desc "Interrupt the evaluation"}))
+
+*module*
