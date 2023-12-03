@@ -199,18 +199,23 @@
       (display-repl-status :stopped)
       (a.assoc (state) :repl nil))))
 
-; By default, there is no way for us to tell the difference between
-; normal stdout log messages and the result of the expression we evaluated.
-; This is because if an expression results in the literal value None, the python
-; interpreter will not print out anything.
-; Replacing this hook ensures that the last line in the output after
-; sending a command is the result of the command.
-; Relevant docs: https://docs.python.org/3/library/sys.html#sys.displayhook
-(def update-python-displayhook
-  (str.join "\n" ["import sys"
-                  "def format_output(val):"
-                  "    print(repr(val))"
-                  "sys.displayhook = format_output\n"]))
+(def initialise-repl-code
+  ;; By default, there is no way for us to tell the difference between
+  ;; normal stdout log messages and the result of the expression we evaluated.
+  ;; This is because if an expression results in the literal value None, the python
+  ;; interpreter will not print out anything.
+  ;; Replacing this hook ensures that the last line in the output after
+  ;; sending a command is the result of the command.
+  ;; Relevant docs: https://docs.python.org/3/library/sys.html#sys.displayhook
+
+  ;; We also set the `__name__` to something else so `__main__` blocks aren't executed.
+  (str.join
+    "\n"
+    ["import sys"
+     "def conjure_format_output(val):"
+     "    print(repr(val))"
+     "sys.displayhook = conjure_format_output\n"
+     "__name__ = '__repl__'"]))
 
 (defn start []
   (if (state :repl)
@@ -238,7 +243,7 @@
               (with-repl-or-warn
                (fn [repl]
                  (repl.send
-                   (prep-code update-python-displayhook)
+                   (prep-code initialise-repl-code)
                    (fn [msgs] nil)
                    nil)))))
 

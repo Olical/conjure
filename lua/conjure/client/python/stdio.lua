@@ -193,8 +193,8 @@ local function stop()
   end
 end
 _2amodule_2a["stop"] = stop
-local update_python_displayhook = str.join("\n", {"import sys", "def format_output(val):", "    print(repr(val))", "sys.displayhook = format_output\n"})
-do end (_2amodule_2a)["update-python-displayhook"] = update_python_displayhook
+local initialise_repl_code = str.join("\n", {"import sys", "def conjure_format_output(val):", "    print(repr(val))", "sys.displayhook = conjure_format_output\n", "__name__ = '__repl__'"})
+do end (_2amodule_2a)["initialise-repl-code"] = initialise_repl_code
 local function start()
   if state("repl") then
     return log.append({(comment_prefix .. "Can't start, REPL is already running."), (comment_prefix .. "Stop the REPL with " .. config["get-in"]({"mapping", "prefix"}) .. cfg({"mapping", "stop"}))}, {["break?"] = true})
@@ -214,7 +214,7 @@ local function start()
           local function _23_(msgs)
             return nil
           end
-          return repl.send(prep_code(update_python_displayhook), _23_, nil)
+          return repl.send(prep_code(initialise_repl_code), _23_, nil)
         end
         return display_repl_status("started", with_repl_or_warn(_22_))
       end
