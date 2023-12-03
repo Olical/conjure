@@ -128,6 +128,29 @@ return {
 ----
 ====
 
+== Configuration
+
+All configuration is performed through global Neovim variables, this may change to a `.setup(...)` Lua first approach some day but for now you can configure things by setting variables early, before Conjure loads. For example, if you wish to rebind or disable the default documentation lookup key (`K`) because you don't need it or it conflicts with your LSP configuration you can do so like this:
+
+```lua
+-- Disable the documentation mapping
+vim.g["conjure#mapping#doc_word"] = false
+
+-- Rebind it from K to <prefix>gk
+vim.g["conjure#mapping#doc_word"] = "gk"
+
+-- Reset it to the default unprefixed K (note the special table wrapped syntax)
+vim.g["conjure#mapping#doc_word"] = {"K"}
+```
+
+```viml
+# And the same disabling but in Vim Script
+# Note the v:false in Vim Script!
+let g:conjure#mapping#doc_word = v:false
+```
+
+Please see `:help conjure` for the full list of possible configuration variables and values.
+
 == Mods
 
 Modifications or mods are extra plugins that improve Conjure in various ways. They may add completion plugin support, entire language clients or new mappings that do fun and interesting things. You can learn about creating your own by reading the source code of the projects listed below as well as https://github.com/Olical/conjure/wiki/Using-Conjure-programatically-(API)["Using Conjure programatically (API)"] and https://github.com/Olical/conjure/wiki/Client-features["Client features"].
