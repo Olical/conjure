@@ -67,7 +67,7 @@
     (fn [_]
       (send
         {:op :eval
-         :ns (or opts.context "user")
+         :ns opts.context
          :code (un-comment opts.code)
          :file opts.file-path
          :line (a.get-in opts [:range :start 1])
@@ -215,11 +215,13 @@
 (defn- eval-preamble [cb]
   (send
     {:op :eval
-     :code (.. "(ns conjure.internal"
+     :code (.. "(def *pre-conjure-internal-ns* (resolve *ns*))"
+               "(ns conjure.internal"
                "  (:require [clojure.pprint :as pp]))"
                "(defn pprint [val w opts]"
                "  (apply pp/write val"
-               "    (mapcat identity (assoc opts :stream w))))")}
+               "    (mapcat identity (assoc opts :stream w))))"
+               "(in-ns *pre-conjure-internal-ns*)")}
     (when cb
       (nrepl.with-all-msgs-fn cb))))
 
