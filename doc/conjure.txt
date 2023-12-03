@@ -289,8 +289,11 @@ configure the ones you care about one at a time you can set:
 
                                                     *g:conjure#filetype#janet*
 `g:conjure#filetype#janet`
-            Client to use for `janet` buffers.
-            Help: |conjure-client-janet-netrepl|
+            Client to use for `janet` buffers. Conjure also ships with an
+            alternative `"conjure.client.janet.stdio"` client which allows
+            you to work with Janet without installing and running a netrepl
+            server.
+            Help: |conjure-client-janet-netrepl|, |conjure-client-janet-stdio|
             Default: `"conjure.client.janet.netrepl"`
 
                                                        *g:conjure#filetype#hy*
@@ -949,6 +952,7 @@ your dotfiles.
  - |conjure-client-fennel-stdio|
  - |conjure-client-clojure-nrepl|
  - |conjure-client-janet-netrepl|
+ - |conjure-client-janet-stdio|
  - |conjure-client-hy-stdio|
  - |conjure-client-racket-stdio|
  - |conjure-client-scheme-stdio|
