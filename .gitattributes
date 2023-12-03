@@ -1,4 +1,4 @@
-lua/* linguist-generated
+lua/**/*.lua linguist-generated
 lua/conjure/aniseed linguist-vendored
 lua/conjure/remote/transport/bencode/impl.lua linguist-vendored
 dev/* -linguist-detectable
