@@ -67,7 +67,7 @@
     (fn [_]
       (send
         {:op :eval
-         :ns opts.context
+         :ns (or opts.context "user")
          :code (un-comment opts.code)
          :file opts.file-path
          :line (a.get-in opts [:range :start 1])
