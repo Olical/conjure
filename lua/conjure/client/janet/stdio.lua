@@ -83,6 +83,13 @@ local function eval_file(opts)
   return eval_str(a.assoc(opts, "code", a.slurp(opts["file-path"])))
 end
 _2amodule_2a["eval-file"] = eval_file
+local function doc_str(opts)
+  local function _8_(_241)
+    return ("(doc " .. _241 .. ")")
+  end
+  return eval_str(a.update(opts, "code", _8_))
+end
+_2amodule_2a["doc-str"] = doc_str
 local function display_repl_status(status)
   local repl = state("repl")
   if repl then
@@ -107,13 +114,13 @@ local function start()
   if state("repl") then
     return log.append({(comment_prefix .. "Can't start, REPL is already running."), (comment_prefix .. "Stop the REPL with " .. config["get-in"]({"mapping", "prefix"}) .. cfg({"mapping", "stop"}))}, {["break?"] = true})
   else
-    local function _10_()
+    local function _11_()
       return display_repl_status("started")
     end
-    local function _11_(err)
+    local function _12_(err)
       return display_repl_status(err)
     end
-    local function _12_(code, signal)
+    local function _13_(code, signal)
       if (("number" == type(code)) and (code > 0)) then
         log.append({(comment_prefix .. "process exited with code " .. code)})
       else
@@ -124,10 +131,10 @@ local function start()
       end
       return stop()
     end
-    local function _15_(msg)
+    local function _16_(msg)
       return log.append(format_message(msg))
     end
-    return a.assoc(state(), "repl", stdio.start({["prompt-pattern"] = cfg({"prompt_pattern"}), cmd = cfg({"command"}), ["on-success"] = _10_, ["on-error"] = _11_, ["on-exit"] = _12_, ["on-stray-output"] = _15_}))
+    return a.assoc(state(), "repl", stdio.start({["prompt-pattern"] = cfg({"prompt_pattern"}), cmd = cfg({"command"}), ["on-success"] = _11_, ["on-error"] = _12_, ["on-exit"] = _13_, ["on-stray-output"] = _16_}))
   end
 end
 _2amodule_2a["start"] = start
