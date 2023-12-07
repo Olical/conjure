@@ -1,4 +1,4 @@
-(module conjure.client.scheme.stdio
+(module conjure.client.janet.stdio
   {autoload {a conjure.aniseed.core
              str conjure.aniseed.string
              nvim conjure.aniseed.nvim

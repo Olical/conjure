@@ -1,5 +1,5 @@
 local _2afile_2a = "fnl/conjure/client/janet/stdio.fnl"
-local _2amodule_name_2a = "conjure.client.scheme.stdio"
+local _2amodule_name_2a = "conjure.client.janet.stdio"
 local _2amodule_2a
 do
   package.loaded[_2amodule_name_2a] = {}
