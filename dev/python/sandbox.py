@@ -56,6 +56,17 @@ async def slow_fn():
 
 await slow_fn()
 
+result = None
+
+
+async def capture():
+    global result
+    result = await slow_fn()
+
+
+await capture()
+result
+
 
 import csv
 from datetime import datetime
