@@ -74,6 +74,9 @@
 (defn eval-file [opts]
   (eval-str (a.assoc opts :code (a.slurp opts.file-path))))
 
+(defn doc-str [opts]
+  (eval-str (a.update opts :code #(.. "(doc " $1 ")"))))
+
 (defn- display-repl-status [status]
   (let [repl (state :repl)]
     (when repl
