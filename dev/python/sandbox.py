@@ -1,13 +1,12 @@
 def add(a, b):
     return a + b
 
+
 add(4, 29)
 
 4 + 9
 
-5 + \
-7 + \
-9
+5 + 7 + 9
 
 "hello"
 
@@ -18,6 +17,7 @@ print(a)
 
 a, b = [1, 2]
 
+
 def print_things_then_return():
     """
     Print things then return!
@@ -26,8 +26,9 @@ def print_things_then_return():
         print(i)
     return "all done!"
 
+
 def newline_in_function_bug():
-    return 'hey\n\n' + "\\n" + '\n' + 'ho'
+    return "hey\n\n" + "\\n" + "\n" + "ho"
 
 
 newline_in_function_bug()
@@ -37,15 +38,24 @@ print_things_then_return()
 for i in range(20):
     print(i)
 
+
 def fn_with_multiline_str():
     description = """
     This is a super long,
     descriptive, multiline string.
     """
-    print(f'Description: {description}')
+    print(f"Description: {description}")
+
 
 fn_with_multiline_str()
 
-import csv
 
+async def slow_fn():
+    return "slow_fn result, this is async!"
+
+
+await slow_fn()
+
+
+import csv
 from datetime import datetime
