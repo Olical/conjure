@@ -213,17 +213,41 @@
         (assume-session (a.first sessions))))))
 
 (defn- eval-preamble [cb]
-  (send
-    {:op :eval
-     :code (.. "(def *pre-conjure-internal-ns* (resolve *ns*))"
-               "(ns conjure.internal"
-               "  (:require [clojure.pprint :as pp]))"
-               "(defn pprint [val w opts]"
-               "  (apply pp/write val"
-               "    (mapcat identity (assoc opts :stream w))))"
-               "(in-ns *pre-conjure-internal-ns*)")}
-    (when cb
-      (nrepl.with-all-msgs-fn cb))))
+  (let [queue-size (config.get-in [:client :clojure :nrepl :tap :queue_size])]
+    (send
+      {:op :eval
+       :code (str.join
+               "\n"
+               ["(create-ns 'conjure.internal)"
+                 "(intern 'conjure.internal 'initial-ns (symbol (str *ns*)))"
+
+                 "(ns conjure.internal"
+                 "  (:require [clojure.pprint :as pp]))"
+
+                 "(defn pprint [val w opts]"
+                 "  (apply pp/write val"
+                 "    (mapcat identity (assoc opts :stream w))))"
+
+                 "(defn bounded-conj [queue x limit]"
+                 "  (->> x (conj queue) (take limit)))"
+
+                 (.. "(def tap-queue-size " queue-size ")")
+                 "(defonce tap-queue! (atom (list)))"
+
+                 "(defn enqueue-tap! [x]"
+                 "  (swap! tap-queue! bounded-conj x tap-queue-size))"
+
+                 "(defn dump-tap-queue! []"
+                 "  (reverse (first (reset-vals! tap-queue! (list)))))"
+
+                 ;; No setup for older Clojure versions.
+                 "(when (resolve 'add-tap)"
+                 "  (remove-tap enqueue-tap!)"
+                 "  (add-tap enqueue-tap!))"
+
+                 "(in-ns initial-ns)"])}
+      (when cb
+        (nrepl.with-all-msgs-fn cb)))))
 
 (defn- capture-describe []
   (send

@@ -47,9 +47,9 @@ end
 _2amodule_2a["symbol-node?"] = symbol_node_3f
 local comment_node_3f = ts["lisp-comment-node?"]
 _2amodule_2a["comment-node?"] = comment_node_3f
-config.merge({client = {clojure = {nrepl = {connection = {default_host = "localhost", port_files = {".nrepl-port", ".shadow-cljs/nrepl.port"}, auto_repl = {enabled = true, cmd = "bb nrepl-server localhost:$port", port_file = ".nrepl-port", hidden = false}}, eval = {pretty_print = true, auto_require = true, print_quota = nil, print_function = "conjure.internal/pprint", print_options = {length = 500, level = 50, right_margin = 72}, raw_out = false}, interrupt = {sample_limit = 0.3}, refresh = {after = nil, before = nil, dirs = nil}, test = {current_form_names = {"deftest"}, runner = "clojure", call_suffix = nil, raw_out = false}, completion = {cljs = {use_suitable = true}, with_context = false}, tap = {queue_size = 16, enabled = false}}}}})
+config.merge({client = {clojure = {nrepl = {connection = {default_host = "localhost", port_files = {".nrepl-port", ".shadow-cljs/nrepl.port"}, auto_repl = {enabled = true, cmd = "bb nrepl-server localhost:$port", port_file = ".nrepl-port", hidden = false}}, eval = {pretty_print = true, auto_require = true, print_quota = nil, print_function = "conjure.internal/pprint", print_options = {length = 500, level = 50, right_margin = 72}, raw_out = false}, interrupt = {sample_limit = 0.3}, refresh = {after = nil, before = nil, dirs = nil}, test = {current_form_names = {"deftest"}, runner = "clojure", call_suffix = nil, raw_out = false}, completion = {cljs = {use_suitable = true}, with_context = false}, tap = {queue_size = 16}}}}})
 if config["get-in"]({"mapping", "enable_defaults"}) then
-  config.merge({client = {clojure = {nrepl = {mapping = {disconnect = "cd", connect_port_file = "cf", interrupt = "ei", last_exception = "ve", result_1 = "v1", result_2 = "v2", result_3 = "v3", view_source = "vs", tap_all = "vt", tap_last = "vl", tap_reset = "vR", session_clone = "sc", session_fresh = "sf", session_close = "sq", session_close_all = "sQ", session_list = "sl", session_next = "sn", session_prev = "sp", session_select = "ss", run_all_tests = "ta", run_current_ns_tests = "tn", run_alternate_ns_tests = "tN", run_current_test = "tc", refresh_changed = "rr", refresh_all = "ra", refresh_clear = "rc"}}}}})
+  config.merge({client = {clojure = {nrepl = {mapping = {disconnect = "cd", connect_port_file = "cf", interrupt = "ei", last_exception = "ve", result_1 = "v1", result_2 = "v2", result_3 = "v3", view_source = "vs", view_tap = "vt", session_clone = "sc", session_fresh = "sf", session_close = "sq", session_close_all = "sQ", session_list = "sl", session_next = "sn", session_prev = "sp", session_select = "ss", run_all_tests = "ta", run_current_ns_tests = "tn", run_alternate_ns_tests = "tN", run_current_test = "tc", refresh_changed = "rr", refresh_all = "ra", refresh_clear = "rc"}}}}})
 else
 end
 local function context(header)
@@ -134,25 +134,20 @@ local function on_filetype()
   mapping.buf("CljRefreshChanged", cfg({"mapping", "refresh_changed"}), util["wrap-require-fn-call"]("conjure.client.clojure.nrepl.action", "refresh-changed"), {desc = "Refresh changed namespaces"})
   mapping.buf("CljRefreshAll", cfg({"mapping", "refresh_all"}), util["wrap-require-fn-call"]("conjure.client.clojure.nrepl.action", "refresh-all"), {desc = "Refresh all namespaces"})
   mapping.buf("CljRefreshClear", cfg({"mapping", "refresh_clear"}), util["wrap-require-fn-call"]("conjure.client.clojure.nrepl.action", "refresh-clear"), {desc = "Clear the refresh cache"})
-  if cfg({"tap", "enabled"}) then
-    mapping.buf("CljTapGetAll", cfg({"mapping", "tap_all"}), util["wrap-require-fn-call"]("conjure.client.clojure.nrepl.action", "tap-view-all"), {desc = "Show all tapped values"})
-    mapping.buf("CljTapGetLast", cfg({"mapping", "tap_last"}), util["wrap-require-fn-call"]("conjure.client.clojure.nrepl.action", "tap-view-last"), {desc = "Show last tapped value"})
-    mapping.buf("CljTapReset", cfg({"mapping", "tap_reset"}), util["wrap-require-fn-call"]("conjure.client.clojure.nrepl.action", "tap-reset"), {desc = "Clear all tapped values"})
-  else
-  end
-  local function _15_(_241)
+  mapping.buf("CljViewTap", cfg({"mapping", "view_tap"}), util["wrap-require-fn-call"]("conjure.client.clojure.nrepl.action", "view-tap"), {desc = "Show all tapped values and clear the queue"})
+  local function _14_(_241)
     return action["shadow-select"](a.get(_241, "args"))
   end
-  nvim.buf_create_user_command(0, "ConjureShadowSelect", _15_, {force = true, nargs = 1})
-  local function _16_(_241)
+  nvim.buf_create_user_command(0, "ConjureShadowSelect", _14_, {force = true, nargs = 1})
+  local function _15_(_241)
     return action.piggieback(a.get(_241, "args"))
   end
-  nvim.buf_create_user_command(0, "ConjurePiggieback", _16_, {force = true, nargs = 1})
+  nvim.buf_create_user_command(0, "ConjurePiggieback", _15_, {force = true, nargs = 1})
   nvim.buf_create_user_command(0, "ConjureOutSubscribe", action["out-subscribe"], {force = true, nargs = 0})
   nvim.buf_create_user_command(0, "ConjureOutUnsubscribe", action["out-unsubscribe"], {force = true, nargs = 0})
   nvim.buf_create_user_command(0, "ConjureCljDebugInit", debugger.init, {force = true})
   nvim.buf_create_user_command(0, "ConjureCljDebugInput", debugger["debug-input"], {force = true, nargs = 1})
-  return action["init-new-connection"]()
+  return action["passive-ns-require"]()
 end
 _2amodule_2a["on-filetype"] = on_filetype
 local function on_load()

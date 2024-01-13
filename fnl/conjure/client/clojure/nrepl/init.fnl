@@ -85,8 +85,7 @@
        :with_context false}
 
       :tap
-      {:enabled false
-       :queue_size 16}}}}})
+      {:queue_size 16}}}}})
 
 (when (config.get-in [:mapping :enable_defaults])
   (config.merge
@@ -104,9 +103,7 @@
         :result_2 "v2"
         :result_3 "v3"
         :view_source "vs"
-        :tap_all "vt"
-        :tap_last "vl"
-        :tap_reset "vR"
+        :view_tap "vt"
 
         :session_clone "sc"
         :session_fresh "sf"
@@ -269,21 +266,10 @@
     (util.wrap-require-fn-call :conjure.client.clojure.nrepl.action :refresh-clear)
     {:desc "Clear the refresh cache"})
 
-  (when (cfg [:tap :enabled])
-    (mapping.buf
-      :CljTapGetAll (cfg [:mapping :tap_all])
-      (util.wrap-require-fn-call :conjure.client.clojure.nrepl.action :tap-view-all)
-      {:desc "Show all tapped values"})
-
-    (mapping.buf
-      :CljTapGetLast (cfg [:mapping :tap_last])
-      (util.wrap-require-fn-call :conjure.client.clojure.nrepl.action :tap-view-last)
-      {:desc "Show last tapped value"})
-
-    (mapping.buf
-      :CljTapReset (cfg [:mapping :tap_reset])
-      (util.wrap-require-fn-call :conjure.client.clojure.nrepl.action :tap-reset)
-      {:desc "Clear all tapped values"}))
+  (mapping.buf
+    :CljViewTap (cfg [:mapping :view_tap])
+    (util.wrap-require-fn-call :conjure.client.clojure.nrepl.action :view-tap)
+    {:desc "Show all tapped values and clear the queue"})
 
   (nvim.buf_create_user_command
     0
@@ -326,7 +312,7 @@
     {:force true
      :nargs 1})
 
-  (action.init-new-connection))
+  (action.passive-ns-require))
 
 (defn on-load []
   (action.connect-port-file))

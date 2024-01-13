@@ -28,41 +28,10 @@
 
 (def- cfg (config.get-in-fn [:client :clojure :nrepl]))
 
-(defn- passive-ns-require []
+(defn passive-ns-require []
   (when (and (cfg [:eval :auto_require])
              (server.connected?))
     (require-ns (extract.context))))
-
-(defn- init-tap []
-  (when (and (cfg [:tap :enabled])
-             (server.connected?))
-    (let [queue-size (cfg [:tap :queue_size])]
-      (server.eval
-        {:code (.. "(def *pre-conjure-internal-ns* (resolve *ns*))"
-                   "(ns conjure.internal.tap)"
-                   "(defn bounded-conj [limit queue x]"
-                   "  (->> x (conj queue) (take limit)))"
-                   "(defonce queue-size (atom 16))"
-                   "(defonce queue (atom (list)))"
-                   "(defonce qtap! (fn [x]"
-                   "  (swap! queue #(bounded-conj @queue-size % x))))"
-                   "(when (resolve 'add-tap)" ;; No setup for older clojure version
-                   "  (remove-tap qtap!)"
-                   "  (add-tap qtap!))"
-                   "(reset! queue-size " queue-size ")"
-                   "(ns conjure"
-                   "  (:require [conjure.internal.tap :as tap]))"
-                   "(defn tap"
-                   "  ([] (-> tap/queue deref reverse))"
-                   "  ([limit] (->> (tap) (take-last limit))))"
-                   "(defn tap-reset []"
-                   "  (reset! tap/queue (list)))"
-                   "(in-ns *pre-conjure-internal-ns*)")}
-        (fn [])))))
-
-(defn init-new-connection []
-  (passive-ns-require)
-  (init-tap))
 
 (defn connect-port-file [opts]
   (let [resolved-path (-?>> (cfg [:connection :port_files]) (fs.resolve-above))
@@ -80,7 +49,7 @@
                (let [cb (a.get opts :cb)]
                  (when cb
                    (cb)))
-               (init-new-connection))
+               (passive-ns-require))
          :connect-opts (a.get opts :connect-opts)})
       (when (not (a.get opts :silent?))
         (log.append ["; No nREPL port file found"] {:break? true})
@@ -109,7 +78,7 @@
         (server.connect
           {:host (or opts.host (cfg [:connection :default_host]))
            :port parsed-port
-           :cb init-new-connection})
+           :cb passive-ns-require})
         (log.append [(str.join ["; Could not parse '" (or opts.port "nil") "' as a port number"])])))))
 
 (defn- eval-cb-fn [opts]
@@ -320,9 +289,7 @@
 (def result-1 (eval-str-fn "*1"))
 (def result-2 (eval-str-fn "*2"))
 (def result-3 (eval-str-fn "*3"))
-(def tap-view-all (eval-str-fn "(conjure/tap)"))
-(def tap-view-last (eval-str-fn "(-> (conjure/tap 1) first)"))
-(def tap-reset (eval-str-fn "(conjure/tap-reset)"))
+(def view-tap (eval-str-fn "(conjure.internal/dump-tap-queue!)"))
 
 (defn view-source []
   (try-ensure-conn
@@ -619,7 +586,7 @@
           (server.eval
             {:code (.. "#?(:clj (shadow.cljs.devtools.api/nrepl-select :" build ") :cljs :already-selected)")}
             ui.display-result)
-          (init-new-connection))))))
+          (passive-ns-require))))))
 
 (defn piggieback [code]
   (try-ensure-conn
@@ -631,7 +598,7 @@
           (server.eval
             {:code (.. "(cider.piggieback/cljs-repl " code ")")}
             ui.display-result)
-          (init-new-connection))))))
+          (passive-ns-require))))))
 
 (defn- clojure->vim-completion [{:candidate word
                                  :type kind

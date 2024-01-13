@@ -104,11 +104,7 @@ options relevant to these mappings.
 
 <localleader>v3          View the 3rd most recent evaluation result.
 
-<localleader>vt          View all tap values from the queue.
-
-<localleader>vl          View last tap value from the queue.
-
-<localleader>vR          Clean up tap queue.
+<localleader>vt          View and delete all tap values from the queue.
 
 <localleader>vs          View the source of the symbol under the cursor.
 
@@ -294,12 +290,6 @@ All configuration can be set as described in |conjure-configuration|.
             all directories on the classpath.
             Default: `nil`
 
-                                  *g:conjure#client#clojure#nrepl#tap#enabled*
-`g:conjure#client#clojure#nrepl#tap#enabled`
-            Setup a queue to save latest tap values. Queue values can be
-            accessed through `(conjure/tap)` function in the repl.
-            Default: `false`
-
                                *g:conjure#client#clojure#nrepl#tap#queue_size*
 `g:conjure#client#clojure#nrepl#tap#queue_size`
             How many values should be stored in the tap queue. Oldest values
@@ -381,20 +371,12 @@ All configuration can be set as described in |conjure-configuration|.
             View the 3rd most recent result.
             Default: `v3`
 
-                              *g:conjure#client#clojure#nrepl#mapping#tap_all*
-`g:conjure#client#clojure#nrepl#mapping#tap_all`
-            View all values in the tap queue.
+                             *g:conjure#client#clojure#nrepl#mapping#view_tap*
+`g:conjure#client#clojure#nrepl#mapping#view_tap`
+            Print the current queue of tapped values and clear the queue.
+            You can also access this queue in your REPL by dereferencing
+            the conjure.internal/tap-queue! atom.
             Default: `vt`
-
-                             *g:conjure#client#clojure#nrepl#mapping#tap_last*
-`g:conjure#client#clojure#nrepl#mapping#tap_last`
-            View the last value in the tap queue.
-            Default: `vl`
-
-                            *g:conjure#client#clojure#nrepl#mapping#tap_reset*
-`g:conjure#client#clojure#nrepl#mapping#tap_reset`
-            Remove all values from the tap queue.
-            Default: `vR`
 
                           *g:conjure#client#clojure#nrepl#mapping#view_source*
 `g:conjure#client#clojure#nrepl#mapping#view_source`

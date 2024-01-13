@@ -19,6 +19,9 @@
 (add 1 2)
 
 (rand-int 10)
+(tap> 1)
+(tap> 2)
+(tap> 3)
 
 (def some-state (atom 20))
 @some-state

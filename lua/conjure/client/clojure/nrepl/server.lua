@@ -246,6 +246,7 @@ local function assume_or_create_session()
 end
 _2amodule_2a["assume-or-create-session"] = assume_or_create_session
 local function eval_preamble(cb)
+  local queue_size = config["get-in"]({"client", "clojure", "nrepl", "tap", "queue_size"})
   local function _39_()
     if cb then
       return nrepl["with-all-msgs-fn"](cb)
@@ -253,7 +254,7 @@ local function eval_preamble(cb)
       return nil
     end
   end
-  return send({op = "eval", code = ("(def *pre-conjure-internal-ns* (resolve *ns*))" .. "(ns conjure.internal" .. "  (:require [clojure.pprint :as pp]))" .. "(defn pprint [val w opts]" .. "  (apply pp/write val" .. "    (mapcat identity (assoc opts :stream w))))" .. "(in-ns *pre-conjure-internal-ns*)")}, _39_())
+  return send({op = "eval", code = str.join("\n", {"(create-ns 'conjure.internal)", "(intern 'conjure.internal 'initial-ns (symbol (str *ns*)))", "(ns conjure.internal", "  (:require [clojure.pprint :as pp]))", "(defn pprint [val w opts]", "  (apply pp/write val", "    (mapcat identity (assoc opts :stream w))))", "(defn bounded-conj [queue x limit]", "  (->> x (conj queue) (take limit)))", ("(def tap-queue-size " .. queue_size .. ")"), "(defonce tap-queue! (atom (list)))", "(defn enqueue-tap! [x]", "  (swap! tap-queue! bounded-conj x tap-queue-size))", "(defn dump-tap-queue! []", "  (reverse (first (reset-vals! tap-queue! (list)))))", "(when (resolve 'add-tap)", "  (remove-tap enqueue-tap!)", "  (add-tap enqueue-tap!))", "(in-ns initial-ns)"})}, _39_())
 end
 _2amodule_locals_2a["eval-preamble"] = eval_preamble
 local function capture_describe()
