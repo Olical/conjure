@@ -234,16 +234,20 @@
                  (.. "(def tap-queue-size " queue-size ")")
                  "(defonce tap-queue! (atom (list)))"
 
-                 "(defn enqueue-tap! [x]"
-                 "  (swap! tap-queue! bounded-conj x tap-queue-size))"
-
-                 "(defn dump-tap-queue! []"
-                 "  (reverse (first (reset-vals! tap-queue! (list)))))"
+                 ;; Must be a defonce so that we always have the same function
+                 ;; reference to remove-tap and add-tap. If we make a new
+                 ;; function each time we'll end up adding more and more tap
+                 ;; functions.
+                 "(defonce enqueue-tap!"
+                 "  (fn [x] (swap! tap-queue! bounded-conj x tap-queue-size)))"
 
                  ;; No setup for older Clojure versions.
                  "(when (resolve 'add-tap)"
                  "  (remove-tap enqueue-tap!)"
                  "  (add-tap enqueue-tap!))"
+
+                 "(defn dump-tap-queue! []"
+                 "  (reverse (first (reset-vals! tap-queue! (list)))))"
 
                  "(in-ns initial-ns)"])}
       (when cb
