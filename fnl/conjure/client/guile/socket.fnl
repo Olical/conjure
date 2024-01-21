@@ -115,22 +115,28 @@
 
 (defn- parse-guile-result [s]
   (let [prompt (s:find "scheme@%([%w%-%s]+%)> ")]
-    (if prompt
-      (let [(ind1 ind2 result) (s:find "%$%d+ = ([^\n]+)\n")]
-        (if result
-          {:done? true
-           :error? false
-           :result result}
-          {:done? true
-           :error? false
-           :result (s:sub 1 (- prompt 1))}))
-      (if (s:find "scheme@%([%w%-%s]+%) %[%d+%]>")
+    (if
+      prompt
+      (let [(ind1 _ result) (s:find "%$%d+ = ([^\n]+)\n")
+            stray-output (s:sub
+                           1
+                           (- (if result ind1 prompt) 1))]
+        (when (> (length stray-output) 0)
+          (log.append
+            (-> (text.trim-last-newline stray-output)
+                (text.prefixed-lines "; (out) "))))
         {:done? true
-         :error? true
-         :result nil}
-        {:done? false
          :error? false
-         :result s}))))
+         :result result})
+
+      (s:find "scheme@%([%w%-%s]+%) %[%d+%]>")
+      {:done? true
+       :error? true
+       :result nil}
+
+      {:done? false
+       :error? false
+       :result s})))
 
 (defn connect [opts]
   (disconnect)
