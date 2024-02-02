@@ -45,13 +45,19 @@
     (nvim.ex.autocmd "BufNewFile,BufRead *.fnl setlocal filetype=clojure")
     (nvim.ex.augroup :END))
 
-  (let [buf (upsert-buf)]
+  (let [maplocalleader-was-unset?
+        (when (and (= "<localleader>" (config.get-in [:mapping :prefix]))
+                   (a.empty? nvim.g.maplocalleader))
+          (set nvim.g.maplocalleader ",")
+          true)
+
+        buf (upsert-buf)]
     (nvim.ex.edit buf-name)
     (nvim.buf_set_lines buf 0 -1 false [])
     (append
       (a.concat
         ["(module user.conjure-school"
-         "  {require {school conjure.school}})"
+                  "  {require {school conjure.school}})"
          ""
          ";; Welcome to Conjure school!"
          ";; Grab yourself a nice beverage and let's get evaluating. I hope you enjoy!"
@@ -66,14 +72,10 @@
          ";; You can learn how to change these mappings with :help conjure-mappings"
          ""
          (.. ";; Let's begin by evaluating the whole buffer using " (map-str :eval_buf))]
-        (when (= "<localleader>" (config.get-in [:mapping :prefix]))
-          (if (a.empty? nvim.g.maplocalleader)
-            (do
-              (set nvim.g.maplocalleader ",")
-              (nvim.ex.edit)
-              [";; Your <localleader> wasn't configured so I've defaulted it to comma (,) for now."
-               ";; See :help localleader for more information. (let maplocalleader=\",\")"])
-            [(.. ";; Your <localleader> is currently mapped to \"" nvim.g.maplocalleader "\"")]))
+        (if maplocalleader-was-unset?
+          [";; Your <localleader> wasn't configured so I've defaulted it to comma (,) for now."
+           ";; See :help localleader for more information. (let maplocalleader=\",\")"]
+          [(.. ";; Your <localleader> is currently mapped to \"" nvim.g.maplocalleader "\"")])
         ["(school.lesson-1)"]))))
 
 (defn lesson-1 []

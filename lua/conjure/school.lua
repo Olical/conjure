@@ -68,22 +68,23 @@ local function start()
     nvim.ex.augroup("END")
   else
   end
+  local maplocalleader_was_unset_3f
+  if (("<localleader>" == config["get-in"]({"mapping", "prefix"})) and a["empty?"](nvim.g.maplocalleader)) then
+    nvim.g.maplocalleader = ","
+    maplocalleader_was_unset_3f = true
+  else
+    maplocalleader_was_unset_3f = nil
+  end
   local buf = upsert_buf()
   nvim.ex.edit(buf_name)
   nvim.buf_set_lines(buf, 0, -1, false, {})
-  local _6_
-  if ("<localleader>" == config["get-in"]({"mapping", "prefix"})) then
-    if a["empty?"](nvim.g.maplocalleader) then
-      nvim.g.maplocalleader = ","
-      nvim.ex.edit()
-      _6_ = {";; Your <localleader> wasn't configured so I've defaulted it to comma (,) for now.", ";; See :help localleader for more information. (let maplocalleader=\",\")"}
-    else
-      _6_ = {(";; Your <localleader> is currently mapped to \"" .. nvim.g.maplocalleader .. "\"")}
-    end
+  local _7_
+  if maplocalleader_was_unset_3f then
+    _7_ = {";; Your <localleader> wasn't configured so I've defaulted it to comma (,) for now.", ";; See :help localleader for more information. (let maplocalleader=\",\")"}
   else
-    _6_ = nil
+    _7_ = {(";; Your <localleader> is currently mapped to \"" .. nvim.g.maplocalleader .. "\"")}
   end
-  return append(a.concat({"(module user.conjure-school", "  {require {school conjure.school}})", "", ";; Welcome to Conjure school!", ";; Grab yourself a nice beverage and let's get evaluating. I hope you enjoy!", "", ";; This language is Fennel, it's quite similar to Clojure.", ";; Conjure is written in Fennel, it's compiled to Lua and executed inside Neovim itself.", ";; This means we can work with a Lisp without installing or running anything else.", "", ";; Note: Some colorschemes will make the HUD unreadable, see here for more: https://git.io/JJ1Hl", "", ";; Let's learn how to evaluate it using Conjure's assortment of mappings.", ";; You can learn how to change these mappings with :help conjure-mappings", "", (";; Let's begin by evaluating the whole buffer using " .. map_str("eval_buf"))}, _6_, {"(school.lesson-1)"}))
+  return append(a.concat({"(module user.conjure-school", "  {require {school conjure.school}})", "", ";; Welcome to Conjure school!", ";; Grab yourself a nice beverage and let's get evaluating. I hope you enjoy!", "", ";; This language is Fennel, it's quite similar to Clojure.", ";; Conjure is written in Fennel, it's compiled to Lua and executed inside Neovim itself.", ";; This means we can work with a Lisp without installing or running anything else.", "", ";; Note: Some colorschemes will make the HUD unreadable, see here for more: https://git.io/JJ1Hl", "", ";; Let's learn how to evaluate it using Conjure's assortment of mappings.", ";; You can learn how to change these mappings with :help conjure-mappings", "", (";; Let's begin by evaluating the whole buffer using " .. map_str("eval_buf"))}, _7_, {"(school.lesson-1)"}))
 end
 _2amodule_2a["start"] = start
 local function lesson_1()
