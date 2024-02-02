@@ -156,18 +156,25 @@ _2amodule_2a["disconnect"] = disconnect
 local function parse_guile_result(s)
   local prompt = s:find("scheme@%([%w%-%s]+%)> ")
   if prompt then
-    local ind1, ind2, result = s:find("%$%d+ = ([^\n]+)\n")
-    if result then
-      return {["done?"] = true, result = result, ["error?"] = false}
-    else
-      return {["done?"] = true, result = s:sub(1, (prompt - 1)), ["error?"] = false}
+    local ind1, _0, result = s:find("%$%d+ = ([^\n]+)\n")
+    local stray_output
+    local function _21_()
+      if result then
+        return ind1
+      else
+        return prompt
+      end
     end
+    stray_output = s:sub(1, (_21_() - 1))
+    if (#stray_output > 0) then
+      log.append(text["prefixed-lines"](text["trim-last-newline"](stray_output), "; (out) "))
+    else
+    end
+    return {["done?"] = true, result = result, ["error?"] = false}
+  elseif s:find("scheme@%([%w%-%s]+%) %[%d+%]>") then
+    return {["done?"] = true, ["error?"] = true, result = nil}
   else
-    if s:find("scheme@%([%w%-%s]+%) %[%d+%]>") then
-      return {["done?"] = true, ["error?"] = true, result = nil}
-    else
-      return {result = s, ["done?"] = false, ["error?"] = false}
-    end
+    return {result = s, ["done?"] = false, ["error?"] = false}
   end
 end
 _2amodule_locals_2a["parse-guile-result"] = parse_guile_result
