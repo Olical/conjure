@@ -87,7 +87,7 @@
         (remote.send
           conn
           (str.join
-            ["(:emacs-rex (swank:eval-and-grab-output \""
+            ["(:emacs-rex (swank:interactive-eval-region \""
              (escape-string msg)
              "\") \"" (or context ":common-lisp-user") "\" t " eval-id ")"])
           cb)))))

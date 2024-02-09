@@ -87,7 +87,7 @@ local function send(msg, context, cb)
   log.dbg(("swank.send called with msg: " .. a["pr-str"](msg) .. ", context: " .. a["pr-str"](context)))
   local function _7_(conn)
     local eval_id = a.get(a.update(state(), "eval-id", a.inc), "eval-id")
-    return remote.send(conn, str.join({"(:emacs-rex (swank:eval-and-grab-output \"", escape_string(msg), "\") \"", (context or ":common-lisp-user"), "\" t ", eval_id, ")"}), cb)
+    return remote.send(conn, str.join({"(:emacs-rex (swank:interactive-eval-region \"", escape_string(msg), "\") \"", (context or ":common-lisp-user"), "\" t ", eval_id, ")"}), cb)
   end
   return with_conn_or_warn(_7_)
 end
