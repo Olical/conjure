@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+
+PACK_DIR=./.test-config/nvim/pack/conjure-tests/start
+
+mkdir -p "$PACK_DIR"
+
+if [ -d "$PACK_DIR/plenary.nvim" ]; then
+	echo "plenary.nvim already exists"
+else
+	git clone https://github.com/nvim-lua/plenary.nvim.git "$PACK_DIR/plenary.nvim"
+fi
+
+if [ -d "$PACK_DIR/fennel.vim" ]; then
+	echo "fennel.vim already exists"
+else
+	git clone https://github.com/bakpakin/fennel.vim.git "$PACK_DIR/fennel.vim"
+fi
+
+if [ -d "$PACK_DIR/aniseed" ]; then
+	echo "aniseed already exists"
+else
+	git clone https://github.com/bakpakin/fennel.vim.git "$PACK_DIR/aniseed"
+fi
+
+if [ -d "$PACK_DIR/conjure" ]; then
+	echo "conjure (symlink) already exists"
+else
+	ln -s "${GITHUB_WORKSPACE:-$(pwd)}" "$PACK_DIR/conjure"
+fi

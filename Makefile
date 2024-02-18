@@ -1,9 +1,8 @@
-.PHONY: deps sponsors compile test
+.PHONY: deps sponsors test
 
-default: deps sponsors compile test
+default: deps sponsors test
 
 deps:
-	scripts/dep.sh Olical aniseed origin/develop
 	scripts/dep.sh Olical bencode origin/master
 
 sponsors:
@@ -16,12 +15,6 @@ sponsors:
 		>> fnl/conjure/sponsors.fnl
 	echo "]" >> fnl/conjure/sponsors.fnl
 
-compile:
-	# rm -rf lua
-	deps/aniseed/scripts/embed.sh aniseed conjure
-	# ANISEED_EMBED_PREFIX=conjure deps/aniseed/scripts/compile.sh
-	# cp deps/bencode/bencode.lua lua/conjure/remote/transport/bencode/impl.lua
-
 test:
-	rm -rf test/lua
-	deps/aniseed/scripts/test.sh
+	./scripts/setup-test-deps
+	./scripts/test
