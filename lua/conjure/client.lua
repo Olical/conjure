@@ -1,7 +1,15 @@
 -- [nfnl] Compiled from fnl/conjure/client.fnl by https://github.com/Olical/nfnl, do not edit.
 local _2amodule_name_2a = "conjure.client"
-local _2amodule_2a = _G.package.loaded[_2amodule_name_2a]
-local _2amodule_locals_2a = (_2amodule_2a)["aniseed/locals"]
+local _2amodule_2a
+do
+  _G.package.loaded[_2amodule_name_2a] = {}
+  _2amodule_2a = _G.package.loaded[_2amodule_name_2a]
+end
+local _2amodule_locals_2a
+do
+  _2amodule_2a["aniseed/locals"] = {}
+  _2amodule_locals_2a = (_2amodule_2a)["aniseed/locals"]
+end
 local autoload = (require("aniseed.autoload")).autoload
 local a, config, dyn, fennel, nvim, str = autoload("conjure.aniseed.core"), autoload("conjure.config"), autoload("conjure.dynamic"), autoload("conjure.aniseed.fennel"), autoload("conjure.aniseed.nvim"), autoload("conjure.aniseed.string")
 do end (_2amodule_locals_2a)["a"] = a
@@ -10,88 +18,63 @@ _2amodule_locals_2a["dyn"] = dyn
 _2amodule_locals_2a["fennel"] = fennel
 _2amodule_locals_2a["nvim"] = nvim
 _2amodule_locals_2a["str"] = str
-local call = (_2amodule_2a).call
-local current = (_2amodule_2a).current
-local current_client_module_name = (_2amodule_2a)["current-client-module-name"]
-local each_loaded_client = (_2amodule_2a)["each-loaded-client"]
-local get = (_2amodule_2a).get
-local multiple_states_3f = (_2amodule_2a)["multiple-states?"]
-local new_state = (_2amodule_2a)["new-state"]
-local optional_call = (_2amodule_2a)["optional-call"]
-local schedule = (_2amodule_2a).schedule
-local schedule_wrap = (_2amodule_2a)["schedule-wrap"]
-local set_state_key_21 = (_2amodule_2a)["set-state-key!"]
-local state_key = (_2amodule_2a)["state-key"]
-local with_filetype = (_2amodule_2a)["with-filetype"]
-local wrap = (_2amodule_2a).wrap
-local a0 = (_2amodule_locals_2a).a
-local config0 = (_2amodule_locals_2a).config
-local dyn0 = (_2amodule_locals_2a).dyn
-local extension = (_2amodule_locals_2a).extension
-local fennel0 = (_2amodule_locals_2a).fennel
-local filetype = (_2amodule_locals_2a).filetype
-local load_module = (_2amodule_locals_2a)["load-module"]
-local loaded = (_2amodule_locals_2a).loaded
-local nvim0 = (_2amodule_locals_2a).nvim
-local state = (_2amodule_locals_2a).state
-local str0 = (_2amodule_locals_2a).str
-do local _ = {nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil} end
-local state_key0
+do local _ = {nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil} end
+local state_key
 local function _1_()
   return "default"
 end
-state_key0 = ((_2amodule_2a)["state-key"] or dyn0.new(_1_))
-do end (_2amodule_2a)["state-key"] = state_key0
+state_key = ((_2amodule_2a)["state-key"] or dyn.new(_1_))
+do end (_2amodule_2a)["state-key"] = state_key
 do local _ = {nil, nil} end
-local state0 = ((_2amodule_2a).state or {["state-key-set?"] = false})
-do end (_2amodule_locals_2a)["state"] = state0
+local state = ((_2amodule_2a).state or {["state-key-set?"] = false})
+do end (_2amodule_locals_2a)["state"] = state
 do local _ = {nil, nil} end
-local function set_state_key_210(new_key)
-  state0["state-key-set?"] = true
+local function set_state_key_21(new_key)
+  state["state-key-set?"] = true
   local function _2_()
     return new_key
   end
-  return dyn0["set-root!"](state_key0, _2_)
+  return dyn["set-root!"](state_key, _2_)
 end
-_2amodule_2a["set-state-key!"] = set_state_key_210
-do local _ = {set_state_key_210, nil} end
-local function multiple_states_3f0()
-  return state0["state-key-set?"]
+_2amodule_2a["set-state-key!"] = set_state_key_21
+do local _ = {set_state_key_21, nil} end
+local function multiple_states_3f()
+  return state["state-key-set?"]
 end
-_2amodule_2a["multiple-states?"] = multiple_states_3f0
-do local _ = {multiple_states_3f0, nil} end
-local function new_state0(init_fn)
+_2amodule_2a["multiple-states?"] = multiple_states_3f
+do local _ = {multiple_states_3f, nil} end
+local function new_state(init_fn)
   local key__3estate = {}
   local function _3_(...)
-    local key = state_key0()
-    local state1 = a0.get(key__3estate, key)
+    local key = state_key()
+    local state0 = a.get(key__3estate, key)
     local _4_
-    if (nil == state1) then
-      local new_state1 = init_fn()
-      a0.assoc(key__3estate, key, new_state1)
-      _4_ = new_state1
+    if (nil == state0) then
+      local new_state0 = init_fn()
+      a.assoc(key__3estate, key, new_state0)
+      _4_ = new_state0
     else
-      _4_ = state1
+      _4_ = state0
     end
-    return a0["get-in"](_4_, {...})
+    return a["get-in"](_4_, {...})
   end
   return _3_
 end
-_2amodule_2a["new-state"] = new_state0
-do local _ = {new_state0, nil} end
-local loaded0 = ((_2amodule_2a).loaded or {})
-do end (_2amodule_locals_2a)["loaded"] = loaded0
+_2amodule_2a["new-state"] = new_state
+do local _ = {new_state, nil} end
+local loaded = ((_2amodule_2a).loaded or {})
+do end (_2amodule_locals_2a)["loaded"] = loaded
 do local _ = {nil, nil} end
-local function load_module0(ft, name)
-  local fnl = fennel0.impl()
+local function load_module(ft, name)
+  local fnl = fennel.impl()
   local ok_3f, result = nil, nil
   local function _7_()
     return require(name)
   end
   ok_3f, result = xpcall(_7_, fnl.traceback)
-  if (ok_3f and a0["nil?"](a0.get(loaded0, name))) then
-    a0.assoc(loaded0, name, {filetype = ft, ["module-name"] = name, module = result})
-    if (result["on-load"] and not nvim0.wo.diff and config0["get-in"]({"client_on_load"})) then
+  if (ok_3f and a["nil?"](a.get(loaded, name))) then
+    a.assoc(loaded, name, {filetype = ft, ["module-name"] = name, module = result})
+    if (result["on-load"] and not nvim.wo.diff and config["get-in"]({"client_on_load"})) then
       vim.schedule(result["on-load"])
     else
     end
@@ -103,75 +86,75 @@ local function load_module0(ft, name)
     return error(result)
   end
 end
-_2amodule_locals_2a["load-module"] = load_module0
-do local _ = {load_module0, nil} end
-local filetype0
+_2amodule_locals_2a["load-module"] = load_module
+do local _ = {load_module, nil} end
+local filetype
 local function _11_()
-  return nvim0.bo.filetype
+  return nvim.bo.filetype
 end
-filetype0 = dyn0.new(_11_)
-do end (_2amodule_locals_2a)["filetype"] = filetype0
+filetype = dyn.new(_11_)
+do end (_2amodule_locals_2a)["filetype"] = filetype
 do local _ = {nil, nil} end
-local extension0
+local extension
 local function _12_()
-  return nvim0.fn.expand("%:e")
+  return nvim.fn.expand("%:e")
 end
-extension0 = dyn0.new(_12_)
-do end (_2amodule_locals_2a)["extension"] = extension0
+extension = dyn.new(_12_)
+do end (_2amodule_locals_2a)["extension"] = extension
 do local _ = {nil, nil} end
-local function with_filetype0(ft, f, ...)
+local function with_filetype(ft, f, ...)
   local function _13_()
     return ft
   end
   local function _14_()
     return nil
   end
-  return dyn0.bind({[filetype0] = _13_, [extension0] = _14_}, f, ...)
+  return dyn.bind({[filetype] = _13_, [extension] = _14_}, f, ...)
 end
-_2amodule_2a["with-filetype"] = with_filetype0
-do local _ = {with_filetype0, nil} end
-local function wrap0(f, ...)
-  local opts = {[filetype0] = a0.constantly(filetype0()), [state_key0] = a0.constantly(state_key0())}
+_2amodule_2a["with-filetype"] = with_filetype
+do local _ = {with_filetype, nil} end
+local function wrap(f, ...)
+  local opts = {[filetype] = a.constantly(filetype()), [state_key] = a.constantly(state_key())}
   local args = {...}
   local function _15_(...)
-    if (0 ~= a0.count(args)) then
-      return dyn0.bind(opts, f, unpack(args), ...)
+    if (0 ~= a.count(args)) then
+      return dyn.bind(opts, f, unpack(args), ...)
     else
-      return dyn0.bind(opts, f, ...)
+      return dyn.bind(opts, f, ...)
     end
   end
   return _15_
 end
-_2amodule_2a["wrap"] = wrap0
-do local _ = {wrap0, nil} end
-local function schedule_wrap0(f, ...)
-  return wrap0(vim.schedule_wrap(f), ...)
+_2amodule_2a["wrap"] = wrap
+do local _ = {wrap, nil} end
+local function schedule_wrap(f, ...)
+  return wrap(vim.schedule_wrap(f), ...)
 end
-_2amodule_2a["schedule-wrap"] = schedule_wrap0
-do local _ = {schedule_wrap0, nil} end
-local function schedule0(f, ...)
-  return vim.schedule(wrap0(f, ...))
+_2amodule_2a["schedule-wrap"] = schedule_wrap
+do local _ = {schedule_wrap, nil} end
+local function schedule(f, ...)
+  return vim.schedule(wrap(f, ...))
 end
-_2amodule_2a["schedule"] = schedule0
-do local _ = {schedule0, nil} end
-local function current_client_module_name0()
-  local result = {filetype = filetype0(), extension = extension0(), ["module-name"] = nil}
+_2amodule_2a["schedule"] = schedule
+do local _ = {schedule, nil} end
+local function current_client_module_name()
+  local result = {filetype = filetype(), extension = extension(), ["module-name"] = nil}
   do
     local fts
     if result.filetype then
-      fts = str0.split(result.filetype, "%.")
+      fts = str.split(result.filetype, "%.")
     else
       fts = nil
     end
     if fts then
-      for i = a0.count(fts), 1, -1 do
+      for i = a.count(fts), 1, -1 do
         local ft_part = fts[i]
-        local module_name = config0["get-in"]({"filetype", ft_part})
-        local suffixes = config0["get-in"]({"filetype_suffixes", ft_part})
+        local module_name = config["get-in"]({"filetype", ft_part})
+        local suffixes = config["get-in"]({"filetype_suffixes", ft_part})
         local function _18_(_241)
           return (result.extension == _241)
         end
-        if (not result["module-name"] and module_name and (not suffixes or not result.extension or a0.some(_18_, suffixes))) then
+        if (not result["module-name"] and module_name and (not suffixes or not result.extension or a.some(_18_, suffixes))) then
           result["module-name"] = module_name
         else
         end
@@ -181,54 +164,54 @@ local function current_client_module_name0()
   end
   return result
 end
-_2amodule_2a["current-client-module-name"] = current_client_module_name0
-do local _ = {current_client_module_name0, nil} end
-local function current0()
-  local _let_21_ = current_client_module_name0()
+_2amodule_2a["current-client-module-name"] = current_client_module_name
+do local _ = {current_client_module_name, nil} end
+local function current()
+  local _let_21_ = current_client_module_name()
   local module_name = _let_21_["module-name"]
-  local filetype1 = _let_21_["filetype"]
-  local extension1 = _let_21_["extension"]
+  local filetype0 = _let_21_["filetype"]
+  local extension0 = _let_21_["extension"]
   if module_name then
-    return load_module0(filetype1, module_name)
+    return load_module(filetype0, module_name)
   else
     return nil
   end
 end
-_2amodule_2a["current"] = current0
-do local _ = {current0, nil} end
-local function get0(...)
-  return a0["get-in"](current0(), {...})
+_2amodule_2a["current"] = current
+do local _ = {current, nil} end
+local function get(...)
+  return a["get-in"](current(), {...})
 end
-_2amodule_2a["get"] = get0
-do local _ = {get0, nil} end
-local function call0(fn_name, ...)
-  local f = get0(fn_name)
+_2amodule_2a["get"] = get
+do local _ = {get, nil} end
+local function call(fn_name, ...)
+  local f = get(fn_name)
   if f then
     return f(...)
   else
-    return error(str0.join({"Conjure client '", a0.get(current_client_module_name0(), "module-name"), "' doesn't support function: ", fn_name}))
+    return error(str.join({"Conjure client '", a.get(current_client_module_name(), "module-name"), "' doesn't support function: ", fn_name}))
   end
 end
-_2amodule_2a["call"] = call0
-do local _ = {call0, nil} end
-local function optional_call0(fn_name, ...)
-  local f = get0(fn_name)
+_2amodule_2a["call"] = call
+do local _ = {call, nil} end
+local function optional_call(fn_name, ...)
+  local f = get(fn_name)
   if f then
     return f(...)
   else
     return nil
   end
 end
-_2amodule_2a["optional-call"] = optional_call0
-do local _ = {optional_call0, nil} end
-local function each_loaded_client0(f)
+_2amodule_2a["optional-call"] = optional_call
+do local _ = {optional_call, nil} end
+local function each_loaded_client(f)
   local function _27_(_25_)
     local _arg_26_ = _25_
-    local filetype1 = _arg_26_["filetype"]
-    return with_filetype0(filetype1, f)
+    local filetype0 = _arg_26_["filetype"]
+    return with_filetype(filetype0, f)
   end
-  return a0["run!"](_27_, a0.vals(loaded0))
+  return a["run!"](_27_, a.vals(loaded))
 end
-_2amodule_2a["each-loaded-client"] = each_loaded_client0
-do local _ = {each_loaded_client0, nil} end
+_2amodule_2a["each-loaded-client"] = each_loaded_client
+do local _ = {each_loaded_client, nil} end
 return _2amodule_2a
