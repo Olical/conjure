@@ -3,6 +3,19 @@
 (local util (require :conjure.util))
 
 (describe
+  "wrap-require-fn-call"
+  (fn []
+    (it "creates a fn that requries a file and calls a fn"
+        (fn []
+          (set package.loaded.example-module
+               {:wrapped-fn-example (fn [] :hello-world!)})
+          (assert.equals
+            :hello-world!
+            ((util.wrap-require-fn-call
+               "example-module"
+               "wrapped-fn-example")))))))
+
+(describe
   "replace-termcodes"
   (fn []
     (it "escapes sequences like <C-o>"
