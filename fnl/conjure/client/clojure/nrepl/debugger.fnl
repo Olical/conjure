@@ -65,6 +65,9 @@
         {})
       {}))
 
+  (when (not (a.nil? msg.debug-value))
+    (log.append [(a.str "; Evaluation result => " msg.debug-value)] {}))
+
   (if (a.empty? msg.prompt)
     (log.append
       ["; Respond with :ConjureCljDebugInput [input]"

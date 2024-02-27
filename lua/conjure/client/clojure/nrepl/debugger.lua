@@ -79,6 +79,10 @@ local function handle_input_request(msg)
     log.append(text["prefixed-lines"](render_inspect(elisp.read(msg.inspect)), "; ", {}), {})
   else
   end
+  if not a["nil?"](msg["debug-value"]) then
+    log.append({a.str("; Evaluation result => ", msg["debug-value"])}, {})
+  else
+  end
   if a["empty?"](msg.prompt) then
     return log.append({"; Respond with :ConjureCljDebugInput [input]", ("; Inputs: " .. str.join(", ", valid_inputs()))}, {})
   else
@@ -87,10 +91,10 @@ local function handle_input_request(msg)
 end
 _2amodule_2a["handle-input-request"] = handle_input_request
 local function debug_input(opts)
-  local function _10_(_241)
+  local function _11_(_241)
     return (opts.args == _241)
   end
-  if a.some(_10_, valid_inputs()) then
+  if a.some(_11_, valid_inputs()) then
     return send({input = (":" .. opts.args)})
   else
     return log.append({("; Valid inputs: " .. str.join(", ", valid_inputs()))})
