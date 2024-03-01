@@ -9,12 +9,28 @@
              config conjure.config
              client conjure.client
              remote conjure.remote.swank
+             util conjure.util
              ts conjure.tree-sitter}})
 
 (def buf-suffix ".lisp")
-(def context-pattern "%(%s*defpackage%s+(.-)[%s){]")
 (def comment-prefix "; ")
 (def form-node? ts.node-surrounded-by-form-pair-chars?)
+
+(defn- iterate-backwards [f lines]
+  (for [i (length lines) 1 (- 1)] (local line (. lines i))
+    (let [res (f line)]
+      (when res
+        (lua "return res"))))
+  nil)
+
+(defn context [_code]
+  (let [[line _col] (vim.api.nvim_win_get_cursor 0)
+        lines (vim.api.nvim_buf_get_lines 0 0 line false)]
+    (iterate-backwards
+      (fn [line]
+        (or (string.match line "%(%s*defpackage%s+(.-)[%s){]")
+            (string.match line "%(%s*in%-package%s+(.-)[%s){]")))
+      lines)))
 
 ;; ------------ common lisp client
 ;; Can parse simple forms
@@ -89,7 +105,7 @@
           (str.join
             ["(:emacs-rex (swank:eval-and-grab-output \""
              (escape-string msg)
-             "\") \"" (or context ":common-lisp-user") "\" t " eval-id ")"])
+             "\") \"" (or context "*package*") "\" t " eval-id ")"])
           cb)))))
 
 (defn connect [opts]
