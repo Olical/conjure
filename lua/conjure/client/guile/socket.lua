@@ -91,7 +91,10 @@ local function eval_str(opts)
             a["assoc-in"](msgs, {1, "out"}, (comment_prefix .. "Empty result"))
           else
           end
-          opts["on-result"](str.join("\n", format_message(a.last(msgs))))
+          if opts["on-result"] then
+            opts["on-result"](str.join("\n", format_message(a.last(msgs))))
+          else
+          end
           return a["run!"](display_result, msgs)
         end
         return repl.send(_9_, _10_, {["batch?"] = true})
@@ -110,16 +113,16 @@ local function eval_file(opts)
 end
 _2amodule_2a["eval-file"] = eval_file
 local function doc_str(opts)
-  local function _14_(_241)
+  local function _15_(_241)
     return ("(procedure-documentation " .. _241 .. ")")
   end
-  return eval_str(a.update(opts, "code", _14_))
+  return eval_str(a.update(opts, "code", _15_))
 end
 _2amodule_2a["doc-str"] = doc_str
 local function display_repl_status()
   local repl = state("repl")
   if repl then
-    local function _15_()
+    local function _16_()
       local pipename = a["get-in"](repl, {"opts", "pipename"})
       if pipename then
         return (pipename .. " ")
@@ -127,7 +130,7 @@ local function display_repl_status()
         return ""
       end
     end
-    local function _17_()
+    local function _18_()
       local err = a.get(repl, "err")
       if err then
         return (" " .. err)
@@ -135,7 +138,7 @@ local function display_repl_status()
         return ""
       end
     end
-    return log.append({(comment_prefix .. _15_() .. "(" .. repl.status .. _17_() .. ")")}, {["break?"] = true})
+    return log.append({(comment_prefix .. _16_() .. "(" .. repl.status .. _18_() .. ")")}, {["break?"] = true})
   else
     return nil
   end
@@ -158,14 +161,14 @@ local function parse_guile_result(s)
   if prompt then
     local ind1, _0, result = s:find("%$%d+ = ([^\n]+)\n")
     local stray_output
-    local function _21_()
+    local function _22_()
       if result then
         return ind1
       else
         return prompt
       end
     end
-    stray_output = s:sub(1, (_21_() - 1))
+    stray_output = s:sub(1, (_22_() - 1))
     if (#stray_output > 0) then
       log.append(text["prefixed-lines"](text["trim-last-newline"](stray_output), "; (out) "))
     else
@@ -174,7 +177,7 @@ local function parse_guile_result(s)
   elseif s:find("scheme@%([%w%-%s]+%) %[%d+%]>") then
     return {["done?"] = true, ["error?"] = true, result = nil}
   else
-    return {result = s, ["done?"] = false, ["error?"] = false}
+    return {result = s, ["error?"] = false, ["done?"] = false}
   end
 end
 _2amodule_locals_2a["parse-guile-result"] = parse_guile_result
@@ -184,16 +187,16 @@ local function connect(opts)
   if ("string" ~= type(pipename)) then
     return log.append({(comment_prefix .. "g:conjure#client#guile#socket#pipename is not specified"), (comment_prefix .. "Please set it to the name of your Guile REPL pipe or pass it to :ConjureConnect [pipename]")})
   else
-    local function _24_()
+    local function _25_()
       return display_repl_status()
     end
-    local function _25_(msg, repl)
+    local function _26_(msg, repl)
       display_result(msg)
-      local function _26_()
+      local function _27_()
       end
-      return repl.send(",q\n", _26_)
+      return repl.send(",q\n", _27_)
     end
-    return a.assoc(state(), "repl", socket.start({["parse-output"] = parse_guile_result, pipename = pipename, ["on-success"] = _24_, ["on-error"] = _25_, ["on-failure"] = disconnect, ["on-close"] = disconnect, ["on-stray-output"] = display_result}))
+    return a.assoc(state(), "repl", socket.start({["parse-output"] = parse_guile_result, pipename = pipename, ["on-success"] = _25_, ["on-error"] = _26_, ["on-failure"] = disconnect, ["on-close"] = disconnect, ["on-stray-output"] = display_result}))
   end
 end
 _2amodule_2a["connect"] = connect
@@ -202,10 +205,10 @@ local function on_exit()
 end
 _2amodule_2a["on-exit"] = on_exit
 local function on_filetype()
-  local function _28_()
+  local function _29_()
     return connect()
   end
-  mapping.buf("GuileConnect", cfg({"mapping", "connect"}), _28_, {desc = "Connect to a REPL"})
+  mapping.buf("GuileConnect", cfg({"mapping", "connect"}), _29_, {desc = "Connect to a REPL"})
   return mapping.buf("GuileDisconnect", cfg({"mapping", "disconnect"}), disconnect, {desc = "Disconnect from the REPL"})
 end
 _2amodule_2a["on-filetype"] = on_filetype
