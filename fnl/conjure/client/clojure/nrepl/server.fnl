@@ -222,7 +222,7 @@
                  "(intern 'conjure.internal 'initial-ns (symbol (str *ns*)))"
 
                  "(ns conjure.internal"
-                 "  (:require [clojure.pprint :as pp]))"
+                 "  (:require [clojure.pprint :as pp] [clojure.test] [clojure.data] [clojure.string]))"
 
                  "(defn pprint [val w opts]"
                  "  (apply pp/write val"
@@ -248,6 +248,28 @@
 
                  "(defn dump-tap-queue! []"
                  "  (reverse (first (reset-vals! tap-queue! (list)))))"
+
+                 "(defmethod clojure.test/report :fail [m]"
+                 "  (clojure.test/with-test-out"
+                 "    (clojure.test/inc-report-counter :fail)"
+                 "    (println \"\nFAIL in\" (clojure.test/testing-vars-str m))"
+                 "    (when (seq clojure.test/*testing-contexts*) (println (clojure.test/testing-contexts-str)))"
+                 "    (when-let [message (:message m)] (println message))"
+                 "    (if (and (seq? (:actual m))"
+                 "             (= #'clojure.core/not (resolve (first (:actual m))))"
+                 "             (seq? (second (:actual m)))"
+                 "             (= #'clojure.core/= (resolve (first (second (:actual m)))))"
+                 "             (= 3 (count (second (:actual m)))))"
+                 "      (let [[missing extra _] (clojure.data/diff (second (second (:actual m))) (last (second (:actual m))))"
+                 "             missing-str (with-out-str (pp/pprint missing))"
+                 "             missing-lines (clojure.string/split-lines missing-str)"
+                 "             extra-str (with-out-str (pp/pprint extra))"
+                 "             extra-lines (clojure.string/split-lines extra-str)]"
+                 "        (when (some? missing) (doseq [m missing-lines] (println \"-\" m)))"
+                 "        (when (some? extra) (doseq [e extra-lines] (println \"+\" e))))"
+                 "      (do"
+                 "        (print \"expected:\" (with-out-str (pp/pprint (:expected m))))"
+                 "        (print \"  actual:\" (with-out-str (pp/pprint (:actual m))))))))"
 
                  "(in-ns initial-ns)"])}
       (when cb
