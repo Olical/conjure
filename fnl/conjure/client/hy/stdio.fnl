@@ -17,7 +17,7 @@
    {:hy
     {:stdio
      {:eval {:raw_out false}
-      :command "hy --repl-output-fn=hy.repr"
+      :command "hy -iu -c=\"Ready!\""
       :prompt_pattern "=> "}}}})
 
 (when (config.get-in [:mapping :enable_defaults])

@@ -24,7 +24,7 @@ _2amodule_locals_2a["str"] = str
 _2amodule_locals_2a["text"] = text
 _2amodule_locals_2a["ts"] = ts
 _2amodule_locals_2a["_"] = _
-config.merge({client = {hy = {stdio = {eval = {raw_out = false}, command = "hy --repl-output-fn=hy.repr", prompt_pattern = "=> "}}}})
+config.merge({client = {hy = {stdio = {eval = {raw_out = false}, command = "hy -iu -c=\"Ready!\"", prompt_pattern = "=> "}}}})
 if config["get-in"]({"mapping", "enable_defaults"}) then
   config.merge({client = {hy = {stdio = {mapping = {start = "cs", stop = "cS", interrupt = "ei"}}}}})
 else
