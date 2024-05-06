@@ -658,100 +658,145 @@ local function refresh_impl(op)
   return server["with-conn-and-ops-or-warn"]({op}, _116_)
 end
 _2amodule_locals_2a["refresh-impl"] = refresh_impl
+local function use_clj_reload_backend_3f()
+  return (cfg({"refresh", "backend"}) == "clj-reload")
+end
+_2amodule_locals_2a["use-clj-reload-backend?"] = use_clj_reload_backend_3f
 local function refresh_changed()
+  local use_clj_reload_3f = use_clj_reload_backend_3f()
   local function _119_()
-    log.append({"; Refreshing changed namespaces"}, {["break?"] = true})
-    return refresh_impl("refresh")
+    local _120_
+    if use_clj_reload_3f then
+      _120_ = "clj-reload"
+    else
+      _120_ = "tools.namespace"
+    end
+    log.append({str.join({"; Refreshing changed namespaces using '", _120_, "'"})}, {["break?"] = true})
+    local function _122_()
+      if use_clj_reload_3f then
+        return "cider.clj-reload/reload"
+      else
+        return "refresh"
+      end
+    end
+    return refresh_impl(_122_())
   end
   return try_ensure_conn(_119_)
 end
 _2amodule_2a["refresh-changed"] = refresh_changed
 local function refresh_all()
-  local function _120_()
-    log.append({"; Refreshing all namespaces"}, {["break?"] = true})
-    return refresh_impl("refresh-all")
+  local use_clj_reload_3f = use_clj_reload_backend_3f()
+  local function _123_()
+    local _124_
+    if use_clj_reload_3f then
+      _124_ = "clj-reload"
+    else
+      _124_ = "tools.namespace"
+    end
+    log.append({str.join({"; Refreshing all namespaces using '", _124_, "'"})}, {["break?"] = true})
+    local function _126_()
+      if use_clj_reload_3f then
+        return "cider.clj-reload/reload-all"
+      else
+        return "refresh-all"
+      end
+    end
+    return refresh_impl(_126_())
   end
-  return try_ensure_conn(_120_)
+  return try_ensure_conn(_123_)
 end
 _2amodule_2a["refresh-all"] = refresh_all
 local function refresh_clear()
-  local function _121_()
-    log.append({"; Clearing refresh cache"}, {["break?"] = true})
-    local function _122_(conn)
-      local function _123_(msgs)
+  local use_clj_reload_3f = use_clj_reload_backend_3f()
+  local function _127_()
+    local _128_
+    if use_clj_reload_3f then
+      _128_ = "clj-reload"
+    else
+      _128_ = "tools.namespace"
+    end
+    log.append({str.join({"; Clearning reload cache using '", _128_, "'"})}, {["break?"] = true})
+    local function _130_(conn)
+      local _131_
+      if use_clj_reload_3f then
+        _131_ = "cider.clj-reload/reload-clear"
+      else
+        _131_ = "refresh-clear"
+      end
+      local function _133_(msgs)
         return log.append({"; Clearing complete"})
       end
-      return server.send({op = "refresh-clear", session = conn.session}, nrepl["with-all-msgs-fn"](_123_))
+      return server.send({op = _131_, session = conn.session}, nrepl["with-all-msgs-fn"](_133_))
     end
-    return server["with-conn-and-ops-or-warn"]({"refresh-clear"}, _122_)
+    return server["with-conn-and-ops-or-warn"]({"refresh-clear"}, _130_)
   end
-  return try_ensure_conn(_121_)
+  return try_ensure_conn(_127_)
 end
 _2amodule_2a["refresh-clear"] = refresh_clear
 local function shadow_select(build)
-  local function _124_()
-    local function _125_(conn)
+  local function _134_()
+    local function _135_(conn)
       log.append({("; shadow-cljs (select): " .. build)}, {["break?"] = true})
       server.eval({code = ("#?(:clj (shadow.cljs.devtools.api/nrepl-select :" .. build .. ") :cljs :already-selected)")}, ui["display-result"])
       return passive_ns_require()
     end
-    return server["with-conn-or-warn"](_125_)
+    return server["with-conn-or-warn"](_135_)
   end
-  return try_ensure_conn(_124_)
+  return try_ensure_conn(_134_)
 end
 _2amodule_2a["shadow-select"] = shadow_select
 local function piggieback(code)
-  local function _126_()
-    local function _127_(conn)
+  local function _136_()
+    local function _137_(conn)
       log.append({("; piggieback: " .. code)}, {["break?"] = true})
       require_ns("cider.piggieback")
       server.eval({code = ("(cider.piggieback/cljs-repl " .. code .. ")")}, ui["display-result"])
       return passive_ns_require()
     end
-    return server["with-conn-or-warn"](_127_)
+    return server["with-conn-or-warn"](_137_)
   end
-  return try_ensure_conn(_126_)
+  return try_ensure_conn(_136_)
 end
 _2amodule_2a["piggieback"] = piggieback
-local function clojure__3evim_completion(_128_)
-  local _arg_129_ = _128_
-  local word = _arg_129_["candidate"]
-  local kind = _arg_129_["type"]
-  local ns = _arg_129_["ns"]
-  local info = _arg_129_["doc"]
-  local arglists = _arg_129_["arglists"]
-  local function _130_()
+local function clojure__3evim_completion(_138_)
+  local _arg_139_ = _138_
+  local word = _arg_139_["candidate"]
+  local kind = _arg_139_["type"]
+  local ns = _arg_139_["ns"]
+  local info = _arg_139_["doc"]
+  local arglists = _arg_139_["arglists"]
+  local function _140_()
     if arglists then
       return str.join(" ", arglists)
     else
       return nil
     end
   end
-  local _131_
+  local _141_
   if ("string" == type(info)) then
-    _131_ = info
+    _141_ = info
   else
-    _131_ = nil
+    _141_ = nil
   end
-  local _133_
+  local _143_
   if not a["empty?"](kind) then
-    _133_ = string.upper(string.sub(kind, 1, 1))
+    _143_ = string.upper(string.sub(kind, 1, 1))
   else
-    _133_ = nil
+    _143_ = nil
   end
-  return {word = word, menu = str.join(" ", {ns, _130_()}), info = _131_, kind = _133_}
+  return {word = word, menu = str.join(" ", {ns, _140_()}), info = _141_, kind = _143_}
 end
 _2amodule_locals_2a["clojure->vim-completion"] = clojure__3evim_completion
 local function extract_completion_context(prefix)
   local root_form = extract.form({["root?"] = true})
   if root_form then
-    local _let_135_ = root_form
-    local content = _let_135_["content"]
-    local range = _let_135_["range"]
+    local _let_145_ = root_form
+    local content = _let_145_["content"]
+    local range = _let_145_["range"]
     local lines = text["split-lines"](content)
-    local _let_136_ = nvim.win_get_cursor(0)
-    local row = _let_136_[1]
-    local col = _let_136_[2]
+    local _let_146_ = nvim.win_get_cursor(0)
+    local row = _let_146_[1]
+    local col = _let_146_[2]
     local lrow = (row - a["get-in"](range, {"start", 1}))
     local line_index = a.inc(lrow)
     local lcol
@@ -773,51 +818,51 @@ local function enhanced_cljs_completion_3f()
 end
 _2amodule_locals_2a["enhanced-cljs-completion?"] = enhanced_cljs_completion_3f
 local function completions(opts)
-  local function _139_(conn, ops)
-    local _140_
+  local function _149_(conn, ops)
+    local _150_
     if ops.complete then
-      local _141_
+      local _151_
       if cfg({"completion", "with_context"}) then
-        _141_ = extract_completion_context(opts.prefix)
+        _151_ = extract_completion_context(opts.prefix)
       else
-        _141_ = nil
+        _151_ = nil
       end
-      local _143_
+      local _153_
       if enhanced_cljs_completion_3f() then
-        _143_ = "t"
+        _153_ = "t"
       else
-        _143_ = nil
+        _153_ = nil
       end
-      _140_ = {op = "complete", session = conn.session, ns = opts.context, symbol = opts.prefix, context = _141_, ["extra-metadata"] = {"arglists", "doc"}, ["enhanced-cljs-completion?"] = _143_}
+      _150_ = {op = "complete", session = conn.session, ns = opts.context, symbol = opts.prefix, context = _151_, ["extra-metadata"] = {"arglists", "doc"}, ["enhanced-cljs-completion?"] = _153_}
     elseif ops.completions then
-      _140_ = {op = "completions", session = conn.session, ns = opts.context, prefix = opts.prefix}
+      _150_ = {op = "completions", session = conn.session, ns = opts.context, prefix = opts.prefix}
     else
-      _140_ = nil
+      _150_ = nil
     end
-    local function _146_(msgs)
+    local function _156_(msgs)
       return opts.cb(a.map(clojure__3evim_completion, a.get(a.last(msgs), "completions")))
     end
-    return server.send(_140_, nrepl["with-all-msgs-fn"](_146_))
+    return server.send(_150_, nrepl["with-all-msgs-fn"](_156_))
   end
-  return server["with-conn-and-ops-or-warn"]({"complete", "completions"}, _139_, {["silent?"] = true, ["else"] = opts.cb})
+  return server["with-conn-and-ops-or-warn"]({"complete", "completions"}, _149_, {["silent?"] = true, ["else"] = opts.cb})
 end
 _2amodule_2a["completions"] = completions
 local function out_subscribe()
   try_ensure_conn()
   log.append({"; Subscribing to out"}, {["break?"] = true})
-  local function _147_(conn)
+  local function _157_(conn)
     return server.send({op = "out-subscribe"})
   end
-  return server["with-conn-and-ops-or-warn"]({"out-subscribe"}, _147_)
+  return server["with-conn-and-ops-or-warn"]({"out-subscribe"}, _157_)
 end
 _2amodule_2a["out-subscribe"] = out_subscribe
 local function out_unsubscribe()
   try_ensure_conn()
   log.append({"; Unsubscribing from out"}, {["break?"] = true})
-  local function _148_(conn)
+  local function _158_(conn)
     return server.send({op = "out-unsubscribe"})
   end
-  return server["with-conn-and-ops-or-warn"]({"out-unsubscribe"}, _148_)
+  return server["with-conn-and-ops-or-warn"]({"out-unsubscribe"}, _158_)
 end
 _2amodule_2a["out-unsubscribe"] = out_unsubscribe
 return _2amodule_2a

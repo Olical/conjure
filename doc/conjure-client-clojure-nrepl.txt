@@ -278,6 +278,14 @@ All configuration can be set as described in |conjure-configuration|.
             after reloading.
             Default: `nil`
 
+                                *g:conjure#client#clojure#nrepl#refresh#backend*
+`g:conjure#client#clojure#nrepl#refresh#backend`
+            The backend to use for "refreshing" the namespaces. It defaults
+            to `tools.namespace` (which has been there since the beginning) or
+            if the value is `clj-reload` it uses the new `clj-reload` feature
+            available since nREPL 0.46.0 (released 2024-03-05).
+            Default: `tools.namespace`
+
                                *g:conjure#client#clojure#nrepl#refresh#before*
 `g:conjure#client#clojure#nrepl#refresh#before`
             The namespace-qualified name of a zero-arity function to call

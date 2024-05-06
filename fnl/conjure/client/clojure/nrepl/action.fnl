@@ -551,31 +551,37 @@
 
             (ui.display-result msg)))))))
 
+(defn- use-clj-reload-backend? []
+  (= (cfg [:refresh :backend]) "clj-reload"))
+
 (defn refresh-changed []
-  (try-ensure-conn
-    (fn []
-      (log.append ["; Refreshing changed namespaces"] {:break? true})
-      (refresh-impl :refresh))))
+  (let [use-clj-reload? (use-clj-reload-backend?)]
+    (try-ensure-conn
+      (fn []
+        (log.append [(str.join ["; Refreshing changed namespaces using '" (if use-clj-reload? "clj-reload" "tools.namespace") "'"])] {:break? true})
+        (refresh-impl (if use-clj-reload? :cider.clj-reload/reload :refresh))))))
 
 (defn refresh-all []
-  (try-ensure-conn
-    (fn []
-      (log.append ["; Refreshing all namespaces"] {:break? true})
-      (refresh-impl :refresh-all))))
+  (let [use-clj-reload? (use-clj-reload-backend?)]
+    (try-ensure-conn
+      (fn []
+        (log.append [(str.join ["; Refreshing all namespaces using '" (if use-clj-reload? "clj-reload" "tools.namespace") "'"])] {:break? true})
+        (refresh-impl (if use-clj-reload? :cider.clj-reload/reload-all :refresh-all))))))
 
 (defn refresh-clear []
-  (try-ensure-conn
-    (fn []
-      (log.append ["; Clearing refresh cache"] {:break? true})
-      (server.with-conn-and-ops-or-warn
-        [:refresh-clear]
-        (fn [conn]
-          (server.send
-            {:op :refresh-clear
-             :session conn.session}
-            (nrepl.with-all-msgs-fn
-              (fn [msgs]
-                (log.append ["; Clearing complete"])))))))))
+  (let [use-clj-reload? (use-clj-reload-backend?)]
+    (try-ensure-conn
+      (fn []
+        (log.append [(str.join ["; Clearning reload cache using '" (if use-clj-reload? "clj-reload" "tools.namespace") "'"])] {:break? true})
+        (server.with-conn-and-ops-or-warn
+          [:refresh-clear]
+          (fn [conn]
+            (server.send
+              {:op (if use-clj-reload? :cider.clj-reload/reload-clear :refresh-clear)
+               :session conn.session}
+              (nrepl.with-all-msgs-fn
+                (fn [msgs]
+                  (log.append ["; Clearing complete"]))))))))))
 
 (defn shadow-select [build]
   (try-ensure-conn
@@ -610,7 +616,7 @@
            " "
            [ns
             (when arglists
-              (str.join " " arglists ))])
+              (str.join " " arglists))])
    :info (when (= :string (type info))
            info)
    :kind (when (not (a.empty? kind))

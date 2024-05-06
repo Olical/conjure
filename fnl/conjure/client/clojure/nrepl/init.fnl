@@ -72,7 +72,8 @@
       :refresh
       {:after nil
        :before nil
-       :dirs nil}
+       :dirs nil
+       :backend "tools.namespace"}
 
       :test
       {:current_form_names ["deftest"]
