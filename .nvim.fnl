@@ -13,6 +13,7 @@
 
 ; (set vim.g.conjure#client#python#stdio#command "ipython --classic")
 
+(set vim.g.conjure#client#clojure#nrepl#refresh#backend "clj-reload")
 
 (set package.path (.. package.path ";test/lua/?.lua"))
 ; (set vim.g.conjure#eval#gsubs {:do-comment ["^%(comment[%s%c]" "(do "]})

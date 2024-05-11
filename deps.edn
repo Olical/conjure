@@ -1,18 +1,18 @@
 {:paths ["dev/clojure/src"]
 
  :deps
- {org.clojure/clojure {:mvn/version "1.11.1"}
+ {org.clojure/clojure {:mvn/version "1.11.3"}
   org.clojure/tools.logging {:mvn/version "1.1.0"}
   lambdaisland/kaocha {:mvn/version "1.66.1034"}}
 
  :aliases
  {:nrepl
   {:extra-deps
-   {nrepl/nrepl {:mvn/version "1.0.0"}}}
+   {nrepl/nrepl {:mvn/version "1.1.1"}}}
 
   :cider
   {:extra-deps
-   {cider/cider-nrepl {:mvn/version "0.28.3"}}}
+   {cider/cider-nrepl {:mvn/version "0.47.1"}}}
 
   :cljs
   {:extra-deps
