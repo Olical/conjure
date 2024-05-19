@@ -688,6 +688,11 @@ configure the ones you care about one at a time you can set:
             warnings you would normally see from your LSP setup if
             switched off.
             Default: `false`
+                                                    *g:conjure#log#treesitter*
+`g:conjure#log#treesitter`
+            Enables treesitter in the log buffer. You may want this off if you
+            notice large logs slowing down your editor.
+            Default: `true`
 
                                                   *g:conjure#log#break_length*
 `g:conjure#log#break_length`

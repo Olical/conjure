@@ -43,6 +43,10 @@
   (when (and vim.diagnostic (= false (config.get-in [:log :diagnostics])))
     (vim.diagnostic.disable buf))
 
+  (when (and vim.treesitter (= false (config.get-in [:log :treesitter])))
+    (vim.treesitter.stop buf)
+    (nvim.buf_set_option buf :syntax "on"))
+
   (nvim.buf_set_lines
     buf 0 -1 false
     [(str.join [(client.get :comment-prefix)
