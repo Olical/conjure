@@ -93,6 +93,7 @@
 
    :log
    {:wrap false
+    :disable_diagnostics true
     :hud {:width 0.42
           :height 0.3
           :zindex 1

@@ -681,6 +681,14 @@ configure the ones you care about one at a time you can set:
             editor, taking up the full width or height respectively.
             Default: `false`
 
+
+                                           *g:conjure#log#disable_diagnostics*
+`g:conjure#log#disable_diagnostics`
+            Disable the diagnostics in the log buffer since the output
+            normally isn't valid input for most clients. This should disable
+            the warnings you would normally see from your LSP setup.
+            Default: `true`
+
                                                   *g:conjure#log#break_length*
 `g:conjure#log#break_length`
             Length of the break comment (`; ---------...`) between log results
