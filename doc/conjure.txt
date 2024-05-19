@@ -682,12 +682,12 @@ configure the ones you care about one at a time you can set:
             Default: `false`
 
 
-                                           *g:conjure#log#disable_diagnostics*
-`g:conjure#log#disable_diagnostics`
-            Disable the diagnostics in the log buffer since the output
-            normally isn't valid input for most clients. This should disable
-            the warnings you would normally see from your LSP setup.
-            Default: `true`
+                                                   *g:conjure#log#diagnostics*
+`g:conjure#log#diagnostics`
+            Enables diagnostics in the log buffer. This should hide the
+            warnings you would normally see from your LSP setup if
+            switched off.
+            Default: `false`
 
                                                   *g:conjure#log#break_length*
 `g:conjure#log#break_length`

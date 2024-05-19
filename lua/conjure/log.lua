@@ -44,7 +44,7 @@ end
 _2amodule_2a["log-buf?"] = log_buf_3f
 local function on_new_log_buf(buf)
   state["jump-to-latest"].mark = nvim.buf_set_extmark(buf, state["jump-to-latest"].ns, 0, 0, {})
-  if (vim.diagnostic and (true == config["get-in"]({"log", "disable_diagnostics"}))) then
+  if (vim.diagnostic and (false == config["get-in"]({"log", "diagnostics"}))) then
     vim.diagnostic.disable(buf)
   else
   end

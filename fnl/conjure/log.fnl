@@ -40,7 +40,7 @@
   (set state.jump-to-latest.mark
        (nvim.buf_set_extmark buf state.jump-to-latest.ns 0 0 {}))
 
-  (when (and vim.diagnostic (= true (config.get-in [:log :disable_diagnostics])))
+  (when (and vim.diagnostic (= false (config.get-in [:log :diagnostics])))
     (vim.diagnostic.disable buf))
 
   (nvim.buf_set_lines
