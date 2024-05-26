@@ -45,7 +45,7 @@ _2amodule_2a["log-buf?"] = log_buf_3f
 local function on_new_log_buf(buf)
   state["jump-to-latest"].mark = nvim.buf_set_extmark(buf, state["jump-to-latest"].ns, 0, 0, {})
   if (vim.diagnostic and (false == config["get-in"]({"log", "diagnostics"}))) then
-    vim.diagnostic.disable(buf)
+    vim.diagnostic.enable(false, {bufnr = buf})
   else
   end
   if (vim.treesitter and (false == config["get-in"]({"log", "treesitter"}))) then
