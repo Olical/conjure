@@ -95,36 +95,25 @@ To take advantage of lazy loading, a bit more involved configuration is required
 ====
 [source,lua]
 ----
+local conjure_fts = { "clojure", "fennel", "python" } -- etc
+
 return {
-    "Olical/conjure",
-    ft = { "clojure", "fennel", "python" }, -- etc
-    -- [Optional] cmp-conjure for cmp
-    dependencies = {
-        {
-            "PaterJason/cmp-conjure",
-            config = function()
-                local cmp = require("cmp")
-                local config = cmp.get_config()
-                table.insert(config.sources, {
-                    name = "buffer",
-                    option = {
-                        sources = {
-                            { name = "conjure" },
-                        },
-                    },
-                })
-                cmp.setup(config)
-            end,
-        },
-    },
-    config = function(_, opts)
-        require("conjure.main").main()
-        require("conjure.mapping")["on-filetype"]()
-    end,
-    init = function()
-	       -- Set configuration options here
-        vim.g["conjure#debug"] = true
-    end,
+	{
+		"Olical/conjure",
+		ft = conjure_fts,
+		lazy = true,
+		init = function()
+			-- Set configuration options here
+			vim.g["conjure#debug"] = true
+		end,
+	},
+	{
+		-- Optional cmp-conjure integration
+		"PaterJason/cmp-conjure",
+		ft = conjure_fts,
+		lazy = true,
+		dependencies = { "Olical/conjure" },
+	},
 }
 ----
 ====
