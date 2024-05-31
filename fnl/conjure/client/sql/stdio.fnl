@@ -29,7 +29,7 @@
   {:client
    {:sql
     {:stdio
-     {:command "psql -U blogger postgres"
+     {:command "psql postgres://postgres:postgres@localhost/postgres"
       :prompt_pattern "=> "}}}})
 
 (when (config.get-in [:mapping :enable_defaults])
@@ -47,14 +47,15 @@
 
 (def buf-suffix ".sql")
 (def comment-prefix "-- ")
+
 ;; Rough equivalent of a Lisp form.
 (defn form-node? [node]
   (or (= "statement" (node:type))))
+
 ;; Comment nodes are comment (--) and marginalia (/*...*/)
 (defn comment-node? [node]
   (or (= "comment" (node:type))
-      (= "marginalia" (node:type))
-      ))
+      (= "marginalia" (node:type))))
 
 (defn- with-repl-or-warn [f opts]
   (let [repl (state :repl)]
@@ -82,7 +83,7 @@
   (with-repl-or-warn
     (fn [repl]
       (repl.send
-        (.. opts.code "\n")
+        (.. opts.code ";\n")
         (fn [msgs]
           (let [msgs (->list msgs)]
             (when opts.on-result
@@ -116,7 +117,7 @@
       (a.assoc (state) :repl nil))))
 
 (defn start []
-  (log.append [(.. comment-prefix "start [] ")])
+  (log.append [(.. comment-prefix "Strting SQL client...")])
   (if (state :repl)
     (log.append [(.. comment-prefix "Can't start, REPL is already running.")
                  (.. comment-prefix "Stop the REPL with "
@@ -148,8 +149,7 @@
 
            :on-stray-output
            (fn [msg]
-             (display-result msg))
-           })))))
+             (display-result msg))})))))
 
 (defn on-load []
   (when (config.get-in [:client_on_load])

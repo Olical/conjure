@@ -23,7 +23,7 @@ _2amodule_locals_2a["str"] = str
 _2amodule_locals_2a["text"] = text
 _2amodule_locals_2a["ts"] = ts
 _2amodule_locals_2a["_"] = _
-config.merge({client = {sql = {stdio = {command = "psql -U blogger postgres", prompt_pattern = "=> "}}}})
+config.merge({client = {sql = {stdio = {command = "psql postgres://postgres:postgres@localhost/postgres", prompt_pattern = "=> "}}}})
 if config["get-in"]({"mapping", "enable_defaults"}) then
   config.merge({client = {sql = {stdio = {mapping = {start = "cs", stop = "cS", interrupt = "ei"}}}}})
 else
@@ -90,7 +90,7 @@ local function eval_str(opts)
       end
       return a["run!"](display_result, msgs0)
     end
-    return repl.send((opts.code .. "\n"), _7_, {["batch?"] = false})
+    return repl.send((opts.code .. ";\n"), _7_, {["batch?"] = false})
   end
   return with_repl_or_warn(_6_)
 end
@@ -128,7 +128,7 @@ local function stop()
 end
 _2amodule_2a["stop"] = stop
 local function start()
-  log.append({(comment_prefix .. "start [] ")})
+  log.append({(comment_prefix .. "Strting SQL client...")})
   if state("repl") then
     return log.append({(comment_prefix .. "Can't start, REPL is already running."), (comment_prefix .. "Stop the REPL with " .. config["get-in"]({"mapping", "prefix"}) .. cfg({"mapping", "stop"}))}, {["break?"] = true})
   else
