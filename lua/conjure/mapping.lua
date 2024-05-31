@@ -124,6 +124,13 @@ local function init(filetypes)
   nvim.ex.autocmd_()
   if (true == config["get-in"]({"mapping", "enable_ft_mappings"})) then
     nvim.ex.autocmd("FileType", str.join(",", filetypes), bridge["viml->lua"]("conjure.mapping", "on-filetype", {}))
+    local function _12_(_241)
+      return (_241 == nvim.bo.filetype)
+    end
+    if a.some(_12_, filetypes) then
+      vim.schedule(on_filetype)
+    else
+    end
   else
   end
   nvim.ex.autocmd("CursorMoved", "*", bridge["viml->lua"]("conjure.log", "close-hud-passive", {}))
@@ -146,7 +153,7 @@ end
 _2amodule_2a["eval-ranged-command"] = eval_ranged_command
 local function connect_command(...)
   local args = {...}
-  local function _15_(...)
+  local function _17_(...)
     if (1 == a.count(args)) then
       local host, port = string.match(a.first(args), "([a-zA-Z%d\\.-]+):(%d+)$")
       if (host and port) then
@@ -158,7 +165,7 @@ local function connect_command(...)
       return {host = a.first(args), port = a.second(args)}
     end
   end
-  return client.call("connect", _15_(...))
+  return client.call("connect", _17_(...))
 end
 _2amodule_2a["connect-command"] = connect_command
 local function client_state_command(state_key)
@@ -171,11 +178,11 @@ end
 _2amodule_2a["client-state-command"] = client_state_command
 local function omnifunc(find_start_3f, base)
   if find_start_3f then
-    local _let_17_ = nvim.win_get_cursor(0)
-    local row = _let_17_[1]
-    local col = _let_17_[2]
-    local _let_18_ = nvim.buf_get_lines(0, a.dec(row), row, false)
-    local line = _let_18_[1]
+    local _let_19_ = nvim.win_get_cursor(0)
+    local row = _let_19_[1]
+    local col = _let_19_[2]
+    local _let_20_ = nvim.buf_get_lines(0, a.dec(row), row, false)
+    local line = _let_20_[1]
     return (col - a.count(nvim.fn.matchstr(string.sub(line, 1, col), "\\k\\+$")))
   else
     return eval["completions-sync"](base)
@@ -184,20 +191,20 @@ end
 _2amodule_2a["omnifunc"] = omnifunc
 nvim.ex.function_(str.join("\n", {"ConjureEvalMotionOpFunc(kind)", "call luaeval(\"require('conjure.eval')['selection'](_A)\", a:kind)", "endfunction"}))
 nvim.ex.function_(str.join("\n", {"ConjureOmnifunc(findstart, base)", "return luaeval(\"require('conjure.mapping')['omnifunc'](_A[1] == 1, _A[2])\", [a:findstart, a:base])", "endfunction"}))
-local function _20_(_241)
+local function _22_(_241)
   return eval_ranged_command((_241).line1, (_241).line2, (_241).args)
 end
-nvim.create_user_command("ConjureEval", _20_, {nargs = "?", range = true})
-local function _21_(_241)
+nvim.create_user_command("ConjureEval", _22_, {nargs = "?", range = true})
+local function _23_(_241)
   return connect_command(unpack((_241).fargs))
 end
-nvim.create_user_command("ConjureConnect", _21_, {nargs = "*", range = true, complete = "file"})
-local function _22_(_241)
+nvim.create_user_command("ConjureConnect", _23_, {nargs = "*", range = true, complete = "file"})
+local function _24_(_241)
   return client_state_command((_241).args)
 end
-nvim.create_user_command("ConjureClientState", _22_, {nargs = "?"})
-local function _23_()
+nvim.create_user_command("ConjureClientState", _24_, {nargs = "?"})
+local function _25_()
   return school.start()
 end
-nvim.create_user_command("ConjureSchool", _23_, {})
+nvim.create_user_command("ConjureSchool", _25_, {})
 return _2amodule_2a

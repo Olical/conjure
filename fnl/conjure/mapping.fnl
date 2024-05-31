@@ -214,7 +214,12 @@
   (when (= true (config.get-in [:mapping :enable_ft_mappings]))
     (nvim.ex.autocmd
       :FileType (str.join "," filetypes)
-      (bridge.viml->lua :conjure.mapping :on-filetype {})))
+      (bridge.viml->lua :conjure.mapping :on-filetype {}))
+
+    ;; If we're in a target filetype right now, immidiately invoke on-filetype.
+    ;; It means we've lazy loaded Conjure and it's loaded after the Filetype autocmd executed.
+    (when (a.some #(= $ nvim.bo.filetype) filetypes)
+      (vim.schedule on-filetype)))
 
   (nvim.ex.autocmd
     :CursorMoved :*
