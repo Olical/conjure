@@ -3,7 +3,8 @@
  :deps
  {org.clojure/clojure {:mvn/version "1.11.3"}
   org.clojure/tools.logging {:mvn/version "1.1.0"}
-  lambdaisland/kaocha {:mvn/version "1.66.1034"}}
+  lambdaisland/kaocha {:mvn/version "1.66.1034"}
+  nubank/matcher-combinators {:mvn/version "3.9.1"}}
 
  :aliases
  {:nrepl
