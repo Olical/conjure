@@ -41,7 +41,9 @@
        (nvim.buf_set_extmark buf state.jump-to-latest.ns 0 0 {}))
 
   (when (and vim.diagnostic (= false (config.get-in [:log :diagnostics])))
-    (vim.diagnostic.enable false {:bufnr buf}))
+    (if (= 1 (vim.fn.has "nvim-0.10"))
+      (vim.diagnostic.enable false {:bufnr buf})
+      (vim.diagnostic.disable buf)))
 
   (when (and vim.treesitter (= false (config.get-in [:log :treesitter])))
     (vim.treesitter.stop buf)
