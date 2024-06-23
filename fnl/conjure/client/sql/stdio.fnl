@@ -117,7 +117,7 @@
       (a.assoc (state) :repl nil))))
 
 (defn start []
-  (log.append [(.. comment-prefix "Strting SQL client...")])
+  (log.append [(.. comment-prefix "Starting SQL client...")])
   (if (state :repl)
     (log.append [(.. comment-prefix "Can't start, REPL is already running.")
                  (.. comment-prefix "Stop the REPL with "

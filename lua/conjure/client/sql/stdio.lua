@@ -128,7 +128,7 @@ local function stop()
 end
 _2amodule_2a["stop"] = stop
 local function start()
-  log.append({(comment_prefix .. "Strting SQL client...")})
+  log.append({(comment_prefix .. "Starting SQL client...")})
   if state("repl") then
     return log.append({(comment_prefix .. "Can't start, REPL is already running."), (comment_prefix .. "Stop the REPL with " .. config["get-in"]({"mapping", "prefix"}) .. cfg({"mapping", "stop"}))}, {["break?"] = true})
   else
