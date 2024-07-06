@@ -27,6 +27,10 @@ _2amodule_2a["resolve"] = resolve
 local function upsert_hidden(buf_name, new_buf_fn)
   local ok_3f, buf = pcall(nvim.fn.bufnr, buf_name)
   local loaded_3f = (ok_3f and nvim.buf_is_loaded(buf))
+  if ((-1 ~= buf) and not loaded_3f) then
+    nvim.buf_delete(buf, {})
+  else
+  end
   if ((-1 == buf) or not loaded_3f) then
     local buf0
     if loaded_3f then
@@ -63,14 +67,14 @@ local function replace_range(buf, range, s)
   local old_lines = nvim.buf_get_lines(buf, start_line, end_line, false)
   local head = string.sub(a.first(old_lines), 1, start_char)
   local tail = string.sub(a.last(old_lines), (end_char + 2))
-  local function _4_(l)
+  local function _5_(l)
     return (head .. l)
   end
-  a.update(new_lines, 1, _4_)
-  local function _5_(l)
+  a.update(new_lines, 1, _5_)
+  local function _6_(l)
     return (l .. tail)
   end
-  a.update(new_lines, a.count(new_lines), _5_)
+  a.update(new_lines, a.count(new_lines), _6_)
   return nvim.buf_set_lines(buf, start_line, end_line, false, new_lines)
 end
 _2amodule_2a["replace-range"] = replace_range
@@ -88,42 +92,42 @@ local function take_while(f, xs)
   return acc
 end
 _2amodule_locals_2a["take-while"] = take_while
-local function append_prefixed_line(buf, _7_, prefix, body)
-  local _arg_8_ = _7_
-  local tl = _arg_8_[1]
-  local tc = _arg_8_[2]
+local function append_prefixed_line(buf, _8_, prefix, body)
+  local _arg_9_ = _8_
+  local tl = _arg_9_[1]
+  local tc = _arg_9_[2]
   local tl0 = a.dec(tl)
-  local _let_9_ = nvim.buf_get_lines(buf, tl0, -1, false)
-  local head_line = _let_9_[1]
-  local lines = (function (t, k, e) local mt = getmetatable(t) if 'table' == type(mt) and mt.__fennelrest then return mt.__fennelrest(t, k) elseif e then local rest = {} for k, v in pairs(t) do if not e[k] then rest[k] = v end end return rest else return {(table.unpack or unpack)(t, k)} end end)(_let_9_, 2)
+  local _let_10_ = nvim.buf_get_lines(buf, tl0, -1, false)
+  local head_line = _let_10_[1]
+  local lines = (function (t, k, e) local mt = getmetatable(t) if 'table' == type(mt) and mt.__fennelrest then return mt.__fennelrest(t, k) elseif e then local rest = {} for k, v in pairs(t) do if not e[k] then rest[k] = v end end return rest else return {(table.unpack or unpack)(t, k)} end end)(_let_10_, 2)
   local to_append = text["prefixed-lines"](body, prefix, {})
   if head_line:find(prefix, tc) then
-    local function _11_()
-      local function _14_(_12_)
-        local _arg_13_ = _12_
-        local n = _arg_13_[1]
-        local line = _arg_13_[2]
+    local function _12_()
+      local function _15_(_13_)
+        local _arg_14_ = _13_
+        local n = _arg_14_[1]
+        local line = _arg_14_[2]
         if text["starts-with"](line, prefix) then
           return {(tl0 + n), a.concat({line}, to_append)}
         else
           return false
         end
       end
-      return a.last(take_while(a.identity, a.map(_14_, a["kv-pairs"](lines))))
+      return a.last(take_while(a.identity, a.map(_15_, a["kv-pairs"](lines))))
     end
-    local _let_10_ = (_11_() or {tl0, a.concat({head_line}, to_append)})
-    local new_tl = _let_10_[1]
-    local lines0 = _let_10_[2]
+    local _let_11_ = (_12_() or {tl0, a.concat({head_line}, to_append)})
+    local new_tl = _let_11_[1]
+    local lines0 = _let_11_[2]
     return nvim.buf_set_lines(buf, new_tl, a.inc(new_tl), false, lines0)
   else
-    local function _16_()
+    local function _17_()
       if (1 == a.count(to_append)) then
         return {(head_line .. " " .. a.first(to_append))}
       else
         return a.concat({head_line}, to_append)
       end
     end
-    return nvim.buf_set_lines(buf, tl0, a.inc(tl0), false, _16_())
+    return nvim.buf_set_lines(buf, tl0, a.inc(tl0), false, _17_())
   end
 end
 _2amodule_2a["append-prefixed-line"] = append_prefixed_line

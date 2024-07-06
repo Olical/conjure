@@ -16,6 +16,12 @@
 (defn upsert-hidden [buf-name new-buf-fn]
   (let [(ok? buf) (pcall nvim.fn.bufnr buf-name)
         loaded? (and ok? (nvim.buf_is_loaded buf))]
+
+    ;; This state happens when the user unloads the buffer somehow.
+    ;; It still exists but is in a bad state, we delete and start over.
+    (when (and (not= -1 buf) (not loaded?))
+      (nvim.buf_delete buf {}))
+
     (if (or (= -1 buf) (not loaded?))
       (let [buf (if loaded?
                   buf
