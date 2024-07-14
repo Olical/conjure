@@ -18,12 +18,15 @@
            (.. (env "HOME") afs.path-sep ".config"))
       afs.path-sep "conjure"))
 
+(defn absolute-normalize-path [path]
+  (vim.fs.normalize (vim.fn.fnamemodify path ":p")))
+
 (defn findfile [name path]
   "Wrapper around Neovim's findfile() that returns nil
   instead of an empty string."
   (let [res (nvim.fn.findfile name path)]
     (when (not (a.empty? res))
-      res)))
+      (absolute-normalize-path res))))
 
 (defn split-path [path]
   (->> (str.split path afs.path-sep)

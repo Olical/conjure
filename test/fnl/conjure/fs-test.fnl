@@ -12,7 +12,7 @@
 
 (deftest findfile
   (t.= nil (fs.findfile "definitely doesn't exist"))
-  (t.= "README.adoc" (fs.findfile "README.adoc")))
+  (t.= (.. (vim.fn.getcwd) "/README.adoc") (fs.findfile "README.adoc")))
 
 (deftest file-readable?
   (t.= false (fs.file-readable? "doesn't exist") "doesn't exist")
@@ -85,25 +85,25 @@
   (t.= nil (fs.upwards-file-search ["thisbetternotexist"] (nvim.fn.getcwd)))
 
   ;; Match in the cwd
-  (t.= "README.adoc"
+  (t.= (.. (vim.fn.getcwd) "/README.adoc")
        (fs.upwards-file-search
          ["README.adoc"]
          (nvim.fn.getcwd)))
 
   ;; Match by walking upwards
-  (t.= "README.adoc"
+  (t.= (.. (vim.fn.getcwd) "/README.adoc")
        (fs.upwards-file-search
          ["README.adoc"]
          (.. (nvim.fn.getcwd) "/test/fnl/conjure/client/clojure/nrepl")))
 
   ;; Matching below first, return early
-  (t.= "test/fnl/conjure/.fs.test"
+  (t.= (.. (vim.fn.getcwd) "/test/fnl/conjure/.fs.test")
        (fs.upwards-file-search
          ["README.adoc" ".fs.test"]
          (.. (nvim.fn.getcwd) "/test/fnl/conjure/client/clojure/nrepl")))
 
   ;; Matching at same level first, return early
-  (t.= "test/fnl/conjure/.fs.test"
+  (t.= (.. (vim.fn.getcwd) "/test/fnl/conjure/.fs.test")
        (fs.upwards-file-search
          ["README.adoc" ".fs.test"]
          (.. (nvim.fn.getcwd) "/test/fnl/conjure"))))
@@ -114,4 +114,4 @@
   (t.= nil (fs.resolve-above ["thisbetternotexist"]))
 
   ;; Match in the cwd
-  (t.= "README.adoc" (fs.resolve-above ["README.adoc"])))
+  (t.= (.. (vim.fn.getcwd) "/README.adoc") (fs.resolve-above ["README.adoc"])))
