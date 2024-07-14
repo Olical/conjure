@@ -31,14 +31,14 @@ local function config_dir()
   return ((env("XDG_CONFIG_HOME") or (env("HOME") .. afs["path-sep"] .. ".config")) .. afs["path-sep"] .. "conjure")
 end
 _2amodule_2a["config-dir"] = config_dir
-local function absolute_normalize_path(path)
-  return vim.fs.normalize(vim.fn.fnamemodify(path, ":p"))
+local function absolute_path(path)
+  return vim.fn.fnamemodify(path, ":p")
 end
-_2amodule_2a["absolute-normalize-path"] = absolute_normalize_path
+_2amodule_2a["absolute-path"] = absolute_path
 local function findfile(name, path)
   local res = nvim.fn.findfile(name, path)
   if not a["empty?"](res) then
-    return absolute_normalize_path(res)
+    return absolute_path(res)
   else
     return nil
   end
