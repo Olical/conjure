@@ -115,3 +115,6 @@
 
   ;; Match in the cwd
   (t.= (.. (vim.fn.getcwd) "/README.adoc") (fs.resolve-above ["README.adoc"])))
+
+(deftest conjure-source-directory
+  (t.= (vim.fn.getcwd) fs.conjure-source-directory))

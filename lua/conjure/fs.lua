@@ -127,9 +127,28 @@ local function localise_path(path)
   return resolve_relative(apply_path_subs(path, config["get-in"]({"path_subs"})))
 end
 _2amodule_2a["localise-path"] = localise_path
+local function current_source()
+  local info = debug.getinfo(2, "S")
+  if text["starts-with"](a.get(info, "source"), "@") then
+    return string.sub(info.source, 2)
+  else
+    return nil
+  end
+end
+_2amodule_2a["current-source"] = current_source
+local conjure_source_directory
+do
+  local src = current_source()
+  if src then
+    conjure_source_directory = vim.fs.normalize((src .. "/../../.."))
+  else
+    conjure_source_directory = nil
+  end
+end
+_2amodule_2a["conjure-source-directory"] = conjure_source_directory
 local function file_path__3emodule_name(file_path)
   if file_path then
-    local function _14_(mod_name)
+    local function _16_(mod_name)
       local mod_path = string.gsub(mod_name, "%.", afs["path-sep"])
       if (text["ends-with"](file_path, (mod_path .. ".fnl")) or text["ends-with"](file_path, (mod_path .. "/init.fnl"))) then
         return mod_name
@@ -137,7 +156,7 @@ local function file_path__3emodule_name(file_path)
         return nil
       end
     end
-    return a.some(_14_, a.keys(package.loaded))
+    return a.some(_16_, a.keys(package.loaded))
   else
     return nil
   end

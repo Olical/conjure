@@ -110,6 +110,16 @@
       (apply-path-subs (config.get-in [:path_subs]))
       (resolve-relative)))
 
+(defn current-source []
+  (let [info (debug.getinfo 2 "S")]
+    (when (text.starts-with (a.get info :source) "@")
+      (string.sub info.source 2))))
+
+(def conjure-source-directory
+  (let [src (current-source)]
+    (when src
+      (vim.fs.normalize (.. src "/../../..")))))
+
 (defn file-path->module-name [file-path]
   "Tries to match a file path up to an existing loaded Lua module."
   (when file-path
