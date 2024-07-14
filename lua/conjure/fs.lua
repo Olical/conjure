@@ -137,18 +137,19 @@ local function current_source()
 end
 _2amodule_2a["current-source"] = current_source
 local conjure_source_directory
-do
+local function _15_(...)
   local src = current_source()
   if src then
-    conjure_source_directory = vim.fs.normalize((src .. "/../../.."))
+    return vim.fs.normalize((src .. "/../../.."))
   else
-    conjure_source_directory = nil
+    return nil
   end
 end
-_2amodule_2a["conjure-source-directory"] = conjure_source_directory
+conjure_source_directory = ((_2amodule_2a)["conjure-source-directory"] or _15_(...))
+do end (_2amodule_2a)["conjure-source-directory"] = conjure_source_directory
 local function file_path__3emodule_name(file_path)
   if file_path then
-    local function _16_(mod_name)
+    local function _17_(mod_name)
       local mod_path = string.gsub(mod_name, "%.", afs["path-sep"])
       if (text["ends-with"](file_path, (mod_path .. ".fnl")) or text["ends-with"](file_path, (mod_path .. "/init.fnl"))) then
         return mod_name
@@ -156,7 +157,7 @@ local function file_path__3emodule_name(file_path)
         return nil
       end
     end
-    return a.some(_16_, a.keys(package.loaded))
+    return a.some(_17_, a.keys(package.loaded))
   else
     return nil
   end

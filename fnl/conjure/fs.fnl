@@ -115,7 +115,7 @@
     (when (text.starts-with (a.get info :source) "@")
       (string.sub info.source 2))))
 
-(def conjure-source-directory
+(defonce conjure-source-directory
   (let [src (current-source)]
     (when src
       (vim.fs.normalize (.. src "/../../..")))))
