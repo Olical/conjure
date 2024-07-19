@@ -39,9 +39,9 @@
 "stelcodes"
 "thiru"
 "TimoKramer"
-"timothy-bangma"
 "trev-dev"
 "valsen"
 "victorb"
+"xHCF"
 "zhming0"
 ]
