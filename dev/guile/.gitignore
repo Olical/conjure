@@ -1,1 +1,3 @@
 *.socket
+guile-ares-rs/
+.nrepl-port
