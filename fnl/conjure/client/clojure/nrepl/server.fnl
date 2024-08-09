@@ -124,7 +124,7 @@
      :cljs :ClojureScript
      :cljr :ClojureCLR}
     st
-    "Unknown https://conjure.fun/unknown-env"))
+    "Unknown https://github.com/Olical/conjure/wiki/Frequently-asked-questions#what-does-unknown-mean-in-the-log-when-connecting-to-a-clojure-nrepl"))
 
 (defn session-type [id cb]
   (let [state {:done? false}]

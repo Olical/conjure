@@ -1,9 +1,9 @@
 ++++
-<p align="center"><a href="https://www.etsy.com/uk/shop/MysticalScribbles?ref=profile_header"><img src="https://conjure.fun/images/lillian.png"/></a></p>
+<p align="center"><a href="https://www.etsy.com/uk/shop/MysticalScribbles?ref=profile_header"><img src="https://conjure.oli.me.uk/images/lillian.png"/></a></p>
 ++++
 
 == https://oli.me.uk/conversational-software-development/[Conversational software development] for https://neovim.io[Neovim] +
-https://conjure.fun/discord[image:https://img.shields.io/discord/732957595249410108.svg?label=&logo=discord&logoColor=ffffff&color=7389D8&labelColor=6A7EC2[Discord]]
+https://discord.gg/wXAMr8F[image:https://img.shields.io/discord/732957595249410108.svg?label=&logo=discord&logoColor=ffffff&color=7389D8&labelColor=6A7EC2[Discord]]
 
 Conjure is an interactive environment for evaluating code within your running program.
 
@@ -58,7 +58,7 @@ You can trial run Conjure with the interactive `:ConjureSchool` tutorial without
 
 [source,bash]
 ----
-curl -fL conjure.fun/school | sh
+curl -fL conjure.oli.me.uk/school | sh
 ----
 
 This will temporarily download the plugin, launch Neovim with `:ConjureSchool` running and then clean up after itself. You get to try out what Conjure has to offer without having to edit your Neovim configuration.
@@ -174,7 +174,7 @@ It's technically optional since Conjure contains legacy fallback code, but I hig
 
 The majority of the documentation can be found within link:doc/conjure.txt[`:help conjure`]. You can also use `:ConjureSchool` to get an interactive introduction to the workflow and mappings Conjure provides. Refer to the list at the top of this file for links to the various quickstart guides for each language.
 
-Please do get in touch via https://conjure.fun/discord[Discord] or https://twitter.com/OliverCaldwell[Twitter] if you have any questions or issues.
+Please do get in touch via https://discord.gg/wXAMr8F[Discord] or https://twitter.com/OliverCaldwell[Twitter] if you have any questions or issues.
 
 Broader documentation can be found in the https://github.com/Olical/conjure/wiki[Conjure wiki], there you'll find blog posts and guides that will help you get common workflows up and running. Contributions are encouraged!
 
