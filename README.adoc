@@ -102,7 +102,9 @@ return {
     lazy = true,
     init = function()
       -- Set configuration options here
-      vim.g["conjure#debug"] = true
+      -- Uncomment this to get verbose logging to help diagnose internal Conjure issues
+      -- This is VERY helpful when reporting an issue with the project
+      -- vim.g["conjure#debug"] = true
     end,
 
     -- Optional cmp-conjure integration
