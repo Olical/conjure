@@ -134,7 +134,7 @@ local function with_session_ids(cb)
 end
 _2amodule_locals_2a["with-session-ids"] = with_session_ids
 local function pretty_session_type(st)
-  return a.get({clj = "Clojure", cljs = "ClojureScript", cljr = "ClojureCLR"}, st, "Unknown https://conjure.fun/unknown-env")
+  return a.get({clj = "Clojure", cljs = "ClojureScript", cljr = "ClojureCLR"}, st, "Unknown https://github.com/Olical/conjure/wiki/Frequently-asked-questions#what-does-unknown-mean-in-the-log-when-connecting-to-a-clojure-nrepl")
 end
 _2amodule_2a["pretty-session-type"] = pretty_session_type
 local function session_type(id, cb)

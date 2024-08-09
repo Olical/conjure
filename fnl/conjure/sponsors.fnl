@@ -26,7 +26,6 @@
 "lanjoni"
 "lucasdf"
 "lucaslollobrigida"
-"macovsky"
 "martinklepsch"
 "NickCellino"
 "NoahTheDuke"
