@@ -9,7 +9,7 @@ local function autoload(name)
       return res[module_key]
     else
       local m = require(name)
-      do end (res)[module_key] = m
+      res[module_key] = m
       return m
     end
   end

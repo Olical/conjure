@@ -4,7 +4,7 @@ local autoload = _local_1_["autoload"]
 local callback = autoload("nfnl.callback")
 local minimum_neovim_version = "0.9.0"
 if vim then
-  if (0 == _G.vim.fn.has(("nvim-" .. minimum_neovim_version))) then
+  if (0 == vim.fn.has(("nvim-" .. minimum_neovim_version))) then
     error(("nfnl requires Neovim > v" .. minimum_neovim_version))
   else
   end

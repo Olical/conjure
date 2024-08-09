@@ -4,31 +4,31 @@ local autoload = _local_1_["autoload"]
 local core = autoload("nfnl.core")
 local function join(...)
   local args = {...}
-  local function _3_(...)
+  local function _2_(...)
     if (2 == core.count(args)) then
       return args
     else
       return {"", core.first(args)}
     end
   end
-  local _let_2_ = _3_(...)
-  local sep = _let_2_[1]
-  local xs = _let_2_[2]
+  local _let_3_ = _2_(...)
+  local sep = _let_3_[1]
+  local xs = _let_3_[2]
   local len = core.count(xs)
   local result = {}
   if (len > 0) then
     for i = 1, len do
       local x = xs[i]
-      local _4_
+      local tmp_6_auto
       if ("string" == type(x)) then
-        _4_ = x
+        tmp_6_auto = x
       elseif (nil == x) then
-        _4_ = x
+        tmp_6_auto = x
       else
-        _4_ = core["pr-str"](x)
+        tmp_6_auto = core["pr-str"](x)
       end
-      if (_4_ ~= nil) then
-        table.insert(result, _4_)
+      if (tmp_6_auto ~= nil) then
+        table.insert(result, tmp_6_auto)
       else
       end
     end
@@ -64,4 +64,13 @@ end
 local function trim(s)
   return string.gsub(s, "^%s*(.-)%s*$", "%1")
 end
-return {join = join, split = split, ["blank?"] = blank_3f, triml = triml, trimr = trimr, trim = trim}
+local function ends_with_3f(s, suffix)
+  local suffix_len = #suffix
+  local s_len = #s
+  if (s_len >= suffix_len) then
+    return (suffix == string.sub(s, (s_len - suffix_len - -1)))
+  else
+    return false
+  end
+end
+return {join = join, split = split, ["blank?"] = blank_3f, triml = triml, trimr = trimr, trim = trim, ["ends-with?"] = ends_with_3f}
