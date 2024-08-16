@@ -1,13 +1,11 @@
-(import-macros {: module : def : defn : defonce : def- : defn- : defonce- : wrap-last-expr : wrap-module-body : deftest} :nfnl.macros.aniseed)
+(local {: autoload} (require :nfnl.module))
+(local nvim (autoload :conjure.aniseed.nvim))
+(local a (autoload :conjure.aniseed.core))
+(local text (autoload :conjure.text))
+(local client (autoload :conjure.client))
+(local str (autoload :conjure.aniseed.string))
 
-(module conjure.event
-  {autoload {nvim conjure.aniseed.nvim
-             a conjure.aniseed.core
-             text conjure.text
-             client conjure.client
-             str conjure.aniseed.string}})
-
-(defn emit [...]
+(fn emit [...]
   (let [names (a.map text.upper-first [...])]
     (client.schedule
       (fn []
@@ -16,4 +14,4 @@
           (table.remove names)))))
   nil)
 
-*module*
+{: emit}
