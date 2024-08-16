@@ -26,7 +26,7 @@ local function default(opts)
   local root_dir
   local or_5_ = core.get(opts, "root-dir")
   if not or_5_ then
-    local tmp_3_auto = fs.cwd()
+    local tmp_3_auto = vim.fn.getcwd()
     if (nil ~= tmp_3_auto) then
       local tmp_3_auto0 = find(tmp_3_auto)
       if (nil ~= tmp_3_auto0) then
@@ -43,8 +43,8 @@ local function default(opts)
       or_5_ = nil
     end
   end
-  root_dir = (or_5_ or fs.cwd())
-  local dirs = path_dirs({runtimepath = vim.o.runtimepath, ["rtp-patterns"] = core.get(opts, "rtp-patterns", {"/nfnl$"}), ["base-dirs"] = {root_dir}})
+  root_dir = (or_5_ or vim.fn.getcwd())
+  local dirs = path_dirs({runtimepath = vim.o.runtimepath, ["rtp-patterns"] = core.get(opts, "rtp-patterns", {(fs["path-sep"]() .. "nfnl$")}), ["base-dirs"] = {root_dir}})
   local function _12_(root_dir0)
     return core.map(fs["join-path"], {{root_dir0, "?.fnl"}, {root_dir0, "?", "init.fnl"}, {root_dir0, "fnl", "?.fnl"}, {root_dir0, "fnl", "?", "init.fnl"}})
   end
@@ -69,13 +69,7 @@ local function find_and_load(dir)
     local config_file_path = find(dir)
     if config_file_path then
       local root_dir = fs.basename(config_file_path)
-      local read_fn
-      if ("false" ~= vim.env.NFNL_USE_SECURE_READ) then
-        read_fn = vim.secure.read
-      else
-        read_fn = core.slurp
-      end
-      local config_source = read_fn(config_file_path)
+      local config_source = vim.secure.read(config_file_path)
       local ok, config = nil, nil
       if core["nil?"](config_source) then
         ok, config = false, (config_file_path .. " is not trusted, refusing to compile.")

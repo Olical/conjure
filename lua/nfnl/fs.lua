@@ -55,11 +55,8 @@ local function read_first_line(path)
     return nil
   end
 end
-local function normalize_path(path)
-  return vim.fs.normalize(path)
-end
 local function absglob(dir, expr)
-  return core.map(normalize_path, vim.fn.globpath(dir, expr, true, true))
+  return vim.fn.globpath(dir, expr, true, true)
 end
 local function relglob(dir, expr)
   local dir_len = (2 + string.len(dir))
@@ -89,16 +86,16 @@ end
 local function findfile(name, path)
   local res = vim.fn.findfile(name, path)
   if not core["empty?"](res) then
-    return normalize_path(full_path(res))
+    return full_path(res)
   else
     return nil
   end
 end
 local function split_path(path)
-  return str.split(path, "/")
+  return str.split(path, path_sep())
 end
 local function join_path(parts)
-  return str.join("/", core.concat(parts))
+  return str.join(path_sep(), core.concat(parts))
 end
 local function replace_dirs(path, from, to)
   local function _13_(segment)
@@ -113,10 +110,4 @@ end
 local function fnl_path__3elua_path(fnl_path)
   return replace_dirs(replace_extension(fnl_path, "lua"), "fnl", "lua")
 end
-local function localize_path(path)
-  return string.gsub(normalize_path(path), "/", path_sep())
-end
-local function cwd()
-  return normalize_path(vim.fn.getcwd())
-end
-return {basename = basename, filename = filename, ["file-name-root"] = file_name_root, ["full-path"] = full_path, mkdirp = mkdirp, ["replace-extension"] = replace_extension, absglob = absglob, relglob = relglob, ["glob-dir-newer?"] = glob_dir_newer_3f, ["path-sep"] = path_sep, findfile = findfile, ["split-path"] = split_path, ["join-path"] = join_path, ["read-first-line"] = read_first_line, ["replace-dirs"] = replace_dirs, ["fnl-path->lua-path"] = fnl_path__3elua_path, ["normalize-path"] = normalize_path, ["localize-path"] = localize_path, cwd = cwd}
+return {basename = basename, filename = filename, ["file-name-root"] = file_name_root, ["full-path"] = full_path, mkdirp = mkdirp, ["replace-extension"] = replace_extension, absglob = absglob, relglob = relglob, ["glob-dir-newer?"] = glob_dir_newer_3f, ["path-sep"] = path_sep, findfile = findfile, ["split-path"] = split_path, ["join-path"] = join_path, ["read-first-line"] = read_first_line, ["replace-dirs"] = replace_dirs, ["fnl-path->lua-path"] = fnl_path__3elua_path}
