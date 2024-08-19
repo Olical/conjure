@@ -74,7 +74,7 @@
         (it "matching nothing"
           (fn []
             (at [2 0])
-            (assert.equal nil (extract.form {}))))
+            (assert.are.equals nil (extract.form {}))))
 
         (it "ns form"
           (fn []

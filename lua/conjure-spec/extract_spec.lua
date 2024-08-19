@@ -48,7 +48,7 @@ local function _2_()
     it("on the last paren of the outer form", _8_)
     local function _9_()
       at({2, 0})
-      return assert.equal(nil, extract.form({}))
+      return assert.are.equals(nil, extract.form({}))
     end
     it("matching nothing", _9_)
     local function _10_()
