@@ -19,7 +19,7 @@ fi
 if [ -d "$PACK_DIR/aniseed" ]; then
 	echo "aniseed already exists"
 else
-	git clone https://github.com/bakpakin/fennel.vim.git "$PACK_DIR/aniseed"
+	git clone https://github.com/Olical/aniseed.git "$PACK_DIR/aniseed"
 fi
 
 if [ -d "$PACK_DIR/conjure" ]; then
