@@ -1,8 +1,6 @@
-(import-macros {: module : def : defn : defonce : def- : defn- : defonce- : wrap-last-expr : wrap-module-body : deftest} :nfnl.macros.aniseed)
-
-(module conjure.uuid
-  {autoload {a conjure.aniseed.core
-             str conjure.aniseed.string}})
+(local {: autoload} (require :nfnl.module))
+(local a (autoload :nfnl.core))
+(local str (autoload :nfnl.string))
 
 ;; Adapted from https://gist.github.com/jrus/3197011
 
@@ -15,7 +13,7 @@
 ;     end)
 ; end
 
-(defn v4 []
+(fn v4 []
   (string.gsub
     "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx"
     "[xy]"
@@ -24,7 +22,7 @@
        (or (and (= $1 "x") (math.random 0 0xf))
            (math.random 8 0xb)))))
 
-(def- cats-and-dogs
+(local cats-and-dogs
   ["Blue Lacy" "Queensland Heeler" "Rhod Ridgeback" "Retriever" "Chinese Sharpei" "Black Mouth Cur" "Catahoula" "Staffordshire" "Affenpinscher"
    "Afghan Hound" "Airedale Terrier" "Akita" "Australian Kelpie" "Alaskan Malamute" "English Bulldog" "American Bulldog" "American English Coonhound"
    "American Eskimo Dog" "American Foxhound" "American Hairless Terrier" "American Staffordshire Terrier" "American Water Spaniel" "Anatolian Shepherd Dog"
@@ -63,7 +61,7 @@
    "Siberian cat" "Singapura cat" "Snowshoe cat" "Sokoke" "Somali cat" "Sphynx cat" "Suphalak" "Thai cat" "Thai Lilac" "Tonkinese cat" "Toyger"
    "Turkish Angora" "Turkish Van" "Ukrainian Levkoy"])
 
-(defn pretty [id]
+(fn pretty [id]
   "Turns a UUID into something human readable. This MASSIVELY reduces the
   entropy but it should be good enough for a bunch of various UI / UX cases."
   (if (a.string? id)
@@ -73,6 +71,9 @@
 
 (comment
   (v4)
-  (pretty (v4)))
+  (pretty (v4))
+)
 
-*module*
+{: v4
+ : pretty
+ : cats-and-dogs}
