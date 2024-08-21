@@ -1,17 +1,20 @@
-(import-macros {: module : def : defn : defonce : def- : defn- : defonce- : wrap-last-expr : wrap-module-body : deftest} :nfnl.macros.aniseed)
+(local {: autoload} (require :nfnl.module))
+(local a (autoload :conjure.aniseed.core))
 
-(module conjure.stack
-  {autoload {a conjure.aniseed.core}})
-
-(defn push [s v]
+(fn push [s v]
   (table.insert s v)
   s)
 
-(defn pop [s]
+(fn pop [s]
   (table.remove s)
   s)
 
-(defn peek [s]
+(fn peek [s]
   (a.last s))
 
-*module*
+{
+ : push
+ : pop
+ : peek
+ }
+

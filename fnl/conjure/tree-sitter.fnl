@@ -1,21 +1,18 @@
-(import-macros {: module : def : defn : defonce : def- : defn- : defonce- : wrap-last-expr : wrap-module-body : deftest} :nfnl.macros.aniseed)
-
-(module conjure.tree-sitter
-  {autoload {a conjure.aniseed.core
-             str conjure.aniseed.string
-             nvim conjure.aniseed.nvim
-             client conjure.client
-             config conjure.config
-             text conjure.text}})
+(local {: autoload} (require :nfnl.module))
+(local a (autoload :nfnl.core))
+(local nvim (autoload :conjure.aniseed.nvim))
+(local client (autoload :conjure.client))
+(local config (autoload :conjure.config))
+(local text (autoload :conjure.text))
 
 ;; Initially based on https://github.com/savq/conjure-julia <3
 
-(def- ts
+(local ts
   (let [(ok? x) (pcall #(require :nvim-treesitter.ts_utils))]
     (when ok?
       x)))
 
-(defn enabled? []
+(fn enabled? []
   "Do we have tree-sitter support in the current nvim, buffer and filetype. If
   this is false, you might need to install
   https://github.com/nvim-treesitter/nvim-treesitter
@@ -30,12 +27,12 @@
     true
     false))
 
-(defn parse! []
+(fn parse! []
   (let [(ok? parser) (pcall vim.treesitter.get_parser)]
     (if ok?
       (parser:parse))))
 
-(defn node->str [node]
+(fn node->str [node]
   "Turn the node into a string, nils flow through. Separate forms are joined by
   new lines."
   (when node
@@ -43,27 +40,27 @@
       (vim.treesitter.get_node_text node (nvim.get_current_buf))
       (vim.treesitter.query.get_node_text node (nvim.get_current_buf)))))
 
-(defn lisp-comment-node? [node]
+(fn lisp-comment-node? [node]
   "Node is a (comment ...) form"
   (text.starts-with (node->str node) "(comment"))
 
-(defn parent [node]
+(fn parent [node]
   "Get the parent if possible."
   (when node
     (node:parent)))
 
-(defn document? [node]
+(fn document? [node]
   "Is the node the entire document, i.e. has no parent?"
   (not (parent node)))
 
-(defn range [node]
+(fn range [node]
   "Get the character range of the form."
   (when node
     (let [(sr sc er ec) (node:range)]
       {:start [(a.inc sr) sc]
        :end [(a.inc er) (a.dec ec)]})))
 
-(defn node->table [node]
+(fn node->table [node]
   "If it is a node, convert it to a Lua table we can work with in Conjure. If
   it's already a table with the right keys just return that."
   (if
@@ -76,7 +73,7 @@
 
     nil))
 
-(defn get-root [node]
+(fn get-root [node]
   "Get the root node below the entire document."
   (parse!)
 
@@ -88,7 +85,7 @@
       (client.optional-call :comment-node? parent-node) node
       (get-root parent-node))))
 
-(defn leaf? [node]
+(fn leaf? [node]
   "Does the node have any children? Or is it the end of the tree?"
   (when node
     (= 0 (node:child_count))))
@@ -96,12 +93,12 @@
 ;; Some node types I've seen: sym_lit, symbol, multi_symbol...
 ;; So I'm not sure if each language just picks a flavour, but this should cover all of our bases.
 ;; Clients can also opt in and hint with their own symbol-node? functions now too.
-(defn sym? [node]
+(fn sym? [node]
   (when node
     (or (string.find (node:type) :sym)
         (client.optional-call :symbol-node? node))))
 
-(defn get-leaf [node]
+(fn get-leaf [node]
   "Return the leaf node under the cursor or nothing at all."
   (parse!)
 
@@ -112,7 +109,7 @@
         (set node (parent node)))
       node)))
 
-(defn node-surrounded-by-form-pair-chars? [node extra-pairs]
+(fn node-surrounded-by-form-pair-chars? [node extra-pairs]
   (let [node-str (node->str node)
         first-and-last-chars (text.first-and-last-chars node-str)]
     (or (a.some
@@ -126,7 +123,7 @@
           extra-pairs)
         false)))
 
-(defn node-prefixed-by-chars? [node prefixes]
+(fn node-prefixed-by-chars? [node prefixes]
   (let [node-str (node->str node)]
     (or (a.some
           (fn [prefix]
@@ -134,7 +131,7 @@
           prefixes)
         false)))
 
-(defn get-form [node]
+(fn get-form [node]
   "Get the current form under the cursor. Walks up until it finds a non-leaf.
 
   Warning, this can return a table containing content and range! Use
@@ -197,4 +194,20 @@
             (a.println "Warning: Conjure client returned an unknown get-form-modifier" res)
             node))))))
 
-*module*
+{
+ : enabled?
+ : parse!
+ : node->str
+ : lisp-comment-node?
+ : parent
+ : document?
+ : range
+ : node->table
+ : get-root
+ : leaf?
+ : sym?
+ : get-leaf
+ : node-surrounded-by-form-pair-chars?
+ : node-prefixed-by-chars?
+ : get-form
+ }
