@@ -1,12 +1,7 @@
 (local {: describe : it} (require :plenary.busted))
 (local assert (require :luassert.assert))
-
 (local stack (require :conjure.stack))
 
-
-
-;;;;;;;;;;
-;;; module/file being tested
 (describe "conjure.stack"
   (fn []
     (describe "push"
