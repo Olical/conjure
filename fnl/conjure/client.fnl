@@ -1,26 +1,24 @@
-(import-macros {: module : def : defn : defonce : def- : defn- : defonce- : wrap-last-expr : wrap-module-body : deftest} :nfnl.macros.aniseed)
+(local {: autoload} (require :nfnl.module))
+(local a (autoload :conjure.aniseed.core))
+(local nvim (autoload :conjure.aniseed.nvim))
+(local fennel (autoload :conjure.aniseed.fennel))
+(local str (autoload :conjure.aniseed.string))
+(local config (autoload :conjure.config))
+(local dyn (autoload :conjure.dynamic))
 
-(module conjure.client
-  {autoload {a conjure.aniseed.core
-             nvim conjure.aniseed.nvim
-             fennel conjure.aniseed.fennel
-             str conjure.aniseed.string
-             config conjure.config
-             dyn conjure.dynamic}})
+(local state-key (dyn.new #(do :default)))
 
-(defonce state-key (dyn.new #(do :default)))
-
-(defonce- state
+(local state
   {:state-key-set? false})
 
-(defn set-state-key! [new-key]
+(fn set-state-key! [new-key]
   (set state.state-key-set? true)
   (dyn.set-root! state-key #(do new-key)))
 
-(defn multiple-states? []
+(fn multiple-states? []
   state.state-key-set?)
 
-(defn new-state [init-fn]
+(fn new-state [init-fn]
   (let [key->state {}]
     (fn [...]
       (let [key (state-key)
@@ -32,9 +30,9 @@
               state)
             (a.get-in [...]))))))
 
-(defonce- loaded {})
+(local loaded {})
 
-(defn- load-module [ft name]
+(fn load-module [ft name]
   (let [fnl (fennel.impl)
         (ok? result) (xpcall
                        (fn []
@@ -55,16 +53,16 @@
       result
       (error result))))
 
-(def- filetype (dyn.new #(do nvim.bo.filetype)))
-(def- extension (dyn.new #(nvim.fn.expand "%:e")))
+(local filetype (dyn.new #(do nvim.bo.filetype)))
+(local extension (dyn.new #(nvim.fn.expand "%:e")))
 
-(defn with-filetype [ft f ...]
+(fn with-filetype [ft f ...]
   (dyn.bind
     {filetype #(do ft)
      extension #(do)}
     f ...))
 
-(defn wrap [f ...]
+(fn wrap [f ...]
   (let [opts {filetype (a.constantly (filetype))
               state-key (a.constantly (state-key))}
         args [...]]
@@ -73,13 +71,13 @@
         (dyn.bind opts f (unpack args) ...)
         (dyn.bind opts f ...)))))
 
-(defn schedule-wrap [f ...]
+(fn schedule-wrap [f ...]
   (wrap (vim.schedule_wrap f) ...))
 
-(defn schedule [f ...]
+(fn schedule [f ...]
   (vim.schedule (wrap f ...)))
 
-(defn current-client-module-name []
+(fn current-client-module-name []
   (var result {:filetype (filetype)
                :extension (extension)
                :module-name nil})
@@ -97,16 +95,16 @@
             (set result.module-name module-name))))))
   result)
 
-(defn current []
+(fn current []
   (let [{: module-name : filetype : extension}
         (current-client-module-name)]
     (when module-name
       (load-module filetype module-name))))
 
-(defn get [...]
+(fn get [...]
   (a.get-in (current) [...]))
 
-(defn call [fn-name ...]
+(fn call [fn-name ...]
   (let [f (get fn-name)]
     (if f
       (f ...)
@@ -116,15 +114,28 @@
                 "' doesn't support function: "
                 fn-name])))))
 
-(defn optional-call [fn-name ...]
+(fn optional-call [fn-name ...]
   (let [f (get fn-name)]
     (when f
       (f ...))))
 
-(defn each-loaded-client [f]
+(fn each-loaded-client [f]
   (a.run!
     (fn [{: filetype}]
       (with-filetype filetype f))
     (a.vals loaded)))
 
-*module*
+{: state-key
+ : set-state-key!
+ : multiple-states?
+ : new-state
+ : with-filetype
+ : wrap
+ : schedule-wrap
+ : schedule
+ : current-client-module-name
+ : current
+ : get
+ : call
+ : optional-call
+ : each-loaded-client}

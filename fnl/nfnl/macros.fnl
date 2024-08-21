@@ -25,7 +25,7 @@
         ;; Even if the user isn't using the first slot, we will.
         ;; [(_ val) (pcall #:foo)]
         ;;  => [(bindGENSYM12345 val) (pcall #:foo)]
-        (when (= '_ (. bind-expr 1))
+        (when (= `_ (. bind-expr 1))
           (tset bind-expr 1 (gensym "bind")))
 
         `(let [,bind-expr ,value-expr]
@@ -44,10 +44,10 @@
 
 (fn if-let [bindings ...]
   (assert (<= (length [...]) 2) (.. "if-let does not support more than two branches"))
-  (conditional-let 'if bindings ...))
+  (conditional-let `if bindings ...))
 
 (fn when-let [bindings ...]
-  (conditional-let 'when bindings ...))
+  (conditional-let `when bindings ...))
 
 {: time
  : if-let
