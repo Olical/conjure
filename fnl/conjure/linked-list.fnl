@@ -1,9 +1,7 @@
-(import-macros {: module : def : defn : defonce : def- : defn- : defonce- : wrap-last-expr : wrap-module-body : deftest} :nfnl.macros.aniseed)
+(local {: autoload} (require :nfnl.module))
+(local a (autoload :conjure.aniseed.core))
 
-(module conjure.linked-list
-  {autoload {a conjure.aniseed.core}})
-
-(defn create [xs prev]
+(fn create [xs prev]
   (when (not (a.empty? xs))
     (let [rest (a.rest xs)
           node {}]
@@ -11,28 +9,28 @@
       (a.assoc node :prev prev)
       (a.assoc node :next (create rest node)))))
 
-(defn val [l]
+(fn val [l]
   (-?> l (a.get :val)))
 
-(defn next [l]
+(fn next [l]
   (-?> l (a.get :next)))
 
-(defn prev [l]
+(fn prev [l]
   (-?> l (a.get :prev)))
 
-(defn first [l]
+(fn first [l]
   (var c l)
   (while (prev c)
     (set c (prev c)))
   c)
 
-(defn last [l]
+(fn last [l]
   (var c l)
   (while (next c)
     (set c (next c)))
   c)
 
-(defn until [f l]
+(fn until [f l]
   (var c l)
   (var r false)
   (fn step []
@@ -43,11 +41,21 @@
   (when r
     c))
 
-(defn cycle [l]
+(fn cycle [l]
   (let [start (first l)
         end (last l)]
     (a.assoc start :prev end)
     (a.assoc end :next start)
     l))
 
-*module*
+{
+ : create
+ : val
+ : next
+ : prev
+ : first
+ : last
+ : until
+ : cycle
+ }
+
