@@ -1,26 +1,23 @@
-(import-macros {: module : def : defn : defonce : def- : defn- : defonce- : wrap-last-expr : wrap-module-body : deftest} :nfnl.macros.aniseed)
+(local {: autoload} (require :nfnl.module))
+(local nvim (autoload :conjure.aniseed.nvim))
+(local a (autoload :conjure.aniseed.core))
+(local str (autoload :conjure.aniseed.string))
+(local config (autoload :conjure.config))
+(local extract (autoload :conjure.extract))
+(local log (autoload :conjure.log))
+(local client (autoload :conjure.client))
+(local eval (autoload :conjure.eval))
+(local bridge (autoload :conjure.bridge))
+(local school (autoload :conjure.school))
+(local util (autoload :conjure.util))
 
-(module conjure.mapping
-  {autoload {nvim conjure.aniseed.nvim
-             a conjure.aniseed.core
-             str conjure.aniseed.string
-             config conjure.config
-             extract conjure.extract
-             log conjure.log
-             client conjure.client
-             eval conjure.eval
-             bridge conjure.bridge
-             school conjure.school
-             util conjure.util}
-   require-macros [conjure.macros]})
-
-(defn- cfg [k]
+(fn cfg [k]
   (config.get-in [:mapping k]))
 
-(defn- vim-repeat [mapping]
+(fn vim-repeat [mapping]
   (.. "repeat#set(\"" (nvim.fn.escape mapping "\"") "\", 1)"))
 
-(defn buf [name-suffix mapping-suffix handler-fn opts]
+(fn buf [name-suffix mapping-suffix handler-fn opts]
   "Successor to buf, allows mapping to a Lua function.
   opts: {:desc ""
          :mode :n
@@ -70,7 +67,7 @@
                                            (util.replace-termcodes "<cr>")])))}
           (a.get opts :mapping-opts {}))))))
 
-(defn on-filetype []
+(fn on-filetype []
   (buf
     :LogSplit (cfg :log_split)
     (util.wrap-require-fn-call :conjure.log :split)
@@ -204,13 +201,13 @@
 
   (client.optional-call :on-filetype))
 
-(defn on-exit []
+(fn on-exit []
   (client.each-loaded-client #(client.optional-call :on-exit)))
 
-(defn on-quit []
+(fn on-quit []
   (log.close-hud))
 
-(defn init [filetypes]
+(fn init [filetypes]
   (nvim.ex.augroup :conjure_init_filetypes)
   (nvim.ex.autocmd_)
   (when (= true (config.get-in [:mapping :enable_ft_mappings]))
@@ -240,16 +237,16 @@
   (nvim.ex.autocmd
     :VimLeavePre :*
     (bridge.viml->lua :conjure.log :clear-close-hud-passive-timer {}))
-  (nvim.ex.autocmd :VimLeavePre :* (viml->fn on-exit))
-  (nvim.ex.autocmd :QuitPre :* (viml->fn on-quit))
+  (nvim.ex.autocmd :VimLeavePre :* (bridge.viml->lua :conjure.mapping :on-exit))
+  (nvim.ex.autocmd :QuitPre :* (bridge.viml->lua :conjure.mapping :on-quit))
   (nvim.ex.augroup :END))
 
-(defn eval-ranged-command [start end code]
+(fn eval-ranged-command [start end code]
   (if (= "" code)
     (eval.range (a.dec start) end)
     (eval.command code)))
 
-(defn connect-command [...]
+(fn connect-command [...]
   (let [args [...]]
     (client.call
       :connect
@@ -261,12 +258,12 @@
         {:host (a.first args)
          :port (a.second args)}))))
 
-(defn client-state-command [state-key]
+(fn client-state-command [state-key]
   (if (a.empty? state-key)
     (a.println (client.state-key))
     (client.set-state-key! state-key)))
 
-(defn omnifunc [find-start? base]
+(fn omnifunc [find-start? base]
   (if find-start?
     (let [[row col] (nvim.win_get_cursor 0)
           [line] (nvim.buf_get_lines 0 (a.dec row) row false)]
@@ -311,4 +308,12 @@
   #(school.start)
   {})
 
-*module*
+{: buf
+ : on-filetype
+ : on-exit
+ : on-quit
+ : init
+ : eval-ranged-command
+ : connect-command
+ : client-state-command
+ : omnifunc}
