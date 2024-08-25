@@ -1,12 +1,10 @@
-(import-macros {: module : def : defn : defonce : def- : defn- : defonce- : wrap-last-expr : wrap-module-body : deftest} :nfnl.macros.aniseed)
+(local {: autoload} (require :nfnl.module))
+(local a (autoload :conjure.aniseed.core))
+(local bridge (autoload :conjure.bridge))
 
-(module conjure.net
-  {autoload {a conjure.aniseed.core
-             nvim conjure.aniseed.nvim
-             bridge conjure.bridge}
-   require-macros [conjure.macros]})
+(import-macros {: augroup : autocmd} :conjure.macros)
 
-(defn resolve [host]
+(fn resolve [host]
   ;; Mostly to work around jeejah binding to localhost instead of 127.0.0.1 and
   ;; libuv net requiring IP addresses.
   (if (= host "::")
@@ -17,10 +15,9 @@
              (a.first))
         (a.get :addr))))
 
-(defonce- state
-  {:sock-drawer []})
+(local state {:sock-drawer []})
 
-(defn- destroy-sock [sock]
+(fn destroy-sock [sock]
   (when (not (sock:is_closing))
     (sock:read_stop)
     (sock:shutdown)
@@ -28,7 +25,7 @@
 
   (set state.sock-drawer (a.filter #(not= sock $1) state.sock-drawer)))
 
-(defn connect [{:  host : port : cb}]
+(fn connect [{:  host : port : cb}]
   (let [sock (vim.loop.new_tcp)
         resolved-host (resolve host)]
 
@@ -43,11 +40,13 @@
      :host host
      :port port}))
 
-(defn destroy-all-socks []
+;; Used through a string reference in a viml->lua call that we should refactor away.
+(fn destroy-all-socks []
   (a.run! destroy-sock state.sock-drawer))
 
 (augroup
   conjure-net-sock-cleanup
-  (autocmd :VimLeavePre :* (viml->fn :destroy-all-socks)))
+  (autocmd :VimLeavePre :* (bridge.viml->lua :conjure.net :destroy-all-socks)))
 
-*module*
+{: resolve
+ : connect}

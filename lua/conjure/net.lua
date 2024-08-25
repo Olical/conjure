@@ -1,37 +1,19 @@
 -- [nfnl] Compiled from fnl/conjure/net.fnl by https://github.com/Olical/nfnl, do not edit.
-local _2amodule_name_2a = "conjure.net"
-local _2amodule_2a
-do
-  _G.package.loaded[_2amodule_name_2a] = {}
-  _2amodule_2a = _G.package.loaded[_2amodule_name_2a]
-end
-local _2amodule_locals_2a
-do
-  _2amodule_2a["aniseed/locals"] = {}
-  _2amodule_locals_2a = (_2amodule_2a)["aniseed/locals"]
-end
-local autoload = (require("aniseed.autoload")).autoload
-local a, bridge, nvim, _ = autoload("conjure.aniseed.core"), autoload("conjure.bridge"), autoload("conjure.aniseed.nvim"), nil
-_2amodule_locals_2a["a"] = a
-_2amodule_locals_2a["bridge"] = bridge
-_2amodule_locals_2a["nvim"] = nvim
-_2amodule_locals_2a["_"] = _
-do local _ = {nil, nil, nil, nil, nil, nil, nil, nil, nil} end
+local _local_1_ = require("nfnl.module")
+local autoload = _local_1_["autoload"]
+local a = autoload("conjure.aniseed.core")
+local bridge = autoload("conjure.bridge")
 local function resolve(host)
   if (host == "::") then
     return host
   else
-    local function _1_(_241)
+    local function _2_(_241)
       return ("inet" == a.get(_241, "family"))
     end
-    return a.get(a.first(a.filter(_1_, vim.loop.getaddrinfo(host))), "addr")
+    return a.get(a.first(a.filter(_2_, vim.loop.getaddrinfo(host))), "addr")
   end
 end
-_2amodule_2a["resolve"] = resolve
-do local _ = {resolve, nil} end
-local state = ((_2amodule_2a).state or {["sock-drawer"] = {}})
-do end (_2amodule_locals_2a)["state"] = state
-do local _ = {nil, nil} end
+local state = {["sock-drawer"] = {}}
 local function destroy_sock(sock)
   if not sock:is_closing() then
     sock:read_stop()
@@ -39,19 +21,16 @@ local function destroy_sock(sock)
     sock:close()
   else
   end
-  local function _4_(_241)
+  local function _5_(_241)
     return (sock ~= _241)
   end
-  state["sock-drawer"] = a.filter(_4_, state["sock-drawer"])
+  state["sock-drawer"] = a.filter(_5_, state["sock-drawer"])
   return nil
 end
-_2amodule_locals_2a["destroy-sock"] = destroy_sock
-do local _ = {destroy_sock, nil} end
-local function connect(_5_)
-  local _arg_6_ = _5_
-  local host = _arg_6_["host"]
-  local port = _arg_6_["port"]
-  local cb = _arg_6_["cb"]
+local function connect(_6_)
+  local host = _6_["host"]
+  local port = _6_["port"]
+  local cb = _6_["cb"]
   local sock = vim.loop.new_tcp()
   local resolved_host = resolve(host)
   if not resolved_host then
@@ -65,17 +44,13 @@ local function connect(_5_)
   end
   return {sock = sock, ["resolved-host"] = resolved_host, destroy = _8_, host = host, port = port}
 end
-_2amodule_2a["connect"] = connect
-do local _ = {connect, nil} end
 local function destroy_all_socks()
   return a["run!"](destroy_sock, state["sock-drawer"])
 end
-_2amodule_2a["destroy-all-socks"] = destroy_all_socks
-do local _ = {destroy_all_socks, nil} end
 do
   nvim.ex.augroup("conjure-net-sock-cleanup")
   nvim.ex.autocmd_()
-  nvim.ex.autocmd("VimLeavePre", "*", ("lua require('" .. _2amodule_name_2a .. "')['" .. "destroy-all-socks" .. "']()"))
+  nvim.ex.autocmd("VimLeavePre", "*", bridge["viml->lua"]("conjure.net", "destroy-all-socks"))
   nvim.ex.augroup("END")
 end
-return _2amodule_2a
+return {resolve = resolve, connect = connect}
