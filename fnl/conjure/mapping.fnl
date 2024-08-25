@@ -3,7 +3,6 @@
 (local a (autoload :conjure.aniseed.core))
 (local str (autoload :conjure.aniseed.string))
 (local config (autoload :conjure.config))
-(local extract (autoload :conjure.extract))
 (local log (autoload :conjure.log))
 (local client (autoload :conjure.client))
 (local eval (autoload :conjure.eval))
@@ -13,9 +12,6 @@
 
 (fn cfg [k]
   (config.get-in [:mapping k]))
-
-(fn vim-repeat [mapping]
-  (.. "repeat#set(\"" (nvim.fn.escape mapping "\"") "\", 1)"))
 
 (fn buf [name-suffix mapping-suffix handler-fn opts]
   "Successor to buf, allows mapping to a Lua function.
