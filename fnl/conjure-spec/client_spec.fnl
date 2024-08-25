@@ -29,7 +29,7 @@
 
 (describe "new-state"
   (fn []
-    (describe "returns a function we can use to look up the current state-key's data for this specific state, the function encloses it's own table of state indexed by state-key"
+    (it "returns a function we can use to look up the current state-key's data for this specific state, the function encloses it's own table of state indexed by state-key"
       (fn []
         (let [state (client.new-state #(do {:foo {:bar 1}}))]
           ;; A "state" is a function
@@ -49,3 +49,23 @@
           ;; ...and not the default state
           (client.set-state-key! :default)
           (assert.equal 1 (state :foo :bar)))))))
+
+; (describe "current-client-module-name"
+;   (fn []
+;     (describe "with-filetype"
+;       (fn []
+;         (it "returns the fennel module when we're in a fennel file"
+;           (fn []
+;             ;; Error in error handling?
+;             (assert.same
+;               {:extension "fnl"
+;                 :filetype "fennel"
+;                 :module-name "conjure.client.fennel.aniseed"}
+;               (client.with-filetype "fennel" #(client.current-client-module-name)))))))))
+
+; (describe "with-filetype"
+;   (fn []
+;     (it "executes a "
+;       (fn []
+;         (let [mod (client.load-module "clojure" "conjure.client.clojure.nrepl")]
+;           (assert.is_table mod))))))

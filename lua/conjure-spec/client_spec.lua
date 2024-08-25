@@ -50,6 +50,6 @@ local function _10_()
     client["set-state-key!"]("default")
     return assert.equal(1, state("foo", "bar"))
   end
-  return describe("returns a function we can use to look up the current state-key's data for this specific state, the function encloses it's own table of state indexed by state-key", _11_)
+  return it("returns a function we can use to look up the current state-key's data for this specific state, the function encloses it's own table of state indexed by state-key", _11_)
 end
 return describe("new-state", _10_)
