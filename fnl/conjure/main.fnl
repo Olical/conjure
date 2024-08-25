@@ -1,10 +1,8 @@
-(import-macros {: module : def : defn : defonce : def- : defn- : defonce- : wrap-last-expr : wrap-module-body : deftest} :nfnl.macros.aniseed)
+(local {: autoload} (require :nfnl.module))
+(local mapping (autoload :conjure.mapping))
+(local config (autoload :conjure.config))
 
-(module conjure.main
-  {autoload {mapping conjure.mapping
-             config conjure.config}})
-
-(defn main []
+(fn main []
   (mapping.init (config.filetypes)))
 
-*module*
+{: main }

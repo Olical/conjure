@@ -1,9 +1,7 @@
-(import-macros {: module : def : defn : defonce : def- : defn- : defonce- : wrap-last-expr : wrap-module-body : deftest} :nfnl.macros.aniseed)
-
-(module conjure.process
-  {autoload {nvim conjure.aniseed.nvim
-             a conjure.aniseed.core
-             str conjure.aniseed.string}})
+(local {: autoload} (require :nfnl.module))
+(local a (autoload :conjure.aniseed.core))
+(local nvim (autoload :conjure.aniseed.nvim))
+(local str (autoload :conjure.aniseed.string))
 
 ;; For the execution of external processes through Neovim's terminal
 ;; integration. This module only cares about checking for some required program
@@ -14,19 +12,19 @@
 ;; The initial use case for this is to start a babashka REPL for Clojure files
 ;; if no nREPL connection can be established.
 
-(defn executable? [cmd]
+(fn executable? [cmd]
   "Check if the given program name can be found on the system. If you give it a
   full command with arguments it'll just check the first word."
   (= 1 (nvim.fn.executable (a.first (str.split cmd "%s+")))))
 
-(defn running? [proc]
+(fn running? [proc]
   (if proc
     (. proc :running?)
     false))
 
-(defonce- state {:jobs {}})
+(local state {:jobs {}})
 
-(defn on-exit [job-id]
+(fn on-exit [job-id]
   (let [proc (. state.jobs job-id)]
     (when (running? proc)
       (a.assoc proc :running? false)
@@ -50,7 +48,7 @@
      "call luaeval(\"require('conjure.process')['on-exit'](unpack(_A))\", a:000)"
      "endfunction"]))
 
-(defn execute [cmd opts]
+(fn execute [cmd opts]
   (let [win (nvim.tabpage_get_win 0)
         original-buf (nvim.win_get_buf win)
         term-buf (nvim.create_buf (not (?. opts :hidden?)) true)
@@ -67,10 +65,16 @@
     (tset state.jobs job-id proc)
     (a.assoc proc :job-id job-id)))
 
-(defn stop [proc]
+(fn stop [proc]
   (when (running? proc)
     (nvim.fn.jobstop proc.job-id)
     (on-exit proc.job-id))
   proc)
 
-*module*
+{
+ : executable?
+ : running?
+ : on-exit
+ : execute
+ : stop
+ }

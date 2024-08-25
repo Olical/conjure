@@ -1,29 +1,34 @@
-(import-macros {: module : def : defn : defonce : def- : defn- : defonce- : wrap-last-expr : wrap-module-body : deftest} :nfnl.macros.aniseed)
-
-(module conjure.hook
-  {autoload {a conjure.aniseed.core
-             str conjure.aniseed.string}})
+(local {: autoload} (require :nfnl.module))
+(local a (autoload :conjure.aniseed.core))
+(local str (autoload :conjure.aniseed.string))
 
 ;; These are originals defined by Conjure.
-(defonce hook-fns {})
+(local hook-fns {})
 
 ;; These are user defined overrides.
-(defonce hook-override-fns {})
+(local hook-override-fns {})
 
-(defn define [name f]
+(fn define [name f]
   (a.assoc hook-fns name f))
 
-(defn override [name f]
+(fn override [name f]
   (a.assoc hook-override-fns name f))
 
-(defn get [name]
+(fn get [name]
   (a.get hook-fns name))
 
-(defn exec [name ...]
+(fn exec [name ...]
   (let [f (or (a.get hook-override-fns name)
               (a.get hook-fns name))]
     (if f
       (f ...)
       (error (str.join " " ["conjure.hook: Hook not found, can not exec" name])))))
 
-*module*
+{
+ : hook-fns
+ : hook-override-fns
+ : define
+ : override
+ : get
+ : exec
+ }

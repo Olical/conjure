@@ -1,19 +1,7 @@
 -- [nfnl] Compiled from fnl/conjure/linked-list.fnl by https://github.com/Olical/nfnl, do not edit.
-local _2amodule_name_2a = "conjure.linked-list"
-local _2amodule_2a
-do
-  _G.package.loaded[_2amodule_name_2a] = {}
-  _2amodule_2a = _G.package.loaded[_2amodule_name_2a]
-end
-local _2amodule_locals_2a
-do
-  _2amodule_2a["aniseed/locals"] = {}
-  _2amodule_locals_2a = (_2amodule_2a)["aniseed/locals"]
-end
-local autoload = (require("aniseed.autoload")).autoload
+local _local_1_ = require("nfnl.module")
+local autoload = _local_1_["autoload"]
 local a = autoload("conjure.aniseed.core")
-do end (_2amodule_locals_2a)["a"] = a
-do local _ = {nil, nil, nil, nil, nil, nil} end
 local function create(xs, prev)
   if not a["empty?"](xs) then
     local rest = a.rest(xs)
@@ -25,38 +13,27 @@ local function create(xs, prev)
     return nil
   end
 end
-_2amodule_2a["create"] = create
-do local _ = {create, nil} end
 local function val(l)
-  local _2_ = l
-  if (nil ~= _2_) then
-    return a.get(_2_, "val")
+  if (nil ~= l) then
+    return a.get(l, "val")
   else
-    return _2_
+    return nil
   end
 end
-_2amodule_2a["val"] = val
-do local _ = {val, nil} end
 local function next(l)
-  local _4_ = l
-  if (nil ~= _4_) then
-    return a.get(_4_, "next")
+  if (nil ~= l) then
+    return a.get(l, "next")
   else
-    return _4_
+    return nil
   end
 end
-_2amodule_2a["next"] = next
-do local _ = {next, nil} end
 local function prev(l)
-  local _6_ = l
-  if (nil ~= _6_) then
-    return a.get(_6_, "prev")
+  if (nil ~= l) then
+    return a.get(l, "prev")
   else
-    return _6_
+    return nil
   end
 end
-_2amodule_2a["prev"] = prev
-do local _ = {prev, nil} end
 local function first(l)
   local c = l
   while prev(c) do
@@ -64,8 +41,6 @@ local function first(l)
   end
   return c
 end
-_2amodule_2a["first"] = first
-do local _ = {first, nil} end
 local function last(l)
   local c = l
   while next(c) do
@@ -73,8 +48,6 @@ local function last(l)
   end
   return c
 end
-_2amodule_2a["last"] = last
-do local _ = {last, nil} end
 local function _until(f, l)
   local c = l
   local r = false
@@ -91,8 +64,6 @@ local function _until(f, l)
     return nil
   end
 end
-_2amodule_2a["until"] = _until
-do local _ = {_until, nil} end
 local function cycle(l)
   local start = first(l)
   local _end = last(l)
@@ -100,6 +71,4 @@ local function cycle(l)
   a.assoc(_end, "next", start)
   return l
 end
-_2amodule_2a["cycle"] = cycle
-do local _ = {cycle, nil} end
-return _2amodule_2a
+return {create = create, val = val, next = next, prev = prev, first = first, last = last, ["until"] = _until, cycle = cycle}

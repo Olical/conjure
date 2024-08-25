@@ -1,25 +1,23 @@
-(import-macros {: module : def : defn : defonce : def- : defn- : defonce- : wrap-last-expr : wrap-module-body : deftest} :nfnl.macros.aniseed)
+(local {: autoload} (require :nfnl.module))
+(local a (autoload :conjure.aniseed.core))
+(local nvim (autoload :conjure.aniseed.nvim))
+(local str (autoload :conjure.aniseed.string))
+(local nu (autoload :conjure.aniseed.nvim.util))
+(local extract (autoload :conjure.extract))
+(local client (autoload :conjure.client))
+(local text (autoload :conjure.text))
+(local fs (autoload :conjure.fs))
+(local timer (autoload :conjure.timer))
+(local config (autoload :conjure.config))
+(local promise (autoload :conjure.promise))
+(local editor (autoload :conjure.editor))
+(local buffer (autoload :conjure.buffer))
+(local inline (autoload :conjure.inline))
+(local uuid (autoload :conjure.uuid))
+(local log (autoload :conjure.log))
+(local event (autoload :conjure.event))
 
-(module conjure.eval
-  {autoload {a conjure.aniseed.core
-             str conjure.aniseed.string
-             nvim conjure.aniseed.nvim
-             nu conjure.aniseed.nvim.util
-             extract conjure.extract
-             client conjure.client
-             text conjure.text
-             fs conjure.fs
-             timer conjure.timer
-             config conjure.config
-             promise conjure.promise
-             editor conjure.editor
-             buffer conjure.buffer
-             inline conjure.inline
-             uuid conjure.uuid
-             log conjure.log
-             event conjure.event}})
-
-(defn- preview [opts]
+(fn preview [opts]
   (let [sample-limit (editor.percent-width
                        (config.get-in [:preview :sample_limit]))]
     (str.join
@@ -29,12 +27,12 @@
          (text.right-sample opts.file-path sample-limit)
          (text.left-sample opts.code sample-limit))])))
 
-(defn- display-request [opts]
+(fn display-request [opts]
   (log.append
     [opts.preview]
     (a.merge opts {:break? true})))
 
-(defn- highlight-range [range]
+(fn highlight-range [range]
   (when (and (config.get-in [:highlight :enabled])
              vim.highlight
              range)
@@ -58,7 +56,7 @@
                     bufnr namespace 0 -1)))
         (config.get-in [:highlight :timeout])))))
 
-(defn- with-last-result-hook [opts]
+(fn with-last-result-hook [opts]
   (let [buf (nvim.win_get_buf 0)
         line (a.dec (a.first (nvim.win_get_cursor 0)))]
     (a.update
@@ -82,7 +80,7 @@
                :line line}))
           (when f (f result)))))))
 
-(defn file []
+(fn file []
   (event.emit :eval :file)
   (let [opts {:file-path (fs.localise-path (extract.file-path))
               :origin :file
@@ -93,14 +91,14 @@
       :eval-file
       (with-last-result-hook opts))))
 
-(defn- assoc-context [opts]
+(fn assoc-context [opts]
   (when (not opts.context)
     (set opts.context
         (or nvim.b.conjure#context
             (extract.context))))
   opts)
 
-(defn- client-exec-fn [action f-name base-opts]
+(fn client-exec-fn [action f-name base-opts]
   (fn [opts]
     (let [opts (a.merge opts base-opts
                         {:action action
@@ -129,7 +127,7 @@
 
       (client.call f-name opts))))
 
-(defn- apply-gsubs [code]
+(fn apply-gsubs [code]
   (when code
     (a.reduce
       (fn [code [name [pat rep]]]
@@ -144,10 +142,10 @@
       (a.kv-pairs (or nvim.b.conjure#eval#gsubs
                       nvim.g.conjure#eval#gsubs)))))
 
-(defonce previous-evaluations
+(local previous-evaluations
   {})
 
-(defn eval-str [opts]
+(fn eval-str [opts]
   (a.assoc
     previous-evaluations
     (a.get (client.current-client-module-name) :module-name :unknown)
@@ -162,29 +160,29 @@
      (with-last-result-hook opts)))
   nil)
 
-(defn previous []
+(fn previous []
   (let [client-name (a.get (client.current-client-module-name) :module-name :unknown)
         opts (a.get previous-evaluations client-name)]
     (when opts
       (eval-str opts))))
 
-(defn wrap-emit [name f]
+(fn wrap-emit [name f]
   (fn [...]
     (event.emit name)
     (f ...)))
 
-(def- doc-str (wrap-emit
+(local doc-str (wrap-emit
                 :doc
                 (client-exec-fn :doc :doc-str)))
 
-(def- def-str (wrap-emit
+(local def-str (wrap-emit
                 :def
                 (client-exec-fn
                   :def :def-str
                   {:suppress-hud? true
                    :jumping? true})))
 
-(defn current-form [extra-opts]
+(fn current-form [extra-opts]
   (let [form (extract.form {})]
     (when form
       (let [{: content : range} form]
@@ -196,7 +194,7 @@
             extra-opts))
         form))))
 
-(defn replace-form []
+(fn replace-form []
   (let [buf (nvim.win_get_buf 0)
         win (nvim.tabpage_get_win 0)
         form (extract.form {})]
@@ -218,7 +216,7 @@
                (a.inc (a.get-in range [:start 2]))))})
         form))))
 
-(defn root-form []
+(fn root-form []
   (let [form (extract.form {:root? true})]
     (when form
       (let [{: content : range} form]
@@ -227,7 +225,7 @@
            :range range
            :origin :root-form})))))
 
-(defn marked-form [mark]
+(fn marked-form [mark]
   (let [comment-prefix (client.get :comment-prefix)
         mark (or mark (extract.prompt-char))
         (ok? err) (pcall #(editor.go-to-mark mark))]
@@ -240,7 +238,7 @@
                   {:break? true}))
     mark))
 
-(defn- insert-result-comment [tag input]
+(fn insert-result-comment [tag input]
   (let [buf (nvim.win_get_buf 0)
         comment-prefix (or
                          (config.get-in [:eval :comment_prefix])
@@ -261,16 +259,16 @@
                result))})
         input))))
 
-(defn comment-current-form []
+(fn comment-current-form []
   (insert-result-comment :current-form (extract.form {})))
 
-(defn comment-root-form []
+(fn comment-root-form []
   (insert-result-comment :root-form (extract.form {:root? true})))
 
-(defn comment-word []
+(fn comment-word []
   (insert-result-comment :word (extract.word)))
 
-(defn word []
+(fn word []
   (let [{: content : range} (extract.word)]
     (when (not (a.empty? content))
       (eval-str
@@ -278,7 +276,7 @@
          :range range
          :origin :word}))))
 
-(defn doc-word []
+(fn doc-word []
   (let [{: content : range} (extract.word)]
     (when (not (a.empty? content))
       (doc-str
@@ -286,7 +284,7 @@
          :range range
          :origin :word}))))
 
-(defn def-word []
+(fn def-word []
   (let [{: content : range} (extract.word)]
     (when (not (a.empty? content))
       (def-str
@@ -294,26 +292,26 @@
          :range range
          :origin :word}))))
 
-(defn buf []
+(fn buf []
   (let [{: content : range} (extract.buf)]
     (eval-str
       {:code content
        :range range
        :origin :buf})))
 
-(defn command [code]
+(fn command [code]
   (eval-str
     {:code code
      :origin :command}))
 
-(defn range [start end]
+(fn range [start end]
   (let [{: content : range} (extract.range start end)]
     (eval-str
       {:code content
        :range range
        :origin :range})))
 
-(defn selection [kind]
+(fn selection [kind]
   (let [{: content : range}
         (extract.selection
           {:kind (or kind (nvim.fn.visualmode))
@@ -323,12 +321,12 @@
        :range range
        :origin :selection})))
 
-(defn- wrap-completion-result [result]
+(fn wrap-completion-result [result]
   (if (a.string? result)
     {:word result}
     result))
 
-(defn completions [prefix cb]
+(fn completions [prefix cb]
   (fn cb-wrap [results]
     (cb (a.map
           wrap-completion-result
@@ -344,14 +342,37 @@
           (assoc-context)))
     (cb-wrap)))
 
-(defn completions-promise [prefix]
+(fn completions-promise [prefix]
   (let [p (promise.new)]
     (completions prefix (promise.deliver-fn p))
     p))
 
-(defn completions-sync [prefix]
+(fn completions-sync [prefix]
   (let [p (completions-promise prefix)]
     (promise.await p)
     (promise.close p)))
 
-*module*
+{
+ : file
+ : previous-evaluation
+ : eval-str
+ : previous
+ : wrap-emit
+ : current-form
+ : replace-form
+ : root-form
+ : marked-form
+ : comment-current-form
+ : comment-root-form
+ : comment-word
+ : word
+ : doc-word
+ : def-word
+ : buf
+ : command
+ : range
+ : selection
+ : completions
+ : completions-promise
+ : completions-sync
+ }

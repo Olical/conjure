@@ -1,13 +1,11 @@
-(import-macros {: module : def : defn : defonce : def- : defn- : defonce- : wrap-last-expr : wrap-module-body : deftest} :nfnl.macros.aniseed)
+(local {: autoload} (require :nfnl.module))
+(local a (autoload :conjure.aniseed.core))
+(local nvim (autoload :conjure.aniseed.nvim))
+(local uuid (autoload :conjure.uuid))
 
-(module conjure.promise
-  {autoload {a conjure.aniseed.core
-             nvim conjure.aniseed.nvim
-             uuid conjure.uuid}})
+(local state {})
 
-(defonce- state {})
-
-(defn new []
+(fn new []
   (let [id (uuid.v4)]
     (a.assoc
       state id
@@ -16,27 +14,34 @@
        :done? false})
     id))
 
-(defn done? [id]
+(fn done? [id]
   (a.get-in state [id :done?]))
 
-(defn deliver [id val]
+(fn deliver [id val]
   (when (= false (done? id))
     (a.assoc-in state [id :val] val)
     (a.assoc-in state [id :done?] true))
   nil)
 
-(defn deliver-fn [id]
+(fn deliver-fn [id]
   #(deliver id $1))
 
-(defn close [id]
+(fn close [id]
   (let [val (a.get-in state [id :val])]
     (a.assoc state id nil)
     val))
 
-(defn await [id opts]
+(fn await [id opts]
   (nvim.fn.wait
     (a.get opts :timeout 10000)
     (.. "luaeval(\"require('conjure.promise')['done?']('" id "')\")")
     (a.get opts :interval 50)))
 
-*module*
+{
+ : new
+ : done?
+ : deliver
+ : deliver-fn
+ : close
+ : await
+ }
