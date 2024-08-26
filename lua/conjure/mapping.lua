@@ -1,16 +1,16 @@
 -- [nfnl] Compiled from fnl/conjure/mapping.fnl by https://github.com/Olical/nfnl, do not edit.
 local _local_1_ = require("nfnl.module")
 local autoload = _local_1_["autoload"]
-local nvim = autoload("conjure.aniseed.nvim")
 local a = autoload("conjure.aniseed.core")
 local str = autoload("conjure.aniseed.string")
 local config = autoload("conjure.config")
 local log = autoload("conjure.log")
 local client = autoload("conjure.client")
 local eval = autoload("conjure.eval")
-local bridge = autoload("conjure.bridge")
+local inline = autoload("conjure.inline")
 local school = autoload("conjure.school")
 local util = autoload("conjure.util")
+local nvim = autoload("conjure.aniseed.nvim")
 local function cfg(k)
   return config["get-in"]({"mapping", k})
 end
@@ -25,10 +25,10 @@ local function buf(name_suffix, mapping_suffix, handler_fn, opts)
     local cmd = ("Conjure" .. name_suffix)
     local desc = (a.get(opts, "desc") or ("Executes the " .. cmd .. " command"))
     local mode = a.get(opts, "mode", "n")
-    nvim.create_user_command(cmd, handler_fn, a["merge!"]({force = true, desc = desc}, a.get(opts, "command-opts", {})))
+    vim.api.nvim_buf_create_user_command(a.get(opts, "buf", 0), cmd, handler_fn, a["merge!"]({force = true, desc = desc}, a.get(opts, "command-opts", {})))
     local function _3_()
       if (false ~= a.get(opts, "repeat?")) then
-        pcall(nvim.fn["repeat#set"], util["replace-termcodes"](mapping), 1)
+        pcall(vim.fn["repeat#set"], util["replace-termcodes"](mapping), 1)
       else
       end
       local _5_
@@ -37,9 +37,9 @@ local function buf(name_suffix, mapping_suffix, handler_fn, opts)
       else
         _5_ = ":"
       end
-      return nvim.ex.normal_(str.join({_5_, cmd, util["replace-termcodes"]("<cr>")}))
+      return vim.api.nvim_command(str.join({"normal! ", _5_, cmd, util["replace-termcodes"]("<cr>")}))
     end
-    return nvim.buf_set_keymap(a.get(opts, "buf", 0), mode, mapping, "", a["merge!"]({silent = true, noremap = true, desc = desc, callback = _3_}, a.get(opts, "mapping-opts", {})))
+    return vim.api.nvim_buf_set_keymap(a.get(opts, "buf", 0), mode, mapping, "", a["merge!"]({silent = true, noremap = true, desc = desc, callback = _3_}, a.get(opts, "mapping-opts", {})))
   else
     return nil
   end
@@ -55,9 +55,9 @@ local function on_filetype()
   buf("LogResetHard", cfg("log_reset_hard"), util["wrap-require-fn-call"]("conjure.log", "reset-hard"), {desc = "Hard reset log"})
   buf("LogJumpToLatest", cfg("log_jump_to_latest"), util["wrap-require-fn-call"]("conjure.log", "jump-to-latest"), {desc = "Jump to latest part of log"})
   local function _8_()
-    nvim.o.opfunc = "ConjureEvalMotionOpFunc"
+    vim.o.opfunc = "ConjureEvalMotionOpFunc"
     local function _9_()
-      return nvim.feedkeys("g@", "m", false)
+      return vim.api.nvim_feedkeys("g@", "m", false)
     end
     return client.schedule(_9_)
   end
@@ -82,7 +82,7 @@ local function on_filetype()
   do
     local fn_name = config["get-in"]({"completion", "omnifunc"})
     if fn_name then
-      nvim.ex.setlocal(("omnifunc=" .. fn_name))
+      vim.api.nvim_command(("setlocal omnifunc=" .. fn_name))
     else
     end
   end
@@ -98,12 +98,11 @@ local function on_quit()
   return log["close-hud"]()
 end
 local function init(filetypes)
-  nvim.ex.augroup("conjure_init_filetypes")
-  nvim.ex.autocmd_()
+  local group = vim.api.nvim_create_augroup("conjure_init_filetypes", {})
   if (true == config["get-in"]({"mapping", "enable_ft_mappings"})) then
-    nvim.ex.autocmd("FileType", str.join(",", filetypes), bridge["viml->lua"]("conjure.mapping", "on-filetype", {}))
+    vim.api.nvim_create_autocmd("FileType", {group = group, pattern = filetypes, callback = on_filetype})
     local function _13_(_241)
-      return (_241 == nvim.bo.filetype)
+      return (_241 == vim.bo.filetype)
     end
     if a.some(_13_, filetypes) then
       vim.schedule(on_filetype)
@@ -111,14 +110,13 @@ local function init(filetypes)
     end
   else
   end
-  nvim.ex.autocmd("CursorMoved", "*", bridge["viml->lua"]("conjure.log", "close-hud-passive", {}))
-  nvim.ex.autocmd("CursorMovedI", "*", bridge["viml->lua"]("conjure.log", "close-hud-passive", {}))
-  nvim.ex.autocmd("CursorMoved", "*", bridge["viml->lua"]("conjure.inline", "clear", {}))
-  nvim.ex.autocmd("CursorMovedI", "*", bridge["viml->lua"]("conjure.inline", "clear", {}))
-  nvim.ex.autocmd("VimLeavePre", "*", bridge["viml->lua"]("conjure.log", "clear-close-hud-passive-timer", {}))
-  nvim.ex.autocmd("VimLeavePre", "*", bridge["viml->lua"]("conjure.mapping", "on-exit"))
-  nvim.ex.autocmd("QuitPre", "*", bridge["viml->lua"]("conjure.mapping", "on-quit"))
-  return nvim.ex.augroup("END")
+  vim.api.nvim_create_autocmd("CursorMoved", {group = group, pattern = "*", callback = log["close-hud-passive"]})
+  vim.api.nvim_create_autocmd("CursorMovedI", {group = group, pattern = "*", callback = log["close-hud-passive"]})
+  vim.api.nvim_create_autocmd("CursorMoved", {group = group, pattern = "*", callback = inline.clear})
+  vim.api.nvim_create_autocmd("CursorMovedI", {group = group, pattern = "*", callback = inline.clear})
+  vim.api.nvim_create_autocmd("VimLeavePre", {group = group, pattern = "*", callback = log["clear-close-hud-passive-timer"]})
+  vim.api.nvim_create_autocmd("VimLeavePre", {group = group, pattern = "*", callback = on_exit})
+  return vim.api.nvim_create_autocmd("QuitPre", {group = group, pattern = "*", callback = on_quit})
 end
 local function eval_ranged_command(start, _end, code)
   if ("" == code) then
@@ -152,32 +150,32 @@ local function client_state_command(state_key)
 end
 local function omnifunc(find_start_3f, base)
   if find_start_3f then
-    local _let_20_ = nvim.win_get_cursor(0)
+    local _let_20_ = vim.api.nvim_win_get_cursor(0)
     local row = _let_20_[1]
     local col = _let_20_[2]
-    local _let_21_ = nvim.buf_get_lines(0, a.dec(row), row, false)
+    local _let_21_ = vim.api.nvim_buf_get_lines(0, a.dec(row), row, false)
     local line = _let_21_[1]
-    return (col - a.count(nvim.fn.matchstr(string.sub(line, 1, col), "\\k\\+$")))
+    return (col - a.count(vim.fn.matchstr(string.sub(line, 1, col), "\\k\\+$")))
   else
     return eval["completions-sync"](base)
   end
 end
-nvim.ex.function_(str.join("\n", {"ConjureEvalMotionOpFunc(kind)", "call luaeval(\"require('conjure.eval')['selection'](_A)\", a:kind)", "endfunction"}))
-nvim.ex.function_(str.join("\n", {"ConjureOmnifunc(findstart, base)", "return luaeval(\"require('conjure.mapping')['omnifunc'](_A[1] == 1, _A[2])\", [a:findstart, a:base])", "endfunction"}))
+vim.api.nvim_command(str.join("\n", {"function! ConjureEvalMotionOpFunc(kind)", "call luaeval(\"require('conjure.eval')['selection'](_A)\", a:kind)", "endfunction"}))
+vim.api.nvim_command(str.join("\n", {"function! ConjureOmnifunc(findstart, base)", "return luaeval(\"require('conjure.mapping')['omnifunc'](_A[1] == 1, _A[2])\", [a:findstart, a:base])", "endfunction"}))
 local function _23_(_241)
   return eval_ranged_command(_241.line1, _241.line2, _241.args)
 end
-nvim.create_user_command("ConjureEval", _23_, {nargs = "?", range = true})
+vim.api.nvim_create_user_command("ConjureEval", _23_, {nargs = "?", range = true})
 local function _24_(_241)
   return connect_command(unpack(_241.fargs))
 end
-nvim.create_user_command("ConjureConnect", _24_, {nargs = "*", range = true, complete = "file"})
+vim.api.nvim_create_user_command("ConjureConnect", _24_, {nargs = "*", range = true, complete = "file"})
 local function _25_(_241)
   return client_state_command(_241.args)
 end
-nvim.create_user_command("ConjureClientState", _25_, {nargs = "?"})
+vim.api.nvim_create_user_command("ConjureClientState", _25_, {nargs = "?"})
 local function _26_()
   return school.start()
 end
-nvim.create_user_command("ConjureSchool", _26_, {})
+vim.api.nvim_create_user_command("ConjureSchool", _26_, {})
 return {buf = buf, ["on-filetype"] = on_filetype, ["on-exit"] = on_exit, ["on-quit"] = on_quit, init = init, ["eval-ranged-command"] = eval_ranged_command, ["connect-command"] = connect_command, ["client-state-command"] = client_state_command, omnifunc = omnifunc}

@@ -1,14 +1,15 @@
 (local {: autoload} (require :nfnl.module))
-(local nvim (autoload :conjure.aniseed.nvim))
 (local a (autoload :conjure.aniseed.core))
 (local str (autoload :conjure.aniseed.string))
 (local config (autoload :conjure.config))
 (local log (autoload :conjure.log))
 (local client (autoload :conjure.client))
 (local eval (autoload :conjure.eval))
-(local bridge (autoload :conjure.bridge))
+(local inline (autoload :conjure.inline))
 (local school (autoload :conjure.school))
 (local util (autoload :conjure.util))
+
+(local nvim (autoload :conjure.aniseed.nvim))
 
 (fn cfg [k]
   (config.get-in [:mapping k]))
@@ -32,13 +33,13 @@
           cmd (.. :Conjure name-suffix)
           desc (or (a.get opts :desc) (.. "Executes the " cmd " command"))
           mode (a.get opts :mode :n)]
-      (nvim.create_user_command
-        cmd handler-fn
+      (vim.api.nvim_buf_create_user_command
+        (a.get opts :buf 0) cmd handler-fn
         (a.merge!
           {:force true
            :desc desc}
           (a.get opts :command-opts {})))
-      (nvim.buf_set_keymap
+      (vim.api.nvim_buf_set_keymap
         (a.get opts :buf 0)
         mode
         mapping
@@ -50,17 +51,19 @@
            :callback (fn []
                        (when (not= false (a.get opts :repeat?))
                          (pcall
-                           nvim.fn.repeat#set
+                           vim.fn.repeat#set
                            (util.replace-termcodes mapping)
                            1))
 
                        ;; Have to call like this to pass visual selections through.
-                       (nvim.ex.normal_ (str.join
-                                          [(if (= :n mode)
-                                             (util.replace-termcodes "<cmd>")
-                                             ":")
-                                           cmd
-                                           (util.replace-termcodes "<cr>")])))}
+                       (vim.api.nvim_command
+                         (str.join
+                           ["normal! "
+                            (if (= :n mode)
+                              (util.replace-termcodes "<cmd>")
+                              ":")
+                            cmd
+                            (util.replace-termcodes "<cr>")])))}
           (a.get opts :mapping-opts {}))))))
 
 (fn on-filetype []
@@ -112,10 +115,10 @@
   (buf
     :EvalMotion (cfg :eval_motion)
     (fn []
-      (set nvim.o.opfunc :ConjureEvalMotionOpFunc)
+      (set vim.o.opfunc :ConjureEvalMotionOpFunc)
 
       ;; Doesn't work unless we schedule it :( this might break some things.
-      (client.schedule #(nvim.feedkeys "g@" :m false)))
+      (client.schedule #(vim.api.nvim_feedkeys "g@" :m false)))
     {:desc "Evaluate motion"})
 
   (buf
@@ -193,7 +196,7 @@
 
   (let [fn-name (config.get-in [:completion :omnifunc])]
     (when fn-name
-      (nvim.ex.setlocal (.. "omnifunc=" fn-name))))
+      (vim.api.nvim_command (.. "setlocal omnifunc=" fn-name))))
 
   (client.optional-call :on-filetype))
 
@@ -204,38 +207,60 @@
   (log.close-hud))
 
 (fn init [filetypes]
-  (nvim.ex.augroup :conjure_init_filetypes)
-  (nvim.ex.autocmd_)
+  (local group (vim.api.nvim_create_augroup "conjure_init_filetypes" {}))
   (when (= true (config.get-in [:mapping :enable_ft_mappings]))
-    (nvim.ex.autocmd
-      :FileType (str.join "," filetypes)
-      (bridge.viml->lua :conjure.mapping :on-filetype {}))
+    (vim.api.nvim_create_autocmd
+      :FileType
+      {: group
+       :pattern filetypes
+       :callback on-filetype})
 
-    ;; If we're in a target filetype right now, immidiately invoke on-filetype.
+    ;; If we're in a target filetype right now, immediately invoke on-filetype.
     ;; It means we've lazy loaded Conjure and it's loaded after the Filetype autocmd executed.
-    (when (a.some #(= $ nvim.bo.filetype) filetypes)
+    (when (a.some #(= $ vim.bo.filetype) filetypes)
       (vim.schedule on-filetype)))
 
-  (nvim.ex.autocmd
-    :CursorMoved :*
-    (bridge.viml->lua :conjure.log :close-hud-passive {}))
-  (nvim.ex.autocmd
-    :CursorMovedI :*
-    (bridge.viml->lua :conjure.log :close-hud-passive {}))
+  (vim.api.nvim_create_autocmd
+    :CursorMoved
+    {: group
+     :pattern "*"
+     :callback log.close-hud-passive})
 
-  (nvim.ex.autocmd
-    :CursorMoved :*
-    (bridge.viml->lua :conjure.inline :clear {}))
-  (nvim.ex.autocmd
-    :CursorMovedI :*
-    (bridge.viml->lua :conjure.inline :clear {}))
+  (vim.api.nvim_create_autocmd
+    :CursorMovedI
+    {: group
+     :pattern "*"
+     :callback log.close-hud-passive})
 
-  (nvim.ex.autocmd
-    :VimLeavePre :*
-    (bridge.viml->lua :conjure.log :clear-close-hud-passive-timer {}))
-  (nvim.ex.autocmd :VimLeavePre :* (bridge.viml->lua :conjure.mapping :on-exit))
-  (nvim.ex.autocmd :QuitPre :* (bridge.viml->lua :conjure.mapping :on-quit))
-  (nvim.ex.augroup :END))
+  (vim.api.nvim_create_autocmd
+    :CursorMoved
+    {: group
+     :pattern "*"
+     :callback inline.clear})
+
+  (vim.api.nvim_create_autocmd
+    :CursorMovedI
+    {: group
+     :pattern "*"
+     :callback inline.clear})
+
+  (vim.api.nvim_create_autocmd
+    :VimLeavePre
+    {: group
+     :pattern "*"
+     :callback log.clear-close-hud-passive-timer})
+
+  (vim.api.nvim_create_autocmd
+    :VimLeavePre
+    {: group
+     :pattern "*"
+     :callback on-exit})
+
+  (vim.api.nvim_create_autocmd
+    :QuitPre
+    {: group
+     :pattern "*"
+     :callback on-quit}))
 
 (fn eval-ranged-command [start end code]
   (if (= "" code)
@@ -261,45 +286,46 @@
 
 (fn omnifunc [find-start? base]
   (if find-start?
-    (let [[row col] (nvim.win_get_cursor 0)
-          [line] (nvim.buf_get_lines 0 (a.dec row) row false)]
+    (let [[row col] (vim.api.nvim_win_get_cursor 0)
+          [line] (vim.api.nvim_buf_get_lines 0 (a.dec row) row false)]
       (- col
-         (a.count (nvim.fn.matchstr
+         (a.count (vim.fn.matchstr
                     (string.sub line 1 col)
                     "\\k\\+$"))))
     (eval.completions-sync base)))
 
-(nvim.ex.function_
-  (->> ["ConjureEvalMotionOpFunc(kind)"
+;; TOOD Maybe we don't need this now we can pass fn refs?
+(vim.api.nvim_command
+  (->> ["function! ConjureEvalMotionOpFunc(kind)"
         "call luaeval(\"require('conjure.eval')['selection'](_A)\", a:kind)"
         "endfunction"]
        (str.join "\n")))
 
-(nvim.ex.function_
-  (->> ["ConjureOmnifunc(findstart, base)"
+(vim.api.nvim_command
+  (->> ["function! ConjureOmnifunc(findstart, base)"
         "return luaeval(\"require('conjure.mapping')['omnifunc'](_A[1] == 1, _A[2])\", [a:findstart, a:base])"
         "endfunction"]
        (str.join "\n")))
 
-(nvim.create_user_command
+(vim.api.nvim_create_user_command
   "ConjureEval"
   #(eval-ranged-command (. $ :line1) (. $ :line2) (. $ :args))
   {:nargs "?"
    :range true })
 
-(nvim.create_user_command
+(vim.api.nvim_create_user_command
   "ConjureConnect"
   #(connect-command (unpack (. $ :fargs)))
   {:nargs "*"
    :range true
    :complete :file})
 
-(nvim.create_user_command
+(vim.api.nvim_create_user_command
   "ConjureClientState"
   #(client-state-command (. $ :args))
   {:nargs "?"})
 
-(nvim.create_user_command
+(vim.api.nvim_create_user_command
   "ConjureSchool"
   #(school.start)
   {})

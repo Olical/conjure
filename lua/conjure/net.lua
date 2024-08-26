@@ -47,10 +47,6 @@ end
 local function destroy_all_socks()
   return a["run!"](destroy_sock, state["sock-drawer"])
 end
-do
-  nvim.ex.augroup("conjure-net-sock-cleanup")
-  nvim.ex.autocmd_()
-  nvim.ex.autocmd("VimLeavePre", "*", bridge["viml->lua"]("conjure.net", "destroy-all-socks"))
-  nvim.ex.augroup("END")
-end
+local group = vim.api.nvim_create_augroup("conjure-net-sock-cleanup", {})
+vim.api.nvim_create_autocmd("VimLeavePre", {group = group, pattern = "*", callback = destroy_all_socks})
 return {resolve = resolve, connect = connect}

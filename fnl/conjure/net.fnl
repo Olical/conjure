@@ -40,13 +40,15 @@
      :host host
      :port port}))
 
-;; Used through a string reference in a viml->lua call that we should refactor away.
 (fn destroy-all-socks []
   (a.run! destroy-sock state.sock-drawer))
 
-(augroup
-  conjure-net-sock-cleanup
-  (autocmd :VimLeavePre :* (bridge.viml->lua :conjure.net :destroy-all-socks)))
+(local group (vim.api.nvim_create_augroup "conjure-net-sock-cleanup" {}))
+(vim.api.nvim_create_autocmd
+  :VimLeavePre
+  {: group
+   :pattern "*"
+   :callback destroy-all-socks})
 
 {: resolve
  : connect}
