@@ -1,14 +1,11 @@
 (local {: autoload} (require :nfnl.module))
 (local a (autoload :conjure.aniseed.core))
-(local nvim (autoload :conjure.aniseed.nvim))
 (local str (autoload :conjure.aniseed.string))
 (local client (autoload :conjure.client))
 (local log (autoload :conjure.log))
 (local stdio (autoload :conjure.remote.stdio-rt))
 (local config (autoload :conjure.config))
-(local text (autoload :conjure.text))
 (local mapping (autoload :conjure.mapping))
-(local ts (autoload :conjure.tree-sitter))
 
 (import-macros {: augroup : autocmd} :conjure.macros)
 

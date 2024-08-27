@@ -2,15 +2,12 @@
 local _local_1_ = require("nfnl.module")
 local autoload = _local_1_["autoload"]
 local a = autoload("conjure.aniseed.core")
-local nvim = autoload("conjure.aniseed.nvim")
 local str = autoload("conjure.aniseed.string")
 local client = autoload("conjure.client")
 local log = autoload("conjure.log")
 local stdio = autoload("conjure.remote.stdio-rt")
 local config = autoload("conjure.config")
-local text = autoload("conjure.text")
 local mapping = autoload("conjure.mapping")
-local ts = autoload("conjure.tree-sitter")
 config.merge({client = {sql = {stdio = {command = "psql postgres://postgres:postgres@localhost/postgres", prompt_pattern = "=> "}}}})
 if config["get-in"]({"mapping", "enable_defaults"}) then
   config.merge({client = {sql = {stdio = {mapping = {start = "cs", stop = "cS", interrupt = "ei"}}}}})
