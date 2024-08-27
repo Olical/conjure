@@ -1,4 +1,15 @@
-(import-macros {: module : def : defn : defonce : def- : defn- : defonce- : wrap-last-expr : wrap-module-body : deftest} :nfnl.macros.aniseed)
+(local {: autoload} (require :nfnl.module))
+(local a (autoload :conjure.aniseed.core))
+(local nvim (autoload :conjure.aniseed.nvim))
+(local str (autoload :conjure.aniseed.string))
+(local client (autoload :conjure.client))
+(local log (autoload :conjure.log))
+(local stdio (autoload :conjure.remote.stdio-rt))
+(local config (autoload :conjure.config))
+(local mapping (autoload :conjure.mapping))
+(local ts (autoload :conjure.tree-sitter))
+
+(import-macros {: augroup : autocmd} :conjure.macros)
 
 ;;------------------------------------------------------------
 ;; A client for snd/s7 (sound editor with s7 scheme scripting)
@@ -17,18 +28,6 @@
 ;;
 ;;------------------------------------------------------------
 
-(module conjure.client.snd-s7.stdio
-  {autoload {a conjure.aniseed.core
-             str conjure.aniseed.string
-             nvim conjure.aniseed.nvim
-             stdio conjure.remote.stdio-rt
-             config conjure.config
-             mapping conjure.mapping
-             client conjure.client
-             log conjure.log
-             ts conjure.tree-sitter}
-   require-macros [conjure.macros]})
-
 (config.merge
   {:client
    {:snd-s7
@@ -45,37 +44,35 @@
                   :stop "cS"
                   :interrupt "ei"}}}}}))
 
-(def- cfg (config.get-in-fn [:client :snd-s7 :stdio]))
+(local cfg (config.get-in-fn [:client :snd-s7 :stdio]))
+(local state (client.new-state #(do {:repl nil})))
+(local buf-suffix ".scm")
+(local comment-prefix "; ")
+(local form-node? ts.node-surrounded-by-form-pair-chars?)
 
-(defonce- state (client.new-state #(do {:repl nil})))
-
-(def buf-suffix ".scm")
-(def comment-prefix "; ")
-(def form-node? ts.node-surrounded-by-form-pair-chars?)
-
-(defn- with-repl-or-warn [f opts]
+(fn with-repl-or-warn [f opts]
   (let [repl (state :repl)]
     (if repl
       (f repl)
       (log.append [(.. comment-prefix "No REPL running")]))))
 
 ;;;;-------- from client/sql/stdio.fnl ----------------------
-(defn- format-message [msg]
+(fn format-message [msg]
   (str.split (or msg.out msg.err) "\n"))
 
-(defn- remove-blank-lines [msg]
+(fn remove-blank-lines [msg]
   (->> (format-message msg)
        (a.filter #(not (= "" $1)))))
 
-(defn- display-result [msg]
+(fn display-result [msg]
   (log.append (remove-blank-lines msg)))
 
-(defn ->list [s]
+(fn ->list [s]
   (if (a.first s)
     s
     [s]))
 
-(defn eval-str [opts]
+(fn eval-str [opts]
   (with-repl-or-warn
     (fn [repl]
       (repl.send
@@ -89,30 +86,31 @@
         {:batch? false}))))
 ;;;;-------- End from client/sql/stdio.fnl ------------------
 
-(defn eval-file [opts]
+(fn eval-file [opts]
   (eval-str (a.assoc opts :code (.. "(load \"" opts.file-path "\")"))))
 
-(defn interrupt []
+(fn interrupt []
   (with-repl-or-warn
     (fn [repl]
       (log.append [(.. comment-prefix " Sending interrupt signal.")] {:break? true})
       (repl.send-signal vim.loop.constants.SIGINT))))
 
-(defn- display-repl-status [status]
+(fn display-repl-status [status]
   (log.append
     [(.. comment-prefix
          (cfg [:command])
          " (" (or status "no status") ")")]
     {:break? true}))
 
-(defn stop []
+(fn stop []
   (let [repl (state :repl)]
     (when repl
       (repl.destroy)
       (display-repl-status :stopped)
       (a.assoc (state) :repl nil))))
 
-(defn start []
+(fn start []
+  (log.append [(.. comment-prefix "Starting snd-s7 client...")])
   (if (state :repl)
     (log.append [(.. comment-prefix "Can't start, REPL is already running.")
                  (.. comment-prefix "Stop the REPL with "
@@ -145,13 +143,14 @@
          (fn [msg]
            (log.append (format-msg msg)))}))))
 
-(defn on-load []
-  (start))
+(fn on-load []
+  (when (config.get-in [:client_on_load])
+  (start)))
 
-(defn on-exit []
+(fn on-exit []
   (stop))
 
-(defn on-filetype []
+(fn on-filetype []
   (mapping.buf
     :SndStart (cfg [:mapping :start])
     start
@@ -167,4 +166,15 @@
     interrupt
     {:desc "Interrupt the REPL"}))
 
-*module*
+{: buf-suffix
+ : comment-prefix
+ : form-node?
+ : ->list
+ : eval-str
+ : eval-file
+ : interrupt
+ : stop
+ : start
+ : on-load
+ : on-exit
+ : on-filetype}
