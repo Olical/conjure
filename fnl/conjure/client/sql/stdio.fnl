@@ -7,8 +7,6 @@
 (local config (autoload :conjure.config))
 (local mapping (autoload :conjure.mapping))
 
-(import-macros {: augroup : autocmd} :conjure.macros)
-
 ;;------------------------------------------------------------
 ;; Based on fnl/conjure/client/fennel/stdio.fnl.
 ;;
