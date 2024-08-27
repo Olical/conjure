@@ -9,8 +9,6 @@
 (local mapping (autoload :conjure.mapping))
 (local ts (autoload :conjure.tree-sitter))
 
-(import-macros {: augroup : autocmd} :conjure.macros)
-
 ;;------------------------------------------------------------
 ;; A client for snd/s7 (sound editor with s7 scheme scripting)
 ;;
