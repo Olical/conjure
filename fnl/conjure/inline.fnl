@@ -1,9 +1,8 @@
 (local {: autoload} (require :nfnl.module))
 (local a (autoload :conjure.aniseed.core))
 (local config (autoload :conjure.config))
-(local nvim (autoload :conjure.aniseed.nvim))
 
-(local ns-id (nvim.create_namespace :conjure.inline))
+(local ns-id (vim.api.nvim_create_namespace :conjure.inline))
 
 (fn sanitise-text [s]
   (if (a.string? s)
@@ -15,7 +14,7 @@
   is the current buffer."
   (pcall
     (fn []
-      (nvim.buf_clear_namespace (a.get opts :buf 0) ns-id 0 -1))))
+      (vim.api.nvim_buf_clear_namespace (a.get opts :buf 0) ns-id 0 -1))))
 
 (fn display [opts]
   "Display virtual text for opts.buf on opts.line containing opts.text."
@@ -23,13 +22,11 @@
   (pcall
     (fn []
       (clear)
-      (nvim.buf_set_virtual_text
+      (vim.api.nvim_buf_set_virtual_text
         (a.get opts :buf 0) ns-id opts.line
         [[(sanitise-text opts.text) hl-group]]
         {}))))
 
-{
- : sanitise-text
+{: sanitise-text
  : clear
- : display
- }
+ : display}

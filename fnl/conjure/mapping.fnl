@@ -9,8 +9,6 @@
 (local school (autoload :conjure.school))
 (local util (autoload :conjure.util))
 
-(local nvim (autoload :conjure.aniseed.nvim))
-
 (fn cfg [k]
   (config.get-in [:mapping k]))
 
@@ -206,6 +204,12 @@
 (fn on-quit []
   (log.close-hud))
 
+(fn autocmd-callback [f]
+  ;; Wraps an autocmd callback to ensure it returns nil because if we return anything truthy Neovim now deletes the autocmd.
+  (fn [ev]
+    (f ev)
+    nil))
+
 (fn init [filetypes]
   (local group (vim.api.nvim_create_augroup "conjure_init_filetypes" {}))
   (when (= true (config.get-in [:mapping :enable_ft_mappings]))
@@ -213,7 +217,7 @@
       :FileType
       {: group
        :pattern filetypes
-       :callback on-filetype})
+       :callback (autocmd-callback on-filetype)})
 
     ;; If we're in a target filetype right now, immediately invoke on-filetype.
     ;; It means we've lazy loaded Conjure and it's loaded after the Filetype autocmd executed.
@@ -224,43 +228,43 @@
     :CursorMoved
     {: group
      :pattern "*"
-     :callback log.close-hud-passive})
+     :callback (autocmd-callback log.close-hud-passive)})
 
   (vim.api.nvim_create_autocmd
     :CursorMovedI
     {: group
      :pattern "*"
-     :callback log.close-hud-passive})
+     :callback (autocmd-callback log.close-hud-passive)})
 
   (vim.api.nvim_create_autocmd
     :CursorMoved
     {: group
      :pattern "*"
-     :callback inline.clear})
+     :callback (autocmd-callback inline.clear)})
 
   (vim.api.nvim_create_autocmd
     :CursorMovedI
     {: group
      :pattern "*"
-     :callback inline.clear})
+     :callback (autocmd-callback inline.clear)})
 
   (vim.api.nvim_create_autocmd
     :VimLeavePre
     {: group
      :pattern "*"
-     :callback log.clear-close-hud-passive-timer})
+     :callback (autocmd-callback log.clear-close-hud-passive-timer)})
 
   (vim.api.nvim_create_autocmd
     :VimLeavePre
     {: group
      :pattern "*"
-     :callback on-exit})
+     :callback (autocmd-callback on-exit)})
 
   (vim.api.nvim_create_autocmd
     :QuitPre
     {: group
      :pattern "*"
-     :callback on-quit}))
+     :callback (autocmd-callback on-quit)}))
 
 (fn eval-ranged-command [start end code]
   (if (= "" code)
