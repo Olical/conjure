@@ -169,8 +169,7 @@
     interrupt
     {:desc "Interrupt the current REPL"}))
 
-{
- : buf-suffix
+{: buf-suffix
  : comment-prefix
  : form-node?
  : comment-node?
@@ -182,5 +181,4 @@
  : start
  : on-load
  : on-exit
- : on-filetype
- }
+ : on-filetype}
