@@ -1,19 +1,15 @@
-(import-macros {: module : def : defn : defonce : def- : defn- : defonce- : wrap-last-expr : wrap-module-body : deftest} :nfnl.macros.aniseed)
-
-(module conjure.client.python.stdio
-  {autoload {a conjure.aniseed.core
-             extract conjure.extract
-             str conjure.aniseed.string
-             nvim conjure.aniseed.nvim
-             stdio conjure.remote.stdio
-             config conjure.config
-             text conjure.text
-             mapping conjure.mapping
-             client conjure.client
-             log conjure.log
-             ts conjure.tree-sitter
-             b64 conjure.remote.transport.base64}
-   require-macros [conjure.macros]})
+(local {: autoload} (require :nfnl.module))
+(local a (autoload :conjure.aniseed.core))
+(local extract (autoload :conjure.extract))
+(local str (autoload :conjure.aniseed.string))
+(local stdio (autoload :conjure.remote.stdio))
+(local config (autoload :conjure.config))
+(local text (autoload :conjure.text))
+(local mapping (autoload :conjure.mapping))
+(local client (autoload :conjure.client))
+(local log (autoload :conjure.log))
+(local ts (autoload :conjure.tree-sitter))
+(local b64 (autoload :conjure.remote.transport.base64))
 
 (config.merge
   {:client
@@ -32,17 +28,15 @@
                   :stop "cS"
                   :interrupt "ei"}}}}}))
 
-(def- cfg (config.get-in-fn [:client :python :stdio]))
-
-(defonce- state (client.new-state #(do {:repl nil})))
-
-(def buf-suffix ".py")
-(def comment-prefix "# ")
+(local cfg (config.get-in-fn [:client :python :stdio]))
+(local state (client.new-state #(do {:repl nil})))
+(local buf-suffix ".py")
+(local comment-prefix "# ")
 
 ; These types of nodes are roughly equivalent to Lisp forms.
 ; This should make it more intuitive to use <localLeader>ee to evaluate the
 ; "current form" and not be surprised that it wasn't what you thought.
-(defn form-node?
+(fn form-node?
   [node]
   (or (= "expression_statement" (node:type))
       (= "import_statement" (node:type))
@@ -52,7 +46,7 @@
       (= "for_statement" (node:type))
       (= "call" (node:type))))
 
-(defn- with-repl-or-warn [f opts]
+(fn with-repl-or-warn [f opts]
   (let [repl (state :repl)]
     (if repl
       (f repl)
@@ -66,13 +60,13 @@
 ; Returns whether a given expression node is an assignment expression
 ; An assignment expression seems to be a weird case where it does not actually
 ; evaluate to anything so it seems more like a statement
-(defn is-assignment?
+(fn is-assignment?
   [node]
   (and (= (node:child_count) 1)
        (let [child (node:child 0)]
          (= (child:type) "assignment"))))
 
-(defn is-expression?
+(fn is-expression?
   [node]
   (and (= "expression_statement" (node:type))
        (not (is-assignment? node))))
@@ -104,7 +98,7 @@
 ; for this. Another option that I have seen used in some other similar projects is sending the statement
 ; as a "bracketed paste" (https://cirw.in/blog/bracketed-paste) so the REPL treats the input as if it were
 ; "pasted", but I couldn't get this working.
-(defn str-is-python-expr?
+(fn str-is-python-expr?
   [s]
   (let [parser (vim.treesitter.get_string_parser s "python")
         result (parser:parse)
@@ -113,11 +107,11 @@
     (and (= 1 (root:child_count))
          (is-expression? (root:child 0)))))
 
-(defn- get-exec-str
+(fn get-exec-str
   [s]
   (.. "import base64\nexec(base64.b64decode('" (b64.encode s) "'))\n"))
 
-(defn- prep-code [s]
+(fn prep-code [s]
   (let [python-expr (str-is-python-expr? s)]
     (if python-expr
       (.. s "\n")
@@ -131,31 +125,31 @@
 ;   print("... <-- check out those dots")
 ; the output will be flagged as one of these special "dots" lines. This could probably
 ; be smarter, but will work for most normal cases for now.
-(defn- is-dots? [s]
+(fn is-dots? [s]
   (= (string.sub s 1 3) "..."))
 
-(defn format-msg [msg]
+(fn format-msg [msg]
   (->> (text.split-lines msg)
        (a.filter #(~= "" $1))
        (a.filter #(not (is-dots? $1)))))
 
-(defn- get-console-output-msgs [msgs]
+(fn get-console-output-msgs [msgs]
   (->> (a.butlast msgs)
        (a.map #(.. comment-prefix "(out) " $1))))
 
-(defn- get-expression-result [msgs]
+(fn get-expression-result [msgs]
   (let [result (a.last msgs)]
     (if
       (or (a.nil? result) (is-dots? result))
       nil
       result)))
 
-(defn unbatch [msgs]
+(fn unbatch [msgs]
   (->> msgs
        (a.map #(or (a.get $1 :out) (a.get $1 :err)))
        (str.join "")))
 
-(defn- log-repl-output [msgs]
+(fn log-repl-output [msgs]
   (let [msgs (-> msgs unbatch format-msg)
         console-output-msgs (get-console-output-msgs msgs)
         cmd-result (get-expression-result msgs)]
@@ -164,7 +158,7 @@
     (when cmd-result
       (log.append [cmd-result]))))
 
-(defn eval-str [opts]
+(fn eval-str [opts]
   (with-repl-or-warn
     (fn [repl]
       (repl.send
@@ -177,31 +171,31 @@
               (opts.on-result cmd-result))))
         {:batch? true}))))
 
-(defn eval-file [opts]
+(fn eval-file [opts]
   (eval-str (a.assoc opts :code (a.slurp opts.file-path))))
 
-(defn get-help [code]
+(fn get-help [code]
   (str.join "" ["help(" (str.trim code) ")"]))
 
-(defn doc-str [opts]
+(fn doc-str [opts]
   (when (str-is-python-expr? opts.code)
     (eval-str (a.assoc opts :code (get-help opts.code)))))
 
-(defn- display-repl-status [status]
+(fn display-repl-status [status]
   (let [repl (state :repl)]
     (when repl
       (log.append
         [(.. comment-prefix (a.pr-str (a.get-in repl [:opts :cmd])) " (" status ")")]
         {:break? true}))))
 
-(defn stop []
+(fn stop []
   (let [repl (state :repl)]
     (when repl
       (repl.destroy)
       (display-repl-status :stopped)
       (a.assoc (state) :repl nil))))
 
-(def initialise-repl-code
+(local initialise-repl-code
   ;; By default, there is no way for us to tell the difference between
   ;; normal stdout log messages and the result of the expression we evaluated.
   ;; This is because if an expression results in the literal value None, the python
@@ -219,7 +213,8 @@
      "sys.displayhook = conjure_format_output\n"
      "__name__ = '__repl__'"]))
 
-(defn start []
+(fn start []
+  (log.append [(.. comment-prefix "Starting Python client...")])
   (if (state :repl)
     (log.append [(.. comment-prefix "Can't start, REPL is already running.")
                  (.. comment-prefix "Stop the REPL with "
@@ -265,22 +260,22 @@
            (fn [msg]
              (log.dbg (-> [msg] unbatch format-msg) {:join-first? true}))})))))
 
-(defn on-load []
+(fn on-load []
   (if (config.get-in [:client_on_load])
-    (do
+    (do ; FIXME: Can we remove the do?
       (start))
     (log.append ["Not starting repl"])))
 
-(defn on-exit []
+(fn on-exit []
   (stop))
 
-(defn interrupt []
+(fn interrupt []
   (with-repl-or-warn
     (fn [repl]
       (log.append [(.. comment-prefix " Sending interrupt signal.")] {:break? true})
       (repl.send-signal vim.loop.constants.SIGINT))))
 
-(defn on-filetype []
+(fn on-filetype []
   (mapping.buf
     :PythonStart (cfg [:mapping :start])
     start
@@ -296,4 +291,22 @@
     interrupt
     {:desc "Interrupt the current evaluation"}))
 
-*module*
+{: buf-suffix
+ : comment-prefix
+ : form-node?
+ : is-assignment?
+ : is-expression?
+ : str-is-python-expr?
+ : format-msg
+ : unbatch
+ : eval-str
+ : eval-file
+ : get-help
+ : doc-str
+ : stop
+ : initialise-repl-code
+ : start
+ : on-load
+ : on-exit
+ : interrupt
+ : on-filetype }
