@@ -1,16 +1,4 @@
 -- [nfnl] Compiled from fnl/conjure/remote/transport/base64.fnl by https://github.com/Olical/nfnl, do not edit.
-local _2amodule_name_2a = "conjure.remote.transport.base64"
-local _2amodule_2a
-do
-  _G.package.loaded[_2amodule_name_2a] = {}
-  _2amodule_2a = _G.package.loaded[_2amodule_name_2a]
-end
-local _2amodule_locals_2a
-do
-  _2amodule_2a["aniseed/locals"] = {}
-  _2amodule_locals_2a = (_2amodule_2a)["aniseed/locals"]
-end
-do local _ = {nil, nil, nil} end
 local b = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
 local function encode(data)
   local function _1_(x)
@@ -31,10 +19,8 @@ local function encode(data)
     end
     return b:sub((c + 1), (c + 1))
   end
-  return (((data:gsub(".", _1_) .. "0000")):gsub("%d%d%d?%d?%d?%d?", _2_) .. ({"", "==", "="})[((#data % 3) + 1)])
+  return ((data:gsub(".", _1_) .. "0000"):gsub("%d%d%d?%d?%d?%d?", _2_) .. ({"", "==", "="})[((#data % 3) + 1)])
 end
-_2amodule_2a["encode"] = encode
-do local _ = {encode, nil} end
 local function decode(data)
   data = string.gsub(data, ("[^" .. b .. "=]"), "")
   local function _4_(x)
@@ -61,6 +47,4 @@ local function decode(data)
   end
   return data:gsub(".", _4_):gsub("%d%d%d?%d?%d?%d?%d?%d?", _6_)
 end
-_2amodule_2a["decode"] = decode
-do local _ = {decode, nil} end
-return _2amodule_2a
+return {encode = encode, decode = decode}
