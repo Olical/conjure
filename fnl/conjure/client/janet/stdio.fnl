@@ -1,16 +1,13 @@
-(import-macros {: module : def : defn : defonce : def- : defn- : defonce- : wrap-last-expr : wrap-module-body : deftest} :nfnl.macros.aniseed)
-
-(module conjure.client.janet.stdio
-  {autoload {a conjure.aniseed.core
-             str conjure.aniseed.string
-             nvim conjure.aniseed.nvim
-             stdio conjure.remote.stdio
-             config conjure.config
-             mapping conjure.mapping
-             client conjure.client
-             log conjure.log
-             ts conjure.tree-sitter}
-   require-macros [conjure.macros]})
+(local {: autoload} (require :nfnl.module))
+(local a (autoload :conjure.aniseed.core))
+(local str (autoload :conjure.aniseed.string))
+(local stdio (autoload :conjure.remote.stdio))
+(local config (autoload :conjure.config))
+(local text (autoload :conjure.text))
+(local mapping (autoload :conjure.mapping))
+(local client (autoload :conjure.client))
+(local log (autoload :conjure.log))
+(local ts (autoload :conjure.tree-sitter))
 
 (config.merge
   {:client
@@ -35,33 +32,31 @@
       ;;:prompt_pattern "(repl|debug\\[[0-9]+\\]):[0-9]+:[^>]*> "
       }}}})
 
-(def- cfg (config.get-in-fn [:client :janet :stdio]))
+(local cfg (config.get-in-fn [:client :janet :stdio]))
+(local state (client.new-state #(do {:repl nil})))
+(local buf-suffix ".janet")
+(local comment-prefix "# ")
+(local form-node? ts.node-surrounded-by-form-pair-chars?)
 
-(defonce- state (client.new-state #(do {:repl nil})))
-
-(def buf-suffix ".janet")
-(def comment-prefix "# ")
-(def form-node? ts.node-surrounded-by-form-pair-chars?)
-
-(defn- with-repl-or-warn [f opts]
+(fn with-repl-or-warn [f opts]
   (let [repl (state :repl)]
     (if repl
       (f repl)
       (log.append [(.. comment-prefix "No REPL running")]))))
 
-(defn unbatch [msgs]
+(fn unbatch [msgs]
   {:out (->> msgs
           (a.map #(or (a.get $1 :out) (a.get $1 :err)))
           (str.join ""))})
 
-(defn- format-message [msg]
+(fn format-message [msg]
   (->> (str.split msg.out "\n")
        (a.filter #(~= "" $1))))
 
-(defn- prep-code [s]
+(fn prep-code [s]
   (.. s "\n"))
 
-(defn eval-str [opts]
+(fn eval-str [opts]
   (with-repl-or-warn
     (fn [repl]
       (repl.send
@@ -73,27 +68,27 @@
             (log.append lines)))
         {:batch? true}))))
 
-(defn eval-file [opts]
+(fn eval-file [opts]
   (eval-str (a.assoc opts :code (a.slurp opts.file-path))))
 
-(defn doc-str [opts]
+(fn doc-str [opts]
   (eval-str (a.update opts :code #(.. "(doc " $1 ")"))))
 
-(defn- display-repl-status [status]
+(fn display-repl-status [status]
   (let [repl (state :repl)]
     (when repl
       (log.append
         [(.. comment-prefix (a.pr-str (a.get-in repl [:opts :cmd])) " (" status ")")]
         {:break? true}))))
 
-(defn stop []
+(fn stop []
   (let [repl (state :repl)]
     (when repl
       (repl.destroy)
       (display-repl-status :stopped)
       (a.assoc (state) :repl nil))))
 
-(defn start []
+(fn start []
   (if (state :repl)
     (log.append [(.. comment-prefix "Can't start, REPL is already running.")
                  (.. comment-prefix "Stop the REPL with "
@@ -126,10 +121,10 @@
          (fn [msg]
            (log.append (format-message msg)))}))))
 
-(defn on-load []
+(fn on-load []
   (start))
 
-(defn on-filetype []
+(fn on-filetype []
   (mapping.buf
     :JanetStart (cfg [:mapping :start])
     start
@@ -140,7 +135,18 @@
     stop
     {:desc "Stop the REPL"}))
 
-(defn on-exit []
+(fn on-exit []
   (stop))
 
-*module*
+{: buf-suffix
+ : comment-prefix
+ : form-node?
+ : unbatch
+ : eval-str
+ : eval-file
+ : doc-str
+ : stop
+ : start
+ : on-load
+ : on-filetype
+ : on-exit}
