@@ -182,11 +182,11 @@
     (eval-str (a.assoc opts :code (get-help opts.code)))))
 
 (fn display-repl-status [status]
-  (let [repl (state :repl)]
-    (when repl
-      (log.append
-        [(.. comment-prefix (a.pr-str (a.get-in repl [:opts :cmd])) " (" status ")")]
-        {:break? true}))))
+  ( log.append
+    [(.. comment-prefix
+         (cfg [:command])
+         " (" (or status "no status") ")")]
+    {:break? true}))
 
 (fn stop []
   (let [repl (state :repl)]
@@ -260,12 +260,6 @@
            (fn [msg]
              (log.dbg (-> [msg] unbatch format-msg) {:join-first? true}))})))))
 
-(fn on-load []
-  (if (config.get-in [:client_on_load])
-    (do ; FIXME: Can we remove the do?
-      (start))
-    (log.append ["Not starting repl"])))
-
 (fn on-exit []
   (stop))
 
@@ -274,6 +268,11 @@
     (fn [repl]
       (log.append [(.. comment-prefix " Sending interrupt signal.")] {:break? true})
       (repl.send-signal vim.loop.constants.SIGINT))))
+
+(fn on-load []
+  ;; Start up REPL only if g.conjure#client_on_load is v:true.
+  (when (config.get-in [:client_on_load])
+    (start)))
 
 (fn on-filetype []
   (mapping.buf

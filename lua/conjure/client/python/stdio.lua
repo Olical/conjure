@@ -141,12 +141,7 @@ local function doc_str(opts)
   end
 end
 local function display_repl_status(status)
-  local repl = state("repl")
-  if repl then
-    return log.append({(comment_prefix .. a["pr-str"](a["get-in"](repl, {"opts", "cmd"})) .. " (" .. status .. ")")}, {["break?"] = true})
-  else
-    return nil
-  end
+  return log.append({(comment_prefix .. cfg({"command"}) .. " (" .. (status or "no status") .. ")")}, {["break?"] = true})
 end
 local function stop()
   local repl = state("repl")
@@ -164,29 +159,29 @@ local function start()
   if state("repl") then
     return log.append({(comment_prefix .. "Can't start, REPL is already running."), (comment_prefix .. "Stop the REPL with " .. config["get-in"]({"mapping", "prefix"}) .. cfg({"mapping", "stop"}))}, {["break?"] = true})
   else
-    local function _21_()
+    local function _20_()
       if vim.treesitter.language.require_language then
         return vim.treesitter.language.require_language("python")
       else
         return vim.treesitter.require_language("python")
       end
     end
-    if not pcall(_21_) then
+    if not pcall(_20_) then
       return log.append({(comment_prefix .. "(error) The python client requires a python treesitter parser in order to function."), (comment_prefix .. "(error) See https://github.com/nvim-treesitter/nvim-treesitter"), (comment_prefix .. "(error) for installation instructions.")})
     else
-      local function _23_()
-        local function _24_(repl)
-          local function _25_(msgs)
+      local function _22_()
+        local function _23_(repl)
+          local function _24_(msgs)
             return nil
           end
-          return repl.send(prep_code(initialise_repl_code), _25_, nil)
+          return repl.send(prep_code(initialise_repl_code), _24_, nil)
         end
-        return display_repl_status("started", with_repl_or_warn(_24_))
+        return display_repl_status("started", with_repl_or_warn(_23_))
       end
-      local function _26_(err)
+      local function _25_(err)
         return display_repl_status(err)
       end
-      local function _27_(code, signal)
+      local function _26_(code, signal)
         if (("number" == type(code)) and (code > 0)) then
           log.append({(comment_prefix .. "process exited with code " .. code)})
         else
@@ -197,29 +192,29 @@ local function start()
         end
         return stop()
       end
-      local function _30_(msg)
+      local function _29_(msg)
         return log.dbg(format_msg(unbatch({msg})), {["join-first?"] = true})
       end
-      return a.assoc(state(), "repl", stdio.start({["prompt-pattern"] = cfg({"prompt-pattern"}), cmd = cfg({"command"}), ["delay-stderr-ms"] = cfg({"delay-stderr-ms"}), ["on-success"] = _23_, ["on-error"] = _26_, ["on-exit"] = _27_, ["on-stray-output"] = _30_}))
+      return a.assoc(state(), "repl", stdio.start({["prompt-pattern"] = cfg({"prompt-pattern"}), cmd = cfg({"command"}), ["delay-stderr-ms"] = cfg({"delay-stderr-ms"}), ["on-success"] = _22_, ["on-error"] = _25_, ["on-exit"] = _26_, ["on-stray-output"] = _29_}))
     end
-  end
-end
-local function on_load()
-  if config["get-in"]({"client_on_load"}) then
-    return start()
-  else
-    return log.append({"Not starting repl"})
   end
 end
 local function on_exit()
   return stop()
 end
 local function interrupt()
-  local function _34_(repl)
+  local function _32_(repl)
     log.append({(comment_prefix .. " Sending interrupt signal.")}, {["break?"] = true})
     return repl["send-signal"](vim.loop.constants.SIGINT)
   end
-  return with_repl_or_warn(_34_)
+  return with_repl_or_warn(_32_)
+end
+local function on_load()
+  if config["get-in"]({"client_on_load"}) then
+    return start()
+  else
+    return nil
+  end
 end
 local function on_filetype()
   mapping.buf("PythonStart", cfg({"mapping", "start"}), start, {desc = "Start the Python REPL"})
