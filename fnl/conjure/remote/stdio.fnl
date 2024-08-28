@@ -1,20 +1,17 @@
-(import-macros {: module : def : defn : defonce : def- : defn- : defonce- : wrap-last-expr : wrap-module-body : deftest} :nfnl.macros.aniseed)
+(local {: autoload} (require :nfnl.module))
+(local a (autoload :conjure.aniseed.core))
+(local str (autoload :conjure.aniseed.string))
+(local client (autoload :conjure.client))
+(local log (autoload :conjure.log))
 
-(module conjure.remote.stdio
-  {autoload {a conjure.aniseed.core
-             nvim conjure.aniseed.nvim
-             str conjure.aniseed.string
-             client conjure.client
-             log conjure.log}})
+(local uv vim.loop)
 
-(def- uv vim.loop)
-
-(defn- parse-prompt [s pat]
+(fn parse-prompt [s pat]
   (if (s:find pat)
     (values true (s:gsub pat ""))
     (values false s)))
 
-(defn parse-cmd [x]
+(fn parse-cmd [x]
   (if
     (a.table? x)
     {:cmd (a.first x)
@@ -23,16 +20,16 @@
     (a.string? x)
     (parse-cmd (str.split x "%s"))))
 
-(defn- extend-env [vars]
+(fn extend-env [vars]
   (->> (a.merge
-         (nvim.fn.environ)
+         (vim.fn.environ)
          vars)
        (a.kv-pairs)
        (a.map
          (fn [[k v]]
            (.. k "=" v)))))
 
-(defn start [opts]
+(fn start [opts]
   "Starts an external REPL and gives you hooks to send code to it and read
   responses back out. Tying an input to a result is near enough impossible
   through this stdio medium, so it's a best effort.
@@ -149,4 +146,5 @@
           (client.schedule #(opts.on-error pid-or-err))
           (destroy))))))
 
-*module*
+{: parse-cmd
+ : start}

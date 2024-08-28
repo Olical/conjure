@@ -2,7 +2,6 @@
 local _local_1_ = require("nfnl.module")
 local autoload = _local_1_["autoload"]
 local a = autoload("conjure.aniseed.core")
-local nvim = autoload("conjure.aniseed.nvim")
 local str = autoload("conjure.aniseed.string")
 local client = autoload("conjure.client")
 local log = autoload("conjure.log")
@@ -29,7 +28,7 @@ local function extend_env(vars)
     local v = _4_[2]
     return (k .. "=" .. v)
   end
-  return a.map(_5_, a["kv-pairs"](a.merge(nvim.fn.environ(), vars)))
+  return a.map(_5_, a["kv-pairs"](a.merge(vim.fn.environ(), vars)))
 end
 local function start(opts)
   local stdin = uv.new_pipe(false)
