@@ -1,18 +1,14 @@
-(import-macros {: module : def : defn : defonce : def- : defn- : defonce- : wrap-last-expr : wrap-module-body : deftest} :nfnl.macros.aniseed)
-
-(module conjure.client.julia.stdio
-  {autoload {a conjure.aniseed.core
-             extract conjure.extract
-             str conjure.aniseed.string
-             nvim conjure.aniseed.nvim
-             stdio conjure.remote.stdio
-             config conjure.config
-             text conjure.text
-             mapping conjure.mapping
-             client conjure.client
-             log conjure.log
-             ts conjure.tree-sitter}
-   require-macros [conjure.macros]})
+(local {: autoload} (require :nfnl.module))
+(local a (autoload :conjure.aniseed.core))
+(local extract (autoload :conjure.extract))
+(local str (autoload :conjure.aniseed.string))
+(local stdio (autoload :conjure.remote.stdio))
+(local config (autoload :conjure.config))
+(local text (autoload :conjure.text))
+(local mapping (autoload :conjure.mapping))
+(local client (autoload :conjure.client))
+(local log (autoload :conjure.log))
+(local ts (autoload :conjure.tree-sitter))
 
 ; TODO prompt_pattern for julia seems to not show, empty "" is problematic.
 (config.merge
@@ -31,14 +27,12 @@
                   :stop "cS"
                   :interrupt "ei"}}}}}))
 
-(def- cfg (config.get-in-fn [:client :julia :stdio]))
+(local cfg (config.get-in-fn [:client :julia :stdio]))
+(local state (client.new-state #(do {:repl nil})))
+(local buf-suffix ".jl")
+(local comment-prefix "# ")
 
-(defonce- state (client.new-state #(do {:repl nil})))
-
-(def buf-suffix ".jl")
-(def comment-prefix "# ")
-
-(defn- with-repl-or-warn [f opts]
+(fn with-repl-or-warn [f opts]
   (let [repl (state :repl)]
     (if repl
       (f repl)
@@ -48,21 +42,21 @@
                        (config.get-in [:mapping :prefix])
                        (cfg [:mapping :start]))]))))
 
-(defn- prep-code [s]
+(fn prep-code [s]
   (.. s "\nif(isnothing(ans)) display(nothing) end\n"))
 
-(defn unbatch [msgs]
+(fn unbatch [msgs]
   (->> msgs
        (a.map #(or (a.get $1 :out) (a.get $1 :err)))
        (str.join "")))
 
-(defn format-msg [msg]
+(fn format-msg [msg]
   ; remove last "nothing" if preceded by character or newline.
   (->> (-> (string.gsub msg "(.?[%w\n])(nothing)" "%1")
            (str.split "\n"))
        (a.filter #(~= "" $1))))
 
-(defn get-form-modifier [node]
+(fn get-form-modifier [node]
   ;; When the next sibling is a semi-colon it means we need to override the
   ;; tree sitter response. We instead need to tell Conjure the exact text and
   ;; range we're interested in since this is a pretty non-standard operation
@@ -79,7 +73,7 @@
                   ;; Increment the end of the range by one.
                   :range (a.update-in (ts.range node) [:end 2] a.inc)}}))
 
-(defn eval-str [opts]
+(fn eval-str [opts]
   (with-repl-or-warn
     (fn [repl]
       (repl.send
@@ -91,27 +85,27 @@
                (opts.on-result (str.join " " msgs)))))
         {:batch? true}))))
 
-(defn eval-file [opts]
+(fn eval-file [opts]
   (eval-str (a.assoc opts :code (a.slurp opts.file-path))))
 
-(defn doc-str [opts]
+(fn doc-str [opts]
   (eval-str (a.update opts :code #(.. "Main.eval(REPL.helpmode(\"" $1 "\"))"))))
 
-(defn- display-repl-status [status]
+(fn display-repl-status [status]
   (let [repl (state :repl)]
     (when repl
       (log.append
         [(.. comment-prefix (a.pr-str (a.get-in repl [:opts :cmd])) " (" status ")")]
         {:break? true}))))
 
-(defn stop []
+(fn stop []
   (let [repl (state :repl)]
     (when repl
       (repl.destroy)
       (display-repl-status :stopped)
       (a.assoc (state) :repl nil))))
 
-(defn start []
+(fn start []
   (if (state :repl)
     (log.append [(.. comment-prefix "Can't start, REPL is already running.")
                  (.. comment-prefix "Stop the REPL with "
@@ -151,19 +145,19 @@
          (fn [msg]
            (log.append (-> [msg] unbatch format-msg) {:join-first? true}))}))))
 
-(defn on-load []
+(fn on-load []
   (start))
 
-(defn on-exit []
+(fn on-exit []
   (stop))
 
-(defn interrupt []
+(fn interrupt []
   (with-repl-or-warn
     (fn [repl]
       (log.append [(.. comment-prefix " Sending interrupt signal.")] {:break? true})
       (repl.send-signal vim.loop.constants.SIGINT))))
 
-(defn on-filetype []
+(fn on-filetype []
   (mapping.buf
     :JuliaStart (cfg [:mapping :start])
     start
@@ -179,4 +173,17 @@
     interrupt
     {:desc "Interrupt the evaluation"}))
 
-*module*
+{: buf-suffix
+ : comment-prefix
+ : unbatch
+ : format-msg
+ : get-form-modifier
+ : eval-str
+ : eval-file
+ : doc-str
+ : stop
+ : start
+ : on-load
+ : on-exit
+ : interrupt
+ : on-filetype}
