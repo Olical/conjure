@@ -66,4 +66,69 @@ local function _13_()
   end
   return describe("with-filetype", _14_)
 end
-return describe("current-client-module-name", _13_)
+describe("current-client-module-name", _13_)
+local function _17_()
+  local function _18_()
+    local function _19_()
+      return client.current()
+    end
+    assert.same(require("conjure.client.fennel.aniseed"), client["with-filetype"]("fennel", _19_))
+    return nil
+  end
+  return it("returns the fennel module when we're in a fennel file", _18_)
+end
+describe("current", _17_)
+local function _20_()
+  local function _21_()
+    local function _22_()
+      return client.get("buf-suffix")
+    end
+    assert.same(require("conjure.client.fennel.aniseed")["buf-suffix"], client["with-filetype"]("fennel", _22_))
+    return nil
+  end
+  return it("looks up a value from the current client", _21_)
+end
+describe("get", _20_)
+local function _23_()
+  local function _24_()
+    local function _25_()
+      return client.call("->list", "foo")
+    end
+    assert.same({"foo"}, client["with-filetype"]("sql", _25_))
+    return nil
+  end
+  return it("executes a function from a client", _24_)
+end
+describe("call", _23_)
+local function _26_()
+  local function _27_()
+    local function _28_()
+      return client.call("->list", "foo")
+    end
+    assert.same({"foo"}, client["with-filetype"]("sql", _28_))
+    return nil
+  end
+  it("executes a function from a client", _27_)
+  local function _29_()
+    local function _30_()
+      return client["optional-call"]("does-not-exist", "foo")
+    end
+    assert.same(nil, client["with-filetype"]("sql", _30_))
+    return nil
+  end
+  return it("skips it if the function does not exist", _29_)
+end
+describe("optional-call", _26_)
+local function _31_()
+  local function _32_()
+    local suffixes = {}
+    local function _33_()
+      return table.insert(suffixes, client.get("buf-suffix"))
+    end
+    client["each-loaded-client"](_33_)
+    assert.same({".sql", ".fnl"}, suffixes)
+    return nil
+  end
+  return it("runs a function for each loaded client", _32_)
+end
+return describe("each-loaded-client", _31_)

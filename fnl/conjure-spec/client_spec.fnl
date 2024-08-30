@@ -62,9 +62,56 @@
               (client.with-filetype "fennel" #(client.current-client-module-name)))
             nil))))))
 
-; (describe "with-filetype"
-;   (fn []
-;     (it "executes a "
-;       (fn []
-;         (let [mod (client.load-module "clojure" "conjure.client.clojure.nrepl")]
-;           (assert.is_table mod))))))
+(describe "current"
+  (fn []
+    (it "returns the fennel module when we're in a fennel file"
+      (fn []
+        (assert.same
+          (require :conjure.client.fennel.aniseed)
+          (client.with-filetype "fennel" #(client.current)))
+        nil))))
+
+(describe "get"
+  (fn []
+    (it "looks up a value from the current client"
+      (fn []
+        (assert.same
+          (. (require :conjure.client.fennel.aniseed) :buf-suffix)
+          (client.with-filetype "fennel" #(client.get :buf-suffix)))
+        nil))))
+
+(describe "call"
+  (fn []
+    (it "executes a function from a client"
+      (fn []
+        (assert.same
+          [:foo]
+          (client.with-filetype "sql" #(client.call :->list :foo)))
+        nil))))
+
+(describe "optional-call"
+  (fn []
+    (it "executes a function from a client"
+      (fn []
+        (assert.same
+          [:foo]
+          (client.with-filetype "sql" #(client.call :->list :foo)))
+        nil))
+
+    (it "skips it if the function does not exist"
+      (fn []
+        (assert.same
+          nil
+          (client.with-filetype "sql" #(client.optional-call :does-not-exist :foo)))
+        nil))))
+
+(describe "each-loaded-client"
+  (fn []
+    (it "runs a function for each loaded client"
+      (fn []
+        (local suffixes [])
+        (client.each-loaded-client
+          (fn []
+            (table.insert suffixes (client.get :buf-suffix))))
+        (assert.same [:.sql :.fnl] suffixes)
+        nil))))
