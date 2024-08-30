@@ -50,18 +50,17 @@
           (client.set-state-key! :default)
           (assert.equal 1 (state :foo :bar)))))))
 
-; (describe "current-client-module-name"
-;   (fn []
-;     (describe "with-filetype"
-;       (fn []
-;         (it "returns the fennel module when we're in a fennel file"
-;           (fn []
-;             ;; Error in error handling?
-;             (assert.same
-;               {:extension "fnl"
-;                 :filetype "fennel"
-;                 :module-name "conjure.client.fennel.aniseed"}
-;               (client.with-filetype "fennel" #(client.current-client-module-name)))))))))
+(describe "current-client-module-name"
+  (fn []
+    (describe "with-filetype"
+      (fn []
+        (it "returns the fennel module when we're in a fennel file"
+          (fn []
+            (assert.same
+              {:filetype "fennel"
+               :module-name "conjure.client.fennel.aniseed"}
+              (client.with-filetype "fennel" #(client.current-client-module-name)))
+            nil))))))
 
 ; (describe "with-filetype"
 ;   (fn []

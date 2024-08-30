@@ -52,4 +52,18 @@ local function _10_()
   end
   return it("returns a function we can use to look up the current state-key's data for this specific state, the function encloses it's own table of state indexed by state-key", _11_)
 end
-return describe("new-state", _10_)
+describe("new-state", _10_)
+local function _13_()
+  local function _14_()
+    local function _15_()
+      local function _16_()
+        return client["current-client-module-name"]()
+      end
+      assert.same({filetype = "fennel", ["module-name"] = "conjure.client.fennel.aniseed"}, client["with-filetype"]("fennel", _16_))
+      return nil
+    end
+    return it("returns the fennel module when we're in a fennel file", _15_)
+  end
+  return describe("with-filetype", _14_)
+end
+return describe("current-client-module-name", _13_)
