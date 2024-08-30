@@ -1,14 +1,12 @@
-(import-macros {: module : def : defn : defonce : def- : defn- : defonce- : wrap-last-expr : wrap-module-body : deftest} :nfnl.macros.aniseed)
+(local autoload (require :nfnl.autoload))
+(local nvim (autoload :conjure.aniseed.nvim))
+(local a (autoload :conjure.aniseed.core))
+(local str (autoload :conjure.aniseed.string))
 
-(module conjure.config
-  {autoload {nvim conjure.aniseed.nvim
-             a conjure.aniseed.core
-             str conjure.aniseed.string}})
-
-(defn- ks->var [ks]
+(fn ks->var [ks]
   (.. "conjure#" (str.join "#" ks)))
 
-(defn get-in [ks]
+(fn get-in [ks]
   (let [key (ks->var ks)
         v (or (a.get nvim.b key) (a.get nvim.g key))]
     (if (and (a.table? v)
@@ -17,18 +15,18 @@
       (a.get v vim.val_idx)
       v)))
 
-(defn filetypes []
+(fn filetypes []
   (get-in [:filetypes]))
 
-(defn get-in-fn [prefix-ks]
+(fn get-in-fn [prefix-ks]
   (fn [ks]
     (get-in (a.concat prefix-ks ks))))
 
-(defn assoc-in [ks v]
+(fn assoc-in [ks v]
   (a.assoc nvim.g (ks->var ks) v)
   v)
 
-(defn merge [tbl opts ks]
+(fn merge [tbl opts ks]
   "Merge a table into the config recursively. Won't overwrite any existing
   value by default, set opts.overwrite? to true if this is desired."
   (let [ks (or ks [])
@@ -161,4 +159,8 @@
       :def_word "gd"
       :doc_word ["K"]}}))
 
-*module*
+{: get-in
+ : filetypes
+ : get-in-fn
+ : assoc-in
+ : merge}
