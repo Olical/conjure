@@ -1,16 +1,13 @@
-(import-macros {: module : def : defn : defonce : def- : defn- : defonce- : wrap-last-expr : wrap-module-body : deftest} :nfnl.macros.aniseed)
-
-(module conjure.client.scheme.stdio
-  {autoload {a conjure.aniseed.core
-             str conjure.aniseed.string
-             nvim conjure.aniseed.nvim
-             stdio conjure.remote.stdio
-             config conjure.config
-             mapping conjure.mapping
-             client conjure.client
-             log conjure.log
-             ts conjure.tree-sitter}
-   require-macros [conjure.macros]})
+(local {: autoload} (require :nfnl.module))
+(local a (autoload :conjure.aniseed.core))
+(local str (autoload :conjure.aniseed.string))
+(local stdio (autoload :conjure.remote.stdio))
+(local config (autoload :conjure.config))
+(local text (autoload :conjure.text))
+(local mapping (autoload :conjure.mapping))
+(local client (autoload :conjure.client))
+(local log (autoload :conjure.log))
+(local ts (autoload :conjure.tree-sitter))
 
 (config.merge
   {:client
@@ -30,26 +27,24 @@
                   :stop "cS"
                   :interrupt "ei"}}}}}))
 
-(def- cfg (config.get-in-fn [:client :scheme :stdio]))
+(local cfg (config.get-in-fn [:client :scheme :stdio]))
+(local state (client.new-state #(do {:repl nil})))
+(local buf-suffix ".scm")
+(local comment-prefix "; ")
+(local form-node? ts.node-surrounded-by-form-pair-chars?)
 
-(defonce- state (client.new-state #(do {:repl nil})))
-
-(def buf-suffix ".scm")
-(def comment-prefix "; ")
-(def form-node? ts.node-surrounded-by-form-pair-chars?)
-
-(defn- with-repl-or-warn [f opts]
+(fn with-repl-or-warn [f opts]
   (let [repl (state :repl)]
     (if repl
       (f repl)
       (log.append [(.. comment-prefix "No REPL running")]))))
 
-(defn unbatch [msgs]
+(fn unbatch [msgs]
   {:out (->> msgs
           (a.map #(or (a.get $1 :out) (a.get $1 :err)))
           (str.join ""))})
 
-(defn format-msg [msg]
+(fn format-msg [msg]
   (->> (-> msg
            (a.get :out)
            (string.gsub "^%s*" "")
@@ -67,7 +62,7 @@
              (.. comment-prefix "(out) " line))))
        (a.filter #(not (str.blank? $1)))))
 
-(defn eval-str [opts]
+(fn eval-str [opts]
   (with-repl-or-warn
     (fn [repl]
       (repl.send
@@ -78,24 +73,24 @@
             (log.append msgs)))
         {:batch? true}))))
 
-(defn eval-file [opts]
+(fn eval-file [opts]
   (eval-str (a.assoc opts :code (.. "(load \"" opts.file-path "\")"))))
 
-(defn- display-repl-status [status]
+(fn display-repl-status [status]
   (log.append
     [(.. comment-prefix
          (cfg [:command])
          " (" (or status "no status") ")")]
     {:break? true}))
 
-(defn stop []
+(fn stop []
   (let [repl (state :repl)]
     (when repl
       (repl.destroy)
       (display-repl-status :stopped)
       (a.assoc (state) :repl nil))))
 
-(defn start []
+(fn start []
   (if (state :repl)
     (log.append [(.. comment-prefix "Can't start, REPL is already running.")
                  (.. comment-prefix "Stop the REPL with "
@@ -128,16 +123,16 @@
          (fn [msg]
            (log.append (format-msg msg)))}))))
 
-(defn interrupt []
+(fn interrupt []
   (with-repl-or-warn
     (fn [repl]
       (log.append [(.. comment-prefix " Sending interrupt signal.")] {:break? true})
       (repl.send-signal vim.loop.constants.SIGINT))))
 
-(defn on-load []
+(fn on-load []
   (start))
 
-(defn on-filetype []
+(fn on-filetype []
   (mapping.buf
     :SchemeStart (cfg [:mapping :start])
     start
@@ -153,8 +148,19 @@
     interrupt
     {:desc "Interrupt the REPL"}))
 
-(defn on-exit []
+(fn on-exit []
   (stop))
 
-
-*module*
+{: buf-suffix
+ : comment-prefix
+ : form-node?
+ : unbatch
+ : format-msg
+ : eval-str
+ : eval-file
+ : stop
+ : start
+ : interrupt
+ : on-load
+ : on-filetype
+ : on-exit }

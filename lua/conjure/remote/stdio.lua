@@ -1,26 +1,11 @@
 -- [nfnl] Compiled from fnl/conjure/remote/stdio.fnl by https://github.com/Olical/nfnl, do not edit.
-local _2amodule_name_2a = "conjure.remote.stdio"
-local _2amodule_2a
-do
-  _G.package.loaded[_2amodule_name_2a] = {}
-  _2amodule_2a = _G.package.loaded[_2amodule_name_2a]
-end
-local _2amodule_locals_2a
-do
-  _2amodule_2a["aniseed/locals"] = {}
-  _2amodule_locals_2a = (_2amodule_2a)["aniseed/locals"]
-end
-local autoload = (require("aniseed.autoload")).autoload
-local a, client, log, nvim, str = autoload("conjure.aniseed.core"), autoload("conjure.client"), autoload("conjure.log"), autoload("conjure.aniseed.nvim"), autoload("conjure.aniseed.string")
-do end (_2amodule_locals_2a)["a"] = a
-_2amodule_locals_2a["client"] = client
-_2amodule_locals_2a["log"] = log
-_2amodule_locals_2a["nvim"] = nvim
-_2amodule_locals_2a["str"] = str
-do local _ = {nil, nil, nil, nil, nil, nil, nil, nil, nil, nil} end
+local _local_1_ = require("nfnl.module")
+local autoload = _local_1_["autoload"]
+local a = autoload("conjure.aniseed.core")
+local str = autoload("conjure.aniseed.string")
+local client = autoload("conjure.client")
+local log = autoload("conjure.log")
 local uv = vim.loop
-_2amodule_locals_2a["uv"] = uv
-do local _ = {nil, nil} end
 local function parse_prompt(s, pat)
   if s:find(pat) then
     return true, s:gsub(pat, "")
@@ -28,8 +13,6 @@ local function parse_prompt(s, pat)
     return false, s
   end
 end
-_2amodule_locals_2a["parse-prompt"] = parse_prompt
-do local _ = {parse_prompt, nil} end
 local function parse_cmd(x)
   if a["table?"](x) then
     return {cmd = a.first(x), args = a.rest(x)}
@@ -39,19 +22,14 @@ local function parse_cmd(x)
     return nil
   end
 end
-_2amodule_2a["parse-cmd"] = parse_cmd
-do local _ = {parse_cmd, nil} end
 local function extend_env(vars)
-  local function _5_(_3_)
-    local _arg_4_ = _3_
-    local k = _arg_4_[1]
-    local v = _arg_4_[2]
+  local function _5_(_4_)
+    local k = _4_[1]
+    local v = _4_[2]
     return (k .. "=" .. v)
   end
-  return a.map(_5_, a["kv-pairs"](a.merge(nvim.fn.environ(), vars)))
+  return a.map(_5_, a["kv-pairs"](a.merge(vim.fn.environ(), vars)))
 end
-_2amodule_locals_2a["extend-env"] = extend_env
-do local _ = {extend_env, nil} end
 local function start(opts)
   local stdin = uv.new_pipe(false)
   local stdout = uv.new_pipe(false)
@@ -84,7 +62,7 @@ local function start(opts)
       end
       pcall(_11_)
       local function _12_()
-        return (repl.handle):close()
+        return repl.handle:close()
       end
       pcall(_12_)
     else
@@ -190,6 +168,4 @@ local function start(opts)
     return destroy()
   end
 end
-_2amodule_2a["start"] = start
-do local _ = {start, nil} end
-return _2amodule_2a
+return {["parse-cmd"] = parse_cmd, start = start}

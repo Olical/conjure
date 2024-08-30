@@ -1,18 +1,14 @@
-(import-macros {: module : def : defn : defonce : def- : defn- : defonce- : wrap-last-expr : wrap-module-body : deftest} :nfnl.macros.aniseed)
-
-(module conjure.client.fennel.stdio
-  {autoload {a conjure.aniseed.core
-             str conjure.aniseed.string
-             nvim conjure.aniseed.nvim
-             stdio conjure.remote.stdio
-             afs conjure.aniseed.fs
-             config conjure.config
-             text conjure.text
-             mapping conjure.mapping
-             client conjure.client
-             log conjure.log
-             ts conjure.tree-sitter}
-   require-macros [conjure.macros]})
+(local {: autoload} (require :nfnl.module))
+(local a (autoload :conjure.aniseed.core))
+(local afs (autoload :conjure.aniseed.fs))
+(local str (autoload :conjure.aniseed.string))
+(local stdio (autoload :conjure.remote.stdio))
+(local config (autoload :conjure.config))
+(local text (autoload :conjure.text))
+(local mapping (autoload :conjure.mapping))
+(local client (autoload :conjure.client))
+(local log (autoload :conjure.log))
+(local ts (autoload :conjure.tree-sitter))
 
 (config.merge
   {:client
@@ -30,30 +26,28 @@
                   :stop "cS"
                   :eval_reload "eF"}}}}}))
 
-(def- cfg (config.get-in-fn [:client :fennel :stdio]))
+(local cfg (config.get-in-fn [:client :fennel :stdio]))
+(local state (client.new-state #(do {:repl nil})))
+(local buf-suffix ".fnl")
+(local comment-prefix "; ")
+(local form-node? ts.node-surrounded-by-form-pair-chars?)
+(local comment-node? ts.lisp-comment-node?)
 
-(defonce- state (client.new-state #(do {:repl nil})))
-
-(def buf-suffix ".fnl")
-(def comment-prefix "; ")
-(def form-node? ts.node-surrounded-by-form-pair-chars?)
-(def comment-node? ts.lisp-comment-node?)
-
-(defn- with-repl-or-warn [f opts]
+(fn with-repl-or-warn [f opts]
   (let [repl (state :repl)]
     (if repl
       (f repl)
       (log.append [(.. comment-prefix "No REPL running")]))))
 
-(defn- format-message [msg]
+(fn format-message [msg]
   (str.split (or msg.out msg.err) "\n"))
 
-(defn- display-result [msg]
+(fn display-result [msg]
   (log.append
     (->> (format-message msg)
          (a.filter #(not (= "" $1))))))
 
-(defn eval-str [opts]
+(fn eval-str [opts]
   (with-repl-or-warn
     (fn [repl]
       (repl.send
@@ -69,10 +63,10 @@
             (a.run! display-result msgs)))
         {:batch? true}))))
 
-(defn eval-file [opts]
+(fn eval-file [opts]
   (eval-str (a.assoc opts :code (a.slurp opts.file-path))))
 
-(defn eval-reload []
+(fn eval-reload []
   (let [file-path (nvim.fn.expand "%")
         relative-no-suf (nvim.fn.fnamemodify file-path ":.:r")
         module-path (string.gsub relative-no-suf afs.path-sep ".")]
@@ -83,24 +77,24 @@
        :file-path file-path
        :code (.. ",reload " module-path)})))
 
-(defn doc-str [opts]
+(fn doc-str [opts]
   (eval-str (a.update opts :code #(.. ",doc " $1 "\n"))))
 
-(defn- display-repl-status [status]
+(fn display-repl-status [status]
   (let [repl (state :repl)]
     (when repl
       (log.append
         [(.. comment-prefix (a.pr-str (a.get-in repl [:opts :cmd])) " (" status ")")]
         {:break? true}))))
 
-(defn stop []
+(fn stop []
   (let [repl (state :repl)]
     (when repl
       (repl.destroy)
       (display-repl-status :stopped)
       (a.assoc (state) :repl nil))))
 
-(defn start []
+(fn start []
   (if (state :repl)
     (log.append [(.. comment-prefix "Can't start, REPL is already running.")
                  (.. comment-prefix "Stop the REPL with "
@@ -133,13 +127,13 @@
          (fn [msg]
            (display-result msg))}))))
 
-(defn on-load []
+(fn on-load []
   (start))
 
-(defn on-exit []
+(fn on-exit []
   (stop))
 
-(defn on-filetype []
+(fn on-filetype []
   (mapping.buf
     :FnlStart
     (cfg [:mapping :start])
@@ -158,4 +152,16 @@
     eval-reload
     {:desc "Use ,reload on the file"}))
 
-*module*
+{: buf-suffix
+ : comment-prefix
+ : form-node?
+ : comment-node?
+ : eval-str
+ : eval-file
+ : eval-reload
+ : doc-str
+ : stop
+ : start
+ : on-load
+ : on-exit
+ : on-filetype}

@@ -1,6 +1,5 @@
 (local {: autoload} (require :nfnl.module))
 (local a (autoload :conjure.aniseed.core))
-(local nvim (autoload :conjure.aniseed.nvim))
 (local str (autoload :conjure.aniseed.string))
 (local client (autoload :conjure.client))
 (local log (autoload :conjure.log))
@@ -23,7 +22,7 @@
 
 (fn extend-env [vars]
   (->> (a.merge
-         (nvim.fn.environ)
+         (vim.fn.environ)
          vars)
        (a.kv-pairs)
        (a.map
@@ -152,7 +151,5 @@
           (client.schedule #(opts.on-error pid-or-err))
           (destroy))))))
 
-{
- : parse-cmd
- : start
- }
+{: parse-cmd
+ : start}

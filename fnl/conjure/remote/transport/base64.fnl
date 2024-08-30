@@ -1,13 +1,9 @@
-(import-macros {: module : def : defn : defonce : def- : defn- : defonce- : wrap-last-expr : wrap-module-body : deftest} :nfnl.macros.aniseed)
-
-(module conjure.remote.transport.base64)
-
 ;; From https://stackoverflow.com/a/35303321/455137
 ;; Converted to Fennel by antifennel.
 
 (local b "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/")
 
-(defn encode [data]
+(fn encode [data]
   (.. (: (.. (data:gsub "."
                         (fn [x]
                           (var (r b) (values "" (x:byte)))
@@ -34,7 +30,7 @@
            (b:sub (+ c 1) (+ c 1))))
       (. ["" "==" "="] (+ (% (length data) 3) 1))))
 
-(defn decode [data]
+(fn decode [data]
   (set-forcibly! data (string.gsub data (.. "[^" b "=]") ""))
   (: (data:gsub "."
                 (fn [x]
@@ -61,4 +57,5 @@
                      0))))
        (string.char c))))
 
-*module*
+{: encode
+ : decode}

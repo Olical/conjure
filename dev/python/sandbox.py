@@ -50,6 +50,7 @@ def fn_with_multiline_str():
 fn_with_multiline_str()
 
 
+"""
 async def slow_fn():
     return "slow_fn result, this is async!"
 
@@ -66,6 +67,7 @@ async def capture():
 
 await capture()
 result
+"""
 
 
 import csv

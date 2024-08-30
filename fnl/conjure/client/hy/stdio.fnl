@@ -1,18 +1,14 @@
-(import-macros {: module : def : defn : defonce : def- : defn- : defonce- : wrap-last-expr : wrap-module-body : deftest} :nfnl.macros.aniseed)
-
-(module conjure.client.hy.stdio
-  {autoload {a conjure.aniseed.core
-             extract conjure.extract
-             str conjure.aniseed.string
-             nvim conjure.aniseed.nvim
-             stdio conjure.remote.stdio
-             config conjure.config
-             text conjure.text
-             mapping conjure.mapping
-             client conjure.client
-             log conjure.log
-             ts conjure.tree-sitter}
-   require-macros [conjure.macros]})
+(local {: autoload} (require :nfnl.module))
+(local a (autoload :conjure.aniseed.core))
+(local extract (autoload :conjure.extract))
+(local str (autoload :conjure.aniseed.string))
+(local stdio (autoload :conjure.remote.stdio))
+(local config (autoload :conjure.config))
+(local text (autoload :conjure.text))
+(local mapping (autoload :conjure.mapping))
+(local client (autoload :conjure.client))
+(local log (autoload :conjure.log))
+(local ts (autoload :conjure.tree-sitter))
 
 (config.merge
   {:client
@@ -31,15 +27,13 @@
                   :stop "cS"
                   :interrupt "ei"}}}}}))
 
-(def- cfg (config.get-in-fn [:client :hy :stdio]))
+(local cfg (config.get-in-fn [:client :hy :stdio]))
+(local state (client.new-state #(do {:repl nil})))
+(local buf-suffix ".hy")
+(local comment-prefix "; ")
+(local form-node? ts.node-surrounded-by-form-pair-chars?)
 
-(defonce- state (client.new-state #(do {:repl nil})))
-
-(def buf-suffix ".hy")
-(def comment-prefix "; ")
-(def form-node? ts.node-surrounded-by-form-pair-chars?)
-
-(defn- with-repl-or-warn [f opts]
+(fn with-repl-or-warn [f opts]
   (let [repl (state :repl)]
     (if repl
       (f repl)
@@ -49,7 +43,7 @@
                        (config.get-in [:mapping :prefix])
                        (cfg [:mapping :start]))]))))
 
-(defn- display-result [msg]
+(fn display-result [msg]
   (let [prefix (if (= true (cfg [:eval :raw_out]))
                  ""
                  (.. comment-prefix (if msg.err "(err)" "(out)") " "))]
@@ -58,10 +52,10 @@
          (a.map #(.. prefix $1))
          log.append)))
 
-(defn- prep-code [s]
+(fn prep-code [s]
   (.. s "\n"))
 
-(defn eval-str [opts]
+(fn eval-str [opts]
   (var last-value nil)
   (with-repl-or-warn
     (fn [repl]
@@ -82,10 +76,10 @@
               (when opts.on-result
                 (opts.on-result last-value)))))))))
 
-(defn eval-file [opts]
+(fn eval-file [opts]
   (log.append [(.. comment-prefix "Not implemented")]))
 
-(defn doc-str [opts]
+(fn doc-str [opts]
   (let [obj (when (= "." (string.sub opts.code 1 1))
               (extract.prompt "Specify object or module: "))
         obj (.. (or obj "") opts.code)
@@ -102,21 +96,21 @@
                           (.. comment-prefix
                               (if msg.err "(err) " "(doc) "))))))))))
 
-(defn- display-repl-status [status]
+(fn display-repl-status [status]
   (let [repl (state :repl)]
     (when repl
       (log.append
         [(.. comment-prefix (a.pr-str (a.get-in repl [:opts :cmd])) " (" status ")")]
         {:break? true}))))
 
-(defn stop []
+(fn stop []
   (let [repl (state :repl)]
     (when repl
       (repl.destroy)
       (display-repl-status :stopped)
       (a.assoc (state) :repl nil))))
 
-(defn start []
+(fn start []
   (if (state :repl)
     (log.append [(.. comment-prefix "Can't start, REPL is already running.")
                  (.. comment-prefix "Stop the REPL with "
@@ -153,20 +147,20 @@
          (fn [msg]
            (display-result msg))}))))
 
-(defn on-load []
+(fn on-load []
   (start))
 
-(defn on-exit []
+(fn on-exit []
   (stop))
 
-(defn interrupt []
+(fn interrupt []
   (log.dbg "sending interrupt message" "")
   (with-repl-or-warn
     (fn [repl]
       (log.append [(.. comment-prefix " Sending interrupt signal.")] {:break? true})
       (repl.send-signal vim.loop.constants.SIGINT))))
 
-(defn on-filetype []
+(fn on-filetype []
   (mapping.buf
     :HyStart (cfg [:mapping :start])
     start
@@ -182,4 +176,15 @@
     interrupt
     {:desc "Interrupt the current evaluation"}))
 
-*module*
+{: buf-suffix
+ : comment-prefix
+ : form-node?
+ : eval-str
+ : eval-file
+ : doc-str
+ : stop
+ : start
+ : on-load
+ : on-exit
+ : interrupt
+ : on-filetype}
