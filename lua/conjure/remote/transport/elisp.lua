@@ -1,36 +1,16 @@
 -- [nfnl] Compiled from fnl/conjure/remote/transport/elisp.fnl by https://github.com/Olical/nfnl, do not edit.
-local _2amodule_name_2a = "conjure.remote.transport.elisp"
-local _2amodule_2a
-do
-  _G.package.loaded[_2amodule_name_2a] = {}
-  _2amodule_2a = _G.package.loaded[_2amodule_name_2a]
-end
-local _2amodule_locals_2a
-do
-  _2amodule_2a["aniseed/locals"] = {}
-  _2amodule_locals_2a = (_2amodule_2a)["aniseed/locals"]
-end
-local autoload = (require("aniseed.autoload")).autoload
-local a, stack, str, text = autoload("conjure.aniseed.core"), autoload("conjure.stack"), autoload("conjure.aniseed.string"), autoload("conjure.text")
-do end (_2amodule_locals_2a)["a"] = a
-_2amodule_locals_2a["stack"] = stack
-_2amodule_locals_2a["str"] = str
-_2amodule_locals_2a["text"] = text
-do local _ = {nil, nil, nil, nil, nil, nil, nil, nil, nil} end
+local _local_1_ = require("nfnl.module")
+local autoload = _local_1_["autoload"]
+local a = autoload("conjure.aniseed.core")
+local str = autoload("conjure.aniseed.string")
+local text = autoload("conjure.text")
+local stack = autoload("conjure.stack")
 local function err(...)
-  return error(str.join({_2amodule_name_2a, ": ", ...}))
+  return error(str.join({__fnl_global___2amodule_2dname_2a, ": ", ...}))
 end
-_2amodule_locals_2a["err"] = err
-do local _ = {err, nil} end
 local symbol_char_pat = "[a-zA-Z0-9_-]"
-_2amodule_locals_2a["symbol-char-pat"] = symbol_char_pat
-do local _ = {nil, nil} end
 local number_char_pat = "[0-9.-]"
-_2amodule_locals_2a["number-char-pat"] = number_char_pat
-do local _ = {nil, nil} end
 local whitespace_char_pat = "%s"
-_2amodule_locals_2a["whitespace-char-pat"] = whitespace_char_pat
-do local _ = {nil, nil} end
 local function read_2a(cs, ctxs, result)
   if a["empty?"](cs) then
     return result
@@ -38,9 +18,9 @@ local function read_2a(cs, ctxs, result)
     local prev_cs = cs
     local c = a.first(cs)
     local cs0 = a.rest(cs)
-    local _let_1_ = (stack.peek(ctxs) or {})
-    local ctx_name = _let_1_["name"]
-    local ctx_value = _let_1_["value"]
+    local _let_2_ = (stack.peek(ctxs) or {})
+    local ctx_name = _let_2_["name"]
+    local ctx_value = _let_2_["value"]
     if (("list" == ctx_name) and (nil ~= result)) then
       table.insert(ctx_value, result)
       return read_2a(prev_cs, ctxs, nil)
@@ -62,7 +42,7 @@ local function read_2a(cs, ctxs, result)
       end
     elseif ("number" == ctx_name) then
       if string.find(c, number_char_pat) then
-        local function _4_()
+        local function _5_()
           local result0 = (result .. c)
           if a["empty?"](cs0) then
             return tonumber(result0)
@@ -70,7 +50,7 @@ local function read_2a(cs, ctxs, result)
             return result0
           end
         end
-        return read_2a(cs0, ctxs, _4_())
+        return read_2a(cs0, ctxs, _5_())
       else
         return read_2a(prev_cs, stack.pop(ctxs), tonumber(result))
       end
@@ -95,11 +75,7 @@ local function read_2a(cs, ctxs, result)
     end
   end
 end
-_2amodule_locals_2a["read*"] = read_2a
-do local _ = {read_2a, nil} end
 local function read(s)
   return read_2a(text.chars(s), {}, nil)
 end
-_2amodule_2a["read"] = read
-do local _ = {read, nil} end
-return _2amodule_2a
+return {read = read}
