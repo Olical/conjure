@@ -1,13 +1,11 @@
-(import-macros {: module : def : defn : defonce : def- : defn- : defonce- : wrap-last-expr : wrap-module-body : deftest} :nfnl.macros.aniseed)
+(local {: autoload} (require :nfnl.module))
+(local a (autoload :conjure.aniseed.core))
+(local net (autoload :conjure.net))
+(local log (autoload :conjure.log))
+(local client (autoload :conjure.client))
+(local trn (autoload :conjure.remote.transport.netrepl))
 
-(module conjure.remote.netrepl
-  {autoload {a conjure.aniseed.core
-            net conjure.net
-            log conjure.log
-            client conjure.client
-            trn conjure.remote.transport.netrepl}})
-
-(defn send [conn msg cb prompt?]
+(fn send [conn msg cb prompt?]
   "Send a message to the given connection, call the callback when a response is received.
   If a prompt is expected in addition to the response, prompt? should be set to true."
   (log.dbg "send" msg)
@@ -17,7 +15,7 @@
   (conn.sock:write (trn.encode msg))
   nil)
 
-(defn connect [opts]
+(fn connect [opts]
   "Connects to a remote netrepl server.
   * opts.host: The host string.
   * opts.port: Port as a string.
@@ -70,4 +68,4 @@
 ; (send c "{:hello :world}" a.println)
 ; (c.destroy)
 
-*module*
+{: send : connect}
