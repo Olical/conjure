@@ -1,20 +1,18 @@
-(import-macros {: module : def : defn : defonce : def- : defn- : defonce- : wrap-last-expr : wrap-module-body : deftest} :nfnl.macros.aniseed)
+(local {: autoload} (require :nfnl.module))
+(local a (autoload :conjure.aniseed.core))
+(local nvim (autoload :conjure.aniseed.nvim))
+(local str (autoload :conjure.aniseed.string))
+(local client (autoload :conjure.client))
+(local text (autoload :conjure.text))
+(local log (autoload :conjure.log))
 
-(module conjure.remote.socket
-  {autoload {a conjure.aniseed.core
-             nvim conjure.aniseed.nvim
-             str conjure.aniseed.string
-             client conjure.client
-             text conjure.text
-             log conjure.log}})
+(local uv vim.loop)
 
-(def- uv vim.loop)
-
-(defn- strip-unprintable [s]
+(fn strip-unprintable [s]
   (-> (text.strip-ansi-escape-sequences s)
       (string.gsub "[\1\2]" "")))
 
-(defn start [opts]
+(fn start [opts]
   "Connects to an external REPL via a socket (TCP or named pipe), and gives you
   hooks to send code to it and read responses back out. This allows you to
   connect Conjure to a running process, but has the same problem as stdio
@@ -118,4 +116,4 @@
        :destroy destroy
        :send send})))
 
-*module*
+{: start}
