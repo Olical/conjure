@@ -1,17 +1,14 @@
-(import-macros {: module : def : defn : defonce : def- : defn- : defonce- : wrap-last-expr : wrap-module-body : deftest} :nfnl.macros.aniseed)
+(local {: autoload} (require :nfnl.module))
+(local a (autoload :conjure.aniseed.core))
+(local promise (autoload :conjure.promise))
+(local str (autoload :conjure.aniseed.string))
+(local stdio (autoload :conjure.remote.stdio))
+(local log (autoload :conjure.log))
+(local config (autoload :conjure.config))
+(local client (autoload :conjure.client))
 
-(module conjure.client.rust.evcxr
-  {autoload {a conjure.aniseed.core
-             promise conjure.promise
-             str conjure.aniseed.string
-             nvim conjure.aniseed.nvim
-             stdio conjure.remote.stdio
-             log conjure.log
-             config conjure.config
-             client conjure.client}})
-
-(def buf-suffix ".rs")
-(def comment-prefix "// ")
+(local buf-suffix ".rs")
+(local comment-prefix "// ")
 
 (config.merge
   {:client
@@ -29,11 +26,10 @@
                   :stop "cS"
                   :interrupt "ei"}}}}}))
 
-(def- cfg (config.get-in-fn [:client :rust :evcxr]))
+(local cfg (config.get-in-fn [:client :rust :evcxr]))
+(local state (client.new-state #(do {:repl nil})))
 
-(defonce- state (client.new-state #(do {:repl nil})))
-
-(defn- with-repl-or-warn [f opts]
+(fn with-repl-or-warn [f opts]
   (let [repl (state :repl)]
     (if repl
       (f repl)
@@ -43,7 +39,7 @@
                        (config.get-in [:mapping :prefix])
                        (cfg [:mapping :start]))]))))
 
-(defn- display-repl-status [status]
+(fn display-repl-status [status]
   (let [repl (state :repl)]
     (if repl
       (log.append
@@ -51,34 +47,34 @@
         {:break? true})
       (log.append [status]))))
 
-(defn- display-result [msg]
+(fn display-result [msg]
   (->> msg
        (a.map #(.. comment-prefix $1))
        log.append))
 
-(defn- format-msg [msg]
+(fn format-msg [msg]
   (->> (str.split msg "\n")
        (a.filter #(not (= "" $1)))
        (a.filter #(not (= "()" $1)))))
 
-(defn- unbatch [msgs]
+(fn unbatch [msgs]
   (->> msgs
        (a.map #(or (a.get $1 :out) (a.get $1 :err)))
        (str.join "")))
 
-(defn- prep-code [s]
+(fn prep-code [s]
   (.. s "\n"))
 
 ; Start/Stop
 
-(defn stop []
+(fn stop []
   (let [repl (state :repl)]
     (when repl
       (repl.destroy)
       (display-repl-status :stopped)
       (a.assoc (state) :repl nil))))
 
-(defn start []
+(fn start []
   (if (state :repl)
     (log.append [(.. comment-prefix "Can't start, REPL is already running.")
                  (.. comment-prefix "Stop the REPL with "
@@ -119,13 +115,13 @@
          (fn [msg]
            (display-result (-> [msg] unbatch format-msg) {:join-first? true}))}))))
 
-(defn on-load []
+(fn on-load []
   (start))
 
-(defn on-exit []
+(fn on-exit []
   (stop))
 
-(defn interrupt []
+(fn interrupt []
   (with-repl-or-warn
     (fn [repl]
       (let [uv vim.loop]
@@ -133,7 +129,7 @@
 
 ; Eval
 
-(defn eval-str [opts]
+(fn eval-str [opts]
   (with-repl-or-warn
     (fn [repl]
       (repl.send
@@ -145,7 +141,15 @@
               (opts.on-result (str.join " " msgs)))))
         {:batch? true}))))
 
-(defn eval-file [opts]
+(fn eval-file [opts]
   (eval-str (a.assoc opts :code (a.slurp opts.file-path))))
 
-*module*
+{: buf-suffix
+ : comment-prefix
+ : stop
+ : start
+ : on-load
+ : on-exit
+ : interrupt
+ : eval-str
+ : eval-file}
