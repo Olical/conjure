@@ -1,26 +1,24 @@
-(import-macros {: module : def : defn : defonce : def- : defn- : defonce- : wrap-last-expr : wrap-module-body : deftest} :nfnl.macros.aniseed)
+(local {: autoload} (require :nfnl.module))
+(local nvim (autoload :conjure.aniseed.nvim))
+(local a (autoload :conjure.aniseed.core))
+(local str (autoload :conjure.aniseed.string))
+(local view (autoload :conjure.aniseed.view))
+(local client (autoload :conjure.client))
+(local mapping (autoload :conjure.mapping))
+(local fs (autoload :conjure.fs))
+(local text (autoload :conjure.text))
+(local log (autoload :conjure.log))
+(local config (autoload :conjure.config))
+(local extract (autoload :conjure.extract))
+(local ts (autoload :conjure.tree-sitter))
 
-(module conjure.client.fennel.aniseed
-  {autoload {nvim conjure.aniseed.nvim
-             a conjure.aniseed.core
-             str conjure.aniseed.string
-             view conjure.aniseed.view
-             client conjure.client
-             mapping conjure.mapping
-             fs conjure.fs
-             text conjure.text
-             log conjure.log
-             config conjure.config
-             extract conjure.extract
-             ts conjure.tree-sitter}})
-
-(def comment-node? ts.lisp-comment-node?)
-(defn form-node? [node]
+(local comment-node? ts.lisp-comment-node?)
+(fn form-node? [node]
   (ts.node-surrounded-by-form-pair-chars? node [["#(" ")"]]))
 
-(def buf-suffix ".fnl")
-(def context-pattern "%(%s*module%s+(.-)[%s){]")
-(def comment-prefix "; ")
+(local buf-suffix ".fnl")
+(local context-pattern "%(%s*module%s+(.-)[%s){]")
+(local comment-prefix "; ")
 
 (config.merge
   {:client
@@ -39,44 +37,44 @@
                  :reset_repl "rr"
                  :reset_all_repls "ra"}}}}}))
 
-(def- cfg (config.get-in-fn [:client :fennel :aniseed]))
+(local cfg (config.get-in-fn [:client :fennel :aniseed]))
 
-(def- ani-aliases
+(local ani-aliases
   {:nu :nvim.util})
 
-(defn- ani [mod-name f-name]
+(fn ani [mod-name f-name]
   (let [mod-name (a.get ani-aliases mod-name mod-name)
         mod (require (.. (cfg [:aniseed_module_prefix]) mod-name))]
     (if f-name
       (a.get mod f-name)
       mod)))
 
-(defn- anic [mod f-name ...]
+(fn anic [mod f-name ...]
   ((ani mod f-name) ...))
 
-(defonce- repls {})
+(local repls {})
 
-(defn reset-repl [filename]
+(fn reset-repl [filename]
   (let [filename (or filename (fs.localise-path (extract.file-path)))]
     (tset repls filename nil)
     (log.append [(.. "; Reset REPL for " filename)] {:break? true})))
 
-(defn reset-all-repls []
+(fn reset-all-repls []
   (a.run!
     (fn [filename]
       (tset repls filename nil))
     (a.keys repls))
   (log.append [(.. "; Reset all REPLs")] {:break? true}))
 
-(def default-module-name "conjure.user")
+(local default-module-name "conjure.user")
 
-(defn module-name [context file-path]
+(fn module-name [context file-path]
   (if
     context context
     file-path (or (fs.file-path->module-name file-path) default-module-name)
     default-module-name))
 
-(defn repl [opts]
+(fn repl [opts]
   (let [filename (a.get opts :filename)]
     (or ;; Reuse an existing REPL.
         (and (not (a.get opts :fresh?)) (a.get repls filename))
@@ -120,7 +118,7 @@
           ;; Return the new REPL!
           repl))))
 
-(defn display-result [opts]
+(fn display-result [opts]
   (when opts
     (let [{: ok? : results} opts
           result-str (or
@@ -140,7 +138,7 @@
       (when opts.on-result
         (opts.on-result result-str)))))
 
-(defn eval-str [opts]
+(fn eval-str [opts]
   ((client.wrap
      (fn []
        (let [out (anic :nu :with-out-str
@@ -171,16 +169,16 @@
            (log.append (text.prefixed-lines (text.trim-last-newline out) "; (out) ")))
          (display-result opts))))))
 
-(defn doc-str [opts]
+(fn doc-str [opts]
   (a.assoc opts :code (.. ",doc " opts.code))
   (eval-str opts))
 
-(defn eval-file [opts]
+(fn eval-file [opts]
   (set opts.code (a.slurp opts.file-path))
   (when opts.code
     (eval-str opts)))
 
-(defn- wrapped-test [req-lines f]
+(fn wrapped-test [req-lines f]
   (log.append req-lines {:break? true})
   (let [res (anic :nu :with-out-str f)]
     (log.append
@@ -189,17 +187,17 @@
             res)
           (text.prefixed-lines "; ")))))
 
-(defn run-buf-tests []
+(fn run-buf-tests []
   (let [c (extract.context)]
     (when c
       (wrapped-test
         [(.. "; run-buf-tests (" c ")")]
         #(anic :test :run c)))))
 
-(defn run-all-tests []
+(fn run-all-tests []
   (wrapped-test ["; run-all-tests"] (ani :test :run-all)))
 
-(defn on-filetype []
+(fn on-filetype []
   (mapping.buf
     :FnlRunBufTests (cfg [:mapping :run_buf_tests])
     #(run-buf-tests)
@@ -220,7 +218,7 @@
     #(reset-all-repls)
     {:desc "Reset all REPL states"}))
 
-(defn value->completions [x]
+(fn value->completions [x]
   (when (= :table (type x))
     (->> (if (. x :aniseed/autoload-enabled?)
            (do
@@ -238,7 +236,7 @@
               :menu nil
               :info nil})))))
 
-(defn completions [opts]
+(fn completions [opts]
   (let [code (when (not (str.blank? opts.prefix))
                (let [prefix (string.gsub opts.prefix ".$" "")]
                  (.. "((. (require :" *module-name* ") :value->completions) " prefix ")")))
@@ -276,4 +274,22 @@
     (when (not ok?)
       (opts.cb locals))))
 
-*module*
+{: buf-suffix
+ : comment-node?
+ : comment-prefix
+ : completions
+ : context-pattern
+ : default-module-name
+ : display-result
+ : doc-str
+ : eval-file
+ : eval-str
+ : form-node?
+ : module-name
+ : on-filetype
+ : repl
+ : reset-all-repls
+ : reset-repl
+ : run-all-tests
+ : run-buf-tests
+ : value->completions }
