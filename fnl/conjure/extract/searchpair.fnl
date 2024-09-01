@@ -1,22 +1,20 @@
-(import-macros {: module : def : defn : defonce : def- : defn- : defonce- : wrap-last-expr : wrap-module-body : deftest} :nfnl.macros.aniseed)
+(local {: autoload} (require :nfnl.module))
+(local a (autoload :conjure.aniseed.core))
 
-(module conjure.extract.searchpair
-  {autoload {a conjure.aniseed.core
-             nvim conjure.aniseed.nvim
-             str conjure.aniseed.string
-             config conjure.config}})
+(local str (autoload :conjure.aniseed.string))
+(local config (autoload :conjure.config))
 
 ;; All of the code related to the searchpair / searchpairpos based form
 ;; extraction. If you use Tree Sitter for all of the languages you work
 ;; with Conjure will avoid loading this module. It's only loaded for
 ;; files that can't support Tree Sitter for some reason.
 
-(defn- nil-pos? [pos]
+(fn nil-pos? [pos]
   (or (not pos)
       (= 0 (unpack pos))))
 
-(defn- read-range [[srow scol] [erow ecol]]
-  (let [lines (nvim.buf_get_lines
+(fn read-range [[srow scol] [erow ecol]]
+  (let [lines (vim.api.nvim_buf_get_lines
                 0 (- srow 1) erow false)]
     (-> lines
         (a.update
@@ -29,36 +27,36 @@
             (string.sub s scol)))
         (->> (str.join "\n")))))
 
-(defn skip-match? []
-  (let [[row col] (nvim.win_get_cursor 0)
-        stack (nvim.fn.synstack row (a.inc col))
+(fn skip-match? []
+  (let [[row col] (vim.api.nvim_win_get_cursor 0)
+        stack (vim.fn.synstack row (a.inc col))
         stack-size (length stack)]
     (if (or
           ;; Are we in a comment, string or regular expression?
           (= :number
              (type
                (and (> stack-size 0)
-                    (let [name (nvim.fn.synIDattr (. stack stack-size) :name)]
+                    (let [name (vim.fn.synIDattr (. stack stack-size) :name)]
                       (or (name:find "Comment$")
                           (name:find "String$")
                           (name:find "Regexp%?$"))))))
 
           ;; Is the character escaped?
           ;; https://github.com/Olical/conjure/issues/209
-          (= "\\" (-> (nvim.buf_get_lines
-                        (nvim.win_get_buf 0) (- row 1) row false)
+          (= "\\" (-> (vim.api.nvim_buf_get_lines
+                        (vim.api.nvim_win_get_buf 0) (- row 1) row false)
                       (a.first)
                       (string.sub col col))))
       1
       0)))
 
-(defn- current-char []
-  (let [[row col] (nvim.win_get_cursor 0)
-        [line] (nvim.buf_get_lines 0 (- row 1) row false)
+(fn current-char []
+  (let [[row col] (vim.api.nvim_win_get_cursor 0)
+        [line] (vim.api.nvim_buf_get_lines 0 (- row 1) row false)
         char (+ col 1)]
     (string.sub line char char)))
 
-(defn- form* [[start-char end-char escape?] {: root?}]
+(fn form* [[start-char end-char escape?] {: root?}]
   (let [;; 'W' don't Wrap around the end of the file
         ;; 'n' do Not move the cursor
         ;; 'z' start searching at the cursor column instead of Zero
@@ -78,11 +76,11 @@
           (.. "\\" end-char)
           end-char)
 
-        start (nvim.fn.searchpairpos
+        start (vim.fn.searchpairpos
                 safe-start-char "" safe-end-char
                 (.. flags "b" (if (= cursor-char start-char) "c" ""))
                 skip-match?)
-        end (nvim.fn.searchpairpos
+        end (vim.fn.searchpairpos
               safe-start-char "" safe-end-char
               (.. flags (if (= cursor-char end-char) "c" ""))
               skip-match?)]
@@ -93,16 +91,16 @@
                :end [(a.first end) (a.dec (a.second end))]}
        :content (read-range start end)})))
 
-(defn- distance-gt [[al ac] [bl bc]]
+(fn distance-gt [[al ac] [bl bc]]
   (or (> al bl)
       (and (= al bl) (> ac bc))))
 
-(defn- range-distance [range]
+(fn range-distance [range]
   (let [[sl sc] range.start
         [el ec] range.end]
     [(- sl el) (- sc ec)]))
 
-(defn form [opts]
+(fn form [opts]
   (local forms
     (->> (config.get-in [:extract :form_pairs])
          (a.map #(form* $1 opts))
@@ -118,4 +116,5 @@
     (a.last forms)
     (a.first forms)))
 
-*module*
+{: skip-match?
+ : form}
