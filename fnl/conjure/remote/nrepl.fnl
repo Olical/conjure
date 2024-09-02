@@ -1,22 +1,20 @@
-(import-macros {: module : def : defn : defonce : def- : defn- : defonce- : wrap-last-expr : wrap-module-body : deftest} :nfnl.macros.aniseed)
+(local {: autoload} (require :nfnl.module))
+(local a (autoload :conjure.aniseed.core))
+(local net (autoload :conjure.net))
+(local timer (autoload :conjure.timer))
+(local uuid (autoload :conjure.uuid))
+(local log (autoload :conjure.log))
+(local client (autoload :conjure.client))
+(local bencode (autoload :conjure.remote.transport.bencode))
 
-(module conjure.remote.nrepl
-  {autoload {a conjure.aniseed.core
-             net conjure.net
-             timer conjure.timer
-             uuid conjure.uuid
-             log conjure.log
-             client conjure.client
-             bencode conjure.remote.transport.bencode}})
-
-(defn with-all-msgs-fn [cb]
+(fn with-all-msgs-fn [cb]
   (let [acc []]
     (fn [msg]
       (table.insert acc msg)
       (when msg.status.done
         (cb acc)))))
 
-(defn enrich-status [msg]
+(fn enrich-status [msg]
   (let [ks (a.get msg :status)
         status {}]
     (a.run!
@@ -26,7 +24,7 @@
     (a.assoc msg :status status)
     msg))
 
-(defn connect [opts]
+(fn connect [opts]
   "Connects to a remote nREPL server.
   * opts.host: The host string.
   * opts.port: Port as a string.
@@ -126,4 +124,6 @@
 
     conn))
 
-*module*
+{: with-all-msgs-fn
+ : enrich-status
+ : connect}
