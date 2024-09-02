@@ -1,18 +1,16 @@
-(import-macros {: module : def : defn : defonce : def- : defn- : defonce- : wrap-last-expr : wrap-module-body : deftest} :nfnl.macros.aniseed)
+(local {: autoload} (require :nfnl.module))
+(local str (autoload :conjure.aniseed.string))
+(local nvim (autoload :conjure.aniseed.nvim))
+(local a (autoload :conjure.aniseed.core))
+(local process (autoload :conjure.process))
+(local log (autoload :conjure.log))
+(local config (autoload :conjure.config))
+(local client (autoload :conjure.client))
+(local state (autoload :conjure.client.clojure.nrepl.state))
 
-(module conjure.client.clojure.nrepl.auto-repl
-  {autoload {str conjure.aniseed.string
-             nvim conjure.aniseed.nvim
-             a conjure.aniseed.core
-             process conjure.process
-             log conjure.log
-             config conjure.config
-             client conjure.client
-             state conjure.client.clojure.nrepl.state}})
+(local cfg (config.get-in-fn [:client :clojure :nrepl]))
 
-(def- cfg (config.get-in-fn [:client :clojure :nrepl]))
-
-(defn enportify [subject]
+(fn enportify [subject]
   "Given a string `subject`, look for `$port` and if there randomly search
   until we find an open port. Then return a table containing the subject with
   `$port` replaced by the found port and the port number itself. If there was
@@ -25,13 +23,13 @@
        :port port})
     {:subject subject}))
 
-(defn delete-auto-repl-port-file []
+(fn delete-auto-repl-port-file []
   (let [port-file (cfg [:connection :auto_repl :port_file])
         port (state.get :auto-repl-port)]
     (when (and port-file port (= (a.slurp port-file) port))
       (nvim.fn.delete port-file))))
 
-(defn upsert-auto-repl-proc []
+(fn upsert-auto-repl-proc []
   "Starts the auto REPL if executable and not already running."
   (let [{:subject cmd : port} (enportify (cfg [:connection :auto_repl :cmd]))
         port-file (cfg [:connection :auto_repl :port_file])
@@ -55,4 +53,6 @@
         (log.append [(.. "; Starting auto-repl: " cmd)])
         proc))))
 
-*module*
+{: enportify
+ : delete-auto-repl-port-file
+ : upsert-auto-repl-proc}
