@@ -1,27 +1,24 @@
-(import-macros {: module : def : defn : defonce : def- : defn- : defonce- : wrap-last-expr : wrap-module-body : deftest} :nfnl.macros.aniseed)
+(local {: autoload} (require :nfnl.module))
+(local a (autoload :conjure.aniseed.core))
+(local mapping (autoload :conjure.mapping))
+(local eval (autoload :conjure.eval))
+(local str (autoload :conjure.aniseed.string))
+(local text (autoload :conjure.text))
+(local config (autoload :conjure.config))
+(local action (autoload :conjure.client.clojure.nrepl.action))
+(local server (autoload :conjure.client.clojure.nrepl.server))
+(local parse (autoload :conjure.client.clojure.nrepl.parse))
+(local debugger (autoload :conjure.client.clojure.nrepl.debugger))
+(local auto-repl (autoload :conjure.client.clojure.nrepl.auto-repl))
+(local client (autoload :conjure.client))
+(local util (autoload :conjure.util))
+(local ts (autoload :conjure.tree-sitter))
 
-(module conjure.client.clojure.nrepl
-  {autoload {nvim conjure.aniseed.nvim
-             a conjure.aniseed.core
-             mapping conjure.mapping
-             eval conjure.eval
-             str conjure.aniseed.string
-             text conjure.text
-             config conjure.config
-             action conjure.client.clojure.nrepl.action
-             server conjure.client.clojure.nrepl.server
-             parse conjure.client.clojure.nrepl.parse
-             debugger conjure.client.clojure.nrepl.debugger
-             auto-repl conjure.client.clojure.nrepl.auto-repl
-             client conjure.client
-             util conjure.util
-             ts conjure.tree-sitter}})
+(local buf-suffix ".cljc")
+(local comment-prefix "; ")
+(local cfg (config.get-in-fn [:client :clojure :nrepl]))
 
-(def buf-suffix ".cljc")
-(def comment-prefix "; ")
-(def- cfg (config.get-in-fn [:client :clojure :nrepl]))
-
-(def- reader-macro-pairs
+(local reader-macro-pairs
   [["#{" "}"]
    ["#(" ")"]
    ["#?(" ")"]
@@ -32,19 +29,19 @@
    ["`[" "]"]
    ["`{" "}"]])
 
-(def- reader-macros
+(local reader-macros
   ["@"
    "^{"
    "^:"])
 
-(defn form-node? [node]
+(fn form-node? [node]
   (or (ts.node-surrounded-by-form-pair-chars? node reader-macro-pairs)
       (ts.node-prefixed-by-chars? node reader-macros)))
 
-(defn symbol-node? [node]
+(fn symbol-node? [node]
   (string.find (node:type) :kwd))
 
-(def comment-node? ts.lisp-comment-node?)
+(local comment-node? ts.lisp-comment-node?)
 
 (config.merge
   {:client
@@ -126,7 +123,7 @@
         :refresh_all "ra"
         :refresh_clear "rc"}}}}}))
 
-(defn context [header]
+(fn context [header]
   (-?> header
        (parse.strip-shebang)
        (parse.strip-meta)
@@ -135,25 +132,25 @@
        (str.split "%s+")
        (a.first)))
 
-(defn eval-file [opts]
+(fn eval-file [opts]
   (action.eval-file opts))
 
-(defn eval-str [opts]
+(fn eval-str [opts]
   (action.eval-str opts))
 
-(defn doc-str [opts]
+(fn doc-str [opts]
   (action.doc-str opts))
 
-(defn def-str [opts]
+(fn def-str [opts]
   (action.def-str opts))
 
-(defn completions [opts]
+(fn completions [opts]
   (action.completions opts))
 
-(defn connect [opts]
+(fn connect [opts]
   (action.connect-host-port opts))
 
-(defn on-filetype []
+(fn on-filetype []
   (mapping.buf
     :CljDisconnect (cfg [:mapping :disconnect])
     (util.wrap-require-fn-call :conjure.client.clojure.nrepl.server :disconnect)
@@ -274,41 +271,41 @@
     (util.wrap-require-fn-call :conjure.client.clojure.nrepl.action :view-tap)
     {:desc "Show all tapped values and clear the queue"})
 
-  (nvim.buf_create_user_command
+  (vim.api.nvim_buf_create_user_command
     0
     "ConjureShadowSelect"
     #(action.shadow-select (a.get $ :args))
     {:force true
      :nargs 1})
 
-  (nvim.buf_create_user_command
+  (vim.api.nvim_buf_create_user_command
     0
     "ConjurePiggieback"
     #(action.piggieback (a.get $ :args))
     {:force true
      :nargs 1})
 
-  (nvim.buf_create_user_command
+  (vim.api.nvim_buf_create_user_command
     0
     "ConjureOutSubscribe"
     action.out-subscribe
     {:force true
      :nargs 0})
 
-  (nvim.buf_create_user_command
+  (vim.api.nvim_buf_create_user_command
     0
     "ConjureOutUnsubscribe"
     action.out-unsubscribe
     {:force true
      :nargs 0})
 
-  (nvim.buf_create_user_command
+  (vim.api.nvim_buf_create_user_command
     0
     "ConjureCljDebugInit"
     debugger.init
     {:force true})
 
-  (nvim.buf_create_user_command
+  (vim.api.nvim_buf_create_user_command
     0
     "ConjureCljDebugInput"
     debugger.debug-input
@@ -317,11 +314,25 @@
 
   (action.passive-ns-require))
 
-(defn on-load []
+(fn on-load []
   (action.connect-port-file))
 
-(defn on-exit []
+(fn on-exit []
   (auto-repl.delete-auto-repl-port-file)
   (server.disconnect))
 
-*module*
+{: buf-suffix
+ : comment-prefix
+ : form-node?
+ : symbol-node?
+ : comment-node?
+ : context
+ : eval-file
+ : eval-str
+ : doc-str
+ : def-str
+ : completions
+ : connect
+ : on-filetype
+ : on-load
+ : on-exit}
