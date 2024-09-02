@@ -1,41 +1,39 @@
-(import-macros {: module : def : defn : defonce : def- : defn- : defonce- : wrap-last-expr : wrap-module-body : deftest} :nfnl.macros.aniseed)
+(local autoload (require :nfnl.autoload))
+(local a (autoload :conjure.aniseed.core))
+(local auto-repl (autoload :conjure.client.clojure.nrepl.auto-repl))
+(local client (autoload :conjure.client))
+(local config (autoload :conjure.config))
+(local editor (autoload :conjure.editor))
+(local eval (autoload :conjure.aniseed.eval))
+(local extract (autoload :conjure.extract))
+(local fs (autoload :conjure.fs))
+(local hook (autoload :conjure.hook))
+(local ll (autoload :conjure.linked-list))
+(local log (autoload :conjure.log))
+(local nrepl (autoload :conjure.remote.nrepl))
+(local nvim (autoload :conjure.aniseed.nvim))
+(local parse (autoload :conjure.client.clojure.nrepl.parse))
+(local server (autoload :conjure.client.clojure.nrepl.server))
+(local state (autoload :conjure.client.clojure.nrepl.state))
+(local str (autoload :conjure.aniseed.string))
+(local text (autoload :conjure.text))
+(local ui (autoload :conjure.client.clojure.nrepl.ui))
+(local view (autoload :conjure.aniseed.view))
 
-(module conjure.client.clojure.nrepl.action
-  {autoload {text conjure.text
-             extract conjure.extract
-             editor conjure.editor
-             ll conjure.linked-list
-             log conjure.log
-             fs conjure.fs
-             hook conjure.hook
-             client conjure.client
-             eval conjure.aniseed.eval
-             str conjure.aniseed.string
-             nvim conjure.aniseed.nvim
-             view conjure.aniseed.view
-             a conjure.aniseed.core
-             config conjure.config
-             server conjure.client.clojure.nrepl.server
-             ui conjure.client.clojure.nrepl.ui
-             state conjure.client.clojure.nrepl.state
-             parse conjure.client.clojure.nrepl.parse
-             auto-repl conjure.client.clojure.nrepl.auto-repl
-             nrepl conjure.remote.nrepl}})
-
-(defn- require-ns [ns]
+(fn require-ns [ns]
   (when ns
     (server.eval
       {:code (.. "(require '" ns ")")}
       (fn []))))
 
-(def- cfg (config.get-in-fn [:client :clojure :nrepl]))
+(local cfg (config.get-in-fn [:client :clojure :nrepl]))
 
-(defn passive-ns-require []
+(fn passive-ns-require []
   (when (and (cfg [:eval :auto_require])
              (server.connected?))
     (require-ns (extract.context))))
 
-(defn connect-port-file [opts]
+(fn connect-port-file [opts]
   (let [resolved-path (-?>> (cfg [:connection :port_files]) (fs.resolve-above))
         resolved (when resolved-path
                    (let [port (a.slurp resolved-path)]
@@ -64,13 +62,13 @@
       {:silent? true
        :cb cb})))
 
-(defn- try-ensure-conn [cb]
+(fn try-ensure-conn [cb]
   (if (not (server.connected?))
     (hook.exec :client-clojure-nrepl-passive-connect cb)
     (when cb
       (cb))))
 
-(defn connect-host-port [opts]
+(fn connect-host-port [opts]
   (if (and (not opts.host) (not opts.port))
     (connect-port-file)
     (let [parsed-port (when (= :string (type opts.port))
@@ -83,7 +81,7 @@
            :cb passive-ns-require})
         (log.append [(str.join ["; Could not parse '" (or opts.port "nil") "' as a port number"])])))))
 
-(defn- eval-cb-fn [opts]
+(fn eval-cb-fn [opts]
   (fn [resp]
     (when (and (a.get opts :on-result)
                (a.get resp :value))
@@ -95,7 +93,7 @@
         (when (not opts.passive?)
           (ui.display-result resp opts))))))
 
-(defn eval-str [opts]
+(fn eval-str [opts]
   (try-ensure-conn
     (fn []
       (server.with-conn-or-warn
@@ -108,7 +106,7 @@
 
           (server.eval opts (eval-cb-fn opts)))))))
 
-(defn- with-info [opts f]
+(fn with-info [opts f]
   (server.with-conn-and-ops-or-warn
     [:info :lookup]
     (fn [conn ops]
@@ -129,7 +127,7 @@
           (f (when (not msg.status.no-info)
                (or (. msg :info) msg))))))))
 
-(defn- java-info->lines [{: arglists-str : class : member : javadoc}]
+(fn java-info->lines [{: arglists-str : class : member : javadoc}]
   (a.concat
     [(str.join
        (a.concat ["; " class]
@@ -140,7 +138,7 @@
     (when javadoc
       [(.. "; " javadoc)])))
 
-(defn doc-str [opts]
+(fn doc-str [opts]
   (try-ensure-conn
     (fn []
       (require-ns "clojure.repl")
@@ -183,7 +181,7 @@
                           ["; Unknown result, it may still be helpful"]
                           (text.prefixed-lines (view.serialise info) "; "))))))))))))))
 
-(defn- nrepl->nvim-path [path]
+(fn nrepl->nvim-path [path]
   (if
     (text.starts-with path "jar:file:")
     (string.gsub path "^jar:file:(.+)!/?(.+)$"
@@ -199,7 +197,7 @@
 
     path))
 
-(defn def-str [opts]
+(fn def-str [opts]
   (try-ensure-conn
     (fn []
       (with-info
@@ -233,10 +231,10 @@
             (log.append ["; Unsupported target"
                          (.. "; " (a.pr-str info))])))))))
 
-(defn escape-backslashes [s]
+(fn escape-backslashes [s]
   (s:gsub "\\" "\\\\"))
 
-(defn eval-file [opts]
+(fn eval-file [opts]
   (try-ensure-conn
     (fn []
       (server.eval
@@ -245,7 +243,7 @@
                                 " \"" (escape-backslashes opts.file-path) "\")"))
         (eval-cb-fn opts)))))
 
-(defn interrupt []
+(fn interrupt []
   (try-ensure-conn
     (fn []
       (server.with-conn-or-warn
@@ -283,17 +281,17 @@
                     (< a.sent-at b.sent-at)))
                 (order-66 (a.get (a.first msgs) :msg))))))))))
 
-(defn- eval-str-fn [code]
+(fn eval-str-fn [code]
   (fn []
     (nvim.ex.ConjureEval code)))
 
-(def last-exception (eval-str-fn "*e"))
-(def result-1 (eval-str-fn "*1"))
-(def result-2 (eval-str-fn "*2"))
-(def result-3 (eval-str-fn "*3"))
-(def view-tap (eval-str-fn "(conjure.internal/dump-tap-queue!)"))
+(local last-exception (eval-str-fn "*e"))
+(local result-1 (eval-str-fn "*1"))
+(local result-2 (eval-str-fn "*2"))
+(local result-3 (eval-str-fn "*3"))
+(local view-tap (eval-str-fn "(conjure.internal/dump-tap-queue!)"))
 
-(defn view-source []
+(fn view-source []
   (try-ensure-conn
     (fn []
       (let [word (a.get (extract.word) :content)]
@@ -308,7 +306,7 @@
                     {:raw-out? true
                      :ignore-nil? true})}))))))
 
-(defn clone-current-session []
+(fn clone-current-session []
   (try-ensure-conn
     (fn []
       (server.with-conn-or-warn
@@ -317,14 +315,14 @@
             (a.get conn :session)
             server.clone-session))))))
 
-(defn clone-fresh-session []
+(fn clone-fresh-session []
   (try-ensure-conn
     (fn []
       (server.with-conn-or-warn
         (fn [conn]
           (server.clone-session))))))
 
-(defn close-current-session []
+(fn close-current-session []
   (try-ensure-conn
     (fn []
       (server.with-conn-or-warn
@@ -337,14 +335,14 @@
                           {:break? true})
               (server.close-session sess #(server.assume-or-create-session)))))))))
 
-(defn display-sessions [cb]
+(fn display-sessions [cb]
   (try-ensure-conn
     (fn []
       (server.with-sessions
         (fn [sessions]
           (ui.display-sessions sessions cb))))))
 
-(defn close-all-sessions []
+(fn close-all-sessions []
   (try-ensure-conn
     (fn []
       (server.with-sessions
@@ -354,7 +352,7 @@
                       {:break? true})
           (server.clone-session))))))
 
-(defn- cycle-session [f]
+(fn cycle-session [f]
   (try-ensure-conn
     (fn []
       (server.with-conn-or-warn
@@ -371,17 +369,17 @@
                        (ll.val)
                        (server.assume-session)))))))))))
 
-(defn next-session []
+(fn next-session []
   (cycle-session
     (fn [current node]
       (= current (a.get (->> node (ll.prev) (ll.val)) :id)))))
 
-(defn prev-session []
+(fn prev-session []
   (cycle-session
     (fn [current node]
       (= current (a.get (->> node (ll.next) (ll.val)) :id)))))
 
-(defn select-session-interactive []
+(fn select-session-interactive []
   (try-ensure-conn
     (fn []
       (server.with-sessions
@@ -397,7 +395,7 @@
                     (server.assume-session (a.get sessions n))
                     (log.append ["; Invalid session number."])))))))))))
 
-(def test-runners
+(local test-runners
   {:clojure
    {:namespace "clojure.test"
     :all-fn "run-all-tests"
@@ -423,15 +421,15 @@
     :name-prefix "#'"
     :name-suffix ""}})
 
-(defn- test-cfg [k]
+(fn test-cfg [k]
   (let [runner (cfg [:test :runner])]
     (or (a.get-in test-runners [runner k])
         (error (str.join ["No test-runners configuration for " runner " / " k])))))
 
-(defn- require-test-runner []
+(fn require-test-runner []
   (require-ns (test-cfg :namespace)))
 
-(defn- test-runner-code [fn-config-name ...]
+(fn test-runner-code [fn-config-name ...]
   (..
     "("
     (str.join
@@ -443,7 +441,7 @@
         (test-cfg :default-call-suffix))
     ")"))
 
-(defn run-all-tests []
+(fn run-all-tests []
   (try-ensure-conn
     (fn []
       (log.append ["; run-all-tests"] {:break? true})
@@ -456,7 +454,7 @@
             :raw-out? (cfg [:test :raw_out])
             :ignore-nil? true})))))
 
-(defn- run-ns-tests [ns]
+(fn run-ns-tests [ns]
   (try-ensure-conn
     (fn []
       (when ns
@@ -471,17 +469,17 @@
               :raw-out? (cfg [:test :raw_out])
               :ignore-nil? true}))))))
 
-(defn run-current-ns-tests []
+(fn run-current-ns-tests []
   (run-ns-tests (extract.context)))
 
-(defn run-alternate-ns-tests []
+(fn run-alternate-ns-tests []
   (let [current-ns (extract.context)]
     (run-ns-tests
       (if (text.ends-with current-ns "-test")
         current-ns
         (.. current-ns "-test")))))
 
-(defn extract-test-name-from-form [form]
+(fn extract-test-name-from-form [form]
   (var seen-deftest? false)
   (-> (parse.strip-meta form)
       (str.split "%s+")
@@ -497,7 +495,7 @@
               seen-deftest?
               part))))))
 
-(defn run-current-test []
+(fn run-current-test []
   (try-ensure-conn
     (fn []
       (let [form (extract.form {:root? true})]
@@ -526,7 +524,7 @@
                                   :ignore-nil? true})
                               msgs))))))))))))
 
-(defn- refresh-impl [op]
+(fn refresh-impl [op]
   (server.with-conn-and-ops-or-warn
     [op]
     (fn [conn]
@@ -553,24 +551,24 @@
 
             (ui.display-result msg)))))))
 
-(defn- use-clj-reload-backend? []
+(fn use-clj-reload-backend? []
   (= (cfg [:refresh :backend]) "clj-reload"))
 
-(defn refresh-changed []
+(fn refresh-changed []
   (let [use-clj-reload? (use-clj-reload-backend?)]
     (try-ensure-conn
       (fn []
         (log.append [(str.join ["; Refreshing changed namespaces using '" (if use-clj-reload? "clj-reload" "tools.namespace") "'"])] {:break? true})
         (refresh-impl (if use-clj-reload? :cider.clj-reload/reload :refresh))))))
 
-(defn refresh-all []
+(fn refresh-all []
   (let [use-clj-reload? (use-clj-reload-backend?)]
     (try-ensure-conn
       (fn []
         (log.append [(str.join ["; Refreshing all namespaces using '" (if use-clj-reload? "clj-reload" "tools.namespace") "'"])] {:break? true})
         (refresh-impl (if use-clj-reload? :cider.clj-reload/reload-all :refresh-all))))))
 
-(defn refresh-clear []
+(fn refresh-clear []
   (let [use-clj-reload? (use-clj-reload-backend?)]
     (try-ensure-conn
       (fn []
@@ -585,7 +583,7 @@
                 (fn [msgs]
                   (log.append ["; Clearing complete"]))))))))))
 
-(defn shadow-select [build]
+(fn shadow-select [build]
   (try-ensure-conn
     (fn []
       (server.with-conn-or-warn
@@ -596,7 +594,7 @@
             ui.display-result)
           (passive-ns-require))))))
 
-(defn piggieback [code]
+(fn piggieback [code]
   (try-ensure-conn
     (fn []
       (server.with-conn-or-warn
@@ -608,7 +606,7 @@
             ui.display-result)
           (passive-ns-require))))))
 
-(defn- clojure->vim-completion [{:candidate word
+(fn clojure->vim-completion [{:candidate word
                                  :type kind
                                  : ns
                                  :doc info
@@ -625,8 +623,7 @@
            (string.upper
              (string.sub kind 1 1)))})
 
-
-(defn- extract-completion-context [prefix]
+(fn extract-completion-context [prefix]
   (let [root-form (extract.form {:root? true})]
     (when root-form
       (let [{: content : range} root-form
@@ -649,10 +646,10 @@
             (a.assoc line-index spliced)
             (->> (str.join "\n")))))))
 
-(defn- enhanced-cljs-completion? []
+(fn enhanced-cljs-completion? []
   (cfg [:completion :cljs :use_suitable]))
 
-(defn completions [opts]
+(fn completions [opts]
   (server.with-conn-and-ops-or-warn
     [:complete :completions]
     (fn [conn ops]
@@ -684,7 +681,7 @@
     {:silent? true
      :else opts.cb}))
 
-(defn out-subscribe []
+(fn out-subscribe []
   (try-ensure-conn)
   (log.append ["; Subscribing to out"] {:break? true})
   (server.with-conn-and-ops-or-warn
@@ -692,7 +689,7 @@
     (fn [conn]
       (server.send {:op :out-subscribe}))))
 
-(defn out-unsubscribe []
+(fn out-unsubscribe []
   (try-ensure-conn)
   (log.append ["; Unsubscribing from out"] {:break? true})
   (server.with-conn-and-ops-or-warn
@@ -700,4 +697,40 @@
     (fn [conn]
       (server.send {:op :out-unsubscribe}))))
 
-*module*
+{: passive-ns-require
+ : connect-port-file
+ : connect-host-port
+ : eval-str
+ : doc-str
+ : def-str
+ : escape-backslashes
+ : eval-file
+ : interrupt
+ : last-exception
+ : result-1
+ : result-2
+ : result-3
+ : view-tap
+ : view-source
+ : clone-current-session
+ : clone-fresh-session
+ : close-current-session
+ : display-sessions
+ : close-all-sessions
+ : next-session
+ : prev-session
+ : select-session-interactive
+ : test-runners
+ : run-all-tests
+ : run-current-ns-tests
+ : run-alternate-ns-tests
+ : extract-test-name-from-form
+ : run-current-test
+ : refresh-changed
+ : refresh-all
+ : refresh-clear
+ : shadow-select
+ : piggieback
+ : completions
+ : out-subscribe
+ : out-unsubscribe}
