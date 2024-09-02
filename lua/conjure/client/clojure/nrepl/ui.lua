@@ -1,27 +1,12 @@
 -- [nfnl] Compiled from fnl/conjure/client/clojure/nrepl/ui.fnl by https://github.com/Olical/nfnl, do not edit.
-local _2amodule_name_2a = "conjure.client.clojure.nrepl.ui"
-local _2amodule_2a
-do
-  _G.package.loaded[_2amodule_name_2a] = {}
-  _2amodule_2a = _G.package.loaded[_2amodule_name_2a]
-end
-local _2amodule_locals_2a
-do
-  _2amodule_2a["aniseed/locals"] = {}
-  _2amodule_locals_2a = (_2amodule_2a)["aniseed/locals"]
-end
-local autoload = (require("aniseed.autoload")).autoload
-local a, config, log, state, str, text = autoload("conjure.aniseed.core"), autoload("conjure.config"), autoload("conjure.log"), autoload("conjure.client.clojure.nrepl.state"), autoload("conjure.aniseed.string"), autoload("conjure.text")
-do end (_2amodule_locals_2a)["a"] = a
-_2amodule_locals_2a["config"] = config
-_2amodule_locals_2a["log"] = log
-_2amodule_locals_2a["state"] = state
-_2amodule_locals_2a["str"] = str
-_2amodule_locals_2a["text"] = text
-do local _ = {nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil} end
+local autoload = require("nfnl.autoload")
+local a = autoload("conjure.aniseed.core")
+local config = autoload("conjure.config")
+local log = autoload("conjure.log")
+local state = autoload("conjure.client.clojure.nrepl.state")
+local str = autoload("conjure.aniseed.string")
+local text = autoload("conjure.text")
 local cfg = config["get-in-fn"]({"client", "clojure", "nrepl"})
-do end (_2amodule_locals_2a)["cfg"] = cfg
-do local _ = {nil, nil} end
 local function handle_join_line(resp)
   local next_key
   if resp.out then
@@ -45,8 +30,6 @@ local function handle_join_line(resp)
   end
   return (next_key and (key == next_key))
 end
-_2amodule_locals_2a["handle-join-line"] = handle_join_line
-do local _ = {handle_join_line, nil} end
 local function display_result(resp, opts)
   local opts0 = (opts or {})
   local joined_3f = handle_join_line(resp)
@@ -74,29 +57,24 @@ local function display_result(resp, opts)
   end
   return log.append(_4_, {["join-first?"] = joined_3f, ["low-priority?"] = not not (resp.out or resp.err)})
 end
-_2amodule_2a["display-result"] = display_result
-do local _ = {display_result, nil} end
 local function display_sessions(sessions, cb)
   local current = state.get("conn", "session")
-  local function _11_(_9_)
-    local _arg_10_ = _9_
-    local idx = _arg_10_[1]
-    local session = _arg_10_[2]
-    local _12_
+  local function _10_(_9_)
+    local idx = _9_[1]
+    local session = _9_[2]
+    local _11_
     if (current == session.id) then
-      _12_ = ">"
+      _11_ = ">"
     else
-      _12_ = " "
+      _11_ = " "
     end
-    return str.join({"; ", _12_, idx, " - ", session.str()})
+    return str.join({"; ", _11_, idx, " - ", session.str()})
   end
-  log.append(a.concat({("; Sessions (" .. a.count(sessions) .. "):")}, a["map-indexed"](_11_, sessions)), {["break?"] = true})
+  log.append(a.concat({("; Sessions (" .. a.count(sessions) .. "):")}, a["map-indexed"](_10_, sessions)), {["break?"] = true})
   if cb then
     return cb()
   else
     return nil
   end
 end
-_2amodule_2a["display-sessions"] = display_sessions
-do local _ = {display_sessions, nil} end
-return _2amodule_2a
+return {["display-result"] = display_result, ["display-sessions"] = display_sessions}

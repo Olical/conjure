@@ -1,20 +1,18 @@
-(import-macros {: module : def : defn : defonce : def- : defn- : defonce- : wrap-last-expr : wrap-module-body : deftest} :nfnl.macros.aniseed)
+(local autoload (require :nfnl.autoload))
+(local a (autoload :conjure.aniseed.core))
+(local client (autoload :conjure.client))
+(local config (autoload :conjure.config))
+(local debugger (autoload :conjure.client.clojure.nrepl.debugger))
+(local extract (autoload :conjure.extract))
+(local log (autoload :conjure.log))
+(local nrepl (autoload :conjure.remote.nrepl))
+(local state (autoload :conjure.client.clojure.nrepl.state))
+(local str (autoload :conjure.aniseed.string))
+(local timer (autoload :conjure.timer))
+(local ui (autoload :conjure.client.clojure.nrepl.ui))
+(local uuid (autoload :conjure.uuid))
 
-(module conjure.client.clojure.nrepl.server
-  {autoload {a conjure.aniseed.core
-             uuid conjure.uuid
-             timer conjure.timer
-             log conjure.log
-             extract conjure.extract
-             client conjure.client
-             str conjure.aniseed.string
-             config conjure.config
-             debugger conjure.client.clojure.nrepl.debugger
-             ui conjure.client.clojure.nrepl.ui
-             state conjure.client.clojure.nrepl.state
-             nrepl conjure.remote.nrepl}})
-
-(defn with-conn-or-warn [f opts]
+(fn with-conn-or-warn [f opts]
   (let [conn (state.get :conn)]
     (if conn
       (f conn)
@@ -24,17 +22,17 @@
         (when (a.get opts :else)
           (opts.else))))))
 
-(defn connected? []
+(fn connected? []
   (if (state.get :conn)
     true
     false))
 
-(defn send [msg cb]
+(fn send [msg cb]
   (with-conn-or-warn
     (fn [conn]
       (conn.send msg cb))))
 
-(defn- display-conn-status [status]
+(fn display-conn-status [status]
   (with-conn-or-warn
     (fn [conn]
       (log.append [(str.join
@@ -43,28 +41,28 @@
                         (str.join [": " conn.port_file_path]))])]
                   {:break? true}))))
 
-(defn disconnect []
+(fn disconnect []
   (with-conn-or-warn
     (fn [conn]
       (conn.destroy)
       (display-conn-status :disconnected)
       (a.assoc (state.get) :conn nil))))
 
-(defn close-session [session cb]
+(fn close-session [session cb]
   (send
     {:op :close :session (a.get session :id)}
     cb))
 
-(defn assume-session [session]
+(fn assume-session [session]
   (a.assoc (state.get :conn) :session (a.get session :id))
   (log.append [(str.join ["; Assumed session: " (session.str)])]
               {:break? true}))
 
-(defn un-comment [code]
+(fn un-comment [code]
   (when code
     (string.gsub code "^#_" "")))
 
-(defn eval [opts cb]
+(fn eval [opts cb]
   (with-conn-or-warn
     (fn [_]
       (send
@@ -108,7 +106,7 @@
            (config.get-in [:client :clojure :nrepl :eval :print_function]))}
         cb))))
 
-(defn- with-session-ids [cb]
+(fn with-session-ids [cb]
   (with-conn-or-warn
     (fn [_]
       (send
@@ -120,7 +118,7 @@
               (table.sort sessions))
             (cb sessions)))))))
 
-(defn pretty-session-type [st]
+(fn pretty-session-type [st]
   (a.get
     {:clj :Clojure
      :cljs :ClojureScript
@@ -128,7 +126,7 @@
     st
     "Unknown https://github.com/Olical/conjure/wiki/Frequently-asked-questions#what-does-unknown-mean-in-the-log-when-connecting-to-a-clojure-nrepl"))
 
-(defn session-type [id cb]
+(fn session-type [id cb]
   (let [state {:done? false}]
 
     ;; Let's not wait forever just to check the type of a session.
@@ -161,7 +159,7 @@
               (set state.done? true)
               (cb (when st (str.trim st))))))))))
 
-(defn enrich-session-id [id cb]
+(fn enrich-session-id [id cb]
   (session-type
     id
     (fn [st]
@@ -172,7 +170,7 @@
         (a.assoc t :str #(str.join [t.name " (" t.pretty-type ")"]))
         (cb t)))))
 
-(defn with-sessions [cb]
+(fn with-sessions [cb]
   (with-session-ids
     (fn [sess-ids]
       (let [rich []
@@ -195,7 +193,7 @@
                       (cb rich))))))
             sess-ids))))))
 
-(defn clone-session [session]
+(fn clone-session [session]
   (send
     {:op :clone
      :session (a.get session :id)}
@@ -206,7 +204,7 @@
           (when session-id
             (enrich-session-id session-id assume-session)))))))
 
-(defn assume-or-create-session []
+(fn assume-or-create-session []
   (a.assoc (state.get :conn) :session nil)
   (with-sessions
     (fn [sessions]
@@ -214,7 +212,7 @@
         (clone-session)
         (assume-session (a.first sessions))))))
 
-(defn- eval-preamble [cb]
+(fn eval-preamble [cb]
   (let [queue-size (config.get-in [:client :clojure :nrepl :tap :queue_size])]
     (send
       {:op :eval
@@ -276,13 +274,13 @@
       (when cb
         (nrepl.with-all-msgs-fn cb)))))
 
-(defn- capture-describe []
+(fn capture-describe []
   (send
     {:op :describe}
     (fn [msg]
       (a.assoc (state.get :conn) :describe msg))))
 
-(defn with-conn-and-ops-or-warn [op-names f opts]
+(fn with-conn-and-ops-or-warn [op-names f opts]
   "Takes a sequential table of op names and calls your function f with an
   associative table of the shape {:op-name true} if any exist. If not, your
   function is not called and a warning is displayed."
@@ -310,7 +308,7 @@
               (opts.else))))))
     opts))
 
-(defn handle-input-request [msg]
+(fn handle-input-request [msg]
   (send
     {:op :stdin
      :stdin (.. (or (extract.prompt "Input required: ")
@@ -318,7 +316,7 @@
                 "\n")
      :session msg.session}))
 
-(defn connect [{: host : port : cb : port_file_path : connect-opts}]
+(fn connect [{: host : port : cb : port_file_path : connect-opts}]
   (when (state.get :conn)
     (disconnect))
 
@@ -373,4 +371,20 @@
       {:seen-ns {}
        :port_file_path port_file_path})))
 
-*module*
+{: assume-or-create-session
+ : assume-session
+ : clone-session
+ : close-session
+ : connect
+ : connected?
+ : disconnect
+ : enrich-session-id
+ : eval
+ : handle-input-request
+ : pretty-session-type
+ : send
+ : session-type
+ : un-comment
+ : with-conn-and-ops-or-warn
+ : with-conn-or-warn
+ : with-sessions}

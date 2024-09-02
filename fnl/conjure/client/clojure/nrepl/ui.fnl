@@ -1,16 +1,14 @@
-(import-macros {: module : def : defn : defonce : def- : defn- : defonce- : wrap-last-expr : wrap-module-body : deftest} :nfnl.macros.aniseed)
+(local autoload (require :nfnl.autoload))
+(local a (autoload :conjure.aniseed.core))
+(local config (autoload :conjure.config))
+(local log (autoload :conjure.log))
+(local state (autoload :conjure.client.clojure.nrepl.state))
+(local str (autoload :conjure.aniseed.string))
+(local text (autoload :conjure.text))
 
-(module conjure.client.clojure.nrepl.ui
-  {autoload {log conjure.log
-             text conjure.text
-             config conjure.config
-             a conjure.aniseed.core
-             str conjure.aniseed.string
-             state conjure.client.clojure.nrepl.state}})
+(local cfg (config.get-in-fn [:client :clojure :nrepl]))
 
-(def- cfg (config.get-in-fn [:client :clojure :nrepl]))
-
-(defn- handle-join-line [resp]
+(fn handle-join-line [resp]
   (let [next-key (if resp.out :out resp.err :err)
         key (state.get :join-next :key)]
     (when (or next-key resp.value)
@@ -21,7 +19,7 @@
                  {:key next-key})))
     (and next-key (= key next-key))))
 
-(defn display-result [resp opts]
+(fn display-result [resp opts]
   (local opts (or opts {}))
   (let [joined? (handle-join-line resp)]
     (log.append
@@ -49,7 +47,7 @@
       {:join-first? joined?
        :low-priority? (not (not (or resp.out resp.err)))})))
 
-(defn display-sessions [sessions cb]
+(fn display-sessions [sessions cb]
   (let [current (state.get :conn :session)]
     (log.append
       (a.concat [(.. "; Sessions (" (a.count sessions) "):")]
@@ -63,4 +61,4 @@
     (when cb
       (cb))))
 
-*module*
+{: display-result : display-sessions}
