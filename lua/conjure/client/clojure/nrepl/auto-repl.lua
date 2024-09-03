@@ -1,13 +1,12 @@
 -- [nfnl] Compiled from fnl/conjure/client/clojure/nrepl/auto-repl.fnl by https://github.com/Olical/nfnl, do not edit.
 local _local_1_ = require("nfnl.module")
 local autoload = _local_1_["autoload"]
-local str = autoload("conjure.aniseed.string")
-local nvim = autoload("conjure.aniseed.nvim")
 local a = autoload("conjure.aniseed.core")
-local process = autoload("conjure.process")
-local log = autoload("conjure.log")
-local config = autoload("conjure.config")
 local client = autoload("conjure.client")
+local config = autoload("conjure.config")
+local log = autoload("conjure.log")
+local nvim = autoload("conjure.aniseed.nvim")
+local process = autoload("conjure.process")
 local state = autoload("conjure.client.clojure.nrepl.state")
 local cfg = config["get-in-fn"]({"client", "clojure", "nrepl"})
 local function enportify(subject)
@@ -50,4 +49,4 @@ local function upsert_auto_repl_proc()
     return nil
   end
 end
-return {enportify = enportify, ["delete-auto-repl-port-file"] = delete_auto_repl_port_file, ["upsert-auto-repl-proc"] = upsert_auto_repl_proc}
+return {["delete-auto-repl-port-file"] = delete_auto_repl_port_file, enportify = enportify, ["upsert-auto-repl-proc"] = upsert_auto_repl_proc}

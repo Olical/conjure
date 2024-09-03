@@ -2,19 +2,16 @@
 local _local_1_ = require("nfnl.module")
 local autoload = _local_1_["autoload"]
 local a = autoload("conjure.aniseed.core")
-local mapping = autoload("conjure.mapping")
-local eval = autoload("conjure.eval")
-local str = autoload("conjure.aniseed.string")
-local text = autoload("conjure.text")
-local config = autoload("conjure.config")
 local action = autoload("conjure.client.clojure.nrepl.action")
-local server = autoload("conjure.client.clojure.nrepl.server")
-local parse = autoload("conjure.client.clojure.nrepl.parse")
-local debugger = autoload("conjure.client.clojure.nrepl.debugger")
 local auto_repl = autoload("conjure.client.clojure.nrepl.auto-repl")
-local client = autoload("conjure.client")
-local util = autoload("conjure.util")
+local config = autoload("conjure.config")
+local debugger = autoload("conjure.client.clojure.nrepl.debugger")
+local mapping = autoload("conjure.mapping")
+local parse = autoload("conjure.client.clojure.nrepl.parse")
+local server = autoload("conjure.client.clojure.nrepl.server")
+local str = autoload("conjure.aniseed.string")
 local ts = autoload("conjure.tree-sitter")
+local util = autoload("conjure.util")
 local buf_suffix = ".cljc"
 local comment_prefix = "; "
 local cfg = config["get-in-fn"]({"client", "clojure", "nrepl"})
@@ -128,4 +125,4 @@ local function on_exit()
   auto_repl["delete-auto-repl-port-file"]()
   return server.disconnect()
 end
-return {["buf-suffix"] = buf_suffix, ["comment-prefix"] = comment_prefix, ["form-node?"] = form_node_3f, ["symbol-node?"] = symbol_node_3f, ["comment-node?"] = comment_node_3f, context = context, ["eval-file"] = eval_file, ["eval-str"] = eval_str, ["doc-str"] = doc_str, ["def-str"] = def_str, completions = completions, connect = connect, ["on-filetype"] = on_filetype, ["on-load"] = on_load, ["on-exit"] = on_exit}
+return {["buf-suffix"] = buf_suffix, ["comment-node?"] = comment_node_3f, ["comment-prefix"] = comment_prefix, completions = completions, connect = connect, context = context, ["def-str"] = def_str, ["doc-str"] = doc_str, ["eval-file"] = eval_file, ["eval-str"] = eval_str, ["form-node?"] = form_node_3f, ["on-exit"] = on_exit, ["on-filetype"] = on_filetype, ["on-load"] = on_load, ["symbol-node?"] = symbol_node_3f}

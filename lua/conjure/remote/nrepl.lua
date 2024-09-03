@@ -2,12 +2,11 @@
 local _local_1_ = require("nfnl.module")
 local autoload = _local_1_["autoload"]
 local a = autoload("conjure.aniseed.core")
-local net = autoload("conjure.net")
-local timer = autoload("conjure.timer")
-local uuid = autoload("conjure.uuid")
-local log = autoload("conjure.log")
-local client = autoload("conjure.client")
 local bencode = autoload("conjure.remote.transport.bencode")
+local client = autoload("conjure.client")
+local log = autoload("conjure.log")
+local net = autoload("conjure.net")
+local uuid = autoload("conjure.uuid")
 local function with_all_msgs_fn(cb)
   local acc = {}
   local function _2_(msg)
@@ -122,4 +121,4 @@ local function connect(opts)
   conn = a["merge!"](conn, {send = send}, net.connect({host = opts.host, port = opts.port, cb = handle_connect_fn()}))
   return conn
 end
-return {["with-all-msgs-fn"] = with_all_msgs_fn, ["enrich-status"] = enrich_status, connect = connect}
+return {connect = connect, ["enrich-status"] = enrich_status, ["with-all-msgs-fn"] = with_all_msgs_fn}

@@ -2,9 +2,9 @@
 local _local_1_ = require("nfnl.module")
 local autoload = _local_1_["autoload"]
 local a = autoload("conjure.aniseed.core")
+local stack = autoload("conjure.stack")
 local str = autoload("conjure.aniseed.string")
 local text = autoload("conjure.text")
-local stack = autoload("conjure.stack")
 local function err(...)
   return error(str.join({__fnl_global___2amodule_2dname_2a, ": ", ...}))
 end

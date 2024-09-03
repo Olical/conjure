@@ -2,9 +2,9 @@
 local _local_1_ = require("nfnl.module")
 local autoload = _local_1_["autoload"]
 local a = autoload("conjure.aniseed.core")
-local net = autoload("conjure.net")
-local log = autoload("conjure.log")
 local client = autoload("conjure.client")
+local log = autoload("conjure.log")
+local net = autoload("conjure.net")
 local trn = autoload("conjure.remote.transport.netrepl")
 local function send(conn, msg, cb, prompt_3f)
   log.dbg("send", msg)
@@ -46,4 +46,4 @@ local function connect(opts)
   conn = a.merge(conn, net.connect({host = opts.host, port = opts.port, cb = client["schedule-wrap"](_6_)}))
   return conn
 end
-return {send = send, connect = connect}
+return {connect = connect, send = send}

@@ -1,11 +1,10 @@
 (local {: autoload} (require :nfnl.module))
 (local a (autoload :conjure.aniseed.core))
-(local net (autoload :conjure.net))
-(local timer (autoload :conjure.timer))
-(local uuid (autoload :conjure.uuid))
-(local log (autoload :conjure.log))
-(local client (autoload :conjure.client))
 (local bencode (autoload :conjure.remote.transport.bencode))
+(local client (autoload :conjure.client))
+(local log (autoload :conjure.log))
+(local net (autoload :conjure.net))
+(local uuid (autoload :conjure.uuid))
 
 (fn with-all-msgs-fn [cb]
   (let [acc []]
@@ -124,6 +123,4 @@
 
     conn))
 
-{: with-all-msgs-fn
- : enrich-status
- : connect}
+{: connect : enrich-status : with-all-msgs-fn}

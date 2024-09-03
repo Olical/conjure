@@ -1,7 +1,5 @@
 (local {: describe : it} (require :plenary.busted))
 (local assert (require :luassert.assert))
-
-(local a (require :nfnl.core))
 (local elisp (require :conjure.remote.transport.elisp))
 
 (describe "remote.transport.elisp"
@@ -39,6 +37,4 @@
                "Contents: " ["newline"]
                "  " ["value" "a" 1] " = " ["value" "1" 2] ["newline"]
                "  " ["value" "b" 3] " = " ["value" "2" 4] ["newline"]]
-              (elisp.read "(\"Class\" \": \" (:value \"clojure.lang.PersistentArrayMap\" 0) (:newline) \"Contents: \" (:newline) \"  \" (:value \"a\" 1) \" = \" (:value \"1\" 2) (:newline) \"  \" (:value \"b\" 3) \" = \" (:value \"2\" 4) (:newline))"))))
-    ))
-  ))
+              (elisp.read "(\"Class\" \": \" (:value \"clojure.lang.PersistentArrayMap\" 0) (:newline) \"Contents: \" (:newline) \"  \" (:value \"a\" 1) \" = \" (:value \"1\" 2) (:newline) \"  \" (:value \"b\" 3) \" = \" (:value \"2\" 4) (:newline))"))))))))

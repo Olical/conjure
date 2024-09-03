@@ -1,8 +1,8 @@
 (local {: autoload} (require :nfnl.module))
 (local a (autoload :conjure.aniseed.core))
-(local net (autoload :conjure.net))
-(local log (autoload :conjure.log))
 (local client (autoload :conjure.client))
+(local log (autoload :conjure.log))
+(local net (autoload :conjure.net))
 (local trn (autoload :conjure.remote.transport.netrepl))
 
 (fn send [conn msg cb prompt?]
@@ -68,4 +68,4 @@
 ; (send c "{:hello :world}" a.println)
 ; (c.destroy)
 
-{: send : connect}
+{: connect : send}

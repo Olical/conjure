@@ -2,12 +2,11 @@
 local _local_1_ = require("nfnl.module")
 local autoload = _local_1_["autoload"]
 local a = autoload("conjure.aniseed.core")
-local promise = autoload("conjure.promise")
-local str = autoload("conjure.aniseed.string")
-local stdio = autoload("conjure.remote.stdio")
-local log = autoload("conjure.log")
-local config = autoload("conjure.config")
 local client = autoload("conjure.client")
+local config = autoload("conjure.config")
+local log = autoload("conjure.log")
+local stdio = autoload("conjure.remote.stdio")
+local str = autoload("conjure.aniseed.string")
 local buf_suffix = ".rs"
 local comment_prefix = "// "
 config.merge({client = {rust = {evcxr = {command = "evcxr", prompt_pattern = ">> "}}}})

@@ -2,10 +2,8 @@
 local autoload = require("nfnl.autoload")
 local a = autoload("conjure.aniseed.core")
 local auto_repl = autoload("conjure.client.clojure.nrepl.auto-repl")
-local client = autoload("conjure.client")
 local config = autoload("conjure.config")
 local editor = autoload("conjure.editor")
-local eval = autoload("conjure.aniseed.eval")
 local extract = autoload("conjure.extract")
 local fs = autoload("conjure.fs")
 local hook = autoload("conjure.hook")
@@ -15,7 +13,6 @@ local nrepl = autoload("conjure.remote.nrepl")
 local nvim = autoload("conjure.aniseed.nvim")
 local parse = autoload("conjure.client.clojure.nrepl.parse")
 local server = autoload("conjure.client.clojure.nrepl.server")
-local state = autoload("conjure.client.clojure.nrepl.state")
 local str = autoload("conjure.aniseed.string")
 local text = autoload("conjure.text")
 local ui = autoload("conjure.client.clojure.nrepl.ui")
@@ -793,4 +790,4 @@ local function out_unsubscribe()
   end
   return server["with-conn-and-ops-or-warn"]({"out-unsubscribe"}, _151_)
 end
-return {["passive-ns-require"] = passive_ns_require, ["connect-port-file"] = connect_port_file, ["connect-host-port"] = connect_host_port, ["eval-str"] = eval_str, ["doc-str"] = doc_str, ["def-str"] = def_str, ["escape-backslashes"] = escape_backslashes, ["eval-file"] = eval_file, interrupt = interrupt, ["last-exception"] = last_exception, ["result-1"] = result_1, ["result-2"] = result_2, ["result-3"] = result_3, ["view-tap"] = view_tap, ["view-source"] = view_source, ["clone-current-session"] = clone_current_session, ["clone-fresh-session"] = clone_fresh_session, ["close-current-session"] = close_current_session, ["display-sessions"] = display_sessions, ["close-all-sessions"] = close_all_sessions, ["next-session"] = next_session, ["prev-session"] = prev_session, ["select-session-interactive"] = select_session_interactive, ["test-runners"] = test_runners, ["run-all-tests"] = run_all_tests, ["run-current-ns-tests"] = run_current_ns_tests, ["run-alternate-ns-tests"] = run_alternate_ns_tests, ["extract-test-name-from-form"] = extract_test_name_from_form, ["run-current-test"] = run_current_test, ["refresh-changed"] = refresh_changed, ["refresh-all"] = refresh_all, ["refresh-clear"] = refresh_clear, ["shadow-select"] = shadow_select, piggieback = piggieback, completions = completions, ["out-subscribe"] = out_subscribe, ["out-unsubscribe"] = out_unsubscribe}
+return {["clone-current-session"] = clone_current_session, ["clone-fresh-session"] = clone_fresh_session, ["close-all-sessions"] = close_all_sessions, ["close-current-session"] = close_current_session, completions = completions, ["connect-host-port"] = connect_host_port, ["connect-port-file"] = connect_port_file, ["def-str"] = def_str, ["display-sessions"] = display_sessions, ["doc-str"] = doc_str, ["escape-backslashes"] = escape_backslashes, ["eval-file"] = eval_file, ["eval-str"] = eval_str, ["extract-test-name-from-form"] = extract_test_name_from_form, interrupt = interrupt, ["last-exception"] = last_exception, ["next-session"] = next_session, ["out-subscribe"] = out_subscribe, ["out-unsubscribe"] = out_unsubscribe, ["passive-ns-require"] = passive_ns_require, piggieback = piggieback, ["prev-session"] = prev_session, ["refresh-all"] = refresh_all, ["refresh-changed"] = refresh_changed, ["refresh-clear"] = refresh_clear, ["result-1"] = result_1, ["result-2"] = result_2, ["result-3"] = result_3, ["run-all-tests"] = run_all_tests, ["run-alternate-ns-tests"] = run_alternate_ns_tests, ["run-current-ns-tests"] = run_current_ns_tests, ["run-current-test"] = run_current_test, ["select-session-interactive"] = select_session_interactive, ["shadow-select"] = shadow_select, ["test-runners"] = test_runners, ["view-source"] = view_source, ["view-tap"] = view_tap}

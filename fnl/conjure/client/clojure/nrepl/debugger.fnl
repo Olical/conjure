@@ -1,6 +1,5 @@
 (local autoload (require :nfnl.autoload))
 (local a (autoload :conjure.aniseed.core))
-(local client (autoload :conjure.client))
 (local elisp (autoload :conjure.remote.transport.elisp))
 (local extract (autoload :conjure.extract))
 (local log (autoload :conjure.log))

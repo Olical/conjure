@@ -1,7 +1,6 @@
 -- [nfnl] Compiled from fnl/conjure/client/clojure/nrepl/debugger.fnl by https://github.com/Olical/nfnl, do not edit.
 local autoload = require("nfnl.autoload")
 local a = autoload("conjure.aniseed.core")
-local client = autoload("conjure.client")
 local elisp = autoload("conjure.remote.transport.elisp")
 local extract = autoload("conjure.extract")
 local log = autoload("conjure.log")

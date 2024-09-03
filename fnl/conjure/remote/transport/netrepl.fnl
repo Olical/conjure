@@ -1,7 +1,6 @@
 (local {: autoload} (require :nfnl.module))
 (local a (autoload :conjure.aniseed.core))
 (local bit (autoload :bit))
-(local str (autoload :conjure.aniseed.string))
 
 (fn encode [msg]
   (let [n (a.count msg)]
@@ -67,4 +66,4 @@
         (set awaiting n)
         (decode rem acc)))))
 
-{: encode : decoder}
+{: decoder : encode}

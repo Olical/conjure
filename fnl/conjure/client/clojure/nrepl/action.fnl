@@ -1,10 +1,8 @@
 (local autoload (require :nfnl.autoload))
 (local a (autoload :conjure.aniseed.core))
 (local auto-repl (autoload :conjure.client.clojure.nrepl.auto-repl))
-(local client (autoload :conjure.client))
 (local config (autoload :conjure.config))
 (local editor (autoload :conjure.editor))
-(local eval (autoload :conjure.aniseed.eval))
 (local extract (autoload :conjure.extract))
 (local fs (autoload :conjure.fs))
 (local hook (autoload :conjure.hook))
@@ -14,7 +12,6 @@
 (local nvim (autoload :conjure.aniseed.nvim))
 (local parse (autoload :conjure.client.clojure.nrepl.parse))
 (local server (autoload :conjure.client.clojure.nrepl.server))
-(local state (autoload :conjure.client.clojure.nrepl.state))
 (local str (autoload :conjure.aniseed.string))
 (local text (autoload :conjure.text))
 (local ui (autoload :conjure.client.clojure.nrepl.ui))
@@ -697,40 +694,40 @@
     (fn [conn]
       (server.send {:op :out-unsubscribe}))))
 
-{: passive-ns-require
- : connect-port-file
+{: clone-current-session
+ : clone-fresh-session
+ : close-all-sessions
+ : close-current-session
+ : completions
  : connect-host-port
- : eval-str
- : doc-str
+ : connect-port-file
  : def-str
+ : display-sessions
+ : doc-str
  : escape-backslashes
  : eval-file
+ : eval-str
+ : extract-test-name-from-form
  : interrupt
  : last-exception
+ : next-session
+ : out-subscribe
+ : out-unsubscribe
+ : passive-ns-require
+ : piggieback
+ : prev-session
+ : refresh-all
+ : refresh-changed
+ : refresh-clear
  : result-1
  : result-2
  : result-3
- : view-tap
- : view-source
- : clone-current-session
- : clone-fresh-session
- : close-current-session
- : display-sessions
- : close-all-sessions
- : next-session
- : prev-session
- : select-session-interactive
- : test-runners
  : run-all-tests
- : run-current-ns-tests
  : run-alternate-ns-tests
- : extract-test-name-from-form
+ : run-current-ns-tests
  : run-current-test
- : refresh-changed
- : refresh-all
- : refresh-clear
+ : select-session-interactive
  : shadow-select
- : piggieback
- : completions
- : out-subscribe
- : out-unsubscribe}
+ : test-runners
+ : view-source
+ : view-tap}

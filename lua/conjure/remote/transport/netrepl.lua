@@ -3,7 +3,6 @@ local _local_1_ = require("nfnl.module")
 local autoload = _local_1_["autoload"]
 local a = autoload("conjure.aniseed.core")
 local bit = autoload("bit")
-local str = autoload("conjure.aniseed.string")
 local function encode(msg)
   local n = a.count(msg)
   return (string.char(bit.band(n, 255), bit.band(bit.rshift(n, 8), 255), bit.band(bit.rshift(n, 16), 255), bit.band(bit.rshift(n, 24), 255)) .. msg)
@@ -48,4 +47,4 @@ local function decoder()
   end
   return decode
 end
-return {encode = encode, decoder = decoder}
+return {decoder = decoder, encode = encode}

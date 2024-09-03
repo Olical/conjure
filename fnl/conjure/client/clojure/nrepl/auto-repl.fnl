@@ -1,11 +1,10 @@
 (local {: autoload} (require :nfnl.module))
-(local str (autoload :conjure.aniseed.string))
-(local nvim (autoload :conjure.aniseed.nvim))
 (local a (autoload :conjure.aniseed.core))
-(local process (autoload :conjure.process))
-(local log (autoload :conjure.log))
-(local config (autoload :conjure.config))
 (local client (autoload :conjure.client))
+(local config (autoload :conjure.config))
+(local log (autoload :conjure.log))
+(local nvim (autoload :conjure.aniseed.nvim))
+(local process (autoload :conjure.process))
 (local state (autoload :conjure.client.clojure.nrepl.state))
 
 (local cfg (config.get-in-fn [:client :clojure :nrepl]))
@@ -53,6 +52,4 @@
         (log.append [(.. "; Starting auto-repl: " cmd)])
         proc))))
 
-{: enportify
- : delete-auto-repl-port-file
- : upsert-auto-repl-proc}
+{: delete-auto-repl-port-file : enportify : upsert-auto-repl-proc}

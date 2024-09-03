@@ -2,11 +2,10 @@
 local _local_1_ = require("nfnl.module")
 local autoload = _local_1_["autoload"]
 local a = autoload("conjure.aniseed.core")
-local nvim = autoload("conjure.aniseed.nvim")
-local str = autoload("conjure.aniseed.string")
 local client = autoload("conjure.client")
-local text = autoload("conjure.text")
 local log = autoload("conjure.log")
+local str = autoload("conjure.aniseed.string")
+local text = autoload("conjure.text")
 local uv = vim.loop
 local function strip_unprintable(s)
   return string.gsub(text["strip-ansi-escape-sequences"](s), "[\1\2]", "")
@@ -106,7 +105,7 @@ local function start(opts)
     end
     uv.pipe_connect(repl_pipe, opts.pipename, client["schedule-wrap"](_16_))
   else
-    nvim.err_writeln((__fnl_global___2amodule_2dname_2a .. ": No pipename specified"))
+    vim.api.nvim_err_writeln(("conjure.remote.socket" .. ": No pipename specified"))
   end
   return a["merge!"](repl, {opts = opts, destroy = destroy, send = send})
 end

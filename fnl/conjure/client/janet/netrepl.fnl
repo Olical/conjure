@@ -1,12 +1,11 @@
 (local {: autoload} (require :nfnl.module))
 (local a (autoload :conjure.aniseed.core))
-(local bridge (autoload :conjure.bridge))
-(local mapping (autoload :conjure.mapping))
-(local text (autoload :conjure.text))
-(local log (autoload :conjure.log))
-(local config (autoload :conjure.config))
 (local client (autoload :conjure.client))
+(local config (autoload :conjure.config))
+(local log (autoload :conjure.log))
+(local mapping (autoload :conjure.mapping))
 (local remote (autoload :conjure.remote.netrepl))
+(local text (autoload :conjure.text))
 (local ts (autoload :conjure.tree-sitter))
 
 (local buf-suffix ".janet")
@@ -147,14 +146,14 @@
   (disconnect))
 
 {: buf-suffix
- : comment-prefix
- : form-node?
  : comment-node?
- : disconnect
+ : comment-prefix
  : connect
- : eval-str
+ : disconnect
  : doc-str
  : eval-file
+ : eval-str
+ : form-node?
+ : on-exit
  : on-filetype
- : on-load
- : on-exit}
+ : on-load}

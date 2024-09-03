@@ -2,13 +2,12 @@
 local _local_1_ = require("nfnl.module")
 local autoload = _local_1_["autoload"]
 local a = autoload("conjure.aniseed.core")
-local bridge = autoload("conjure.bridge")
-local mapping = autoload("conjure.mapping")
-local text = autoload("conjure.text")
-local log = autoload("conjure.log")
-local config = autoload("conjure.config")
 local client = autoload("conjure.client")
+local config = autoload("conjure.config")
+local log = autoload("conjure.log")
+local mapping = autoload("conjure.mapping")
 local remote = autoload("conjure.remote.netrepl")
+local text = autoload("conjure.text")
 local ts = autoload("conjure.tree-sitter")
 local buf_suffix = ".janet"
 local comment_prefix = "# "
@@ -140,4 +139,4 @@ end
 local function on_exit()
   return disconnect()
 end
-return {["buf-suffix"] = buf_suffix, ["comment-prefix"] = comment_prefix, ["form-node?"] = form_node_3f, ["comment-node?"] = comment_node_3f, disconnect = disconnect, connect = connect, ["eval-str"] = eval_str, ["doc-str"] = doc_str, ["eval-file"] = eval_file, ["on-filetype"] = on_filetype, ["on-load"] = on_load, ["on-exit"] = on_exit}
+return {["buf-suffix"] = buf_suffix, ["comment-node?"] = comment_node_3f, ["comment-prefix"] = comment_prefix, connect = connect, disconnect = disconnect, ["doc-str"] = doc_str, ["eval-file"] = eval_file, ["eval-str"] = eval_str, ["form-node?"] = form_node_3f, ["on-exit"] = on_exit, ["on-filetype"] = on_filetype, ["on-load"] = on_load}

@@ -1,6 +1,5 @@
 (local {: describe : it} (require :plenary.busted))
 (local assert (require :luassert.assert))
-(local a (require :nfnl.core))
 (local auto-repl (require :conjure.client.clojure.nrepl.auto-repl))
 
 (describe "client.clojure.nrepl.auto-repl"

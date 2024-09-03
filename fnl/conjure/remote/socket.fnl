@@ -1,10 +1,9 @@
 (local {: autoload} (require :nfnl.module))
 (local a (autoload :conjure.aniseed.core))
-(local nvim (autoload :conjure.aniseed.nvim))
-(local str (autoload :conjure.aniseed.string))
 (local client (autoload :conjure.client))
-(local text (autoload :conjure.text))
 (local log (autoload :conjure.log))
+(local str (autoload :conjure.aniseed.string))
+(local text (autoload :conjure.text))
 
 (local uv vim.loop)
 
@@ -108,7 +107,8 @@
                     (fn [err chunk]
                       (on-output err chunk)))))))))
 
-      (nvim.err_writeln (.. *module-name* ": No pipename specified")))
+      ;(nvim.err_writeln (.. *module-name* ": No pipename specified")))
+      (vim.api.nvim_err_writeln (.. :conjure.remote.socket ": No pipename specified")))
 
     (a.merge!
       repl

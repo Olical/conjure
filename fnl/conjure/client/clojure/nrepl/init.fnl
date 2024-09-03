@@ -1,18 +1,15 @@
 (local {: autoload} (require :nfnl.module))
 (local a (autoload :conjure.aniseed.core))
-(local mapping (autoload :conjure.mapping))
-(local eval (autoload :conjure.eval))
-(local str (autoload :conjure.aniseed.string))
-(local text (autoload :conjure.text))
-(local config (autoload :conjure.config))
 (local action (autoload :conjure.client.clojure.nrepl.action))
-(local server (autoload :conjure.client.clojure.nrepl.server))
-(local parse (autoload :conjure.client.clojure.nrepl.parse))
-(local debugger (autoload :conjure.client.clojure.nrepl.debugger))
 (local auto-repl (autoload :conjure.client.clojure.nrepl.auto-repl))
-(local client (autoload :conjure.client))
-(local util (autoload :conjure.util))
+(local config (autoload :conjure.config))
+(local debugger (autoload :conjure.client.clojure.nrepl.debugger))
+(local mapping (autoload :conjure.mapping))
+(local parse (autoload :conjure.client.clojure.nrepl.parse))
+(local server (autoload :conjure.client.clojure.nrepl.server))
+(local str (autoload :conjure.aniseed.string))
 (local ts (autoload :conjure.tree-sitter))
+(local util (autoload :conjure.util))
 
 (local buf-suffix ".cljc")
 (local comment-prefix "; ")
@@ -322,17 +319,17 @@
   (server.disconnect))
 
 {: buf-suffix
- : comment-prefix
- : form-node?
- : symbol-node?
  : comment-node?
- : context
- : eval-file
- : eval-str
- : doc-str
- : def-str
+ : comment-prefix
  : completions
  : connect
+ : context
+ : def-str
+ : doc-str
+ : eval-file
+ : eval-str
+ : form-node?
+ : on-exit
  : on-filetype
  : on-load
- : on-exit}
+ : symbol-node?}

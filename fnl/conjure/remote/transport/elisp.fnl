@@ -1,8 +1,8 @@
 (local {: autoload} (require :nfnl.module))
 (local a (autoload :conjure.aniseed.core))
+(local stack (autoload :conjure.stack))
 (local str (autoload :conjure.aniseed.string))
 (local text (autoload :conjure.text))
-(local stack (autoload :conjure.stack))
 
 (fn err [...]
   (error (str.join [*module-name* ": " ...])))
