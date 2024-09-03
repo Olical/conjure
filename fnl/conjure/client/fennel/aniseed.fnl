@@ -6,7 +6,6 @@
 (local fs (autoload :conjure.fs))
 (local log (autoload :conjure.log))
 (local mapping (autoload :conjure.mapping))
-(local nvim (autoload :conjure.aniseed.nvim))
 (local str (autoload :conjure.aniseed.string))
 (local text (autoload :conjure.text))
 (local ts (autoload :conjure.tree-sitter))
@@ -239,7 +238,7 @@
 (fn completions [opts]
   (let [code (when (not (str.blank? opts.prefix))
                (let [prefix (string.gsub opts.prefix ".$" "")]
-                 (.. "((. (require :" *module-name* ") :value->completions) " prefix ")")))
+                 (.. "((. (require :conjure.client.fennel.aniseed) :value->completions) " prefix ")")))
         mods (value->completions package.loaded)
         locals (let [(ok? m) (pcall #(require opts.context))]
                  (if ok?
