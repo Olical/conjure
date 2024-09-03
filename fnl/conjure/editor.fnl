@@ -1,31 +1,29 @@
-(import-macros {: module : def : defn : defonce : def- : defn- : defonce- : wrap-last-expr : wrap-module-body : deftest} :nfnl.macros.aniseed)
+(local {: autoload} (require :nfnl.module))
+(local a (autoload :conjure.aniseed.core))
+(local fs (autoload :conjure.fs))
+(local nvim (autoload :conjure.aniseed.nvim))
+(local util (autoload :conjure.util))
 
-(module conjure.editor
-  {autoload {a conjure.aniseed.core
-             nvim conjure.aniseed.nvim
-             fs conjure.fs
-             util conjure.util}})
-
-(defn- percent-fn [total-fn]
+(fn percent-fn [total-fn]
   (fn [pc]
     (math.floor (* (/ (total-fn) 100) (* pc 100)))))
 
-(defn width []
-  nvim.o.columns)
+(fn width []
+  vim.o.columns)
 
-(defn height []
-  nvim.o.lines)
+(fn height []
+  vim.o.lines)
 
-(def percent-width (percent-fn width))
-(def percent-height (percent-fn height))
+(local percent-width (percent-fn width))
+(local percent-height (percent-fn height))
 
-(defn cursor-left []
-  (nvim.fn.screencol))
+(fn cursor-left []
+  (vim.fn.screencol))
 
-(defn cursor-top []
-  (nvim.fn.screenrow))
+(fn cursor-top []
+  (vim.fn.screenrow))
 
-(defn go-to [path-or-win line column]
+(fn go-to [path-or-win line column]
   (when (a.string? path-or-win)
     (nvim.ex.edit (fs.localise-path path-or-win)))
 
@@ -35,13 +33,22 @@
       0)
     [line (a.dec column)]))
 
-(defn go-to-mark [m]
+(fn go-to-mark [m]
   (nvim.ex.normal_ (.. "`" m)))
 
-(defn go-back []
+(fn go-back []
   (nvim.ex.normal_ (util.replace-termcodes "<c-o>")))
 
-(defn has-filetype? [ft]
+(fn has-filetype? [ft]
   (a.some #(= ft $1) (nvim.fn.getcompletion ft :filetype)))
 
-*module*
+{: width
+ : height
+ : percent-width
+ : percent-height
+ : cursor-left
+ : cursor-top
+ : go-to
+ : go-to-mark
+ : go-back
+ : has-filetype?}

@@ -1,8 +1,8 @@
 (local {: describe : it} (require :plenary.busted))
 (local assert (require :luassert.assert))
-(local stdio (require :conjure.remote.stdio))
+(local stdio (require :conjure.remote.stdio2))
 
-(describe "conjure.remote.stdio"
+(describe "conjure.remote.stdio2"
   (fn []
     (describe "parse-cmd"
       (fn []

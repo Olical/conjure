@@ -4,6 +4,7 @@ local describe = _local_1_["describe"]
 local it = _local_1_["it"]
 local before_each = _local_1_["before-each"]
 local assert = require("luassert.assert")
+local nc = require("nfnl.core")
 local client = require("conjure.client")
 local function _2_()
   local function _3_()
@@ -126,7 +127,7 @@ local function _31_()
       return table.insert(suffixes, client.get("buf-suffix"))
     end
     client["each-loaded-client"](_33_)
-    assert.same({".sql", ".fnl"}, suffixes)
+    assert.same(nc.sort({".sql", ".fnl"}), nc.sort(suffixes))
     return nil
   end
   return it("runs a function for each loaded client", _32_)

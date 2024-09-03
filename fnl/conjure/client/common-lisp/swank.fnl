@@ -1,31 +1,27 @@
-(import-macros {: module : def : defn : defonce : def- : defn- : defonce- : wrap-last-expr : wrap-module-body : deftest} :nfnl.macros.aniseed)
+(local {: autoload} (require :nfnl.module))
+(local a (autoload :conjure.aniseed.core))
+(local client (autoload :conjure.client))
+(local config (autoload :conjure.config))
+(local log (autoload :conjure.log))
+(local mapping (autoload :conjure.mapping))
+(local remote (autoload :conjure.remote.swank))
+(local str (autoload :conjure.aniseed.string))
+(local text (autoload :conjure.text))
+(local ts (autoload :conjure.tree-sitter))
+(local util (autoload :conjure.util))
 
-(module conjure.client.common-lisp.swank
-  {autoload {a conjure.aniseed.core
-             nvim conjure.aniseed.nvim
-             bridge conjure.bridge
-             mapping conjure.mapping
-             text conjure.text
-             log conjure.log
-             str conjure.aniseed.string
-             config conjure.config
-             client conjure.client
-             remote conjure.remote.swank
-             util conjure.util
-             ts conjure.tree-sitter}})
+(local buf-suffix ".lisp")
+(local comment-prefix "; ")
+(local form-node? ts.node-surrounded-by-form-pair-chars?)
 
-(def buf-suffix ".lisp")
-(def comment-prefix "; ")
-(def form-node? ts.node-surrounded-by-form-pair-chars?)
-
-(defn- iterate-backwards [f lines]
+(fn iterate-backwards [f lines]
   (for [i (length lines) 1 (- 1)] (local line (. lines i))
     (let [res (f line)]
       (when res
         (lua "return res"))))
   nil)
 
-(defn context [_code]
+(fn context [_code]
   (let [[line _col] (vim.api.nvim_win_get_cursor 0)
         lines (vim.api.nvim_buf_get_lines 0 0 line false)]
     (iterate-backwards
@@ -55,37 +51,37 @@
       {:mapping {:connect "cc"
                  :disconnect "cd"}}}}}))
 
-(defonce- state (client.new-state
+(local state (client.new-state
                   #(do
                      {:conn nil
                       :eval-id 0})))
 
-(defn- with-conn-or-warn [f opts]
+(fn with-conn-or-warn [f opts]
   (let [conn (state :conn)]
     (if conn
       (f conn)
       (log.append "; No connection"))))
 
-(defn- connected? []
+(fn connected? []
   (if (state :conn)
     true
     false))
 
-(defn- display-conn-status [status]
+(fn display-conn-status [status]
   (with-conn-or-warn
     (fn [conn]
       (log.append
         [(.. "; " conn.host ":" conn.port " (" status ")")]
         {:break? true}))))
 
-(defn disconnect []
+(fn disconnect []
   (with-conn-or-warn
     (fn [conn]
       (conn.destroy)
       (display-conn-status :disconnected)
       (a.assoc (state) :conn nil))))
 
-(defn- escape-string [in]
+(fn escape-string [in]
   "puts leading slashes infront of \\ and \"
   so that swank can correctly interpret the results."
   (fn replace [in pat rep]
@@ -94,7 +90,7 @@
       (replace "\\" "\\\\")
       (replace "\"" "\\\"")))
 
-(defn- send [msg context cb]
+(fn send [msg context cb]
   (log.dbg (.. "swank.send called with msg: " (a.pr-str msg) ", context: " (a.pr-str context)))
   (with-conn-or-warn
     (fn [conn]
@@ -110,7 +106,7 @@
              "\") \"" (or context "*package*") "\" t " eval-id ")"])
           cb)))))
 
-(defn connect [opts]
+(fn connect [opts]
   (log.dbg (.. "connect called with: " (a.pr-str opts)))
   (let [opts (or opts {})
         host (or opts.host (config.get-in [:client :common_lisp :swank :connection :default_host]))
@@ -142,11 +138,11 @@
 
     (send ":ok" (fn [_]))))
 
-(defn- try-ensure-conn []
+(fn try-ensure-conn []
   (when (not (connected?))
     (connect {:silent? true})))
 
-(defn- string-stream [str]
+(fn string-stream [str]
   "Convert a string into a byte-value iterator"
   (var index 1)
   (fn []
@@ -154,12 +150,12 @@
       (set index (+ index 1))
       r)))
 
-(defn- display-stdout [msg]
+(fn display-stdout [msg]
   (when (and (not= nil msg) (not= "" msg))
     (log.append (text.prefixed-lines msg comment-prefix))))
 
 
-(defn- inner-results [received]
+(fn inner-results [received]
   "A string of '(:return (:ok (blah)) 1)' should just give us the blah"
   ;; this is super hacky, but it seems to work, so we're going with it
   ;; until something better comes along.
@@ -170,7 +166,7 @@
                 (+ idx len)
                 (- (string.len received) tail-size))))
 
-(defn- parse-separated-list [string-to-parse]
+(fn parse-separated-list [string-to-parse]
   "Take a string of quoted components and return an array of those values,
   ie: (I'm using single instead of double quotes in the example for ease)
 
@@ -236,7 +232,7 @@
   ;;finally return vals
   vals)
 
-(defn parse-result [received]
+(fn parse-result [received]
   "Given the form (:return (:ok (\"\" \"(1 2 \\\"3\\\" 4)\")) 1) we want)])
   to extract both
   - the stdout, which is the first delimited quoted component
@@ -258,7 +254,7 @@
   (when (result? received)
     (unpack (parse-separated-list (inner-results received)))))
 
-(defn eval-str [opts]
+(fn eval-str [opts]
   (log.dbg (.. "eval-str() called with: " (a.pr-str opts)))
   (try-ensure-conn)
 
@@ -277,16 +273,16 @@
             (when (not opts.passive?) ;; log results when not true
               (log.append (text.split-lines result)))))))))
 
-(defn doc-str [opts]
+(fn doc-str [opts]
   (try-ensure-conn)
   (eval-str (a.update opts :code #(.. "(describe '" $1 ")"))))
 
-(defn eval-file [opts]
+(fn eval-file [opts]
   (try-ensure-conn)
   (eval-str
     (a.assoc opts :code (.. "(load \"" opts.file-path "\")"))))
 
-(defn on-filetype []
+(fn on-filetype []
   (mapping.buf
     :CommonLispDisconnect
     (config.get-in [:client :common_lisp :swank :mapping :disconnect])
@@ -299,14 +295,14 @@
     #(connect {})
     {:desc "Connect to a REPL"}))
 
-(defn on-load []
+(fn on-load []
   (connect {}))
 
-(defn on-exit []
+(fn on-exit []
   (disconnect))
 
 ;; completions - partially copied from client/fennel/aniseed.fnl.
-(defn completions [opts]
+(fn completions [opts]
   ;(when (not= nil opts)
   ;  (log.append [(.. "; completions() called with: " (a.pr-str opts))] {:break? true}))
   (try-ensure-conn)
@@ -330,4 +326,17 @@
     (a.assoc opts :passive? true)
     (eval-str opts)))
 
-*module*
+{: buf-suffix
+ : comment-prefix
+ : form-node?
+ : context
+ : disconnect
+ : connect
+ : parse-result
+ : eval-str
+ : doc-str
+ : eval-file
+ : on-filetype
+ : on-load
+ : on-exit
+ : completions}

@@ -1,9 +1,9 @@
--- [nfnl] Compiled from fnl/conjure-spec/remote/stdio_spec.fnl by https://github.com/Olical/nfnl, do not edit.
+-- [nfnl] Compiled from fnl/conjure-spec/remote/stdio2_spec.fnl by https://github.com/Olical/nfnl, do not edit.
 local _local_1_ = require("plenary.busted")
 local describe = _local_1_["describe"]
 local it = _local_1_["it"]
 local assert = require("luassert.assert")
-local stdio = require("conjure.remote.stdio")
+local stdio = require("conjure.remote.stdio2")
 local function _2_()
   local function _3_()
     local function _4_()
@@ -25,4 +25,4 @@ local function _2_()
   end
   return describe("parse-cmd", _3_)
 end
-return describe("conjure.remote.stdio", _2_)
+return describe("conjure.remote.stdio2", _2_)

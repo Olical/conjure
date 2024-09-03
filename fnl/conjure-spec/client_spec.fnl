@@ -1,5 +1,6 @@
 (local {: describe : it : before-each } (require :plenary.busted))
 (local assert (require :luassert.assert))
+(local nc (require :nfnl.core))
 (local client (require :conjure.client))
 
 (describe "multiple-states? before a change"
@@ -113,5 +114,5 @@
         (client.each-loaded-client
           (fn []
             (table.insert suffixes (client.get :buf-suffix))))
-        (assert.same [:.sql :.fnl] suffixes)
+        (assert.same (nc.sort [:.sql :.fnl]) (nc.sort suffixes))
         nil))))
