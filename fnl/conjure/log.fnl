@@ -6,7 +6,6 @@
 (local client (autoload :conjure.client))
 (local hook (autoload :conjure.hook))
 (local config (autoload :conjure.config))
-(local view (autoload :conjure.aniseed.view))
 (local text (autoload :conjure.text))
 (local editor (autoload :conjure.editor))
 (local timer (autoload :conjure.timer))
@@ -185,7 +184,7 @@
     (when (> (a.get-in state [:hud :low-priority-spam :streak]) low-priority-streak-threshold)
       (let [pref (client.get :comment-prefix)]
         (client.schedule
-          (. *module* :append)
+          (. (require :conjure.log) :append)
           [(.. pref "Is the HUD popping up too much and annoying you in this project?")
            (.. pref "Set this option to suppress this kind of output for this session.")
            (.. pref "  :let g:conjure#log#hud#ignore_low_priority = v:true")]
