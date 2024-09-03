@@ -8,7 +8,6 @@ local buffer = autoload("conjure.buffer")
 local client = autoload("conjure.client")
 local hook = autoload("conjure.hook")
 local config = autoload("conjure.config")
-local view = autoload("conjure.aniseed.view")
 local text = autoload("conjure.text")
 local editor = autoload("conjure.editor")
 local timer = autoload("conjure.timer")
@@ -179,7 +178,7 @@ local function handle_low_priority_spam_21(low_priority_3f)
     if (a["get-in"](state, {"hud", "low-priority-spam", "streak"}) > low_priority_streak_threshold) then
       do
         local pref = client.get("comment-prefix")
-        client.schedule(__fnl_global___2amodule_2a.append, {(pref .. "Is the HUD popping up too much and annoying you in this project?"), (pref .. "Set this option to suppress this kind of output for this session."), (pref .. "  :let g:conjure#log#hud#ignore_low_priority = v:true")}, {["break?"] = true})
+        client.schedule(require("conjure.log").append, {(pref .. "Is the HUD popping up too much and annoying you in this project?"), (pref .. "Set this option to suppress this kind of output for this session."), (pref .. "  :let g:conjure#log#hud#ignore_low_priority = v:true")}, {["break?"] = true})
       end
       return a["assoc-in"](state, {"hud", "low-priority-spam", "help-displayed?"}, true)
     else

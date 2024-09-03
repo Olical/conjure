@@ -8,7 +8,6 @@ local extract = autoload("conjure.extract")
 local fs = autoload("conjure.fs")
 local log = autoload("conjure.log")
 local mapping = autoload("conjure.mapping")
-local nvim = autoload("conjure.aniseed.nvim")
 local str = autoload("conjure.aniseed.string")
 local text = autoload("conjure.text")
 local ts = autoload("conjure.tree-sitter")
@@ -253,7 +252,7 @@ local function completions(opts)
   local code
   if not str["blank?"](opts.prefix) then
     local prefix = string.gsub(opts.prefix, ".$", "")
-    code = ("((. (require :" .. __fnl_global___2amodule_2dname_2a .. ") :value->completions) " .. prefix .. ")")
+    code = ("((. (require :conjure.client.fennel.aniseed) :value->completions) " .. prefix .. ")")
   else
     code = nil
   end
