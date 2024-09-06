@@ -1,0 +1,31 @@
+#!/bin/bash
+
+# Define the source repository and directories
+REPO_URL="https://github.com/Olical/nfnl.git"
+TMP_DIR="./nfnl_tmp"
+LUA_DIR="./lua/nfnl"
+MACROS_FNL_PATH="./fnl/nfnl/macros.fnl"
+
+# Step 1: Remove the existing local lua/nfnl directory
+echo "Removing existing $LUA_DIR..."
+rm -rf "$LUA_DIR"
+
+# Step 2: Clone the repository into a temporary directory
+echo "Cloning $REPO_URL into $TMP_DIR..."
+git clone "$REPO_URL" "$TMP_DIR"
+
+# Step 3: Copy the contents of lua/nfnl from the cloned repository to the local lua/nfnl directory
+echo "Copying lua/nfnl to $LUA_DIR..."
+mkdir -p "$LUA_DIR"
+cp -r "$TMP_DIR/lua/nfnl/." "$LUA_DIR/"
+
+# Step 4: Copy the fnl/nfnl/macros.fnl file to the same path locally
+echo "Copying macros.fnl..."
+mkdir -p "$(dirname "$MACROS_FNL_PATH")"
+cp "$TMP_DIR/$MACROS_FNL_PATH" "$MACROS_FNL_PATH"
+
+# Step 5: Clean up by removing the temporary directory
+echo "Cleaning up..."
+rm -rf "$TMP_DIR"
+
+echo "Done!"
