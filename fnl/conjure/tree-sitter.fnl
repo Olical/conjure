@@ -194,8 +194,7 @@
             (a.println "Warning: Conjure client returned an unknown get-form-modifier" res)
             node))))))
 
-{
- : enabled?
+{: enabled?
  : parse!
  : node->str
  : lisp-comment-node?
@@ -209,5 +208,4 @@
  : get-leaf
  : node-surrounded-by-form-pair-chars?
  : node-prefixed-by-chars?
- : get-form
- }
+ : get-form}
