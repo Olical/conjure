@@ -1,17 +1,15 @@
-(import-macros {: module : def : defn : defonce : def- : defn- : defonce- : wrap-last-expr : wrap-module-body : deftest} :nfnl.macros.aniseed)
+(local {: autoload} (require :nfnl.module))
+(local a (autoload :conjure.aniseed.core))
+(local log (autoload :conjure.log))
 
-(module conjure.remote.transport.swank
-  {autoload {a conjure.aniseed.core
-             log conjure.log}})
-
-(defn encode [msg]
+(fn encode [msg]
   (let [n (a.count msg)
         header (string.format "%06x" (+ 1 n))] ; Additional 1 for trailing newline
     (.. header msg "\n")))
 
-(defn decode [msg]
+(fn decode [msg]
   (let [len (tonumber (string.sub msg 1 7) 16)
         cmd (string.sub msg 7 len)]
     cmd))
 
-*module*
+{: encode : decode}

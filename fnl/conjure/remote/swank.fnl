@@ -1,21 +1,18 @@
-(import-macros {: module : def : defn : defonce : def- : defn- : defonce- : wrap-last-expr : wrap-module-body : deftest} :nfnl.macros.aniseed)
+(local {: autoload} (require :nfnl.module))
+(local a (autoload :conjure.aniseed.core))
+(local client (autoload :conjure.client))
+(local log (autoload :conjure.log))
+(local net (autoload :conjure.net))
+(local trn (autoload :conjure.remote.transport.swank))
 
-(module conjure.remote.swank
-  {autoload {a conjure.aniseed.core
-             net conjure.net
-             log conjure.log
-             client conjure.client
-             trn conjure.remote.transport.swank
-             nvim conjure.aniseed.nvim}})
-
-(defn send [conn msg cb]
+(fn send [conn msg cb]
   "Send a message to the given connection, call the callback when a response is received."
   ; (log.dbg "send" msg)
   (table.insert conn.queue 1 (or cb false))
   (conn.sock:write (trn.encode msg))
   nil)
 
-(defn connect [opts]
+(fn connect [opts]
   "Connects to a remote swank server.
   * opts.host: The host string.
   * opts.port: Port as a string.
@@ -57,5 +54,5 @@
   ; (send conn (or opts.name "Conjure"))
   conn)
 
-
-*module*
+{: send
+ : connect}

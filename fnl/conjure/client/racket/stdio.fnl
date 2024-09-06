@@ -102,7 +102,7 @@
 
 (fn enter []
   (let [repl (state :repl)
-        path (nvim.fn.expand "%:p")]
+        path (vim.fn.expand "%:p")]
     (when (and repl (not (log.log-buf? path)))
       (repl.send
         (prep-code (.. ",enter " path))

@@ -1,18 +1,15 @@
-(import-macros {: module : def : defn : defonce : def- : defn- : defonce- : wrap-last-expr : wrap-module-body : deftest} :nfnl.macros.aniseed)
+(local autoload (require :nfnl.autoload))
+(local a (autoload :conjure.aniseed.core))
+(local elisp (autoload :conjure.remote.transport.elisp))
+(local extract (autoload :conjure.extract))
+(local log (autoload :conjure.log))
+(local server (autoload :conjure.client.clojure.nrepl.server))
+(local str (autoload :conjure.aniseed.string))
+(local text (autoload :conjure.text))
 
-(module conjure.client.clojure.nrepl.debugger
-  {autoload {log conjure.log
-             extract conjure.extract
-             text conjure.text
-             client conjure.client
-             a conjure.aniseed.core
-             str conjure.aniseed.string
-             elisp conjure.remote.transport.elisp
-             server conjure.client.clojure.nrepl.server}})
+(local state {:last-request nil})
 
-(defonce state {:last-request nil})
-
-(defn init []
+(fn init []
   (log.append ["; Initialising CIDER debugger"] {:break? true})
   (server.send
     {:op :init-debugger}
@@ -21,7 +18,7 @@
       (log.dbg "init-debugger response" msg)))
   nil)
 
-(defn send [opts]
+(fn send [opts]
   (let [key (a.get-in state [:last-request :key])]
     (if key
       (server.send
@@ -35,14 +32,14 @@
         ["; Debugger is not awaiting input"]
         {:break? true}))))
 
-(defn valid-inputs []
+(fn valid-inputs []
   (let [input-types (a.get-in state [:last-request :input-type])]
     (a.filter
       (fn [input-type]
         (not= :stacktrace input-type))
       (or input-types []))))
 
-(defn render-inspect [inspect]
+(fn render-inspect [inspect]
   (str.join
     (a.map
       (fn [v]
@@ -54,7 +51,7 @@
           v))
       inspect)))
 
-(defn handle-input-request [msg]
+(fn handle-input-request [msg]
   (set state.last-request msg)
 
   (log.append ["; CIDER debugger"] {:break? true})
@@ -77,10 +74,16 @@
       {})
     (send {:input (extract.prompt msg.prompt)})))
 
-(defn debug-input [opts]
+(fn debug-input [opts]
   (if (a.some #(= opts.args $1) (valid-inputs))
     (send {:input (.. ":" opts.args)})
     (log.append
       [(.. "; Valid inputs: " (str.join ", " (valid-inputs)))])))
 
-*module*
+{: debug-input
+ : handle-input-request
+ : init
+ : render-inspect
+ : send
+ : state
+ : valid-inputs}

@@ -1,6 +1,5 @@
 (local {: describe : it} (require :plenary.busted))
 (local assert (require :luassert.assert))
-(local a (require :nfnl.core))
 (local promise (require :conjure.promise))
 
 (describe "conjure.promise"

@@ -104,7 +104,7 @@ local function stop()
 end
 local function enter()
   local repl = state("repl")
-  local path = nvim.fn.expand("%:p")
+  local path = vim.fn.expand("%:p")
   if (repl and not log["log-buf?"](path)) then
     local function _14_()
     end

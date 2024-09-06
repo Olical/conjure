@@ -1,38 +1,23 @@
 -- [nfnl] Compiled from fnl/conjure/remote/swank.fnl by https://github.com/Olical/nfnl, do not edit.
-local _2amodule_name_2a = "conjure.remote.swank"
-local _2amodule_2a
-do
-  _G.package.loaded[_2amodule_name_2a] = {}
-  _2amodule_2a = _G.package.loaded[_2amodule_name_2a]
-end
-local _2amodule_locals_2a
-do
-  _2amodule_2a["aniseed/locals"] = {}
-  _2amodule_locals_2a = (_2amodule_2a)["aniseed/locals"]
-end
-local autoload = (require("aniseed.autoload")).autoload
-local a, client, log, net, nvim, trn = autoload("conjure.aniseed.core"), autoload("conjure.client"), autoload("conjure.log"), autoload("conjure.net"), autoload("conjure.aniseed.nvim"), autoload("conjure.remote.transport.swank")
-do end (_2amodule_locals_2a)["a"] = a
-_2amodule_locals_2a["client"] = client
-_2amodule_locals_2a["log"] = log
-_2amodule_locals_2a["net"] = net
-_2amodule_locals_2a["nvim"] = nvim
-_2amodule_locals_2a["trn"] = trn
-do local _ = {nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil} end
+local _local_1_ = require("nfnl.module")
+local autoload = _local_1_["autoload"]
+local a = autoload("conjure.aniseed.core")
+local client = autoload("conjure.client")
+local log = autoload("conjure.log")
+local net = autoload("conjure.net")
+local trn = autoload("conjure.remote.transport.swank")
 local function send(conn, msg, cb)
   table.insert(conn.queue, 1, (cb or false))
-  do end (conn.sock):write(trn.encode(msg))
+  conn.sock:write(trn.encode(msg))
   return nil
 end
-_2amodule_2a["send"] = send
-do local _ = {send, nil} end
 local function connect(opts)
   local conn = {decode = trn.decode, queue = {}}
   local function handle_message(err, chunk)
     if (err or not chunk) then
       return opts["on-error"](err)
     else
-      local function _1_(msg)
+      local function _2_(msg)
         local cb = table.remove(conn.queue)
         if cb then
           return cb(msg)
@@ -40,20 +25,18 @@ local function connect(opts)
           return nil
         end
       end
-      return _1_(conn.decode(chunk))
+      return _2_(conn.decode(chunk))
     end
   end
-  local function _4_(err)
+  local function _5_(err)
     if err then
       return opts["on-failure"](err)
     else
-      do end (conn.sock):read_start(client["schedule-wrap"](handle_message))
+      conn.sock:read_start(client["schedule-wrap"](handle_message))
       return opts["on-success"]()
     end
   end
-  conn = a.merge(conn, net.connect({host = opts.host, port = opts.port, cb = client["schedule-wrap"](_4_)}))
+  conn = a.merge(conn, net.connect({host = opts.host, port = opts.port, cb = client["schedule-wrap"](_5_)}))
   return conn
 end
-_2amodule_2a["connect"] = connect
-do local _ = {connect, nil} end
-return _2amodule_2a
+return {send = send, connect = connect}

@@ -1,18 +1,14 @@
-(import-macros {: module : def : defn : defonce : def- : defn- : defonce- : wrap-last-expr : wrap-module-body : deftest} :nfnl.macros.aniseed)
-
-(module conjure.client.clojure.nrepl.parse)
-
-(defn strip-meta [s]
+(fn strip-meta [s]
   (-?> s
        (string.gsub "%^:.-%s+" "")
        (string.gsub "%^%b{}%s+" "")))
 
-(defn strip-comments [s]
+(fn strip-comments [s]
   (-?> s
        (string.gsub ";.-[\n$]" "")))
 
-(defn strip-shebang [s]
+(fn strip-shebang [s]
   (-?> s
        (string.gsub "^#![^\n]*\n" "")))
 
-*module*
+{: strip-comments : strip-meta : strip-shebang}

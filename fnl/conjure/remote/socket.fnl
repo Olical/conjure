@@ -1,20 +1,17 @@
-(import-macros {: module : def : defn : defonce : def- : defn- : defonce- : wrap-last-expr : wrap-module-body : deftest} :nfnl.macros.aniseed)
+(local {: autoload} (require :nfnl.module))
+(local a (autoload :conjure.aniseed.core))
+(local client (autoload :conjure.client))
+(local log (autoload :conjure.log))
+(local str (autoload :conjure.aniseed.string))
+(local text (autoload :conjure.text))
 
-(module conjure.remote.socket
-  {autoload {a conjure.aniseed.core
-             nvim conjure.aniseed.nvim
-             str conjure.aniseed.string
-             client conjure.client
-             text conjure.text
-             log conjure.log}})
+(local uv vim.loop)
 
-(def- uv vim.loop)
-
-(defn- strip-unprintable [s]
+(fn strip-unprintable [s]
   (-> (text.strip-ansi-escape-sequences s)
       (string.gsub "[\1\2]" "")))
 
-(defn start [opts]
+(fn start [opts]
   "Connects to an external REPL via a socket (TCP or named pipe), and gives you
   hooks to send code to it and read responses back out. This allows you to
   connect Conjure to a running process, but has the same problem as stdio
@@ -110,7 +107,8 @@
                     (fn [err chunk]
                       (on-output err chunk)))))))))
 
-      (nvim.err_writeln (.. *module-name* ": No pipename specified")))
+      ;(nvim.err_writeln (.. *module-name* ": No pipename specified")))
+      (vim.api.nvim_err_writeln (.. :conjure.remote.socket ": No pipename specified")))
 
     (a.merge!
       repl
@@ -118,4 +116,4 @@
        :destroy destroy
        :send send})))
 
-*module*
+{: start}
