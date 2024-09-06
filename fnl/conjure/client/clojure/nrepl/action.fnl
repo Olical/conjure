@@ -345,7 +345,7 @@
       (server.with-sessions
         (fn [sessions]
           (a.run! server.close-session sessions)
-          (log.append [(.. "; Closed all sessions (" (a.count sessions)")")]
+          (log.append [(.. "; Closed all sessions (" (a.count sessions) ")")]
                       {:break? true})
           (server.clone-session))))))
 

@@ -14,7 +14,7 @@
 
 (fn buf [name-suffix mapping-suffix handler-fn opts]
   "Successor to buf, allows mapping to a Lua function.
-  opts: {:desc ""
+  opts: {:desc \"\"
          :mode :n
          :buf 0
          :command-opts {}

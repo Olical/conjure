@@ -27,7 +27,7 @@
       (config.get-in [:mapping m])))
 
 (fn progress [n]
-  (.. "Lesson ["n "/7] complete!"))
+  (.. "Lesson [" n "/7] complete!"))
 
 (fn append-or-warn [current-progress lines]
   (if (append lines)
