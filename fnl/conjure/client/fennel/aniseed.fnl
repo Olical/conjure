@@ -24,7 +24,8 @@
    {:fennel
     {:aniseed
      {:aniseed_module_prefix :conjure.aniseed.
-      :use_metadata true}}}})
+      :use_metadata true
+      :deprecation_warning true}}}})
 
 (when (config.get-in [:mapping :enable_defaults])
   (config.merge
@@ -273,6 +274,17 @@
     (when (not ok?)
       (opts.cb locals))))
 
+(fn on-load []
+  (when (and (= "conjure.client.fennel.aniseed" (config.get-in [:filetype :fennel]))
+             (cfg [:deprecation_warning]))
+    (log.append
+      ["; Warning: https://github.com/Olical/nfnl will eventually replace Aniseed as the default Fennel client."
+       "; Set the following to keep things as they are indefinitely:"
+       "(set vim.g.conjure#filetype#fennel \"conjure.client.fennel.aniseed\")"
+       ""
+       "; Set the following to suppress this warning:"
+       "(set vim.g.conjure#client#fennel#aniseed#deprecation_warning false)"])))
+
 {: buf-suffix
  : comment-node?
  : comment-prefix
@@ -291,4 +303,5 @@
  : reset-repl
  : run-all-tests
  : run-buf-tests
- : value->completions }
+ : value->completions
+ : on-load}

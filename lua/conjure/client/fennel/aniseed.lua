@@ -19,7 +19,7 @@ end
 local buf_suffix = ".fnl"
 local context_pattern = "%(%s*module%s+(.-)[%s){]"
 local comment_prefix = "; "
-config.merge({client = {fennel = {aniseed = {aniseed_module_prefix = "conjure.aniseed.", use_metadata = true}}}})
+config.merge({client = {fennel = {aniseed = {aniseed_module_prefix = "conjure.aniseed.", use_metadata = true, deprecation_warning = true}}}})
 if config["get-in"]({"mapping", "enable_defaults"}) then
   config.merge({client = {fennel = {aniseed = {mapping = {run_buf_tests = "tt", run_all_tests = "ta", reset_repl = "rr", reset_all_repls = "ra"}}}}})
 else
@@ -304,4 +304,11 @@ local function completions(opts)
     return nil
   end
 end
-return {["buf-suffix"] = buf_suffix, ["comment-node?"] = comment_node_3f, ["comment-prefix"] = comment_prefix, completions = completions, ["context-pattern"] = context_pattern, ["default-module-name"] = default_module_name, ["display-result"] = display_result, ["doc-str"] = doc_str, ["eval-file"] = eval_file, ["eval-str"] = eval_str, ["form-node?"] = form_node_3f, ["module-name"] = module_name, ["on-filetype"] = on_filetype, repl = repl, ["reset-all-repls"] = reset_all_repls, ["reset-repl"] = reset_repl, ["run-all-tests"] = run_all_tests, ["run-buf-tests"] = run_buf_tests, ["value->completions"] = value__3ecompletions}
+local function on_load()
+  if (("conjure.client.fennel.aniseed" == config["get-in"]({"filetype", "fennel"})) and cfg({"deprecation_warning"})) then
+    return log.append({"; Warning: https://github.com/Olical/nfnl will eventually replace Aniseed as the default Fennel client.", "; Set the following to keep things as they are indefinitely:", "(set vim.g.conjure#filetype#fennel \"conjure.client.fennel.aniseed\")", "", "; Set the following to suppress this warning:", "(set vim.g.conjure#client#fennel#aniseed#deprecation_warning false)"})
+  else
+    return nil
+  end
+end
+return {["buf-suffix"] = buf_suffix, ["comment-node?"] = comment_node_3f, ["comment-prefix"] = comment_prefix, completions = completions, ["context-pattern"] = context_pattern, ["default-module-name"] = default_module_name, ["display-result"] = display_result, ["doc-str"] = doc_str, ["eval-file"] = eval_file, ["eval-str"] = eval_str, ["form-node?"] = form_node_3f, ["module-name"] = module_name, ["on-filetype"] = on_filetype, repl = repl, ["reset-all-repls"] = reset_all_repls, ["reset-repl"] = reset_repl, ["run-all-tests"] = run_all_tests, ["run-buf-tests"] = run_buf_tests, ["value->completions"] = value__3ecompletions, ["on-load"] = on_load}
