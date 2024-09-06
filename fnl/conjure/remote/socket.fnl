@@ -107,8 +107,7 @@
                     (fn [err chunk]
                       (on-output err chunk)))))))))
 
-      ;(nvim.err_writeln (.. *module-name* ": No pipename specified")))
-      (vim.api.nvim_err_writeln (.. :conjure.remote.socket ": No pipename specified")))
+      (vim.api.nvim_err_writeln "conjure.remote.socket: No pipename specified"))
 
     (a.merge!
       repl

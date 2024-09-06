@@ -5,7 +5,7 @@
 (local text (autoload :conjure.text))
 
 (fn err [...]
-  (error (str.join [*module-name* ": " ...])))
+  (error (str.join ["conjure.remote.transport.elisp: " ...])))
 
 (local symbol-char-pat "[a-zA-Z0-9_-]")
 (local number-char-pat "[0-9.-]")

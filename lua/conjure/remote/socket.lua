@@ -105,7 +105,7 @@ local function start(opts)
     end
     uv.pipe_connect(repl_pipe, opts.pipename, client["schedule-wrap"](_16_))
   else
-    vim.api.nvim_err_writeln(("conjure.remote.socket" .. ": No pipename specified"))
+    vim.api.nvim_err_writeln("conjure.remote.socket: No pipename specified")
   end
   return a["merge!"](repl, {opts = opts, destroy = destroy, send = send})
 end

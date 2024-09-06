@@ -6,7 +6,7 @@ local stack = autoload("conjure.stack")
 local str = autoload("conjure.aniseed.string")
 local text = autoload("conjure.text")
 local function err(...)
-  return error(str.join({__fnl_global___2amodule_2dname_2a, ": ", ...}))
+  return error(str.join({"conjure.remote.transport.elisp: ", ...}))
 end
 local symbol_char_pat = "[a-zA-Z0-9_-]"
 local number_char_pat = "[0-9.-]"
