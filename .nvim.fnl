@@ -37,8 +37,6 @@
 (set package.path (.. package.path ";test/lua/?.lua"))
 ; (set vim.g.conjure#eval#gsubs {:do-comment ["^%(comment[%s%c]" "(do "]})
 
-(set vim.g.conjure#filetype#fennel "conjure.client.fennel.nfnl")
-
 (comment
   (nvim.ex.augroup :conjure_set_state_key_on_dir_changed)
   (nvim.ex.autocmd_)
