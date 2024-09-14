@@ -34,14 +34,7 @@ local function new(opts)
   co = coroutine.create(_2_)
   coroutine.resume(co)
   local function _9_(input)
-    if core["string?"](input) then
-      local function _10_(char)
-        return coroutine.resume(co, char)
-      end
-      core["run!"](_10_, core.seq((input .. "\n")))
-    else
-      coroutine.resume(co, input)
-    end
+    coroutine.resume(co, input)
     local prev_eval_values = results_to_return
     results_to_return = nil
     return prev_eval_values

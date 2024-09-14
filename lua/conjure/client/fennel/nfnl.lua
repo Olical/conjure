@@ -9,6 +9,7 @@ local core = autoload("nfnl.core")
 local fennel = autoload("nfnl.fennel")
 local str = autoload("nfnl.string")
 local repl = autoload("nfnl.repl")
+local fs = autoload("nfnl.fs")
 local comment_node_3f = ts["lisp-comment-node?"]
 local function form_node_3f(node)
   return ts["node-surrounded-by-form-pair-chars?"](node, {{"#(", ")"}})
@@ -40,6 +41,10 @@ local function repl_for_path(path)
     return r
   end
 end
+local function module_path(path)
+  return fs["split-path"](fs["file-name-root"](path))
+end
+--[[ (module-path "~/repos/Olical/conjure/fnl/conjure/client/fennel/nfnl.fnl") ]]
 local function eval_str(opts)
   local repl0 = repl_for_path(opts["file-path"])
   local results = repl0((opts.code .. "\n"))
@@ -59,5 +64,4 @@ local function doc_str(opts)
   core.assoc(opts, "code", (",doc " .. opts.code))
   return eval_str(opts)
 end
---[[ (+ 10 20) ]]
 return {["comment-node?"] = comment_node_3f, ["form-node?"] = form_node_3f, ["buf-suffix"] = buf_suffix, ["comment-prefix"] = comment_prefix, ["eval-str"] = eval_str, ["eval-file"] = eval_file, ["doc-str"] = doc_str}
