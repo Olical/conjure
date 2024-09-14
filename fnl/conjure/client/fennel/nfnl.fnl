@@ -31,9 +31,18 @@
 
 (local cfg (config.get-in-fn [:client :fennel :nfnl]))
 
+(local repls {})
+
+(fn repl-for-path [path]
+  (if (?. repls path)
+    (. repls path)
+    (let [r (repl.new)]
+      (tset repls path r)
+      r)))
+
 (fn eval-str [opts]
-  (let [eval (repl.new)
-        results (eval (.. opts.code "\n"))
+  (let [repl (repl-for-path opts.file-path)
+        results (repl (.. opts.code "\n"))
         result-strs (core.map fennel.view results)
         lines (text.split-lines (str.join "\n" result-strs))]
     (log.append lines)))

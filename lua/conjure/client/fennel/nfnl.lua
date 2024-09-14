@@ -21,9 +21,28 @@ if config["get-in"]({"mapping", "enable_defaults"}) then
 else
 end
 local cfg = config["get-in-fn"]({"client", "fennel", "nfnl"})
+local repls = {}
+local function repl_for_path(path)
+  local _4_
+  do
+    local t_3_ = repls
+    if (nil ~= t_3_) then
+      t_3_ = t_3_[path]
+    else
+    end
+    _4_ = t_3_
+  end
+  if _4_ then
+    return repls[path]
+  else
+    local r = repl.new()
+    repls[path] = r
+    return r
+  end
+end
 local function eval_str(opts)
-  local eval = repl.new()
-  local results = eval((opts.code .. "\n"))
+  local repl0 = repl_for_path(opts["file-path"])
+  local results = repl0((opts.code .. "\n"))
   local result_strs = core.map(fennel.view, results)
   local lines = text["split-lines"](str.join("\n", result_strs))
   return log.append(lines)
