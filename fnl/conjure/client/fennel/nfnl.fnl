@@ -40,9 +40,12 @@
 
 (fn eval-file [opts]
   (set opts.code (core.slurp opts.file-path))
-
   (when opts.code
     (eval-str opts)))
+
+(fn doc-str [opts]
+  (core.assoc opts :code (.. ",doc " opts.code))
+  (eval-str opts))
 
 (comment
   (+ 10 20))
@@ -52,4 +55,5 @@
  : buf-suffix
  : comment-prefix
  : eval-str
- : eval-file}
+ : eval-file
+ : doc-str}

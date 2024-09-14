@@ -36,5 +36,9 @@ local function eval_file(opts)
     return nil
   end
 end
+local function doc_str(opts)
+  core.assoc(opts, "code", (",doc " .. opts.code))
+  return eval_str(opts)
+end
 --[[ (+ 10 20) ]]
-return {["comment-node?"] = comment_node_3f, ["form-node?"] = form_node_3f, ["buf-suffix"] = buf_suffix, ["comment-prefix"] = comment_prefix, ["eval-str"] = eval_str, ["eval-file"] = eval_file}
+return {["comment-node?"] = comment_node_3f, ["form-node?"] = form_node_3f, ["buf-suffix"] = buf_suffix, ["comment-prefix"] = comment_prefix, ["eval-str"] = eval_str, ["eval-file"] = eval_file, ["doc-str"] = doc_str}
