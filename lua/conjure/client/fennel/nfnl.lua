@@ -23,10 +23,18 @@ end
 local cfg = config["get-in-fn"]({"client", "fennel", "nfnl"})
 local function eval_str(opts)
   local eval = repl.new()
-  local results = eval(opts.code)
+  local results = eval((opts.code .. "\n"))
   local result_strs = core.map(fennel.view, results)
   local lines = text["split-lines"](str.join("\n", result_strs))
   return log.append(lines)
 end
+local function eval_file(opts)
+  opts.code = core.slurp(opts["file-path"])
+  if opts.code then
+    return eval_str(opts)
+  else
+    return nil
+  end
+end
 --[[ (+ 10 20) ]]
-return {["comment-node?"] = comment_node_3f, ["form-node?"] = form_node_3f, ["buf-suffix"] = buf_suffix, ["comment-prefix"] = comment_prefix, ["eval-str"] = eval_str}
+return {["comment-node?"] = comment_node_3f, ["form-node?"] = form_node_3f, ["buf-suffix"] = buf_suffix, ["comment-prefix"] = comment_prefix, ["eval-str"] = eval_str, ["eval-file"] = eval_file}

@@ -33,10 +33,16 @@
 
 (fn eval-str [opts]
   (let [eval (repl.new)
-        results (eval opts.code)
+        results (eval (.. opts.code "\n"))
         result-strs (core.map fennel.view results)
         lines (text.split-lines (str.join "\n" result-strs))]
     (log.append lines)))
+
+(fn eval-file [opts]
+  (set opts.code (core.slurp opts.file-path))
+
+  (when opts.code
+    (eval-str opts)))
 
 (comment
   (+ 10 20))
@@ -45,4 +51,5 @@
  : form-node?
  : buf-suffix
  : comment-prefix
- : eval-str}
+ : eval-str
+ : eval-file}
