@@ -1,6 +1,6 @@
 (local {: autoload} (require :nfnl.module))
 (local nvim (autoload :conjure.aniseed.nvim))
-(local a (autoload :conjure.aniseed.core))
+(local core (autoload :nfnl.core))
 (local text (autoload :conjure.text))
 
 (fn unlist [buf]
@@ -38,68 +38,58 @@
 
 (fn empty? [buf]
   (and (<= (nvim.buf_line_count buf) 1)
-       (= 0 (a.count (a.first (nvim.buf_get_lines buf 0 -1 false))))))
+       (= 0 (core.count (core.first (nvim.buf_get_lines buf 0 -1 false))))))
 
 (fn replace-range [buf range s]
-  (let [start-line (a.dec (a.get-in range [:start 1]))
-        end-line (a.get-in range [:end 1])
-        start-char (a.get-in range [:start 2])
-        end-char (a.get-in range [:end 2])
+  (let [start-line (core.dec (core.get-in range [:start 1]))
+        end-line (core.get-in range [:end 1])
+        start-char (core.get-in range [:start 2])
+        end-char (core.get-in range [:end 2])
 
         new-lines (text.split-lines s)
         old-lines (nvim.buf_get_lines buf start-line end-line false)
 
-        head (string.sub (a.first old-lines) 1 start-char)
-        tail (string.sub (a.last old-lines) (+ end-char 2))]
+        head (string.sub (core.first old-lines) 1 start-char)
+        tail (string.sub (core.last old-lines) (+ end-char 2))]
 
-    (a.update
+    (core.update
       new-lines 1
       (fn [l] (.. head l)))
 
-    (a.update
-      new-lines (a.count new-lines)
+    (core.update
+      new-lines (core.count new-lines)
       (fn [l] (.. l tail)))
 
     (nvim.buf_set_lines buf start-line end-line false new-lines)))
-
-(fn take-while [f xs]
-  (var acc [])
-  (var done? false)
-  (for [i 1 (a.count xs) 1]
-    (let [v (. xs i)]
-      (if (and (not done?) (f v))
-        (table.insert acc v)
-        (set done? true))))
-  acc)
 
 (fn append-prefixed-line [buf [tl tc] prefix body]
   "Appends a string to the end of the current line, or the one below this one
   if there's already the same suffix on the end. If there's already a matching
   suffix on the end of this line and the one below, it will insert another
   below that last one and so on."
-  (let [tl (a.dec tl)
+  (let [tl (core.dec tl)
         [head-line & lines] (nvim.buf_get_lines buf tl -1 false)
         to-append (text.prefixed-lines body prefix {})]
     (if (head-line:find prefix tc)
       (let [[new-tl lines]
             (or
-              (->> (a.kv-pairs lines)
-                   (a.map
+              (->> (core.kv-pairs lines)
+                   (core.map
                      (fn [[n line]]
                        (if (text.starts-with line prefix)
-                         [(+ tl n) (a.concat [line] to-append)]
+                         [(+ tl n) (core.concat [line] to-append)]
                          false)))
-                   (take-while a.identity)
-                   (a.last))
-              [tl (a.concat [head-line] to-append)])]
-        (nvim.buf_set_lines buf new-tl (a.inc new-tl) false lines))
+                   (core.take-while core.identity)
+                   (core.last))
+              [tl (core.concat [head-line] to-append)])]
+        (nvim.buf_set_lines buf new-tl (core.inc new-tl) false lines))
       (nvim.buf_set_lines
         buf tl
-        (a.inc tl)
+        (core.inc tl)
         false
-        (if (= 1 (a.count to-append))
-          [(.. head-line " " (a.first to-append))]
-          (a.concat
+        (if (= 1 (core.count to-append))
+          [(.. head-line " " (core.first to-append))]
+          (core.concat
             [head-line]
             to-append))))))
 
@@ -108,5 +98,4 @@
  : upsert-hidden
  : empty?
  : replace-range
- : take-while
  : append-prefixed-line}

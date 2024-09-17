@@ -7,6 +7,7 @@
 (local fennel (autoload :nfnl.fennel))
 (local str (autoload :nfnl.string))
 (local repl (autoload :nfnl.repl))
+(local fs (autoload :nfnl.fs))
 
 (local comment-node? ts.lisp-comment-node?)
 
@@ -34,13 +35,30 @@
 (local repls {})
 
 (fn repl-for-path [path]
+  "Upserts a repl for the given path. Stored in the `repls` table.
+  TODO: Add mappings or commands that allow us to reset the REPL state if they get stuck."
   (if (?. repls path)
     (. repls path)
     (let [r (repl.new)]
       (tset repls path r)
       r)))
 
+(fn module-path [path]
+  "Turns a full file path into a dot.delimited.module.path. We can then use this module path to perform live reloads by modifying the currently loaded module.
+
+  Finds the closest root `fnl` directory and uses that as the root of the module path.
+
+  TODO: Make this configurable so that non-standard Fennel setups also work. Maybe just read the .nfnl.fnl configuration since that is what we are supposed to be working with."
+  (-> path
+      (fs.file-name-root)
+      (fs.split-path)
+      (->> (core.take-while #(not= $1 "fnl")))))
+
+(comment
+  (module-path "~/repos/Olical/conjure/fnl/conjure/client/fennel/nfnl.fnl"))
+
 (fn eval-str [opts]
+  "Client function, called by Conjure when evaluating a string."
   (let [repl (repl-for-path opts.file-path)
         results (repl (.. opts.code "\n"))
         result-strs (core.map fennel.view results)
@@ -48,16 +66,15 @@
     (log.append lines)))
 
 (fn eval-file [opts]
+  "Client function, called by Conjure when evaluating a file from disk."
   (set opts.code (core.slurp opts.file-path))
   (when opts.code
     (eval-str opts)))
 
 (fn doc-str [opts]
+  "Client function, called by Conjure when looking up documentation."
   (core.assoc opts :code (.. ",doc " opts.code))
   (eval-str opts))
-
-(comment
-  (+ 10 20))
 
 {: comment-node?
  : form-node?
