@@ -34,6 +34,8 @@
 
 (local repls {})
 
+;; TODO Catch errors and display them in the log with ASCII codes removed.
+
 (fn repl-for-path [path]
   "Upserts a repl for the given path. Stored in the `repls` table.
   TODO: Add mappings or commands that allow us to reset the REPL state if they get stuck."
@@ -49,10 +51,10 @@
   Finds the closest root `fnl` directory and uses that as the root of the module path.
 
   TODO: Make this configurable so that non-standard Fennel setups also work. Maybe just read the .nfnl.fnl configuration since that is what we are supposed to be working with."
-  (-> path
-      (fs.file-name-root)
-      (fs.split-path)
-      (->> (core.take-while #(not= $1 "fnl")))))
+  (let [parts (-> path (fs.file-name-root) (fs.split-path))
+        fnl-and-below (core.drop-while #(not= $1 "fnl") parts)]
+    (when (= "fnl" (core.first fnl-and-below))
+      (str.join "." (core.rest fnl-and-below)))))
 
 (comment
   (module-path "~/repos/Olical/conjure/fnl/conjure/client/fennel/nfnl.fnl"))

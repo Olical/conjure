@@ -42,10 +42,17 @@ local function repl_for_path(path)
   end
 end
 local function module_path(path)
+  local parts = fs["split-path"](fs["file-name-root"](path))
+  local fnl_and_below
   local function _7_(_241)
     return (_241 ~= "fnl")
   end
-  return core["take-while"](_7_, fs["split-path"](fs["file-name-root"](path)))
+  fnl_and_below = core["drop-while"](_7_, parts)
+  if ("fnl" == core.first(fnl_and_below)) then
+    return str.join(".", core.rest(fnl_and_below))
+  else
+    return nil
+  end
 end
 --[[ (module-path "~/repos/Olical/conjure/fnl/conjure/client/fennel/nfnl.fnl") ]]
 local function eval_str(opts)
