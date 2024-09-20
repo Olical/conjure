@@ -210,6 +210,13 @@
                 ["; Multiple candidates found"]
                 (a.map #(.. $1 "/" opts.code) (a.keys info.candidates))))
 
+            (and info.file info.line)
+            (let [column (or info.column 1)
+                  path (nrepl->nvim-path info.file)]
+              (editor.go-to path info.line column)
+              (log.append [(.. "; " path " [" info.line " " column "]")]
+                          {:suppress-hud? true}))
+
             info.javadoc
             (log.append ["; Can't open source, it's Java"
                          (.. "; " info.javadoc)])
@@ -218,12 +225,6 @@
             (log.append ["; Can't open source, it's a special form"
                          (when info.url (.. "; " info.url))])
 
-            (and info.file info.line)
-            (let [column (or info.column 1)
-                  path (nrepl->nvim-path info.file)]
-              (editor.go-to path info.line column)
-              (log.append [(.. "; " path " [" info.line " " column "]")]
-                          {:suppress-hud? true}))
 
             (log.append ["; Unsupported target"
                          (.. "; " (a.pr-str info))])))))))
