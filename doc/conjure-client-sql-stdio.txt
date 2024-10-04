@@ -93,4 +93,12 @@ All configuration can be set as described in |conjure-configuration|.
             marker as the result.
             Default: `"=> "`
 
+                           *g:conjure#client#sql#stdio#meta_prefix_pattern*
+`g:conjure#client#sql#stdio#meta_prefix_pattern`
+            Lua pattern to identify meta commands that do not require a `;`
+            suffix. Commands such as `\watch` in postgresql and `.tables` in
+            duckdb. When Conjure spots one of these it will avoid appending a
+            semi-colon which is required to execute true statements.
+            Default: `"^[.\\]%w"`
+
 vim:tw=78:sw=2:ts=2:ft=help:norl:et:listchars=
