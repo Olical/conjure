@@ -75,7 +75,7 @@ local function node__3etable(node)
   if (a.get(node, "range") and a.get(node, "content")) then
     return node
   elseif node then
-    return {range = range(node), content = node__3estr(node)}
+    return {range = range(node), content = node__3estr(node), node = node}
   else
     return nil
   end

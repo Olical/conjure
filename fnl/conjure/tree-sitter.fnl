@@ -69,7 +69,8 @@
 
     node
     {:range (range node)
-     :content (node->str node)}
+     :content (node->str node)
+     :node node}
 
     nil))
 
