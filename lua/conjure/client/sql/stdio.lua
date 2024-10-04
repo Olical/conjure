@@ -8,7 +8,8 @@ local log = autoload("conjure.log")
 local stdio = autoload("conjure.remote.stdio-rt")
 local config = autoload("conjure.config")
 local mapping = autoload("conjure.mapping")
-config.merge({client = {sql = {stdio = {command = "psql postgres://postgres:postgres@localhost/postgres", prompt_pattern = "=> "}}}})
+local ts = autoload("conjure.tree-sitter")
+config.merge({client = {sql = {stdio = {command = "psql postgres://postgres:postgres@localhost/postgres", meta_prefix_pattern = "^[.\\]%w", prompt_pattern = "=> "}}}})
 if config["get-in"]({"mapping", "enable_defaults"}) then
   config.merge({client = {sql = {stdio = {mapping = {start = "cs", stop = "cS", interrupt = "ei"}}}}})
 else
@@ -22,7 +23,7 @@ state = client["new-state"](_3_)
 local buf_suffix = ".sql"
 local comment_prefix = "-- "
 local function form_node_3f(node)
-  return ("statement" == node:type())
+  return (("statement" == node:type()) or a["string?"](string.match(ts["node->str"](node), cfg({"meta_prefix_pattern"}))))
 end
 local function comment_node_3f(node)
   return (("comment" == node:type()) or ("marginalia" == node:type()))
@@ -56,7 +57,15 @@ local function __3elist(s)
 end
 local function eval_str(opts)
   local function _7_(repl)
-    local function _8_(msgs)
+    local node = a.get(opts, "node")
+    local suffix
+    if (node and ("statement" == node:type())) then
+      suffix = ";\n"
+    else
+      suffix = "\n"
+    end
+    print(node, node:type(), suffix)
+    local function _9_(msgs)
       local msgs0 = __3elist(msgs)
       if opts["on-result"] then
         opts["on-result"](str.join("\n", remove_blank_lines(a.last(msgs0))))
@@ -64,7 +73,7 @@ local function eval_str(opts)
       end
       return a["run!"](display_result, msgs0)
     end
-    return repl.send((opts.code .. ";\n"), _8_, {["batch?"] = false})
+    return repl.send((opts.code .. suffix), _9_, {["batch?"] = false})
   end
   return with_repl_or_warn(_7_)
 end
@@ -72,11 +81,11 @@ local function eval_file(opts)
   return eval_str(a.assoc(opts, "code", a.slurp(opts["file-path"])))
 end
 local function interrupt()
-  local function _10_(repl)
+  local function _11_(repl)
     log.append({(comment_prefix .. " Sending interrupt signal.")}, {["break?"] = true})
     return repl["send-signal"](vim.loop.constants.SIGINT)
   end
-  return with_repl_or_warn(_10_)
+  return with_repl_or_warn(_11_)
 end
 local function display_repl_status(status)
   local repl = state("repl")
@@ -101,13 +110,13 @@ local function start()
   if state("repl") then
     return log.append({(comment_prefix .. "Can't start, REPL is already running."), (comment_prefix .. "Stop the REPL with " .. config["get-in"]({"mapping", "prefix"}) .. cfg({"mapping", "stop"}))}, {["break?"] = true})
   else
-    local function _13_()
+    local function _14_()
       return display_repl_status("started")
     end
-    local function _14_(err)
+    local function _15_(err)
       return display_repl_status(err)
     end
-    local function _15_(code, signal)
+    local function _16_(code, signal)
       if (("number" == type(code)) and (code > 0)) then
         log.append({(comment_prefix .. "process exited with code " .. code)})
       else
@@ -118,10 +127,10 @@ local function start()
       end
       return stop()
     end
-    local function _18_(msg)
+    local function _19_(msg)
       return display_result(msg)
     end
-    return a.assoc(state(), "repl", stdio.start({["prompt-pattern"] = cfg({"prompt_pattern"}), cmd = cfg({"command"}), ["on-success"] = _13_, ["on-error"] = _14_, ["on-exit"] = _15_, ["on-stray-output"] = _18_}))
+    return a.assoc(state(), "repl", stdio.start({["prompt-pattern"] = cfg({"prompt_pattern"}), cmd = cfg({"command"}), ["on-success"] = _14_, ["on-error"] = _15_, ["on-exit"] = _16_, ["on-stray-output"] = _19_}))
   end
 end
 local function on_load()

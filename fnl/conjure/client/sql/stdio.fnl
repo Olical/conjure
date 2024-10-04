@@ -6,6 +6,7 @@
 (local stdio (autoload :conjure.remote.stdio-rt))
 (local config (autoload :conjure.config))
 (local mapping (autoload :conjure.mapping))
+(local ts (autoload :conjure.tree-sitter))
 
 ;;------------------------------------------------------------
 ;; Based on fnl/conjure/client/fennel/stdio.fnl.
@@ -26,6 +27,7 @@
    {:sql
     {:stdio
      {:command "psql postgres://postgres:postgres@localhost/postgres"
+      :meta_prefix_pattern "^[.\\]%w"
       :prompt_pattern "=> "}}}})
 
 (when (config.get-in [:mapping :enable_defaults])
@@ -45,7 +47,15 @@
 
 ;; Rough equivalent of a Lisp form.
 (fn form-node? [node]
-  (or (= "statement" (node:type))))
+  (or
+    ;; Must either be a statement which we have to add ; to because the
+    ;; tree-sitter node excludes it for some reason.
+    (= "statement" (node:type))
+
+    ;; Or an unknown node that starts with a command escape character.
+    ;; It has the type of ERROR at the time of writing, but this might change
+    ;; if the tree sitter grammar is updated.
+    (a.string? (string.match (ts.node->str node) (cfg [:meta_prefix_pattern])))))
 
 ;; Comment nodes are comment (--) and marginalia (/*...*/)
 (fn comment-node? [node]
@@ -77,14 +87,19 @@
 (fn eval-str [opts]
   (with-repl-or-warn
     (fn [repl]
-      (repl.send
-        (.. opts.code ";\n")
-        (fn [msgs]
-          (let [msgs (->list msgs)]
-            (when opts.on-result
-              (opts.on-result (str.join "\n" (remove-blank-lines (a.last msgs)))))
-            (a.run! display-result msgs)))
-        {:batch? false}))))
+      (let [node (a.get opts :node)
+            suffix (if (and node (= "statement" (node:type)))
+                     ";\n"
+                     "\n")]
+        (print node (node:type) suffix)
+        (repl.send
+          (.. opts.code suffix)
+          (fn [msgs]
+            (let [msgs (->list msgs)]
+              (when opts.on-result
+                (opts.on-result (str.join "\n" (remove-blank-lines (a.last msgs)))))
+              (a.run! display-result msgs)))
+          {:batch? false})))))
 ;;;;-------- End from client/fennel/stdio.fnl ------------------
 
 (fn eval-file [opts]
