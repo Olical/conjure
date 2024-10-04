@@ -15,7 +15,6 @@ local promise = autoload("conjure.promise")
 local editor = autoload("conjure.editor")
 local buffer = autoload("conjure.buffer")
 local inline = autoload("conjure.inline")
-local uuid = autoload("conjure.uuid")
 local log = autoload("conjure.log")
 local event = autoload("conjure.event")
 local function preview(opts)
@@ -168,7 +167,8 @@ local function current_form(extra_opts)
   if form then
     local content = form["content"]
     local range = form["range"]
-    eval_str(a.merge({code = content, range = range, origin = "current-form"}, extra_opts))
+    local node = form["node"]
+    eval_str(a.merge({code = content, range = range, node = node, origin = "current-form"}, extra_opts))
     return form
   else
     return nil
@@ -181,11 +181,12 @@ local function replace_form()
   if form then
     local content = form["content"]
     local range = form["range"]
+    local node = form["node"]
     local function _24_(result)
       buffer["replace-range"](buf, range, result)
       return editor["go-to"](win, a["get-in"](range, {"start", 1}), a.inc(a["get-in"](range, {"start", 2})))
     end
-    eval_str({code = content, range = range, origin = "replace-form", ["suppress-hud?"] = true, ["on-result"] = _24_})
+    eval_str({code = content, range = range, node = node, origin = "replace-form", ["suppress-hud?"] = true, ["on-result"] = _24_})
     return form
   else
     return nil
@@ -196,7 +197,8 @@ local function root_form()
   if form then
     local content = form["content"]
     local range = form["range"]
-    return eval_str({code = content, range = range, origin = "root-form"})
+    local node = form["node"]
+    return eval_str({code = content, range = range, node = node, origin = "root-form"})
   else
     return nil
   end
@@ -223,10 +225,11 @@ local function insert_result_comment(tag, input)
   if input then
     local content = input["content"]
     local range = input["range"]
+    local node = input["node"]
     local function _29_(result)
       return buffer["append-prefixed-line"](buf, range["end"], comment_prefix, result)
     end
-    eval_str({code = content, range = range, origin = str.join({"comment-", tag}), ["suppress-hud?"] = true, ["on-result"] = _29_})
+    eval_str({code = content, range = range, node = node, origin = str.join({"comment-", tag}), ["suppress-hud?"] = true, ["on-result"] = _29_})
     return input
   else
     return nil
@@ -245,8 +248,9 @@ local function word()
   local _let_31_ = extract.word()
   local content = _let_31_["content"]
   local range = _let_31_["range"]
+  local node = _let_31_["node"]
   if not a["empty?"](content) then
-    return eval_str({code = content, range = range, origin = "word"})
+    return eval_str({code = content, range = range, node = node, origin = "word"})
   else
     return nil
   end
@@ -255,8 +259,9 @@ local function doc_word()
   local _let_33_ = extract.word()
   local content = _let_33_["content"]
   local range = _let_33_["range"]
+  local node = _let_33_["node"]
   if not a["empty?"](content) then
-    return doc_str({code = content, range = range, origin = "word"})
+    return doc_str({code = content, range = range, node = node, origin = "word"})
   else
     return nil
   end
@@ -265,8 +270,9 @@ local function def_word()
   local _let_35_ = extract.word()
   local content = _let_35_["content"]
   local range = _let_35_["range"]
+  local node = _let_35_["node"]
   if not a["empty?"](content) then
-    return def_str({code = content, range = range, origin = "word"})
+    return def_str({code = content, range = range, node = node, origin = "word"})
   else
     return nil
   end
@@ -328,4 +334,4 @@ local function completions_sync(prefix)
   promise.await(p)
   return promise.close(p)
 end
-return {file = file, ["previous-evaluation"] = __fnl_global__previous_2devaluation, ["eval-str"] = eval_str, previous = previous, ["wrap-emit"] = wrap_emit, ["current-form"] = current_form, ["replace-form"] = replace_form, ["root-form"] = root_form, ["marked-form"] = marked_form, ["comment-current-form"] = comment_current_form, ["comment-root-form"] = comment_root_form, ["comment-word"] = comment_word, word = word, ["doc-word"] = doc_word, ["def-word"] = def_word, buf = buf, command = command, range = range, selection = selection, completions = completions, ["completions-promise"] = completions_promise, ["completions-sync"] = completions_sync}
+return {file = file, ["previous-evaluations"] = previous_evaluations, ["eval-str"] = eval_str, previous = previous, ["wrap-emit"] = wrap_emit, ["current-form"] = current_form, ["replace-form"] = replace_form, ["root-form"] = root_form, ["marked-form"] = marked_form, ["comment-current-form"] = comment_current_form, ["comment-root-form"] = comment_root_form, ["comment-word"] = comment_word, word = word, ["doc-word"] = doc_word, ["def-word"] = def_word, buf = buf, command = command, range = range, selection = selection, completions = completions, ["completions-promise"] = completions_promise, ["completions-sync"] = completions_sync}

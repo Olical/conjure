@@ -13,7 +13,6 @@
 (local editor (autoload :conjure.editor))
 (local buffer (autoload :conjure.buffer))
 (local inline (autoload :conjure.inline))
-(local uuid (autoload :conjure.uuid))
 (local log (autoload :conjure.log))
 (local event (autoload :conjure.event))
 
@@ -185,11 +184,12 @@
 (fn current-form [extra-opts]
   (let [form (extract.form {})]
     (when form
-      (let [{: content : range} form]
+      (let [{: content : range : node} form]
         (eval-str
           (a.merge
             {:code content
              :range range
+             :node node
              :origin :current-form}
             extra-opts))
         form))))
@@ -199,10 +199,11 @@
         win (nvim.tabpage_get_win 0)
         form (extract.form {})]
     (when form
-      (let [{: content : range} form]
+      (let [{: content : range : node} form]
         (eval-str
           {:code content
            :range range
+           :node node
            :origin :replace-form
            :suppress-hud? true
            :on-result
@@ -219,10 +220,11 @@
 (fn root-form []
   (let [form (extract.form {:root? true})]
     (when form
-      (let [{: content : range} form]
+      (let [{: content : range : node} form]
         (eval-str
           {:code content
            :range range
+           :node node
            :origin :root-form})))))
 
 (fn marked-form [mark]
@@ -244,10 +246,11 @@
                          (config.get-in [:eval :comment_prefix])
                          (client.get :comment-prefix))]
     (when input
-      (let [{: content : range} input]
+      (let [{: content : range : node} input]
         (eval-str
           {:code content
            :range range
+           :node node
            :origin (str.join [:comment- tag])
            :suppress-hud? true
            :on-result
@@ -269,27 +272,30 @@
   (insert-result-comment :word (extract.word)))
 
 (fn word []
-  (let [{: content : range} (extract.word)]
+  (let [{: content : range : node} (extract.word)]
     (when (not (a.empty? content))
       (eval-str
         {:code content
          :range range
+         :node node
          :origin :word}))))
 
 (fn doc-word []
-  (let [{: content : range} (extract.word)]
+  (let [{: content : range : node} (extract.word)]
     (when (not (a.empty? content))
       (doc-str
         {:code content
          :range range
+         :node node
          :origin :word}))))
 
 (fn def-word []
-  (let [{: content : range} (extract.word)]
+  (let [{: content : range : node} (extract.word)]
     (when (not (a.empty? content))
       (def-str
         {:code content
          :range range
+         :node node
          :origin :word}))))
 
 (fn buf []
@@ -352,9 +358,8 @@
     (promise.await p)
     (promise.close p)))
 
-{
- : file
- : previous-evaluation
+{: file
+ : previous-evaluations
  : eval-str
  : previous
  : wrap-emit
@@ -374,5 +379,4 @@
  : selection
  : completions
  : completions-promise
- : completions-sync
- }
+ : completions-sync}
