@@ -46,16 +46,30 @@
 (local comment-prefix "-- ")
 
 ;; Rough equivalent of a Lisp form.
-(fn form-node? [node]
-  (or
+(fn get-form-modifier [node]
+  (if
     ;; Must either be a statement which we have to add ; to because the
     ;; tree-sitter node excludes it for some reason.
     (= "statement" (node:type))
+    {:modifier :none}
 
     ;; Or an unknown node that starts with a command escape character.
     ;; It has the type of ERROR at the time of writing, but this might change
     ;; if the tree sitter grammar is updated.
-    (a.string? (string.match (ts.node->str node) (cfg [:meta_prefix_pattern])))))
+    ;; We have to use the :raw override because the grammar returns all adjacent meta commands.
+    ;; We just take the current line in this case.
+    (a.string? (string.match (ts.node->str node) (cfg [:meta_prefix_pattern])))
+    (let [line (vim.api.nvim_get_current_line)
+          [row _col] (vim.api.nvim_win_get_cursor 0)]
+      {:modifier :raw
+       :node-table {:node node
+                    :content line
+                    :range {:start [row 0]
+                            :end [row (a.count line)]}}})
+
+    ;; Default to looking at the parent node.
+    {:modifier :parent}))
+
 
 ;; Comment nodes are comment (--) and marginalia (/*...*/)
 (fn comment-node? [node]
@@ -184,7 +198,7 @@
 
 {: buf-suffix
  : comment-prefix
- : form-node?
+ : get-form-modifier
  : comment-node?
  : ->list
  : eval-str

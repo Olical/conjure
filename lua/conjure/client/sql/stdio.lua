@@ -22,8 +22,18 @@ end
 state = client["new-state"](_3_)
 local buf_suffix = ".sql"
 local comment_prefix = "-- "
-local function form_node_3f(node)
-  return (("statement" == node:type()) or a["string?"](string.match(ts["node->str"](node), cfg({"meta_prefix_pattern"}))))
+local function get_form_modifier(node)
+  if ("statement" == node:type()) then
+    return {modifier = "none"}
+  elseif a["string?"](string.match(ts["node->str"](node), cfg({"meta_prefix_pattern"}))) then
+    local line = vim.api.nvim_get_current_line()
+    local _let_4_ = vim.api.nvim_win_get_cursor(0)
+    local row = _let_4_[1]
+    local _col = _let_4_[2]
+    return {modifier = "raw", ["node-table"] = {node = node, content = line, range = {start = {row, 0}, ["end"] = {row, a.count(line)}}}}
+  else
+    return {modifier = "parent"}
+  end
 end
 local function comment_node_3f(node)
   return (("comment" == node:type()) or ("marginalia" == node:type()))
@@ -40,10 +50,10 @@ local function format_message(msg)
   return str.split((msg.out or msg.err), "\n")
 end
 local function remove_blank_lines(msg)
-  local function _5_(_241)
+  local function _7_(_241)
     return not ("" == _241)
   end
-  return a.filter(_5_, format_message(msg))
+  return a.filter(_7_, format_message(msg))
 end
 local function display_result(msg)
   return log.append(remove_blank_lines(msg))
@@ -56,7 +66,7 @@ local function __3elist(s)
   end
 end
 local function eval_str(opts)
-  local function _7_(repl)
+  local function _9_(repl)
     local node = a.get(opts, "node")
     local suffix
     if (node and ("statement" == node:type())) then
@@ -65,7 +75,7 @@ local function eval_str(opts)
       suffix = "\n"
     end
     print(node, node:type(), suffix)
-    local function _9_(msgs)
+    local function _11_(msgs)
       local msgs0 = __3elist(msgs)
       if opts["on-result"] then
         opts["on-result"](str.join("\n", remove_blank_lines(a.last(msgs0))))
@@ -73,19 +83,19 @@ local function eval_str(opts)
       end
       return a["run!"](display_result, msgs0)
     end
-    return repl.send((opts.code .. suffix), _9_, {["batch?"] = false})
+    return repl.send((opts.code .. suffix), _11_, {["batch?"] = false})
   end
-  return with_repl_or_warn(_7_)
+  return with_repl_or_warn(_9_)
 end
 local function eval_file(opts)
   return eval_str(a.assoc(opts, "code", a.slurp(opts["file-path"])))
 end
 local function interrupt()
-  local function _11_(repl)
+  local function _13_(repl)
     log.append({(comment_prefix .. " Sending interrupt signal.")}, {["break?"] = true})
     return repl["send-signal"](vim.loop.constants.SIGINT)
   end
-  return with_repl_or_warn(_11_)
+  return with_repl_or_warn(_13_)
 end
 local function display_repl_status(status)
   local repl = state("repl")
@@ -110,13 +120,13 @@ local function start()
   if state("repl") then
     return log.append({(comment_prefix .. "Can't start, REPL is already running."), (comment_prefix .. "Stop the REPL with " .. config["get-in"]({"mapping", "prefix"}) .. cfg({"mapping", "stop"}))}, {["break?"] = true})
   else
-    local function _14_()
+    local function _16_()
       return display_repl_status("started")
     end
-    local function _15_(err)
+    local function _17_(err)
       return display_repl_status(err)
     end
-    local function _16_(code, signal)
+    local function _18_(code, signal)
       if (("number" == type(code)) and (code > 0)) then
         log.append({(comment_prefix .. "process exited with code " .. code)})
       else
@@ -127,10 +137,10 @@ local function start()
       end
       return stop()
     end
-    local function _19_(msg)
+    local function _21_(msg)
       return display_result(msg)
     end
-    return a.assoc(state(), "repl", stdio.start({["prompt-pattern"] = cfg({"prompt_pattern"}), cmd = cfg({"command"}), ["on-success"] = _14_, ["on-error"] = _15_, ["on-exit"] = _16_, ["on-stray-output"] = _19_}))
+    return a.assoc(state(), "repl", stdio.start({["prompt-pattern"] = cfg({"prompt_pattern"}), cmd = cfg({"command"}), ["on-success"] = _16_, ["on-error"] = _17_, ["on-exit"] = _18_, ["on-stray-output"] = _21_}))
   end
 end
 local function on_load()
@@ -148,4 +158,4 @@ local function on_filetype()
   mapping.buf("SqlStop", cfg({"mapping", "stop"}), stop, {desc = "Stop the REPL"})
   return mapping.buf("SqlInterrupt", cfg({"mapping", "interrupt"}), interrupt, {desc = "Interrupt the current REPL"})
 end
-return {["buf-suffix"] = buf_suffix, ["comment-prefix"] = comment_prefix, ["form-node?"] = form_node_3f, ["comment-node?"] = comment_node_3f, ["->list"] = __3elist, ["eval-str"] = eval_str, ["eval-file"] = eval_file, interrupt = interrupt, stop = stop, start = start, ["on-load"] = on_load, ["on-exit"] = on_exit, ["on-filetype"] = on_filetype}
+return {["buf-suffix"] = buf_suffix, ["comment-prefix"] = comment_prefix, ["get-form-modifier"] = get_form_modifier, ["comment-node?"] = comment_node_3f, ["->list"] = __3elist, ["eval-str"] = eval_str, ["eval-file"] = eval_file, interrupt = interrupt, stop = stop, start = start, ["on-load"] = on_load, ["on-exit"] = on_exit, ["on-filetype"] = on_filetype}
