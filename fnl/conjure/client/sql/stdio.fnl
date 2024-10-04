@@ -105,7 +105,6 @@
             suffix (if (and node (= "statement" (node:type)))
                      ";\n"
                      "\n")]
-        (print node (node:type) suffix)
         (repl.send
           (.. opts.code suffix)
           (fn [msgs]

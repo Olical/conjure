@@ -74,7 +74,6 @@ local function eval_str(opts)
     else
       suffix = "\n"
     end
-    print(node, node:type(), suffix)
     local function _11_(msgs)
       local msgs0 = __3elist(msgs)
       if opts["on-result"] then
