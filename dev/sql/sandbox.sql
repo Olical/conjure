@@ -92,8 +92,8 @@ INSERT INTO orders VALUES (5, 3, 5, 'AA-00003');
 INSERT INTO orders VALUES (6, 3, 6, 'AA-00003');
 
 -- Evaluate the following before sending an interrupt.
-SELECT 1;
 \watch
+SELECT 1;
 .tables foo
 
 
