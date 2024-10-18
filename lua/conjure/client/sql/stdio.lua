@@ -5,6 +5,7 @@ local a = autoload("conjure.aniseed.core")
 local str = autoload("conjure.aniseed.string")
 local client = autoload("conjure.client")
 local log = autoload("conjure.log")
+local text = autoload("conjure.text")
 local stdio = autoload("conjure.remote.stdio-rt")
 local config = autoload("conjure.config")
 local mapping = autoload("conjure.mapping")
@@ -65,15 +66,19 @@ local function __3elist(s)
     return {s}
   end
 end
+local function prep_code(opts)
+  local node = a.get(opts, "node")
+  local suffix
+  if (node and ("statement" == node:type())) then
+    suffix = ";\n"
+  else
+    suffix = "\n"
+  end
+  local code = string.gsub(opts.code, "%s*%-%-[^\n]*$", "")
+  return (code .. suffix)
+end
 local function eval_str(opts)
-  local function _9_(repl)
-    local node = a.get(opts, "node")
-    local suffix
-    if (node and ("statement" == node:type())) then
-      suffix = ";\n"
-    else
-      suffix = "\n"
-    end
+  local function _10_(repl)
     local function _11_(msgs)
       local msgs0 = __3elist(msgs)
       if opts["on-result"] then
@@ -82,9 +87,9 @@ local function eval_str(opts)
       end
       return a["run!"](display_result, msgs0)
     end
-    return repl.send((opts.code .. suffix), _11_, {["batch?"] = false})
+    return repl.send(prep_code(opts), _11_, {["batch?"] = false})
   end
-  return with_repl_or_warn(_9_)
+  return with_repl_or_warn(_10_)
 end
 local function eval_file(opts)
   return eval_str(a.assoc(opts, "code", a.slurp(opts["file-path"])))
@@ -157,4 +162,4 @@ local function on_filetype()
   mapping.buf("SqlStop", cfg({"mapping", "stop"}), stop, {desc = "Stop the REPL"})
   return mapping.buf("SqlInterrupt", cfg({"mapping", "interrupt"}), interrupt, {desc = "Interrupt the current REPL"})
 end
-return {["buf-suffix"] = buf_suffix, ["comment-prefix"] = comment_prefix, ["get-form-modifier"] = get_form_modifier, ["comment-node?"] = comment_node_3f, ["->list"] = __3elist, ["eval-str"] = eval_str, ["eval-file"] = eval_file, interrupt = interrupt, stop = stop, start = start, ["on-load"] = on_load, ["on-exit"] = on_exit, ["on-filetype"] = on_filetype}
+return {["buf-suffix"] = buf_suffix, ["comment-prefix"] = comment_prefix, ["get-form-modifier"] = get_form_modifier, ["comment-node?"] = comment_node_3f, ["->list"] = __3elist, ["prep-code"] = prep_code, ["eval-str"] = eval_str, ["eval-file"] = eval_file, interrupt = interrupt, stop = stop, start = start, ["on-load"] = on_load, ["on-exit"] = on_exit, ["on-filetype"] = on_filetype}

@@ -3,6 +3,7 @@
 (local str (autoload :conjure.aniseed.string))
 (local client (autoload :conjure.client))
 (local log (autoload :conjure.log))
+(local text (autoload :conjure.text))
 (local stdio (autoload :conjure.remote.stdio-rt))
 (local config (autoload :conjure.config))
 (local mapping (autoload :conjure.mapping))
@@ -98,21 +99,31 @@
     s
     [s]))
 
+(fn prep-code [opts]
+  (let [node (a.get opts :node)
+        suffix (if (and node (= "statement" (node:type)))
+                 ";\n"
+                 "\n")
+
+        ;; Removes trailing "-- ..." SQL comments from the code string
+        ;; These interfere with meta commands like .tables
+        ;; Only works on the last comment, intended for single lines
+        ;; This is because running it across multiple lines may mangle your source code
+        code (string.gsub opts.code "%s*%-%-[^\n]*$" "")]
+
+    (.. code suffix)))
+
 (fn eval-str [opts]
   (with-repl-or-warn
     (fn [repl]
-      (let [node (a.get opts :node)
-            suffix (if (and node (= "statement" (node:type)))
-                     ";\n"
-                     "\n")]
-        (repl.send
-          (.. opts.code suffix)
-          (fn [msgs]
-            (let [msgs (->list msgs)]
-              (when opts.on-result
-                (opts.on-result (str.join "\n" (remove-blank-lines (a.last msgs)))))
-              (a.run! display-result msgs)))
-          {:batch? false})))))
+      (repl.send
+        (prep-code opts)
+        (fn [msgs]
+          (let [msgs (->list msgs)]
+            (when opts.on-result
+              (opts.on-result (str.join "\n" (remove-blank-lines (a.last msgs)))))
+            (a.run! display-result msgs)))
+        {:batch? false}))))
 ;;;;-------- End from client/fennel/stdio.fnl ------------------
 
 (fn eval-file [opts]
@@ -200,6 +211,7 @@
  : get-form-modifier
  : comment-node?
  : ->list
+ : prep-code
  : eval-str
  : eval-file
  : interrupt
