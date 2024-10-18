@@ -42,14 +42,18 @@ local function repl_for_path(path)
   end
 end
 local function module_path(path)
-  local parts = fs["split-path"](fs["file-name-root"](path))
-  local fnl_and_below
-  local function _7_(_241)
-    return (_241 ~= "fnl")
-  end
-  fnl_and_below = core["drop-while"](_7_, parts)
-  if ("fnl" == core.first(fnl_and_below)) then
-    return str.join(".", core.rest(fnl_and_below))
+  if path then
+    local parts = fs["split-path"](fs["file-name-root"](path))
+    local fnl_and_below
+    local function _7_(_241)
+      return (_241 ~= "fnl")
+    end
+    fnl_and_below = core["drop-while"](_7_, parts)
+    if ("fnl" == core.first(fnl_and_below)) then
+      return str.join(".", core.rest(fnl_and_below))
+    else
+      return nil
+    end
   else
     return nil
   end
@@ -74,4 +78,4 @@ local function doc_str(opts)
   core.assoc(opts, "code", (",doc " .. opts.code))
   return eval_str(opts)
 end
-return {["comment-node?"] = comment_node_3f, ["form-node?"] = form_node_3f, ["buf-suffix"] = buf_suffix, ["comment-prefix"] = comment_prefix, ["eval-str"] = eval_str, ["eval-file"] = eval_file, ["doc-str"] = doc_str}
+return {["comment-node?"] = comment_node_3f, ["form-node?"] = form_node_3f, ["buf-suffix"] = buf_suffix, ["module-path"] = module_path, ["comment-prefix"] = comment_prefix, ["eval-str"] = eval_str, ["eval-file"] = eval_file, ["doc-str"] = doc_str}

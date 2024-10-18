@@ -122,4 +122,4 @@ local function _2_()
   end
   return describe("repl", _19_)
 end
-return describe("client.fennel.aniseed", _2_)
+return describe("conjure.client.fennel.aniseed", _2_)

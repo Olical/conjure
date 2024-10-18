@@ -3,7 +3,7 @@
 (local a (require :nfnl.core))
 (local ani (require :conjure.client.fennel.aniseed))
 
-(describe "client.fennel.aniseed"
+(describe "conjure.client.fennel.aniseed"
   (fn []
     (local ex-mod "test.foo.bar")
     (local ex-file "/some-big/ol/path/test/foo/bar.fnl")

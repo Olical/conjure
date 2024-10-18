@@ -51,10 +51,11 @@
   Finds the closest root `fnl` directory and uses that as the root of the module path.
 
   TODO: Make this configurable so that non-standard Fennel setups also work. Maybe just read the .nfnl.fnl configuration since that is what we are supposed to be working with."
-  (let [parts (-> path (fs.file-name-root) (fs.split-path))
-        fnl-and-below (core.drop-while #(not= $1 "fnl") parts)]
-    (when (= "fnl" (core.first fnl-and-below))
-      (str.join "." (core.rest fnl-and-below)))))
+  (when path
+    (let [parts (-> path (fs.file-name-root) (fs.split-path))
+          fnl-and-below (core.drop-while #(not= $1 "fnl") parts)]
+      (when (= "fnl" (core.first fnl-and-below))
+        (str.join "." (core.rest fnl-and-below))))))
 
 (comment
   (module-path "~/repos/Olical/conjure/fnl/conjure/client/fennel/nfnl.fnl"))
@@ -81,6 +82,7 @@
 {: comment-node?
  : form-node?
  : buf-suffix
+ : module-path
  : comment-prefix
  : eval-str
  : eval-file
