@@ -19,7 +19,7 @@
 
 ; (set vim.g.conjure#extract#tree_sitter#enabled true)
 ; (set vim.g.conjure#client#clojure#nrepl#test#runner "kaocha")
-; (set vim.g.conjure#filetype#fennel "conjure.client.fennel.stdio")
+(set vim.g.conjure#filetype#fennel "conjure.client.fennel.nfnl")
 ; (set vim.g.conjure#filetype#scheme "conjure.client.snd-s7.stdio")
 ; (set vim.g.conjure#debug true)
 
