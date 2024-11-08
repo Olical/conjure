@@ -2,9 +2,9 @@
 <p align="center"><a href="https://www.etsy.com/uk/shop/MysticalScribbles?ref=profile_header"><img src="https://conjure.oli.me.uk/images/lillian.png"/></a></p>
 ++++
 
-----
-Warning! This branch is deprecated! Please us the `main` branch instead.
-----
+____
+Warning! This branch is deprecated! Please use the `main` branch instead.
+____
 
 == https://oli.me.uk/conversational-software-development/[Conversational software development] for https://neovim.io[Neovim] +
 https://discord.gg/wXAMr8F[image:https://img.shields.io/discord/732957595249410108.svg?label=&logo=discord&logoColor=ffffff&color=7389D8&labelColor=6A7EC2[Discord]]
