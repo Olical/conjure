@@ -180,7 +180,7 @@ Broader documentation can be found in the https://github.com/Olical/conjure/wiki
 
 == Behind the curtain
 
-Conjure is written entirely in Lua (no VimL or external processes!) which is compiled from https://fennel-lang.org/[Fennel] by https://github.com/Olical/aniseed[Aniseed] ahead of time. Check out link:CONTRIBUTING.adoc[`CONTRIBUTING.adoc`] for more on how to work on Conjure using itself.
+Conjure is written entirely in Lua (no VimL or external processes!) which is compiled from https://fennel-lang.org/[Fennel] by https://github.com/Olical/nfnl[nfnl] ahead of time. Check out link:CONTRIBUTING.md[`CONTRIBUTING.md`] for more on how to work on Conjure using itself.
 
 Historically, Conjure was Clojure specific with an entirely different implementation, you can still find that version on the https://github.com/Olical/conjure/tree/legacy-jvm[legacy-jvm branch].
 
