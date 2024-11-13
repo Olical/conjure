@@ -118,7 +118,7 @@
                     :end "}%~~~"}}}
 
    :extract
-   {:context_header_lines 24
+   {:context_header_lines -1
     :form_pairs [["(" ")"]
                  ["{" "}"]
                  ["[" "]" true]]

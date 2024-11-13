@@ -766,12 +766,13 @@ configure the ones you care about one at a time you can set:
 `g:conjure#extract#context_header_lines`
             How many lines of the file should be checked for a context
             (namespace name) such as `(module foo.bar)` or `(ns foo.bar)`
-            which is used for setting the right context for evaluations.
-            If you have buffers with huge comment headers you may want to set
-            this higher.
-            If a specific buffer isn't extracting the context correctly, you
-            can override it by setting `b:conjure#context`.
-            Default: `24`
+            which is used for setting the right context for evaluations. You
+            can hard code a context for a particular buffer by setting
+            `b:conjure#context`.
+            This defaults to `-1` which means "all lines" but you can set it
+            to something like `30` if you're experiencing performance issues
+            in some buffers or projects.
+            Default: `-1`
 
                                                 *g:conjure#extract#form_pairs*
 `g:conjure#extract#form_pairs`

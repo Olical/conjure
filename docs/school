@@ -4,7 +4,7 @@ PREFIX="/tmp/conjure-school"
 
 if [ ! -d $PREFIX ]; then
   echo "Downloading Conjure into $PREFIX..."
-  curl -LJ https://github.com/Olical/conjure/archive/master.zip -o $PREFIX.zip
+  curl -LJ https://github.com/Olical/conjure/archive/main.zip -o $PREFIX.zip
   unzip -qq $PREFIX.zip -d $PREFIX
   rm $PREFIX.zip
 else
@@ -12,8 +12,8 @@ else
 fi
 
 nvim \
-  --cmd "set rtp+=$PREFIX/conjure-master" \
-  --cmd "source $PREFIX/conjure-master/plugin/conjure.vim" \
-  -c "au VimEnter * ++nested ConjureSchool" \
-  && echo "I hope you had a great time! Cleaning up $PREFIX and exiting." \
-  && rm -rf $PREFIX
+  --cmd "set rtp+=$PREFIX/conjure-main" \
+  --cmd "source $PREFIX/conjure-main/plugin/conjure.vim" \
+  -c "au VimEnter * ++nested ConjureSchool" &&
+  echo "I hope you had a great time! Cleaning up $PREFIX and exiting." &&
+  rm -rf $PREFIX
