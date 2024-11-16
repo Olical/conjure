@@ -2,11 +2,9 @@
 local _local_1_ = require("nfnl.module")
 local autoload = _local_1_["autoload"]
 local a = autoload("conjure.aniseed.core")
-local extract = autoload("conjure.extract")
 local str = autoload("conjure.aniseed.string")
 local stdio = autoload("conjure.remote.stdio")
 local config = autoload("conjure.config")
-local text = autoload("conjure.text")
 local mapping = autoload("conjure.mapping")
 local client = autoload("conjure.client")
 local log = autoload("conjure.log")
@@ -24,7 +22,7 @@ end
 state = client["new-state"](_3_)
 local buf_suffix = ".jl"
 local comment_prefix = "# "
-local function with_repl_or_warn(f, opts)
+local function with_repl_or_warn(f, _opts)
   local repl = state("repl")
   if repl then
     return f(repl)

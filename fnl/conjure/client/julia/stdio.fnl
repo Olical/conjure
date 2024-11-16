@@ -1,10 +1,8 @@
 (local {: autoload} (require :nfnl.module))
 (local a (autoload :conjure.aniseed.core))
-(local extract (autoload :conjure.extract))
 (local str (autoload :conjure.aniseed.string))
 (local stdio (autoload :conjure.remote.stdio))
 (local config (autoload :conjure.config))
-(local text (autoload :conjure.text))
 (local mapping (autoload :conjure.mapping))
 (local client (autoload :conjure.client))
 (local log (autoload :conjure.log))
@@ -32,7 +30,7 @@
 (local buf-suffix ".jl")
 (local comment-prefix "# ")
 
-(fn with-repl-or-warn [f opts]
+(fn with-repl-or-warn [f _opts]
   (let [repl (state :repl)]
     (if repl
       (f repl)
