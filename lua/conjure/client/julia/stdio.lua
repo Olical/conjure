@@ -22,6 +22,9 @@ end
 state = client["new-state"](_3_)
 local buf_suffix = ".jl"
 local comment_prefix = "# "
+local function form_node_3f(node)
+  return (("field_expression" ~= node:type()) and ("argument_list" ~= node:type()))
+end
 local function with_repl_or_warn(f, _opts)
   local repl = state("repl")
   if repl then
@@ -146,4 +149,4 @@ local function on_filetype()
   mapping.buf("JuliaStop", cfg({"mapping", "stop"}), stop, {desc = "Stop the REPL"})
   return mapping.buf("JuliaInterrupt", cfg({"mapping", "interrupt"}), interrupt, {desc = "Interrupt the evaluation"})
 end
-return {["buf-suffix"] = buf_suffix, ["comment-prefix"] = comment_prefix, unbatch = unbatch, ["format-msg"] = format_msg, ["get-form-modifier"] = get_form_modifier, ["eval-str"] = eval_str, ["eval-file"] = eval_file, ["doc-str"] = doc_str, stop = stop, start = start, ["on-load"] = on_load, ["on-exit"] = on_exit, interrupt = interrupt, ["on-filetype"] = on_filetype}
+return {["buf-suffix"] = buf_suffix, ["comment-prefix"] = comment_prefix, unbatch = unbatch, ["form-node?"] = form_node_3f, ["format-msg"] = format_msg, ["get-form-modifier"] = get_form_modifier, ["eval-str"] = eval_str, ["eval-file"] = eval_file, ["doc-str"] = doc_str, stop = stop, start = start, ["on-load"] = on_load, ["on-exit"] = on_exit, interrupt = interrupt, ["on-filetype"] = on_filetype}

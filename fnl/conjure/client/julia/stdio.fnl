@@ -30,6 +30,10 @@
 (local buf-suffix ".jl")
 (local comment-prefix "# ")
 
+(fn form-node? [node]
+  (and (not= "field_expression" (node:type))
+       (not= "argument_list" (node:type))))
+
 (fn with-repl-or-warn [f _opts]
   (let [repl (state :repl)]
     (if repl
@@ -174,6 +178,7 @@
 {: buf-suffix
  : comment-prefix
  : unbatch
+ : form-node?
  : format-msg
  : get-form-modifier
  : eval-str
