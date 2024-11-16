@@ -1,3 +1,6 @@
+using Pkg
+Pkg.activate("project")
+
 1 + 1
 
 function add(x, y)
