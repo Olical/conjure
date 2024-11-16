@@ -31,8 +31,15 @@
 (local comment-prefix "# ")
 
 (fn form-node? [node]
-  (and (not= "field_expression" (node:type))
-       (not= "argument_list" (node:type))))
+  (let [parent (node:parent)]
+    (and
+      ;; Pkg.activate(...) should execute the expression Pkg.foo should just return foo.
+      (not (and
+             (= "call_expression" (parent:type))
+             (= "field_expression" (node:type))))
+
+      ;; Don't eval arg lists as tuples, just evaluate the call_expression above.
+      (not= "argument_list" (node:type)))))
 
 (fn with-repl-or-warn [f _opts]
   (let [repl (state :repl)]
