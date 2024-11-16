@@ -1,10 +1,8 @@
 (local {: autoload} (require :nfnl.module))
 (local a (autoload :conjure.aniseed.core))
-(local extract (autoload :conjure.extract))
 (local str (autoload :conjure.aniseed.string))
 (local stdio (autoload :conjure.remote.stdio))
 (local config (autoload :conjure.config))
-(local text (autoload :conjure.text))
 (local mapping (autoload :conjure.mapping))
 (local client (autoload :conjure.client))
 (local log (autoload :conjure.log))
@@ -32,7 +30,18 @@
 (local buf-suffix ".jl")
 (local comment-prefix "# ")
 
-(fn with-repl-or-warn [f opts]
+(fn form-node? [node]
+  (let [parent (node:parent)]
+    (and
+      ;; Pkg.activate(...) should execute the expression Pkg.foo should just return foo.
+      (not (and
+             (= "call_expression" (parent:type))
+             (= "field_expression" (node:type))))
+
+      ;; Don't eval arg lists as tuples, just evaluate the call_expression above.
+      (not= "argument_list" (node:type)))))
+
+(fn with-repl-or-warn [f _opts]
   (let [repl (state :repl)]
     (if repl
       (f repl)
@@ -176,6 +185,7 @@
 {: buf-suffix
  : comment-prefix
  : unbatch
+ : form-node?
  : format-msg
  : get-form-modifier
  : eval-str
