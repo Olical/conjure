@@ -1,3 +1,5 @@
+# Should be able to evaluate all of these.
+
 def add(a, b):
     return a + b
 
@@ -49,6 +51,63 @@ def fn_with_multiline_str():
 
 fn_with_multiline_str()
 
+import csv
+from datetime import datetime
+
+
+# Class definition
+#   - from https://docs.python.org/3/tutorial/classes.html
+class Dog:
+
+    def __init__(self, name):
+        self.name = name
+        self.tricks = []
+
+    def add_trick(self, trick):
+        self.tricks.append(trick)
+
+d = Dog('Fido')
+e = Dog('Buddy')
+d.add_trick('roll_over')
+e.add_trick('play dead')
+d.tricks
+e.tricks
+
+
+# Class definition with decorator
+#   - from https://docs.python.org/3.10/tutorial/classes.html
+from dataclasses import dataclass
+
+@dataclass
+class Employee:
+    name: str
+    dept: str
+    salary: int
+
+john = Employee('john', 'computer lab', 1000)
+john.dept
+john.salary
+
+
+# Function definition with decorator
+#   - https://docs.python.org/3.8/library/functools.html?highlight=decorator#functools.cached_property
+from functools import lru_cache
+
+@lru_cache(maxsize=None)
+def fib(n):
+    if n < 2:
+        return n
+    return fib(n-1) + fib(n-2)
+
+[fib(n) for n in range(16)]
+# [0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377, 610]
+
+fib.cache_info()
+# CacheInfo(hits=28, misses=16, maxsize=None, currsize=16)
+
+
+# Asyncio samples
+#   - Add '-m asyncio' to the python command to evaluate these.
 
 """
 async def slow_fn():
@@ -68,7 +127,3 @@ async def capture():
 await capture()
 result
 """
-
-
-import csv
-from datetime import datetime
