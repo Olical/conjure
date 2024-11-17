@@ -19,6 +19,7 @@ sponsors:
 		| sort \
 		>> fnl/conjure/sponsors.fnl
 	echo "]" >> fnl/conjure/sponsors.fnl
+	nvim fnl/conjure/sponsors.fnl +wq
 
 test:
 	./scripts/setup-test-deps
