@@ -38,13 +38,21 @@
 ; "current form" and not be surprised that it wasn't what you thought.
 (fn form-node?
   [node]
-  (or (= "expression_statement" (node:type))
-      (= "import_statement" (node:type))
-      (= "import_from_statement" (node:type))
-      (= "with_statement" (node:type))
-      (= "function_definition" (node:type))
-      (= "for_statement" (node:type))
-      (= "call" (node:type))))
+  (log.dbg "form-node?: node:type =" (node:type))
+  (log.dbg "form-node?: node:parent =" (node:parent))
+  (let [parent (node:parent)]
+    (if (= "expression_statement" (node:type)) true
+        (= "import_statement" (node:type)) true
+        (= "import_from_statement" (node:type)) true
+        (= "with_statement" (node:type)) true
+        (= "decorated_definition" (node:type)) true
+        (= "for_statement" (node:type)) true
+        (= "call" (node:type)) true
+        (and (= "class_definition" (node:type))
+              (not (= "decorated_definition" (parent:type)))) true
+        (and (= "function_definition" (node:type))
+             (not (= "decorated_definition" (parent:type)))) true
+        false)))
 
 (fn with-repl-or-warn [f opts]
   (let [repl (state :repl)]

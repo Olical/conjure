@@ -26,7 +26,30 @@ state = client["new-state"](_3_)
 local buf_suffix = ".py"
 local comment_prefix = "# "
 local function form_node_3f(node)
-  return (("expression_statement" == node:type()) or ("import_statement" == node:type()) or ("import_from_statement" == node:type()) or ("with_statement" == node:type()) or ("function_definition" == node:type()) or ("for_statement" == node:type()) or ("call" == node:type()))
+  log.dbg("form-node?: node:type =", node:type())
+  log.dbg("form-node?: node:parent =", node:parent())
+  local parent = node:parent()
+  if ("expression_statement" == node:type()) then
+    return true
+  elseif ("import_statement" == node:type()) then
+    return true
+  elseif ("import_from_statement" == node:type()) then
+    return true
+  elseif ("with_statement" == node:type()) then
+    return true
+  elseif ("decorated_definition" == node:type()) then
+    return true
+  elseif ("for_statement" == node:type()) then
+    return true
+  elseif ("call" == node:type()) then
+    return true
+  elseif (("class_definition" == node:type()) and not ("decorated_definition" == parent:type())) then
+    return true
+  elseif (("function_definition" == node:type()) and not ("decorated_definition" == parent:type())) then
+    return true
+  else
+    return false
+  end
 end
 local function with_repl_or_warn(f, opts)
   local repl = state("repl")
@@ -37,12 +60,12 @@ local function with_repl_or_warn(f, opts)
   end
 end
 local function is_assignment_3f(node)
-  local and_5_ = (node:child_count() == 1)
-  if and_5_ then
+  local and_6_ = (node:child_count() == 1)
+  if and_6_ then
     local child = node:child(0)
-    and_5_ = (child:type() == "assignment")
+    and_6_ = (child:type() == "assignment")
   end
-  return and_5_
+  return and_6_
 end
 local function is_expression_3f(node)
   return (("expression_statement" == node:type()) and not is_assignment_3f(node))
@@ -69,19 +92,19 @@ local function is_dots_3f(s)
   return (string.sub(s, 1, 3) == "...")
 end
 local function format_msg(msg)
-  local function _8_(_241)
+  local function _9_(_241)
     return not is_dots_3f(_241)
   end
-  local function _9_(_241)
+  local function _10_(_241)
     return ("" ~= _241)
   end
-  return a.filter(_8_, a.filter(_9_, text["split-lines"](msg)))
+  return a.filter(_9_, a.filter(_10_, text["split-lines"](msg)))
 end
 local function get_console_output_msgs(msgs)
-  local function _10_(_241)
+  local function _11_(_241)
     return (comment_prefix .. "(out) " .. _241)
   end
-  return a.map(_10_, a.butlast(msgs))
+  return a.map(_11_, a.butlast(msgs))
 end
 local function get_expression_result(msgs)
   local result = a.last(msgs)
@@ -92,10 +115,10 @@ local function get_expression_result(msgs)
   end
 end
 local function unbatch(msgs)
-  local function _12_(_241)
+  local function _13_(_241)
     return (a.get(_241, "out") or a.get(_241, "err"))
   end
-  return str.join("", a.map(_12_, msgs))
+  return str.join("", a.map(_13_, msgs))
 end
 local function log_repl_output(msgs)
   local msgs0 = format_msg(unbatch(msgs))
@@ -112,8 +135,8 @@ local function log_repl_output(msgs)
   end
 end
 local function eval_str(opts)
-  local function _15_(repl)
-    local function _16_(msgs)
+  local function _16_(repl)
+    local function _17_(msgs)
       log_repl_output(msgs)
       if opts["on-result"] then
         local msgs0 = format_msg(unbatch(msgs))
@@ -123,9 +146,9 @@ local function eval_str(opts)
         return nil
       end
     end
-    return repl.send(prep_code(opts.code), _16_, {["batch?"] = true})
+    return repl.send(prep_code(opts.code), _17_, {["batch?"] = true})
   end
-  return with_repl_or_warn(_15_)
+  return with_repl_or_warn(_16_)
 end
 local function eval_file(opts)
   return eval_str(a.assoc(opts, "code", a.slurp(opts["file-path"])))
@@ -159,29 +182,29 @@ local function start()
   if state("repl") then
     return log.append({(comment_prefix .. "Can't start, REPL is already running."), (comment_prefix .. "Stop the REPL with " .. config["get-in"]({"mapping", "prefix"}) .. cfg({"mapping", "stop"}))}, {["break?"] = true})
   else
-    local function _20_()
+    local function _21_()
       if vim.treesitter.language.require_language then
         return vim.treesitter.language.require_language("python")
       else
         return vim.treesitter.require_language("python")
       end
     end
-    if not pcall(_20_) then
+    if not pcall(_21_) then
       return log.append({(comment_prefix .. "(error) The python client requires a python treesitter parser in order to function."), (comment_prefix .. "(error) See https://github.com/nvim-treesitter/nvim-treesitter"), (comment_prefix .. "(error) for installation instructions.")})
     else
-      local function _22_()
-        local function _23_(repl)
-          local function _24_(msgs)
+      local function _23_()
+        local function _24_(repl)
+          local function _25_(msgs)
             return nil
           end
-          return repl.send(prep_code(initialise_repl_code), _24_, nil)
+          return repl.send(prep_code(initialise_repl_code), _25_, nil)
         end
-        return display_repl_status("started", with_repl_or_warn(_23_))
+        return display_repl_status("started", with_repl_or_warn(_24_))
       end
-      local function _25_(err)
+      local function _26_(err)
         return display_repl_status(err)
       end
-      local function _26_(code, signal)
+      local function _27_(code, signal)
         if (("number" == type(code)) and (code > 0)) then
           log.append({(comment_prefix .. "process exited with code " .. code)})
         else
@@ -192,10 +215,10 @@ local function start()
         end
         return stop()
       end
-      local function _29_(msg)
+      local function _30_(msg)
         return log.dbg(format_msg(unbatch({msg})), {["join-first?"] = true})
       end
-      return a.assoc(state(), "repl", stdio.start({["prompt-pattern"] = cfg({"prompt-pattern"}), cmd = cfg({"command"}), ["delay-stderr-ms"] = cfg({"delay-stderr-ms"}), ["on-success"] = _22_, ["on-error"] = _25_, ["on-exit"] = _26_, ["on-stray-output"] = _29_}))
+      return a.assoc(state(), "repl", stdio.start({["prompt-pattern"] = cfg({"prompt-pattern"}), cmd = cfg({"command"}), ["delay-stderr-ms"] = cfg({"delay-stderr-ms"}), ["on-success"] = _23_, ["on-error"] = _26_, ["on-exit"] = _27_, ["on-stray-output"] = _30_}))
     end
   end
 end
@@ -203,11 +226,11 @@ local function on_exit()
   return stop()
 end
 local function interrupt()
-  local function _32_(repl)
+  local function _33_(repl)
     log.append({(comment_prefix .. " Sending interrupt signal.")}, {["break?"] = true})
     return repl["send-signal"](vim.loop.constants.SIGINT)
   end
-  return with_repl_or_warn(_32_)
+  return with_repl_or_warn(_33_)
 end
 local function on_load()
   if config["get-in"]({"client_on_load"}) then
