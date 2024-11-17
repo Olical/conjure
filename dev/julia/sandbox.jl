@@ -2,6 +2,8 @@ using Pkg
 Pkg.activate("project")
 Pkg.activate
 
+rand(10000)
+
 1 + 1
 
 function add(x, y)
