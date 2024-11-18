@@ -78,4 +78,4 @@ local function doc_str(opts)
   core.assoc(opts, "code", (",doc " .. opts.code))
   return eval_str(opts)
 end
-return {["comment-node?"] = comment_node_3f, ["form-node?"] = form_node_3f, ["buf-suffix"] = buf_suffix, ["module-path"] = module_path, ["comment-prefix"] = comment_prefix, ["eval-str"] = eval_str, ["eval-file"] = eval_file, ["doc-str"] = doc_str}
+return {["comment-node?"] = comment_node_3f, ["form-node?"] = form_node_3f, ["buf-suffix"] = buf_suffix, ["module-path"] = module_path, ["repl-for-path"] = repl_for_path, ["comment-prefix"] = comment_prefix, ["eval-str"] = eval_str, ["eval-file"] = eval_file, ["doc-str"] = doc_str}

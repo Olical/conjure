@@ -83,6 +83,7 @@
  : form-node?
  : buf-suffix
  : module-path
+ : repl-for-path
  : comment-prefix
  : eval-str
  : eval-file
