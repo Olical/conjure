@@ -67,6 +67,7 @@
         result-strs (core.map fennel.view results)
         lines (text.split-lines (str.join "\n" result-strs))]
 
+    ;; TODO Test that this works properly, it might not work well with autoload.
     ;; When we evaluate a whole file and it ends in a table, we merge that table into the loaded module.
     ;; This allows you to reload a module with ef or eb.
     (when (and (or (= :buf opts.origin) (= :file opts.origin))
