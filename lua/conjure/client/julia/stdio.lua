@@ -24,7 +24,7 @@ local buf_suffix = ".jl"
 local comment_prefix = "# "
 local function form_node_3f(node)
   local parent = node:parent()
-  return (not (("call_expression" == parent:type()) and ("field_expression" == node:type())) and ("argument_list" ~= node:type()))
+  return (not (("call_expression" == parent:type()) and ("field_expression" == node:type())) and not ("assignment" == parent:type()) and ("argument_list" ~= node:type()))
 end
 local function with_repl_or_warn(f, _opts)
   local repl = state("repl")

@@ -38,6 +38,10 @@
              (= "call_expression" (parent:type))
              (= "field_expression" (node:type))))
 
+      ;; (a, b) = (1, 2) should evaluate the assignment, not the tuple alone.
+      ;; So don't allow evaluating a node that is directly below an assignment.
+      (not (= "assignment" (parent:type)))
+
       ;; Don't eval arg lists as tuples, just evaluate the call_expression above.
       (not= "argument_list" (node:type)))))
 
