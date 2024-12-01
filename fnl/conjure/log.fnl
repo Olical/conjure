@@ -328,6 +328,7 @@
   (let [line-count (a.count lines)]
     (when (> line-count 0)
       (var visible-scrolling-log? false)
+      (var visible-log? false)
 
       (let [buf (upsert-buf)
             join-first? (a.get opts :join-first?)
@@ -427,10 +428,16 @@
           (with-buf-wins
             buf
             (fn [win]
-              (set visible-scrolling-log? (and (not= win state.hud.id)
-                                               (win-visible? win)
-                                               (or jump-to-latest?
-                                                   (>= (win-botline win) old-lines))))
+              (set visible-scrolling-log?
+                   (and (not= win state.hud.id)
+                        (win-visible? win)
+                        (or jump-to-latest?
+                            (>= (win-botline win) old-lines))))
+
+              (set visible-log?
+                   (and (not= win state.hud.id)
+                        (win-visible? win)))
+
               (let [[row _] (nvim.win_get_cursor win)]
                 (if jump-to-latest?
                   (jump-to-latest)
@@ -438,12 +445,16 @@
                   (= row old-lines)
                   (nvim.win_set_cursor win [new-lines 0]))))))
 
-        (if (and (not (a.get opts :suppress-hud?))
-                 (not visible-scrolling-log?))
-          (display-hud opts)
-          (close-hud))
+        (let [open-when (config.get-in [:log :hud :open_when])]
+          (if (and (not (a.get opts :suppress-hud?))
 
-        (trim buf)))))
+                   (or (and (= :last-log-line-not-visible open-when)
+                            (not visible-scrolling-log?))
+
+                       (and (= :log-win-not-visible open-when)
+                            (not visible-log?))))
+            (display-hud opts)
+            (trim buf)))))))
 
 (fn create-win [cmd]
   (set state.last-open-cmd cmd)

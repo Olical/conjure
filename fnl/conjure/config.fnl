@@ -104,7 +104,8 @@
           :overlap_padding 0.1
           :border :single
           :anchor :NE
-          :ignore_low_priority false}
+          :ignore_low_priority false
+          :open_when :last-log-line-not-visible}
     :botright false
     :jump_to_latest {:enabled false
                      :cursor_scroll_position "top"}

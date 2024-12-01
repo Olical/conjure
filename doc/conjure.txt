@@ -675,6 +675,20 @@ configure the ones you care about one at a time you can set:
 <
             Default: `false`
 
+                                                 *g:conjure#log#hud#open_when*
+`g:conjure#log#hud#open_when`
+            Decide when the HUD will open. By default we open when the last
+            line in the log isn't visible. So if you have the log open in a
+            split but you can't quite see the bottom, the HUD will still open.
+
+            Set this to `"log-win-not-visible"` if you would like the HUD to
+            never open if you have the log open in a window at all. Even if
+            you can't see the bottom line.
+
+            You can set `g:conjure#log#hud#enabled` to `false` if you never
+            want to see the HUD.
+            Default: `"last-log-line-not-visible"`
+
                                                       *g:conjure#log#botright*
 `g:conjure#log#botright`
             Force the log to always open at the bottom or far right of the

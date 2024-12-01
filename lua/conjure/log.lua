@@ -299,6 +299,7 @@ local function append(lines, opts)
   local line_count = a.count(lines)
   if (line_count > 0) then
     local visible_scrolling_log_3f = false
+    local visible_log_3f = false
     local buf = upsert_buf()
     local join_first_3f = a.get(opts, "join-first?")
     local lines0
@@ -377,6 +378,7 @@ local function append(lines, opts)
       nvim.buf_set_extmark(buf, state["jump-to-latest"].ns, _55_, 0, {id = state["jump-to-latest"].mark})
       local function _57_(win)
         visible_scrolling_log_3f = ((win ~= state.hud.id) and win_visible_3f(win) and (jump_to_latest_3f or (win_botline(win) >= old_lines)))
+        visible_log_3f = ((win ~= state.hud.id) and win_visible_3f(win))
         local _let_58_ = nvim.win_get_cursor(win)
         local row = _let_58_[1]
         local _ = _let_58_[2]
@@ -390,12 +392,12 @@ local function append(lines, opts)
       end
       with_buf_wins(buf, _57_)
     end
-    if (not a.get(opts, "suppress-hud?") and not visible_scrolling_log_3f) then
-      display_hud(opts)
+    local open_when = config["get-in"]({"log", "hud", "open_when"})
+    if (not a.get(opts, "suppress-hud?") and ((("last-log-line-not-visible" == open_when) and not visible_scrolling_log_3f) or (("log-win-not-visible" == open_when) and not visible_log_3f))) then
+      return display_hud(opts)
     else
-      close_hud()
+      return trim(buf)
     end
-    return trim(buf)
   else
     return nil
   end
