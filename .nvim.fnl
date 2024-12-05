@@ -17,15 +17,16 @@
                (require :conjure.main)
                (notify.info "Done!"))})
 
+; (set vim.g.conjure#mapping#enable_defaults false)
 ; (set vim.g.conjure#extract#tree_sitter#enabled true)
 ; (set vim.g.conjure#client#clojure#nrepl#test#runner "kaocha")
 (set vim.g.conjure#filetype#fennel "conjure.client.fennel.nfnl")
 ; (set vim.g.conjure#filetype#scheme "conjure.client.snd-s7.stdio")
 ; (set vim.g.conjure#debug true)
 
-; (set vim.g.conjure#client#scheme#stdio#command "csi -quiet -:c")
+; (set vim.g.conjure#client#scheme#stdio#command "chicken-csi -quiet -:c")
 ; (set vim.g.conjure#client#scheme#stdio#prompt_pattern "\n-#;%d-> ")
-; (set vim.g.conjure#mapping#enable_defaults false)
+; (set vim.g.conjure#client#scheme#stdio#value_prefix_pattern false)
 
 ; (set vim.g.conjure#filetype#scheme "conjure.client.guile.socket")
 ; (set vim.g.conjure#client#guile#socket#pipename "guile-repl.socket")
