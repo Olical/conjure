@@ -57,7 +57,7 @@
        :raw_out false
        :auto_require true
        :print_quota nil
-       :print_function :conjure.internal/pprint
+       :print_function "cider.nrepl.pprint/pprint"
        :print_options {:length 500
                        :level 50
                        :right_margin 72}}

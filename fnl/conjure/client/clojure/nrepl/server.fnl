@@ -66,44 +66,43 @@
   (with-conn-or-warn
     (fn [_]
       (send
-        {:op :eval
-         :ns opts.context
-         :code (un-comment opts.code)
-         :file opts.file-path
-         :line (a.get-in opts [:range :start 1])
-         :column (-?> (a.get-in opts [:range :start 2]) (a.inc))
-         :session opts.session
+        (a.merge
+          {:op :eval
+           :ns opts.context
+           :code (un-comment opts.code)
+           :file opts.file-path
+           :line (a.get-in opts [:range :start 1])
+           :column (-?> (a.get-in opts [:range :start 2]) (a.inc))
+           :session opts.session}
+          (let [print-fn (config.get-in [:client :clojure :nrepl :eval :print_function])]
+            (when (and (config.get-in [:client :clojure :nrepl :eval :pretty_print]) print-fn)
+              {:nrepl.middleware.print/print print-fn
+               :nrepl.middleware.print/options
+               {;; This forces this table to remain associative even if level and length aren't set.
+                ;; If you have an empty table in Fennel / Lua like {} it actually becomes sequential by default.
+                ;; So it's as if we set the options to [] which is _not_ good.
+                :associative 1
 
-         :nrepl.middleware.print/options
-         {;; This forces this table to remain associative even if level and length aren't set.
-          ;; If you have an empty table in Fennel / Lua like {} it actually becomes sequential by default.
-          ;; So it's as if we set the options to [] which is _not_ good.
-          :associative 1
+                :level
+                (or
+                  (config.get-in [:client :clojure :nrepl :eval :print_options :level])
+                  nil)
 
-          :level
-          (or
-            (config.get-in [:client :clojure :nrepl :eval :print_options :level])
-            nil)
+                :length
+                (or
+                  (config.get-in [:client :clojure :nrepl :eval :print_options :length])
+                  nil)
 
-          :length
-          (or
-            (config.get-in [:client :clojure :nrepl :eval :print_options :length])
-            nil)
+                :right-margin
+                (or
+                  (config.get-in [:client :clojure :nrepl :eval :print_options :right_margin])
+                  nil)}
 
-          :right-margin
-          (or
-            (config.get-in [:client :clojure :nrepl :eval :print_options :right_margin])
-            nil)}
+               :nrepl.middleware.print/quota
+               (config.get-in [:client :clojure :nrepl :eval :print_quota])
 
-         :nrepl.middleware.print/quota
-         (config.get-in [:client :clojure :nrepl :eval :print_quota])
-
-         :nrepl.middleware.print/buffer-size
-         (config.get-in [:client :clojure :nrepl :eval :print_buffer_size])
-
-         :nrepl.middleware.print/print
-         (when (config.get-in [:client :clojure :nrepl :eval :pretty_print])
-           (config.get-in [:client :clojure :nrepl :eval :print_function]))}
+               :nrepl.middleware.print/buffer-size
+               (config.get-in [:client :clojure :nrepl :eval :print_buffer_size])})))
         cb))))
 
 (fn with-session-ids [cb]
@@ -224,9 +223,16 @@
                  "(ns conjure.internal"
                  "  (:require [clojure.pprint :as pp] [clojure.test] [clojure.data] [clojure.string]))"
 
-                 "(defn pprint [val w opts]"
-                 "  (apply pp/write val"
-                 "    (mapcat identity (assoc opts :stream w))))"
+                 ;; This is a shim that inserts a pprint fn in the place that CIDER would create it if it's not found.
+                 ;; We shim instead of creating our own distinct function because babashka requires us
+                 ;; to refer to `cider.nrepl.pprint/pprint` if we want to use pretty printing.
+                 ;; https://github.com/Olical/conjure/issues/406
+                 "(when-not (find-ns 'cider.nrepl.pprint)"
+                 "  (create-ns 'cider.nrepl.pprint)"
+                 "  (intern 'cider.nrepl.pprint 'pprint"
+                 "    (fn pprint [val w opts]"
+                 "      (apply pp/write val"
+                 "        (mapcat identity (assoc opts :stream w))))))"
 
                  "(defn bounded-conj [queue x limit]"
                  "  (->> x (conj queue) (take limit)))"
