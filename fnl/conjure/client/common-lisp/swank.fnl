@@ -8,7 +8,6 @@
 (local str (autoload :conjure.aniseed.string))
 (local text (autoload :conjure.text))
 (local ts (autoload :conjure.tree-sitter))
-(local util (autoload :conjure.util))
 
 (local buf-suffix ".lisp")
 (local comment-prefix "; ")
@@ -260,7 +259,9 @@
 
   (when (not (a.empty? opts.code))
     (send
-      opts.code
+      (if (= :buf opts.origin)
+        (.. "(list " opts.code ")")
+        opts.code)
       (when (not (a.empty? opts.context))
         opts.context)
       (fn [msg] ;; handle results from Swank server

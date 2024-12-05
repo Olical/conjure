@@ -10,7 +10,6 @@ local remote = autoload("conjure.remote.swank")
 local str = autoload("conjure.aniseed.string")
 local text = autoload("conjure.text")
 local ts = autoload("conjure.tree-sitter")
-local util = autoload("conjure.util")
 local buf_suffix = ".lisp"
 local comment_prefix = "; "
 local form_node_3f = ts["node-surrounded-by-form-pair-chars?"]
@@ -227,12 +226,18 @@ local function eval_str(opts)
   try_ensure_conn()
   if not a["empty?"](opts.code) then
     local _30_
-    if not a["empty?"](opts.context) then
-      _30_ = opts.context
+    if ("buf" == opts.origin) then
+      _30_ = ("(list " .. opts.code .. ")")
     else
-      _30_ = nil
+      _30_ = opts.code
     end
-    local function _32_(msg)
+    local _32_
+    if not a["empty?"](opts.context) then
+      _32_ = opts.context
+    else
+      _32_ = nil
+    end
+    local function _34_(msg)
       local stdout, result = parse_result(msg)
       display_stdout(stdout)
       if (nil ~= result) then
@@ -249,17 +254,17 @@ local function eval_str(opts)
         return nil
       end
     end
-    return send(opts.code, _30_, _32_)
+    return send(_30_, _32_, _34_)
   else
     return nil
   end
 end
 local function doc_str(opts)
   try_ensure_conn()
-  local function _37_(_241)
+  local function _39_(_241)
     return ("(describe '" .. _241 .. ")")
   end
-  return eval_str(a.update(opts, "code", _37_))
+  return eval_str(a.update(opts, "code", _39_))
 end
 local function eval_file(opts)
   try_ensure_conn()
@@ -267,10 +272,10 @@ local function eval_file(opts)
 end
 local function on_filetype()
   mapping.buf("CommonLispDisconnect", config["get-in"]({"client", "common_lisp", "swank", "mapping", "disconnect"}), disconnect, {desc = "Disconnect from the REPL"})
-  local function _38_()
+  local function _40_()
     return connect({})
   end
-  return mapping.buf("CommonLispConnect", config["get-in"]({"client", "common_lisp", "swank", "mapping", "connect"}), _38_, {desc = "Connect to a REPL"})
+  return mapping.buf("CommonLispConnect", config["get-in"]({"client", "common_lisp", "swank", "mapping", "connect"}), _40_, {desc = "Connect to a REPL"})
 end
 local function on_load()
   return connect({})
@@ -282,19 +287,19 @@ local function completions(opts)
   try_ensure_conn()
   local code = ("(swank:simple-completions " .. a["pr-str"](opts.prefix) .. " " .. a["pr-str"](opts.context) .. ")")
   local format_for_cmpl
-  local function _39_(rs)
+  local function _41_(rs)
     local cmpls = parse_separated_list(rs)
     local last = table.remove(cmpls)
     table.insert(cmpls, 1, last)
     return cmpls
   end
-  format_for_cmpl = _39_
+  format_for_cmpl = _41_
   local result_fn
-  local function _40_(results)
+  local function _42_(results)
     local cmpl_list = format_for_cmpl(results)
     return opts.cb(cmpl_list)
   end
-  result_fn = _40_
+  result_fn = _42_
   a.assoc(opts, "code", code)
   a.assoc(opts, "on-result", result_fn)
   a.assoc(opts, "passive?", true)
