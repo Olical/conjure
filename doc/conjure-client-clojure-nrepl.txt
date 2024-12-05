@@ -237,7 +237,10 @@ All configuration can be set as described in |conjure-configuration|.
             A fully-qualified symbol naming a var whose function to use for
             printing.
             Must point to a function with signature [value writer options].
-            Default: `"conjure.internal/pprint"`
+            Conjure will create this CIDER pprint function if you aren't using
+            CIDER. The name _must_ be this string to work with babashka.
+            https://github.com/Olical/conjure/issues/406
+            Default: `"cider.nrepl.pprint/pprint"`
 
                             *g:conjure#client#clojure#nrepl#eval#auto_require*
 `g:conjure#client#clojure#nrepl#eval#auto_require`
