@@ -12,6 +12,7 @@ local str = autoload("conjure.aniseed.string")
 local timer = autoload("conjure.timer")
 local ui = autoload("conjure.client.clojure.nrepl.ui")
 local uuid = autoload("conjure.uuid")
+local fs = autoload("nfnl.fs")
 local function with_conn_or_warn(f, opts)
   local conn = state.get("conn")
   if conn then
@@ -76,28 +77,34 @@ local function un_comment(code)
     return nil
   end
 end
+local function print_opts()
+  local print_fn = config["get-in"]({"client", "clojure", "nrepl", "eval", "print_function"})
+  if (config["get-in"]({"client", "clojure", "nrepl", "eval", "pretty_print"}) and print_fn) then
+    return {["nrepl.middleware.print/print"] = print_fn, ["nrepl.middleware.print/options"] = {associative = 1, level = (config["get-in"]({"client", "clojure", "nrepl", "eval", "print_options", "level"}) or nil), length = (config["get-in"]({"client", "clojure", "nrepl", "eval", "print_options", "length"}) or nil), ["right-margin"] = (config["get-in"]({"client", "clojure", "nrepl", "eval", "print_options", "right_margin"}) or nil)}, ["nrepl.middleware.print/quota"] = config["get-in"]({"client", "clojure", "nrepl", "eval", "print_quota"}), ["nrepl.middleware.print/buffer-size"] = config["get-in"]({"client", "clojure", "nrepl", "eval", "print_buffer_size"})}
+  else
+    return nil
+  end
+end
 local function eval(opts, cb)
-  local function _10_(_)
-    local _11_
+  local function _11_(_)
+    local _12_
     do
       local tmp_3_auto = a["get-in"](opts, {"range", "start", 2})
       if (nil ~= tmp_3_auto) then
-        _11_ = a.inc(tmp_3_auto)
+        _12_ = a.inc(tmp_3_auto)
       else
-        _11_ = nil
+        _12_ = nil
       end
     end
-    local function _13_()
-      local print_fn = config["get-in"]({"client", "clojure", "nrepl", "eval", "print_function"})
-      if (config["get-in"]({"client", "clojure", "nrepl", "eval", "pretty_print"}) and print_fn) then
-        return {["nrepl.middleware.print/print"] = print_fn, ["nrepl.middleware.print/options"] = {associative = 1, level = (config["get-in"]({"client", "clojure", "nrepl", "eval", "print_options", "level"}) or nil), length = (config["get-in"]({"client", "clojure", "nrepl", "eval", "print_options", "length"}) or nil), ["right-margin"] = (config["get-in"]({"client", "clojure", "nrepl", "eval", "print_options", "right_margin"}) or nil)}, ["nrepl.middleware.print/quota"] = config["get-in"]({"client", "clojure", "nrepl", "eval", "print_quota"}), ["nrepl.middleware.print/buffer-size"] = config["get-in"]({"client", "clojure", "nrepl", "eval", "print_buffer_size"})}
-      else
-        return nil
-      end
-    end
-    return send(a.merge({op = "eval", ns = opts.context, code = un_comment(opts.code), file = opts["file-path"], line = a["get-in"](opts, {"range", "start", 1}), column = _11_, session = opts.session}, _13_()), cb)
+    return send(a.merge({op = "eval", ns = opts.context, code = un_comment(opts.code), file = opts["file-path"], line = a["get-in"](opts, {"range", "start", 1}), column = _12_, session = opts.session}, print_opts()), cb)
   end
-  return with_conn_or_warn(_10_)
+  return with_conn_or_warn(_11_)
+end
+local function load_file(opts, cb)
+  local function _14_(_)
+    return send(a.merge({op = "load-file", file = opts.code, ["file-name"] = fs.filename(opts["file-path"]), ["file-path"] = opts["file-path"], session = opts.session}, print_opts()), cb)
+  end
+  return with_conn_or_warn(_14_)
 end
 local function with_session_ids(cb)
   local function _15_(_)
@@ -321,4 +328,4 @@ local function connect(_46_)
   end
   return a.assoc(state.get(), "conn", a["merge!"](nrepl.connect(a.merge({host = host, port = port, ["on-failure"] = _48_, ["on-success"] = _49_, ["on-error"] = _50_, ["on-message"] = _52_, ["side-effect-callback"] = _55_, ["default-callback"] = _58_}, connect_opts)), {["seen-ns"] = {}, port_file_path = port_file_path}))
 end
-return {["assume-or-create-session"] = assume_or_create_session, ["assume-session"] = assume_session, ["clone-session"] = clone_session, ["close-session"] = close_session, connect = connect, ["connected?"] = connected_3f, disconnect = disconnect, ["enrich-session-id"] = enrich_session_id, eval = eval, ["handle-input-request"] = handle_input_request, ["pretty-session-type"] = pretty_session_type, send = send, ["session-type"] = session_type, ["un-comment"] = un_comment, ["with-conn-and-ops-or-warn"] = with_conn_and_ops_or_warn, ["with-conn-or-warn"] = with_conn_or_warn, ["with-sessions"] = with_sessions}
+return {["assume-or-create-session"] = assume_or_create_session, ["assume-session"] = assume_session, ["clone-session"] = clone_session, ["close-session"] = close_session, connect = connect, ["connected?"] = connected_3f, disconnect = disconnect, ["enrich-session-id"] = enrich_session_id, eval = eval, ["handle-input-request"] = handle_input_request, ["pretty-session-type"] = pretty_session_type, send = send, ["session-type"] = session_type, ["un-comment"] = un_comment, ["with-conn-and-ops-or-warn"] = with_conn_and_ops_or_warn, ["with-conn-or-warn"] = with_conn_or_warn, ["with-sessions"] = with_sessions, ["load-file"] = load_file}

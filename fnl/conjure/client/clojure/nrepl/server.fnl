@@ -11,6 +11,7 @@
 (local timer (autoload :conjure.timer))
 (local ui (autoload :conjure.client.clojure.nrepl.ui))
 (local uuid (autoload :conjure.uuid))
+(local fs (autoload :nfnl.fs))
 
 (fn with-conn-or-warn [f opts]
   (let [conn (state.get :conn)]
@@ -62,6 +63,37 @@
   (when code
     (string.gsub code "^#_" "")))
 
+(fn print-opts []
+  (let [print-fn (config.get-in [:client :clojure :nrepl :eval :print_function])]
+    (when (and (config.get-in [:client :clojure :nrepl :eval :pretty_print]) print-fn)
+      {:nrepl.middleware.print/print print-fn
+       :nrepl.middleware.print/options
+       {;; This forces this table to remain associative even if level and length aren't set.
+        ;; If you have an empty table in Fennel / Lua like {} it actually becomes sequential by default.
+        ;; So it's as if we set the options to [] which is _not_ good.
+        :associative 1
+
+        :level
+        (or
+          (config.get-in [:client :clojure :nrepl :eval :print_options :level])
+          nil)
+
+        :length
+        (or
+          (config.get-in [:client :clojure :nrepl :eval :print_options :length])
+          nil)
+
+        :right-margin
+        (or
+          (config.get-in [:client :clojure :nrepl :eval :print_options :right_margin])
+          nil)}
+
+       :nrepl.middleware.print/quota
+       (config.get-in [:client :clojure :nrepl :eval :print_quota])
+
+       :nrepl.middleware.print/buffer-size
+       (config.get-in [:client :clojure :nrepl :eval :print_buffer_size])})))
+
 (fn eval [opts cb]
   (with-conn-or-warn
     (fn [_]
@@ -74,35 +106,20 @@
            :line (a.get-in opts [:range :start 1])
            :column (-?> (a.get-in opts [:range :start 2]) (a.inc))
            :session opts.session}
-          (let [print-fn (config.get-in [:client :clojure :nrepl :eval :print_function])]
-            (when (and (config.get-in [:client :clojure :nrepl :eval :pretty_print]) print-fn)
-              {:nrepl.middleware.print/print print-fn
-               :nrepl.middleware.print/options
-               {;; This forces this table to remain associative even if level and length aren't set.
-                ;; If you have an empty table in Fennel / Lua like {} it actually becomes sequential by default.
-                ;; So it's as if we set the options to [] which is _not_ good.
-                :associative 1
+          (print-opts))
+        cb))))
 
-                :level
-                (or
-                  (config.get-in [:client :clojure :nrepl :eval :print_options :level])
-                  nil)
-
-                :length
-                (or
-                  (config.get-in [:client :clojure :nrepl :eval :print_options :length])
-                  nil)
-
-                :right-margin
-                (or
-                  (config.get-in [:client :clojure :nrepl :eval :print_options :right_margin])
-                  nil)}
-
-               :nrepl.middleware.print/quota
-               (config.get-in [:client :clojure :nrepl :eval :print_quota])
-
-               :nrepl.middleware.print/buffer-size
-               (config.get-in [:client :clojure :nrepl :eval :print_buffer_size])})))
+(fn load-file [opts cb]
+  (with-conn-or-warn
+    (fn [_]
+      (send
+        (a.merge
+          {:op :load-file
+           :file opts.code
+           :file-name (fs.filename opts.file-path)
+           :file-path opts.file-path
+           :session opts.session}
+          (print-opts))
         cb))))
 
 (fn with-session-ids [cb]
@@ -393,4 +410,5 @@
  : un-comment
  : with-conn-and-ops-or-warn
  : with-conn-or-warn
- : with-sessions}
+ : with-sessions
+ : load-file}
