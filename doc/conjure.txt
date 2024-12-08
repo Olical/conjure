@@ -1197,6 +1197,18 @@ examples: https://github.com/Olical/conjure/wiki/Client-features
                regret at a later date but for now, it's pretty darn useful
                when we really need it.
 
+`modify-client-exec-fn-opts`
+            Function(action, f-name, opts)
+            Called when a client function is about to be executed. You can
+            (optionally) implement this in your client to allow you to modify
+            the `opts` table (through mutation) before it's used. For example,
+            this means you can set `:passive?` on the table in order to
+            prevent the request from being displayed in the log and HUD.
+
+            Useful if you wish to handle the full display lifecycle of this
+            client function in your client code instead of relying on the
+            shared infrastructure.
+
 `comment-node?`
             Function(node)
             When tree-sitter is in use this will be called with each node
