@@ -88,6 +88,7 @@ local function client_exec_fn(action, f_name, base_opts)
     local opts0 = a.merge(opts, base_opts, {action = action, ["file-path"] = extract["file-path"]()})
     assoc_context(opts0)
     opts0.preview = preview(opts0)
+    client["optional-call"]("modify-client-exec-fn-opts", action, f_name, opts0)
     if not opts0["passive?"] then
       display_request(opts0)
     else

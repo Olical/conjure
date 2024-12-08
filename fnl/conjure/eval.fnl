@@ -105,6 +105,8 @@
       (assoc-context opts)
       (set opts.preview (preview opts))
 
+      (client.optional-call :modify-client-exec-fn-opts action f-name opts)
+
       (when (not opts.passive?)
         (display-request opts))
 
