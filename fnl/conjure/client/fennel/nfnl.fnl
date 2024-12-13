@@ -78,7 +78,6 @@
         result-strs (core.map fennel.view results)
         mod-path (M.module-path opts.file-path)]
 
-    ;; TODO Test that this works properly, it might not work well with autoload.
     ;; When we evaluate a whole file and it ends in a table, we merge that table into the loaded module.
     ;; This allows you to reload a module with ef or eb.
     (when (and mod-path
