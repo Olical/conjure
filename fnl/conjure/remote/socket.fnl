@@ -2,7 +2,6 @@
 (local a (autoload :conjure.aniseed.core))
 (local client (autoload :conjure.client))
 (local log (autoload :conjure.log))
-(local str (autoload :conjure.aniseed.string))
 (local text (autoload :conjure.text))
 
 (local uv vim.loop)
