@@ -11,9 +11,11 @@
 (local fs (autoload :nfnl.fs))
 
 (local M
-  {:comment-node? ts.lisp-comment-node?
-   :buf-suffix ".fnl"
-   :comment-prefix "; "})
+  (or
+    (?. package.loaded :conjure.client.fennel.nfnl)
+    {:comment-node? ts.lisp-comment-node?
+     :buf-suffix ".fnl"
+     :comment-prefix "; "}))
 
 (fn M.form-node? [node]
   (ts.node-surrounded-by-form-pair-chars? node [["#(" ")"]]))
@@ -33,13 +35,13 @@
 
 (local cfg (config.get-in-fn [:client :fennel :nfnl]))
 
-(local repls {})
+(set M.repls (or M.repls {}))
 
 (fn M.repl-for-path [path]
   "Upserts a repl for the given path. Stored in the `repls` table.
   TODO: Add mappings or commands that allow us to reset the REPL state if they get stuck."
-  (if (?. repls path)
-    (. repls path)
+  (if (?. M.repls path)
+    (. M.repls path)
     (let [r (repl.new
               {:on-error
                (fn [err-type err]
@@ -51,7 +53,7 @@
                :cfg (let [config-map (nfnl-config.find-and-load (fs.file-name-root path))]
                       (when config-map
                         (nfnl-config.cfg-fn config-map)))})]
-      (tset repls path r)
+      (tset M.repls path r)
       r)))
 
 (fn M.module-path [path]
