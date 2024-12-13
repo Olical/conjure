@@ -38,15 +38,22 @@ local function fennel_filetype_callback(ev)
         notify.info("Found nfnl config, setting up autocmds: ", root_dir)
       else
       end
-      vim.api.nvim_create_autocmd({"BufWritePost"}, {group = vim.api.nvim_create_augroup(str.join({"nfnl-on-write", root_dir, ev.buf}), {}), buffer = ev.buf, callback = fennel_buf_write_post_callback_fn(root_dir, cfg)})
-      local function _7_(_241)
+      if (false ~= vim.g["nfnl#compile_on_write"]) then
+        vim.api.nvim_create_autocmd({"BufWritePost"}, {group = vim.api.nvim_create_augroup(str.join({"nfnl-on-write", root_dir, ev.buf}), {}), buffer = ev.buf, callback = fennel_buf_write_post_callback_fn(root_dir, cfg)})
+      else
+      end
+      local function _8_(_241)
         return api.dofile(core.first(core.get(_241, "fargs")))
       end
-      vim.api.nvim_buf_create_user_command(ev.buf, "NfnlFile", _7_, {desc = "Run the matching Lua file for this Fennel file from disk. Does not recompile the Lua, you must use nfnl to compile your Fennel to Lua first. Calls nfnl.api/dofile under the hood.", force = true, complete = "file", nargs = "?"})
-      local function _8_(_241)
+      vim.api.nvim_buf_create_user_command(ev.buf, "NfnlFile", _8_, {desc = "Run the matching Lua file for this Fennel file from disk. Does not recompile the Lua, you must use nfnl to compile your Fennel to Lua first. Calls nfnl.api/dofile under the hood.", force = true, complete = "file", nargs = "?"})
+      local function _9_(_241)
+        return api["compile-file"]({path = core.first(core.get(_241, "fargs"))})
+      end
+      vim.api.nvim_buf_create_user_command(ev.buf, "NfnlCompileFile", _9_, {desc = "Executes (nfnl.api/compile-file) which compiles the current file or the one provided as an argumet. The output is written to the appropriate Lua file.", force = true, complete = "file", nargs = "?"})
+      local function _10_(_241)
         return api["compile-all-files"](core.first(core.get(_241, "fargs")))
       end
-      return vim.api.nvim_buf_create_user_command(ev.buf, "NfnlCompileAllFiles", _8_, {desc = "Executes (nfnl.api/compile-all-files) which will, you guessed it, compile all of your files.", force = true, complete = "file", nargs = "?"})
+      return vim.api.nvim_buf_create_user_command(ev.buf, "NfnlCompileAllFiles", _10_, {desc = "Executes (nfnl.api/compile-all-files) which will, you guessed it, compile all of your files.", force = true, complete = "file", nargs = "?"})
     else
       return nil
     end

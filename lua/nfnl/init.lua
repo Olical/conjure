@@ -15,7 +15,12 @@ if vim then
   end
 else
 end
-local function setup()
-  return "A noop for now, may be used one day. You just need to load this module for the plugin to initialise for now."
+local function setup(opts)
+  if opts then
+    vim.g["nfnl#compile_on_write"] = opts.compile_on_write
+    return nil
+  else
+    return nil
+  end
 end
 return {setup = setup}

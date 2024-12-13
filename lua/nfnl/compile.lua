@@ -26,14 +26,21 @@ local function valid_source_files(glob_fn, _2_)
   end
   return core.mapcat(_3_, cfg({"source-file-patterns"}))
 end
-mod["into-string"] = function(_4_)
+local function valid_source_file_3f(path, _4_)
   local root_dir = _4_["root-dir"]
-  local path = _4_["path"]
   local cfg = _4_["cfg"]
-  local source = _4_["source"]
-  local batch_3f = _4_["batch?"]
-  local file_exists_on_disk_3f = _4_["file-exists-on-disk?"]
-  local opts = _4_
+  local function _5_(_241)
+    return fs["glob-matches?"](root_dir, _241, path)
+  end
+  return core.some(_5_, cfg({"source-file-patterns"}))
+end
+mod["into-string"] = function(_6_)
+  local root_dir = _6_["root-dir"]
+  local path = _6_["path"]
+  local cfg = _6_["cfg"]
+  local source = _6_["source"]
+  local batch_3f = _6_["batch?"]
+  local opts = _6_
   local macro_3f = macro_source_3f(source)
   if (macro_3f and batch_3f) then
     return {status = "macros-are-not-compiled", ["source-path"] = path}
@@ -42,37 +49,28 @@ mod["into-string"] = function(_4_)
     return mod["all-files"]({["root-dir"] = root_dir, cfg = cfg})
   elseif config["config-file-path?"](path) then
     return {status = "nfnl-config-is-not-compiled", ["source-path"] = path}
+  elseif not valid_source_file_3f(path, opts) then
+    return {status = "path-is-not-in-source-file-patterns", ["source-path"] = path}
   else
-    local and_5_ = (false ~= file_exists_on_disk_3f)
-    if and_5_ then
-      local function _6_(_241)
-        return (path == _241)
-      end
-      and_5_ = not core.some(_6_, valid_source_files(fs.absglob, opts))
+    local rel_file_name = path:sub((2 + root_dir:len()))
+    local ok, res = nil, nil
+    do
+      fennel.path = cfg({"fennel-path"})
+      fennel["macro-path"] = cfg({"fennel-macro-path"})
+      ok, res = pcall(fennel["compile-string"], source, core.merge({filename = path, warn = notify.warn}, cfg({"compiler-options"})))
     end
-    if and_5_ then
-      return {status = "path-is-not-in-source-file-patterns", ["source-path"] = path}
-    else
-      local rel_file_name = path:sub((2 + root_dir:len()))
-      local ok, res = nil, nil
-      do
-        fennel.path = cfg({"fennel-path"})
-        fennel["macro-path"] = cfg({"fennel-macro-path"})
-        ok, res = pcall(fennel["compile-string"], source, core.merge({filename = path, warn = notify.warn}, cfg({"compiler-options"})))
-      end
-      if ok then
-        if cfg({"verbose"}) then
-          notify.info("Successfully compiled: ", path)
-        else
-        end
-        return {status = "ok", ["source-path"] = path, result = (with_header(rel_file_name, res) .. "\n")}
+    if ok then
+      if cfg({"verbose"}) then
+        notify.info("Successfully compiled: ", path)
       else
-        if not batch_3f then
-          notify.error(res)
-        else
-        end
-        return {status = "compilation-error", error = res, ["source-path"] = path}
       end
+      return {status = "ok", ["source-path"] = path, result = (with_header(rel_file_name, res) .. "\n")}
+    else
+      if not batch_3f then
+        notify.error(res)
+      else
+      end
+      return {status = "compilation-error", error = res, ["source-path"] = path}
     end
   end
 end

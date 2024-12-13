@@ -7,38 +7,59 @@ local notify = autoload("nfnl.notify")
 local str = autoload("nfnl.string")
 local function new(opts)
   local results_to_return = nil
+  local cfg
+  do
+    local t_2_ = opts
+    if (nil ~= t_2_) then
+      t_2_ = t_2_.cfg
+    else
+    end
+    cfg = t_2_
+  end
   local co
-  local function _2_()
-    local function _3_(results)
+  local function _4_()
+    local function _5_(results)
       results_to_return = core.concat(results_to_return, results)
       return nil
     end
-    local function _4_(err_type, err, lua_source)
-      local _6_
+    local function _6_(err_type, err, lua_source)
+      local _8_
       do
-        local t_5_ = opts
-        if (nil ~= t_5_) then
-          t_5_ = t_5_["on-error"]
+        local t_7_ = opts
+        if (nil ~= t_7_) then
+          t_7_ = t_7_["on-error"]
         else
         end
-        _6_ = t_5_
+        _8_ = t_7_
       end
-      if _6_ then
+      if _8_ then
         return opts["on-error"](err_type, err, lua_source)
       else
         return notify.error(str.join("\n\n", {("[" .. err_type .. "] " .. err), lua_source}))
       end
     end
-    return fennel.repl({pp = core.identity, readChunk = coroutine.yield, onValues = _3_, onError = _4_})
+    local function _11_()
+      if cfg then
+        return cfg({"compiler-options"})
+      else
+        return nil
+      end
+    end
+    return fennel.repl(core["merge!"]({pp = core.identity, readChunk = coroutine.yield, onValues = _5_, onError = _6_}, _11_()))
   end
-  co = coroutine.create(_2_)
+  co = coroutine.create(_4_)
   coroutine.resume(co)
-  local function _9_(input)
+  local function _12_(input)
+    if cfg then
+      fennel.path = cfg({"fennel-path"})
+      fennel["macro-path"] = cfg({"fennel-macro-path"})
+    else
+    end
     coroutine.resume(co, input)
     local prev_eval_values = results_to_return
     results_to_return = nil
     return prev_eval_values
   end
-  return _9_
+  return _12_
 end
 return {new = new}
