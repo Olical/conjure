@@ -1,7 +1,8 @@
 (local core (require :nfnl.core))
 (local config (require :nfnl.config))
+(local defaults (config.default))
 
 {:compiler-options (core.merge
-                     (config.default)
+                     defaults.compiler-options
                      {:compilerEnv _G})
  :source-file-patterns [".nvim.fnl" "fnl/**/*.fnl"]}
