@@ -62,8 +62,8 @@ M["eval-str"] = function(opts)
   local results = repl0((opts.code .. "\n"))
   local result_strs = core.map(fennel.view, results)
   local lines = text["split-lines"](str.join("\n", result_strs))
-  if ((("buf" == opts.origin) or ("file" == opts.origin)) and core["table?"](core.last(results))) then
-    local mod_path = M["module-path"](opts["file-path"])
+  local mod_path = M["module-path"](opts["file-path"])
+  if (mod_path and (("buf" == opts.origin) or ("file" == opts.origin)) and core["table?"](core.last(results))) then
     local mod = core.get(package.loaded, mod_path)
     package.loaded[mod_path] = core["merge!"](mod, core.last(results))
   else

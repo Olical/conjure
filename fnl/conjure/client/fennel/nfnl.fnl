@@ -65,15 +65,16 @@
   (let [repl (M.repl-for-path opts.file-path)
         results (repl (.. opts.code "\n"))
         result-strs (core.map fennel.view results)
-        lines (text.split-lines (str.join "\n" result-strs))]
+        lines (text.split-lines (str.join "\n" result-strs))
+        mod-path (M.module-path opts.file-path)]
 
     ;; TODO Test that this works properly, it might not work well with autoload.
     ;; When we evaluate a whole file and it ends in a table, we merge that table into the loaded module.
     ;; This allows you to reload a module with ef or eb.
-    (when (and (or (= :buf opts.origin) (= :file opts.origin))
+    (when (and mod-path
+               (or (= :buf opts.origin) (= :file opts.origin))
                (core.table? (core.last results)))
-      (let [mod-path (M.module-path opts.file-path)
-            mod (core.get package.loaded mod-path)]
+      (let [mod (core.get package.loaded mod-path)]
         (tset package.loaded mod-path (core.merge! mod (core.last results)))))
 
     (log.append lines)))
