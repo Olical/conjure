@@ -35,8 +35,8 @@ M["repl-for-path"] = function(path)
     return repls[path]
   else
     local r
-    local function _6_(err_type, err, lua_source)
-      return log.append(text["split-lines"](str.trim(text["strip-ansi-escape-sequences"](str.join({"[", err_type, "] ", err, "\n\n", lua_source})))))
+    local function _6_(err_type, err)
+      return log.append(text["prefixed-lines"](str.trim(text["strip-ansi-escape-sequences"](str.join({"[", err_type, "] ", err}))), "; "))
     end
     r = repl.new({["on-error"] = _6_})
     repls[path] = r

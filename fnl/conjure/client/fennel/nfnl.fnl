@@ -41,11 +41,11 @@
     (. repls path)
     (let [r (repl.new
               {:on-error
-               (fn [err-type err lua-source]
-                 (-> (str.join ["[" err-type "] " err "\n\n" lua-source])
+               (fn [err-type err]
+                 (-> (str.join ["[" err-type "] " err])
                      (text.strip-ansi-escape-sequences)
                      (str.trim)
-                     (text.split-lines)
+                     (text.prefixed-lines "; ")
                      (log.append)))})]
       (tset repls path r)
       r)))
