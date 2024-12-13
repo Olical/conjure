@@ -1,6 +1,7 @@
 (local {: autoload} (require :nfnl.module))
 (local ts (autoload :conjure.tree-sitter))
 (local config (autoload :conjure.config))
+(local nfnl-config (autoload :nfnl.config))
 (local text (autoload :conjure.text))
 (local log (autoload :conjure.log))
 (local core (autoload :nfnl.core))
@@ -46,7 +47,10 @@
                      (text.strip-ansi-escape-sequences)
                      (str.trim)
                      (text.prefixed-lines "; ")
-                     (log.append)))})]
+                     (log.append)))
+               :cfg (let [config-map (nfnl-config.find-and-load (fs.file-name-root path))]
+                      (when config-map
+                        (nfnl-config.cfg-fn config-map)))})]
       (tset repls path r)
       r)))
 

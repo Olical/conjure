@@ -3,6 +3,7 @@ local _local_1_ = require("nfnl.module")
 local autoload = _local_1_["autoload"]
 local ts = autoload("conjure.tree-sitter")
 local config = autoload("conjure.config")
+local nfnl_config = autoload("nfnl.config")
 local text = autoload("conjure.text")
 local log = autoload("conjure.log")
 local core = autoload("nfnl.core")
@@ -38,7 +39,16 @@ M["repl-for-path"] = function(path)
     local function _6_(err_type, err)
       return log.append(text["prefixed-lines"](str.trim(text["strip-ansi-escape-sequences"](str.join({"[", err_type, "] ", err}))), "; "))
     end
-    r = repl.new({["on-error"] = _6_})
+    local _7_
+    do
+      local config_map = nfnl_config["find-and-load"](fs["file-name-root"](path))
+      if config_map then
+        _7_ = nfnl_config["cfg-fn"](config_map)
+      else
+        _7_ = nil
+      end
+    end
+    r = repl.new({["on-error"] = _6_, cfg = _7_})
     repls[path] = r
     return r
   end
@@ -47,10 +57,10 @@ M["module-path"] = function(path)
   if path then
     local parts = fs["split-path"](fs["file-name-root"](path))
     local fnl_and_below
-    local function _8_(_241)
+    local function _10_(_241)
       return (_241 ~= "fnl")
     end
-    fnl_and_below = core["drop-while"](_8_, parts)
+    fnl_and_below = core["drop-while"](_10_, parts)
     if ("fnl" == core.first(fnl_and_below)) then
       return str.join(".", core.rest(fnl_and_below))
     else
