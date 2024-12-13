@@ -12,7 +12,7 @@
 
 (local M
   (or
-    (?. package.loaded :conjure.client.fennel.nfnl)
+    (?. package.preload :conjure.client.fennel.nfnl)
     {:comment-node? ts.lisp-comment-node?
      :buf-suffix ".fnl"
      :comment-prefix "; "}))

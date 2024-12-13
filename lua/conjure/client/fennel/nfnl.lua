@@ -14,7 +14,7 @@ local fs = autoload("nfnl.fs")
 local M
 local _3_
 do
-  local t_2_ = package.loaded
+  local t_2_ = package.preload
   if (nil ~= t_2_) then
     t_2_ = t_2_["conjure.client.fennel.nfnl"]
   else
