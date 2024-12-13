@@ -34,7 +34,11 @@ M["repl-for-path"] = function(path)
   if _4_ then
     return repls[path]
   else
-    local r = repl.new()
+    local r
+    local function _6_(err_type, err, lua_source)
+      return log.append(text["split-lines"](str.trim(text["strip-ansi-escape-sequences"](str.join({"[", err_type, "] ", err, "\n\n", lua_source})))))
+    end
+    r = repl.new({["on-error"] = _6_})
     repls[path] = r
     return r
   end
@@ -43,10 +47,10 @@ M["module-path"] = function(path)
   if path then
     local parts = fs["split-path"](fs["file-name-root"](path))
     local fnl_and_below
-    local function _7_(_241)
+    local function _8_(_241)
       return (_241 ~= "fnl")
     end
-    fnl_and_below = core["drop-while"](_7_, parts)
+    fnl_and_below = core["drop-while"](_8_, parts)
     if ("fnl" == core.first(fnl_and_below)) then
       return str.join(".", core.rest(fnl_and_below))
     else
@@ -61,14 +65,17 @@ M["eval-str"] = function(opts)
   local repl0 = M["repl-for-path"](opts["file-path"])
   local results = repl0((opts.code .. "\n"))
   local result_strs = core.map(fennel.view, results)
-  local lines = text["split-lines"](str.join("\n", result_strs))
   local mod_path = M["module-path"](opts["file-path"])
   if (mod_path and (("buf" == opts.origin) or ("file" == opts.origin)) and core["table?"](core.last(results))) then
     local mod = core.get(package.loaded, mod_path)
     package.loaded[mod_path] = core["merge!"](mod, core.last(results))
   else
   end
-  return log.append(lines)
+  if not core["empty?"](result_strs) then
+    return log.append(text["split-lines"](str.join("\n", result_strs)))
+  else
+    return nil
+  end
 end
 M["eval-file"] = function(opts)
   opts.code = core.slurp(opts["file-path"])

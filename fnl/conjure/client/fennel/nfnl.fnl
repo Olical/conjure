@@ -34,14 +34,19 @@
 
 (local repls {})
 
-;; TODO Catch errors and display them in the log with ASCII codes removed.
-
 (fn M.repl-for-path [path]
   "Upserts a repl for the given path. Stored in the `repls` table.
   TODO: Add mappings or commands that allow us to reset the REPL state if they get stuck."
   (if (?. repls path)
     (. repls path)
-    (let [r (repl.new)]
+    (let [r (repl.new
+              {:on-error
+               (fn [err-type err lua-source]
+                 (-> (str.join ["[" err-type "] " err "\n\n" lua-source])
+                     (text.strip-ansi-escape-sequences)
+                     (str.trim)
+                     (text.split-lines)
+                     (log.append)))})]
       (tset repls path r)
       r)))
 
@@ -65,7 +70,6 @@
   (let [repl (M.repl-for-path opts.file-path)
         results (repl (.. opts.code "\n"))
         result-strs (core.map fennel.view results)
-        lines (text.split-lines (str.join "\n" result-strs))
         mod-path (M.module-path opts.file-path)]
 
     ;; TODO Test that this works properly, it might not work well with autoload.
@@ -77,7 +81,8 @@
       (let [mod (core.get package.loaded mod-path)]
         (tset package.loaded mod-path (core.merge! mod (core.last results)))))
 
-    (log.append lines)))
+    (when (not (core.empty? result-strs))
+      (log.append (text.split-lines (str.join "\n" result-strs))))))
 
 (fn M.eval-file [opts]
   "Client function, called by Conjure when evaluating a file from disk."
