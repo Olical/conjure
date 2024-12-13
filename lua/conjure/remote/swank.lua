@@ -3,7 +3,6 @@ local _local_1_ = require("nfnl.module")
 local autoload = _local_1_["autoload"]
 local a = autoload("conjure.aniseed.core")
 local client = autoload("conjure.client")
-local log = autoload("conjure.log")
 local net = autoload("conjure.net")
 local trn = autoload("conjure.remote.transport.swank")
 local function send(conn, msg, cb)

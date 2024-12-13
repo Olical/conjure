@@ -2,7 +2,6 @@
 local _local_1_ = require("nfnl.module")
 local autoload = _local_1_["autoload"]
 local a = autoload("conjure.aniseed.core")
-local bridge = autoload("conjure.bridge")
 local function resolve(host)
   if (host == "::") then
     return host

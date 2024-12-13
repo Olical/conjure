@@ -1,7 +1,6 @@
 (local {: autoload} (require :nfnl.module))
 (local a (autoload :conjure.aniseed.core))
 (local client (autoload :conjure.client))
-(local log (autoload :conjure.log))
 (local net (autoload :conjure.net))
 (local trn (autoload :conjure.remote.transport.swank))
 

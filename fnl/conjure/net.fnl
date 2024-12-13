@@ -1,6 +1,5 @@
 (local {: autoload} (require :nfnl.module))
 (local a (autoload :conjure.aniseed.core))
-(local bridge (autoload :conjure.bridge))
 
 (import-macros {: augroup : autocmd} :conjure.macros)
 
