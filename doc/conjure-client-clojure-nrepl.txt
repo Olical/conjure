@@ -362,6 +362,21 @@ All configuration can be set as described in |conjure-configuration|.
             Interrupt an evaluation.
             Default: `ei`
 
+                       *g:conjure#client#clojure#nrepl#mapping#macro_expand_1*
+`g:conjure#client#clojure#nrepl#mapping#macro_expand_1`
+            Run the current form wrapped in `(macroexpand-1 ...)`
+            Default: `x1`
+
+                         *g:conjure#client#clojure#nrepl#mapping#macro_expand*
+`g:conjure#client#clojure#nrepl#mapping#macro_expand`
+            Run the current form wrapped in `(macroexpand ...)`
+            Default: `xr`
+
+                     *g:conjure#client#clojure#nrepl#mapping#macro_expand_all*
+`g:conjure#client#clojure#nrepl#mapping#macro_expand_all`
+            Run the current form wrapped in `(clojure.walk/macroexpand-all ...)`
+            Default: `xa`
+
                        *g:conjure#client#clojure#nrepl#mapping#last_exception*
 `g:conjure#client#clojure#nrepl#mapping#last_exception`
             View the last exception.

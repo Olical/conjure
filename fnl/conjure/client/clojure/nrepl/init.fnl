@@ -95,6 +95,10 @@
 
         :interrupt "ei"
 
+        :macro_expand_1 "x1"
+        :macro_expand "xr"
+        :macro_expand_all "xa"
+
         :last_exception "ve"
         :result_1 "v1"
         :result_2 "v2"
@@ -162,6 +166,21 @@
     :CljInterrupt (cfg [:mapping :interrupt])
     (util.wrap-require-fn-call :conjure.client.clojure.nrepl.action :interrupt)
     {:desc "Interrupt the current evaluation"})
+
+  (mapping.buf
+    :CljMacroExpand1 (cfg [:mapping :macro_expand_1])
+    (util.wrap-require-fn-call :conjure.client.clojure.nrepl.action :macro-expand-1)
+    {:desc "Run the current form wrapped in (macroexpand-1 ...)"})
+
+  (mapping.buf
+    :CljMacroExpand (cfg [:mapping :macro_expand])
+    (util.wrap-require-fn-call :conjure.client.clojure.nrepl.action :macro-expand)
+    {:desc "Run the current form wrapped in (macroexpand ...)"})
+
+  (mapping.buf
+    :CljMacroExpandAll (cfg [:mapping :macro_expand_all])
+    (util.wrap-require-fn-call :conjure.client.clojure.nrepl.action :macro-expand-all)
+    {:desc "Run the current form wrapped in (clojure.walk/macroexpand-all ...)"})
 
   (mapping.buf
     :CljLastException (cfg [:mapping :last_exception])
