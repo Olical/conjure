@@ -1,14 +1,17 @@
 -- [nfnl] Compiled from fnl/conjure/fs.fnl by https://github.com/Olical/nfnl, do not edit.
 local _local_1_ = require("nfnl.module")
 local autoload = _local_1_["autoload"]
-local nvim = autoload("conjure.aniseed.nvim")
 local a = autoload("conjure.aniseed.core")
-local text = autoload("conjure.text")
 local str = autoload("conjure.aniseed.string")
-local afs = autoload("conjure.aniseed.fs")
 local config = autoload("conjure.config")
+local path_sep
+if (jit.os == "Windows") then
+  path_sep = "\\"
+else
+  path_sep = "/"
+end
 local function env(k)
-  local v = nvim.fn.getenv(k)
+  local v = vim.fn.getenv(k)
   if (a["string?"](v) and not a["empty?"](v)) then
     return v
   else
@@ -16,13 +19,20 @@ local function env(k)
   end
 end
 local function config_dir()
-  return ((env("XDG_CONFIG_HOME") or (env("HOME") .. afs["path-sep"] .. ".config")) .. afs["path-sep"] .. "conjure")
+  local function _4_()
+    if env("XDG_CONFIG_HOME") then
+      return "$XDG_CONFIG_HOME/conjure"
+    else
+      return "~/.config/conjure"
+    end
+  end
+  return vim.fs.normalize(_4_())
 end
 local function absolute_path(path)
-  return vim.fn.fnamemodify(path, ":p")
+  return vim.fs.normalize(vim.fn.fnamemodify(path, ":p"))
 end
 local function findfile(name, path)
-  local res = nvim.fn.findfile(name, path)
+  local res = vim.fn.findfile(name, path)
   if not a["empty?"](res) then
     return absolute_path(res)
   else
@@ -30,29 +40,26 @@ local function findfile(name, path)
   end
 end
 local function split_path(path)
-  local function _4_(_241)
-    return not a["empty?"](_241)
-  end
-  return a.filter(_4_, str.split(path, afs["path-sep"]))
+  return vim.split(path, path_sep, {trimempty = true})
 end
 local function join_path(parts)
-  return str.join(afs["path-sep"], a.concat(parts))
+  return str.join(path_sep, a.concat(parts))
 end
 local function parent_dir(path)
   local res = join_path(a.butlast(split_path(path)))
   if ("" == res) then
     return nil
   else
-    return (afs["path-sep"] .. res)
+    return (path_sep .. res)
   end
 end
 local function upwards_file_search(file_names, from_dir)
   if (from_dir and not a["empty?"](file_names)) then
     local result
-    local function _6_(file_name)
+    local function _7_(file_name)
       return findfile(file_name, from_dir)
     end
-    result = a.some(_6_, file_names)
+    result = a.some(_7_, file_names)
     if result then
       return result
     else
@@ -63,10 +70,10 @@ local function upwards_file_search(file_names, from_dir)
   end
 end
 local function resolve_above(names)
-  return (upwards_file_search(names, nvim.fn.expand("%:p:h")) or upwards_file_search(names, nvim.fn.getcwd()) or upwards_file_search(names, config_dir()))
+  return (upwards_file_search(names, vim.fn.expand("%:p:h")) or upwards_file_search(names, vim.fn.getcwd()) or upwards_file_search(names, config_dir()))
 end
 local function file_readable_3f(path)
-  return (1 == nvim.fn.filereadable(path))
+  return (1 == vim.fn.filereadable(path))
 end
 local function resolve_relative_to(path, root)
   local function loop(parts)
@@ -91,19 +98,19 @@ local function resolve_relative(path)
   end
 end
 local function apply_path_subs(path, path_subs)
-  local function _13_(path0, _12_)
-    local pat = _12_[1]
-    local rep = _12_[2]
+  local function _14_(path0, _13_)
+    local pat = _13_[1]
+    local rep = _13_[2]
     return path0:gsub(pat, rep)
   end
-  return a.reduce(_13_, path, a["kv-pairs"](path_subs))
+  return a.reduce(_14_, path, a["kv-pairs"](path_subs))
 end
 local function localise_path(path)
   return resolve_relative(apply_path_subs(path, config["get-in"]({"path_subs"})))
 end
 local function current_source()
   local info = debug.getinfo(2, "S")
-  if text["starts-with"](a.get(info, "source"), "@") then
+  if vim.startswith(a.get(info, "source"), "@") then
     return string.sub(info.source, 2)
   else
     return nil
@@ -120,15 +127,15 @@ do
 end
 local function file_path__3emodule_name(file_path)
   if file_path then
-    local function _16_(mod_name)
-      local mod_path = string.gsub(mod_name, "%.", afs["path-sep"])
-      if (text["ends-with"](file_path, (mod_path .. ".fnl")) or text["ends-with"](file_path, (mod_path .. "/init.fnl"))) then
+    local function _17_(mod_name)
+      local mod_path = string.gsub(mod_name, "%.", path_sep)
+      if (vim.endswith(file_path, (mod_path .. ".fnl")) or vim.endswith(file_path, (mod_path .. "/init.fnl"))) then
         return mod_name
       else
         return nil
       end
     end
-    return a.some(_16_, a.keys(package.loaded))
+    return a.some(_17_, a.keys(package.loaded))
   else
     return nil
   end
