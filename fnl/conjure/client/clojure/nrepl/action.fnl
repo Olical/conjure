@@ -232,15 +232,6 @@
 (fn escape-backslashes [s]
   (s:gsub "\\" "\\\\"))
 
-; (fn eval-file [opts]
-;   (try-ensure-conn
-;     (fn []
-;       (server.eval
-;         (a.assoc opts :code (.. "(#?(:cljs cljs.core/load-file"
-;                                 " :default clojure.core/load-file)"
-;                                 " \"" (escape-backslashes opts.file-path) "\")"))
-;         (eval-cb-fn opts)))))
-
 (fn eval-file [opts]
   (try-ensure-conn
     (fn []
