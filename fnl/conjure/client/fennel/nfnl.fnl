@@ -1,4 +1,4 @@
-(local {: autoload} (require :nfnl.module))
+(local {: autoload : define} (require :nfnl.module))
 (local ts (autoload :conjure.tree-sitter))
 (local config (autoload :conjure.config))
 (local nfnl-config (autoload :nfnl.config))
@@ -11,8 +11,7 @@
 (local fs (autoload :nfnl.fs))
 
 (local M
-  (or
-    (?. package.preload :conjure.client.fennel.nfnl)
+  (define :conjure.client.fennel.nfnl
     {:comment-node? ts.lisp-comment-node?
      :buf-suffix ".fnl"
      :comment-prefix "; "}))

@@ -1,6 +1,7 @@
 -- [nfnl] Compiled from fnl/conjure/client/fennel/nfnl.fnl by https://github.com/Olical/nfnl, do not edit.
 local _local_1_ = require("nfnl.module")
 local autoload = _local_1_["autoload"]
+local define = _local_1_["define"]
 local ts = autoload("conjure.tree-sitter")
 local config = autoload("conjure.config")
 local nfnl_config = autoload("nfnl.config")
@@ -11,17 +12,7 @@ local fennel = autoload("nfnl.fennel")
 local str = autoload("nfnl.string")
 local repl = autoload("nfnl.repl")
 local fs = autoload("nfnl.fs")
-local M
-local _3_
-do
-  local t_2_ = package.preload
-  if (nil ~= t_2_) then
-    t_2_ = t_2_["conjure.client.fennel.nfnl"]
-  else
-  end
-  _3_ = t_2_
-end
-M = (_3_ or {["comment-node?"] = ts["lisp-comment-node?"], ["buf-suffix"] = ".fnl", ["comment-prefix"] = "; "})
+local M = define("conjure.client.fennel.nfnl", {["comment-node?"] = ts["lisp-comment-node?"], ["buf-suffix"] = ".fnl", ["comment-prefix"] = "; "})
 M["form-node?"] = function(node)
   return ts["node-surrounded-by-form-pair-chars?"](node, {{"#(", ")"}})
 end
@@ -33,32 +24,32 @@ end
 local cfg = config["get-in-fn"]({"client", "fennel", "nfnl"})
 M.repls = (M.repls or {})
 M["repl-for-path"] = function(path)
-  local _7_
+  local _4_
   do
-    local t_6_ = M.repls
-    if (nil ~= t_6_) then
-      t_6_ = t_6_[path]
+    local t_3_ = M.repls
+    if (nil ~= t_3_) then
+      t_3_ = t_3_[path]
     else
     end
-    _7_ = t_6_
+    _4_ = t_3_
   end
-  if _7_ then
+  if _4_ then
     return M.repls[path]
   else
     local r
-    local function _9_(err_type, err)
+    local function _6_(err_type, err)
       return log.append(text["prefixed-lines"](str.trim(text["strip-ansi-escape-sequences"](str.join({"[", err_type, "] ", err}))), "; "))
     end
-    local _10_
+    local _7_
     do
       local config_map = nfnl_config["find-and-load"](fs["file-name-root"](path))
       if config_map then
-        _10_ = nfnl_config["cfg-fn"](config_map)
+        _7_ = nfnl_config["cfg-fn"](config_map)
       else
-        _10_ = nil
+        _7_ = nil
       end
     end
-    r = repl.new({["on-error"] = _9_, cfg = _10_})
+    r = repl.new({["on-error"] = _6_, cfg = _7_})
     M.repls[path] = r
     return r
   end
@@ -67,10 +58,10 @@ M["module-path"] = function(path)
   if path then
     local parts = fs["split-path"](fs["file-name-root"](path))
     local fnl_and_below
-    local function _13_(_241)
+    local function _10_(_241)
       return (_241 ~= "fnl")
     end
-    fnl_and_below = core["drop-while"](_13_, parts)
+    fnl_and_below = core["drop-while"](_10_, parts)
     if ("fnl" == core.first(fnl_and_below)) then
       return str.join(".", core.rest(fnl_and_below))
     else

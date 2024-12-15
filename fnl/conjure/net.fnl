@@ -1,9 +1,11 @@
-(local {: autoload} (require :nfnl.module))
+(local {: autoload : define} (require :nfnl.module))
 (local a (autoload :conjure.aniseed.core))
 
 (import-macros {: augroup : autocmd} :conjure.macros)
 
-(fn resolve [host]
+(local M (define :conjure.net {}))
+
+(fn M.resolve [host]
   ;; Mostly to work around jeejah binding to localhost instead of 127.0.0.1 and
   ;; libuv net requiring IP addresses.
   (if (= host "::")
@@ -24,9 +26,9 @@
 
   (set state.sock-drawer (a.filter #(not= sock $1) state.sock-drawer)))
 
-(fn connect [{:  host : port : cb}]
+(fn M.connect [{:  host : port : cb}]
   (let [sock (vim.loop.new_tcp)
-        resolved-host (resolve host)]
+        resolved-host (M.resolve host)]
 
     (when (not resolved-host)
       (error "Failed to resolve host for Conjure connection"))
@@ -49,5 +51,4 @@
    :pattern "*"
    :callback destroy-all-socks})
 
-{: resolve
- : connect}
+M

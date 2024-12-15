@@ -1,7 +1,8 @@
 -- [nfnl] Compiled from fnl/nfnl/module.fnl by https://github.com/Olical/nfnl, do not edit.
 local module_key = "nfnl/autoload-module"
 local enabled_key = "nfnl/autoload-enabled?"
-local function autoload(name)
+local M = {}
+M.autoload = function(name)
   local res = {[enabled_key] = true, [module_key] = false}
   local ensure
   local function _1_()
@@ -26,4 +27,12 @@ local function autoload(name)
   end
   return setmetatable(res, {__call = _3_, __index = _4_, __newindex = _5_})
 end
-return {autoload = autoload}
+M.define = function(mod_name, base)
+  local loaded = package.loaded[mod_name]
+  if (type(loaded) == type(base)) then
+    return loaded
+  else
+    return base
+  end
+end
+return M
