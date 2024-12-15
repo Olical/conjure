@@ -192,9 +192,10 @@
     (util.wrap-require-fn-call :conjure.eval :def-word)
     {:desc "Get definition under cursor"})
 
-  (let [fn-name (config.get-in [:completion :omnifunc])]
-    (when fn-name
-      (vim.api.nvim_command (.. "setlocal omnifunc=" fn-name))))
+  (when (= :function (type (client.get :completions)))
+    (let [fn-name (config.get-in [:completion :omnifunc])]
+      (when fn-name
+        (vim.api.nvim_command (.. "setlocal omnifunc=" fn-name)))))
 
   (client.optional-call :on-filetype))
 
