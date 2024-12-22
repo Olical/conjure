@@ -65,7 +65,7 @@ This will temporarily download the plugin, launch Neovim with `:ConjureSchool` r
 
 == Installation
 
-Requires Neovim 0.7 or newer.
+Requires Neovim 0.8 or newer.
 
 Alternatively you can use https://github.com/Olical/magic-kit[Magic Kit], an opinionated starter kit that includes all sorts of essential tools.
 

@@ -1,39 +1,38 @@
 (local {: autoload} (require :nfnl.module))
-(local nvim (autoload :conjure.aniseed.nvim))
 (local a (autoload :conjure.aniseed.core))
-(local text (autoload :conjure.text))
 (local str (autoload :conjure.aniseed.string))
-(local afs (autoload :conjure.aniseed.fs))
 (local config (autoload :conjure.config))
+(local nfs (autoload :nfnl.fs))
+
+(local path-sep (nfs.path-sep))
 
 (fn env [k]
-  (let [v (nvim.fn.getenv k)]
+  (let [v (vim.fn.getenv k)]
     (when (and (a.string? v) (not (a.empty? v)))
       v)))
 
 (fn config-dir []
   "Return $XDG_CONFIG_HOME/conjure.
   Defaulting the config directory to $HOME/.config."
-  (.. (or (env "XDG_CONFIG_HOME")
-          (.. (env "HOME") afs.path-sep ".config"))
-      afs.path-sep "conjure"))
+  (vim.fs.normalize (if (env "XDG_CONFIG_HOME")
+                        "$XDG_CONFIG_HOME/conjure" 
+                        "~/.config/conjure")))
 
 (fn absolute-path [path]
-  (vim.fn.fnamemodify path ":p"))
+  (vim.fs.normalize (vim.fn.fnamemodify path ":p")))
 
 (fn findfile [name path]
   "Wrapper around Neovim's findfile() that returns nil
   instead of an empty string."
-  (let [res (nvim.fn.findfile name path)]
+  (let [res (vim.fn.findfile name path)]
     (when (not (a.empty? res))
       (absolute-path res))))
 
 (fn split-path [path]
-  (->> (str.split path afs.path-sep)
-       (a.filter #(not (a.empty? $)))))
+  (vim.split path path-sep {:trimempty true}))
 
 (fn join-path [parts]
-  (str.join afs.path-sep (a.concat parts)))
+  (str.join path-sep (a.concat parts)))
 
 (fn parent-dir [path]
   (let [res (-> path
@@ -42,7 +41,7 @@
                 (join-path))]
     (if (= "" res)
       nil
-      (.. afs.path-sep res))))
+      (.. path-sep res))))
 
 (fn upwards-file-search [file-names from-dir]
   "Given a list of relative filenames and an absolute path to a directory,
@@ -68,12 +67,12 @@
   first file name in the first directory, everything will short circuit and
   return that full path."
   (or
-    (upwards-file-search names (nvim.fn.expand "%:p:h"))
-    (upwards-file-search names (nvim.fn.getcwd))
+    (upwards-file-search names (vim.fn.expand "%:p:h"))
+    (upwards-file-search names (vim.fn.getcwd))
     (upwards-file-search names (config-dir))))
 
 (fn file-readable? [path]
-  (= 1 (nvim.fn.filereadable path)))
+  (= 1 (vim.fn.filereadable path)))
 
 (fn resolve-relative-to [path root]
   "Successively remove parts of the path until we get to a relative path that
@@ -112,7 +111,7 @@
 
 (fn current-source []
   (let [info (debug.getinfo 2 "S")]
-    (when (text.starts-with (a.get info :source) "@")
+    (when (vim.startswith (a.get info :source) "@")
       (string.sub info.source 2))))
 
 (local conjure-source-directory
@@ -125,10 +124,10 @@
   (when file-path
     (a.some
       (fn [mod-name]
-        (let [mod-path (string.gsub mod-name "%." afs.path-sep)]
+        (let [mod-path (string.gsub mod-name "%." path-sep)]
           (when (or
-                  (text.ends-with file-path (.. mod-path ".fnl"))
-                  (text.ends-with file-path (.. mod-path "/init.fnl")))
+                  (vim.endswith file-path (.. mod-path ".fnl"))
+                  (vim.endswith file-path (.. mod-path "/init.fnl")))
             mod-name)))
       (a.keys package.loaded))))
 
