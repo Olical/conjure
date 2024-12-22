@@ -2,8 +2,9 @@
 (local a (autoload :conjure.aniseed.core))
 (local str (autoload :conjure.aniseed.string))
 (local config (autoload :conjure.config))
+(local nfs (autoload :nfnl.fs))
 
-(local path-sep (if (= jit.os :Windows) "\\" "/"))
+(local path-sep (nfs.path-sep))
 
 (fn env [k]
   (let [v (vim.fn.getenv k)]
