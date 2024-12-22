@@ -9,6 +9,7 @@
 (local client (autoload :conjure.client))
 (local log (autoload :conjure.log))
 (local ts (autoload :conjure.tree-sitter))
+(local nvim (autoload :conjure.aniseed.nvim))
 
 (config.merge
   {:client
