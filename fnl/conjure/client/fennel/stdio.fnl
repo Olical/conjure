@@ -4,7 +4,6 @@
 (local str (autoload :conjure.aniseed.string))
 (local stdio (autoload :conjure.remote.stdio))
 (local config (autoload :conjure.config))
-(local text (autoload :conjure.text))
 (local mapping (autoload :conjure.mapping))
 (local client (autoload :conjure.client))
 (local log (autoload :conjure.log))
