@@ -1,6 +1,5 @@
 (local {: autoload} (require :nfnl.module))
 (local a (autoload :nfnl.core))
-(local nvim (autoload :conjure.aniseed.nvim))
 (local client (autoload :conjure.client))
 (local config (autoload :conjure.config))
 (local text (autoload :conjure.text))
@@ -37,8 +36,8 @@
   new lines."
   (when node
     (if vim.treesitter.get_node_text
-      (vim.treesitter.get_node_text node (nvim.get_current_buf))
-      (vim.treesitter.query.get_node_text node (nvim.get_current_buf)))))
+      (vim.treesitter.get_node_text node (vim.api.nvim_get_current_buf))
+      (vim.treesitter.query.get_node_text node (vim.api.nvim_get_current_buf)))))
 
 (fn lisp-comment-node? [node]
   "Node is a (comment ...) form"
@@ -119,8 +118,8 @@
           (config.get-in [:extract :form_pairs]))
         (a.some
           (fn [[start end]]
-            (and (text.starts-with node-str start)
-                 (text.ends-with node-str end)))
+            (and (vim.startswith node-str start)
+                 (vim.endswith node-str end)))
           extra-pairs)
         false)))
 
@@ -128,7 +127,7 @@
   (let [node-str (node->str node)]
     (or (a.some
           (fn [prefix]
-            (text.starts-with node-str prefix))
+            (vim.startswith node-str prefix))
           prefixes)
         false)))
 
