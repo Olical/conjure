@@ -36,15 +36,15 @@ local function prefixed_lines(s, prefix, opts)
   return a["map-indexed"](_4_, split_lines(s))
 end
 local function starts_with(str0, start)
-  if str0 then
-    return (string.sub(str0, 1, a.count(start)) == start)
+  if (str0 and start) then
+    return vim.startswith(str0, start)
   else
     return nil
   end
 end
 local function ends_with(str0, _end)
-  if str0 then
-    return ((_end == "") or (_end == string.sub(str0, ( - a.count(_end)))))
+  if (str0 and _end) then
+    return ((_end == "") or vim.endswith(str0, _end))
   else
     return nil
   end

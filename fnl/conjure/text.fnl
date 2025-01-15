@@ -32,12 +32,13 @@
              (.. prefix line))))))
 
 (fn starts-with [str start]
-  (when str
-    (= (string.sub str 1 (a.count start)) start)))
+  (when (and str start)
+    (vim.startswith str start)))
 
 (fn ends-with [str end]
-  (when str
-    (or (= end "") (= end (string.sub str (- (a.count end)))))))
+  (when (and str end)
+    (or (= end "")
+        (vim.endswith str end))))
 
 (fn first-and-last-chars [str]
   (when str
