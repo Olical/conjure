@@ -2,7 +2,6 @@
 local _local_1_ = require("nfnl.module")
 local autoload = _local_1_["autoload"]
 local a = autoload("nfnl.core")
-local nvim = autoload("conjure.aniseed.nvim")
 local client = autoload("conjure.client")
 local config = autoload("conjure.config")
 local text = autoload("conjure.text")
@@ -42,9 +41,9 @@ end
 local function node__3estr(node)
   if node then
     if vim.treesitter.get_node_text then
-      return vim.treesitter.get_node_text(node, nvim.get_current_buf())
+      return vim.treesitter.get_node_text(node, vim.api.nvim_get_current_buf())
     else
-      return vim.treesitter.query.get_node_text(node, nvim.get_current_buf())
+      return vim.treesitter.query.get_node_text(node, vim.api.nvim_get_current_buf())
     end
   else
     return nil
@@ -134,7 +133,7 @@ local function node_surrounded_by_form_pair_chars_3f(node, extra_pairs)
     local function _21_(_20_)
       local start = _20_[1]
       local _end = _20_[2]
-      return (text["starts-with"](node_str, start) and text["ends-with"](node_str, _end))
+      return (vim.startswith(node_str, start) and vim.endswith(node_str, _end))
     end
     or_19_ = a.some(_21_, extra_pairs)
   end
@@ -143,7 +142,7 @@ end
 local function node_prefixed_by_chars_3f(node, prefixes)
   local node_str = node__3estr(node)
   local function _22_(prefix)
-    return text["starts-with"](node_str, prefix)
+    return vim.startswith(node_str, prefix)
   end
   return (a.some(_22_, prefixes) or false)
 end
