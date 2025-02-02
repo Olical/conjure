@@ -6,8 +6,6 @@ It's developed using itself which leads to an extremely tight feedback loop. Thi
 
 To work on Conjure you'll first need to clone the repository and execute `make deps`, then point your plugin manager at the directory.
 
-Contrary to old versions of Conjure, we now simply work on branches that target the `main` branch, I no longer use the `develop` staging branch and we can consider that obsolete just like the `master` branch.
-
 Now you can open up Conjure's source files (ending in `.fnl`) and evaluate them as you would any other language with Conjure, see `:help conjure`.
 
 Your changes and evaluations through Conjure only apply to the in memory copy of Conjure. When you write a `.fnl` file with nfnl installed however your Fennel will be compiled to a static `.lua` file automatically. Make sure you commit both your Fennel _and_ Lua file changes!
@@ -15,5 +13,17 @@ Your changes and evaluations through Conjure only apply to the in memory copy of
 Once you're happy with your changes, you can (maybe) write some tests and execute them with `make test`. CircleCI will also run them for you.
 
 You can run `scripts/docker.sh` to drop into a fresh Ubuntu based Neovim environment with Conjure pre-installed from your working directory. This can be used to verify your changes in a clean room environment.
+
+## Mise
+
+I'm beginning to experiment with [mise](https://mise.jdx.dev/) to manage some development dependencies. I'll probably eventually replace the makefile with it since I'm really happy with mise as a general development workflow tool.
+
+It's not essential right now, but it might make your time in the Conjure repo a little easier in the future. I also think it's a fantastic tool that's worth playing with.
+
+## Branches
+
+Contrary to old versions of Conjure, we now simply work on branches that target the `main` branch, I no longer use the `develop` staging branch and we can consider that obsolete just like the `master` branch.
+
+## Still unsure?
 
 If you'd like to contribute or are having issues please don't hesitate to get in touch with me through GitHub discussions and issues. You can also find some ways to contact me privately on my personal site, [oli.me.uk](https://oli.me.uk).
