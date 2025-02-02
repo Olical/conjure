@@ -106,7 +106,7 @@
 (fn enter []
   (let [repl (state :repl)
         path (vim.fn.expand "%:p")]
-    (when (and repl (not (log.log-buf? path)) (config.get-in [:auto_enter]))
+    (when (and repl (not (log.log-buf? path)) (cfg [:auto_enter]))
       (repl.send
         (prep-code (.. ",enter " path))
         (fn [])))))

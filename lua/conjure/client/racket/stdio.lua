@@ -105,7 +105,7 @@ end
 local function enter()
   local repl = state("repl")
   local path = vim.fn.expand("%:p")
-  if (repl and not log["log-buf?"](path) and config["get-in"]({"auto_enter"})) then
+  if (repl and not log["log-buf?"](path) and cfg({"auto_enter"})) then
     local function _14_()
     end
     return repl.send(prep_code((",enter " .. path)), _14_)
