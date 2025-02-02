@@ -1,7 +1,6 @@
 (local {: autoload} (require :nfnl.module))
 (local a (autoload :conjure.aniseed.core))
 (local str (autoload :conjure.aniseed.string))
-(local nvim (autoload :conjure.aniseed.nvim))
 (local stdio (autoload :conjure.remote.stdio))
 (local config (autoload :conjure.config))
 (local mapping (autoload :conjure.mapping))

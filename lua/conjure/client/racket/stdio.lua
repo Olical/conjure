@@ -3,7 +3,6 @@ local _local_1_ = require("nfnl.module")
 local autoload = _local_1_["autoload"]
 local a = autoload("conjure.aniseed.core")
 local str = autoload("conjure.aniseed.string")
-local nvim = autoload("conjure.aniseed.nvim")
 local stdio = autoload("conjure.remote.stdio")
 local config = autoload("conjure.config")
 local mapping = autoload("conjure.mapping")
