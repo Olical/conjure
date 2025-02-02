@@ -10,7 +10,8 @@ local client = autoload("conjure.client")
 local log = autoload("conjure.log")
 local ts = autoload("conjure.tree-sitter")
 local bridge = autoload("conjure.bridge")
-config.merge({client = {racket = {stdio = {command = "racket", prompt_pattern = "\n?[\"%w%-./_]*> "}}}})
+local nvim = autoload("conjure.aniseed.nvim")
+config.merge({client = {racket = {stdio = {command = "racket", prompt_pattern = "\n?[\"%w%-./_]*> ", auto_enter = true}}}})
 if config["get-in"]({"mapping", "enable_defaults"}) then
   config.merge({client = {racket = {stdio = {mapping = {start = "cs", stop = "cS", interrupt = "ei"}}}}})
 else
@@ -104,7 +105,7 @@ end
 local function enter()
   local repl = state("repl")
   local path = vim.fn.expand("%:p")
-  if (repl and not log["log-buf?"](path)) then
+  if (repl and not log["log-buf?"](path) and config["get-in"]({"auto_enter"})) then
     local function _14_()
     end
     return repl.send(prep_code((",enter " .. path)), _14_)

@@ -68,6 +68,24 @@ All configuration can be set as described in |conjure-configuration|.
             arguments or change the command entirely.
             Default: `"racket"`
 
+                                    *g:conjure#client#racket#stdio#auto_enter*
+`g:conjure#client#racket#stdio#auto_enter`
+            Conjure automatically runs `,enter [module]` when you start a REPL
+            or enter a buffer. In most cases this is useful and makes your
+            REPL interactions feel local to the current module you're looking
+            at.
+
+            In some `#lang` configurations (like `#lang reader ...`) this will
+            break the REPL because the normal REPL hooks we use get removed
+            when you `,enter` that particular module.
+
+            If you experience issues with a particular lang, please try
+            setting this option to `false`.
+
+            Related issue: https://github.com/Olical/conjure/issues/643
+
+            Default: `true`
+
                                 *g:conjure#client#racket#stdio#prompt_pattern*
 `g:conjure#client#racket#stdio#prompt_pattern`
             Lua pattern to identify a new REPL prompt. This match signals to

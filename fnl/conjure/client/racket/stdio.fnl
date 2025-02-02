@@ -9,6 +9,9 @@
 (local ts (autoload :conjure.tree-sitter))
 (local bridge (autoload :conjure.bridge))
 
+;; Referenced by conjure.macros, even if LSP thinks it's unused.
+(local nvim (autoload :conjure.aniseed.nvim))
+
 (import-macros {: augroup : autocmd} :conjure.macros)
 
 (config.merge
@@ -16,7 +19,8 @@
    {:racket
     {:stdio
      {:command "racket"
-      :prompt_pattern "\n?[\"%w%-./_]*> "}}}})
+      :prompt_pattern "\n?[\"%w%-./_]*> "
+      :auto_enter true}}}})
 
 (when (config.get-in [:mapping :enable_defaults])
   (config.merge
@@ -102,7 +106,7 @@
 (fn enter []
   (let [repl (state :repl)
         path (vim.fn.expand "%:p")]
-    (when (and repl (not (log.log-buf? path)))
+    (when (and repl (not (log.log-buf? path)) (config.get-in [:auto_enter]))
       (repl.send
         (prep-code (.. ",enter " path))
         (fn [])))))
