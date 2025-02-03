@@ -14,12 +14,6 @@ Once you're happy with your changes, you can (maybe) write some tests and execut
 
 You can run `scripts/docker.sh` to drop into a fresh Ubuntu based Neovim environment with Conjure pre-installed from your working directory. This can be used to verify your changes in a clean room environment.
 
-## Mise
-
-I'm beginning to experiment with [mise](https://mise.jdx.dev/) to manage some development dependencies. I'll probably eventually replace the makefile with it since I'm really happy with mise as a general development workflow tool.
-
-It's not essential right now, but it might make your time in the Conjure repo a little easier in the future. I also think it's a fantastic tool that's worth playing with.
-
 ## Branches
 
 Contrary to old versions of Conjure, we now simply work on branches that target the `main` branch, I no longer use the `develop` staging branch and we can consider that obsolete just like the `master` branch.
