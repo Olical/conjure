@@ -1,5 +1,5 @@
 -- [nfnl] Compiled from fnl/conjure/net.fnl by https://github.com/Olical/nfnl, do not edit.
-local _local_1_ = require("nfnl.module")
+local _local_1_ = require("conjure.nfnl.module")
 local autoload = _local_1_["autoload"]
 local define = _local_1_["define"]
 local a = autoload("conjure.aniseed.core")

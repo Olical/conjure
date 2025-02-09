@@ -1,8 +1,8 @@
 -- [nfnl] Compiled from fnl/conjure/buffer.fnl by https://github.com/Olical/nfnl, do not edit.
-local _local_1_ = require("nfnl.module")
+local _local_1_ = require("conjure.nfnl.module")
 local autoload = _local_1_["autoload"]
 local nvim = autoload("conjure.aniseed.nvim")
-local core = autoload("nfnl.core")
+local core = autoload("conjure.nfnl.core")
 local text = autoload("conjure.text")
 local function unlist(buf)
   return nvim.buf_set_option(buf, "buflisted", false)

@@ -1,7 +1,7 @@
 -- [nfnl] Compiled from fnl/conjure/tree-sitter.fnl by https://github.com/Olical/nfnl, do not edit.
-local _local_1_ = require("nfnl.module")
+local _local_1_ = require("conjure.nfnl.module")
 local autoload = _local_1_["autoload"]
-local a = autoload("nfnl.core")
+local a = autoload("conjure.nfnl.core")
 local client = autoload("conjure.client")
 local config = autoload("conjure.config")
 local text = autoload("conjure.text")

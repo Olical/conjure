@@ -1,7 +1,7 @@
 -- [nfnl] Compiled from fnl/nfnl/init.fnl by https://github.com/Olical/nfnl, do not edit.
-local _local_1_ = require("nfnl.module")
+local _local_1_ = require("conjure.nfnl.module")
 local autoload = _local_1_["autoload"]
-local callback = autoload("nfnl.callback")
+local callback = autoload("conjure.nfnl.callback")
 local minimum_neovim_version = "0.9.0"
 if vim then
   if (0 == vim.fn.has(("nvim-" .. minimum_neovim_version))) then

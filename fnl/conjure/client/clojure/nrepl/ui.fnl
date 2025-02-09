@@ -1,4 +1,4 @@
-(local autoload (require :nfnl.autoload))
+(local autoload (require :conjure.nfnl.autoload))
 (local a (autoload :conjure.aniseed.core))
 (local config (autoload :conjure.config))
 (local log (autoload :conjure.log))

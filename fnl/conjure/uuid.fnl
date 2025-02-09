@@ -1,6 +1,6 @@
-(local {: autoload} (require :nfnl.module))
-(local a (autoload :nfnl.core))
-(local str (autoload :nfnl.string))
+(local {: autoload} (require :conjure.nfnl.module))
+(local a (autoload :conjure.nfnl.core))
+(local str (autoload :conjure.nfnl.string))
 
 ;; Adapted from https://gist.github.com/jrus/3197011
 

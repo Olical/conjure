@@ -1,1 +1,1 @@
-(include :deps.bencode.bencode)
+(include :bencode.bencode)

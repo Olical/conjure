@@ -1,4 +1,4 @@
-(local {: autoload} (require :nfnl.module))
+(local {: autoload} (require :conjure.nfnl.module))
 (local a (autoload :conjure.aniseed.core))
 (local client (autoload :conjure.client))
 (local net (autoload :conjure.net))

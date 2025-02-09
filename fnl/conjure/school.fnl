@@ -1,4 +1,4 @@
-(local {: autoload} (require :nfnl.module))
+(local {: autoload} (require :conjure.nfnl.module))
 (local a (autoload :conjure.aniseed.core))
 (local buffer (autoload :conjure.buffer))
 (local config (autoload :conjure.config))
@@ -57,7 +57,7 @@
     (append
       (a.concat
         [
-         "(local {: autoload} (require :nfnl.module))"
+         "(local {: autoload} (require :conjure.nfnl.module))"
          "(local school (require :conjure.school))"
          ""
          ";; Welcome to Conjure school!"

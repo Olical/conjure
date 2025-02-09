@@ -1,6 +1,6 @@
-(local {: autoload} (require :nfnl.module))
+(local {: autoload} (require :conjure.nfnl.module))
 (local nvim (autoload :conjure.aniseed.nvim))
-(local core (autoload :nfnl.core))
+(local core (autoload :conjure.nfnl.core))
 (local text (autoload :conjure.text))
 
 (fn unlist [buf]

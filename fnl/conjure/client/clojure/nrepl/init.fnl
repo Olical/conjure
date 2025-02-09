@@ -1,4 +1,4 @@
-(local {: autoload} (require :nfnl.module))
+(local {: autoload} (require :conjure.nfnl.module))
 (local a (autoload :conjure.aniseed.core))
 (local action (autoload :conjure.client.clojure.nrepl.action))
 (local auto-repl (autoload :conjure.client.clojure.nrepl.auto-repl))

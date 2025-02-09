@@ -1,4 +1,4 @@
-(local {: autoload : define} (require :nfnl.module))
+(local {: autoload : define} (require :conjure.nfnl.module))
 (local a (autoload :conjure.aniseed.core))
 
 (import-macros {: augroup : autocmd} :conjure.macros)

@@ -1,14 +1,14 @@
-(local {: autoload : define} (require :nfnl.module))
+(local {: autoload : define} (require :conjure.nfnl.module))
 (local ts (autoload :conjure.tree-sitter))
 (local config (autoload :conjure.config))
-(local nfnl-config (autoload :nfnl.config))
+(local nfnl-config (autoload :conjure.nfnl.config))
 (local text (autoload :conjure.text))
 (local log (autoload :conjure.log))
-(local core (autoload :nfnl.core))
-(local fennel (autoload :nfnl.fennel))
-(local str (autoload :nfnl.string))
-(local repl (autoload :nfnl.repl))
-(local fs (autoload :nfnl.fs))
+(local core (autoload :conjure.nfnl.core))
+(local fennel (autoload :conjure.nfnl.fennel))
+(local str (autoload :conjure.nfnl.string))
+(local repl (autoload :conjure.nfnl.repl))
+(local fs (autoload :conjure.nfnl.fs))
 
 (local M
   (define :conjure.client.fennel.nfnl

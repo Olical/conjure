@@ -1,5 +1,5 @@
 -- [nfnl] Compiled from fnl/conjure/config.fnl by https://github.com/Olical/nfnl, do not edit.
-local autoload = require("nfnl.autoload")
+local autoload = require("conjure.nfnl.autoload")
 local nvim = autoload("conjure.aniseed.nvim")
 local a = autoload("conjure.aniseed.core")
 local str = autoload("conjure.aniseed.string")
