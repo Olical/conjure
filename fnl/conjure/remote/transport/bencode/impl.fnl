@@ -1,1 +1,1 @@
-(include :deps.bencode.bencode)
+(include "./deps/bencode/bencode")

@@ -1,4 +1,4 @@
-(local {: autoload} (require :nfnl.module))
+(local {: autoload} (require :conjure.nfnl.module))
 (local mapping (autoload :conjure.mapping))
 (local config (autoload :conjure.config))
 

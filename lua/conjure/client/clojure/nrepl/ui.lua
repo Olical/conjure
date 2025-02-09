@@ -1,5 +1,5 @@
 -- [nfnl] Compiled from fnl/conjure/client/clojure/nrepl/ui.fnl by https://github.com/Olical/nfnl, do not edit.
-local autoload = require("nfnl.autoload")
+local autoload = require("conjure.nfnl.autoload")
 local a = autoload("conjure.aniseed.core")
 local config = autoload("conjure.config")
 local log = autoload("conjure.log")

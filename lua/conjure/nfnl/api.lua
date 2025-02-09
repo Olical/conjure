@@ -1,11 +1,11 @@
 -- [nfnl] Compiled from fnl/nfnl/api.fnl by https://github.com/Olical/nfnl, do not edit.
-local _local_1_ = require("nfnl.module")
+local _local_1_ = require("conjure.nfnl.module")
 local autoload = _local_1_["autoload"]
-local core = autoload("nfnl.core")
-local compile = autoload("nfnl.compile")
-local config = autoload("nfnl.config")
-local notify = autoload("nfnl.notify")
-local fs = autoload("nfnl.fs")
+local core = autoload("conjure.nfnl.core")
+local compile = autoload("conjure.nfnl.compile")
+local config = autoload("conjure.nfnl.config")
+local notify = autoload("conjure.nfnl.notify")
+local fs = autoload("conjure.nfnl.fs")
 local mod = {}
 mod["compile-file"] = function(_2_)
   local path = _2_["path"]

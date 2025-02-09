@@ -1,10 +1,10 @@
 -- [nfnl] Compiled from fnl/conjure/fs.fnl by https://github.com/Olical/nfnl, do not edit.
-local _local_1_ = require("nfnl.module")
+local _local_1_ = require("conjure.nfnl.module")
 local autoload = _local_1_["autoload"]
 local a = autoload("conjure.aniseed.core")
 local str = autoload("conjure.aniseed.string")
 local config = autoload("conjure.config")
-local nfs = autoload("nfnl.fs")
+local nfs = autoload("conjure.nfnl.fs")
 local path_sep = nfs["path-sep"]()
 local function env(k)
   local v = vim.fn.getenv(k)

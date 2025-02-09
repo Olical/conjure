@@ -1,8 +1,8 @@
 -- [nfnl] Compiled from fnl/nfnl/fs.fnl by https://github.com/Olical/nfnl, do not edit.
-local _local_1_ = require("nfnl.module")
+local _local_1_ = require("conjure.nfnl.module")
 local autoload = _local_1_["autoload"]
-local core = autoload("nfnl.core")
-local str = autoload("nfnl.string")
+local core = autoload("conjure.nfnl.core")
+local str = autoload("conjure.nfnl.string")
 local function basename(path)
   if path then
     return vim.fn.fnamemodify(path, ":h")

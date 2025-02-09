@@ -1,5 +1,5 @@
 -- [nfnl] Compiled from fnl/conjure/remote/transport/bencode/impl.fnl by https://github.com/Olical/nfnl, do not edit.
-package.preload["deps.bencode.bencode"] = package.preload["deps.bencode.bencode"] or function(...)
+package.preload["./deps/bencode/bencode"] = package.preload["./deps/bencode/bencode"] or function(...)
   -- public domain lua-module for handling bittorrent-bencoded data.
   -- This module includes both a recursive decoder and a recursive encoder.
   
@@ -179,4 +179,4 @@ package.preload["deps.bencode.bencode"] = package.preload["deps.bencode.bencode"
   
   return bencode
 end
-return require("deps.bencode.bencode")
+return require("./deps/bencode/bencode")

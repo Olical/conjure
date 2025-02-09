@@ -1,8 +1,8 @@
 -- [nfnl] Compiled from fnl/conjure/uuid.fnl by https://github.com/Olical/nfnl, do not edit.
-local _local_1_ = require("nfnl.module")
+local _local_1_ = require("conjure.nfnl.module")
 local autoload = _local_1_["autoload"]
-local a = autoload("nfnl.core")
-local str = autoload("nfnl.string")
+local a = autoload("conjure.nfnl.core")
+local str = autoload("conjure.nfnl.string")
 local function v4()
   local function _2_(_241)
     return string.format("%x", (((_241 == "x") and math.random(0, 15)) or math.random(8, 11)))

@@ -1,4 +1,4 @@
-(local {: autoload} (require :nfnl.module))
+(local {: autoload} (require :conjure.nfnl.module))
 (local impl (autoload :conjure.remote.transport.bencode.impl))
 (local a (autoload :conjure.aniseed.core))
 
