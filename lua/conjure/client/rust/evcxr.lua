@@ -5,6 +5,7 @@ local a = autoload("conjure.aniseed.core")
 local client = autoload("conjure.client")
 local config = autoload("conjure.config")
 local log = autoload("conjure.log")
+local mapping = autoload("conjure.mapping")
 local stdio = autoload("conjure.remote.stdio")
 local str = autoload("conjure.aniseed.string")
 local buf_suffix = ".rs"
@@ -113,8 +114,8 @@ local function on_exit()
 end
 local function interrupt()
   local function _20_(repl)
-    local uv = vim.loop
-    return uv.kill(repl.pid, uv.constants.SIGINT)
+    log.append({(comment_prefix .. " Sending interrupt signal.")}, {["break?"] = true})
+    return repl["send-signal"](vim.loop.constants.SIGINT)
   end
   return with_repl_or_warn(_20_)
 end
@@ -136,4 +137,9 @@ end
 local function eval_file(opts)
   return eval_str(a.assoc(opts, "code", a.slurp(opts["file-path"])))
 end
-return {["buf-suffix"] = buf_suffix, ["comment-prefix"] = comment_prefix, stop = stop, start = start, ["on-load"] = on_load, ["on-exit"] = on_exit, interrupt = interrupt, ["eval-str"] = eval_str, ["eval-file"] = eval_file}
+local function on_filetype()
+  mapping.buf("RustStart", cfg({"mapping", "start"}), start, {desc = "Start the Rust REPL"})
+  mapping.buf("RustStop", cfg({"mapping", "stop"}), stop, {desc = "Stop the Rust REPL"})
+  return mapping.buf("RustInterrupt", cfg({"mapping", "interrupt"}), interrupt, {desc = "Interrupt the current evaluation"})
+end
+return {["buf-suffix"] = buf_suffix, ["comment-prefix"] = comment_prefix, ["eval-file"] = eval_file, ["eval-str"] = eval_str, interrupt = interrupt, ["on-exit"] = on_exit, ["on-filetype"] = on_filetype, ["on-load"] = on_load, start = start, stop = stop}
