@@ -3,6 +3,7 @@
 (local client (autoload :conjure.client))
 (local config (autoload :conjure.config))
 (local log (autoload :conjure.log))
+(local mapping (autoload :conjure.mapping))
 (local stdio (autoload :conjure.remote.stdio))
 (local str (autoload :conjure.aniseed.string))
 
@@ -123,8 +124,8 @@
 (fn interrupt []
   (with-repl-or-warn
     (fn [repl]
-      (let [uv vim.loop]
-        (uv.kill repl.pid uv.constants.SIGINT)))))
+      (log.append [(.. comment-prefix " Sending interrupt signal.")] {:break? true})
+      (repl.send-signal vim.loop.constants.SIGINT))))
 
 ; Eval
 
@@ -143,12 +144,29 @@
 (fn eval-file [opts]
   (eval-str (a.assoc opts :code (a.slurp opts.file-path))))
 
+(fn on-filetype []
+  (mapping.buf
+    :RustStart (cfg [:mapping :start])
+    start
+    {:desc "Start the Rust REPL"})
+
+  (mapping.buf
+    :RustStop (cfg [:mapping :stop])
+    stop
+    {:desc "Stop the Rust REPL"})
+
+  (mapping.buf
+    :RustInterrupt (cfg [:mapping :interrupt])
+    interrupt
+    {:desc "Interrupt the current evaluation"}))
+
 {: buf-suffix
  : comment-prefix
- : stop
- : start
- : on-load
- : on-exit
- : interrupt
+ : eval-file
  : eval-str
- : eval-file}
+ : interrupt
+ : on-exit
+ : on-filetype
+ : on-load
+ : start
+ : stop}
