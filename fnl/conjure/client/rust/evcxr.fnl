@@ -29,6 +29,23 @@
 (local cfg (config.get-in-fn [:client :rust :evcxr]))
 (local state (client.new-state #(do {:repl nil})))
 
+;; These types of nodes for Rust are roughly equivalent to Lisp forms.
+;;   struct_item
+;;   let_declaration
+;;   expression_statement
+;;   struct_item
+;;   index_expression
+(fn form-node?
+  [node]
+  (log.dbg "form-node?: node:type =" (node:type))
+  (log.dbg "form-node?: node:parent =" (node:parent))
+  (let [parent (node:parent)]
+    (if (= "struct_item" (node:type)) true
+        (= "let_declaration" (node:type)) true
+        (= "index_expression" (node:type)) true
+        (= "expression_statement" (node:type)) true
+        false)))
+
 (fn with-repl-or-warn [f opts]
   (let [repl (state :repl)]
     (if repl
@@ -164,6 +181,7 @@
  : comment-prefix
  : eval-file
  : eval-str
+ : form-node?
  : interrupt
  : on-exit
  : on-filetype
