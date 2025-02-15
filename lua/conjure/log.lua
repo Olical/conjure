@@ -66,7 +66,6 @@ local function hud_lifetime_ms()
 end
 local function close_hud_passive()
   if (state.hud.id and (hud_lifetime_ms() > config["get-in"]({"log", "hud", "minimum_lifetime_ms"}))) then
-    local original_timer_id = state.hud["timer-id"]
     local delay = config["get-in"]({"log", "hud", "passive_close_delay"})
     if (0 == delay) then
       return close_hud()
@@ -84,7 +83,7 @@ end
 local function break_lines(buf)
   local break_str = _break()
   local function _11_(_10_)
-    local n = _10_[1]
+    local _n = _10_[1]
     local s = _10_[2]
     return (s == break_str)
   end

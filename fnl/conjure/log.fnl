@@ -80,8 +80,7 @@
   (when (and state.hud.id
              (> (hud-lifetime-ms)
                 (config.get-in [:log :hud :minimum_lifetime_ms])))
-    (let [original-timer-id state.hud.timer-id
-          delay (config.get-in [:log :hud :passive_close_delay])]
+    (let [delay (config.get-in [:log :hud :passive_close_delay])]
       (if (= 0 delay)
         (close-hud)
         (when (not (a.get-in state [:hud :timer]))
@@ -94,7 +93,7 @@
     (->> (vim.api.nvim_buf_get_lines buf 0 -1 false)
          (a.kv-pairs)
          (a.filter
-           (fn [[n s]]
+           (fn [[_n s]]
              (= s break-str)))
          (a.map a.first))))
 
