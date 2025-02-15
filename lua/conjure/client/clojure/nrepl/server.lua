@@ -1,5 +1,5 @@
 -- [nfnl] Compiled from fnl/conjure/client/clojure/nrepl/server.fnl by https://github.com/Olical/nfnl, do not edit.
-local autoload = require("nfnl.autoload")
+local autoload = require("conjure.nfnl.autoload")
 local a = autoload("conjure.aniseed.core")
 local client = autoload("conjure.client")
 local config = autoload("conjure.config")
@@ -12,7 +12,7 @@ local str = autoload("conjure.aniseed.string")
 local timer = autoload("conjure.timer")
 local ui = autoload("conjure.client.clojure.nrepl.ui")
 local uuid = autoload("conjure.uuid")
-local fs = autoload("nfnl.fs")
+local fs = autoload("conjure.nfnl.fs")
 local function with_conn_or_warn(f, opts)
   local conn = state.get("conn")
   if conn then

@@ -22,6 +22,12 @@ else
 	git clone https://github.com/Olical/aniseed.git "$PACK_DIR/aniseed"
 fi
 
+if [ -d "$PACK_DIR/nfnl" ]; then
+	echo "nfnl already exists"
+else
+	git clone https://github.com/Olical/nfnl.git "$PACK_DIR/nfnl"
+fi
+
 if [ -d "$PACK_DIR/conjure" ]; then
 	echo "conjure (symlink) already exists"
 else

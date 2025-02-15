@@ -1,4 +1,4 @@
-(local {: autoload} (require :nfnl.module))
+(local {: autoload} (require :conjure.nfnl.module))
 (local nvim (autoload :conjure.aniseed.nvim))
 (local a (autoload :conjure.aniseed.core))
 (local text (autoload :conjure.text))

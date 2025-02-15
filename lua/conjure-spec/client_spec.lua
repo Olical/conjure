@@ -4,7 +4,7 @@ local describe = _local_1_["describe"]
 local it = _local_1_["it"]
 local before_each = _local_1_["before-each"]
 local assert = require("luassert.assert")
-local nc = require("nfnl.core")
+local nc = require("conjure.nfnl.core")
 local client = require("conjure.client")
 local function _2_()
   local function _3_()

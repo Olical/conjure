@@ -1,6 +1,5 @@
 (local {: describe : it} (require :plenary.busted))
 (local assert (require :luassert.assert))
-(local a (require :nfnl.core))
 (local bencode (require :conjure.remote.transport.bencode))
 
 (describe "conjure.remote.transport.bencode"

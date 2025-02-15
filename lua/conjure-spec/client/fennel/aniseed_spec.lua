@@ -3,7 +3,7 @@ local _local_1_ = require("plenary.busted")
 local describe = _local_1_["describe"]
 local it = _local_1_["it"]
 local assert = require("luassert.assert")
-local a = require("nfnl.core")
+local a = require("conjure.nfnl.core")
 local ani = require("conjure.client.fennel.aniseed")
 local function _2_()
   local ex_mod = "test.foo.bar"

@@ -1,4 +1,4 @@
-(local autoload (require :nfnl.autoload))
+(local autoload (require :conjure.nfnl.autoload))
 (local a (autoload :conjure.aniseed.core))
 (local client (autoload :conjure.client))
 (local config (autoload :conjure.config))
@@ -11,7 +11,7 @@
 (local timer (autoload :conjure.timer))
 (local ui (autoload :conjure.client.clojure.nrepl.ui))
 (local uuid (autoload :conjure.uuid))
-(local fs (autoload :nfnl.fs))
+(local fs (autoload :conjure.nfnl.fs))
 
 (fn with-conn-or-warn [f opts]
   (let [conn (state.get :conn)]

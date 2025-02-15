@@ -1,6 +1,6 @@
 (local {: describe : it : before-each } (require :plenary.busted))
 (local assert (require :luassert.assert))
-(local nc (require :nfnl.core))
+(local nc (require :conjure.nfnl.core))
 (local client (require :conjure.client))
 
 (describe "multiple-states? before a change"

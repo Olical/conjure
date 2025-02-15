@@ -1,8 +1,8 @@
-(local {: autoload} (require :nfnl.module))
+(local {: autoload} (require :conjure.nfnl.module))
 (local a (autoload :conjure.aniseed.core))
 (local str (autoload :conjure.aniseed.string))
 (local config (autoload :conjure.config))
-(local nfs (autoload :nfnl.fs))
+(local nfs (autoload :conjure.nfnl.fs))
 
 (local path-sep (nfs.path-sep))
 
