@@ -54,7 +54,8 @@
     [(str.join [(client.get :comment-prefix)
                 "Sponsored by @"
                 (a.get sponsors (a.inc (math.floor (a.rand (a.dec (a.count sponsors))))))
-                " ❤"])]))
+                " ❤"])
+     (str.join [(client.get :comment-prefix) "You are using the old `master` branch! Please update to the new default `main` branch, re-installing the plugin should be enough https://github.com/Olical/conjure/discussions/605"])]))
 
 (defn- upsert-buf []
   (buffer.upsert-hidden
