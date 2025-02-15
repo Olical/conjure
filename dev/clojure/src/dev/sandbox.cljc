@@ -161,3 +161,16 @@
 (comment
   (clojure.pprint/pprint stu)
   (pr stu))
+
+(def us-states
+  {"AK" "Alaska"
+   "AL" "Alabama"
+   "AR" "Arkansas"
+   "AZ" "Arizona"
+   "CA" "California"
+   "CO" "Colorado"
+   "CT" "Connecticut"
+   "DE" "Delaware"
+   "FL" "Florida"})
+
+(into (sorted-map) us-states)
