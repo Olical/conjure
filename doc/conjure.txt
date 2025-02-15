@@ -629,7 +629,7 @@ configure the ones you care about one at a time you can set:
             HUD opened before it'll be passively closed from cursor movement.
             This delay means evaluations that involve cursor movement etc
             won't close the HUD the moment it displays.
-            Default: `20`
+            Default: `250`
 
                                            *g:conjure#log#hud#overlap_padding*
 `g:conjure#log#hud#overlap_padding`
