@@ -1,6 +1,6 @@
 (local {: describe : it} (require :plenary.busted))
 (local assert (require :luassert.assert))
-(local a (require :nfnl.core))
+(local a (require :conjure.nfnl.core))
 (local uuid (require :conjure.uuid))
 
 (describe "uuid"

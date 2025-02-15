@@ -4,7 +4,7 @@ local describe = _local_1_["describe"]
 local it = _local_1_["it"]
 local assert = require("luassert.assert")
 local config = require("conjure.config")
-local core = require("nfnl.core")
+local core = require("conjure.nfnl.core")
 local function _2_()
   local function _3_()
     assert.is_true(config["get-in"]({"client_on_load"}))

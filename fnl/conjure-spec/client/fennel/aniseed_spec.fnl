@@ -1,6 +1,6 @@
 (local {: describe : it} (require :plenary.busted))
 (local assert (require :luassert.assert))
-(local a (require :nfnl.core))
+(local a (require :conjure.nfnl.core))
 (local ani (require :conjure.client.fennel.aniseed))
 
 (describe "conjure.client.fennel.aniseed"

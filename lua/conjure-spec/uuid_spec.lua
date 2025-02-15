@@ -3,7 +3,7 @@ local _local_1_ = require("plenary.busted")
 local describe = _local_1_["describe"]
 local it = _local_1_["it"]
 local assert = require("luassert.assert")
-local a = require("nfnl.core")
+local a = require("conjure.nfnl.core")
 local uuid = require("conjure.uuid")
 local function _2_()
   local function is_in(word, xs)

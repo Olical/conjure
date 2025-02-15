@@ -1,7 +1,7 @@
 (local {: describe : it } (require :plenary.busted))
 (local assert (require :luassert.assert))
 (local config (require :conjure.config))
-(local core (require :nfnl.core))
+(local core (require :conjure.nfnl.core))
 
 (describe "get-in"
   (fn []
