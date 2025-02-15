@@ -198,7 +198,10 @@
   (when (= :function (type (client.get :completions)))
     (let [fn-name (config.get-in [:completion :omnifunc])]
       (when fn-name
-        (vim.api.nvim_command (.. "setlocal omnifunc=" fn-name)))))
+        (set _G._conjure_omnifunc
+             (fn [find-start base]
+               (M.omnifunc (= find-start 1) base)))
+        (set vim.bo.omnifunc "v:lua._conjure_omnifunc"))))
 
   (client.optional-call :on-filetype))
 
@@ -301,12 +304,6 @@
                     (string.sub line 1 col)
                     "\\k\\+$"))))
     (eval.completions-sync base)))
-
-(vim.api.nvim_command
-  (->> ["function! ConjureOmnifunc(findstart, base)"
-        "return luaeval(\"require('conjure.mapping')['omnifunc'](_A[1] == 1, _A[2])\", [a:findstart, a:base])"
-        "endfunction"]
-       (str.join "\n")))
 
 (vim.api.nvim_create_user_command
   "ConjureEval"

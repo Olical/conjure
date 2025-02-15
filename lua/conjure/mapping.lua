@@ -87,7 +87,11 @@ M["on-filetype"] = function()
   if ("function" == type(client.get("completions"))) then
     local fn_name = config["get-in"]({"completion", "omnifunc"})
     if fn_name then
-      vim.api.nvim_command(("setlocal omnifunc=" .. fn_name))
+      local function _12_(find_start, base)
+        return M.omnifunc((find_start == 1), base)
+      end
+      _G._conjure_omnifunc = _12_
+      vim.bo.omnifunc = "v:lua._conjure_omnifunc"
     else
     end
   else
@@ -95,29 +99,29 @@ M["on-filetype"] = function()
   return client["optional-call"]("on-filetype")
 end
 M["on-exit"] = function()
-  local function _14_()
+  local function _15_()
     return client["optional-call"]("on-exit")
   end
-  return client["each-loaded-client"](_14_)
+  return client["each-loaded-client"](_15_)
 end
 M["on-quit"] = function()
   return log["close-hud"]()
 end
 local function autocmd_callback(f)
-  local function _15_(ev)
+  local function _16_(ev)
     f(ev)
     return nil
   end
-  return _15_
+  return _16_
 end
 M.init = function(filetypes)
   local group = vim.api.nvim_create_augroup("conjure_init_filetypes", {})
   if (true == config["get-in"]({"mapping", "enable_ft_mappings"})) then
     vim.api.nvim_create_autocmd("FileType", {group = group, pattern = filetypes, callback = autocmd_callback(M["on-filetype"])})
-    local function _16_(_241)
+    local function _17_(_241)
       return (_241 == vim.bo.filetype)
     end
-    if core.some(_16_, filetypes) then
+    if core.some(_17_, filetypes) then
       vim.schedule(M["on-filetype"])
     else
     end
@@ -140,7 +144,7 @@ M["eval-ranged-command"] = function(start, _end, code)
 end
 M["connect-command"] = function(...)
   local args = {...}
-  local function _21_(...)
+  local function _22_(...)
     if (1 == core.count(args)) then
       local host, port = string.match(core.first(args), "([a-zA-Z%d\\.-]+):(%d+)$")
       if (host and port) then
@@ -152,7 +156,7 @@ M["connect-command"] = function(...)
       return {host = core.first(args), port = core.second(args)}
     end
   end
-  return client.call("connect", _21_(...))
+  return client.call("connect", _22_(...))
 end
 M["client-state-command"] = function(state_key)
   if core["empty?"](state_key) then
@@ -163,31 +167,30 @@ M["client-state-command"] = function(state_key)
 end
 M.omnifunc = function(find_start_3f, base)
   if find_start_3f then
-    local _let_23_ = vim.api.nvim_win_get_cursor(0)
-    local row = _let_23_[1]
-    local col = _let_23_[2]
-    local _let_24_ = vim.api.nvim_buf_get_lines(0, core.dec(row), row, false)
-    local line = _let_24_[1]
+    local _let_24_ = vim.api.nvim_win_get_cursor(0)
+    local row = _let_24_[1]
+    local col = _let_24_[2]
+    local _let_25_ = vim.api.nvim_buf_get_lines(0, core.dec(row), row, false)
+    local line = _let_25_[1]
     return (col - core.count(vim.fn.matchstr(string.sub(line, 1, col), "\\k\\+$")))
   else
     return eval["completions-sync"](base)
   end
 end
-vim.api.nvim_command(str.join("\n", {"function! ConjureOmnifunc(findstart, base)", "return luaeval(\"require('conjure.mapping')['omnifunc'](_A[1] == 1, _A[2])\", [a:findstart, a:base])", "endfunction"}))
-local function _26_(_241)
+local function _27_(_241)
   return M["eval-ranged-command"](_241.line1, _241.line2, _241.args)
 end
-vim.api.nvim_create_user_command("ConjureEval", _26_, {nargs = "?", range = true})
-local function _27_(_241)
+vim.api.nvim_create_user_command("ConjureEval", _27_, {nargs = "?", range = true})
+local function _28_(_241)
   return M["connect-command"](unpack(_241.fargs))
 end
-vim.api.nvim_create_user_command("ConjureConnect", _27_, {nargs = "*", range = true, complete = "file"})
-local function _28_(_241)
+vim.api.nvim_create_user_command("ConjureConnect", _28_, {nargs = "*", range = true, complete = "file"})
+local function _29_(_241)
   return M["client-state-command"](_241.args)
 end
-vim.api.nvim_create_user_command("ConjureClientState", _28_, {nargs = "?"})
-local function _29_()
+vim.api.nvim_create_user_command("ConjureClientState", _29_, {nargs = "?"})
+local function _30_()
   return school.start()
 end
-vim.api.nvim_create_user_command("ConjureSchool", _29_, {})
+vim.api.nvim_create_user_command("ConjureSchool", _30_, {})
 return M
