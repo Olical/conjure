@@ -100,7 +100,7 @@
           :zindex 1
           :enabled true
           :passive_close_delay 0
-          :minimum_lifetime_ms 20
+          :minimum_lifetime_ms 250
           :overlap_padding 0.1
           :border :single
           :anchor :NE
