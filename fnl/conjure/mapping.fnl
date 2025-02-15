@@ -115,7 +115,8 @@
   (M.buf
     :EvalMotion (cfg :eval_motion)
     (fn []
-      (set vim.o.opfunc :ConjureEvalMotionOpFunc)
+      (set _G._conjure_opfunc (fn [...] (eval.selection ...)))
+      (set vim.o.opfunc "v:lua._conjure_opfunc")
 
       ;; Doesn't work unless we schedule it :( this might break some things.
       (client.schedule #(vim.api.nvim_feedkeys "g@" :m false)))
@@ -300,13 +301,6 @@
                     (string.sub line 1 col)
                     "\\k\\+$"))))
     (eval.completions-sync base)))
-
-;; TOOD Maybe we don't need this now we can pass fn refs?
-(vim.api.nvim_command
-  (->> ["function! ConjureEvalMotionOpFunc(kind)"
-        "call luaeval(\"require('conjure.eval')['selection'](_A)\", a:kind)"
-        "endfunction"]
-       (str.join "\n")))
 
 (vim.api.nvim_command
   (->> ["function! ConjureOmnifunc(findstart, base)"

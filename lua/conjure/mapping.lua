@@ -56,11 +56,15 @@ M["on-filetype"] = function()
   M.buf("LogResetHard", cfg("log_reset_hard"), util["wrap-require-fn-call"]("conjure.log", "reset-hard"), {desc = "Hard reset log"})
   M.buf("LogJumpToLatest", cfg("log_jump_to_latest"), util["wrap-require-fn-call"]("conjure.log", "jump-to-latest"), {desc = "Jump to latest part of log"})
   local function _8_()
-    vim.o.opfunc = "ConjureEvalMotionOpFunc"
-    local function _9_()
+    local function _9_(...)
+      return eval.selection(...)
+    end
+    _G._conjure_opfunc = _9_
+    vim.o.opfunc = "v:lua._conjure_opfunc"
+    local function _10_()
       return vim.api.nvim_feedkeys("g@", "m", false)
     end
-    return client.schedule(_9_)
+    return client.schedule(_10_)
   end
   M.buf("EvalMotion", cfg("eval_motion"), _8_, {desc = "Evaluate motion"})
   M.buf("EvalCurrentForm", cfg("eval_current_form"), util["wrap-require-fn-call"]("conjure.eval", "current-form"), {desc = "Evaluate current form"})
@@ -70,10 +74,10 @@ M["on-filetype"] = function()
   M.buf("EvalWord", cfg("eval_word"), util["wrap-require-fn-call"]("conjure.eval", "word"), {desc = "Evaluate word"})
   M.buf("EvalCommentWord", cfg("eval_comment_word"), util["wrap-require-fn-call"]("conjure.eval", "comment-word"), {desc = "Evaluate word and comment result"})
   M.buf("EvalReplaceForm", cfg("eval_replace_form"), util["wrap-require-fn-call"]("conjure.eval", "replace-form"), {desc = "Evaluate form and replace with result"})
-  local function _10_()
+  local function _11_()
     return client.schedule(eval["marked-form"])
   end
-  M.buf("EvalMarkedForm", cfg("eval_marked_form"), _10_, {desc = "Evaluate marked form", ["repeat?"] = false})
+  M.buf("EvalMarkedForm", cfg("eval_marked_form"), _11_, {desc = "Evaluate marked form", ["repeat?"] = false})
   M.buf("EvalFile", cfg("eval_file"), util["wrap-require-fn-call"]("conjure.eval", "file"), {desc = "Evaluate file"})
   M.buf("EvalBuf", cfg("eval_buf"), util["wrap-require-fn-call"]("conjure.eval", "buf"), {desc = "Evaluate buffer"})
   M.buf("EvalPrevious", cfg("eval_previous"), util["wrap-require-fn-call"]("conjure.eval", "previous"), {desc = "Evaluate previous evaluation"})
@@ -91,29 +95,29 @@ M["on-filetype"] = function()
   return client["optional-call"]("on-filetype")
 end
 M["on-exit"] = function()
-  local function _13_()
+  local function _14_()
     return client["optional-call"]("on-exit")
   end
-  return client["each-loaded-client"](_13_)
+  return client["each-loaded-client"](_14_)
 end
 M["on-quit"] = function()
   return log["close-hud"]()
 end
 local function autocmd_callback(f)
-  local function _14_(ev)
+  local function _15_(ev)
     f(ev)
     return nil
   end
-  return _14_
+  return _15_
 end
 M.init = function(filetypes)
   local group = vim.api.nvim_create_augroup("conjure_init_filetypes", {})
   if (true == config["get-in"]({"mapping", "enable_ft_mappings"})) then
     vim.api.nvim_create_autocmd("FileType", {group = group, pattern = filetypes, callback = autocmd_callback(M["on-filetype"])})
-    local function _15_(_241)
+    local function _16_(_241)
       return (_241 == vim.bo.filetype)
     end
-    if core.some(_15_, filetypes) then
+    if core.some(_16_, filetypes) then
       vim.schedule(M["on-filetype"])
     else
     end
@@ -136,7 +140,7 @@ M["eval-ranged-command"] = function(start, _end, code)
 end
 M["connect-command"] = function(...)
   local args = {...}
-  local function _20_(...)
+  local function _21_(...)
     if (1 == core.count(args)) then
       local host, port = string.match(core.first(args), "([a-zA-Z%d\\.-]+):(%d+)$")
       if (host and port) then
@@ -148,7 +152,7 @@ M["connect-command"] = function(...)
       return {host = core.first(args), port = core.second(args)}
     end
   end
-  return client.call("connect", _20_(...))
+  return client.call("connect", _21_(...))
 end
 M["client-state-command"] = function(state_key)
   if core["empty?"](state_key) then
@@ -159,32 +163,31 @@ M["client-state-command"] = function(state_key)
 end
 M.omnifunc = function(find_start_3f, base)
   if find_start_3f then
-    local _let_22_ = vim.api.nvim_win_get_cursor(0)
-    local row = _let_22_[1]
-    local col = _let_22_[2]
-    local _let_23_ = vim.api.nvim_buf_get_lines(0, core.dec(row), row, false)
-    local line = _let_23_[1]
+    local _let_23_ = vim.api.nvim_win_get_cursor(0)
+    local row = _let_23_[1]
+    local col = _let_23_[2]
+    local _let_24_ = vim.api.nvim_buf_get_lines(0, core.dec(row), row, false)
+    local line = _let_24_[1]
     return (col - core.count(vim.fn.matchstr(string.sub(line, 1, col), "\\k\\+$")))
   else
     return eval["completions-sync"](base)
   end
 end
-vim.api.nvim_command(str.join("\n", {"function! ConjureEvalMotionOpFunc(kind)", "call luaeval(\"require('conjure.eval')['selection'](_A)\", a:kind)", "endfunction"}))
 vim.api.nvim_command(str.join("\n", {"function! ConjureOmnifunc(findstart, base)", "return luaeval(\"require('conjure.mapping')['omnifunc'](_A[1] == 1, _A[2])\", [a:findstart, a:base])", "endfunction"}))
-local function _25_(_241)
+local function _26_(_241)
   return M["eval-ranged-command"](_241.line1, _241.line2, _241.args)
 end
-vim.api.nvim_create_user_command("ConjureEval", _25_, {nargs = "?", range = true})
-local function _26_(_241)
+vim.api.nvim_create_user_command("ConjureEval", _26_, {nargs = "?", range = true})
+local function _27_(_241)
   return M["connect-command"](unpack(_241.fargs))
 end
-vim.api.nvim_create_user_command("ConjureConnect", _26_, {nargs = "*", range = true, complete = "file"})
-local function _27_(_241)
+vim.api.nvim_create_user_command("ConjureConnect", _27_, {nargs = "*", range = true, complete = "file"})
+local function _28_(_241)
   return M["client-state-command"](_241.args)
 end
-vim.api.nvim_create_user_command("ConjureClientState", _27_, {nargs = "?"})
-local function _28_()
+vim.api.nvim_create_user_command("ConjureClientState", _28_, {nargs = "?"})
+local function _29_()
   return school.start()
 end
-vim.api.nvim_create_user_command("ConjureSchool", _28_, {})
+vim.api.nvim_create_user_command("ConjureSchool", _29_, {})
 return M
