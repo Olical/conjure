@@ -5,4 +5,4 @@
 (fn main []
   (mapping.init (config.filetypes)))
 
-{: main }
+{: main}
