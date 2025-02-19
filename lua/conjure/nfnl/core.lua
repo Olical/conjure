@@ -500,4 +500,31 @@ local function drop_while(f, xs)
     return nil
   end
 end
-return {rand = rand, ["nil?"] = nil_3f, ["number?"] = number_3f, ["boolean?"] = boolean_3f, ["string?"] = string_3f, ["table?"] = table_3f, ["function?"] = function_3f, keys = keys, count = count, ["empty?"] = empty_3f, first = first, second = second, last = last, inc = inc, dec = dec, ["even?"] = even_3f, ["odd?"] = odd_3f, vals = vals, ["kv-pairs"] = kv_pairs, ["run!"] = run_21, complement = complement, filter = filter, remove = remove, map = map, ["map-indexed"] = map_indexed, identity = identity, reduce = reduce, some = some, butlast = butlast, rest = rest, concat = concat, mapcat = mapcat, ["pr-str"] = pr_str, str = str, println = println, pr = pr, slurp = slurp, spit = spit, ["merge!"] = merge_21, merge = merge, ["select-keys"] = select_keys, get = get, ["get-in"] = get_in, assoc = assoc, ["assoc-in"] = assoc_in, update = update, ["update-in"] = update_in, constantly = constantly, distinct = distinct, sort = sort, ["clear-table!"] = clear_table_21, ["sequential?"] = sequential_3f, seq = seq, ["take-while"] = take_while, ["drop-while"] = drop_while}
+local function __3eset(tbl)
+  if tbl then
+    assert(table_3f(tbl), "Table required as input to ->set.")
+    local result = {}
+    for _n, v in ipairs(tbl) do
+      result[v] = true
+    end
+    return result
+  else
+    return nil
+  end
+end
+local function contains_3f(tbl, v)
+  if tbl then
+    assert(table_3f(tbl), "contains? expects a table")
+    if sequential_3f(tbl) then
+      local function _72_(_241)
+        return (_241 == v)
+      end
+      return (some(_72_, tbl) or false)
+    else
+      return (true == tbl[v])
+    end
+  else
+    return nil
+  end
+end
+return {rand = rand, ["nil?"] = nil_3f, ["number?"] = number_3f, ["boolean?"] = boolean_3f, ["string?"] = string_3f, ["table?"] = table_3f, ["function?"] = function_3f, keys = keys, count = count, ["empty?"] = empty_3f, first = first, second = second, last = last, inc = inc, dec = dec, ["even?"] = even_3f, ["odd?"] = odd_3f, vals = vals, ["kv-pairs"] = kv_pairs, ["run!"] = run_21, complement = complement, filter = filter, remove = remove, map = map, ["map-indexed"] = map_indexed, identity = identity, reduce = reduce, some = some, butlast = butlast, rest = rest, concat = concat, mapcat = mapcat, ["pr-str"] = pr_str, str = str, println = println, pr = pr, slurp = slurp, spit = spit, ["merge!"] = merge_21, merge = merge, ["select-keys"] = select_keys, get = get, ["get-in"] = get_in, assoc = assoc, ["assoc-in"] = assoc_in, update = update, ["update-in"] = update_in, constantly = constantly, distinct = distinct, sort = sort, ["clear-table!"] = clear_table_21, ["sequential?"] = sequential_3f, seq = seq, ["take-while"] = take_while, ["drop-while"] = drop_while, ["->set"] = __3eset, ["contains?"] = contains_3f}
