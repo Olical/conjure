@@ -2,7 +2,7 @@
 (local core (autoload :conjure.nfnl.core))
 (local str (autoload :conjure.nfnl.string))
 
-(local M (define "conjure.config"))
+(local M (define :conjure.config))
 
 (fn ks->var [ks]
   (.. "conjure#" (str.join "#" ks)))

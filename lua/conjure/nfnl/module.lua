@@ -29,12 +29,10 @@ M.autoload = function(name)
 end
 M.define = function(mod_name, base)
   local loaded = package.loaded[mod_name]
-  if ((nil == loaded) and (loaded == base)) then
-    return {}
-  elseif (type(loaded) == type(base)) then
+  if (type(loaded) == type(base)) then
     return loaded
   else
-    return base
+    return (base or {})
   end
 end
 return M
