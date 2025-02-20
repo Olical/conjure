@@ -1,4 +1,4 @@
-(local autoload (require :conjure.nfnl.autoload))
+(local {: autoload} (require :conjure.nfnl.module))
 (local a (autoload :conjure.aniseed.core))
 (local elisp (autoload :conjure.remote.transport.elisp))
 (local extract (autoload :conjure.extract))

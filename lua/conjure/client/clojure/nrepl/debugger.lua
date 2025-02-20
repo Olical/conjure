@@ -1,5 +1,6 @@
 -- [nfnl] Compiled from fnl/conjure/client/clojure/nrepl/debugger.fnl by https://github.com/Olical/nfnl, do not edit.
-local autoload = require("conjure.nfnl.autoload")
+local _local_1_ = require("conjure.nfnl.module")
+local autoload = _local_1_["autoload"]
 local a = autoload("conjure.aniseed.core")
 local elisp = autoload("conjure.remote.transport.elisp")
 local extract = autoload("conjure.extract")
@@ -10,35 +11,35 @@ local text = autoload("conjure.text")
 local state = {["last-request"] = nil}
 local function init()
   log.append({"; Initialising CIDER debugger"}, {["break?"] = true})
-  local function _1_(msg)
+  local function _2_(msg)
     log.append({"; CIDER debugger initialized"}, {["break?"] = true})
     return log.dbg("init-debugger response", msg)
   end
-  server.send({op = "init-debugger"}, _1_)
+  server.send({op = "init-debugger"}, _2_)
   return nil
 end
 local function send(opts)
   local key = a["get-in"](state, {"last-request", "key"})
   if key then
-    local function _2_(msg)
+    local function _3_(msg)
       log.dbg("debug-input response", msg)
       state["last-request"] = nil
       return nil
     end
-    return server.send({op = "debug-input", input = a.get(opts, "input"), key = key}, _2_)
+    return server.send({op = "debug-input", input = a.get(opts, "input"), key = key}, _3_)
   else
     return log.append({"; Debugger is not awaiting input"}, {["break?"] = true})
   end
 end
 local function valid_inputs()
   local input_types = a["get-in"](state, {"last-request", "input-type"})
-  local function _4_(input_type)
+  local function _5_(input_type)
     return ("stacktrace" ~= input_type)
   end
-  return a.filter(_4_, (input_types or {}))
+  return a.filter(_5_, (input_types or {}))
 end
 local function render_inspect(inspect)
-  local function _5_(v)
+  local function _6_(v)
     if a["table?"](v) then
       local head = a.first(v)
       if ("newline" == head) then
@@ -52,7 +53,7 @@ local function render_inspect(inspect)
       return v
     end
   end
-  return str.join(a.map(_5_, inspect))
+  return str.join(a.map(_6_, inspect))
 end
 local function handle_input_request(msg)
   state["last-request"] = msg
@@ -72,10 +73,10 @@ local function handle_input_request(msg)
   end
 end
 local function debug_input(opts)
-  local function _11_(_241)
+  local function _12_(_241)
     return (opts.args == _241)
   end
-  if a.some(_11_, valid_inputs()) then
+  if a.some(_12_, valid_inputs()) then
     return send({input = (":" .. opts.args)})
   else
     return log.append({("; Valid inputs: " .. str.join(", ", valid_inputs()))})
