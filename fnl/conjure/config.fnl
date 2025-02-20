@@ -1,11 +1,13 @@
-(local autoload (require :conjure.nfnl.autoload))
+(local {: autoload : define} (require :conjure.nfnl.module))
 (local core (autoload :conjure.nfnl.core))
 (local str (autoload :conjure.nfnl.string))
+
+(local M (define "conjure.config"))
 
 (fn ks->var [ks]
   (.. "conjure#" (str.join "#" ks)))
 
-(fn get-in [ks]
+(fn M.get-in [ks]
   (let [key (ks->var ks)
         v (or (core.get vim.b key) (core.get vim.g key))]
     (if (and (core.table? v)
@@ -14,18 +16,18 @@
       (core.get v vim.val_idx)
       v)))
 
-(fn filetypes []
-  (get-in [:filetypes]))
+(fn M.filetypes []
+  (M.get-in [:filetypes]))
 
-(fn get-in-fn [prefix-ks]
+(fn M.get-in-fn [prefix-ks]
   (fn [ks]
-    (get-in (core.concat prefix-ks ks))))
+    (M.get-in (core.concat prefix-ks ks))))
 
-(fn assoc-in [ks v]
+(fn M.assoc-in [ks v]
   (core.assoc vim.g (ks->var ks) v)
   v)
 
-(fn merge [tbl opts ks]
+(fn M.merge [tbl opts ks]
   "Merge a table into the config recursively. Won't overwrite any existing
   value by default, set opts.overwrite? to true if this is desired."
   (let [ks (or ks [])
@@ -33,20 +35,20 @@
     (core.run!
       (fn [[k v]]
         (let [ks (core.concat ks [k])
-              current (get-in ks)]
+              current (M.get-in ks)]
 
           ;; Is it an associative table?
           (if (and (core.table? v) (not (core.get v 1)))
             ;; Recur if so.
-            (merge v opts ks)
+            (M.merge v opts ks)
 
             ;; Otherwise we're at a value and we can assoc it.
             (when (or (core.nil? current) opts.overwrite?)
-              (assoc-in ks v)))))
+              (M.assoc-in ks v)))))
       (core.kv-pairs tbl))
     nil))
 
-(merge
+(M.merge
   {:debug false
    :relative_file_root nil
    :path_subs nil
@@ -127,8 +129,8 @@
    :preview
    {:sample_limit 0.3}})
 
-(when (get-in [:mapping :enable_defaults])
-  (merge
+(when (M.get-in [:mapping :enable_defaults])
+  (M.merge
     {:mapping
      {:log_split "ls"
       :log_vsplit "lv"
@@ -159,8 +161,4 @@
       :def_word "gd"
       :doc_word ["K"]}}))
 
-{: get-in
- : filetypes
- : get-in-fn
- : assoc-in
- : merge}
+M
