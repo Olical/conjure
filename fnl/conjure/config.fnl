@@ -1,18 +1,17 @@
 (local autoload (require :conjure.nfnl.autoload))
-(local nvim (autoload :conjure.aniseed.nvim))
-(local a (autoload :conjure.aniseed.core))
-(local str (autoload :conjure.aniseed.string))
+(local core (autoload :conjure.nfnl.core))
+(local str (autoload :conjure.nfnl.string))
 
 (fn ks->var [ks]
   (.. "conjure#" (str.join "#" ks)))
 
 (fn get-in [ks]
   (let [key (ks->var ks)
-        v (or (a.get nvim.b key) (a.get nvim.g key))]
-    (if (and (a.table? v)
-             (a.get v vim.type_idx)
-             (a.get v vim.val_idx))
-      (a.get v vim.val_idx)
+        v (or (core.get vim.b key) (core.get vim.g key))]
+    (if (and (core.table? v)
+             (core.get v vim.type_idx)
+             (core.get v vim.val_idx))
+      (core.get v vim.val_idx)
       v)))
 
 (fn filetypes []
@@ -20,10 +19,10 @@
 
 (fn get-in-fn [prefix-ks]
   (fn [ks]
-    (get-in (a.concat prefix-ks ks))))
+    (get-in (core.concat prefix-ks ks))))
 
 (fn assoc-in [ks v]
-  (a.assoc nvim.g (ks->var ks) v)
+  (core.assoc vim.g (ks->var ks) v)
   v)
 
 (fn merge [tbl opts ks]
@@ -31,20 +30,20 @@
   value by default, set opts.overwrite? to true if this is desired."
   (let [ks (or ks [])
         opts (or opts {})]
-    (a.run!
+    (core.run!
       (fn [[k v]]
-        (let [ks (a.concat ks [k])
+        (let [ks (core.concat ks [k])
               current (get-in ks)]
 
           ;; Is it an associative table?
-          (if (and (a.table? v) (not (a.get v 1)))
+          (if (and (core.table? v) (not (core.get v 1)))
             ;; Recur if so.
             (merge v opts ks)
 
             ;; Otherwise we're at a value and we can assoc it.
-            (when (or (a.nil? current) opts.overwrite?)
+            (when (or (core.nil? current) opts.overwrite?)
               (assoc-in ks v)))))
-      (a.kv-pairs tbl))
+      (core.kv-pairs tbl))
     nil))
 
 (merge
