@@ -60,7 +60,7 @@ local function _13_()
       local function _16_()
         return client["current-client-module-name"]()
       end
-      assert.same({filetype = "fennel", ["module-name"] = "conjure.client.fennel.aniseed"}, client["with-filetype"]("fennel", _16_))
+      assert.same({filetype = "fennel", ["module-name"] = "conjure.client.fennel.nfnl"}, client["with-filetype"]("fennel", _16_))
       return nil
     end
     return it("returns the fennel module when we're in a fennel file", _15_)
@@ -73,7 +73,7 @@ local function _17_()
     local function _19_()
       return client.current()
     end
-    assert.same(require("conjure.client.fennel.aniseed"), client["with-filetype"]("fennel", _19_))
+    assert.same(require("conjure.client.fennel.nfnl"), client["with-filetype"]("fennel", _19_))
     return nil
   end
   return it("returns the fennel module when we're in a fennel file", _18_)
@@ -84,7 +84,7 @@ local function _20_()
     local function _22_()
       return client.get("buf-suffix")
     end
-    assert.same(require("conjure.client.fennel.aniseed")["buf-suffix"], client["with-filetype"]("fennel", _22_))
+    assert.same(require("conjure.client.fennel.nfnl")["buf-suffix"], client["with-filetype"]("fennel", _22_))
     return nil
   end
   return it("looks up a value from the current client", _21_)

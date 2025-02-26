@@ -1,10 +1,10 @@
 (local {: autoload} (require :conjure.nfnl.module))
-(local a (autoload :conjure.aniseed.core))
+(local core (autoload :conjure.nfnl.core))
 (local buffer (autoload :conjure.buffer))
 (local config (autoload :conjure.config))
 (local editor (autoload :conjure.editor))
 (local nvim (autoload :conjure.aniseed.nvim))
-(local str (autoload :conjure.aniseed.string))
+(local str (autoload :conjure.nfnl.string))
 
 (local buf-name "conjure-school.fnl")
 
@@ -13,10 +13,10 @@
 
 (fn append [lines]
   (let [buf (upsert-buf)
-        current-buf-str (str.join "\n" (nvim.buf_get_lines 0 0 -1 true))
+        current-buf-str (str.join "\n" (vim.api.nvim_buf_get_lines 0 0 -1 true))
         to-insert-str (str.join "\n" lines)]
     (when (not (string.find current-buf-str to-insert-str 0 true))
-      (nvim.buf_set_lines
+      (vim.api.nvim_buf_set_lines
         buf
         (if (buffer.empty? buf) 0 -1)
         -1 false lines)
@@ -36,10 +36,10 @@
 
 (fn start []
   (when (not (editor.has-filetype? :fennel))
-    (nvim.echo
+    (vim.notify_once
       "Warning: No Fennel filetype found, falling back to Clojure syntax."
-      "Install https://github.com/Olical/aniseed for better Fennel support.")
-    (set nvim.g.conjure#filetype#clojure nvim.g.conjure#filetype#fennel)
+      "Install https://github.com/atweiden/vim-fennel for better Fennel support.")
+    (set vim.g.conjure#filetype#clojure vim.g.conjure#filetype#fennel)
     (nvim.ex.augroup :conjure_school_filetype)
     (nvim.ex.autocmd_)
     (nvim.ex.autocmd "BufNewFile,BufRead *.fnl setlocal filetype=clojure")
@@ -47,17 +47,16 @@
 
   (let [maplocalleader-was-unset?
         (when (and (= "<localleader>" (config.get-in [:mapping :prefix]))
-                   (a.empty? nvim.g.maplocalleader))
-          (set nvim.g.maplocalleader ",")
+                   (core.empty? vim.g.maplocalleader))
+          (set vim.g.maplocalleader ",")
           true)
 
         buf (upsert-buf)]
     (nvim.ex.edit buf-name)
-    (nvim.buf_set_lines buf 0 -1 false [])
+    (vim.api.nvim_buf_set_lines buf 0 -1 false [])
     (append
-      (a.concat
+      (core.concat
         [
-         "(local {: autoload} (require :conjure.nfnl.module))"
          "(local school (require :conjure.school))"
          ""
          ";; Welcome to Conjure school!"
@@ -76,7 +75,7 @@
         (if maplocalleader-was-unset?
           [";; Your <localleader> wasn't configured so I've defaulted it to comma (,) for now."
            ";; See :help localleader for more information. (let maplocalleader=\",\")"]
-          [(.. ";; Your <localleader> is currently mapped to \"" nvim.g.maplocalleader "\"")])
+          [(.. ";; Your <localleader> is currently mapped to \"" vim.g.maplocalleader "\"")])
         ["(school.lesson-1)"]))))
 
 (fn lesson-1 []
@@ -183,12 +182,11 @@
      ";; Excellent job, you made it to the end!"
      ";; To learn more about configuring Conjure, install the plugin and check out :help conjure"
      ";; You can learn about specific languages with :help conjure-client- and then tab completion."
-     ";; For example, conjure-client-fennel-aniseed or conjure-client-clojure-nrepl."
+     ";; For example, conjure-client-fennel-nfnl or conjure-client-clojure-nrepl."
      ""
      ";; I hope you have a wonderful time in Conjure!"]))
 
-{
- : start
+{: start
  : lesson-1
  : lesson-2
  : lesson-3
@@ -197,5 +195,4 @@
  : lesson-6
  : lesson-7
  : lesson-5-message
- : lesson-6-message
- }
+ : lesson-6-message}

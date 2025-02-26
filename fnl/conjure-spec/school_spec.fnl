@@ -13,7 +13,6 @@
 
     (it "buffer requires conjure.school module"
         (fn []
-          (assert.same ["(local school (require :conjure.school))"] (nvim.buf_get_lines 0 1 2 false))))
+          (assert.same ["(local school (require :conjure.school))"] (nvim.buf_get_lines 0 0 1 false))))
 
-    (nvim.ex.bdelete "conjure-school.fnl")
-        ))
+    (nvim.ex.bdelete "conjure-school.fnl")))

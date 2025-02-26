@@ -12,7 +12,7 @@ local function _2_()
   end
   it("buffer has correct name", _3_)
   local function _4_()
-    return assert.same({"(local school (require :conjure.school))"}, nvim.buf_get_lines(0, 1, 2, false))
+    return assert.same({"(local school (require :conjure.school))"}, nvim.buf_get_lines(0, 0, 1, false))
   end
   it("buffer requires conjure.school module", _4_)
   return nvim.ex.bdelete("conjure-school.fnl")

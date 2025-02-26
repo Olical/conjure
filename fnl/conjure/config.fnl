@@ -56,7 +56,7 @@
 
    :filetypes [:clojure :fennel :janet :hy :julia :racket :scheme :lua :lisp :python :rust :sql]
    :filetype {:clojure :conjure.client.clojure.nrepl
-              :fennel :conjure.client.fennel.aniseed
+              :fennel :conjure.client.fennel.nfnl
               :janet :conjure.client.janet.netrepl
               :hy :conjure.client.hy.stdio
               :julia :conjure.client.julia.stdio

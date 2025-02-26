@@ -1,19 +1,19 @@
 -- [nfnl] Compiled from fnl/conjure/school.fnl by https://github.com/Olical/nfnl, do not edit.
 local _local_1_ = require("conjure.nfnl.module")
 local autoload = _local_1_["autoload"]
-local a = autoload("conjure.aniseed.core")
+local core = autoload("conjure.nfnl.core")
 local buffer = autoload("conjure.buffer")
 local config = autoload("conjure.config")
 local editor = autoload("conjure.editor")
 local nvim = autoload("conjure.aniseed.nvim")
-local str = autoload("conjure.aniseed.string")
+local str = autoload("conjure.nfnl.string")
 local buf_name = "conjure-school.fnl"
 local function upsert_buf()
   return buffer["upsert-hidden"](buf_name)
 end
 local function append(lines)
   local buf = upsert_buf()
-  local current_buf_str = str.join("\n", nvim.buf_get_lines(0, 0, -1, true))
+  local current_buf_str = str.join("\n", vim.api.nvim_buf_get_lines(0, 0, -1, true))
   local to_insert_str = str.join("\n", lines)
   if not string.find(current_buf_str, to_insert_str, 0, true) then
     local _2_
@@ -22,7 +22,7 @@ local function append(lines)
     else
       _2_ = -1
     end
-    nvim.buf_set_lines(buf, _2_, -1, false, lines)
+    vim.api.nvim_buf_set_lines(buf, _2_, -1, false, lines)
     return true
   else
     return nil
@@ -43,8 +43,8 @@ local function append_or_warn(current_progress, lines)
 end
 local function start()
   if not editor["has-filetype?"]("fennel") then
-    nvim.echo("Warning: No Fennel filetype found, falling back to Clojure syntax.", "Install https://github.com/Olical/aniseed for better Fennel support.")
-    nvim.g["conjure#filetype#clojure"] = nvim.g["conjure#filetype#fennel"]
+    vim.notify_once("Warning: No Fennel filetype found, falling back to Clojure syntax.", "Install https://github.com/atweiden/vim-fennel for better Fennel support.")
+    vim.g["conjure#filetype#clojure"] = vim.g["conjure#filetype#fennel"]
     nvim.ex.augroup("conjure_school_filetype")
     nvim.ex.autocmd_()
     nvim.ex.autocmd("BufNewFile,BufRead *.fnl setlocal filetype=clojure")
@@ -52,22 +52,22 @@ local function start()
   else
   end
   local maplocalleader_was_unset_3f
-  if (("<localleader>" == config["get-in"]({"mapping", "prefix"})) and a["empty?"](nvim.g.maplocalleader)) then
-    nvim.g.maplocalleader = ","
+  if (("<localleader>" == config["get-in"]({"mapping", "prefix"})) and core["empty?"](vim.g.maplocalleader)) then
+    vim.g.maplocalleader = ","
     maplocalleader_was_unset_3f = true
   else
     maplocalleader_was_unset_3f = nil
   end
   local buf = upsert_buf()
   nvim.ex.edit(buf_name)
-  nvim.buf_set_lines(buf, 0, -1, false, {})
+  vim.api.nvim_buf_set_lines(buf, 0, -1, false, {})
   local _8_
   if maplocalleader_was_unset_3f then
     _8_ = {";; Your <localleader> wasn't configured so I've defaulted it to comma (,) for now.", ";; See :help localleader for more information. (let maplocalleader=\",\")"}
   else
-    _8_ = {(";; Your <localleader> is currently mapped to \"" .. nvim.g.maplocalleader .. "\"")}
+    _8_ = {(";; Your <localleader> is currently mapped to \"" .. vim.g.maplocalleader .. "\"")}
   end
-  return append(a.concat({"(local {: autoload} (require :conjure.nfnl.module))", "(local school (require :conjure.school))", "", ";; Welcome to Conjure school!", ";; Grab yourself a nice beverage and let's get evaluating. I hope you enjoy!", "", ";; This language is Fennel, it's quite similar to Clojure.", ";; Conjure is written in Fennel, it's compiled to Lua and executed inside Neovim itself.", ";; This means we can work with a Lisp without installing or running anything else.", "", ";; Note: Some colorschemes will make the HUD unreadable, see here for more: https://git.io/JJ1Hl", "", ";; Let's learn how to evaluate it using Conjure's assortment of mappings.", ";; You can learn how to change these mappings with :help conjure-mappings", "", (";; Let's begin by evaluating the whole buffer using " .. map_str("eval_buf"))}, _8_, {"(school.lesson-1)"}))
+  return append(core.concat({"(local school (require :conjure.school))", "", ";; Welcome to Conjure school!", ";; Grab yourself a nice beverage and let's get evaluating. I hope you enjoy!", "", ";; This language is Fennel, it's quite similar to Clojure.", ";; Conjure is written in Fennel, it's compiled to Lua and executed inside Neovim itself.", ";; This means we can work with a Lisp without installing or running anything else.", "", ";; Note: Some colorschemes will make the HUD unreadable, see here for more: https://git.io/JJ1Hl", "", ";; Let's learn how to evaluate it using Conjure's assortment of mappings.", ";; You can learn how to change these mappings with :help conjure-mappings", "", (";; Let's begin by evaluating the whole buffer using " .. map_str("eval_buf"))}, _8_, {"(school.lesson-1)"}))
 end
 local function lesson_1()
   return append_or_warn(1, {"", ";; Good job!", ";; You'll notice the heads up display (HUD) appeared showing the result of the evaluation.", ";; All results are appended to a log buffer. If that log is not open, the HUD will appear.", ";; The HUD closes automatically when you move your cursor.", "", ";; You can open the log buffer in a few ways:", (";;  * Horizontally - " .. map_str("log_split")), (";;  * Vertically - " .. map_str("log_vsplit")), (";;  * New tab - " .. map_str("log_tab")), "", (";; All visible log windows (including the HUD) can be closed with " .. map_str("log_close_visible")), ";; Try opening and closing the log window to get the hang of those key mappings.", ";; It's a regular window and buffer, so you can edit and close it however you want.", ";; Feel free to leave the log open in a split for the next lesson to see how it behaves.", "", ";; If you ever need to clear your log you can use the reset mappings:", (";; * Soft reset (leaves windows open) - " .. map_str("log_reset_soft")), (";; * Hard reset (closes windows, deletes the buffer) - " .. map_str("log_reset_hard")), "", ";; Next, we have a form inside a comment. We want to evaluate that inner form, not the comment.", (";; Place your cursor on the inner form (the one inside the comment) and use " .. map_str("eval_current_form") .. " to evaluate it."), "(comment", "  (school.lesson-2))"})
@@ -90,6 +90,6 @@ local function lesson_6()
   return append_or_warn(6, {"", ";; Wonderful!", ";; Visual evaluation is great for specific sections of a form.", (";; You can also evaluate a given motion with " .. map_str("eval_motion")), (";; Try " .. map_str("eval_motion") .. "iw below to evaluate the word."), "school.lesson-6-message", "", (";; Use " .. map_str("eval_motion") .. "a( to evaluate the lesson form."), "(school.lesson-7)"})
 end
 local function lesson_7()
-  return append_or_warn(7, {"", ";; Excellent job, you made it to the end!", ";; To learn more about configuring Conjure, install the plugin and check out :help conjure", ";; You can learn about specific languages with :help conjure-client- and then tab completion.", ";; For example, conjure-client-fennel-aniseed or conjure-client-clojure-nrepl.", "", ";; I hope you have a wonderful time in Conjure!"})
+  return append_or_warn(7, {"", ";; Excellent job, you made it to the end!", ";; To learn more about configuring Conjure, install the plugin and check out :help conjure", ";; You can learn about specific languages with :help conjure-client- and then tab completion.", ";; For example, conjure-client-fennel-nfnl or conjure-client-clojure-nrepl.", "", ";; I hope you have a wonderful time in Conjure!"})
 end
 return {start = start, ["lesson-1"] = lesson_1, ["lesson-2"] = lesson_2, ["lesson-3"] = lesson_3, ["lesson-4"] = lesson_4, ["lesson-5"] = lesson_5, ["lesson-6"] = lesson_6, ["lesson-7"] = lesson_7, ["lesson-5-message"] = lesson_5_message, ["lesson-6-message"] = lesson_6_message}

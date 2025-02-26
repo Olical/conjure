@@ -10,6 +10,8 @@
 (local repl (autoload :conjure.nfnl.repl))
 (local fs (autoload :conjure.nfnl.fs))
 
+;; TODO Eval and replace isn't working.
+
 (local M
   (define :conjure.client.fennel.nfnl
     {:comment-node? ts.lisp-comment-node?

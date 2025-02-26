@@ -278,14 +278,12 @@ configure the ones you care about one at a time you can set:
 
                                                    *g:conjure#filetype#fennel*
 `g:conjure#filetype#fennel`
-            Client to use for `fennel` buffers. Conjure also ships with an
-            alternative `"conjure.client.fennel.stdio"` client which allows
-            you to work with Fennel (without Aniseed) outside of Neovim in an
-            external Lua process.
-            This default Fennel client implementation uses a vendored copy of
-            Aniseed (which contains a vendored Fennel compiler) for all evaluations.
-            Help: |conjure-client-fennel-aniseed|, |conjure-client-fennel-stdio|
-            Default: `"conjure.client.fennel.aniseed"`
+            Client to use for `fennel` buffers. By default we evaluate fennel
+            with a vendorded copy of nfnl within Neovim. You can also swap to
+            the legacy Aniseed based client or an stdio client if you wish to
+            execute code in a sub-Lua process outside of Neovim.
+            Help: |conjure-client-fennel-nfnl|, |conjure-client-fennel-aniseed|, |conjure-client-fennel-stdio|
+            Default: `"conjure.client.fennel.nfnl"`
 
                                                     *g:conjure#filetype#janet*
 `g:conjure#filetype#janet`

@@ -59,7 +59,7 @@
           (fn []
             (assert.same
               {:filetype "fennel"
-               :module-name "conjure.client.fennel.aniseed"}
+               :module-name "conjure.client.fennel.nfnl"}
               (client.with-filetype "fennel" #(client.current-client-module-name)))
             nil))))))
 
@@ -68,7 +68,7 @@
     (it "returns the fennel module when we're in a fennel file"
       (fn []
         (assert.same
-          (require :conjure.client.fennel.aniseed)
+          (require :conjure.client.fennel.nfnl)
           (client.with-filetype "fennel" #(client.current)))
         nil))))
 
@@ -77,7 +77,7 @@
     (it "looks up a value from the current client"
       (fn []
         (assert.same
-          (. (require :conjure.client.fennel.aniseed) :buf-suffix)
+          (. (require :conjure.client.fennel.nfnl) :buf-suffix)
           (client.with-filetype "fennel" #(client.get :buf-suffix)))
         nil))))
 
