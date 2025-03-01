@@ -15,7 +15,7 @@ INTRODUCTION                        *conjure-client-fennel-stdio-introduction*
 
 Conjure starts a Fennel REPL within Neovim when you first open a Fennel file.
 
-The default Fennel filetype client is `conjure.client.fennel.aniseed`, to use
+The default Fennel filetype client is `conjure.client.fennel.nfnl`, to use
 this client instead you must override the configuration.
 >
   let g:conjure#filetype#fennel = "conjure.client.fennel.stdio"

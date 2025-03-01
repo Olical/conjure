@@ -10,7 +10,7 @@ Conjure is an interactive environment for evaluating code within your running pr
 The core features of Conjure are language agnostic (although it's targeted at Lisps _for now_), with each language client providing their own extra tools. Here's the currently supported languages, contributions and 3rd party plugins that add clients are highly encouraged! You can find a https://github.com/Olical/conjure/wiki/Client-features[comparison table for all clients and supported features] in the wiki.
 
  * https://clojure.org/[Clojure] over https://nrepl.org/[nREPL] (https://github.com/Olical/conjure/wiki/Quick-start:-Clojure[quickstart])
- * https://fennel-lang.org/[Fennel] inside Neovim via Lua and https://github.com/Olical/aniseed[Aniseed] (https://github.com/Olical/conjure/wiki/Quick-start:-Fennel-(Aniseed)[quickstart])
+ * https://fennel-lang.org/[Fennel] inside Neovim via Lua and https://github.com/Olical/nfnl[nfnl] (https://github.com/Olical/conjure/wiki/Quick-start:-Fennel-(nfnl)[quickstart])
  * https://fennel-lang.org[Fennel] outside of Neovim within any Lua process through an stdio REPL (https://github.com/Olical/conjure/wiki/Quick-start:-Fennel-(stdio)[quickstart])
  * https://janet-lang.org/[Janet] over https://github.com/janet-lang/spork/#networked-repl[spork/netrepl] (https://github.com/Olical/conjure/wiki/Quick-start:-Janet-(netrepl)[quickstart])
  * https://janet-lang.org/[Janet] over stdio (https://github.com/Olical/conjure/wiki/Quick-start:-Janet-(stdio)[quickstart])
