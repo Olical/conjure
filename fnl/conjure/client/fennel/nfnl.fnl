@@ -10,8 +10,6 @@
 (local repl (autoload :conjure.nfnl.repl))
 (local fs (autoload :conjure.nfnl.fs))
 
-;; TODO Eval and replace isn't working.
-
 (local M
   (define :conjure.client.fennel.nfnl
     {:comment-node? ts.lisp-comment-node?
@@ -88,7 +86,11 @@
         (tset package.loaded mod-path (core.merge! mod (core.last results)))))
 
     (when (not (core.empty? result-strs))
-      (log.append (text.split-lines (str.join "\n" result-strs))))))
+      (let [result (str.join "\n" result-strs)]
+        (when opts.on-result
+          (opts.on-result result))
+
+        (log.append (text.split-lines result))))))
 
 (fn M.eval-file [opts]
   "Client function, called by Conjure when evaluating a file from disk."

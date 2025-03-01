@@ -83,7 +83,12 @@ M["eval-str"] = function(opts)
   else
   end
   if not core["empty?"](result_strs) then
-    return log.append(text["split-lines"](str.join("\n", result_strs)))
+    local result = str.join("\n", result_strs)
+    if opts["on-result"] then
+      opts["on-result"](result)
+    else
+    end
+    return log.append(text["split-lines"](result))
   else
     return nil
   end
