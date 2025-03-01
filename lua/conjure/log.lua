@@ -415,10 +415,22 @@ local function create_win(cmd)
   return buffer.unlist(buf)
 end
 local function split()
-  return create_win("split")
+  create_win("split")
+  local height = config["get-in"]({"log", "split", "height"})
+  if height then
+    return vim.api.nvim_win_set_height(0, editor["percent-height"](height))
+  else
+    return nil
+  end
 end
 local function vsplit()
-  return create_win("vsplit")
+  create_win("vsplit")
+  local width = config["get-in"]({"log", "split", "width"})
+  if width then
+    return vim.api.nvim_win_set_width(0, editor["percent-width"](width))
+  else
+    return nil
+  end
 end
 local function tab()
   return create_win("tabnew")
@@ -428,16 +440,16 @@ local function buf()
 end
 local function find_windows()
   local buf0 = upsert_buf()
-  local function _65_(win)
+  local function _67_(win)
     return ((state.hud.id ~= win) and (buf0 == vim.api.nvim_win_get_buf(win)))
   end
-  return a.filter(_65_, vim.api.nvim_tabpage_list_wins(0))
+  return a.filter(_67_, vim.api.nvim_tabpage_list_wins(0))
 end
 local function close(windows)
-  local function _66_(_241)
+  local function _68_(_241)
     return vim.api.nvim_win_close(_241, true)
   end
-  return a["run!"](_66_, windows)
+  return a["run!"](_68_, windows)
 end
 local function close_visible()
   close_hud()

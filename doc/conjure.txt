@@ -590,6 +590,18 @@ configure the ones you care about one at a time you can set:
             How long should the highlight last in milliseconds.
             Default: `500`
 
+                                                   *g:conjure#log#split#width*
+`g:conjure#log#split#width`
+            Width of the log vsplit as a percentage of the editor width.
+            A float between 0.0 and 1.0.
+            Default: `nil`
+
+                                                  *g:conjure#log#split#height*
+`g:conjure#log#split#height`
+            Height of the log split as a percentage of the editor height.
+            A float between 0.0 and 1.0.
+            Default: `nil`
+
                                                      *g:conjure#log#hud#width*
 `g:conjure#log#hud#width`
             Width of the HUD as a percentage of the editor width.

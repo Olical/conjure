@@ -459,10 +459,16 @@
     (buffer.unlist buf)))
 
 (fn split []
-  (create-win :split))
+  (create-win :split)
+  (let [height (config.get-in [:log :split :height])]
+    (when height
+      (vim.api.nvim_win_set_height 0 (editor.percent-height height)))))
 
 (fn vsplit []
-  (create-win :vsplit))
+  (create-win :vsplit)
+  (let [width (config.get-in [:log :split :width])]
+    (when width
+      (vim.api.nvim_win_set_width 0 (editor.percent-width width)))))
 
 (fn tab []
   (create-win :tabnew))

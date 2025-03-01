@@ -96,6 +96,8 @@
    {:wrap false
     :diagnostics false
     :treesitter true
+    :split {:width nil
+            :height nil}
     :hud {:width 0.42
           :height 0.3
           :zindex 1
