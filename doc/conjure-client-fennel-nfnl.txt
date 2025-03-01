@@ -1,0 +1,18 @@
+                                                  *conjure-client-fennel-nfnl*
+
+==============================================================================
+CONTENTS                                 *conjure-client-fennel-nfnl-contents*
+
+    1. Introduction ....... |conjure-client-fennel-nfnl-introduction|
+
+==============================================================================
+INTRODUCTION                         *conjure-client-fennel-nfnl-introduction*
+
+Conjure itself is written in Fennel and compiled to Lua with nfnl
+(https://github.com/Olical/nfnl). This client is the default Fennel client and
+uses the bundled nfnl version inside of Conjure to evaluate your Fennel code
+on demand.
+
+There are no custom mappings or configurations for this client yet.
+
+vim:tw=78:sw=2:ts=2:ft=help:norl:et:listchars=
