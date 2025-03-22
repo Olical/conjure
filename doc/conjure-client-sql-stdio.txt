@@ -83,7 +83,7 @@ All configuration can be set as described in |conjure-configuration|.
                                        *g:conjure#client#sql#stdio#command*
 `g:conjure#client#sql#stdio#command`
             Command used to start the SQL REPL, modify to meet your needs.
-            Default: `"psql -U blogger postgres"`
+            Default: `"psql postgres://postgres:postgres@localhost/postgres"`
 
                                 *g:conjure#client#sql#stdio#prompt_pattern*
 `g:conjure#client#sql#stdio#prompt_pattern`
