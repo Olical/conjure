@@ -32,7 +32,6 @@
 "matheusfrancisco"
 "mraveloarinjaka"
 "NickCellino"
-"nickcernis"
 "NoahTheDuke"
 "orestis"
 "penryu"
