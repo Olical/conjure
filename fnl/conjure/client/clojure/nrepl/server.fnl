@@ -212,7 +212,8 @@
 (fn clone-session [session]
   (send
     {:op :clone
-     :session (a.get session :id)}
+     :session (a.get session :id)
+     :client-name "Conjure"}
     (nrepl.with-all-msgs-fn
       (fn [msgs]
         (let [session-id (a.some #(a.get $1 :new-session) msgs)]
