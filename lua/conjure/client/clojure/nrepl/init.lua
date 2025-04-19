@@ -31,17 +31,17 @@ else
 end
 local function context(header)
   if (nil ~= header) then
-    local tmp_3_auto = parse["strip-shebang"](header)
-    if (nil ~= tmp_3_auto) then
-      local tmp_3_auto0 = parse["strip-meta"](tmp_3_auto)
-      if (nil ~= tmp_3_auto0) then
-        local tmp_3_auto1 = parse["strip-comments"](tmp_3_auto0)
-        if (nil ~= tmp_3_auto1) then
-          local tmp_3_auto2 = string.match(tmp_3_auto1, "%(%s*ns%s+([^)]*)")
-          if (nil ~= tmp_3_auto2) then
-            local tmp_3_auto3 = str.split(tmp_3_auto2, "%s+")
-            if (nil ~= tmp_3_auto3) then
-              return a.first(tmp_3_auto3)
+    local tmp_3_ = parse["strip-shebang"](header)
+    if (nil ~= tmp_3_) then
+      local tmp_3_0 = parse["strip-meta"](tmp_3_)
+      if (nil ~= tmp_3_0) then
+        local tmp_3_1 = parse["strip-comments"](tmp_3_0)
+        if (nil ~= tmp_3_1) then
+          local tmp_3_2 = string.match(tmp_3_1, "%(%s*ns%s+([^)]*)")
+          if (nil ~= tmp_3_2) then
+            local tmp_3_3 = str.split(tmp_3_2, "%s+")
+            if (nil ~= tmp_3_3) then
+              return a.first(tmp_3_3)
             else
               return nil
             end

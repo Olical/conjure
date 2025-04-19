@@ -4,10 +4,10 @@ local autoload = _local_1_["autoload"]
 local a = autoload("conjure.aniseed.core")
 local str = autoload("conjure.aniseed.string")
 local function trailing_newline_3f(s)
-  return string.match(s, "\13?\n$")
+  return string.match(s, "\r?\n$")
 end
 local function trim_last_newline(s)
-  return string.gsub(s, "\13?\n$", "")
+  return string.gsub(s, "\r?\n$", "")
 end
 local function left_sample(s, limit)
   local flat = str.trim(string.gsub(string.gsub(s, "\n", " "), "%s+", " "))
@@ -21,7 +21,7 @@ local function right_sample(s, limit)
   return string.reverse(left_sample(string.reverse(s), limit))
 end
 local function split_lines(s)
-  return str.split(s, "\13?\n")
+  return str.split(s, "\r?\n")
 end
 local function prefixed_lines(s, prefix, opts)
   local function _4_(_3_)

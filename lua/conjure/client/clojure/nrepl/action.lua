@@ -38,9 +38,9 @@ end
 local function connect_port_file(opts)
   local resolved_path
   do
-    local tmp_6_auto = cfg({"connection", "port_files"})
-    if (tmp_6_auto ~= nil) then
-      resolved_path = fs["resolve-above"](tmp_6_auto)
+    local tmp_6_ = cfg({"connection", "port_files"})
+    if (tmp_6_ ~= nil) then
+      resolved_path = fs["resolve-above"](tmp_6_)
     else
       resolved_path = nil
     end

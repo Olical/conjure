@@ -310,9 +310,9 @@ local function completions(prefix, cb)
   local function cb_wrap(results)
     local or_41_ = results
     if not or_41_ then
-      local tmp_3_auto = config["get-in"]({"completion", "fallback"})
-      if (nil ~= tmp_3_auto) then
-        or_41_ = nvim.call_function(tmp_3_auto, {0, prefix})
+      local tmp_3_ = config["get-in"]({"completion", "fallback"})
+      if (nil ~= tmp_3_) then
+        or_41_ = nvim.call_function(tmp_3_, {0, prefix})
       else
         or_41_ = nil
       end

@@ -1,9 +1,9 @@
 -- [nfnl] Compiled from fnl/conjure/client/clojure/nrepl/parse.fnl by https://github.com/Olical/nfnl, do not edit.
 local function strip_meta(s)
   if (nil ~= s) then
-    local tmp_3_auto = string.gsub(s, "%^:.-%s+", "")
-    if (nil ~= tmp_3_auto) then
-      return string.gsub(tmp_3_auto, "%^%b{}%s+", "")
+    local tmp_3_ = string.gsub(s, "%^:.-%s+", "")
+    if (nil ~= tmp_3_) then
+      return string.gsub(tmp_3_, "%^%b{}%s+", "")
     else
       return nil
     end

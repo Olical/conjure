@@ -59,10 +59,10 @@ local function clean_input_code(code)
 end
 local function eval_str(opts)
   local function _8_(repl)
-    local tmp_3_auto = (",m " .. (opts.context or "(guile-user)") .. "\n" .. opts.code)
-    if (nil ~= tmp_3_auto) then
-      local tmp_3_auto0 = clean_input_code(tmp_3_auto)
-      if (nil ~= tmp_3_auto0) then
+    local tmp_3_ = (",m " .. (opts.context or "(guile-user)") .. "\n" .. opts.code)
+    if (nil ~= tmp_3_) then
+      local tmp_3_0 = clean_input_code(tmp_3_)
+      if (nil ~= tmp_3_0) then
         local function _9_(msgs)
           if ((1 == a.count(msgs)) and ("" == a["get-in"](msgs, {1, "out"}))) then
             a["assoc-in"](msgs, {1, "out"}, (comment_prefix .. "Empty result"))
@@ -74,7 +74,7 @@ local function eval_str(opts)
           end
           return a["run!"](display_result, msgs)
         end
-        return repl.send(tmp_3_auto0, _9_, {["batch?"] = true})
+        return repl.send(tmp_3_0, _9_, {["batch?"] = true})
       else
         return nil
       end

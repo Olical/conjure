@@ -80,7 +80,7 @@ local function default_env()
   local base = setmetatable({["REDIRECTED-OUTPUT"] = "", io = setmetatable({}, {__index = _G.io})}, {__index = _G})
   local print_redirected
   local function _12_(...)
-    base["REDIRECTED-OUTPUT"] = (base["REDIRECTED-OUTPUT"] .. str.join("\t", {...}) .. "\n")
+    base["REDIRECTED-OUTPUT"] = (base["REDIRECTED-OUTPUT"] .. str.join("\9", {...}) .. "\n")
     return nil
   end
   print_redirected = _12_

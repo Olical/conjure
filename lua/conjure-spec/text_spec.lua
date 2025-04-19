@@ -53,7 +53,7 @@ local function _2_()
     end
     it("blank lines", _15_)
     local function _16_()
-      return assert.same({"foo", "bar"}, text["split-lines"]("foo\13\nbar"), "")
+      return assert.same({"foo", "bar"}, text["split-lines"]("foo\r\nbar"), "")
     end
     return it("Windows CRLF", _16_)
   end

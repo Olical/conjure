@@ -90,9 +90,9 @@ local function eval(opts, cb)
   local function _12_(_)
     local _13_
     do
-      local tmp_3_auto = a["get-in"](opts, {"range", "start", 2})
-      if (nil ~= tmp_3_auto) then
-        _13_ = a.inc(tmp_3_auto)
+      local tmp_3_ = a["get-in"](opts, {"range", "start", 2})
+      if (nil ~= tmp_3_) then
+        _13_ = a.inc(tmp_3_)
       else
         _13_ = nil
       end
