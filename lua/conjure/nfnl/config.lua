@@ -26,13 +26,13 @@ local function default(opts)
   local root_dir
   local or_5_ = core.get(opts, "root-dir")
   if not or_5_ then
-    local tmp_3_auto = vim.fn.getcwd()
-    if (nil ~= tmp_3_auto) then
-      local tmp_3_auto0 = find(tmp_3_auto)
-      if (nil ~= tmp_3_auto0) then
-        local tmp_3_auto1 = fs["full-path"](tmp_3_auto0)
-        if (nil ~= tmp_3_auto1) then
-          or_5_ = fs.basename(tmp_3_auto1)
+    local tmp_3_ = vim.fn.getcwd()
+    if (nil ~= tmp_3_) then
+      local tmp_3_0 = find(tmp_3_)
+      if (nil ~= tmp_3_0) then
+        local tmp_3_1 = fs["full-path"](tmp_3_0)
+        if (nil ~= tmp_3_1) then
+          or_5_ = fs.basename(tmp_3_1)
         else
           or_5_ = nil
         end
@@ -51,7 +51,7 @@ local function default(opts)
   local function _13_(root_dir0)
     return core.map(fs["join-path"], {{root_dir0, "?.fnl"}, {root_dir0, "?", "init-macros.fnl"}, {root_dir0, "?", "init.fnl"}, {root_dir0, "fnl", "?.fnl"}, {root_dir0, "fnl", "?", "init-macros.fnl"}, {root_dir0, "fnl", "?", "init.fnl"}})
   end
-  return {["compiler-options"] = {["error-pinpoint"] = false}, ["root-dir"] = root_dir, ["fennel-path"] = str.join(";", core.mapcat(_12_, dirs)), ["fennel-macro-path"] = str.join(";", core.mapcat(_13_, dirs)), ["source-file-patterns"] = {".*.fnl", "*.fnl", fs["join-path"]({"**", "*.fnl"})}, ["fnl-path->lua-path"] = fs["fnl-path->lua-path"], verbose = false}
+  return {["header-comment"] = true, ["compiler-options"] = {["error-pinpoint"] = false}, ["root-dir"] = root_dir, ["fennel-path"] = str.join(";", core.mapcat(_12_, dirs)), ["fennel-macro-path"] = str.join(";", core.mapcat(_13_, dirs)), ["source-file-patterns"] = {".*.fnl", "*.fnl", fs["join-path"]({"**", "*.fnl"})}, ["fnl-path->lua-path"] = fs["fnl-path->lua-path"], verbose = false}
 end
 local function cfg_fn(t, opts)
   local default_cfg = default(opts)

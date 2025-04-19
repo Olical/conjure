@@ -19,16 +19,16 @@ local function join(...)
   if (len > 0) then
     for i = 1, len do
       local x = xs[i]
-      local tmp_6_auto
+      local tmp_6_
       if ("string" == type(x)) then
-        tmp_6_auto = x
+        tmp_6_ = x
       elseif (nil == x) then
-        tmp_6_auto = x
+        tmp_6_ = x
       else
-        tmp_6_auto = core["pr-str"](x)
+        tmp_6_ = core["pr-str"](x)
       end
-      if (tmp_6_auto ~= nil) then
-        table.insert(result, tmp_6_auto)
+      if (tmp_6_ ~= nil) then
+        table.insert(result, tmp_6_)
       else
       end
     end

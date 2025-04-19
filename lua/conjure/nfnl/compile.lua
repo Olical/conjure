@@ -64,7 +64,13 @@ mod["into-string"] = function(_6_)
         notify.info("Successfully compiled: ", path)
       else
       end
-      return {status = "ok", ["source-path"] = path, result = (with_header(rel_file_name, res) .. "\n")}
+      local _8_
+      if cfg({"header-comment"}) then
+        _8_ = with_header(rel_file_name, res)
+      else
+        _8_ = res
+      end
+      return {status = "ok", ["source-path"] = path, result = (_8_ .. "\n")}
     else
       if not batch_3f then
         notify.error(res)
@@ -74,23 +80,23 @@ mod["into-string"] = function(_6_)
     end
   end
 end
-mod["into-file"] = function(_11_)
-  local _root_dir = _11_["_root-dir"]
-  local cfg = _11_["cfg"]
-  local _source = _11_["_source"]
-  local path = _11_["path"]
-  local batch_3f = _11_["batch?"]
-  local opts = _11_
+mod["into-file"] = function(_13_)
+  local _root_dir = _13_["_root-dir"]
+  local cfg = _13_["cfg"]
+  local _source = _13_["_source"]
+  local path = _13_["path"]
+  local batch_3f = _13_["batch?"]
+  local opts = _13_
   local fnl_path__3elua_path = cfg({"fnl-path->lua-path"})
   local destination_path = fnl_path__3elua_path(path)
-  local _let_12_ = mod["into-string"](opts)
-  local status = _let_12_["status"]
-  local source_path = _let_12_["source-path"]
-  local result = _let_12_["result"]
-  local res = _let_12_
+  local _let_14_ = mod["into-string"](opts)
+  local status = _let_14_["status"]
+  local source_path = _let_14_["source-path"]
+  local result = _let_14_["result"]
+  local res = _let_14_
   if ("ok" ~= status) then
     return res
-  elseif safe_target_3f(destination_path) then
+  elseif (safe_target_3f(destination_path) or not cfg({"header-comment"})) then
     fs.mkdirp(fs.basename(destination_path))
     core.spit(destination_path, result)
     return {status = "ok", ["source-path"] = source_path, ["destination-path"] = destination_path}
@@ -102,16 +108,16 @@ mod["into-file"] = function(_11_)
     return {status = "destination-exists", ["source-path"] = path, ["destination-path"] = destination_path}
   end
 end
-mod["all-files"] = function(_15_)
-  local root_dir = _15_["root-dir"]
-  local cfg = _15_["cfg"]
-  local opts = _15_
-  local function _16_(path)
+mod["all-files"] = function(_17_)
+  local root_dir = _17_["root-dir"]
+  local cfg = _17_["cfg"]
+  local opts = _17_
+  local function _18_(path)
     return mod["into-file"]({["root-dir"] = root_dir, path = path, cfg = cfg, source = core.slurp(path), ["batch?"] = true})
   end
-  local function _17_(_241)
+  local function _19_(_241)
     return fs["join-path"]({root_dir, _241})
   end
-  return core.map(_16_, core.map(_17_, valid_source_files(fs.relglob, opts)))
+  return core.map(_18_, core.map(_19_, valid_source_files(fs.relglob, opts)))
 end
 return mod

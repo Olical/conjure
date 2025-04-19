@@ -399,7 +399,7 @@ local function assoc(t, ...)
   local _let_58_ = {...}
   local k = _let_58_[1]
   local v = _let_58_[2]
-  local xs = (function (t, k, e) local mt = getmetatable(t) if 'table' == type(mt) and mt.__fennelrest then return mt.__fennelrest(t, k) elseif e then local rest = {} for k, v in pairs(t) do if not e[k] then rest[k] = v end end return rest else return {(table.unpack or unpack)(t, k)} end end)(_let_58_, 3)
+  local xs = (function (t, k) return ((getmetatable(t) or {}).__fennelrest or function (t, k) return {(table.unpack or unpack)(t, k)} end)(t, k) end)(_let_58_, 3)
   local rem = count(xs)
   local t0 = (t or {})
   if odd_3f(rem) then
