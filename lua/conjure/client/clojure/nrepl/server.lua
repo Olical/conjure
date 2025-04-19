@@ -214,7 +214,7 @@ local function clone_session(session)
       return nil
     end
   end
-  return send({op = "clone", session = a.get(session, "id")}, nrepl["with-all-msgs-fn"](_34_))
+  return send({op = "clone", session = a.get(session, "id"), ["client-name"] = "Conjure"}, nrepl["with-all-msgs-fn"](_34_))
 end
 local function assume_or_create_session()
   a.assoc(state.get("conn"), "session", nil)
