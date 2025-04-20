@@ -1,6 +1,5 @@
 (local {: autoload} (require :conjure.nfnl.module))
 (local a (autoload :conjure.aniseed.core))
-(local extract (autoload :conjure.extract))
 (local str (autoload :conjure.aniseed.string))
 (local stdio (autoload :conjure.remote.stdio))
 (local config (autoload :conjure.config))
@@ -8,7 +7,6 @@
 (local mapping (autoload :conjure.mapping))
 (local client (autoload :conjure.client))
 (local log (autoload :conjure.log))
-(local ts (autoload :conjure.tree-sitter))
 (local b64 (autoload :conjure.remote.transport.base64))
 
 (config.merge
