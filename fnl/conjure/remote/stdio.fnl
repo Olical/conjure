@@ -44,10 +44,9 @@
   * opts.on-exit: Called on exit with the code and signal."
   (let [stdin (uv.new_pipe false)
         stdout (uv.new_pipe false)
-        stderr (uv.new_pipe false)]
-
-    (var repl {:queue []
-               :current nil})
+        stderr (uv.new_pipe false)
+        repl {:queue []
+              :current nil}]
 
     (fn destroy []
       ;; https://teukka.tech/vimloop.html
