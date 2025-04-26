@@ -411,14 +411,12 @@
         (fn [sessions]
           (if (= 1 (a.count sessions))
             (log.append ["; No other sessions"] {:break? true})
-            (ui.display-sessions
+            (vim.ui.select
               sessions
-              (fn []
-                (nvim.ex.redraw_)
-                (let [n (nvim.fn.str2nr (extract.prompt "Session number: "))]
-                  (if (<= 1 n (a.count sessions))
-                    (server.assume-session (a.get sessions n))
-                    (log.append ["; Invalid session number."])))))))))))
+              {:prompt "Select an nREPL session:"
+               :format_item #(.. $.name " (" $.pretty-type ", " $.id ")")}
+              (fn [session]
+                (server.assume-session session)))))))))
 
 (local test-runners
   {:clojure

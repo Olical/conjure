@@ -500,16 +500,13 @@ local function select_session_interactive()
       if (1 == a.count(sessions)) then
         return log.append({"; No other sessions"}, {["break?"] = true})
       else
-        local function _100_()
-          nvim.ex.redraw_()
-          local n = nvim.fn.str2nr(extract.prompt("Session number: "))
-          if ((1 <= n) and (n <= a.count(sessions))) then
-            return server["assume-session"](a.get(sessions, n))
-          else
-            return log.append({"; Invalid session number."})
-          end
+        local function _100_(_241)
+          return (_241.name .. " (" .. _241["pretty-type"] .. ", " .. _241.id .. ")")
         end
-        return ui["display-sessions"](sessions, _100_)
+        local function _101_(session)
+          return server["assume-session"](session)
+        end
+        return vim.ui.select(sessions, {prompt = "Select an nREPL session:", format_item = _100_}, _101_)
       end
     end
     return server["with-sessions"](_99_)
