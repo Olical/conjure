@@ -5,4 +5,5 @@
 {:compiler-options (core.merge
                      defaults.compiler-options
                      {:compilerEnv _G})
- :source-file-patterns [".nvim.fnl" "plugin/*.fnl" "fnl/**/*.fnl"]}
+ :source-file-patterns [".nvim.fnl" "plugin/*.fnl" "fnl/**/*.fnl"]
+ :orphan-detection {:ignore-patterns ["lua/conjure/nfnl/"]}}
