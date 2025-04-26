@@ -1,4 +1,4 @@
--- [nfnl] Compiled from fnl/conjure/remote/transport/base64.fnl by https://github.com/Olical/nfnl, do not edit.
+-- [nfnl] fnl/conjure/remote/transport/base64.fnl
 local b = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
 local function encode(data)
   local function _1_(x)

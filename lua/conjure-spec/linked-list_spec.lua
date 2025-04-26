@@ -1,4 +1,4 @@
--- [nfnl] Compiled from fnl/conjure-spec/linked-list_spec.fnl by https://github.com/Olical/nfnl, do not edit.
+-- [nfnl] fnl/conjure-spec/linked-list_spec.fnl
 local _local_1_ = require("plenary.busted")
 local describe = _local_1_["describe"]
 local it = _local_1_["it"]

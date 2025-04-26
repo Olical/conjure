@@ -1,4 +1,4 @@
--- [nfnl] Compiled from .nvim.fnl by https://github.com/Olical/nfnl, do not edit.
+-- [nfnl] .nvim.fnl
 local _local_1_ = require("nfnl.module")
 local autoload = _local_1_["autoload"]
 local reload = autoload("plenary.reload")

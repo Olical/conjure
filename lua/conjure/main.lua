@@ -1,4 +1,4 @@
--- [nfnl] Compiled from fnl/conjure/main.fnl by https://github.com/Olical/nfnl, do not edit.
+-- [nfnl] fnl/conjure/main.fnl
 local _local_1_ = require("conjure.nfnl.module")
 local autoload = _local_1_["autoload"]
 local mapping = autoload("conjure.mapping")

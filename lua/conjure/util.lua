@@ -1,4 +1,4 @@
--- [nfnl] Compiled from fnl/conjure/util.fnl by https://github.com/Olical/nfnl, do not edit.
+-- [nfnl] fnl/conjure/util.fnl
 local function wrap_require_fn_call(mod, f)
   local function _1_()
     return require(mod)[f]()

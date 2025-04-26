@@ -1,4 +1,4 @@
--- [nfnl] Compiled from fnl/conjure/linked-list.fnl by https://github.com/Olical/nfnl, do not edit.
+-- [nfnl] fnl/conjure/linked-list.fnl
 local _local_1_ = require("conjure.nfnl.module")
 local autoload = _local_1_["autoload"]
 local a = autoload("conjure.aniseed.core")

@@ -1,4 +1,4 @@
--- [nfnl] Compiled from fnl/conjure-spec/util.fnl by https://github.com/Olical/nfnl, do not edit.
+-- [nfnl] fnl/conjure-spec/util.fnl
 local nvim = require("conjure.aniseed.nvim")
 local function with_buf(lines, f)
   local at
