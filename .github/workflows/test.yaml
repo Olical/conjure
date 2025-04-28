@@ -1,0 +1,22 @@
+name: Test
+
+on: [push]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        neovim-version: ["v0.8.3", "v0.9.5", "v0.10.4", "stable", "nightly"]
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: MunifTanjim/setup-neovim-action@v1
+        with:
+          tag: ${{ matrix.neovim-version }}
+      - name: Install Neovim plugins
+        run: |
+          ./script/setup-test-deps
+      - name: Test with plenary / busted
+        run: |
+          ./script/test
