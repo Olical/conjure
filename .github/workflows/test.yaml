@@ -7,7 +7,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        neovim-version: ["v0.8.3", "v0.9.5", "v0.10.4", "stable", "nightly"]
+        neovim-version: ["v0.9.5", "v0.10.4", "stable", "nightly"]
 
     steps:
       - uses: actions/checkout@v4
