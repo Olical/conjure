@@ -15,6 +15,14 @@ jobs:
       - uses: actions/checkout@v4
       - name: Install Mise
         uses: jdx/mise-action@v2
+      - name: Cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            ./.test-config/nvim/pack/conjure-tests/start
+          key: conjure-${{ hashFiles('scripts/setup-test-deps') }}
+          restore-keys: conjure-
+
       - name: Test
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
