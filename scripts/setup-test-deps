@@ -28,8 +28,5 @@ else
   git clone https://github.com/Olical/nfnl.git "$PACK_DIR/nfnl"
 fi
 
-if [ -L "$PACK_DIR/conjure" ]; then
-  echo "conjure (symlink) already exists"
-else
-  ln -s "${GITHUB_WORKSPACE:-$(pwd)}" "$PACK_DIR/conjure"
-fi
+rm -f "$PACK_DIR/conjure"
+ln -s "${GITHUB_WORKSPACE:-$(pwd)}" "$PACK_DIR/conjure"
