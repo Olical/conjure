@@ -5,4 +5,4 @@ run = "scripts/dep.sh Olical bencode origin/master"
 run = "scripts/sponsors.sh"
 
 [tasks.test]
-run = ["scripts/setup-test-deps", "scripts/test"]
+run = ["bash ./scripts/setup-test-deps", "bash ./scripts/test"]
