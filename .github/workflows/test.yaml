@@ -6,7 +6,7 @@ jobs:
   test:
     strategy:
       matrix:
-        os: [ubuntu-latest]
+        os: [ubuntu-latest, macOS-latest]
         # os: [ubuntu-latest, macOS-latest, windows-latest]
         neovim-version: ["0.9.5", "0.10.4", "stable", "nightly"]
 
