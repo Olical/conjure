@@ -13,6 +13,8 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
+      - name: Cache
+        uses: actions/cache@v4
       - uses: actions/checkout@v4
       - name: Install Mise
         uses: jdx/mise-action@v2
