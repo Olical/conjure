@@ -13,8 +13,10 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-      - name: Install Mise
+
+      - name: Mise
         uses: jdx/mise-action@v2
+
       - name: Cache
         uses: actions/cache@v4
         with:
@@ -22,6 +24,10 @@ jobs:
             .test/nvim/pack
           key: conjure-${{ hashFiles('scripts/setup-test-deps') }}
           restore-keys: conjure-
+
+      - name: Windows paths fix
+        if: runner.os == 'Windows'
+        run: git config --global core.longpaths true
 
       - name: Test
         env:
