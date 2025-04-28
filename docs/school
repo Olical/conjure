@@ -13,7 +13,7 @@ fi
 
 nvim \
   --cmd "set rtp+=$PREFIX/conjure-main" \
-  --cmd "source $PREFIX/conjure-main/plugin/conjure.vim" \
+  --cmd "source $PREFIX/conjure-main/plugin/conjure.lua" \
   -c "au VimEnter * ++nested ConjureSchool" &&
   echo "I hope you had a great time! Cleaning up $PREFIX and exiting." &&
   rm -rf $PREFIX
