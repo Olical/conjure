@@ -14,9 +14,8 @@ jobs:
       - uses: MunifTanjim/setup-neovim-action@v1
         with:
           tag: ${{ matrix.neovim-version }}
-      - name: Install Neovim plugins
+      - name: Install Mise
+        uses: jdx/mise-action@v2
+      - name: Test
         run: |
-          ./script/setup-test-deps
-      - name: Test with plenary / busted
-        run: |
-          ./script/test
+          mise test
