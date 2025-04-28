@@ -11,11 +11,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-      - uses: MunifTanjim/setup-neovim-action@v1
-        with:
-          tag: ${{ matrix.neovim-version }}
       - name: Install Mise
         uses: jdx/mise-action@v2
       - name: Test
         run: |
-          mise test
+          mise -t neovim@${{ matrix.neovim-version }} test
