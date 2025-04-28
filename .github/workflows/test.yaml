@@ -19,7 +19,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: |
-            ./.test-config/nvim/pack/conjure-tests/start
+            .test/nvim/pack
           key: conjure-${{ hashFiles('scripts/setup-test-deps') }}
           restore-keys: conjure-
 

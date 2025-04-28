@@ -154,7 +154,7 @@ local function _38_()
 end
 local function _41_()
   local function _42_()
-    return assert.equals((nvim.fn.getcwd() .. "/.test-config/nvim/pack/conjure-tests/start/conjure"), fs["conjure-source-directory"])
+    return assert.equals((nvim.fn.getcwd() .. "/.test/nvim/pack/main/start/conjure"), fs["conjure-source-directory"])
   end
   return it("returns the current working directory", _42_)
 end

@@ -177,4 +177,4 @@
       (fn []
         (it "returns the current working directory"
           (fn []
-            (assert.equals (.. (nvim.fn.getcwd) "/.test-config/nvim/pack/conjure-tests/start/conjure") fs.conjure-source-directory))))))
+            (assert.equals (.. (nvim.fn.getcwd) "/.test/nvim/pack/main/start/conjure") fs.conjure-source-directory))))))

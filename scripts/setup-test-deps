@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-PACK_DIR=./.test-config/nvim/pack/conjure-tests/start
+PACK_DIR=.test/nvim/pack/main/start
 
 mkdir -p "$PACK_DIR"
 
