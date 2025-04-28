@@ -29,4 +29,5 @@ else
 fi
 
 rm -f "$PACK_DIR/conjure"
-ln -s "${GITHUB_WORKSPACE:-$(pwd)}" "$PACK_DIR/conjure"
+LINK_DEST="${GITHUB_WORKSPACE:-$(pwd)}"
+(cd $PACK_DIR && ln -s "$LINK_DEST" "conjure")
