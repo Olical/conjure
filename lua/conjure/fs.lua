@@ -116,7 +116,7 @@ local conjure_source_directory
 do
   local src = current_source()
   if src then
-    conjure_source_directory = vim.fs.normalize((src .. "/../../.."))
+    conjure_source_directory = vim.fs.dirname(vim.fs.dirname(vim.fs.dirname(src)))
   else
     conjure_source_directory = nil
   end
