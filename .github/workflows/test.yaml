@@ -1,0 +1,34 @@
+name: Test
+
+on: [push]
+
+jobs:
+  test:
+    strategy:
+      matrix:
+        # TODO: Get windows-latest working.
+        # Currently errors with: ln: failed to create symbolic link '.test/nvim/pack/main/start/conjure' -> '../../../../../': File name too long
+        os: [ubuntu-latest, macOS-latest]
+        neovim-version: ["0.9.5", "0.10.4", "stable", "nightly"]
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Mise
+        uses: jdx/mise-action@v2
+
+      - name: Cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            .test/nvim/pack
+          key: conjure-${{ hashFiles('scripts/setup-test-deps') }}
+          restore-keys: conjure-
+
+      - name: Test
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          mise run -t neovim@${{ matrix.neovim-version }} test

@@ -13,4 +13,4 @@ __pycache__/
 /target/
 /.lein-repl-history
 /.direnv
-.test-config/
+.test/

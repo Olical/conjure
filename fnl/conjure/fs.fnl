@@ -117,7 +117,8 @@
 (local conjure-source-directory
   (let [src (current-source)]
     (when src
-      (vim.fs.normalize (.. src "/../../..")))))
+      ;; Go three levels up!
+      (vim.fs.dirname (vim.fs.dirname (vim.fs.dirname src))))))
 
 (fn file-path->module-name [file-path]
   "Tries to match a file path up to an existing loaded Lua module."
