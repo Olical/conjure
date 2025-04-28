@@ -5,31 +5,31 @@ PACK_DIR=./.test-config/nvim/pack/conjure-tests/start
 mkdir -p "$PACK_DIR"
 
 if [ -d "$PACK_DIR/plenary.nvim" ]; then
-	echo "plenary.nvim already exists"
+  echo "plenary.nvim already exists"
 else
-	git clone https://github.com/nvim-lua/plenary.nvim.git "$PACK_DIR/plenary.nvim"
+  git clone https://github.com/nvim-lua/plenary.nvim.git "$PACK_DIR/plenary.nvim"
 fi
 
 if [ -d "$PACK_DIR/fennel.vim" ]; then
-	echo "fennel.vim already exists"
+  echo "fennel.vim already exists"
 else
-	git clone https://github.com/bakpakin/fennel.vim.git "$PACK_DIR/fennel.vim"
+  git clone https://github.com/bakpakin/fennel.vim.git "$PACK_DIR/fennel.vim"
 fi
 
 if [ -d "$PACK_DIR/aniseed" ]; then
-	echo "aniseed already exists"
+  echo "aniseed already exists"
 else
-	git clone https://github.com/Olical/aniseed.git "$PACK_DIR/aniseed"
+  git clone https://github.com/Olical/aniseed.git "$PACK_DIR/aniseed"
 fi
 
 if [ -d "$PACK_DIR/nfnl" ]; then
-	echo "nfnl already exists"
+  echo "nfnl already exists"
 else
-	git clone https://github.com/Olical/nfnl.git "$PACK_DIR/nfnl"
+  git clone https://github.com/Olical/nfnl.git "$PACK_DIR/nfnl"
 fi
 
-if [ -d "$PACK_DIR/conjure" ]; then
-	echo "conjure (symlink) already exists"
+if [ -L "$PACK_DIR/conjure" ]; then
+  echo "conjure (symlink) already exists"
 else
-	ln -s "${GITHUB_WORKSPACE:-$(pwd)}" "$PACK_DIR/conjure"
+  ln -s "${GITHUB_WORKSPACE:-$(pwd)}" "$PACK_DIR/conjure"
 fi
