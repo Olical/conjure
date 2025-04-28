@@ -15,4 +15,4 @@ jobs:
         uses: jdx/mise-action@v2
       - name: Test
         run: |
-          mise -t neovim@${{ matrix.neovim-version }} test
+          mise run -t neovim@${{ matrix.neovim-version }} test
