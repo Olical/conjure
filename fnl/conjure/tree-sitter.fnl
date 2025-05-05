@@ -194,6 +194,12 @@
             (a.println "Warning: Conjure client returned an unknown get-form-modifier" res)
             node))))))
 
+(fn add-language [lang]
+  ((or vim.treesitter.language.add
+       vim.treesitter.language.require_language
+       vim.treesitter.require_language)
+   lang))
+
 {: enabled?
  : parse!
  : node->str
@@ -208,4 +214,5 @@
  : get-leaf
  : node-surrounded-by-form-pair-chars?
  : node-prefixed-by-chars?
- : get-form}
+ : get-form
+ : add-language}
