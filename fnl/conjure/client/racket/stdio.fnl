@@ -81,7 +81,7 @@
   (with-repl-or-warn
     (fn [repl]
       (log.append [(.. comment-prefix " Sending interrupt signal.")] {:break? true})
-      (repl.send-signal vim.loop.constants.SIGINT))))
+      (repl.send-signal :sigint))))
 
 (fn eval-file [opts]
   (eval-str (a.assoc opts :code (.. ",require-reloadable " opts.file-path))))
