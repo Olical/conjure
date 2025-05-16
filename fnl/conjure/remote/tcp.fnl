@@ -11,19 +11,37 @@
       (string.gsub "[\1\2]" "")))
 
 (fn start [opts]
-  "Connects to an external REPL via a UNIX domain socket or named pipe
-  (Windows), and gives you hooks to send code to it and read responses back
-  out. This allows you to connect Conjure to a running process, but has the
-  same problem as stdio clients regarding the difficulty of tying results to
-  input.
+  "Connects to an external REPL via a TCP socket, and gives you hooks to send
+  code to it and read responses back out. This allows you to connect Conjure to
+  a running process, but has the same problem as stdio clients regarding the
+  difficulty of tying results to input.
   * opts.prompt-pattern: Identify result boundaries such as '> '.
-  * opts.pipename: Name of the pipe
+  * opts.pipename: 'host:port' to connect to.
   * opts.on-success: Called when the connection succeeds.
   * opts.on-failure: Called when the connection fails.
   * opts.on-close: Called when the connection closes.
   * opts.on-stray-output: Called with stray output that don't match up to a callback.
   * opts.on-exit: Called on exit with the code and signal."
-  (let [handle (uv.new_pipe true)
+
+  (comment
+
+  s = hostname (Guile default port_num = 37146)
+    | hostname:port_num
+    | ip_addr (Guile default port_num = 37146)
+    | ip_addr:port_num
+    | socket_name (may begin with a "/")
+
+  )
+
+  (fn host->addr [s]
+    (let [info (uv.getaddrinfo s nil {:family "inet" :protocol "tcp"})]
+      (if info
+          (. info 1 :addr)
+          (.. "no IP address found for " s))))
+
+  (let [handle (uv.new_tcp :inet)
+        [host port] (vim.split opts.pipename ":")
+        host (host->addr host)
         repl {:status :pending
               :queue []
               :current nil
@@ -87,28 +105,29 @@
       (next-in-queue)
       nil)
 
-    ;; TODO Add support for host / port sockets.
-    (if opts.pipename
-      (do
-        (log.append [(.. "Starting connection to pipename=" opts.pipename)])
-        (uv.pipe_connect
-          handle opts.pipename
-          (client.schedule-wrap
-            (fn [err]
-              (if err
-                (opts.on-failure
-                  (a.merge!
-                    repl
-                    {:status :failed
-                     :err err}))
-                (do
-                  (opts.on-success (a.assoc repl :status :connected))
-                  (handle:read_start
-                    (client.schedule-wrap
-                      (fn [err chunk]
-                        (on-output err chunk))))))))))
+    (fn on-connect [err]
+      (if err
+        (opts.on-failure
+          (a.merge!
+            repl
+            {:status :failed
+            :err err}))
+        (do
+          (opts.on-success (a.assoc repl :status :connected))
+          (handle:read_start
+            (client.schedule-wrap
+              (fn [err chunk]
+                (on-output err chunk)))))))
 
-      (vim.api.nvim_err_writeln "conjure.remote.socket: No pipename specified"))
+    (if (and host port)
+      (do
+        (log.append [(.. "Starting connection to host=" host ", port=" port)])
+        (uv.tcp_connect
+          handle host (tonumber port)
+          (client.schedule-wrap
+            on-connect)))
+
+      (vim.api.nvim_err_writeln "conjure.remote.tcp: No host:port specified"))
 
     (a.merge!
       repl
@@ -117,3 +136,4 @@
        :send send})))
 
 {: start}
+
