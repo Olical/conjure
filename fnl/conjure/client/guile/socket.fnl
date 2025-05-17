@@ -110,12 +110,6 @@
       (display-repl-status)
       (a.assoc (state) :repl nil))))
 
-(fn get-exception [s]
-  ;; Get the first line after a line with "raise-exception" in it.
-  (let [(_ _ e) (s:find "raise%-exception.*\n([^\n]+)\n\n")]
-    (if e e
-        "No result")))
-
 (fn parse-guile-result [s]
   (let [prompt (s:find "scheme@%([%w%-%s]+%)> ")]
     (if

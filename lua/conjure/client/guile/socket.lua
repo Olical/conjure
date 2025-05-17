@@ -129,26 +129,18 @@ local function disconnect()
     return nil
   end
 end
-local function get_exception(s)
-  local _, _0, e = s:find("raise%-exception.*\n([^\n]+)\n\n")
-  if e then
-    return e
-  else
-    return "No result"
-  end
-end
 local function parse_guile_result(s)
   local prompt = s:find("scheme@%([%w%-%s]+%)> ")
   if prompt then
     local ind1, _, result = s:find("%$%d+ = ([^\n]+)\n")
     local stray_output
-    local _22_
+    local _21_
     if result then
-      _22_ = ind1
+      _21_ = ind1
     else
-      _22_ = prompt
+      _21_ = prompt
     end
-    stray_output = s:sub(1, (_22_ - 1))
+    stray_output = s:sub(1, (_21_ - 1))
     if (#stray_output > 0) then
       log.append(text["prefixed-lines"](text["trim-last-newline"](stray_output), "; (out) "))
     else
@@ -166,26 +158,26 @@ local function connect(opts)
   if ("string" ~= type(pipename)) then
     return log.append({(comment_prefix .. "g:conjure#client#guile#socket#pipename is not specified"), (comment_prefix .. "Please set it to the name of your Guile REPL pipe or host:port or pass it to :ConjureConnect [pipename]")})
   else
-    local function _26_()
+    local function _25_()
       return display_repl_status()
     end
-    local function _27_(msg, repl)
+    local function _26_(msg, repl)
       display_result(msg)
-      local function _28_()
+      local function _27_()
       end
-      return repl.send(",q\n", _28_)
+      return repl.send(",q\n", _27_)
     end
-    return a.assoc(state(), "repl", socket.start({["parse-output"] = parse_guile_result, pipename = pipename, ["on-success"] = _26_, ["on-error"] = _27_, ["on-failure"] = disconnect, ["on-close"] = disconnect, ["on-stray-output"] = display_result}))
+    return a.assoc(state(), "repl", socket.start({["parse-output"] = parse_guile_result, pipename = pipename, ["on-success"] = _25_, ["on-error"] = _26_, ["on-failure"] = disconnect, ["on-close"] = disconnect, ["on-stray-output"] = display_result}))
   end
 end
 local function on_exit()
   return disconnect()
 end
 local function on_filetype()
-  local function _30_()
+  local function _29_()
     return connect()
   end
-  mapping.buf("GuileConnect", cfg({"mapping", "connect"}), _30_, {desc = "Connect to a REPL"})
+  mapping.buf("GuileConnect", cfg({"mapping", "connect"}), _29_, {desc = "Connect to a REPL"})
   return mapping.buf("GuileDisconnect", cfg({"mapping", "disconnect"}), disconnect, {desc = "Disconnect from the REPL"})
 end
 return {["buf-suffix"] = buf_suffix, ["comment-prefix"] = comment_prefix, connect = connect, ["context-pattern"] = context_pattern, disconnect = disconnect, ["doc-str"] = doc_str, ["eval-file"] = eval_file, ["eval-str"] = eval_str, ["form-node?"] = form_node_3f, ["on-exit"] = on_exit, ["on-filetype"] = on_filetype}

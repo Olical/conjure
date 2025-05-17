@@ -24,8 +24,8 @@ local function start(opts)
   local host0 = host__3eaddr(host)
   local repl = {status = "pending", queue = {}, current = nil, buffer = ""}
   local handle = nil
-  log.dbg("opts.pipename=", opts.pipename)
-  log.dbg("host=", host0)
+  log.dbg(a.str("opts.pipename=", opts.pipename))
+  log.dbg(a.str("host=", host0))
   local function destroy()
     local function _4_()
       return handle:shutdown()
@@ -116,15 +116,13 @@ local function start(opts)
     end
   end
   if (host0 and port) then
-    log.append({("Starting connection to host=" .. host0 .. ", port=" .. port)})
     handle = uv.new_tcp("inet")
     uv.tcp_connect(handle, host0, tonumber(port), client["schedule-wrap"](on_connect))
   elseif not port then
-    log.append({("Starting connection to pipe=" .. opts.pipename)})
     handle = uv.new_pipe(true)
     uv.pipe_connect(handle, opts.pipename, client["schedule-wrap"](on_connect))
   else
-    vim.api.nvim_err_writeln(("conjure.remote.tcp: can't connect to " .. opts.pipename))
+    vim.api.nvim_err_writeln(("conjure.remote.socket: can't connect to " .. opts.pipename))
   end
   return a["merge!"](repl, {opts = opts, destroy = destroy, send = send})
 end

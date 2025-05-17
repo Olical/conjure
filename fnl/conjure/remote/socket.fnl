@@ -6,6 +6,7 @@
 
 (local uv vim.uv)
 
+
 (fn strip-unprintable [s]
   (-> (text.strip-ansi-escape-sequences s)
       (string.gsub "[\1\2]" "")))
@@ -37,8 +38,8 @@
 
     (var handle nil)
 
-    (log.dbg "opts.pipename=" opts.pipename)
-    (log.dbg "host=" host )
+    (log.dbg (a.str "opts.pipename=" opts.pipename))
+    (log.dbg (a.str "host=" host))
 
 
     (fn destroy []
@@ -115,7 +116,6 @@
 
     (if (and host port)
         (do
-          (log.append [(.. "Starting connection to host=" host ", port=" port)])
           (set handle (uv.new_tcp :inet))
           (uv.tcp_connect
             handle host (tonumber port)
@@ -124,14 +124,13 @@
 
         (not port)
         (do
-          (log.append [(.. "Starting connection to pipe=" opts.pipename)])
           (set handle (uv.new_pipe true))
           (uv.pipe_connect
             handle opts.pipename
             (client.schedule-wrap
               on-connect)))
 
-        (vim.api.nvim_err_writeln (.. "conjure.remote.tcp: can't connect to " opts.pipename)))
+        (vim.api.nvim_err_writeln (.. "conjure.remote.socket: can't connect to " opts.pipename)))
 
     (a.merge!
       repl
