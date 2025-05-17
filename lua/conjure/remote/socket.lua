@@ -9,14 +9,28 @@ local uv = vim.uv
 local function strip_unprintable(s)
   return string.gsub(text["strip-ansi-escape-sequences"](s), "[\1\2]", "")
 end
+local function host__3eaddr(s)
+  local info = uv.getaddrinfo(s, nil, {family = "inet", protocol = "tcp"})
+  if info then
+    return info[1].addr
+  else
+    return nil
+  end
+end
 local function start(opts)
-  local handle = uv.new_pipe(true)
+  local _let_3_ = vim.split(opts.pipename, ":")
+  local host = _let_3_[1]
+  local port = _let_3_[2]
+  local host0 = host__3eaddr(host)
   local repl = {status = "pending", queue = {}, current = nil, buffer = ""}
+  local handle = nil
+  log.dbg("opts.pipename=", opts.pipename)
+  log.dbg("host=", host0)
   local function destroy()
-    local function _2_()
+    local function _4_()
       return handle:shutdown()
     end
-    pcall(_2_)
+    pcall(_4_)
     return nil
   end
   local function next_in_queue()
@@ -33,10 +47,10 @@ local function start(opts)
   local function on_message(chunk)
     log.dbg("receive", chunk)
     if chunk then
-      local _let_4_ = opts["parse-output"](chunk)
-      local done_3f = _let_4_["done?"]
-      local error_3f = _let_4_["error?"]
-      local result = _let_4_["result"]
+      local _let_6_ = opts["parse-output"](chunk)
+      local done_3f = _let_6_["done?"]
+      local error_3f = _let_6_["error?"]
+      local result = _let_6_["result"]
       local cb = a["get-in"](repl, {"current", "cb"}, opts["on-stray-output"])
       if error_3f then
         opts["on-error"]({err = repl.buffer, ["done?"] = done_3f}, repl)
@@ -44,10 +58,10 @@ local function start(opts)
       end
       if done_3f then
         if cb then
-          local function _6_()
+          local function _8_()
             return cb({out = result, ["done?"] = done_3f})
           end
-          pcall(_6_)
+          pcall(_8_)
         else
         end
         a.assoc(repl, "current", nil)
@@ -71,10 +85,10 @@ local function start(opts)
     end
   end
   local function send(code, cb, opts0)
-    local _11_
+    local _13_
     if a.get(opts0, "batch?") then
       local msgs = {}
-      local function _13_(msg)
+      local function _15_(msg)
         table.insert(msgs, msg)
         if msg["done?"] then
           return cb(msgs)
@@ -82,30 +96,35 @@ local function start(opts)
           return nil
         end
       end
-      _11_ = _13_
+      _13_ = _15_
     else
-      _11_ = cb
+      _13_ = cb
     end
-    table.insert(repl.queue, {code = code, cb = _11_})
+    table.insert(repl.queue, {code = code, cb = _13_})
     next_in_queue()
     return nil
   end
-  if opts.pipename then
-    log.append({("Starting connection to pipename=" .. opts.pipename)})
-    local function _16_(err)
-      if err then
-        return opts["on-failure"](a["merge!"](repl, {status = "failed", err = err}))
-      else
-        opts["on-success"](a.assoc(repl, "status", "connected"))
-        local function _17_(err0, chunk)
-          return on_output(err0, chunk)
-        end
-        return handle:read_start(client["schedule-wrap"](_17_))
+  local function on_connect(err)
+    if err then
+      return opts["on-failure"](a["merge!"](repl, {status = "failed", err = err}))
+    else
+      opts["on-success"](a.assoc(repl, "status", "connected"))
+      local function _18_(err0, chunk)
+        return on_output(err0, chunk)
       end
+      return handle:read_start(client["schedule-wrap"](_18_))
     end
-    uv.pipe_connect(handle, opts.pipename, client["schedule-wrap"](_16_))
+  end
+  if (host0 and port) then
+    log.append({("Starting connection to host=" .. host0 .. ", port=" .. port)})
+    handle = uv.new_tcp("inet")
+    uv.tcp_connect(handle, host0, tonumber(port), client["schedule-wrap"](on_connect))
+  elseif not port then
+    log.append({("Starting connection to pipe=" .. opts.pipename)})
+    handle = uv.new_pipe(true)
+    uv.pipe_connect(handle, opts.pipename, client["schedule-wrap"](on_connect))
   else
-    vim.api.nvim_err_writeln("conjure.remote.socket: No pipename specified")
+    vim.api.nvim_err_writeln(("conjure.remote.tcp: can't connect to " .. opts.pipename))
   end
   return a["merge!"](repl, {opts = opts, destroy = destroy, send = send})
 end

@@ -4,8 +4,7 @@
 (local config (autoload :conjure.config))
 (local log (autoload :conjure.log))
 (local mapping (autoload :conjure.mapping))
-; (local socket (autoload :conjure.remote.socket))
-(local socket (autoload :conjure.remote.tcp))
+(local socket (autoload :conjure.remote.socket))
 (local str (autoload :conjure.nfnl.string))
 (local text (autoload :conjure.text))
 (local ts (autoload :conjure.tree-sitter))
@@ -111,6 +110,12 @@
       (display-repl-status)
       (a.assoc (state) :repl nil))))
 
+(fn get-exception [s]
+  ;; Get the first line after a line with "raise-exception" in it.
+  (let [(_ _ e) (s:find "raise%-exception.*\n([^\n]+)\n\n")]
+    (if e e
+        "No result")))
+
 (fn parse-guile-result [s]
   (let [prompt (s:find "scheme@%([%w%-%s]+%)> ")]
     (if
@@ -142,7 +147,7 @@
     (if (not= :string (type pipename))
       (log.append
         [(.. comment-prefix "g:conjure#client#guile#socket#pipename is not specified")
-         (.. comment-prefix "Please set it to the name of your Guile REPL pipe or pass it to :ConjureConnect [pipename]")])
+         (.. comment-prefix "Please set it to the name of your Guile REPL pipe or host:port or pass it to :ConjureConnect [pipename]")])
       (a.assoc
         (state) :repl
         (socket.start
