@@ -313,6 +313,12 @@ All configuration can be set as described in |conjure-configuration|.
             current root form is a test that should be ran.
             Default: `["deftest"]`
 
+                      *g:conjure#client#clojure#nrepl#test#pretty_print_test_failures*
+`g:conjure#client#clojure#nrepl#test#pretty_print_test_failures
+            Pretty print a diff of the test's expected and
+            actual data-structures.
+            Default: `true`
+
                                   *g:conjure#client#clojure#nrepl#test#runner*
 `g:conjure#client#clojure#nrepl#test#runner`
             Test runner to use for the various test mappings. The following

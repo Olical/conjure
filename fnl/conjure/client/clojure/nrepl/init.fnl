@@ -73,6 +73,7 @@
 
       :test
       {:current_form_names ["deftest"]
+       :pretty_print_test_failures true
        :raw_out false
        :runner "clojure"
        :call_suffix nil}
