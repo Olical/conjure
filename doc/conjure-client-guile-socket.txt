@@ -63,10 +63,16 @@ All configuration can be set as described in |conjure-configuration|.
 
                                       *g:conjure#client#guile#socket#pipe_or_host*
 `g:conjure#client#guile#socket#pipe_or_host`
-            Default path to your Guile socket or "host:port" used when connecting. Guile
-            requires the socket path to be absolute!
-            Command: `guile --listen=/home/user/guile-repl.socket`
-            Example: `"/home/user/guile-repl.socket"`
+            The path to your Guile socket or "host:port".
+
+            Example to start Guile REPL:
+                     `guile --listen=/home/user/guile-repl.socket`
+                     `guile --listen="localhost:7654`
+
+            Example value:
+                     `"/home/user/guile-repl.socket"`
+                     `"localhost:7654"`
+
             Default: `nil`
 
 vim:tw=78:sw=2:ts=2:ft=help:norl:et:listchars=
