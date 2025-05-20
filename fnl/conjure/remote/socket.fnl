@@ -44,7 +44,6 @@
 
     (fn destroy []
       (pcall #(handle:shutdown))
-      (pcall #(handle:close))
       nil)
 
     (fn next-in-queue []

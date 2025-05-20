@@ -31,10 +31,6 @@ local function start(opts)
       return handle:shutdown()
     end
     pcall(_4_)
-    local function _5_()
-      return handle:close()
-    end
-    pcall(_5_)
     return nil
   end
   local function next_in_queue()
@@ -51,10 +47,10 @@ local function start(opts)
   local function on_message(chunk)
     log.dbg("receive", chunk)
     if chunk then
-      local _let_7_ = opts["parse-output"](chunk)
-      local done_3f = _let_7_["done?"]
-      local error_3f = _let_7_["error?"]
-      local result = _let_7_["result"]
+      local _let_6_ = opts["parse-output"](chunk)
+      local done_3f = _let_6_["done?"]
+      local error_3f = _let_6_["error?"]
+      local result = _let_6_["result"]
       local cb = a["get-in"](repl, {"current", "cb"}, opts["on-stray-output"])
       if error_3f then
         opts["on-error"]({err = repl.buffer, ["done?"] = done_3f}, repl)
@@ -62,10 +58,10 @@ local function start(opts)
       end
       if done_3f then
         if cb then
-          local function _9_()
+          local function _8_()
             return cb({out = result, ["done?"] = done_3f})
           end
-          pcall(_9_)
+          pcall(_8_)
         else
         end
         a.assoc(repl, "current", nil)
@@ -89,10 +85,10 @@ local function start(opts)
     end
   end
   local function send(code, cb, opts0)
-    local _14_
+    local _13_
     if a.get(opts0, "batch?") then
       local msgs = {}
-      local function _16_(msg)
+      local function _15_(msg)
         table.insert(msgs, msg)
         if msg["done?"] then
           return cb(msgs)
@@ -100,11 +96,11 @@ local function start(opts)
           return nil
         end
       end
-      _14_ = _16_
+      _13_ = _15_
     else
-      _14_ = cb
+      _13_ = cb
     end
-    table.insert(repl.queue, {code = code, cb = _14_})
+    table.insert(repl.queue, {code = code, cb = _13_})
     next_in_queue()
     return nil
   end
@@ -113,10 +109,10 @@ local function start(opts)
       return opts["on-failure"](a["merge!"](repl, {status = "failed", err = err}))
     else
       opts["on-success"](a.assoc(repl, "status", "connected"))
-      local function _19_(err0, chunk)
+      local function _18_(err0, chunk)
         return on_output(err0, chunk)
       end
-      return handle:read_start(client["schedule-wrap"](_19_))
+      return handle:read_start(client["schedule-wrap"](_18_))
     end
   end
   if (host0 and port) then
