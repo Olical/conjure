@@ -1,5 +1,5 @@
 (local {: autoload} (require :conjure.nfnl.module))
-(local a (autoload :conjure.aniseed.core))
+(local a (autoload :conjure.nfnl.core))
 (local client (autoload :conjure.client))
 (local config (autoload :conjure.config))
 (local log (autoload :conjure.log))
@@ -13,7 +13,7 @@
   {:client
    {:guile
     {:socket
-     {:pipename nil}}}})
+     {:pipe_or_host nil}}}})
 
 (when (config.get-in [:mapping :enable_defaults])
   (config.merge
@@ -90,9 +90,9 @@
     (when repl
       (log.append
         [(.. comment-prefix
-             (let [pipename (a.get-in repl [:opts :pipename])]
-               (if pipename
-                 (.. pipename " ")
+             (let [pipe_or_host (a.get-in repl [:opts :pipe_or_host])]
+               (if pipe_or_host
+                 (.. pipe_or_host " ")
                  ""))
              "(" repl.status
              (let [err (a.get repl :err)]
@@ -137,16 +137,16 @@
 
 (fn connect [opts]
   (disconnect)
-  (let [pipename (or (cfg [:pipename]) (a.get opts :port))]
-    (if (not= :string (type pipename))
+  (let [pipe_or_host (or (cfg [:pipe_or_host]) (a.get opts :port))]
+    (if (not= :string (type pipe_or_host))
       (log.append
-        [(.. comment-prefix "g:conjure#client#guile#socket#pipename is not specified")
-         (.. comment-prefix "Please set it to the name of your Guile REPL pipe or host:port or pass it to :ConjureConnect [pipename]")])
+        [(.. comment-prefix "g:conjure#client#guile#socket#pipe_or_host is not specified")
+         (.. comment-prefix "Please set it to the name of your Guile REPL pipe or host:port or pass it to :ConjureConnect [pipe_or_host]")])
       (a.assoc
         (state) :repl
         (socket.start
           {:parse-output parse-guile-result
-           :pipename pipename
+           :pipe_or_host pipe_or_host
            :on-success
            (fn []
              (display-repl-status))

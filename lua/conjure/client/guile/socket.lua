@@ -1,7 +1,7 @@
 -- [nfnl] fnl/conjure/client/guile/socket.fnl
 local _local_1_ = require("conjure.nfnl.module")
 local autoload = _local_1_["autoload"]
-local a = autoload("conjure.aniseed.core")
+local a = autoload("conjure.nfnl.core")
 local client = autoload("conjure.client")
 local config = autoload("conjure.config")
 local log = autoload("conjure.log")
@@ -10,7 +10,7 @@ local socket = autoload("conjure.remote.socket")
 local str = autoload("conjure.nfnl.string")
 local text = autoload("conjure.text")
 local ts = autoload("conjure.tree-sitter")
-config.merge({client = {guile = {socket = {pipename = nil}}}})
+config.merge({client = {guile = {socket = {pipe_or_host = nil}}}})
 if config["get-in"]({"mapping", "enable_defaults"}) then
   config.merge({client = {guile = {socket = {mapping = {connect = "cc", disconnect = "cd"}}}}})
 else
@@ -97,9 +97,9 @@ local function display_repl_status()
   if repl then
     local _15_
     do
-      local pipename = a["get-in"](repl, {"opts", "pipename"})
-      if pipename then
-        _15_ = (pipename .. " ")
+      local pipe_or_host = a["get-in"](repl, {"opts", "pipe_or_host"})
+      if pipe_or_host then
+        _15_ = (pipe_or_host .. " ")
       else
         _15_ = ""
       end
@@ -154,9 +154,9 @@ local function parse_guile_result(s)
 end
 local function connect(opts)
   disconnect()
-  local pipename = (cfg({"pipename"}) or a.get(opts, "port"))
-  if ("string" ~= type(pipename)) then
-    return log.append({(comment_prefix .. "g:conjure#client#guile#socket#pipename is not specified"), (comment_prefix .. "Please set it to the name of your Guile REPL pipe or host:port or pass it to :ConjureConnect [pipename]")})
+  local pipe_or_host = (cfg({"pipe_or_host"}) or a.get(opts, "port"))
+  if ("string" ~= type(pipe_or_host)) then
+    return log.append({(comment_prefix .. "g:conjure#client#guile#socket#pipe_or_host is not specified"), (comment_prefix .. "Please set it to the name of your Guile REPL pipe or host:port or pass it to :ConjureConnect [pipe_or_host]")})
   else
     local function _25_()
       return display_repl_status()
@@ -167,7 +167,7 @@ local function connect(opts)
       end
       return repl.send(",q\n", _27_)
     end
-    return a.assoc(state(), "repl", socket.start({["parse-output"] = parse_guile_result, pipename = pipename, ["on-success"] = _25_, ["on-error"] = _26_, ["on-failure"] = disconnect, ["on-close"] = disconnect, ["on-stray-output"] = display_result}))
+    return a.assoc(state(), "repl", socket.start({["parse-output"] = parse_guile_result, pipe_or_host = pipe_or_host, ["on-success"] = _25_, ["on-error"] = _26_, ["on-failure"] = disconnect, ["on-close"] = disconnect, ["on-stray-output"] = display_result}))
   end
 end
 local function on_exit()

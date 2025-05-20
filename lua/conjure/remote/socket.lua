@@ -18,19 +18,23 @@ local function host__3eaddr(s)
   end
 end
 local function start(opts)
-  local _let_3_ = vim.split(opts.pipename, ":")
+  local _let_3_ = vim.split(opts.pipe_or_host, ":")
   local host = _let_3_[1]
   local port = _let_3_[2]
   local host0 = host__3eaddr(host)
   local repl = {status = "pending", queue = {}, current = nil, buffer = ""}
   local handle = nil
-  log.dbg(a.str("opts.pipename=", opts.pipename))
+  log.dbg(a.str("opts.pipe_or_host=", opts.pipe_or_host))
   log.dbg(a.str("host=", host0))
   local function destroy()
     local function _4_()
       return handle:shutdown()
     end
     pcall(_4_)
+    local function _5_()
+      return handle:close()
+    end
+    pcall(_5_)
     return nil
   end
   local function next_in_queue()
@@ -47,10 +51,10 @@ local function start(opts)
   local function on_message(chunk)
     log.dbg("receive", chunk)
     if chunk then
-      local _let_6_ = opts["parse-output"](chunk)
-      local done_3f = _let_6_["done?"]
-      local error_3f = _let_6_["error?"]
-      local result = _let_6_["result"]
+      local _let_7_ = opts["parse-output"](chunk)
+      local done_3f = _let_7_["done?"]
+      local error_3f = _let_7_["error?"]
+      local result = _let_7_["result"]
       local cb = a["get-in"](repl, {"current", "cb"}, opts["on-stray-output"])
       if error_3f then
         opts["on-error"]({err = repl.buffer, ["done?"] = done_3f}, repl)
@@ -58,10 +62,10 @@ local function start(opts)
       end
       if done_3f then
         if cb then
-          local function _8_()
+          local function _9_()
             return cb({out = result, ["done?"] = done_3f})
           end
-          pcall(_8_)
+          pcall(_9_)
         else
         end
         a.assoc(repl, "current", nil)
@@ -85,10 +89,10 @@ local function start(opts)
     end
   end
   local function send(code, cb, opts0)
-    local _13_
+    local _14_
     if a.get(opts0, "batch?") then
       local msgs = {}
-      local function _15_(msg)
+      local function _16_(msg)
         table.insert(msgs, msg)
         if msg["done?"] then
           return cb(msgs)
@@ -96,11 +100,11 @@ local function start(opts)
           return nil
         end
       end
-      _13_ = _15_
+      _14_ = _16_
     else
-      _13_ = cb
+      _14_ = cb
     end
-    table.insert(repl.queue, {code = code, cb = _13_})
+    table.insert(repl.queue, {code = code, cb = _14_})
     next_in_queue()
     return nil
   end
@@ -109,10 +113,10 @@ local function start(opts)
       return opts["on-failure"](a["merge!"](repl, {status = "failed", err = err}))
     else
       opts["on-success"](a.assoc(repl, "status", "connected"))
-      local function _18_(err0, chunk)
+      local function _19_(err0, chunk)
         return on_output(err0, chunk)
       end
-      return handle:read_start(client["schedule-wrap"](_18_))
+      return handle:read_start(client["schedule-wrap"](_19_))
     end
   end
   if (host0 and port) then
@@ -120,9 +124,9 @@ local function start(opts)
     uv.tcp_connect(handle, host0, tonumber(port), client["schedule-wrap"](on_connect))
   elseif not port then
     handle = uv.new_pipe(true)
-    uv.pipe_connect(handle, opts.pipename, client["schedule-wrap"](on_connect))
+    uv.pipe_connect(handle, opts.pipe_or_host, client["schedule-wrap"](on_connect))
   else
-    vim.api.nvim_err_writeln(("conjure.remote.socket: can't connect to " .. opts.pipename))
+    vim.api.nvim_err_writeln(("conjure.remote.socket: can't connect to " .. opts.pipe_or_host))
   end
   return a["merge!"](repl, {opts = opts, destroy = destroy, send = send})
 end

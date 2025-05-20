@@ -61,8 +61,8 @@ All configuration can be set as described in |conjure-configuration|.
             Disconnect from Guile REPL
             Default: `"cS"`
 
-                                      *g:conjure#client#guile#socket#pipename*
-`g:conjure#client#guile#socket#pipename`
+                                      *g:conjure#client#guile#socket#pipe_or_host*
+`g:conjure#client#guile#socket#pipe_or_host`
             Default path to your Guile socket or "host:port" used when connecting. Guile
             requires the socket path to be absolute!
             Command: `guile --listen=/home/user/guile-repl.socket`

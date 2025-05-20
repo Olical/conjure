@@ -23,13 +23,13 @@
   This allows you to connect Conjure to a running process, but has the same
   problem as stdio clients regarding the difficulty of tying results to input.
   * opts.prompt-pattern: Identify result boundaries such as '> '.
-  * opts.pipename: UNIX-style socket name or 'host:port' for TCP
+  * opts.pipe_or_host: UNIX domain socket or 'host:port' for TCP socket
   * opts.on-success: Called when the connection succeeds.
   * opts.on-failure: Called when the connection fails.
   * opts.on-close: Called when the connection closes.
   * opts.on-stray-output: Called with stray output that don't match up to a callback.
   * opts.on-exit: Called on exit with the code and signal."
-  (let [[host port] (vim.split opts.pipename ":")
+  (let [[host port] (vim.split opts.pipe_or_host ":")
         host (host->addr host)
         repl {:status :pending
               :queue []
@@ -38,12 +38,13 @@
 
     (var handle nil)
 
-    (log.dbg (a.str "opts.pipename=" opts.pipename))
+    (log.dbg (a.str "opts.pipe_or_host=" opts.pipe_or_host))
     (log.dbg (a.str "host=" host))
 
 
     (fn destroy []
       (pcall #(handle:shutdown))
+      (pcall #(handle:close))
       nil)
 
     (fn next-in-queue []
@@ -126,11 +127,11 @@
         (do
           (set handle (uv.new_pipe true))
           (uv.pipe_connect
-            handle opts.pipename
+            handle opts.pipe_or_host
             (client.schedule-wrap
               on-connect)))
 
-        (vim.api.nvim_err_writeln (.. "conjure.remote.socket: can't connect to " opts.pipename)))
+        (vim.api.nvim_err_writeln (.. "conjure.remote.socket: can't connect to " opts.pipe_or_host)))
 
     (a.merge!
       repl
