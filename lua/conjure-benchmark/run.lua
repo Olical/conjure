@@ -6,7 +6,7 @@ local function benchmark_task(_1_)
   local name = _1_["name"]
   local task_fn = _1_["task-fn"]
   local start = vim.uv.now()
-  for i = 1, iterations do
+  for _i = 1, iterations do
     task_fn()
   end
   vim.uv.update_time()
