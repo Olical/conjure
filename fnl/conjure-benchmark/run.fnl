@@ -6,7 +6,7 @@
          package.path))
 
 (local core (require :conjure.nfnl.core))
-(local iterations 10000)
+(local iterations 1000)
 
 (fn benchmark-task [{: name : task-fn}]
   (let [start (vim.uv.now)]

@@ -1,7 +1,7 @@
 -- [nfnl] fnl/conjure-benchmark/run.fnl
 package.path = (vim.fn.getcwd() .. "/lua/?.lua;" .. vim.fn.getcwd() .. "/lua/?/init.lua;" .. package.path)
 local core = require("conjure.nfnl.core")
-local iterations = 10000
+local iterations = 1000
 local function benchmark_task(_1_)
   local name = _1_["name"]
   local task_fn = _1_["task-fn"]
