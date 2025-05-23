@@ -21,7 +21,6 @@
         (bencode.decode-all
           bs
           (bencode.encode
-            bs
             {:foo :bar :baz [1 2 3]}))))}
    {:name "big encode decode"
     :task-fn
@@ -30,7 +29,6 @@
         (bencode.decode-all
           bs
           (bencode.encode
-            bs
             (core.map
               (fn []
                 {:foo :bar :baz [1 2 3] :quux {:hello :world}})

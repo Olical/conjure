@@ -14,14 +14,14 @@ local function range(n)
 end
 local function _2_()
   local bs = bencode.new()
-  return bencode["decode-all"](bs, bencode.encode(bs, {foo = "bar", baz = {1, 2, 3}}))
+  return bencode["decode-all"](bs, bencode.encode({foo = "bar", baz = {1, 2, 3}}))
 end
 local function _3_()
   local bs = bencode.new()
   local function _4_()
     return {foo = "bar", baz = {1, 2, 3}, quux = {hello = "world"}}
   end
-  return bencode["decode-all"](bs, bencode.encode(bs, core.map(_4_, range(500))))
+  return bencode["decode-all"](bs, bencode.encode(core.map(_4_, range(500))))
 end
 M.tasks = {{name = "simple encode and decode", ["task-fn"] = _2_}, {name = "big encode decode", ["task-fn"] = _3_}}
 return M
