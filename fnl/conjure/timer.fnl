@@ -1,4 +1,4 @@
-(local {: define} (require :nfnl.module))
+(local {: define} (require :conjure.nfnl.module))
 
 (local M (define :conjure.timer))
 

@@ -1,5 +1,5 @@
 -- [nfnl] fnl/conjure/timer.fnl
-local _local_1_ = require("nfnl.module")
+local _local_1_ = require("conjure.nfnl.module")
 local define = _local_1_["define"]
 local M = define("conjure.timer")
 M.defer = function(f, ms)
