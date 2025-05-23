@@ -6,3 +6,6 @@ run = "scripts/sponsors.sh"
 
 [tasks.test]
 run = ["bash ./scripts/setup-test-deps", "bash ./scripts/test"]
+
+[tasks.benchmark]
+run = "nvim -l lua/conjure-benchmark/run.lua"
