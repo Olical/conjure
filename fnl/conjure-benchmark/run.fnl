@@ -10,7 +10,7 @@
 
 (fn benchmark-task [{: name : task-fn}]
   (let [start (vim.uv.now)]
-    (for [i 1 iterations]
+    (for [_i 1 iterations]
       (task-fn))
     (vim.uv.update_time)
     (let [duration (/ (- (vim.uv.now) start) iterations)]
