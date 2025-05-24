@@ -44,7 +44,7 @@
        Takes term char and whether to include first char for parsing number/string length"
       (let [start (+ offset (if ?inclusive 0 1))]
         (var pos start)
-        (while (and (check pos) (not= (. ptr pos) (or ?term \e)))
+        (while (and (check (+ pos 1)) (not= (. ptr pos) (or ?term \e)))
           (set pos (+ pos 1))) ; Search for terminator one byte at a time
         (when (= (. ptr pos) (or ?term \e)) ; Found terminator, otherwise end of buffer
           (let [num (tonumber (ffi.string (+ ptr start) (- pos start)))]

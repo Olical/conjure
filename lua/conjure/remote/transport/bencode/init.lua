@@ -58,7 +58,7 @@ local function decode_all(state, chunk)
     end
     start = (offset + _5_)
     local pos = start
-    while (check(pos) and (ptr[pos] ~= (_3fterm or _5ce))) do
+    while (check((pos + 1)) and (ptr[pos] ~= (_3fterm or _5ce))) do
       pos = (pos + 1)
     end
     if (ptr[pos] == (_3fterm or _5ce)) then
