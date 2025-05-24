@@ -13,15 +13,15 @@ local _5c0 = string.byte("0")
 local _5c9 = string.byte("9")
 local _5c_ = string.byte(":")
 local function decode_all(state, chunk)
-  if (chunk and (#chunk > 0)) then
+  if chunk then
     state.buf:put(chunk)
   else
   end
-  local offset = 0
   local vals = {}
   local ptr, blen = state.buf:ref()
+  local offset = -1
   local function check(n)
-    if (n <= blen) then
+    if (n < blen) then
       return n
     else
       return nil
@@ -62,24 +62,23 @@ local function decode_all(state, chunk)
       pos = (pos + 1)
     end
     if (ptr[pos] == (_3fterm or _5ce)) then
-      local num = tonumber(ffi.string((ptr + start), (pos - start)))
-      offset = (pos + 1)
+      local str = ffi.string((ptr + start), (pos - start))
+      local num = tonumber(str)
+      offset = pos
       return num
     else
       return nil
     end
   end
   local function parse_string()
-    local original_offset = offset
     local len = parse_number(_5c_, true)
     if len then
       local str_end = check((offset + len))
       if str_end then
-        local str = ffi.string((ptr + offset), len)
+        local str = ffi.string((ptr + offset + 1), len)
         offset = str_end
         return str
       else
-        offset = original_offset
         return nil
       end
     else
@@ -88,45 +87,51 @@ local function decode_all(state, chunk)
   end
   local BEGIN = {}
   local function parse_collection(t)
-    offset = (offset + 1)
     return {BEGIN, t}
   end
   local function parse_terminator()
     assert((#state.stack > 0), "bencode: unexpected terminator")
-    offset = (offset + 1)
     local frame = table.remove(state.stack)
     assert(((frame.t ~= "dict") or (frame.k == nil)), "bencode: dict ended with pending key")
     return frame.v
   end
   local function parse()
-    local c = (check((offset + 1)) and ptr[offset])
-    if c then
+    if check((offset + 1)) then
+      local original_offset = offset
+      local c = ptr[(offset + 1)]
+      offset = (offset + 1)
+      local _10_
       if (c == _5ci) then
-        return parse_number()
+        _10_ = parse_number()
       else
-        local and_10_ = (c == c)
-        if and_10_ then
-          and_10_ = ((c >= _5c0) and (c <= _5c9))
+        local and_12_ = (c == c)
+        if and_12_ then
+          and_12_ = ((c >= _5c0) and (c <= _5c9))
         end
-        if and_10_ then
-          return parse_string()
+        if and_12_ then
+          _10_ = parse_string()
         elseif (c == _5cl) then
-          return parse_collection("list")
+          _10_ = parse_collection("list")
         elseif (c == _5cd) then
-          return parse_collection("dict")
+          _10_ = parse_collection("dict")
         elseif (c == _5ce) then
-          return parse_terminator()
+          _10_ = parse_terminator()
         else
           local _ = c
-          return error(string.format("bencode: bad byte 0x%02x", c))
+          _10_ = error(string.format("bencode: bad char 0x%02x", c))
         end
       end
+      local or_20_ = _10_
+      if not or_20_ then
+        offset = original_offset
+        or_20_ = nil
+      end
+      return or_20_
     else
       return nil
     end
   end
   for val in parse do
-    if (val == nil) then break end
     if ((_G.type(val) == "table") and (val[1] == BEGIN) and (nil ~= val[2])) then
       local t = val[2]
       table.insert(state.stack, {t = t, k = nil, v = {}})
@@ -135,10 +140,7 @@ local function decode_all(state, chunk)
       push(val)
     end
   end
-  if (offset > 0) then
-    state.buf:skip(offset)
-  else
-  end
+  state.buf:skip((offset + 1))
   return vals
 end
 local function is_list_3f(x)
@@ -154,27 +156,27 @@ local function wrap(prefix, suffix, x)
   return (prefix .. x .. suffix)
 end
 local function encode(x)
-  local _16_ = type(x)
-  if (_16_ == "string") then
+  local _23_ = type(x)
+  if (_23_ == "string") then
     return (#x .. ":" .. x)
-  elseif (_16_ == "number") then
+  elseif (_23_ == "number") then
     assert(((x % 1) == 0), ("bencode: non\226\128\145integer number " .. x))
     return wrap("i", "e", x)
-  elseif (_16_ == "table") then
+  elseif (_23_ == "table") then
     if is_list_3f(x) then
       return wrap("l", "e", table.concat(core.map(encode, core.vals(x))))
     else
       table.sort(x)
-      local function _18_(_17_)
-        local k = _17_[1]
-        local v = _17_[2]
+      local function _25_(_24_)
+        local k = _24_[1]
+        local v = _24_[2]
         assert((type(k) == "string"), "bencode: dict key not string")
         return (encode(k) .. encode(v))
       end
-      return wrap("d", "e", table.concat(core["map-indexed"](_18_, x)))
+      return wrap("d", "e", table.concat(core["map-indexed"](_25_, x)))
     end
   else
-    local _ = _16_
+    local _ = _23_
     return error(("bencode: unsupported type " .. type(x)))
   end
 end
