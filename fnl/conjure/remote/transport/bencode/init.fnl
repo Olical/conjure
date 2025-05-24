@@ -14,14 +14,14 @@
 (local \_ (string.byte ":"))
 
 (fn decode-all [state chunk]
-  (when (and chunk (> (length chunk) 0))
-    (state.buf:put chunk))
-  (var offset 0)
+  (when chunk (state.buf:put chunk))
   (let [vals []
         (ptr blen) (state.buf:ref)]
+    (var offset -1)
+
     (fn check [n]
-      "Checks if the buffer has at least N bytes available."
-      (when (<= n blen) n))
+      "Checks if the buffer has at least N chars available."
+      (when (< n blen) n))
 
     (fn push [val]
       "Pushes a value onto the accumulator or the stack."
@@ -45,36 +45,32 @@
       (let [start (+ offset (if ?inclusive 0 1))]
         (var pos start)
         (while (and (check (+ pos 1)) (not= (. ptr pos) (or ?term \e)))
-          (set pos (+ pos 1))) ; Search for terminator one byte at a time
+          (set pos (+ pos 1))) ; Search for terminator one char at a time
         (when (= (. ptr pos) (or ?term \e)) ; Found terminator, otherwise end of buffer
-          (let [num (tonumber (ffi.string (+ ptr start) (- pos start)))]
-            (set offset (+ pos 1)) ; Move past terminator
+          (let [str (ffi.string (+ ptr start) (- pos start))
+                num (tonumber str)]
+            (set offset pos) ; Move to terminator
             num))))
 
     (fn parse-string []
       "Returns string if complete, otherwise nil"
-      (let [original-offset offset]
-        (when-let [len (parse-number \_ true)]
-                  ; Parse string length with colon terminator
-                  ; Include number char indicating string (unlike \i which is skipped)
-                  (if-let [str-end (check (+ offset len))]
-                          (let [str (ffi.string (+ ptr offset) len)]
-                            (set offset str-end) ; Move past string
-                            str)
-                          ; String content incomplete, restore offset
-                          (set offset original-offset)))))
+      (when-let [len (parse-number \_ true)]
+                ; Parse string length with ':' terminator
+                ; Use inclusive unlike \i which is skipped
+                (if-let [str-end (check (+ offset len))]
+                        (let [str (ffi.string (+ ptr offset 1) len)]
+                          (set offset str-end) ; Move to terminator
+                          str))))
 
     (local BEGIN {})
 
     (fn parse-collection [t]
       "Pushes a new list/dict frame onto the stack."
-      (set offset (+ offset 1)) ; Move past collection indicator
       [BEGIN t])
 
     (fn parse-terminator []
       "Pops the last frame from the stack and returns its value."
       (assert (> (length state.stack) 0) "bencode: unexpected terminator")
-      (set offset (+ offset 1)) ; Move past terminator
       (let [frame (table.remove state.stack)] ; Pop last frame and return its value
         (assert (or (not= frame.t :dict) (= frame.k nil))
                 "bencode: dict ended with pending key")
@@ -82,9 +78,13 @@
 
     (fn parse []
       "Parses the next value from the buffer.
-       Returns parsed value if complete, otherwise nil"
-      (if-let [c (and (check (+ offset 1)) (. ptr offset))]
-              (match c
+       Returns parsed value if complete, otherwise nil
+       Moves offset to end of any parsed values"
+      (when (check (+ offset 1))
+        (let [original-offset offset
+              c (. ptr (+ offset 1))]
+          (set offset (+ offset 1)) ; Move to next char
+          (or (match c
                 \i ; i42e -> 42
                 (parse-number)
                 (where c (and (>= c \0) (<= c \9))) ; 3:foo -> "foo"
@@ -96,13 +96,14 @@
                 \e ; e -> end of list/dict
                 (parse-terminator)
                 _
-                (error (string.format "bencode: bad byte 0x%02x" c)))))
+                (error (string.format "bencode: bad char 0x%02x" c)))
+              (set offset original-offset)))))
 
-    (each [val parse &until (= val nil)]
+    (each [val parse]
       (match val
         [BEGIN t] (table.insert state.stack {: t :k nil :v {}})
         _ (push val))) ; Push value to stack or vals
-    (when (> offset 0) (state.buf:skip offset)) ; Skip parsed bytes
+    (state.buf:skip (+ offset 1)) ; Skip parsed chars
     vals))
 
 (fn is-list? [x]
