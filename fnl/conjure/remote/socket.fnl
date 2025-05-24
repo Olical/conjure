@@ -3,7 +3,6 @@
 (local client (autoload :conjure.client))
 (local log (autoload :conjure.log))
 (local text (autoload :conjure.text))
-
 (local uv vim.uv)
 
 
@@ -23,24 +22,19 @@
   This allows you to connect Conjure to a running process, but has the same
   problem as stdio clients regarding the difficulty of tying results to input.
   * opts.prompt-pattern: Identify result boundaries such as '> '.
-  * opts.pipe_or_host: UNIX domain socket or 'host:port' for TCP socket
+  * opts.pipename: Pathname of the UNIX domain socket.
+  * opts.host-port: 'hostname:port' of TCP socket.
   * opts.on-success: Called when the connection succeeds.
   * opts.on-failure: Called when the connection fails.
   * opts.on-close: Called when the connection closes.
   * opts.on-stray-output: Called with stray output that don't match up to a callback.
   * opts.on-exit: Called on exit with the code and signal."
-  (let [[host port] (vim.split opts.pipe_or_host ":")
-        host (host->addr host)
-        repl {:status :pending
+  (let [repl {:status :pending
               :queue []
               :current nil
               :buffer ""}]
 
-    (var handle nil)
-
-    (log.dbg (a.str "opts.pipe_or_host=" opts.pipe_or_host))
-    (log.dbg (a.str "host=" host))
-
+    (var handle nil) ; will be set to new_pipe or new_tcp
 
     (fn destroy []
       (pcall #(handle:shutdown))
@@ -51,11 +45,11 @@
         (when (and next-msg (not repl.current))
           (table.remove repl.queue 1)
           (a.assoc repl :current next-msg)
-          (log.dbg "send" next-msg.code)
+          (log.dbg "remote.socket: send" next-msg.code)
           (handle:write (.. next-msg.code "\n")))))
 
     (fn on-message [chunk]
-      (log.dbg "receive" chunk)
+      (log.dbg "remote.socket: receive" chunk)
       (when chunk
         (let [{: done? : error? : result} (opts.parse-output chunk)
               cb (a.get-in repl [:current :cb] opts.on-stray-output)]
@@ -114,23 +108,40 @@
               (fn [err chunk]
                 (on-output err chunk)))))))
 
-    (if (and host port)
+    ;; If both pipename and host-port are specified, use pipename.
+    ;; If both pipename and host-port are not specified, log error.
+    (if opts.pipename
         (do
-          (set handle (uv.new_tcp :inet))
-          (uv.tcp_connect
-            handle host (tonumber port)
-            (client.schedule-wrap
-              on-connect)))
-
-        (not port)
-        (do
+          (log.dbg (a.str "remote.socket: pipename=" opts.pipename))
           (set handle (uv.new_pipe true))
           (uv.pipe_connect
-            handle opts.pipe_or_host
+            handle opts.pipename
             (client.schedule-wrap
               on-connect)))
 
-        (vim.api.nvim_err_writeln (.. "conjure.remote.socket: can't connect to " opts.pipe_or_host)))
+        opts.host-port
+        (do
+          (log.dbg (a.str "remote.socket: host-port=" opts.host-port))
+          (set handle (uv.new_tcp :inet))
+          (let [[host port] (vim.split opts.host-port ":")
+                conn_status (uv.tcp_connect
+                              handle (host->addr host) (tonumber port)
+                              (client.schedule-wrap
+                                on-connect))]
+            (log.dbg (a.str "remote.socket: host=" host))
+            (log.dbg (a.str "remote.socket: port=" port))
+            (log.dbg (a.str "remote.socket: conn_status=" conn_status))
+            (when (not conn_status)
+              (a.merge! repl {:status :failed :err (a.str "couldn't connect to " host ":" port)})
+              (opts.on-failure
+                (a.merge!
+                  repl
+                  {:status :failed
+                  :err (a.str "couldn't connect to " host ":" port)})))))
+
+        (vim.api.nvim_echo [["conjure.remote.socket: No pipename or host-port specified"]] true {:err true}))
+
+    (log.dbg (a.str "remote.socket: repl = " repl))
 
     (a.merge!
       repl
