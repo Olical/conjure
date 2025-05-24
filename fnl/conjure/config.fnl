@@ -65,6 +65,7 @@
               :lua :conjure.client.lua.neovim
               :lisp :conjure.client.common-lisp.swank
               :python :conjure.client.python.stdio
+              :r :conjure.client.r.stdio
               :rust :conjure.client.rust.evcxr
               :sql :conjure.client.sql.stdio}
    :filetype_suffixes {:racket [:rkt]
