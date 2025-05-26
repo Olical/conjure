@@ -88,13 +88,19 @@
 
 (fn display-repl-status []
   (let [repl (state :repl)]
+    (log.dbg (a.str "client.guile.socket: repl=" repl))
     (when repl
       (log.append
         [(.. comment-prefix
-             (let [pipe_or_host (a.get-in repl [:opts :pipe_or_host])]
-               (if pipe_or_host
-                 (.. pipe_or_host " ")
-                 ""))
+             (let [pipename (a.get-in repl [:opts :pipename])
+                   host-port (a.get-in repl [:opts :host-port])]
+               (if pipename
+                 (.. pipename " ")
+
+                 host-port
+                 (.. host-port " ")
+
+                 "no pipename & no host-port"))
              "(" repl.status
              (let [err (a.get repl :err)]
                (if err

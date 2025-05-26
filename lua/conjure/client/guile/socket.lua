@@ -94,14 +94,18 @@ local function doc_str(opts)
 end
 local function display_repl_status()
   local repl = state("repl")
+  log.dbg(a.str("client.guile.socket: repl=", repl))
   if repl then
     local _15_
     do
-      local pipe_or_host = a["get-in"](repl, {"opts", "pipe_or_host"})
-      if pipe_or_host then
-        _15_ = (pipe_or_host .. " ")
+      local pipename = a["get-in"](repl, {"opts", "pipename"})
+      local host_port = a["get-in"](repl, {"opts", "host-port"})
+      if pipename then
+        _15_ = (pipename .. " ")
+      elseif host_port then
+        _15_ = (host_port .. " ")
       else
-        _15_ = ""
+        _15_ = "no pipename & no host-port"
       end
     end
     local _17_
