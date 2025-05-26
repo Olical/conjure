@@ -13,16 +13,13 @@ INTRODUCTION                        *conjure-client-guile-socket-introduction*
   Guile is the "GNU Ubiquitous Intelligent Language for Extensions",
   implementing the Scheme dialect of Lisp.
 
-With this client, Conjure connects to Guile's REPL socket.  To create the
-socket, run your Guile program using "--listen=/home/user/guile.socket".
+With this client, Conjure connects to Guile's REPL listening on a local path
+or TCP socket.  Start a Guile REPL by running your Guile program using
+"--listen" command-line option. See "Command-line Options" section of the
+Guile Reference Manual for details. Examples are given below in the
+configuration items section below.
 
-Note that you must give a full path for the socket, because the leading slash
-tells Guile to listen via a Unix domain socket instead of a network socket.
-Network socket support is planned for this client, but not yet available - a
-Unix domain socket is strongly preferred, where possible, for security.
-
-The default Scheme filetype client is `conjure.client.mit-scheme.stdio`, to
-use this client instead you must override the configuration.
+To use this client for Scheme filetypes, you must override the configuration for it.
 >
   let g:conjure#filetype#scheme = "conjure.client.guile.socket"
 
@@ -61,12 +58,47 @@ All configuration can be set as described in |conjure-configuration|.
             Disconnect from Guile REPL
             Default: `"cS"`
 
+
+The next two configuration items determine how the Guile client connects to a
+Guile REPL. If the `pipename` is specified (i.e., non-nil) it used. If the
+`host-port` is specified, it is used. If both are specified, the `pipename` is
+used because the Guile Reference Manual recommends using a UNIX domain socket
+rather than a TCP connection. If neither are specified, then an error message
+is printed.
+
                                       *g:conjure#client#guile#socket#pipename*
 `g:conjure#client#guile#socket#pipename`
-            Default path to your Guile socket used when connecting. Guile
-            requires this path to be absolute!
-            Command: `guile --listen=/home/user/guile-repl.socket`
-            Example: `"/home/user/guile-repl.socket"`
+            The path to your Guile socket used to connect to the Guile REPL.
+            Guile requires this path to be absolute!
+
+            Example command to start a Guile REPL:
+                     `guile --listen=/path/to/guile-repl.socket`
+
+            Example value: `"/home/user/guile-repl.socket"`
+
+            Default: `nil`
+
+                                      *g:conjure#client#guile#socket#host-port*
+`g:conjure#client#guile#socket#host-port`
+            The "hostname:port" of the TCP socket to the Guile REPL.
+
+            If "port" is not specified, the default Guile port 37146 is used.
+
+            If `nil`, "localhost:37146" is used.
+
+            Examples to start a Guile REPL:
+                     `guile --listen` 
+                     `guile --listen="localhost"`
+                     `guile --listen="localhost:37146"`
+                     `guile --listen="4444"`
+
+            Note: The first three examples are the same.
+                  The last example listens on "localhost:4444"
+                  See the "Command-line Options" section of the Guile Reference Manual.
+
+            Example value:
+                     `"localhost"`
+
             Default: `nil`
 
 vim:tw=78:sw=2:ts=2:ft=help:norl:et:listchars=

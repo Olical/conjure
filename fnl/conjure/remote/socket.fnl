@@ -1,35 +1,43 @@
 (local {: autoload} (require :conjure.nfnl.module))
-(local a (autoload :conjure.aniseed.core))
+(local a (autoload :conjure.nfnl.core))
 (local client (autoload :conjure.client))
 (local log (autoload :conjure.log))
 (local text (autoload :conjure.text))
+(local uv vim.uv)
 
-(local uv vim.loop)
 
 (fn strip-unprintable [s]
   (-> (text.strip-ansi-escape-sequences s)
       (string.gsub "[\1\2]" "")))
 
+(fn host->addr [s]
+  (let [info (uv.getaddrinfo s nil {:family "inet" :protocol "tcp"})]
+    (if info
+        (. info 1 :addr)
+        nil)))
+
 (fn start [opts]
-  "Connects to an external REPL via a socket (TCP or named pipe), and gives you
-  hooks to send code to it and read responses back out. This allows you to
-  connect Conjure to a running process, but has the same problem as stdio
-  clients regarding the difficulty of tying results to input.
+  "Connects to an external REPL via a UNIX domain socket (named pipe) or a TCP
+  socket, and gives you hooks to send code to it and read responses back out.
+  This allows you to connect Conjure to a running process, but has the same
+  problem as stdio clients regarding the difficulty of tying results to input.
   * opts.prompt-pattern: Identify result boundaries such as '> '.
-  * opts.pipename: Name of the pipe
+  * opts.pipename: Pathname of the UNIX domain socket.
+  * opts.host-port: 'hostname:port' of TCP socket.
   * opts.on-success: Called when the connection succeeds.
   * opts.on-failure: Called when the connection fails.
   * opts.on-close: Called when the connection closes.
   * opts.on-stray-output: Called with stray output that don't match up to a callback.
   * opts.on-exit: Called on exit with the code and signal."
-  (let [repl-pipe (uv.new_pipe true)
-        repl {:status :pending
+  (let [repl {:status :pending
               :queue []
               :current nil
               :buffer ""}]
 
+    (var handle nil) ; will be set to new_pipe or new_tcp
+
     (fn destroy []
-      (pcall #(repl-pipe:shutdown))
+      (pcall #(handle:shutdown))
       nil)
 
     (fn next-in-queue []
@@ -37,11 +45,11 @@
         (when (and next-msg (not repl.current))
           (table.remove repl.queue 1)
           (a.assoc repl :current next-msg)
-          (log.dbg "send" next-msg.code)
-          (repl-pipe:write (.. next-msg.code "\n")))))
+          (log.dbg "remote.socket: send" next-msg.code)
+          (handle:write (.. next-msg.code "\n")))))
 
     (fn on-message [chunk]
-      (log.dbg "receive" chunk)
+      (log.dbg "remote.socket: receive" chunk)
       (when chunk
         (let [{: done? : error? : result} (opts.parse-output chunk)
               cb (a.get-in repl [:current :cb] opts.on-stray-output)]
@@ -59,12 +67,11 @@
     (fn on-output [err chunk]
       (if
         err
-        (do
-          (opts.on-failure
-            (a.merge!
-              repl
-              {:status :failed
-               :err err})))
+        (opts.on-failure
+          (a.merge!
+            repl
+            {:status :failed
+            :err err}))
 
         chunk
         (do
@@ -87,26 +94,54 @@
       (next-in-queue)
       nil)
 
-    ;; TODO Add support for host / port sockets.
+    (fn on-connect [err]
+      (if err
+        (opts.on-failure
+          (a.merge!
+            repl
+            {:status :failed
+            :err err}))
+        (do
+          (opts.on-success (a.assoc repl :status :connected))
+          (handle:read_start
+            (client.schedule-wrap
+              (fn [err chunk]
+                (on-output err chunk)))))))
+
+    ;; If both pipename and host-port are specified, use pipename.
+    ;; If both pipename and host-port are not specified, log error.
     (if opts.pipename
-      (uv.pipe_connect
-        repl-pipe opts.pipename
-        (client.schedule-wrap
-          (fn [err]
-            (if err
+        (do
+          (log.dbg (a.str "remote.socket: pipename=" opts.pipename))
+          (set handle (uv.new_pipe true))
+          (uv.pipe_connect
+            handle opts.pipename
+            (client.schedule-wrap
+              on-connect)))
+
+        opts.host-port
+        (do
+          (log.dbg (a.str "remote.socket: host-port=" opts.host-port))
+          (set handle (uv.new_tcp :inet))
+          (let [[host port] (vim.split opts.host-port ":")
+                conn_status (uv.tcp_connect
+                              handle (host->addr host) (tonumber port)
+                              (client.schedule-wrap
+                                on-connect))]
+            (log.dbg (a.str "remote.socket: host=" host))
+            (log.dbg (a.str "remote.socket: port=" port))
+            (log.dbg (a.str "remote.socket: conn_status=" conn_status))
+            (when (not conn_status)
+              (a.merge! repl {:status :failed :err (a.str "couldn't connect to " host ":" port)})
               (opts.on-failure
                 (a.merge!
                   repl
                   {:status :failed
-                   :err err}))
-              (do
-                (opts.on-success (a.assoc repl :status :connected))
-                (repl-pipe:read_start
-                  (client.schedule-wrap
-                    (fn [err chunk]
-                      (on-output err chunk)))))))))
+                  :err (a.str "couldn't connect to " host ":" port)})))))
 
-      (vim.api.nvim_err_writeln "conjure.remote.socket: No pipename specified"))
+        (vim.api.nvim_echo [["conjure.remote.socket: No pipename or host-port specified"]] true {:err true}))
+
+    (log.dbg (a.str "remote.socket: repl = " repl))
 
     (a.merge!
       repl

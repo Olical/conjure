@@ -1,12 +1,11 @@
 (local {: autoload} (require :conjure.nfnl.module))
-(local a (autoload :conjure.aniseed.core))
+(local a (autoload :conjure.nfnl.core))
 (local client (autoload :conjure.client))
 (local config (autoload :conjure.config))
-(local extract (autoload :conjure.extract))
 (local log (autoload :conjure.log))
 (local mapping (autoload :conjure.mapping))
 (local socket (autoload :conjure.remote.socket))
-(local str (autoload :conjure.aniseed.string))
+(local str (autoload :conjure.nfnl.string))
 (local text (autoload :conjure.text))
 (local ts (autoload :conjure.tree-sitter))
 
@@ -14,7 +13,8 @@
   {:client
    {:guile
     {:socket
-     {:pipename nil}}}})
+     {:pipename nil
+      :host-port nil}}}})
 
 (when (config.get-in [:mapping :enable_defaults])
   (config.merge
@@ -88,13 +88,19 @@
 
 (fn display-repl-status []
   (let [repl (state :repl)]
+    (log.dbg (a.str "client.guile.socket: repl=" repl))
     (when repl
       (log.append
         [(.. comment-prefix
-             (let [pipename (a.get-in repl [:opts :pipename])]
+             (let [pipename (a.get-in repl [:opts :pipename])
+                   host-port (a.get-in repl [:opts :host-port])]
                (if pipename
                  (.. pipename " ")
-                 ""))
+
+                 host-port
+                 (.. host-port " ")
+
+                 "no pipename & no host-port"))
              "(" repl.status
              (let [err (a.get repl :err)]
                (if err
@@ -138,26 +144,42 @@
 
 (fn connect [opts]
   (disconnect)
-  (let [pipename (or (cfg [:pipename]) (a.get opts :port))]
-    (if (not= :string (type pipename))
-      (log.append
-        [(.. comment-prefix "g:conjure#client#guile#socket#pipename is not specified")
-         (.. comment-prefix "Please set it to the name of your Guile REPL pipe or pass it to :ConjureConnect [pipename]")])
-      (a.assoc
-        (state) :repl
-        (socket.start
-          {:parse-output parse-guile-result
-           :pipename pipename
-           :on-success
-           (fn []
-             (display-repl-status))
-           :on-error
-           (fn [msg repl]
-             (display-result msg)
-             (repl.send ",q\n" (fn [])))
-           :on-failure disconnect
-           :on-close disconnect
-           :on-stray-output display-result})))))
+  (let [pipename (cfg [:pipename])
+        cfg-host-port (cfg [:host-port])
+        host-port (when cfg-host-port
+                    ;; Default missing parts but not fool-proof.
+                    (let [[host port] (vim.split cfg-host-port ":")]
+                      (log.dbg (a.str "client.guile.socket: host=" host))
+                      (log.dbg (a.str "client.guile.socket: port=" port))
+                      (if (and (not host) (not port))
+                          "localhost:37146" ;; Guile default to listen on local port.
+
+                          (and (not host) (tonumber port))
+                          (a.str "localhost:" port)
+
+                          (and host (not port))
+                          (if (tonumber host)
+                              (a.str "localhost:" host)
+                              (a.str host ":37146"))
+                          cfg-host-port)))]
+
+    (log.dbg (a.str "client.guile.socket: pipename=" pipename))
+    (log.dbg (a.str "client.guile.socket: host-port=" cfg-host-port))
+
+    (a.assoc
+      (state) :repl
+      (socket.start
+        {:parse-output parse-guile-result
+        :pipename pipename
+        :host-port host-port
+        :on-success (fn []
+                      (display-repl-status))
+        :on-error (fn [msg repl]
+                    (display-result msg)
+                    (repl.send ",q\n" (fn []))) ; Don't bother with debugger.
+        :on-failure disconnect
+        :on-close disconnect
+        :on-stray-output display-result}))))
 
 (fn on-exit []
   (disconnect))
