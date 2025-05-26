@@ -1,6 +1,3 @@
-[tasks.deps]
-run = "scripts/dep.sh Olical bencode origin/master"
-
 [tasks.sponsors]
 run = "scripts/sponsors.sh"
 
