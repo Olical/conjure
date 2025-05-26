@@ -1,4 +1,4 @@
--- [nfnl] fnl/conjure/remote/transport/bencode/init.fnl
+-- [nfnl] fnl/conjure/remote/transport/bencode.fnl
 local buffer = require("string.buffer")
 local ffi = require("ffi")
 local core = require("conjure.nfnl.core")

@@ -4,8 +4,6 @@ Conjure is a [Neovim](https://neovim.io) specific Lua plugin written in [Fennel]
 
 It's developed using itself which leads to an extremely tight feedback loop. This makes it easier to move fast without breaking things.
 
-To work on Conjure you'll first need to clone the repository and execute `make deps`, then point your plugin manager at the directory.
-
 Now you can open up Conjure's source files (ending in `.fnl`) and evaluate them as you would any other language with Conjure, see `:help conjure`.
 
 Your changes and evaluations through Conjure only apply to the in memory copy of Conjure. When you write a `.fnl` file with nfnl installed however your Fennel will be compiled to a static `.lua` file automatically. Make sure you commit both your Fennel _and_ Lua file changes!
