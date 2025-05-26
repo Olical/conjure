@@ -1,0 +1,27 @@
+name: Benchmark
+
+on: [push, pull_request]
+
+jobs:
+  benchmark:
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+        neovim-version: ["stable"]
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Mise
+        uses: jdx/mise-action@v2
+
+      - name: Cache
+        uses: actions/cache@v4
+
+      - name: Benchmark
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          mise run -t neovim@${{ matrix.neovim-version }} benchmark
