@@ -284,7 +284,13 @@ return setmetatable({
 		__index = function(t, k)
 			local command = k:gsub("_$", "!")
 			local f = function(...)
-				return api.nvim_command(table.concat(vim.iter({ command, ... }):flatten():totable(), " "))
+				local flattened = nil
+				if vim.iter then
+					flattened = vim.iter({ command, ... }):flatten():totable()
+				else
+					flattened = vim.tbl_flatten({ command, ... })
+				end
+				return api.nvim_command(table.concat(flattened, " "))
 			end
 			rawset(t, k, f)
 			return f
