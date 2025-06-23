@@ -18,16 +18,9 @@ end
 local cfg = config["get-in-fn"]({"client", "guile", "socket"})
 local state
 local function _3_()
-  return {repl = nil}
+  return {repl = nil, ["known-contexts"] = {}}
 end
 state = client["new-state"](_3_)
-local known_contexts = {}
-local function reset_known_contexts()
-  for k, _ in pairs(known_contexts) do
-    known_contexts[k] = nil
-  end
-  return nil
-end
 local buf_suffix = ".scm"
 local comment_prefix = "; "
 local base_module = "(guile)"
@@ -91,10 +84,9 @@ local function init_module(repl, context0)
   return repl.send((build_switch_module_command(context0) .. "\n,import " .. base_module), _9_)
 end
 local function ensure_module_initialized(repl, context0)
-  if not known_contexts[context0] then
+  if not a["get-in"](state(), {"known-contexts", context0}) then
     init_module(repl, context0)
-    known_contexts[context0] = true
-    return nil
+    return a["assoc-in"](state(), {"known-contexts", context0}, true)
   else
     return nil
   end
@@ -168,16 +160,17 @@ local function display_repl_status()
   end
 end
 local function disconnect()
-  reset_known_contexts()
-  local repl = state("repl")
-  if repl then
-    repl.destroy()
-    a.assoc(repl, "status", "disconnected")
-    display_repl_status()
-    return a.assoc(state(), "repl", nil)
-  else
-    return nil
+  do
+    local repl = state("repl")
+    if repl then
+      repl.destroy()
+      a.assoc(repl, "status", "disconnected")
+      display_repl_status()
+      a.assoc(state(), "repl", nil)
+    else
+    end
   end
+  return a.assoc(state(), "known-contexts", {})
 end
 local function parse_guile_result(s)
   local prompt = s:find("scheme@%([%w%-%s]+%)> ")

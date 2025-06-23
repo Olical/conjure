@@ -25,12 +25,7 @@
                   :disconnect "cd"}}}}}))
 
 (local cfg (config.get-in-fn [:client :guile :socket]))
-(local state (client.new-state #(do {:repl nil})))
-(local known-contexts {})
-
-(fn reset-known-contexts []
-  (each [k _ (pairs known-contexts)]
-    (tset known-contexts k nil)))
+(local state (client.new-state #(do {:repl nil :known-contexts {}})))
 
 (local buf-suffix ".scm")
 (local comment-prefix "; ")
@@ -96,10 +91,10 @@
     (fn [_])))
 
 (fn ensure-module-initialized [repl context]
- (if (not (. known-contexts context))
-   (do 
-     (init-module repl context)
-     (tset known-contexts context true))))
+  (if (not (a.get-in (state) [:known-contexts context]))
+    (do 
+      (init-module repl context)
+      (a.assoc-in (state) [:known-contexts context] true))))
 
 (fn eval-str [opts]
   (with-repl-or-warn
@@ -149,13 +144,13 @@
         {:break? true}))))
 
 (fn disconnect []
-  (reset-known-contexts)
   (let [repl (state :repl)]
     (when repl
       (repl.destroy)
       (a.assoc repl :status :disconnected)
       (display-repl-status)
-      (a.assoc (state) :repl nil))))
+      (a.assoc (state) :repl nil)))
+  (a.assoc (state) :known-contexts {}))
 
 (fn parse-guile-result [s]
   (let [prompt (s:find "scheme@%([%w%-%s]+%)> ")]
