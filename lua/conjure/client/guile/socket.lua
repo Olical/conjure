@@ -22,17 +22,23 @@ local function _3_()
 end
 state = client["new-state"](_3_)
 local known_contexts = {}
+local function reset_known_contexts()
+  for k, _ in pairs(known_contexts) do
+    known_contexts[k] = nil
+  end
+  return nil
+end
 local buf_suffix = ".scm"
 local comment_prefix = "; "
 local base_module = "(guile)"
 local default_context = "(guile-user)"
-local function strip_comments(f)
-  return string.gsub(f, ";.-\n", "")
-end
 local function normalize_context(arg)
   local tokens = str.split(arg, "%s+")
   local context = ("(" .. str.join(" ", tokens) .. ")")
   return context
+end
+local function strip_comments(f)
+  return string.gsub(f, ";.-\n", "")
 end
 local function context(f)
   local stripped = strip_comments(f)
@@ -77,18 +83,19 @@ local function clean_input_code(code)
     return nil
   end
 end
-local function build_context_line(opts)
+local function build_switch_module_command(opts)
   return (",m " .. (opts.context or default_context))
 end
-local function init_context(repl, opts)
+local function init_module(repl, opts)
+  log.dbg(("Initializing module for context " .. opts.context))
   local function _9_(_)
   end
-  return repl.send((build_context_line(opts) .. "\n,import " .. base_module), _9_)
+  return repl.send((build_switch_module_command(opts) .. "\n,import " .. base_module), _9_)
 end
 local function eval_str(opts)
   local function _10_(repl)
     if not known_contexts[opts.context] then
-      init_context(repl, opts)
+      init_module(repl, opts)
       known_contexts[opts.context] = true
     else
     end
@@ -157,6 +164,7 @@ local function display_repl_status()
   end
 end
 local function disconnect()
+  reset_known_contexts()
   local repl = state("repl")
   if repl then
     repl.destroy()

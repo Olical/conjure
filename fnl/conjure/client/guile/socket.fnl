@@ -28,25 +28,28 @@
 (local state (client.new-state #(do {:repl nil})))
 (local known-contexts {})
 
+(fn reset-known-contexts []
+  (each [k _ (pairs known-contexts)]
+    (tset known-contexts k nil)))
+
 (local buf-suffix ".scm")
 (local comment-prefix "; ")
 (local base-module "(guile)")
 (local default-context "(guile-user)")
-
-(fn strip-comments [f]
-  (string.gsub f ";.-\n" ""))
 
 (fn normalize-context [arg] 
   (let [tokens  (str.split arg "%s+") 
         context (.. "(" (str.join " " tokens) ")")]
     context))
 
+(fn strip-comments [f]
+  (string.gsub f ";.-\n" ""))
+
 (fn context [f] 
   (let [stripped (strip-comments f)
         define-args (string.match stripped "%(define%-module%s+%(%s*([%g%s]-)%s*%)")
         context (if define-args (normalize-context define-args) nil)]
    context))
-
 
 (local form-node? ts.node-surrounded-by-form-pair-chars?)
 
@@ -82,18 +85,21 @@
     (when (not (str.blank? clean))
       clean)))
 
- (fn build-context-line [opts]
+ (fn build-switch-module-command [opts]
    (.. ",m " (or opts.context default-context)))
 
- (fn init-context [repl opts]
-   (repl.send (.. (build-context-line opts) "\n,import " base-module ) (fn [_]) ))
+ (fn init-module [repl opts]
+   (log.dbg (.. "Initializing module for context " opts.context))
+   (repl.send 
+     (.. (build-switch-module-command opts) "\n,import " base-module ) 
+     (fn [_])))
 
 (fn eval-str [opts]
   (with-repl-or-warn
     (fn [repl]
       (if (not (. known-contexts opts.context))
         (do 
-         (init-context repl opts)
+         (init-module repl opts)
          (tset known-contexts opts.context true)))
       (-?> (.. ",m " (or opts.context default-context) "\n" opts.code)
            (clean-input-code)
@@ -138,6 +144,7 @@
         {:break? true}))))
 
 (fn disconnect []
+  (reset-known-contexts)
   (let [repl (state :repl)]
     (when repl
       (repl.destroy)
