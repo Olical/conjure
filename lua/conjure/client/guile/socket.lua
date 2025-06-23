@@ -92,14 +92,19 @@ local function init_module(repl, context0)
   end
   return repl.send((build_switch_module_command(context0) .. "\n,import " .. base_module), _9_)
 end
+local function ensure_module_initialized(repl, context0)
+  if not known_contexts[context0] then
+    init_module(repl, context0)
+    known_contexts[context0] = true
+    return nil
+  else
+    return nil
+  end
+end
 local function eval_str(opts)
-  local function _10_(repl)
+  local function _11_(repl)
     local context0 = (opts.context or default_context)
-    if not known_contexts[context0] then
-      init_module(repl, context0)
-      known_contexts[context0] = true
-    else
-    end
+    ensure_module_initialized(repl, context0)
     local tmp_3_ = (build_switch_module_command(context0) .. "\n" .. opts.code)
     if (nil ~= tmp_3_) then
       local tmp_3_0 = clean_input_code(tmp_3_)
@@ -123,7 +128,7 @@ local function eval_str(opts)
       return nil
     end
   end
-  return with_repl_or_warn(_10_)
+  return with_repl_or_warn(_11_)
 end
 local function eval_file(opts)
   return eval_str(a.assoc(opts, "code", ("(load \"" .. opts["file-path"] .. "\")")))

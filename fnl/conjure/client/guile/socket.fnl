@@ -85,23 +85,26 @@
     (when (not (str.blank? clean))
       clean)))
 
- (fn build-switch-module-command [context]
-   (.. ",m " context))
+(fn build-switch-module-command [context]
+  (.. ",m " context))
 
- (fn init-module [repl context]
-   (log.dbg (.. "Initializing module for context " context))
-   (repl.send 
-     (.. (build-switch-module-command context) "\n,import " base-module ) 
-     (fn [_])))
+(fn init-module [repl context]
+  (log.dbg (.. "Initializing module for context " context))
+  (repl.send 
+    (.. (build-switch-module-command context) "\n,import " base-module ) 
+    (fn [_])))
+
+(fn ensure-module-initialized [repl context]
+ (if (not (. known-contexts context))
+   (do 
+     (init-module repl context)
+     (tset known-contexts context true))))
 
 (fn eval-str [opts]
   (with-repl-or-warn
     (fn [repl]
       (let [context (or opts.context default-context)]
-        (if (not (. known-contexts context))
-          (do 
-            (init-module repl context)
-            (tset known-contexts context true)))
+        (ensure-module-initialized repl context) 
         (-?> (.. (build-switch-module-command context) "\n" opts.code)
              (clean-input-code)
              (repl.send
