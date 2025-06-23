@@ -47,9 +47,10 @@
 
 (fn context [f] 
   (let [stripped (strip-comments f)
-        define-args (string.match stripped "%(define%-module%s+%(%s*([%g%s]-)%s*%)")
-        context (if define-args (normalize-context define-args) nil)]
-   context))
+        define-args (string.match stripped "%(define%-module%s+%(%s*([%g%s]-)%s*%)")]
+    (if define-args 
+      (normalize-context define-args) 
+      nil)))
 
 (local form-node? ts.node-surrounded-by-form-pair-chars?)
 

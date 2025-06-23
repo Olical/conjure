@@ -43,13 +43,11 @@ end
 local function context(f)
   local stripped = strip_comments(f)
   local define_args = string.match(stripped, "%(define%-module%s+%(%s*([%g%s]-)%s*%)")
-  local context0
   if define_args then
-    context0 = normalize_context(define_args)
+    return normalize_context(define_args)
   else
-    context0 = nil
+    return nil
   end
-  return context0
 end
 local form_node_3f = ts["node-surrounded-by-form-pair-chars?"]
 local function with_repl_or_warn(f, opts)
