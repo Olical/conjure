@@ -83,23 +83,24 @@ local function clean_input_code(code)
     return nil
   end
 end
-local function build_switch_module_command(opts)
-  return (",m " .. (opts.context or default_context))
+local function build_switch_module_command(context0)
+  return (",m " .. context0)
 end
-local function init_module(repl, opts)
-  log.dbg(("Initializing module for context " .. opts.context))
+local function init_module(repl, context0)
+  log.dbg(("Initializing module for context " .. context0))
   local function _9_(_)
   end
-  return repl.send((build_switch_module_command(opts) .. "\n,import " .. base_module), _9_)
+  return repl.send((build_switch_module_command(context0) .. "\n,import " .. base_module), _9_)
 end
 local function eval_str(opts)
   local function _10_(repl)
-    if not known_contexts[opts.context] then
-      init_module(repl, opts)
-      known_contexts[opts.context] = true
+    local context0 = (opts.context or default_context)
+    if not known_contexts[context0] then
+      init_module(repl, context0)
+      known_contexts[context0] = true
     else
     end
-    local tmp_3_ = (",m " .. (opts.context or default_context) .. "\n" .. opts.code)
+    local tmp_3_ = (build_switch_module_command(context0) .. "\n" .. opts.code)
     if (nil ~= tmp_3_) then
       local tmp_3_0 = clean_input_code(tmp_3_)
       if (nil ~= tmp_3_0) then

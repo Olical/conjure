@@ -85,34 +85,35 @@
     (when (not (str.blank? clean))
       clean)))
 
- (fn build-switch-module-command [opts]
-   (.. ",m " (or opts.context default-context)))
+ (fn build-switch-module-command [context]
+   (.. ",m " context))
 
- (fn init-module [repl opts]
-   (log.dbg (.. "Initializing module for context " opts.context))
+ (fn init-module [repl context]
+   (log.dbg (.. "Initializing module for context " context))
    (repl.send 
-     (.. (build-switch-module-command opts) "\n,import " base-module ) 
+     (.. (build-switch-module-command context) "\n,import " base-module ) 
      (fn [_])))
 
 (fn eval-str [opts]
   (with-repl-or-warn
     (fn [repl]
-      (if (not (. known-contexts opts.context))
-        (do 
-         (init-module repl opts)
-         (tset known-contexts opts.context true)))
-      (-?> (.. ",m " (or opts.context default-context) "\n" opts.code)
-           (clean-input-code)
-           (repl.send
-             (fn [msgs]
-               (when (and (= 1 (a.count msgs))
-                          (= "" (a.get-in msgs [1 :out])))
-                 (a.assoc-in msgs [1 :out] (.. comment-prefix "Empty result")))
+      (let [context (or opts.context default-context)]
+        (if (not (. known-contexts context))
+          (do 
+            (init-module repl context)
+            (tset known-contexts context true)))
+        (-?> (.. (build-switch-module-command context) "\n" opts.code)
+             (clean-input-code)
+             (repl.send
+               (fn [msgs]
+                 (when (and (= 1 (a.count msgs))
+                            (= "" (a.get-in msgs [1 :out])))
+                   (a.assoc-in msgs [1 :out] (.. comment-prefix "Empty result")))
 
-               (when opts.on-result
-                (opts.on-result (str.join "\n" (format-message (a.last msgs)))))
-               (a.run! display-result msgs))
-             {:batch? true})))))
+                 (when opts.on-result
+                   (opts.on-result (str.join "\n" (format-message (a.last msgs)))))
+                 (a.run! display-result msgs))
+               {:batch? true}))))))
 
 (fn eval-file [opts]
   (eval-str (a.assoc opts :code (.. "(load \"" opts.file-path "\")"))))
