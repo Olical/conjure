@@ -26,9 +26,12 @@
 
 (local cfg (config.get-in-fn [:client :guile :socket]))
 (local state (client.new-state #(do {:repl nil})))
+(local known-contexts {})
 
 (local buf-suffix ".scm")
 (local comment-prefix "; ")
+(local base-module "(guile)")
+(local default-context "(guile-user)")
 
 (fn strip-comments [f]
   (string.gsub f ";.-\n" ""))
@@ -79,10 +82,20 @@
     (when (not (str.blank? clean))
       clean)))
 
+ (fn build-context-line [opts]
+   (.. ",m " (or opts.context default-context)))
+
+ (fn init-context [repl opts]
+   (repl.send (.. (build-context-line opts) "\n,import " base-module ) (fn [_]) ))
+
 (fn eval-str [opts]
   (with-repl-or-warn
     (fn [repl]
-      (-?> (.. ",m " (or opts.context "(guile-user)") "\n" opts.code)
+      (if (not (. known-contexts opts.context))
+        (do 
+         (init-context repl opts)
+         (tset known-contexts opts.context true)))
+      (-?> (.. ",m " (or opts.context default-context) "\n" opts.code)
            (clean-input-code)
            (repl.send
              (fn [msgs]

@@ -21,8 +21,11 @@ local function _3_()
   return {repl = nil}
 end
 state = client["new-state"](_3_)
+local known_contexts = {}
 local buf_suffix = ".scm"
 local comment_prefix = "; "
+local base_module = "(guile)"
+local default_context = "(guile-user)"
 local function strip_comments(f)
   return string.gsub(f, ";.-\n", "")
 end
@@ -74,13 +77,26 @@ local function clean_input_code(code)
     return nil
   end
 end
+local function build_context_line(opts)
+  return (",m " .. (opts.context or default_context))
+end
+local function init_context(repl, opts)
+  local function _9_(_)
+  end
+  return repl.send((build_context_line(opts) .. "\n,import " .. base_module), _9_)
+end
 local function eval_str(opts)
-  local function _9_(repl)
-    local tmp_3_ = (",m " .. (opts.context or "(guile-user)") .. "\n" .. opts.code)
+  local function _10_(repl)
+    if not known_contexts[opts.context] then
+      init_context(repl, opts)
+      known_contexts[opts.context] = true
+    else
+    end
+    local tmp_3_ = (",m " .. (opts.context or default_context) .. "\n" .. opts.code)
     if (nil ~= tmp_3_) then
       local tmp_3_0 = clean_input_code(tmp_3_)
       if (nil ~= tmp_3_0) then
-        local function _10_(msgs)
+        local function _12_(msgs)
           if ((1 == a.count(msgs)) and ("" == a["get-in"](msgs, {1, "out"}))) then
             a["assoc-in"](msgs, {1, "out"}, (comment_prefix .. "Empty result"))
           else
@@ -91,7 +107,7 @@ local function eval_str(opts)
           end
           return a["run!"](display_result, msgs)
         end
-        return repl.send(tmp_3_0, _10_, {["batch?"] = true})
+        return repl.send(tmp_3_0, _12_, {["batch?"] = true})
       else
         return nil
       end
@@ -99,43 +115,43 @@ local function eval_str(opts)
       return nil
     end
   end
-  return with_repl_or_warn(_9_)
+  return with_repl_or_warn(_10_)
 end
 local function eval_file(opts)
   return eval_str(a.assoc(opts, "code", ("(load \"" .. opts["file-path"] .. "\")")))
 end
 local function doc_str(opts)
-  local function _15_(_241)
+  local function _17_(_241)
     return ("(procedure-documentation " .. _241 .. ")")
   end
-  return eval_str(a.update(opts, "code", _15_))
+  return eval_str(a.update(opts, "code", _17_))
 end
 local function display_repl_status()
   local repl = state("repl")
   log.dbg(a.str("client.guile.socket: repl=", repl))
   if repl then
-    local _16_
+    local _18_
     do
       local pipename = a["get-in"](repl, {"opts", "pipename"})
       local host_port = a["get-in"](repl, {"opts", "host-port"})
       if pipename then
-        _16_ = (pipename .. " ")
+        _18_ = (pipename .. " ")
       elseif host_port then
-        _16_ = (host_port .. " ")
+        _18_ = (host_port .. " ")
       else
-        _16_ = "no pipename & no host-port"
+        _18_ = "no pipename & no host-port"
       end
     end
-    local _18_
+    local _20_
     do
       local err = a.get(repl, "err")
       if err then
-        _18_ = (" " .. err)
+        _20_ = (" " .. err)
       else
-        _18_ = ""
+        _20_ = ""
       end
     end
-    return log.append({(comment_prefix .. _16_ .. "(" .. repl.status .. _18_ .. ")")}, {["break?"] = true})
+    return log.append({(comment_prefix .. _18_ .. "(" .. repl.status .. _20_ .. ")")}, {["break?"] = true})
   else
     return nil
   end
@@ -156,13 +172,13 @@ local function parse_guile_result(s)
   if prompt then
     local ind1, _, result = s:find("%$%d+ = ([^\n]+)\n")
     local stray_output
-    local _22_
+    local _24_
     if result then
-      _22_ = ind1
+      _24_ = ind1
     else
-      _22_ = prompt
+      _24_ = prompt
     end
-    stray_output = s:sub(1, (_22_ - 1))
+    stray_output = s:sub(1, (_24_ - 1))
     if (#stray_output > 0) then
       log.append(text["prefixed-lines"](text["trim-last-newline"](stray_output), "; (out) "))
     else
@@ -180,9 +196,9 @@ local function connect(opts)
   local cfg_host_port = cfg({"host-port"})
   local host_port
   if cfg_host_port then
-    local _let_26_ = vim.split(cfg_host_port, ":")
-    local host = _let_26_[1]
-    local port = _let_26_[2]
+    local _let_28_ = vim.split(cfg_host_port, ":")
+    local host = _let_28_[1]
+    local port = _let_28_[2]
     log.dbg(a.str("client.guile.socket: host=", host))
     log.dbg(a.str("client.guile.socket: port=", port))
     if (not host and not port) then
@@ -203,25 +219,25 @@ local function connect(opts)
   end
   log.dbg(a.str("client.guile.socket: pipename=", pipename))
   log.dbg(a.str("client.guile.socket: host-port=", cfg_host_port))
-  local function _30_()
+  local function _32_()
     return display_repl_status()
   end
-  local function _31_(msg, repl)
+  local function _33_(msg, repl)
     display_result(msg)
-    local function _32_()
+    local function _34_()
     end
-    return repl.send(",q\n", _32_)
+    return repl.send(",q\n", _34_)
   end
-  return a.assoc(state(), "repl", socket.start({["parse-output"] = parse_guile_result, pipename = pipename, ["host-port"] = host_port, ["on-success"] = _30_, ["on-error"] = _31_, ["on-failure"] = disconnect, ["on-close"] = disconnect, ["on-stray-output"] = display_result}))
+  return a.assoc(state(), "repl", socket.start({["parse-output"] = parse_guile_result, pipename = pipename, ["host-port"] = host_port, ["on-success"] = _32_, ["on-error"] = _33_, ["on-failure"] = disconnect, ["on-close"] = disconnect, ["on-stray-output"] = display_result}))
 end
 local function on_exit()
   return disconnect()
 end
 local function on_filetype()
-  local function _33_()
+  local function _35_()
     return connect()
   end
-  mapping.buf("GuileConnect", cfg({"mapping", "connect"}), _33_, {desc = "Connect to a REPL"})
+  mapping.buf("GuileConnect", cfg({"mapping", "connect"}), _35_, {desc = "Connect to a REPL"})
   return mapping.buf("GuileDisconnect", cfg({"mapping", "disconnect"}), disconnect, {desc = "Disconnect from the REPL"})
 end
 return {["buf-suffix"] = buf_suffix, ["comment-prefix"] = comment_prefix, connect = connect, context = context, disconnect = disconnect, ["doc-str"] = doc_str, ["eval-file"] = eval_file, ["eval-str"] = eval_str, ["form-node?"] = form_node_3f, ["on-exit"] = on_exit, ["on-filetype"] = on_filetype}
