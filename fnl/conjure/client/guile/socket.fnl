@@ -29,22 +29,19 @@
 
 (local buf-suffix ".scm")
 (local comment-prefix "; ")
-(local context-pattern "%(define%-module%s+(%([%g%s]-%))")
 
 (fn strip-comments [f]
   (string.gsub f ";.-\n" ""))
 
 (fn normalize-context [arg] 
-  (let [trimmed (str.trim arg)
-        tokens  (str.split trimmed "%s+") 
+  (let [tokens  (str.split arg "%s+") 
         context (.. "(" (str.join " " tokens) ")")]
     context))
 
 (fn context [f] 
   (let [stripped (strip-comments f)
-        define-args (string.match stripped "%(define%-module%s+%(([%g%s]-)%)")
+        define-args (string.match stripped "%(define%-module%s+%(%s*([%g%s]-)%s*%)")
         context (if define-args (normalize-context define-args) nil)]
-                              (log.append ["context" context])
    context))
 
 
@@ -217,7 +214,6 @@
  : comment-prefix
  : connect
  : context
-; : context-pattern
  : disconnect
  : doc-str
  : eval-file

@@ -23,26 +23,23 @@ end
 state = client["new-state"](_3_)
 local buf_suffix = ".scm"
 local comment_prefix = "; "
-local context_pattern = "%(define%-module%s+(%([%g%s]-%))"
 local function strip_comments(f)
   return string.gsub(f, ";.-\n", "")
 end
 local function normalize_context(arg)
-  local trimmed = str.trim(arg)
-  local tokens = str.split(trimmed, "%s+")
+  local tokens = str.split(arg, "%s+")
   local context = ("(" .. str.join(" ", tokens) .. ")")
   return context
 end
 local function context(f)
   local stripped = strip_comments(f)
-  local define_args = string.match(stripped, "%(define%-module%s+%(([%g%s]-)%)")
+  local define_args = string.match(stripped, "%(define%-module%s+%(%s*([%g%s]-)%s*%)")
   local context0
   if define_args then
     context0 = normalize_context(define_args)
   else
     context0 = nil
   end
-  log.append({"context", context0})
   return context0
 end
 local form_node_3f = ts["node-surrounded-by-form-pair-chars?"]
