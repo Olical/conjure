@@ -34,7 +34,7 @@ local function strip_comments(f)
   return string.gsub(f, ";.-\n", "")
 end
 local function context(f)
-  local stripped = strip_comments(f)
+  local stripped = strip_comments((f .. "\n"))
   local define_args = string.match(stripped, "%(define%-module%s+%(%s*([%g%s]-)%s*%)")
   if define_args then
     return normalize_context(define_args)
