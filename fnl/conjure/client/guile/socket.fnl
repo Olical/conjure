@@ -41,7 +41,7 @@
   (string.gsub f ";.-\n" ""))
 
 (fn context [f] 
-  (let [stripped (strip-comments f)
+  (let [stripped (strip-comments (.. f "\n"))
         define-args (string.match stripped "%(define%-module%s+%(%s*([%g%s]-)%s*%)")]
     (if define-args 
       (normalize-context define-args) 
