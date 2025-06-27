@@ -25,11 +25,28 @@
                   :disconnect "cd"}}}}}))
 
 (local cfg (config.get-in-fn [:client :guile :socket]))
-(local state (client.new-state #(do {:repl nil})))
+(local state (client.new-state #(do {:repl nil :known-contexts {}})))
 
 (local buf-suffix ".scm")
 (local comment-prefix "; ")
-(local context-pattern "%(define%-module%s+(%([%g%s]-%))")
+(local base-module "(guile)")
+(local default-context "(guile-user)")
+
+(fn normalize-context [arg] 
+  (let [tokens  (str.split arg "%s+") 
+        context (.. "(" (str.join " " tokens) ")")]
+    context))
+
+(fn strip-comments [f]
+  (string.gsub f ";.-\n" ""))
+
+(fn context [f] 
+  (let [stripped (strip-comments (.. f "\n"))
+        define-args (string.match stripped "%(define%-module%s+%(%s*([%g%s]-)%s*%)")]
+    (if define-args 
+      (normalize-context define-args) 
+      nil)))
+
 (local form-node? ts.node-surrounded-by-form-pair-chars?)
 
 (fn with-repl-or-warn [f opts]
@@ -64,21 +81,37 @@
     (when (not (str.blank? clean))
       clean)))
 
+(fn build-switch-module-command [context]
+  (.. ",m " context))
+
+(fn init-module [repl context]
+  (log.dbg (.. "Initializing module for context " context))
+  (repl.send 
+    (.. (build-switch-module-command context) "\n,import " base-module ) 
+    (fn [_])))
+
+(fn ensure-module-initialized [repl context]
+  (when (not (a.get-in (state) [:known-contexts context]))
+    (init-module repl context)
+    (a.assoc-in (state) [:known-contexts context] true)))
+
 (fn eval-str [opts]
   (with-repl-or-warn
     (fn [repl]
-      (-?> (.. ",m " (or opts.context "(guile-user)") "\n" opts.code)
-           (clean-input-code)
-           (repl.send
-             (fn [msgs]
-               (when (and (= 1 (a.count msgs))
-                          (= "" (a.get-in msgs [1 :out])))
-                 (a.assoc-in msgs [1 :out] (.. comment-prefix "Empty result")))
+      (let [context (or opts.context default-context)]
+        (ensure-module-initialized repl context) 
+        (-?> (.. (build-switch-module-command context) "\n" opts.code)
+             (clean-input-code)
+             (repl.send
+               (fn [msgs]
+                 (when (and (= 1 (a.count msgs))
+                            (= "" (a.get-in msgs [1 :out])))
+                   (a.assoc-in msgs [1 :out] (.. comment-prefix "Empty result")))
 
-               (when opts.on-result
-                (opts.on-result (str.join "\n" (format-message (a.last msgs)))))
-               (a.run! display-result msgs))
-             {:batch? true})))))
+                 (when opts.on-result
+                   (opts.on-result (str.join "\n" (format-message (a.last msgs)))))
+                 (a.run! display-result msgs))
+               {:batch? true}))))))
 
 (fn eval-file [opts]
   (eval-str (a.assoc opts :code (.. "(load \"" opts.file-path "\")"))))
@@ -115,7 +148,8 @@
       (repl.destroy)
       (a.assoc repl :status :disconnected)
       (display-repl-status)
-      (a.assoc (state) :repl nil))))
+      (a.assoc (state) :repl nil)))
+  (a.assoc (state) :known-contexts {}))
 
 (fn parse-guile-result [s]
   (let [prompt (s:find "scheme@%([%w%-%s]+%)> ")]
@@ -198,7 +232,7 @@
 {: buf-suffix
  : comment-prefix
  : connect
- : context-pattern
+ : context
  : disconnect
  : doc-str
  : eval-file

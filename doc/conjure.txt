@@ -1040,7 +1040,7 @@ examples: https://github.com/Olical/conjure/wiki/Client-features
 `context`
             Function(header)
             Called instead of `context-pattern` if it's not defined. Is passed
-            the first few lines of the buffer as it's only argument. You can
+            the first few lines of the buffer as its only argument. You can
             parse out the context string in any way you see fit.
             The return value is passed into later functions as `opts.context`.
 
