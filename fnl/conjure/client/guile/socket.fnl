@@ -1,4 +1,4 @@
-(local {: autoload} (require :conjure.nfnl.module))
+(local {: autoload : define} (require :conjure.nfnl.module))
 (local a (autoload :conjure.nfnl.core))
 (local client (autoload :conjure.client))
 (local config (autoload :conjure.config))
@@ -8,6 +8,8 @@
 (local str (autoload :conjure.nfnl.string))
 (local text (autoload :conjure.text))
 (local ts (autoload :conjure.tree-sitter))
+
+(local M (define :conjure.client.guile.socket))
 
 (config.merge
   {:client
@@ -27,8 +29,9 @@
 (local cfg (config.get-in-fn [:client :guile :socket]))
 (local state (client.new-state #(do {:repl nil :known-contexts {}})))
 
-(local buf-suffix ".scm")
-(local comment-prefix "; ")
+(set M.buf-suffix ".scm")
+(set M.comment-prefix "; ")
+
 (local base-module "(guile)")
 (local default-context "(guile-user)")
 
@@ -40,20 +43,20 @@
 (fn strip-comments [f]
   (string.gsub f ";.-\n" ""))
 
-(fn context [f] 
+(fn M.context [f] 
   (let [stripped (strip-comments (.. f "\n"))
         define-args (string.match stripped "%(define%-module%s+%(%s*([%g%s]-)%s*%)")]
     (if define-args 
       (normalize-context define-args) 
       nil)))
 
-(local form-node? ts.node-surrounded-by-form-pair-chars?)
+(set M.form-node? ts.node-surrounded-by-form-pair-chars?)
 
-(fn with-repl-or-warn [f opts]
+(fn with-repl-or-warn [f _opts]
   (let [repl (state :repl)]
     (if (and repl (= :connected repl.status))
       (f repl)
-      (log.append [(.. comment-prefix "No REPL running")]))))
+      (log.append [(.. M.comment-prefix "No REPL running")]))))
 
 (fn format-message [msg]
   (if
@@ -63,9 +66,9 @@
     msg.err
     (-> msg.err
         (string.gsub "%s*Entering a new prompt%. .*]>%s*" "")
-        (text.prefixed-lines comment-prefix))
+        (text.prefixed-lines M.comment-prefix))
 
-    [(.. comment-prefix "Empty result")]))
+    [(.. M.comment-prefix "Empty result")]))
 
 (fn display-result [msg]
   (log.append
@@ -95,7 +98,7 @@
     (init-module repl context)
     (a.assoc-in (state) [:known-contexts context] true)))
 
-(fn eval-str [opts]
+(fn M.eval-str [opts]
   (with-repl-or-warn
     (fn [repl]
       (let [context (or opts.context default-context)]
@@ -106,25 +109,25 @@
                (fn [msgs]
                  (when (and (= 1 (a.count msgs))
                             (= "" (a.get-in msgs [1 :out])))
-                   (a.assoc-in msgs [1 :out] (.. comment-prefix "Empty result")))
+                   (a.assoc-in msgs [1 :out] (.. M.comment-prefix "Empty result")))
 
                  (when opts.on-result
                    (opts.on-result (str.join "\n" (format-message (a.last msgs)))))
                  (a.run! display-result msgs))
                {:batch? true}))))))
 
-(fn eval-file [opts]
-  (eval-str (a.assoc opts :code (.. "(load \"" opts.file-path "\")"))))
+(fn M.eval-file [opts]
+  (M.eval-str (a.assoc opts :code (.. "(load \"" opts.file-path "\")"))))
 
-(fn doc-str [opts]
-  (eval-str (a.update opts :code #(.. "(procedure-documentation " $1 ")"))))
+(fn M.doc-str [opts]
+  (M.eval-str (a.update opts :code #(.. "(procedure-documentation " $1 ")"))))
 
 (fn display-repl-status []
   (let [repl (state :repl)]
     (log.dbg (a.str "client.guile.socket: repl=" repl))
     (when repl
       (log.append
-        [(.. comment-prefix
+        [(.. M.comment-prefix
              (let [pipename (a.get-in repl [:opts :pipename])
                    host-port (a.get-in repl [:opts :host-port])]
                (if pipename
@@ -142,7 +145,7 @@
              ")")]
         {:break? true}))))
 
-(fn disconnect []
+(fn M.disconnect []
   (let [repl (state :repl)]
     (when repl
       (repl.destroy)
@@ -176,8 +179,8 @@
        :error? false
        :result s})))
 
-(fn connect [opts]
-  (disconnect)
+(fn M.connect [_opts]
+  (M.disconnect)
   (let [pipename (cfg [:pipename])
         cfg-host-port (cfg [:host-port])
         host-port (when cfg-host-port
@@ -211,32 +214,22 @@
         :on-error (fn [msg repl]
                     (display-result msg)
                     (repl.send ",q\n" (fn []))) ; Don't bother with debugger.
-        :on-failure disconnect
-        :on-close disconnect
+        :on-failure M.disconnect
+        :on-close M.disconnect
         :on-stray-output display-result}))))
 
-(fn on-exit []
-  (disconnect))
+(fn M.on-exit []
+  (M.disconnect))
 
-(fn on-filetype []
+(fn M.on-filetype []
   (mapping.buf
     :GuileConnect (cfg [:mapping :connect])
-    #(connect)
+    #(M.connect)
     {:desc "Connect to a REPL"})
 
   (mapping.buf
     :GuileDisconnect (cfg [:mapping :disconnect])
-    disconnect
+    #(M.disconnect)
     {:desc "Disconnect from the REPL"}))
 
-{: buf-suffix
- : comment-prefix
- : connect
- : context
- : disconnect
- : doc-str
- : eval-file
- : eval-str
- : form-node?
- : on-exit
- : on-filetype}
+M
