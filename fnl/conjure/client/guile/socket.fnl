@@ -91,10 +91,9 @@
     (fn [_])))
 
 (fn ensure-module-initialized [repl context]
-  (if (not (a.get-in (state) [:known-contexts context]))
-    (do 
-      (init-module repl context)
-      (a.assoc-in (state) [:known-contexts context] true))))
+  (when (not (a.get-in (state) [:known-contexts context]))
+    (init-module repl context)
+    (a.assoc-in (state) [:known-contexts context] true)))
 
 (fn eval-str [opts]
   (with-repl-or-warn
