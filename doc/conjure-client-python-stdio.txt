@@ -15,6 +15,12 @@ INTRODUCTION                          *conjure-client-python-stdio-introduction*
 
 Conjure starts a Python REPL within Neovim when you first open a Python file.
 
+We set `__name__` to `__repl__` which means you can alter your program entry
+point to include `__repl__` if you wish to execute your software from the REPL
+as well as the command line.
+>python
+ if __name__ == "__main__" or "__repl__":
+
 Once you have tree sitter installed and configured (remember to run
 `:TSInstall python`!) you should be able to evaluate forms just like you would
 in any other Conjure supported language.
