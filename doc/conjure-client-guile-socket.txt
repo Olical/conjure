@@ -101,4 +101,15 @@ is printed.
 
             Default: `nil`
 
+                                      *g:conjure#client#guile#socket#enable-completions*
+`g:conjure#client#guile#socket#enable-completions`
+            Enable completion suggestions through the repl via Guile's readline
+            apropos-completion-function, which offers completions for functions
+            and variables (all defines).
+
+            Example value:
+                     `false`
+
+            Default: `true`
+
 vim:tw=78:sw=2:ts=2:ft=help:norl:et:listchars=

@@ -306,26 +306,27 @@
 (fn completions [opts]
   ;(when (not= nil opts)
   ;  (log.append [(.. "; completions() called with: " (a.pr-str opts))] {:break? true}))
-  (try-ensure-conn)
-  (let [code (.. "(swank:simple-completions " (a.pr-str opts.prefix) " " (a.pr-str opts.context) ")")
-        format-for-cmpl
-        (fn [rs]
-          (let [cmpls (parse-separated-list rs)
-                last (table.remove cmpls)]
-            (table.insert cmpls 1 last)
-            cmpls))
-        result-fn
-        (fn [results]
-          (let [cmpl-list (format-for-cmpl results)]
-            ;(log.append [(.. "; in completions()'s result-fn, called with: " (a.pr-str results))] )
-            ;(log.append [(..  "; in completions()'s result-fn, calling opts.cb with " (a.pr-str cmpl-list))])
-            (opts.cb cmpl-list) ; return the list of completions
-            ))
-        ]
-    (a.assoc opts :code code)
-    (a.assoc opts :on-result result-fn)
-    (a.assoc opts :passive? true)
-    (eval-str opts)))
+  (if (connected?) 
+    (let [code (.. "(swank:simple-completions " (a.pr-str opts.prefix) " " (a.pr-str opts.context) ")")
+          format-for-cmpl
+          (fn [rs]
+            (let [cmpls (parse-separated-list rs)
+                  last (table.remove cmpls)]
+              (table.insert cmpls 1 last)
+              cmpls))
+          result-fn
+          (fn [results]
+            (let [cmpl-list (format-for-cmpl results)]
+              ;(log.append [(.. "; in completions()'s result-fn, called with: " (a.pr-str results))] )
+              ;(log.append [(..  "; in completions()'s result-fn, calling opts.cb with " (a.pr-str cmpl-list))])
+              (opts.cb cmpl-list) ; return the list of completions
+              ))
+          ]
+      (a.assoc opts :code code)
+      (a.assoc opts :on-result result-fn)
+      (a.assoc opts :passive? true)
+      (eval-str opts))
+    (opts.cb [])))
 
 {: buf-suffix
  : comment-prefix
