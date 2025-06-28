@@ -284,25 +284,28 @@ local function on_exit()
   return disconnect()
 end
 local function completions(opts)
-  try_ensure_conn()
-  local code = ("(swank:simple-completions " .. a["pr-str"](opts.prefix) .. " " .. a["pr-str"](opts.context) .. ")")
-  local format_for_cmpl
-  local function _41_(rs)
-    local cmpls = parse_separated_list(rs)
-    local last = table.remove(cmpls)
-    table.insert(cmpls, 1, last)
-    return cmpls
+  if connected_3f() then
+    local code = ("(swank:simple-completions " .. a["pr-str"](opts.prefix) .. " " .. a["pr-str"](opts.context) .. ")")
+    local format_for_cmpl
+    local function _41_(rs)
+      local cmpls = parse_separated_list(rs)
+      local last = table.remove(cmpls)
+      table.insert(cmpls, 1, last)
+      return cmpls
+    end
+    format_for_cmpl = _41_
+    local result_fn
+    local function _42_(results)
+      local cmpl_list = format_for_cmpl(results)
+      return opts.cb(cmpl_list)
+    end
+    result_fn = _42_
+    a.assoc(opts, "code", code)
+    a.assoc(opts, "on-result", result_fn)
+    a.assoc(opts, "passive?", true)
+    return eval_str(opts)
+  else
+    return opts.cb({})
   end
-  format_for_cmpl = _41_
-  local result_fn
-  local function _42_(results)
-    local cmpl_list = format_for_cmpl(results)
-    return opts.cb(cmpl_list)
-  end
-  result_fn = _42_
-  a.assoc(opts, "code", code)
-  a.assoc(opts, "on-result", result_fn)
-  a.assoc(opts, "passive?", true)
-  return eval_str(opts)
 end
 return {["buf-suffix"] = buf_suffix, ["comment-prefix"] = comment_prefix, ["form-node?"] = form_node_3f, context = context, disconnect = disconnect, connect = connect, ["parse-result"] = parse_result, ["eval-str"] = eval_str, ["doc-str"] = doc_str, ["eval-file"] = eval_file, ["on-filetype"] = on_filetype, ["on-load"] = on_load, ["on-exit"] = on_exit, completions = completions}
