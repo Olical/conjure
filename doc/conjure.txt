@@ -786,6 +786,13 @@ configure the ones you care about one at a time you can set:
             after moving the cursor to the latest log entry.
             Default: `"top"`
 
+                                 *g:conjure#log#raw_out*
+`g:conjure#log#raw_out`
+            Don't prefix stdout lines with language specific comment prefixes,
+            useful if you print data a lot and don't want to have to strip the
+            comment prefixes each time.
+            Default: `false`
+
                                       *g:conjure#extract#context_header_lines*
 `g:conjure#extract#context_header_lines`
             How many lines of the file should be checked for a context

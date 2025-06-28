@@ -54,7 +54,6 @@
 
       :eval
       {:pretty_print true
-       :raw_out false
        :auto_require true
        :print_quota nil
        :print_function "cider.nrepl.pprint/pprint"

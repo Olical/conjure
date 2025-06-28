@@ -69,11 +69,5 @@ All configuration can be set as described in |conjure-configuration|.
             to submit more code as well as collect all output prior to the
             marker as the result.
             Default: `"=> "`
-                                      *g:conjure#client#hy#stdio#eval#raw_out*
-`g:conjure#client#hy#stdio#eval#raw_out`
-            Don't prefix stdout lines with `; (out)`, useful if you print data
-            a lot and don't want to have to strip the comment prefixes each
-            time.
-            Default: `false`
 
 vim:tw=78:sw=2:ts=2:ft=help:norl:et:listchars=

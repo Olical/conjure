@@ -119,7 +119,8 @@
     :fold {:enabled false
            :lines 10
            :marker {:start "~~~%{"
-                    :end "}%~~~"}}}
+                    :end "}%~~~"}}
+    :raw_out false}
 
    :extract
    {:context_header_lines -1

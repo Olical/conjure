@@ -14,8 +14,7 @@
   {:client
    {:hy
     {:stdio
-     {:eval {:raw_out false}
-      :command "hy -iu -c=\"Ready!\""
+     {:command "hy -iu -c=\"Ready!\""
       :prompt_pattern "=> "}}}})
 
 (when (config.get-in [:mapping :enable_defaults])
@@ -44,7 +43,7 @@
                        (cfg [:mapping :start]))]))))
 
 (fn display-result [msg]
-  (let [prefix (if (= true (cfg [:eval :raw_out]))
+  (let [prefix (if (= true (config.get-in [:log :raw_out]))
                  ""
                  (.. comment-prefix (if msg.err "(err)" "(out)") " "))]
     (->> (str.split (or msg.err msg.out) "\n")
