@@ -1,0 +1,86 @@
+                                                 *conjure-client-r-stdio*
+
+==============================================================================
+CONTENTS                                *conjure-client-r-stdio-contents*
+
+    1. Introduction ............ |conjure-client-r-stdio-introduction|
+    2. Mappings .................... |conjure-client-r-stdio-mappings|
+    3. Configuration .......... |conjure-client-r-stdio-configuration|
+
+==============================================================================
+INTRODUCTION                        *conjure-client-r-stdio-introduction*
+
+  R is a programming language and environment specifically designed 
+  for statistical computing, data analysis, and graphics.
+
+Conjure starts an R REPL within Neovim when you first open a R
+(`.r`) file. You can configure which REPL is launched with the
+`g:conjure#client#r#stdio#command` configuration option.
+
+You should be able to evaluate files and forms as you would with other Conjure
+supported languages right away.
+
+Check out `:ConjureSchool` if you're unsure about what evaluation operations
+you can perform.
+
+ * https://www.r-project.org/
+
+==============================================================================
+MAPPINGS                                *conjure-client-r-stdio-mappings*
+
+These mappings are the defaults, you can change them as described in
+|conjure-mappings| and |conjure-configuration|.
+
+See |conjure-client-r-stdio-configuration| for specific configuration
+options relevant to these mappings.
+
+<localleader>cs          Start the r REPL if it's not running already.
+
+<localleader>cS          Stop any existing r REPL.
+
+<localleader>ei          Interrupt running command. Same as pressing Ctrl-C
+                         in a cmdline REPL.
+
+==============================================================================
+CONFIGURATION                      *conjure-client-r-stdio-configuration*
+
+All configuration can be set as described in |conjure-configuration|.
+
+                                 *g:conjure#client#r#stdio#mapping#start*
+`g:conjure#client#r#stdio#mapping#start`
+            Start the R REPL if it's not running already.
+            Default: `"cs"`
+
+                                  *g:conjure#client#r#stdio#mapping#stop*
+`g:conjure#client#r#stdio#mapping#stop`
+            Stop any existing R REPL.
+            Default: `"cS"`
+
+                                       *g:conjure#client#r#stdio#command*
+`g:conjure#client#r#stdio#command`
+            Command used to start the R REPL, you can modify this to add
+            arguments or change the command entirely.
+
+            When using a different REPL you'll probably have to change the
+            `prompt_pattern` too! Have a look at the default REPL output and
+            write a Lua pattern that will match that prompt string as best as
+            you can.
+
+            Default: `"R --vanilla --interactive --quiet"`
+
+                                *g:conjure#client#r#stdio#prompt_pattern*
+`g:conjure#client#r#stdio#prompt_pattern`
+            Lua pattern to identify a new REPL prompt. This match signals to
+            Conjure that the previous evaluation is complete and we're ready
+            to submit more code as well as collect all output prior to the
+            marker as the result.
+            Default: `"[%]e][=r]r?o?r?> "`
+
+                          *g:conjure#client#r#stdio#value_prefix_pattern*
+`g:conjure#client#r#stdio#value_prefix_pattern`
+            Lua pattern to identify a value output as opposed to a printed,
+            non-code, string. Set it to `v:false` to turn it off entirely and treat
+            everything as a value.
+            Default: `"^;Value: "`
+
+vim:tw=78:sw=2:ts=2:ft=help:norl:et:listchars=
