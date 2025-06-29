@@ -275,10 +275,9 @@ end
 M.completions = function(opts)
   if (completions_enabled_3f() and connected_3f()) then
     local code = cmpl["build-completion-request"](opts.prefix)
-    local format_for_cmpl = cmpl["format-results"]
     local result_fn
     local function _41_(results)
-      local cmpl_list = format_for_cmpl(results)
+      local cmpl_list = cmpl["format-results"](results)
       return opts.cb(cmpl_list)
     end
     result_fn = _41_
