@@ -61,7 +61,7 @@
                 (guile.disconnect)
 
                 (assert.are.equal ",m (guile-user)\n,import (guile)" (. calls 1))
-                (assert.contains completion-code-define-match (. calls 2))
+                (assert.has-substring completion-code-define-match (. calls 2))
                 (assert.are.equal (.. ",m (guile-user)\n" expected-code) (. calls 3)))))
 
         (it "initializes (guile-user) once when eval-str called twice on repl in nil context"
@@ -100,7 +100,7 @@
                 (guile.disconnect)
 
                 (assert.are.equal ",m (guile-user)\n,import (guile)" (. calls 4))
-                (assert.contains completion-code-define-match (. calls 5))
+                (assert.has-substring completion-code-define-match (. calls 5))
                 (assert.are.equal (.. ",m (guile-user)\n" expected-code) (. calls 6)))))
 
         (it "initializes (a-module) when eval-str in (guile-user) then eval-str in (a-module)"
@@ -120,7 +120,7 @@
                 (guile.disconnect)
 
                 (assert.are.equal (..  ",m " expected-module "\n,import (guile)") (. calls 4))
-                (assert.contains completion-code-define-match (. calls 5))
+                (assert.has-substring completion-code-define-match (. calls 5))
                 (assert.are.equal (.. ",m " expected-module "\n" expected-code) (. calls 6)))))))
 
     (describe "completions"
@@ -157,19 +157,19 @@
                 (guile.connect {})
                 (set-repl-connected fake-repl)
                 (guile.completions {:cb fake-callback :prefix "d"})
-                ((. (. calls 3) :callback) [{:out "(\"define\")"}])
-                (guile.disconnect)
+                (let [completion-call (. calls 3)]
+                  ((. completion-call :callback) [{:out "(\"define\")"}])
+                  (guile.disconnect)
 
-                (assert.contains expected-code (. (. calls 3) :code))
-                (assert.same ["define"] (. callback-results 1)))))
+                  (assert.has-substring expected-code (. completion-call :code))
+                  (assert.same ["define"] (. callback-results 1))))))
 
         (it "Puts last completion first for prefix fu with results fun func and future"
             (fn []
               (let [
-                    calls []
-                    spy-send (fn [_ callback] (table.insert calls callback))
+                    sent-callbacks []
+                    spy-send (fn [_ callback] (table.insert sent-callbacks callback))
                     fake-repl (fake-socket.build-fake-repl spy-send)
-                    expected-code "%(%%conjure:get%-guile%-completions \"fu\"%)"
                     callback-results  []
                     fake-callback (fn [result] (table.insert callback-results result))]
                 (fake-socket.set-fake-repl fake-repl)
@@ -177,7 +177,7 @@
                 (guile.connect {})
                 (set-repl-connected fake-repl)
                 (guile.completions {:cb fake-callback :prefix "fu"})
-                ((. calls 3) [{:out "(\"fun\" \"func\" \"future\")"}])
+                ((. sent-callbacks 3) [{:out "(\"fun\" \"func\" \"future\")"}])
                 (guile.disconnect)
 
                 (assert.same ["future" "fun" "func"] (. callback-results 1)))))))
@@ -224,7 +224,7 @@
                 (guile.disconnect)
 
                 (assert.are.equal ",m (guile-user)\n,import (guile)" (. calls 1))
-                (assert.contains completion-code-define-match (. calls 2))
+                (assert.has-substring completion-code-define-match (. calls 2))
                 (assert.are.equal (.. ",m (guile-user)\n" expected-code) (. calls 3)))))
 
         (it "Does not execute completions in REPL when connected but completions disabled"

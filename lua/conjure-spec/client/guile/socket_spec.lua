@@ -67,7 +67,7 @@ local function _2_()
       guile["eval-str"]({code = expected_code, context = nil})
       guile.disconnect()
       assert.are.equal(",m (guile-user)\n,import (guile)", calls[1])
-      assert.contains(completion_code_define_match, calls[2])
+      assert["has-substring"](completion_code_define_match, calls[2])
       return assert.are.equal((",m (guile-user)\n" .. expected_code), calls[3])
     end
     it("initializes (guile-user) when eval-str called on new repl in nil context", _13_)
@@ -108,7 +108,7 @@ local function _2_()
       guile["eval-str"]({code = expected_code, context = nil})
       guile.disconnect()
       assert.are.equal(",m (guile-user)\n,import (guile)", calls[4])
-      assert.contains(completion_code_define_match, calls[5])
+      assert["has-substring"](completion_code_define_match, calls[5])
       return assert.are.equal((",m (guile-user)\n" .. expected_code), calls[6])
     end
     it("initializes (guile-user) again when eval-str disconnect eval-str is called in nil context", _17_)
@@ -132,7 +132,7 @@ local function _2_()
       guile["eval-str"]({code = expected_code, context = expected_module})
       guile.disconnect()
       assert.are.equal((",m " .. expected_module .. "\n,import (guile)"), calls[4])
-      assert.contains(completion_code_define_match, calls[5])
+      assert["has-substring"](completion_code_define_match, calls[5])
       return assert.are.equal((",m " .. expected_module .. "\n" .. expected_code), calls[6])
     end
     return it("initializes (a-module) when eval-str in (guile-user) then eval-str in (a-module)", _19_)
@@ -182,21 +182,21 @@ local function _2_()
       guile.connect({})
       set_repl_connected(fake_repl)
       guile.completions({cb = fake_callback, prefix = "d"})
-      calls[3].callback({{out = "(\"define\")"}})
+      local completion_call = calls[3]
+      completion_call.callback({{out = "(\"define\")"}})
       guile.disconnect()
-      assert.contains(expected_code, calls[3].code)
+      assert["has-substring"](expected_code, completion_call.code)
       return assert.same({"define"}, callback_results[1])
     end
     it("Executes completions in REPL for prefix d with result define", _26_)
     local function _30_()
-      local calls = {}
+      local sent_callbacks = {}
       local spy_send
       local function _31_(_, callback)
-        return table.insert(calls, callback)
+        return table.insert(sent_callbacks, callback)
       end
       spy_send = _31_
       local fake_repl = fake_socket["build-fake-repl"](spy_send)
-      local expected_code = "%(%%conjure:get%-guile%-completions \"fu\"%)"
       local callback_results = {}
       local fake_callback
       local function _32_(result)
@@ -207,7 +207,7 @@ local function _2_()
       guile.connect({})
       set_repl_connected(fake_repl)
       guile.completions({cb = fake_callback, prefix = "fu"})
-      calls[3]({{out = "(\"fun\" \"func\" \"future\")"}})
+      sent_callbacks[3]({{out = "(\"fun\" \"func\" \"future\")"}})
       guile.disconnect()
       return assert.same({"future", "fun", "func"}, callback_results[1])
     end
@@ -253,7 +253,7 @@ local function _2_()
       guile["eval-str"]({code = expected_code, context = nil})
       guile.disconnect()
       assert.are.equal(",m (guile-user)\n,import (guile)", calls[1])
-      assert.contains(completion_code_define_match, calls[2])
+      assert["has-substring"](completion_code_define_match, calls[2])
       return assert.are.equal((",m (guile-user)\n" .. expected_code), calls[3])
     end
     it("Does load completion code when completions enabled in config", _37_)
