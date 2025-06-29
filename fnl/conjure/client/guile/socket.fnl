@@ -252,10 +252,9 @@
   ;  (log.append [(.. "; completions() called with: " (a.pr-str opts))] {:break? true}))
   (if (and (completions-enabled?) (connected?))
     (let [code (cmpl.build-completion-request opts.prefix)
-          format-for-cmpl cmpl.format-results
           result-fn
           (fn [results]
-            (let [cmpl-list (format-for-cmpl results)]
+            (let [cmpl-list (cmpl.format-results results)]
               ;(log.append [(.. "; in completions()'s result-fn, called with: " (a.pr-str results))] )
               ;(log.append [(..  "; in completions()'s result-fn, calling opts.cb with " (a.pr-str cmpl-list))])
               (opts.cb cmpl-list) ; return the list of completions
