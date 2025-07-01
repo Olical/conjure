@@ -120,7 +120,12 @@
            :lines 10
            :marker {:start "~~~%{"
                     :end "}%~~~"}}
-    :raw_out false}
+    :std_out {:raw false
+              :filetypes [:clojure :fennel :janet :hy :julia :racket :scheme :lua :lisp :python :rust :sql]}
+    :std_warn {:raw false
+              :filetypes [:clojure :fennel :janet :hy :julia :racket :scheme :lua :lisp :python :rust :sql]}
+    :std_err {:raw false
+              :filetypes [:clojure :fennel :janet :hy :julia :racket :scheme :lua :lisp :python :rust :sql]}}
 
    :extract
    {:context_header_lines -1

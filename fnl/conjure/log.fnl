@@ -511,6 +511,11 @@
 (fn reset-hard []
   (vim.api.nvim_buf_delete (upsert-buf) {:force true}))
 
+(fn format-message [prefix msg suffix raw_out]
+  (if raw_out
+    msg
+    (.. prefix msg suffix)))
+
 {: log-buf?
  : clear-close-hud-passive-timer
  : close-hud
@@ -528,4 +533,5 @@
  : toggle
  : dbg
  : reset-soft
- : reset-hard}
+ : reset-hard
+ : format-message}
