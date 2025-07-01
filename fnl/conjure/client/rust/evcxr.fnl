@@ -65,9 +65,10 @@
       (log.append [status]))))
 
 (fn display-result [msg]
-  (->> msg
-       (a.map #(.. comment-prefix $1))
-       log.append))
+  (let [raw-out? (config.get-in [:log :raw_out])]
+    (->> msg
+         (a.map #(.. (if (not raw-out?) comment-prefix "") $1))
+         log.append)))
 
 (fn format-msg [msg]
   (->> (str.split msg "\n")

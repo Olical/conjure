@@ -45,22 +45,23 @@
           (str.join ""))})
 
 (fn format-msg [msg]
-  (->> (-> msg
-           (a.get :out)
-           (string.gsub "^%s*" "")
-           (string.gsub "%s+%d+%s*$" "")
-           (str.split "\n"))
-       (a.map
-         (fn [line]
-           (if
-             (not (cfg [:value_prefix_pattern]))
-             line
+  (let [raw-out? (config.get-in [:log :raw_out])]
+    (->> (-> msg
+             (a.get :out)
+             (string.gsub "^%s*" "")
+             (string.gsub "%s+%d+%s*$" "")
+             (str.split "\n"))
+         (a.map
+           (fn [line]
+             (if
+               (not (cfg [:value_prefix_pattern]))
+               line
 
-             (string.match line (cfg [:value_prefix_pattern]))
-             (string.gsub line (cfg [:value_prefix_pattern]) "")
+               (string.match line (cfg [:value_prefix_pattern]))
+               (string.gsub line (cfg [:value_prefix_pattern]) "")
 
-             (.. comment-prefix "(out) " line))))
-       (a.filter #(not (str.blank? $1)))))
+               (.. (if (not raw-out?) (.. comment-prefix "(out) ") "") line))))
+         (a.filter #(not (str.blank? $1))))))
 
 (fn eval-str [opts]
   (with-repl-or-warn

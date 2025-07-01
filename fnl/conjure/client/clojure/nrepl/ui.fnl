@@ -28,7 +28,7 @@
         (text.prefixed-lines
           (text.trim-last-newline resp.out)
           (if
-            (or opts.raw-out? (cfg [:eval :raw_out])) ""
+            (or opts.raw-out? (config.get-in [:log :raw_out])) ""
             opts.simple-out? "; "
             "; (out) ")
           {:skip-first? joined?})

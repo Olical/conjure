@@ -60,12 +60,13 @@
     #(reset-all-envs)))
 
 (fn display [out ret err]
-  (let [outs (->> (str.split (or out "") "\n")
+  (let [raw-out? (config.get-in [:log :raw_out])
+        outs (->> (str.split (or out "") "\n")
                   (a.filter #(~= "" $1))
-                  (a.map #(.. comment-prefix "(out) " $1)))
+                  (a.map #(.. (if (not raw-out?) (.. comment-prefix "(out) ") "") $1)))
         errs (->> (str.split (or err "") "\n")
                   (a.filter #(~= "" $1))
-                  (a.map #(.. comment-prefix "(err) " $1)))]
+                  (a.map #(.. (if (not raw-out?) (.. comment-prefix "(err) ") "") $1)))]
     (log.append outs)
     (log.append errs)
     (log.append (str.split (.. "res = " (vim.inspect ret)) "\n"))))

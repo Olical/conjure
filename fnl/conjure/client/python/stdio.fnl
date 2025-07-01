@@ -141,8 +141,10 @@
        (a.filter #(not (is-dots? $1)))))
 
 (fn get-console-output-msgs [msgs]
-  (->> (a.butlast msgs)
-       (a.map #(.. comment-prefix "(out) " $1))))
+  (let [raw-out? (config.get-in [:log :raw_out])]
+    (->> (a.butlast msgs)
+      (a.map (fn [msg]
+        (.. (if (not raw-out?) (.. comment-prefix "(out) ") "") msg))))))
 
 (fn get-expression-result [msgs]
   (let [result (a.last msgs)]
