@@ -127,7 +127,7 @@ M["eval-file"] = function(opts)
 end
 M["doc-str"] = function(opts)
   local function _17_(_241)
-    return ("(procedure-documentation " .. _241 .. ")")
+    return (",d " .. _241)
   end
   return M["eval-str"](a.update(opts, "code", _17_))
 end

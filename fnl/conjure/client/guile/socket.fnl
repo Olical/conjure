@@ -120,7 +120,7 @@
   (M.eval-str (a.assoc opts :code (.. "(load \"" opts.file-path "\")"))))
 
 (fn M.doc-str [opts]
-  (M.eval-str (a.update opts :code #(.. "(procedure-documentation " $1 ")"))))
+  (M.eval-str (a.update opts :code #(.. ",d " $1))))
 
 (fn display-repl-status []
   (let [repl (state :repl)]
