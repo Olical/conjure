@@ -283,17 +283,17 @@
 (fn M.on-filetype []
   (mapping.buf
     :PythonStart (cfg [:mapping :start])
-    M.start
+    #(M.start)
     {:desc "Start the Python REPL"})
 
   (mapping.buf
     :PythonStop (cfg [:mapping :stop])
-    M.stop
+    #(M.stop)
     {:desc "Stop the Python REPL"})
 
   (mapping.buf
     :PythonInterrupt (cfg [:mapping :interrupt])
-    M.interrupt
+    #(M.interrupt)
     {:desc "Interrupt the current evaluation"}))
 
 M

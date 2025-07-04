@@ -237,8 +237,17 @@ M["on-load"] = function()
   end
 end
 M["on-filetype"] = function()
-  mapping.buf("PythonStart", cfg({"mapping", "start"}), M.start, {desc = "Start the Python REPL"})
-  mapping.buf("PythonStop", cfg({"mapping", "stop"}), M.stop, {desc = "Stop the Python REPL"})
-  return mapping.buf("PythonInterrupt", cfg({"mapping", "interrupt"}), M.interrupt, {desc = "Interrupt the current evaluation"})
+  local function _34_()
+    return M.start()
+  end
+  mapping.buf("PythonStart", cfg({"mapping", "start"}), _34_, {desc = "Start the Python REPL"})
+  local function _35_()
+    return M.stop()
+  end
+  mapping.buf("PythonStop", cfg({"mapping", "stop"}), _35_, {desc = "Stop the Python REPL"})
+  local function _36_()
+    return M.interrupt()
+  end
+  return mapping.buf("PythonInterrupt", cfg({"mapping", "interrupt"}), _36_, {desc = "Interrupt the current evaluation"})
 end
 return M
