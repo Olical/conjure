@@ -78,8 +78,8 @@ is printed.
 
             Default: `nil`
 
-                                      *g:conjure#client#guile#socket#host-port*
-`g:conjure#client#guile#socket#host-port`
+                                      *g:conjure#client#guile#socket#host_port*
+`g:conjure#client#guile#socket#host_port`
             The "hostname:port" of the TCP socket to the Guile REPL.
 
             If "port" is not specified, the default Guile port 37146 is used.
@@ -87,7 +87,7 @@ is printed.
             If `nil`, "localhost:37146" is used.
 
             Examples to start a Guile REPL:
-                     `guile --listen` 
+                     `guile --listen`
                      `guile --listen="localhost"`
                      `guile --listen="localhost:37146"`
                      `guile --listen="4444"`
@@ -101,8 +101,8 @@ is printed.
 
             Default: `nil`
 
-                                      *g:conjure#client#guile#socket#enable-completions*
-`g:conjure#client#guile#socket#enable-completions`
+                                      *g:conjure#client#guile#socket#enable_completions*
+`g:conjure#client#guile#socket#enable_completions`
             Enable completion suggestions through the repl via Guile's readline
             apropos-completion-function, which offers completions for functions
             and variables (all defines).

@@ -17,8 +17,8 @@
    {:guile
     {:socket
      {:pipename nil
-      :host-port nil
-      :enable-completions true}}}})
+      :host_port nil
+      :enable_completions true}}}})
 
 (when (config.get-in [:mapping :enable_defaults])
   (config.merge
@@ -87,7 +87,7 @@
       clean)))
 
 (fn completions-enabled? [] 
-  (cfg [:enable-completions]))
+  (cfg [:enable_completions]))
 
 (fn build-switch-module-command [context]
   (.. ",m " context))
@@ -139,7 +139,7 @@
       (log.append
         [(.. M.comment-prefix
              (let [pipename (a.get-in repl [:opts :pipename])
-                   host-port (a.get-in repl [:opts :host-port])]
+                   host-port (a.get-in repl [:opts :host_port])]
                (if pipename
                  (.. pipename " ")
 
@@ -192,7 +192,7 @@
 (fn M.connect [_opts]
   (M.disconnect)
   (let [pipename (cfg [:pipename])
-        cfg-host-port (cfg [:host-port])
+        cfg-host-port (cfg [:host_port])
         host-port (when cfg-host-port
                     ;; Default missing parts but not fool-proof.
                     (let [[host port] (vim.split cfg-host-port ":")]

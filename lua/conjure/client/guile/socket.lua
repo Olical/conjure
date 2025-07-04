@@ -13,7 +13,7 @@ local text = autoload("conjure.text")
 local ts = autoload("conjure.tree-sitter")
 local cmpl = autoload("conjure.client.guile.completions")
 local M = define("conjure.client.guile.socket")
-config.merge({client = {guile = {socket = {pipename = nil, ["host-port"] = nil, ["enable-completions"] = true}}}})
+config.merge({client = {guile = {socket = {pipename = nil, host_port = nil, enable_completions = true}}}})
 if config["get-in"]({"mapping", "enable_defaults"}) then
   config.merge({client = {guile = {socket = {mapping = {connect = "cc", disconnect = "cd"}}}}})
 else
@@ -78,7 +78,7 @@ local function clean_input_code(code)
   end
 end
 local function completions_enabled_3f()
-  return cfg({"enable-completions"})
+  return cfg({"enable_completions"})
 end
 local function build_switch_module_command(context)
   return (",m " .. context)
@@ -153,7 +153,7 @@ local function display_repl_status()
     local _21_
     do
       local pipename = a["get-in"](repl, {"opts", "pipename"})
-      local host_port = a["get-in"](repl, {"opts", "host-port"})
+      local host_port = a["get-in"](repl, {"opts", "host_port"})
       if pipename then
         _21_ = (pipename .. " ")
       elseif host_port then
@@ -215,7 +215,7 @@ end
 M.connect = function(_opts)
   M.disconnect()
   local pipename = cfg({"pipename"})
-  local cfg_host_port = cfg({"host-port"})
+  local cfg_host_port = cfg({"host_port"})
   local host_port
   if cfg_host_port then
     local _let_31_ = vim.split(cfg_host_port, ":")
