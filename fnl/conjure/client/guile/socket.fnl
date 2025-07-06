@@ -8,6 +8,7 @@
 (local str (autoload :conjure.nfnl.string))
 (local text (autoload :conjure.text))
 (local ts (autoload :conjure.tree-sitter))
+(local cmpl (autoload :conjure.client.guile.completions))
 
 (local M (define :conjure.client.guile.socket))
 
@@ -16,7 +17,8 @@
    {:guile
     {:socket
      {:pipename nil
-      :host-port nil}}}})
+      :host_port nil
+      :enable_completions true}}}})
 
 (when (config.get-in [:mapping :enable_defaults])
   (config.merge
@@ -84,14 +86,21 @@
     (when (not (str.blank? clean))
       clean)))
 
+(fn completions-enabled? [] 
+  (cfg [:enable_completions]))
+
 (fn build-switch-module-command [context]
   (.. ",m " context))
 
 (fn init-module [repl context]
   (log.dbg (.. "Initializing module for context " context))
   (repl.send 
-    (.. (build-switch-module-command context) "\n,import " base-module ) 
-    (fn [_])))
+    (.. (build-switch-module-command context) "\n,import " base-module)
+    (fn [_]))
+  (when (completions-enabled?)
+    (repl.send 
+      cmpl.guile-repl-completion-code 
+      (fn [_]))))
 
 (fn ensure-module-initialized [repl context]
   (when (not (a.get-in (state) [:known-contexts context]))
@@ -113,14 +122,15 @@
 
                  (when opts.on-result
                    (opts.on-result (str.join "\n" (format-message (a.last msgs)))))
-                 (a.run! display-result msgs))
+                 (when (not opts.passive?)
+                   (a.run! display-result msgs)))
                {:batch? true}))))))
 
 (fn M.eval-file [opts]
   (M.eval-str (a.assoc opts :code (.. "(load \"" opts.file-path "\")"))))
 
 (fn M.doc-str [opts]
-  (M.eval-str (a.update opts :code #(.. "(procedure-documentation " $1 ")"))))
+  (M.eval-str (a.update opts :code #(.. ",d " $1))))
 
 (fn display-repl-status []
   (let [repl (state :repl)]
@@ -129,7 +139,7 @@
       (log.append
         [(.. M.comment-prefix
              (let [pipename (a.get-in repl [:opts :pipename])
-                   host-port (a.get-in repl [:opts :host-port])]
+                   host-port (a.get-in repl [:opts :host_port])]
                (if pipename
                  (.. pipename " ")
 
@@ -182,7 +192,7 @@
 (fn M.connect [_opts]
   (M.disconnect)
   (let [pipename (cfg [:pipename])
-        cfg-host-port (cfg [:host-port])
+        cfg-host-port (cfg [:host_port])
         host-port (when cfg-host-port
                     ;; Default missing parts but not fool-proof.
                     (let [[host port] (vim.split cfg-host-port ":")]
@@ -218,6 +228,11 @@
         :on-close M.disconnect
         :on-stray-output display-result}))))
 
+(fn connected? []
+  (if (state :repl)
+    true
+    false))
+
 (fn M.on-exit []
   (M.disconnect))
 
@@ -231,5 +246,24 @@
     :GuileDisconnect (cfg [:mapping :disconnect])
     #(M.disconnect)
     {:desc "Disconnect from the REPL"}))
+
+(fn M.completions [opts]
+  ;(when (not= nil opts)
+  ;  (log.append [(.. "; completions() called with: " (a.pr-str opts))] {:break? true}))
+  (if (and (completions-enabled?) (connected?))
+    (let [code (cmpl.build-completion-request opts.prefix)
+          result-fn
+          (fn [results]
+            (let [cmpl-list (cmpl.format-results results)]
+              ;(log.append [(.. "; in completions()'s result-fn, called with: " (a.pr-str results))] )
+              ;(log.append [(..  "; in completions()'s result-fn, calling opts.cb with " (a.pr-str cmpl-list))])
+              (opts.cb cmpl-list) ; return the list of completions
+              ))
+          ]
+      (a.assoc opts :code code)
+      (a.assoc opts :on-result result-fn)
+      (a.assoc opts :passive? true)
+      (M.eval-str opts))
+    (opts.cb [])))
 
 M

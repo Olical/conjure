@@ -1,0 +1,79 @@
+                                                     *conjure-client-php-psysh*
+
+==============================================================================
+CONTENTS                                  *conjure-client-php-psysh-contents*
+
+    1. Introduction ........ |conjure-client-php-psysh-introduction|
+    2. Mappings ................ |conjure-client-php-psysh-mappings|
+    3. Configuration ...... |conjure-client-php-psysh-configuration|
+
+==============================================================================
+INTRODUCTION                            *conjure-client-php-psysh-introduction*
+
+  A popular general-purpose scripting language that is especially suited to web development.
+  Fast, flexible and pragmatic, PHP powers everything from your blog to the most popular websites in the world.
+
+Conjure starts a PHP REPL within Neovim when you first open a PHP file.
+
+You should be able to evaluate files and forms as you would with other Conjure
+supported languages right away.
+
+Check out `:ConjureSchool` if you're unsure about what evaluation operations
+you can perform.
+
+ * https://www.php.net/
+ * https://github.com/bobthecow/psysh
+
+==============================================================================
+MAPPINGS                                    *conjure-client-php-psysh-mappings*
+
+These mappings are the defaults, you can change them as described in
+|conjure-mappings| and |conjure-configuration|.
+
+See |conjure-client-php-psysh-configuration| for specific configuration
+options relevant to these mappings.
+
+<localleader>cs          Start the PHP REPL if it's not running already.
+
+<localleader>cS          Stop any existing PHP REPL.
+
+<localleader>ei          Interrupt running command. Same as pressing Ctrl-C
+                         in a cmdline REPL.
+
+==============================================================================
+CONFIGURATION                          *conjure-client-php-psysh-configuration*
+
+All configuration can be set as described in |conjure-configuration|.
+
+
+                                     *g:conjure#client#php#psysh#mapping#start*
+`g:conjure#client#php#psysh#mapping#start`
+            Start the php REPL if it's not running already.
+            Default: `"cs"`
+
+                                      *g:conjure#client#php#psysh#mapping#stop*
+`g:conjure#client#php#psysh#mapping#stop`
+            Stop any existing php REPL.
+            Default: `"cS"`
+
+                                 *g:conjure#client#php#psysh#mapping#interrupt*
+`g:conjure#client#php#psysh#mapping#interrupt`
+            Interrupt running command. Same as pressing Ctrl-C in a cmdline
+            REPL.
+            Default: `"ei"`
+
+                                           *g:conjure#client#php#psysh#command*
+`g:conjure#client#php#psysh#command`
+            Command used to start the php REPL, you can modify this to add
+            arguments or change the command entirely.
+            Default: `"psysh -ir --no-color"`
+
+                                    *g:conjure#client#php#psysh#prompt_pattern*
+`g:conjure#client#php#psysh#prompt_pattern`
+            Lua pattern to identify a new REPL prompt. This match signals to
+            Conjure that the previous evaluation is complete and we're ready
+            to submit more code as well as collect all output prior to the
+            marker as the result.
+            Default: `"> "`
+
+vim:tw=78:sw=2:ts=2:ft=help:norl:et:listchars=

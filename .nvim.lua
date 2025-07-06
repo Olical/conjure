@@ -13,6 +13,8 @@ local function _2_()
 end
 vim.api.nvim_set_keymap("n", "<localleader>pr", "", {desc = "Reload the conjure modules.", callback = _2_})
 vim.g["conjure#filetype#fennel"] = "conjure.client.fennel.nfnl"
+vim.g["conjure#filetype#scheme"] = "conjure.client.guile.socket"
+vim.g["conjure#client#guile#socket#pipename"] = "dev/guile/guile-repl.socket"
 vim.g["conjure#client#clojure#nrepl#refresh#backend"] = "clj-reload"
 package.path = (package.path .. ";test/lua/?.lua")
 --[[ (nvim.ex.augroup "conjure_set_state_key_on_dir_changed") (nvim.ex.autocmd_) (nvim.ex.autocmd "DirChanged * call luaeval(\"require('conjure.client')['set-state-key!']('\" . getcwd() . \"')\")") (nvim.ex.augroup "END") ]]
