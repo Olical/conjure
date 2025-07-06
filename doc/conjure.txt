@@ -786,49 +786,6 @@ configure the ones you care about one at a time you can set:
             after moving the cursor to the latest log entry.
             Default: `"top"`
 
-                                 *g:conjure#log#std_out#raw*
-`g:conjure#log#std_out#raw`
-            Don't prefix std out lines with language specific comment prefixes,
-            useful if you print data a lot and don't want to have to strip the
-            comment prefixes each time.
-            Default: `false`
-
-                                 *g:conjure#log#std_out#filetypes*
-`g:conjure#log#std_out#filetypes`
-            Filetypes that follow the rule for raw std out.
-            Default: >
-              ["clojure", "fennel", "janet", "hy", "julia", "racket",
-               "scheme", "lua", "lisp", "python", "rust", "sql"]
-<
-                                 *g:conjure#log#std_warn#raw*
-`g:conjure#log#std_warn#raw`
-            Don't prefix std warn lines with language specific comment prefixes,
-            useful if you keep track of errors and don't want syntax highlighting 
-            to mask warnings.
-            Default: `false`
-
-                                 *g:conjure#log#std_warn#filetypes*
-`g:conjure#log#std_warn#filetypes`
-            Filetypes that follow the rule for raw std warn.
-            Default: >
-              ["clojure", "fennel", "janet", "hy", "julia", "racket",
-               "scheme", "lua", "lisp", "python", "rust", "sql"]
-<
-
-                                 *g:conjure#log#std_err#raw*
-`g:conjure#log#std_err#raw`
-            Don't prefix std err lines with language specific comment prefixes,
-            useful if you keep track of errors and don't want syntax highlighting 
-            to mask errors.
-            Default: `false`
-
-                                 *g:conjure#log#std_err#filetypes*
-`g:conjure#log#std_err#filetypes`
-            Filetypes that follow the rule for raw std err.
-            Default: >
-              ["clojure", "fennel", "janet", "hy", "julia", "racket",
-               "scheme", "lua", "lisp", "python", "rust", "sql"]
-<
                                       *g:conjure#extract#context_header_lines*
 `g:conjure#extract#context_header_lines`
             How many lines of the file should be checked for a context

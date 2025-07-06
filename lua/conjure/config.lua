@@ -1,4 +1,4 @@
--- [nfnl] fnl/conjure/config.fnl
+-- [nfnl] fnl\conjure\config.fnl
 local _local_1_ = require("conjure.nfnl.module")
 local autoload = _local_1_["autoload"]
 local define = _local_1_["define"]
