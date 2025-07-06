@@ -1,7 +1,6 @@
 (local {: autoload : define} (require :conjure.nfnl.module))
-(local a (autoload :conjure.aniseed.core))
-(local nvim (autoload :conjure.aniseed.nvim))
-(local str (autoload :conjure.aniseed.string))
+(local core (autoload :conjure.nfnl.core))
+(local str (autoload :conjure.nfnl.string))
 (local nu (autoload :conjure.aniseed.nvim.util))
 (local extract (autoload :conjure.extract))
 (local client (autoload :conjure.client))
@@ -31,13 +30,13 @@
 (fn display-request [opts]
   (log.append
     [opts.preview]
-    (a.merge opts {:break? true})))
+    (core.merge opts {:break? true})))
 
 (fn highlight-range [range]
   (when (and (config.get-in [:highlight :enabled])
              vim.highlight
              range)
-    (let [bufnr (or (. range :bufnr) (nvim.buf.nr))
+    (let [bufnr (or (. range :bufnr) (vim.api.nvim_get_current_buf))
           namespace (vim.api.nvim_create_namespace "conjure_highlight")
           hl_start {1 (- (. range.start 1) 1)
                     2 (. range.start 2)}
@@ -58,13 +57,13 @@
         (config.get-in [:highlight :timeout])))))
 
 (fn with-last-result-hook [opts]
-  (let [buf (nvim.win_get_buf 0)
-        line (a.dec (a.first (nvim.win_get_cursor 0)))]
-    (a.update
+  (let [buf (vim.api.nvim_win_get_buf 0)
+        line (core.dec (core.first (vim.api.nvim_win_get_cursor 0)))]
+    (core.update
       opts :on-result
       (fn [f]
         (fn [result]
-          (nvim.fn.setreg
+          (vim.fn.setreg
             (config.get-in [:eval :result_register])
 
             ;; Workaround for https://github.com/Olical/conjure/issues/212
@@ -95,15 +94,16 @@
 (fn assoc-context [opts]
   (when (not opts.context)
     (set opts.context
-        (or nvim.b.conjure#context
+        (or vim.b.conjure#context
             (extract.context))))
   opts)
 
 (fn client-exec-fn [action f-name base-opts]
   (fn [opts]
-    (let [opts (a.merge opts base-opts
-                        {:action action
-                         :file-path (extract.file-path)})]
+    (let [opts (core.merge
+                 opts base-opts
+                 {:action action
+                  :file-path (extract.file-path)})]
       (assoc-context opts)
       (set opts.preview (preview opts))
 
@@ -117,45 +117,47 @@
         ;; related code executes.
         (pcall
           (fn []
-            (let [win (nvim.get_current_win)
-                  buf (nvim.get_current_buf)]
-              (nvim.fn.settagstack
+            (let [win (vim.api.nvim_get_current_win)
+                  buf (vim.api.nvim_get_current_buf)]
+              (vim.fn.settagstack
                 win
                 {:items [{:tagname opts.code
                           :bufnr buf
-                          :from (a.concat [buf] (nvim.win_get_cursor win) [0])
+                          :from (core.concat [buf] (vim.api.nvim_win_get_cursor win) [0])
                           :matchnr 0}]}
                 :a))
-            (nu.normal "m'"))))
+            (vim.api.nvim_feedkeys "m'" "n" false))))
 
       (client.call f-name opts))))
 
 (fn apply-gsubs [code]
   (when code
-    (a.reduce
+    (core.reduce
       (fn [code [name [pat rep]]]
         (let [(ok? val-or-err) (pcall string.gsub code pat rep)]
           (if ok?
             val-or-err
             (do
-              (nvim.err_writeln
-                (str.join ["Error from g:conjure#eval#gsubs: " name " - " val-or-err]))
+              (vim.notify
+                (str.join ["Error from g:conjure#eval#gsubs: " name " - " val-or-err])
+                vim.log.levels.ERROR)
               code))))
       code
-      (a.kv-pairs (or nvim.b.conjure#eval#gsubs
-                      nvim.g.conjure#eval#gsubs)))))
+      (core.kv-pairs
+        (or vim.b.conjure#eval#gsubs
+            vim.g.conjure#eval#gsubs)))))
 
 (set M.previous-evaluations {})
 
 (fn M.eval-str [opts]
-  (a.assoc
+  (core.assoc
     M.previous-evaluations
-    (a.get (client.current-client-module-name) :module-name :unknown)
+    (core.get (client.current-client-module-name) :module-name :unknown)
     opts)
 
   (highlight-range opts.range)
   (event.emit :eval :str)
-  (a.update opts :code apply-gsubs)
+  (core.update opts :code apply-gsubs)
   ((client-exec-fn :eval :eval-str)
    (if opts.passive?
      opts
@@ -163,8 +165,8 @@
   nil)
 
 (fn M.previous []
-  (let [client-name (a.get (client.current-client-module-name) :module-name :unknown)
-        opts (a.get M.previous-evaluations client-name)]
+  (let [client-name (core.get (client.current-client-module-name) :module-name :unknown)
+        opts (core.get M.previous-evaluations client-name)]
     (when opts
       (M.eval-str opts))))
 
@@ -189,7 +191,7 @@
     (when form
       (let [{: content : range : node} form]
         (M.eval-str
-          (a.merge
+          (core.merge
             {:code content
              :range range
              :node node
@@ -198,8 +200,8 @@
         form))))
 
 (fn M.replace-form []
-  (let [buf (nvim.win_get_buf 0)
-        win (nvim.tabpage_get_win 0)
+  (let [buf (vim.api.nvim_win_get_buf 0)
+        win (vim.api.nvim_tabpage_get_win 0)
         form (extract.form {})]
     (when form
       (let [{: content : range : node} form]
@@ -216,8 +218,8 @@
                range result)
              (editor.go-to
                win
-               (a.get-in range [:start 1])
-               (a.inc (a.get-in range [:start 2]))))})
+               (core.get-in range [:start 1])
+               (core.inc (core.get-in range [:start 2]))))})
         form))))
 
 (fn M.root-form []
@@ -244,7 +246,7 @@
     mark))
 
 (fn insert-result-comment [tag input]
-  (let [buf (nvim.win_get_buf 0)
+  (let [buf (vim.api.nvim_win_get_buf 0)
         comment-prefix (or
                          (config.get-in [:eval :comment_prefix])
                          (client.get :comment-prefix))]
@@ -276,7 +278,7 @@
 
 (fn M.word []
   (let [{: content : range : node} (extract.word)]
-    (when (not (a.empty? content))
+    (when (not (core.empty? content))
       (M.eval-str
         {:code content
          :range range
@@ -285,7 +287,7 @@
 
 (fn M.doc-word []
   (let [{: content : range : node} (extract.word)]
-    (when (not (a.empty? content))
+    (when (not (core.empty? content))
       (doc-str
         {:code content
          :range range
@@ -294,7 +296,7 @@
 
 (fn M.def-word []
   (let [{: content : range : node} (extract.word)]
-    (when (not (a.empty? content))
+    (when (not (core.empty? content))
       (def-str
         {:code content
          :range range
@@ -323,7 +325,7 @@
 (fn M.selection [kind]
   (let [{: content : range}
         (extract.selection
-          {:kind (or kind (nvim.fn.visualmode))
+          {:kind (or kind (vim.fn.visualmode))
            :visual? (not kind)})]
     (M.eval-str
       {:code content
@@ -331,17 +333,17 @@
        :origin :selection})))
 
 (fn wrap-completion-result [result]
-  (if (a.string? result)
+  (if (core.string? result)
     {:word result}
     result))
 
 (fn M.completions [prefix cb]
   (fn cb-wrap [results]
-    (cb (a.map
+    (cb (core.map
           wrap-completion-result
           (or results
               (-?> (config.get-in [:completion :fallback])
-                   (nvim.call_function [0 prefix]))))))
+                   (vim.api.nvim_call_function [0 prefix]))))))
   (if (= :function (type (client.get :completions)))
     (client.call
       :completions
