@@ -57,6 +57,9 @@ local function with_on_result_hook(opts)
     local function _7_(result)
       vim.fn.setreg(config["get-in"]({"eval", "result_register"}), string.gsub(result, "%z", ""))
       table.insert(M.results, {client = core.get(client["current-client-module-name"](), "module-name", "unknown"), buf = buf, request = opts, result = result})
+      while (core.count(M.results) > 1000) do
+        table.remove(M.results, 1)
+      end
       if config["get-in"]({"eval", "inline_results"}) then
         inline.display({buf = buf, text = str.join({config["get-in"]({"eval", "inline", "prefix"}), result}), line = line})
       else

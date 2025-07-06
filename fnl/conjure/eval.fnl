@@ -80,6 +80,9 @@
              :request opts
              :result result})
 
+          (while (> (core.count M.results) 1000)
+            (table.remove M.results 1))
+
           (when (config.get-in [:eval :inline_results])
             (inline.display
               {:buf buf
