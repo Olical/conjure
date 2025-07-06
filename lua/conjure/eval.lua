@@ -4,7 +4,6 @@ local autoload = _local_1_["autoload"]
 local define = _local_1_["define"]
 local core = autoload("conjure.nfnl.core")
 local str = autoload("conjure.nfnl.string")
-local nu = autoload("conjure.aniseed.nvim.util")
 local extract = autoload("conjure.extract")
 local client = autoload("conjure.client")
 local text = autoload("conjure.text")
