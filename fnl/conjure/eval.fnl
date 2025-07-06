@@ -55,6 +55,7 @@
                     bufnr namespace 0 -1)))
         (config.get-in [:highlight :timeout])))))
 
+;; TODO Turn this into a sliding buffer, it grows infinitely right now.
 (set M.evaluations (or M.evaluations []))
 
 (fn with-on-result-hook [opts]
