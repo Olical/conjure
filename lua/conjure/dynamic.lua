@@ -1,7 +1,9 @@
 -- [nfnl] fnl/conjure/dynamic.fnl
 local _local_1_ = require("conjure.nfnl.module")
 local autoload = _local_1_["autoload"]
-local a = autoload("conjure.aniseed.core")
+local define = _local_1_["define"]
+local core = autoload("conjure.nfnl.core")
+local M = define("conjure.dynamic")
 local get_stack_key = "conjure.dynamic/get-stack"
 local function assert_value_function_21(value)
   if ("function" ~= type(value)) then
@@ -10,14 +12,14 @@ local function assert_value_function_21(value)
     return nil
   end
 end
-local function new(base_value)
+M.new = function(base_value)
   assert_value_function_21(base_value)
   local stack = {base_value}
   local function _3_(x, ...)
     if (get_stack_key == x) then
       return stack
     else
-      return a.last(stack)(x, ...)
+      return core.last(stack)(x, ...)
     end
   end
   return _3_
@@ -29,9 +31,9 @@ local function run_binds_21(f, binds)
     assert_value_function_21(new_value)
     return f(dyn(get_stack_key), new_value)
   end
-  return a["map-indexed"](_6_, binds)
+  return core["map-indexed"](_6_, binds)
 end
-local function bind(binds, f, ...)
+M.bind = function(binds, f, ...)
   run_binds_21(table.insert, binds)
   local ok_3f, result = pcall(f, ...)
   local function _7_(_241)
@@ -44,18 +46,18 @@ local function bind(binds, f, ...)
     return error(result)
   end
 end
-local function set_21(dyn, new_value)
+M["set!"] = function(dyn, new_value)
   assert_value_function_21(new_value)
   do
     local stack = dyn(get_stack_key)
-    local depth = a.count(stack)
-    a.assoc(stack, depth, new_value)
+    local depth = core.count(stack)
+    core.assoc(stack, depth, new_value)
   end
   return nil
 end
-local function set_root_21(dyn, new_value)
+M["set-root!"] = function(dyn, new_value)
   assert_value_function_21(new_value)
-  a.assoc(dyn(get_stack_key), 1, new_value)
+  core.assoc(dyn(get_stack_key), 1, new_value)
   return nil
 end
-return {new = new, bind = bind, ["set!"] = set_21, ["set-root!"] = set_root_21}
+return M
