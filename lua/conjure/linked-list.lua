@@ -2,7 +2,7 @@
 local _local_1_ = require("conjure.nfnl.module")
 local autoload = _local_1_["autoload"]
 local define = _local_1_["define"]
-local core = autoload("conjure.core.core")
+local core = autoload("conjure.nfnl.core")
 local M = define("conjure.linked-list")
 M.create = function(xs, prev)
   if not core["empty?"](xs) then
@@ -45,8 +45,8 @@ M.first = function(l)
 end
 M.last = function(l)
   local c = l
-  while next(c) do
-    c = next(c)
+  while M.next(c) do
+    c = M.next(c)
   end
   return c
 end
@@ -58,7 +58,7 @@ M["until"] = function(f, l)
     return r
   end
   while (c and not step()) do
-    c = next(c)
+    c = M.next(c)
   end
   if r then
     return c

@@ -1,5 +1,5 @@
 (local {: autoload : define} (require :conjure.nfnl.module))
-(local core (autoload :conjure.core.core))
+(local core (autoload :conjure.nfnl.core))
 
 (local M (define :conjure.linked-list))
 
@@ -28,8 +28,8 @@
 
 (fn M.last [l]
   (var c l)
-  (while (next c)
-    (set c (next c)))
+  (while (M.next c)
+    (set c (M.next c)))
   c)
 
 (fn M.until [f l]
@@ -39,7 +39,7 @@
     (set r (f c))
     r)
   (while (and c (not (step)))
-    (set c (next c)))
+    (set c (M.next c)))
   (when r
     c))
 
