@@ -56,7 +56,7 @@
         (config.get-in [:highlight :timeout])))))
 
 ;; TODO Turn this into a sliding buffer, it grows infinitely right now.
-(set M.evaluations (or M.evaluations []))
+(set M.results (or M.results []))
 
 (fn with-on-result-hook [opts]
   (let [buf (vim.api.nvim_win_get_buf 0)
@@ -74,7 +74,7 @@
             (string.gsub result "%z" ""))
 
           (table.insert
-            M.evaluations
+            M.results
             {:client (core.get (client.current-client-module-name) :module-name :unknown)
              :buf buf
              :request opts

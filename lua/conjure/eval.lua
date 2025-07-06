@@ -49,14 +49,14 @@ local function highlight_range(range)
     return nil
   end
 end
-M.evaluations = (M.evaluations or {})
+M.results = (M.results or {})
 local function with_on_result_hook(opts)
   local buf = vim.api.nvim_win_get_buf(0)
   local line = core.dec(core.first(vim.api.nvim_win_get_cursor(0)))
   local function _6_(f)
     local function _7_(result)
       vim.fn.setreg(config["get-in"]({"eval", "result_register"}), string.gsub(result, "%z", ""))
-      table.insert(M.evaluations, {client = core.get(client["current-client-module-name"](), "module-name", "unknown"), buf = buf, request = opts, result = result})
+      table.insert(M.results, {client = core.get(client["current-client-module-name"](), "module-name", "unknown"), buf = buf, request = opts, result = result})
       if config["get-in"]({"eval", "inline_results"}) then
         inline.display({buf = buf, text = str.join({config["get-in"]({"eval", "inline", "prefix"}), result}), line = line})
       else
