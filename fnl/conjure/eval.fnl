@@ -1,4 +1,4 @@
-(local {: autoload} (require :conjure.nfnl.module))
+(local {: autoload : define} (require :conjure.nfnl.module))
 (local a (autoload :conjure.aniseed.core))
 (local nvim (autoload :conjure.aniseed.nvim))
 (local str (autoload :conjure.aniseed.string))
@@ -15,6 +15,8 @@
 (local inline (autoload :conjure.inline))
 (local log (autoload :conjure.log))
 (local event (autoload :conjure.event))
+
+(local M (define :conjure.eval))
 
 (fn preview [opts]
   (let [sample-limit (editor.percent-width
@@ -79,7 +81,7 @@
                :line line}))
           (when f (f result)))))))
 
-(fn file []
+(fn M.file []
   (event.emit :eval :file)
   (let [opts {:file-path (fs.localise-path (extract.file-path))
               :origin :file
@@ -143,12 +145,11 @@
       (a.kv-pairs (or nvim.b.conjure#eval#gsubs
                       nvim.g.conjure#eval#gsubs)))))
 
-(local previous-evaluations
-  {})
+(set M.previous-evaluations {})
 
-(fn eval-str [opts]
+(fn M.eval-str [opts]
   (a.assoc
-    previous-evaluations
+    M.previous-evaluations
     (a.get (client.current-client-module-name) :module-name :unknown)
     opts)
 
@@ -161,33 +162,33 @@
      (with-last-result-hook opts)))
   nil)
 
-(fn previous []
+(fn M.previous []
   (let [client-name (a.get (client.current-client-module-name) :module-name :unknown)
-        opts (a.get previous-evaluations client-name)]
+        opts (a.get M.previous-evaluations client-name)]
     (when opts
-      (eval-str opts))))
+      (M.eval-str opts))))
 
-(fn wrap-emit [name f]
+(fn M.wrap-emit [name f]
   (fn [...]
     (event.emit name)
     (f ...)))
 
-(local doc-str (wrap-emit
+(local doc-str (M.wrap-emit
                 :doc
                 (client-exec-fn :doc :doc-str)))
 
-(local def-str (wrap-emit
+(local def-str (M.wrap-emit
                 :def
                 (client-exec-fn
                   :def :def-str
                   {:suppress-hud? true
                    :jumping? true})))
 
-(fn current-form [extra-opts]
+(fn M.current-form [extra-opts]
   (let [form (extract.form {})]
     (when form
       (let [{: content : range : node} form]
-        (eval-str
+        (M.eval-str
           (a.merge
             {:code content
              :range range
@@ -196,13 +197,13 @@
             extra-opts))
         form))))
 
-(fn replace-form []
+(fn M.replace-form []
   (let [buf (nvim.win_get_buf 0)
         win (nvim.tabpage_get_win 0)
         form (extract.form {})]
     (when form
       (let [{: content : range : node} form]
-        (eval-str
+        (M.eval-str
           {:code content
            :range range
            :node node
@@ -219,23 +220,23 @@
                (a.inc (a.get-in range [:start 2]))))})
         form))))
 
-(fn root-form []
+(fn M.root-form []
   (let [form (extract.form {:root? true})]
     (when form
       (let [{: content : range : node} form]
-        (eval-str
+        (M.eval-str
           {:code content
            :range range
            :node node
            :origin :root-form})))))
 
-(fn marked-form [mark]
+(fn M.marked-form [mark]
   (let [comment-prefix (client.get :comment-prefix)
         mark (or mark (extract.prompt-char))
         (ok? err) (pcall #(editor.go-to-mark mark))]
     (if ok?
       (do
-        (current-form {:origin (str.join ["marked-form [" mark "]"])})
+        (M.current-form {:origin (str.join ["marked-form [" mark "]"])})
         (editor.go-back))
       (log.append [(str.join [comment-prefix "Couldn't eval form at mark: " mark])
                    (str.join [comment-prefix err])]
@@ -249,7 +250,7 @@
                          (client.get :comment-prefix))]
     (when input
       (let [{: content : range : node} input]
-        (eval-str
+        (M.eval-str
           {:code content
            :range range
            :node node
@@ -264,25 +265,25 @@
                result))})
         input))))
 
-(fn comment-current-form []
+(fn M.comment-current-form []
   (insert-result-comment :current-form (extract.form {})))
 
-(fn comment-root-form []
+(fn M.comment-root-form []
   (insert-result-comment :root-form (extract.form {:root? true})))
 
-(fn comment-word []
+(fn M.comment-word []
   (insert-result-comment :word (extract.word)))
 
-(fn word []
+(fn M.word []
   (let [{: content : range : node} (extract.word)]
     (when (not (a.empty? content))
-      (eval-str
+      (M.eval-str
         {:code content
          :range range
          :node node
          :origin :word}))))
 
-(fn doc-word []
+(fn M.doc-word []
   (let [{: content : range : node} (extract.word)]
     (when (not (a.empty? content))
       (doc-str
@@ -291,7 +292,7 @@
          :node node
          :origin :word}))))
 
-(fn def-word []
+(fn M.def-word []
   (let [{: content : range : node} (extract.word)]
     (when (not (a.empty? content))
       (def-str
@@ -300,31 +301,31 @@
          :node node
          :origin :word}))))
 
-(fn buf []
+(fn M.buf []
   (let [{: content : range} (extract.buf)]
-    (eval-str
+    (M.eval-str
       {:code content
        :range range
        :origin :buf})))
 
-(fn command [code]
-  (eval-str
+(fn M.command [code]
+  (M.eval-str
     {:code code
      :origin :command}))
 
-(fn range [start end]
+(fn M.range [start end]
   (let [{: content : range} (extract.range start end)]
-    (eval-str
+    (M.eval-str
       {:code content
        :range range
        :origin :range})))
 
-(fn selection [kind]
+(fn M.selection [kind]
   (let [{: content : range}
         (extract.selection
           {:kind (or kind (nvim.fn.visualmode))
            :visual? (not kind)})]
-    (eval-str
+    (M.eval-str
       {:code content
        :range range
        :origin :selection})))
@@ -334,7 +335,7 @@
     {:word result}
     result))
 
-(fn completions [prefix cb]
+(fn M.completions [prefix cb]
   (fn cb-wrap [results]
     (cb (a.map
           wrap-completion-result
@@ -350,35 +351,14 @@
           (assoc-context)))
     (cb-wrap)))
 
-(fn completions-promise [prefix]
+(fn M.completions-promise [prefix]
   (let [p (promise.new)]
-    (completions prefix (promise.deliver-fn p))
+    (M.completions prefix (promise.deliver-fn p))
     p))
 
-(fn completions-sync [prefix]
-  (let [p (completions-promise prefix)]
+(fn M.completions-sync [prefix]
+  (let [p (M.completions-promise prefix)]
     (promise.await p)
     (promise.close p)))
 
-{: file
- : previous-evaluations
- : eval-str
- : previous
- : wrap-emit
- : current-form
- : replace-form
- : root-form
- : marked-form
- : comment-current-form
- : comment-root-form
- : comment-word
- : word
- : doc-word
- : def-word
- : buf
- : command
- : range
- : selection
- : completions
- : completions-promise
- : completions-sync}
+M

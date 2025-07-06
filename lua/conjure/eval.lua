@@ -1,6 +1,7 @@
 -- [nfnl] fnl/conjure/eval.fnl
 local _local_1_ = require("conjure.nfnl.module")
 local autoload = _local_1_["autoload"]
+local define = _local_1_["define"]
 local a = autoload("conjure.aniseed.core")
 local nvim = autoload("conjure.aniseed.nvim")
 local str = autoload("conjure.aniseed.string")
@@ -17,6 +18,7 @@ local buffer = autoload("conjure.buffer")
 local inline = autoload("conjure.inline")
 local log = autoload("conjure.log")
 local event = autoload("conjure.event")
+local M = define("conjure.eval")
 local function preview(opts)
   local sample_limit = editor["percent-width"](config["get-in"]({"preview", "sample_limit"}))
   local function _2_()
@@ -69,7 +71,7 @@ local function with_last_result_hook(opts)
   end
   return a.update(opts, "on-result", _6_)
 end
-local function file()
+M.file = function()
   event.emit("eval", "file")
   local opts = {["file-path"] = fs["localise-path"](extract["file-path"]()), origin = "file", action = "eval"}
   opts.preview = preview(opts)
@@ -129,9 +131,9 @@ local function apply_gsubs(code)
     return nil
   end
 end
-local previous_evaluations = {}
-local function eval_str(opts)
-  a.assoc(previous_evaluations, a.get(client["current-client-module-name"](), "module-name", "unknown"), opts)
+M["previous-evaluations"] = {}
+M["eval-str"] = function(opts)
+  a.assoc(M["previous-evaluations"], a.get(client["current-client-module-name"](), "module-name", "unknown"), opts)
   highlight_range(opts.range)
   event.emit("eval", "str")
   a.update(opts, "code", apply_gsubs)
@@ -145,37 +147,37 @@ local function eval_str(opts)
   client_exec_fn("eval", "eval-str")(_20_())
   return nil
 end
-local function previous()
+M.previous = function()
   local client_name = a.get(client["current-client-module-name"](), "module-name", "unknown")
-  local opts = a.get(previous_evaluations, client_name)
+  local opts = a.get(M["previous-evaluations"], client_name)
   if opts then
-    return eval_str(opts)
+    return M["eval-str"](opts)
   else
     return nil
   end
 end
-local function wrap_emit(name, f)
+M["wrap-emit"] = function(name, f)
   local function _22_(...)
     event.emit(name)
     return f(...)
   end
   return _22_
 end
-local doc_str = wrap_emit("doc", client_exec_fn("doc", "doc-str"))
-local def_str = wrap_emit("def", client_exec_fn("def", "def-str", {["suppress-hud?"] = true, ["jumping?"] = true}))
-local function current_form(extra_opts)
+local doc_str = M["wrap-emit"]("doc", client_exec_fn("doc", "doc-str"))
+local def_str = M["wrap-emit"]("def", client_exec_fn("def", "def-str", {["suppress-hud?"] = true, ["jumping?"] = true}))
+M["current-form"] = function(extra_opts)
   local form = extract.form({})
   if form then
     local content = form["content"]
     local range = form["range"]
     local node = form["node"]
-    eval_str(a.merge({code = content, range = range, node = node, origin = "current-form"}, extra_opts))
+    M["eval-str"](a.merge({code = content, range = range, node = node, origin = "current-form"}, extra_opts))
     return form
   else
     return nil
   end
 end
-local function replace_form()
+M["replace-form"] = function()
   local buf = nvim.win_get_buf(0)
   local win = nvim.tabpage_get_win(0)
   local form = extract.form({})
@@ -187,24 +189,24 @@ local function replace_form()
       buffer["replace-range"](buf, range, result)
       return editor["go-to"](win, a["get-in"](range, {"start", 1}), a.inc(a["get-in"](range, {"start", 2})))
     end
-    eval_str({code = content, range = range, node = node, origin = "replace-form", ["suppress-hud?"] = true, ["on-result"] = _24_})
+    M["eval-str"]({code = content, range = range, node = node, origin = "replace-form", ["suppress-hud?"] = true, ["on-result"] = _24_})
     return form
   else
     return nil
   end
 end
-local function root_form()
+M["root-form"] = function()
   local form = extract.form({["root?"] = true})
   if form then
     local content = form["content"]
     local range = form["range"]
     local node = form["node"]
-    return eval_str({code = content, range = range, node = node, origin = "root-form"})
+    return M["eval-str"]({code = content, range = range, node = node, origin = "root-form"})
   else
     return nil
   end
 end
-local function marked_form(mark)
+M["marked-form"] = function(mark)
   local comment_prefix = client.get("comment-prefix")
   local mark0 = (mark or extract["prompt-char"]())
   local ok_3f, err = nil, nil
@@ -213,7 +215,7 @@ local function marked_form(mark)
   end
   ok_3f, err = pcall(_27_)
   if ok_3f then
-    current_form({origin = str.join({"marked-form [", mark0, "]"})})
+    M["current-form"]({origin = str.join({"marked-form [", mark0, "]"})})
     editor["go-back"]()
   else
     log.append({str.join({comment_prefix, "Couldn't eval form at mark: ", mark0}), str.join({comment_prefix, err})}, {["break?"] = true})
@@ -230,33 +232,33 @@ local function insert_result_comment(tag, input)
     local function _29_(result)
       return buffer["append-prefixed-line"](buf, range["end"], comment_prefix, result)
     end
-    eval_str({code = content, range = range, node = node, origin = str.join({"comment-", tag}), ["suppress-hud?"] = true, ["on-result"] = _29_})
+    M["eval-str"]({code = content, range = range, node = node, origin = str.join({"comment-", tag}), ["suppress-hud?"] = true, ["on-result"] = _29_})
     return input
   else
     return nil
   end
 end
-local function comment_current_form()
+M["comment-current-form"] = function()
   return insert_result_comment("current-form", extract.form({}))
 end
-local function comment_root_form()
+M["comment-root-form"] = function()
   return insert_result_comment("root-form", extract.form({["root?"] = true}))
 end
-local function comment_word()
+M["comment-word"] = function()
   return insert_result_comment("word", extract.word())
 end
-local function word()
+M.word = function()
   local _let_31_ = extract.word()
   local content = _let_31_["content"]
   local range = _let_31_["range"]
   local node = _let_31_["node"]
   if not a["empty?"](content) then
-    return eval_str({code = content, range = range, node = node, origin = "word"})
+    return M["eval-str"]({code = content, range = range, node = node, origin = "word"})
   else
     return nil
   end
 end
-local function doc_word()
+M["doc-word"] = function()
   local _let_33_ = extract.word()
   local content = _let_33_["content"]
   local range = _let_33_["range"]
@@ -267,7 +269,7 @@ local function doc_word()
     return nil
   end
 end
-local function def_word()
+M["def-word"] = function()
   local _let_35_ = extract.word()
   local content = _let_35_["content"]
   local range = _let_35_["range"]
@@ -278,26 +280,26 @@ local function def_word()
     return nil
   end
 end
-local function buf()
+M.buf = function()
   local _let_37_ = extract.buf()
   local content = _let_37_["content"]
   local range = _let_37_["range"]
-  return eval_str({code = content, range = range, origin = "buf"})
+  return M["eval-str"]({code = content, range = range, origin = "buf"})
 end
-local function command(code)
-  return eval_str({code = code, origin = "command"})
+M.command = function(code)
+  return M["eval-str"]({code = code, origin = "command"})
 end
-local function range(start, _end)
+M.range = function(start, _end)
   local _let_38_ = extract.range(start, _end)
   local content = _let_38_["content"]
-  local range0 = _let_38_["range"]
-  return eval_str({code = content, range = range0, origin = "range"})
+  local range = _let_38_["range"]
+  return M["eval-str"]({code = content, range = range, origin = "range"})
 end
-local function selection(kind)
+M.selection = function(kind)
   local _let_39_ = extract.selection({kind = (kind or nvim.fn.visualmode()), ["visual?"] = not kind})
   local content = _let_39_["content"]
-  local range0 = _let_39_["range"]
-  return eval_str({code = content, range = range0, origin = "selection"})
+  local range = _let_39_["range"]
+  return M["eval-str"]({code = content, range = range, origin = "selection"})
 end
 local function wrap_completion_result(result)
   if a["string?"](result) then
@@ -306,7 +308,7 @@ local function wrap_completion_result(result)
     return result
   end
 end
-local function completions(prefix, cb)
+M.completions = function(prefix, cb)
   local function cb_wrap(results)
     local or_41_ = results
     if not or_41_ then
@@ -325,14 +327,14 @@ local function completions(prefix, cb)
     return cb_wrap()
   end
 end
-local function completions_promise(prefix)
+M["completions-promise"] = function(prefix)
   local p = promise.new()
-  completions(prefix, promise["deliver-fn"](p))
+  M.completions(prefix, promise["deliver-fn"](p))
   return p
 end
-local function completions_sync(prefix)
-  local p = completions_promise(prefix)
+M["completions-sync"] = function(prefix)
+  local p = M["completions-promise"](prefix)
   promise.await(p)
   return promise.close(p)
 end
-return {file = file, ["previous-evaluations"] = previous_evaluations, ["eval-str"] = eval_str, previous = previous, ["wrap-emit"] = wrap_emit, ["current-form"] = current_form, ["replace-form"] = replace_form, ["root-form"] = root_form, ["marked-form"] = marked_form, ["comment-current-form"] = comment_current_form, ["comment-root-form"] = comment_root_form, ["comment-word"] = comment_word, word = word, ["doc-word"] = doc_word, ["def-word"] = def_word, buf = buf, command = command, range = range, selection = selection, completions = completions, ["completions-promise"] = completions_promise, ["completions-sync"] = completions_sync}
+return M
