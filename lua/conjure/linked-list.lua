@@ -1,54 +1,56 @@
 -- [nfnl] fnl/conjure/linked-list.fnl
 local _local_1_ = require("conjure.nfnl.module")
 local autoload = _local_1_["autoload"]
-local a = autoload("conjure.aniseed.core")
-local function create(xs, prev)
-  if not a["empty?"](xs) then
-    local rest = a.rest(xs)
+local define = _local_1_["define"]
+local core = autoload("conjure.core.core")
+local M = define("conjure.linked-list")
+M.create = function(xs, prev)
+  if not core["empty?"](xs) then
+    local rest = core.rest(xs)
     local node = {}
-    a.assoc(node, "val", a.first(xs))
-    a.assoc(node, "prev", prev)
-    return a.assoc(node, "next", create(rest, node))
+    core.assoc(node, "val", core.first(xs))
+    core.assoc(node, "prev", prev)
+    return core.assoc(node, "next", M.create(rest, node))
   else
     return nil
   end
 end
-local function val(l)
+M.val = function(l)
   if (nil ~= l) then
-    return a.get(l, "val")
+    return core.get(l, "val")
   else
     return nil
   end
 end
-local function next(l)
+M.next = function(l)
   if (nil ~= l) then
-    return a.get(l, "next")
+    return core.get(l, "next")
   else
     return nil
   end
 end
-local function prev(l)
+M.prev = function(l)
   if (nil ~= l) then
-    return a.get(l, "prev")
+    return core.get(l, "prev")
   else
     return nil
   end
 end
-local function first(l)
+M.first = function(l)
   local c = l
-  while prev(c) do
-    c = prev(c)
+  while M.prev(c) do
+    c = M.prev(c)
   end
   return c
 end
-local function last(l)
+M.last = function(l)
   local c = l
   while next(c) do
     c = next(c)
   end
   return c
 end
-local function _until(f, l)
+M["until"] = function(f, l)
   local c = l
   local r = false
   local function step()
@@ -64,11 +66,11 @@ local function _until(f, l)
     return nil
   end
 end
-local function cycle(l)
-  local start = first(l)
-  local _end = last(l)
-  a.assoc(start, "prev", _end)
-  a.assoc(_end, "next", start)
+M.cycle = function(l)
+  local start = M.first(l)
+  local _end = M.last(l)
+  core.assoc(start, "prev", _end)
+  core.assoc(_end, "next", start)
   return l
 end
-return {create = create, val = val, next = next, prev = prev, first = first, last = last, ["until"] = _until, cycle = cycle}
+return M
