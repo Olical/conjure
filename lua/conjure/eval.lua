@@ -49,12 +49,14 @@ local function highlight_range(range)
     return nil
   end
 end
-local function with_last_result_hook(opts)
+M.evaluations = (M.evaluations or {})
+local function with_on_result_hook(opts)
   local buf = vim.api.nvim_win_get_buf(0)
   local line = core.dec(core.first(vim.api.nvim_win_get_cursor(0)))
   local function _6_(f)
     local function _7_(result)
       vim.fn.setreg(config["get-in"]({"eval", "result_register"}), string.gsub(result, "%z", ""))
+      table.insert(M.evaluations, {client = core.get(client["current-client-module-name"](), "module-name", "unknown"), buf = buf, request = opts, result = result})
       if config["get-in"]({"eval", "inline_results"}) then
         inline.display({buf = buf, text = str.join({config["get-in"]({"eval", "inline", "prefix"}), result}), line = line})
       else
@@ -74,7 +76,7 @@ M.file = function()
   local opts = {["file-path"] = fs["localise-path"](extract["file-path"]()), origin = "file", action = "eval"}
   opts.preview = preview(opts)
   display_request(opts)
-  return client.call("eval-file", with_last_result_hook(opts))
+  return client.call("eval-file", with_on_result_hook(opts))
 end
 local function assoc_context(opts)
   if not opts.context then
@@ -139,7 +141,7 @@ M["eval-str"] = function(opts)
     if opts["passive?"] then
       return opts
     else
-      return with_last_result_hook(opts)
+      return with_on_result_hook(opts)
     end
   end
   client_exec_fn("eval", "eval-str")(_20_())

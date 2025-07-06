@@ -55,7 +55,9 @@
                     bufnr namespace 0 -1)))
         (config.get-in [:highlight :timeout])))))
 
-(fn with-last-result-hook [opts]
+(set M.evaluations (or M.evaluations []))
+
+(fn with-on-result-hook [opts]
   (let [buf (vim.api.nvim_win_get_buf 0)
         line (core.dec (core.first (vim.api.nvim_win_get_cursor 0)))]
     (core.update
@@ -70,6 +72,13 @@
             ;; end up being tables as they cross the boundary!
             (string.gsub result "%z" ""))
 
+          (table.insert
+            M.evaluations
+            {:client (core.get (client.current-client-module-name) :module-name :unknown)
+             :buf buf
+             :request opts
+             :result result})
+
           (when (config.get-in [:eval :inline_results])
             (inline.display
               {:buf buf
@@ -77,7 +86,8 @@
                        [(config.get-in [:eval :inline :prefix])
                         result])
                :line line}))
-          (when f (f result)))))))
+          (when f
+            (f result)))))))
 
 (fn M.file []
   (event.emit :eval :file)
@@ -88,7 +98,7 @@
     (display-request opts)
     (client.call
       :eval-file
-      (with-last-result-hook opts))))
+      (with-on-result-hook opts))))
 
 (fn assoc-context [opts]
   (when (not opts.context)
@@ -160,7 +170,7 @@
   ((client-exec-fn :eval :eval-str)
    (if opts.passive?
      opts
-     (with-last-result-hook opts)))
+     (with-on-result-hook opts)))
   nil)
 
 (fn M.previous []
