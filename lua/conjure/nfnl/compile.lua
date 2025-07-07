@@ -1,4 +1,4 @@
--- [nfnl] Compiled from fnl/nfnl/compile.fnl by https://github.com/Olical/nfnl, do not edit.
+-- [nfnl] fnl/nfnl/compile.fnl
 local _local_1_ = require("conjure.nfnl.module")
 local autoload = _local_1_["autoload"]
 local core = autoload("conjure.nfnl.core")
@@ -6,14 +6,11 @@ local fs = autoload("conjure.nfnl.fs")
 local fennel = autoload("conjure.nfnl.fennel")
 local notify = autoload("conjure.nfnl.notify")
 local config = autoload("conjure.nfnl.config")
+local header = autoload("conjure.nfnl.header")
 local mod = {}
-local header_marker = "[nfnl]"
-local function with_header(file, src)
-  return ("-- " .. header_marker .. " Compiled from " .. file .. " by https://github.com/Olical/nfnl, do not edit.\n" .. src)
-end
 local function safe_target_3f(path)
-  local header = fs["read-first-line"](path)
-  return (core["nil?"](header) or not core["nil?"](header:find(header_marker, 1, true)))
+  local line = fs["read-first-line"](path)
+  return (not line or header["tagged?"](line))
 end
 local function macro_source_3f(source)
   return string.find(source, "%s*;+%s*%[nfnl%-macro%]")
@@ -66,7 +63,7 @@ mod["into-string"] = function(_6_)
       end
       local _8_
       if cfg({"header-comment"}) then
-        _8_ = with_header(rel_file_name, res)
+        _8_ = header["with-header"](rel_file_name, res)
       else
         _8_ = res
       end

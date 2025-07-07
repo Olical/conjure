@@ -1,4 +1,4 @@
--- [nfnl] Compiled from fnl/nfnl/module.fnl by https://github.com/Olical/nfnl, do not edit.
+-- [nfnl] fnl/nfnl/module.fnl
 local module_key = "nfnl/autoload-module"
 local enabled_key = "nfnl/autoload-enabled?"
 local M = {}
@@ -29,7 +29,7 @@ M.autoload = function(name)
 end
 M.define = function(mod_name, base)
   local loaded = package.loaded[mod_name]
-  if (type(loaded) == type(base)) then
+  if (((type(loaded) == type(base)) or (nil == base)) and ((nil ~= loaded) and ("number" ~= type(loaded)))) then
     return loaded
   else
     return (base or {})
