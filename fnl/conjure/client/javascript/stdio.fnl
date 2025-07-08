@@ -86,24 +86,34 @@
                                 initial-acc patterns-replacements)]
         final-acc.result)))
 
+(fn is-arrow-fn? [s]
+  (if (not= :string (type s)) false)
+  (let [ts (s:match "^%s*(.-)%s*$")
+        expr (or (ts:match "=%s*(.*)") ts)
+        parens "^%s*%b()%s*=>"
+        ident "^%s*[%a_$][%w_$]*%s*=>"]
+    (if (not (or (ts:find "=> ") (ts:find "%f[%w]function%f[%W]")))
+        false)
+    (if (expr:match parens) true)
+    (if (expr:match ident) true)
+    false))
+
 (fn replace-arrows [s]
-  (if (not (text.starts-with s :const)) s 
-      (s:gsub
-        "const%s*([%w_]+)%s*=%s*(.-)%((.-)%)%s*=>%s*(.*)"
-        (fn [name before-args args body]
-          (let [async-kw (if (before-args:find :async) "async " "")
-                final-body (if (body:find "^%s*%{")
-                               (.. " " body)
-                               (.. " { return " body " }"))]
-            (.. async-kw "function " name "(" args ")" final-body))))))
+  (if (not (is-arrow-fn? s)) s
+      (s:gsub "const%s*([%w_]+)%s*=%s*(.-)%((.-)%)%s*=>%s*(.*)"
+              (fn [name before-args args body]
+                (let [async-kw (if (before-args:find :async) "async " "")
+                      final-body (if (body:find "^%s*%{")
+                                     (.. " " body)
+                                     (.. " { return " body " }"))]
+                  (.. async-kw "function " name "(" args ")" final-body))))))
 
 (fn prep-code [s]
   (let [consts (replace-arrows s)
-        res (.. (->> 
-                  (str.split consts "\n")
-                  (a.filter #(not= "" $1))
-                  (a.map #(-> $1 str.trim replace-imports))
-                  (str.join "\n")) "\n") ]
+        res (.. (->> (str.split consts "\n")
+                     (a.filter #(not= "" $1))
+                     (a.map #(-> $1 str.trim replace-imports))
+                     (str.join "\n")) "\n")]
     res))
 
 (fn replace-dots [s with]
