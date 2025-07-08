@@ -55,11 +55,13 @@
    :client_on_load true
 
    :filetypes [:clojure :fennel :janet :hy :julia :racket :scheme :lua :lisp :python :rust :sql :php :r]
+   :filetypes [:clojure :fennel :janet :javascript :hy :julia :racket :scheme :lua :lisp :python :rust :sql]
    :filetype {:clojure :conjure.client.clojure.nrepl
               :fennel :conjure.client.fennel.nfnl
               :janet :conjure.client.janet.netrepl
               :hy :conjure.client.hy.stdio
               :julia :conjure.client.julia.stdio
+              :javascript :conjure.client.javascript.stdio
               :racket :conjure.client.racket.stdio
               :scheme :conjure.client.scheme.stdio
               :lua :conjure.client.lua.neovim
