@@ -1,7 +1,6 @@
-(local {: autoload} (require :conjure.nfnl.module))
-(local a (autoload :conjure.aniseed.core))
-(local nvim (autoload :conjure.aniseed.nvim))
-(local str (autoload :conjure.aniseed.string))
+(local {: autoload : define} (require :conjure.nfnl.module))
+(local a (autoload :conjure.nfnl.core))
+(local str (autoload :conjure.nfnl.string))
 (local client (autoload :conjure.client))
 (local log (autoload :conjure.log))
 (local stdio (autoload :conjure.remote.stdio-rt))
@@ -9,13 +8,15 @@
 (local mapping (autoload :conjure.mapping))
 (local ts (autoload :conjure.tree-sitter))
 
+(local M (define :conjure.client.snd-s7.stdio))
+
 ;;------------------------------------------------------------
+;; NOTE: Uses fnl/conjure/remote/stdio-rt.fnl; not fnl/conjure/remote/stdio.fnl.
+;;
 ;; A client for snd/s7 (sound editor with s7 scheme scripting)
 ;;
 ;; Based on: fnl/conjure/client/scheme/stdio.fnl
 ;;           fnl/conjure/client/sql/stdio.fnl
-;;
-;; Uses fnl/conjure/remote/stdio-rt.fnl; not fnl/conjure/remote/stdio.fnl.
 ;;
 ;; The `snd` program should be runnable on the command line.
 ;;
@@ -23,7 +24,6 @@
 ;;       To use this instead of the default Scheme client, set
 ;;       `g:conjure#filetype#scheme` to `"conjure.client.snd-s7.stdio"`.
 ;;       client in fnl/conjure/config.fnl.
-;;
 ;;------------------------------------------------------------
 
 (config.merge
@@ -44,15 +44,17 @@
 
 (local cfg (config.get-in-fn [:client :snd-s7 :stdio]))
 (local state (client.new-state #(do {:repl nil})))
-(local buf-suffix ".scm")
-(local comment-prefix "; ")
-(local form-node? ts.node-surrounded-by-form-pair-chars?)
+
+(set M.buf-suffix ".scm")
+(set M.comment-prefix "; ")
+;; Use Lisp syntax.
+(set M.form-node? ts.node-surrounded-by-form-pair-chars?)
 
 (fn with-repl-or-warn [f opts]
   (let [repl (state :repl)]
     (if repl
       (f repl)
-      (log.append [(.. comment-prefix "No REPL running")]))))
+      (log.append [(.. M.comment-prefix "No REPL running")]))))
 
 ;;;;-------- from client/sql/stdio.fnl ----------------------
 (fn format-message [msg]
@@ -65,18 +67,28 @@
 (fn display-result [msg]
   (log.append (remove-blank-lines msg)))
 
-(fn ->list [s]
+(fn M.->list [s]
   (if (a.first s)
     s
     [s]))
 
-(fn eval-str [opts]
+;; Split string on newlines, remove trailing comments, and join lines into one
+;; string. s7 doesn't handle multi-line string when sent via a subprocess.
+(fn split-and-join [s]
+  (str.join
+    (icollect [_ v (ipairs (str.split s "\n"))]
+      (string.gsub (str.trimr v) "%s*%;[^\n]*$" ""))))
+
+(fn M.eval-str [opts]
+  (log.dbg (.. "eval-str: opts >>" (a.pr-str opts) "<<"))
+  (log.dbg (.. "eval-str: opts.code >>" (a.pr-str opts.code) "<<"))
+
   (with-repl-or-warn
     (fn [repl]
       (repl.send
-        (.. opts.code "\n")
+        (.. (split-and-join opts.code) "\n")
         (fn [msgs]
-          (let [msgs (->list msgs)]
+          (let [msgs (M.->list msgs)]
             (when opts.on-result
               (opts.on-result (str.join "\n" (remove-blank-lines (a.last msgs)))))
             (a.run! display-result msgs))
@@ -84,34 +96,34 @@
         {:batch? false}))))
 ;;;;-------- End from client/sql/stdio.fnl ------------------
 
-(fn eval-file [opts]
-  (eval-str (a.assoc opts :code (.. "(load \"" opts.file-path "\")"))))
+(fn M.eval-file [opts]
+  (M.eval-str (a.assoc opts :code (.. "(load \"" opts.file-path "\")"))))
 
-(fn interrupt []
+(fn M.interrupt []
   (with-repl-or-warn
     (fn [repl]
-      (log.append [(.. comment-prefix " Sending interrupt signal.")] {:break? true})
+      (log.append [(.. M.comment-prefix " Sending interrupt signal.")] {:break? true})
       (repl.send-signal :sigint))))
 
 (fn display-repl-status [status]
   (log.append
-    [(.. comment-prefix
-         (cfg [:command])
+    [(.. M.comment-prefix
+         (a.pr-str (cfg [:command]))
          " (" (or status "no status") ")")]
     {:break? true}))
 
-(fn stop []
+(fn M.stop []
   (let [repl (state :repl)]
     (when repl
       (repl.destroy)
       (display-repl-status :stopped)
       (a.assoc (state) :repl nil))))
 
-(fn start []
-  (log.append [(.. comment-prefix "Starting snd-s7 client...")])
+(fn M.start []
+  (log.append [(.. M.comment-prefix "Starting snd-s7 client...")])
   (if (state :repl)
-    (log.append [(.. comment-prefix "Can't start, REPL is already running.")
-                 (.. comment-prefix "Stop the REPL with "
+    (log.append [(.. M.comment-prefix "Can't start, REPL is already running.")
+                 (.. M.comment-prefix "Stop the REPL with "
                      (config.get-in [:mapping :prefix])
                      (cfg [:mapping :stop]))]
                 {:break? true})
@@ -131,48 +143,35 @@
 
          :on-exit
          (fn [code signal]
-           (when (and (= :number (type code)) (> code 0))
-             (log.append [(.. comment-prefix "process exited with code " code)]))
-           (when (and (= :number (type signal)) (> signal 0))
-             (log.append [(.. comment-prefix "process exited with signal " signal)]))
-           (stop))
+           (log.dbg "process exited with code " (a.pr-str code))
+           (log.dbg "process exited with signal " (a.pr-str signal))
+           (M.stop))
 
          :on-stray-output
          (fn [msg]
-           (log.append (format-msg msg)))}))))
+           (display-result msg))}))))
 
-(fn on-load []
+(fn M.on-load []
   (when (config.get-in [:client_on_load])
-  (start)))
+  (M.start)))
 
-(fn on-exit []
-  (stop))
+(fn M.on-exit []
+  (M.stop))
 
-(fn on-filetype []
+(fn M.on-filetype []
   (mapping.buf
     :SndStart (cfg [:mapping :start])
-    start
+    #(M.start)
     {:desc "Start the REPL"})
 
   (mapping.buf
     :SndStop (cfg [:mapping :stop])
-    stop
+    #(M.stop)
     {:desc "Stop the REPL"})
 
   (mapping.buf
-    :SdnInterrupt (cfg [:mapping :interrupt])
-    interrupt
-    {:desc "Interrupt the REPL"}))
+    :SndInterrupt (cfg [:mapping :interrupt])
+    #(M.interrupt)
+    {:desc "Interrupt the current REPL"}))
 
-{: buf-suffix
- : comment-prefix
- : form-node?
- : ->list
- : eval-str
- : eval-file
- : interrupt
- : stop
- : start
- : on-load
- : on-exit
- : on-filetype}
+M

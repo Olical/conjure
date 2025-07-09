@@ -16,6 +16,17 @@ INTRODUCTION                        *conjure-client-snd-s7-stdio-introduction*
   be scripted or extended using the S7 Scheme interpreter built into it. In
   this document, snd-s7 is used to refer to the program which is named snd.
 
+This client conflicts with the Scheme client due to the same filetype suffix.
+
+To use this instead of the default Scheme client, add this Vimscript to your
+Neovim configuration:
+
+  let g:conjure#filetype#scheme = "conjure.client.snd-s7.stdio"
+
+The equivalent Lua would be:
+
+  vim.g["conjure#filetype#scheme"] = "conjure.client.snd-s7.stdio"
+
 Conjure starts a snd-s7 REPL within Neovim when you first open a snd-s7
 (`.scm`) file. You can configure how the snd-s7 REPL is launched with the
 `g:conjure#client#snd-s7#stdio#command` configuration option.

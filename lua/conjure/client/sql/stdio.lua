@@ -1,15 +1,16 @@
 -- [nfnl] fnl/conjure/client/sql/stdio.fnl
 local _local_1_ = require("conjure.nfnl.module")
 local autoload = _local_1_["autoload"]
-local a = autoload("conjure.aniseed.core")
-local str = autoload("conjure.aniseed.string")
+local define = _local_1_["define"]
+local a = autoload("conjure.nfnl.core")
+local str = autoload("conjure.nfnl.string")
 local client = autoload("conjure.client")
 local log = autoload("conjure.log")
-local text = autoload("conjure.text")
 local stdio = autoload("conjure.remote.stdio-rt")
 local config = autoload("conjure.config")
 local mapping = autoload("conjure.mapping")
 local ts = autoload("conjure.tree-sitter")
+local M = define("conjure.client.sql.stdio")
 config.merge({client = {sql = {stdio = {command = "psql postgres://postgres:postgres@localhost/postgres", meta_prefix_pattern = "^[.\\]%w", prompt_pattern = "=> "}}}})
 if config["get-in"]({"mapping", "enable_defaults"}) then
   config.merge({client = {sql = {stdio = {mapping = {start = "cs", stop = "cS", interrupt = "ei"}}}}})
@@ -21,9 +22,10 @@ local function _3_()
   return {repl = nil}
 end
 state = client["new-state"](_3_)
-local buf_suffix = ".sql"
-local comment_prefix = "-- "
-local function get_form_modifier(node)
+M["buf-suffix"] = ".sql"
+M["comment-prefix"] = "-- "
+M["get-form-modifier"] = function(node)
+  log.dbg("get-form-modifier: node:type = ", a["pr-str"](node:type()))
   if ("statement" == node:type()) then
     return {modifier = "none"}
   elseif a["string?"](string.match(ts["node->str"](node), cfg({"meta_prefix_pattern"}))) then
@@ -36,7 +38,7 @@ local function get_form_modifier(node)
     return {modifier = "parent"}
   end
 end
-local function comment_node_3f(node)
+M["comment-node?"] = function(node)
   return (("comment" == node:type()) or ("marginalia" == node:type()))
 end
 local function with_repl_or_warn(f, opts)
@@ -44,7 +46,7 @@ local function with_repl_or_warn(f, opts)
   if repl then
     return f(repl)
   else
-    return log.append({(comment_prefix .. "No REPL running")})
+    return log.append({(M["comment-prefix"] .. "No REPL running")})
   end
 end
 local function format_message(msg)
@@ -59,14 +61,14 @@ end
 local function display_result(msg)
   return log.append(remove_blank_lines(msg))
 end
-local function __3elist(s)
+M["->list"] = function(s)
   if a.first(s) then
     return s
   else
     return {s}
   end
 end
-local function prep_code(opts)
+M["prep-code"] = function(opts)
   local node = a.get(opts, "node")
   local suffix
   if (node and ("statement" == node:type())) then
@@ -77,26 +79,27 @@ local function prep_code(opts)
   local code = string.gsub(opts.code, "%s*%-%-[^\n]*$", "")
   return (code .. suffix)
 end
-local function eval_str(opts)
+M["eval-str"] = function(opts)
+  log.dbg("eval-str: opts >> ", a["pr-str"](opts), "<<")
   local function _10_(repl)
     local function _11_(msgs)
-      local msgs0 = __3elist(msgs)
+      local msgs0 = M["->list"](msgs)
       if opts["on-result"] then
         opts["on-result"](str.join("\n", remove_blank_lines(a.last(msgs0))))
       else
       end
       return a["run!"](display_result, msgs0)
     end
-    return repl.send(prep_code(opts), _11_, {["batch?"] = false})
+    return repl.send(M["prep-code"](opts), _11_, {["batch?"] = false})
   end
   return with_repl_or_warn(_10_)
 end
-local function eval_file(opts)
-  return eval_str(a.assoc(opts, "code", a.slurp(opts["file-path"])))
+M["eval-file"] = function(opts)
+  return M["eval-str"](a.assoc(opts, "code", a.slurp(opts["file-path"])))
 end
-local function interrupt()
+M.interrupt = function()
   local function _13_(repl)
-    log.append({(comment_prefix .. " Sending interrupt signal.")}, {["break?"] = true})
+    log.append({(M["comment-prefix"] .. " Sending interrupt signal.")}, {["break?"] = true})
     return repl["send-signal"]("sigint")
   end
   return with_repl_or_warn(_13_)
@@ -104,12 +107,12 @@ end
 local function display_repl_status(status)
   local repl = state("repl")
   if repl then
-    return log.append({(comment_prefix .. a["pr-str"](a["get-in"](repl, {"opts", "cmd"})) .. " (" .. status .. ")")}, {["break?"] = true})
+    return log.append({(M["comment-prefix"] .. a["pr-str"](a["get-in"](repl, {"opts", "cmd"})) .. " (" .. status .. ")")}, {["break?"] = true})
   else
     return nil
   end
 end
-local function stop()
+M.stop = function()
   local repl = state("repl")
   if repl then
     repl.destroy()
@@ -119,10 +122,10 @@ local function stop()
     return nil
   end
 end
-local function start()
-  log.append({(comment_prefix .. "Starting SQL client...")})
+M.start = function()
+  log.append({(M["comment-prefix"] .. "Starting SQL client...")})
   if state("repl") then
-    return log.append({(comment_prefix .. "Can't start, REPL is already running."), (comment_prefix .. "Stop the REPL with " .. config["get-in"]({"mapping", "prefix"}) .. cfg({"mapping", "stop"}))}, {["break?"] = true})
+    return log.append({(M["comment-prefix"] .. "Can't start, REPL is already running."), (M["comment-prefix"] .. "Stop the REPL with " .. config["get-in"]({"mapping", "prefix"}) .. cfg({"mapping", "stop"}))}, {["break?"] = true})
   else
     local function _16_()
       return display_repl_status("started")
@@ -131,35 +134,38 @@ local function start()
       return display_repl_status(err)
     end
     local function _18_(code, signal)
-      if (("number" == type(code)) and (code > 0)) then
-        log.append({(comment_prefix .. "process exited with code " .. code)})
-      else
-      end
-      if (("number" == type(signal)) and (signal > 0)) then
-        log.append({(comment_prefix .. "process exited with signal " .. signal)})
-      else
-      end
-      return stop()
+      log.dbg("process exited with code ", a["pr-str"](code))
+      log.dbg("process exited with signal ", a["pr-str"](signal))
+      return M.stop()
     end
-    local function _21_(msg)
+    local function _19_(msg)
       return display_result(msg)
     end
-    return a.assoc(state(), "repl", stdio.start({["prompt-pattern"] = cfg({"prompt_pattern"}), cmd = cfg({"command"}), ["on-success"] = _16_, ["on-error"] = _17_, ["on-exit"] = _18_, ["on-stray-output"] = _21_}))
+    return a.assoc(state(), "repl", stdio.start({["prompt-pattern"] = cfg({"prompt_pattern"}), cmd = cfg({"command"}), ["on-success"] = _16_, ["on-error"] = _17_, ["on-exit"] = _18_, ["on-stray-output"] = _19_}))
   end
 end
-local function on_load()
+M["on-load"] = function()
   if config["get-in"]({"client_on_load"}) then
-    return start()
+    return M.start()
   else
     return nil
   end
 end
-local function on_exit()
-  return stop()
+M["on-exit"] = function()
+  return M.stop()
 end
-local function on_filetype()
-  mapping.buf("SqlStart", cfg({"mapping", "start"}), start, {desc = "Start the REPL"})
-  mapping.buf("SqlStop", cfg({"mapping", "stop"}), stop, {desc = "Stop the REPL"})
-  return mapping.buf("SqlInterrupt", cfg({"mapping", "interrupt"}), interrupt, {desc = "Interrupt the current REPL"})
+M["on-filetype"] = function()
+  local function _22_()
+    return M.start()
+  end
+  mapping.buf("SqlStart", cfg({"mapping", "start"}), _22_, {desc = "Start the REPL"})
+  local function _23_()
+    return M.stop()
+  end
+  mapping.buf("SqlStop", cfg({"mapping", "stop"}), _23_, {desc = "Stop the REPL"})
+  local function _24_()
+    return M.interrupt()
+  end
+  return mapping.buf("SqlInterrupt", cfg({"mapping", "interrupt"}), _24_, {desc = "Interrupt the current REPL"})
 end
-return {["buf-suffix"] = buf_suffix, ["comment-prefix"] = comment_prefix, ["get-form-modifier"] = get_form_modifier, ["comment-node?"] = comment_node_3f, ["->list"] = __3elist, ["prep-code"] = prep_code, ["eval-str"] = eval_str, ["eval-file"] = eval_file, interrupt = interrupt, stop = stop, start = start, ["on-load"] = on_load, ["on-exit"] = on_exit, ["on-filetype"] = on_filetype}
+return M
