@@ -6,7 +6,6 @@
 (local mapping (autoload :conjure.mapping))
 (local client (autoload :conjure.client))
 (local log (autoload :conjure.log))
-(local dyn (autoload :conjure.dynamic))
 (local text (autoload :conjure.text))
 
 ;; INFO: Javascript don't allow to redeclare variables 'let' and 'const', but you 
@@ -57,6 +56,15 @@
 ;; because you can't redeclare the functions in the Node REPL. 
 ;; The solution is not to use that form; instead, use a standard 'function' declaration.
 ;; Also, imports cannot be used in the Node REPL, this is why the import change trick was used.
+
+(fn replace-require-path [s cwd]
+  (if (not (string.find s "require"))
+      s 
+      (string.gsub s "require%(\"(.-)\"%)" 
+                   (fn [m]
+                     (if (text.starts-with m "./")
+                         (.. "require(\"" cwd (m:sub 2) "\")")
+                         (.. "require(\"" m "\")"))))))
 
 (local patterns-replacements
        [["^%s*import%s+%{%s*([^}]+)%s+as%s+([^}]+)%s+%}%s+from%s+[\"'](%w+:?%w+)[\"']%s*;?%s?"
@@ -112,7 +120,7 @@
   (let [consts (replace-arrows s)
         res (.. (->> (str.split consts "\n")
                      (a.filter #(not= "" $1))
-                     (a.map #(-> $1 str.trim replace-imports))
+                     (a.map #(-> $1 str.trim replace-imports (replace-require-path (vim.uv.fs_realpath (vim.fn.expand "%:p:h")))))
                      (str.join "\n")) "\n")]
     res))
 
