@@ -121,7 +121,7 @@ All configuration can be set as described in |conjure-configuration|.
 TROUBLESHOOTING                         *conjure-client-sql-stdio-trouble*
 
 If you get an error message like "SQLComplete:The dbext plugin must be loaded
-for dynamic SQL completio", you add this Vimscript to your Neovim configuration:
+for dynamic SQL completion", you add this Vimscript to your Neovim configuration:
 
   " Default to static completion for SQL
   let g:omni_sql_default_compl_type = 'syntax'
