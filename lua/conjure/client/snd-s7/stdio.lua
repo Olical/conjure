@@ -9,6 +9,7 @@ local log = autoload("conjure.log")
 local stdio = autoload("conjure.remote.stdio-rt")
 local config = autoload("conjure.config")
 local mapping = autoload("conjure.mapping")
+local text = autoload("conjure.text")
 local ts = autoload("conjure.tree-sitter")
 local M = define("conjure.client.snd-s7.stdio")
 config.merge({client = {["snd-s7"] = {stdio = {command = "snd", prompt_pattern = "> "}}}})
@@ -53,26 +54,16 @@ M["->list"] = function(s)
   end
 end
 local function split_and_join(s)
-  local function _7_()
-    local tbl_21_ = {}
-    local i_22_ = 0
-    for _, v in ipairs(str.split(s, "\n")) do
-      local val_23_ = string.gsub(str.trimr(v), "%s*%;[^\n]*$", "")
-      if (nil ~= val_23_) then
-        i_22_ = (i_22_ + 1)
-        tbl_21_[i_22_] = val_23_
-      else
-      end
-    end
-    return tbl_21_
+  local function _7_(_241)
+    return string.gsub(str.trimr(_241), "%s*%;[^\n]*$", "")
   end
-  return str.join(_7_())
+  return str.join(a.map(_7_, text["split-lines"](s)))
 end
 M["eval-str"] = function(opts)
   log.dbg(("eval-str: opts >>" .. a["pr-str"](opts) .. "<<"))
   log.dbg(("eval-str: opts.code >>" .. a["pr-str"](opts.code) .. "<<"))
-  local function _9_(repl)
-    local function _10_(msgs)
+  local function _8_(repl)
+    local function _9_(msgs)
       local msgs0 = M["->list"](msgs)
       if opts["on-result"] then
         opts["on-result"](str.join("\n", remove_blank_lines(a.last(msgs0))))
@@ -80,19 +71,19 @@ M["eval-str"] = function(opts)
       end
       return a["run!"](display_result, msgs0)
     end
-    return repl.send((split_and_join(opts.code) .. "\n"), _10_, {["batch?"] = false})
+    return repl.send((split_and_join(opts.code) .. "\n"), _9_, {["batch?"] = false})
   end
-  return with_repl_or_warn(_9_)
+  return with_repl_or_warn(_8_)
 end
 M["eval-file"] = function(opts)
   return M["eval-str"](a.assoc(opts, "code", ("(load \"" .. opts["file-path"] .. "\")")))
 end
 M.interrupt = function()
-  local function _12_(repl)
+  local function _11_(repl)
     log.append({(M["comment-prefix"] .. " Sending interrupt signal.")}, {["break?"] = true})
     return repl["send-signal"]("sigint")
   end
-  return with_repl_or_warn(_12_)
+  return with_repl_or_warn(_11_)
 end
 local function display_repl_status(status)
   return log.append({(M["comment-prefix"] .. a["pr-str"](cfg({"command"})) .. " (" .. (status or "no status") .. ")")}, {["break?"] = true})
@@ -112,21 +103,21 @@ M.start = function()
   if state("repl") then
     return log.append({(M["comment-prefix"] .. "Can't start, REPL is already running."), (M["comment-prefix"] .. "Stop the REPL with " .. config["get-in"]({"mapping", "prefix"}) .. cfg({"mapping", "stop"}))}, {["break?"] = true})
   else
-    local function _14_()
+    local function _13_()
       return display_repl_status("started")
     end
-    local function _15_(err)
+    local function _14_(err)
       return display_repl_status(err)
     end
-    local function _16_(code, signal)
+    local function _15_(code, signal)
       log.dbg("process exited with code ", a["pr-str"](code))
       log.dbg("process exited with signal ", a["pr-str"](signal))
       return M.stop()
     end
-    local function _17_(msg)
+    local function _16_(msg)
       return display_result(msg)
     end
-    return a.assoc(state(), "repl", stdio.start({["prompt-pattern"] = cfg({"prompt_pattern"}), cmd = cfg({"command"}), ["on-success"] = _14_, ["on-error"] = _15_, ["on-exit"] = _16_, ["on-stray-output"] = _17_}))
+    return a.assoc(state(), "repl", stdio.start({["prompt-pattern"] = cfg({"prompt_pattern"}), cmd = cfg({"command"}), ["on-success"] = _13_, ["on-error"] = _14_, ["on-exit"] = _15_, ["on-stray-output"] = _16_}))
   end
 end
 M["on-load"] = function()
@@ -140,17 +131,17 @@ M["on-exit"] = function()
   return M.stop()
 end
 M["on-filetype"] = function()
-  local function _20_()
+  local function _19_()
     return M.start()
   end
-  mapping.buf("SndStart", cfg({"mapping", "start"}), _20_, {desc = "Start the REPL"})
-  local function _21_()
+  mapping.buf("SndStart", cfg({"mapping", "start"}), _19_, {desc = "Start the REPL"})
+  local function _20_()
     return M.stop()
   end
-  mapping.buf("SndStop", cfg({"mapping", "stop"}), _21_, {desc = "Stop the REPL"})
-  local function _22_()
+  mapping.buf("SndStop", cfg({"mapping", "stop"}), _20_, {desc = "Stop the REPL"})
+  local function _21_()
     return M.interrupt()
   end
-  return mapping.buf("SndInterrupt", cfg({"mapping", "interrupt"}), _22_, {desc = "Interrupt the current REPL"})
+  return mapping.buf("SndInterrupt", cfg({"mapping", "interrupt"}), _21_, {desc = "Interrupt the current REPL"})
 end
 return M

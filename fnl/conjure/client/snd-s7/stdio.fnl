@@ -6,6 +6,7 @@
 (local stdio (autoload :conjure.remote.stdio-rt))
 (local config (autoload :conjure.config))
 (local mapping (autoload :conjure.mapping))
+(local text (autoload :conjure.text))
 (local ts (autoload :conjure.tree-sitter))
 
 (local M (define :conjure.client.snd-s7.stdio))
@@ -76,8 +77,9 @@
 ;; string. s7 doesn't handle multi-line string when sent via a subprocess.
 (fn split-and-join [s]
   (str.join
-    (icollect [_ v (ipairs (str.split s "\n"))]
-      (string.gsub (str.trimr v) "%s*%;[^\n]*$" ""))))
+    (a.map
+      #(-> $1 (str.trimr) (string.gsub "%s*%;[^\n]*$" ""))
+      (text.split-lines s))))
 
 (fn M.eval-str [opts]
   (log.dbg (.. "eval-str: opts >>" (a.pr-str opts) "<<"))
