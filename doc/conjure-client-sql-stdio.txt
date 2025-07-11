@@ -19,34 +19,38 @@ Conjure starts a SQL REPL within Neovim when you first open a SQL file unless
 you set `conjure#client_on_load` to `v:false`.
 
 This client was initially developed using PostgreSQL's `psql` command line
-client. Thus, the default configuration values for the `command` and `prompt
-`pattern` are set for `psql` to use a connection URL for a local a PostgreSQL
-server running on your local computer listening on the default port, a
-`postgres` database, and a `postgres` user with a password of `postgres`.
+client. Thus, the default configuration values for `command` and `prompt
+`pattern` are set for `psql`. The `command` string is set to use a connection
+URL to a `postgres` database with a `postgres` user and password of
+`postgres`. The database is served by a local PostgreSQL server listening on
+the default port.
 
-Please note that connecting to databases can be a security risk so consult the
-appropriate people for your particular situation and environment.
-  
-If you set up a `~/.pgpass` password file for PostgreSQL, like so:
+Also, if you set up a `~/.pgpass` password file, like so:
 
   -- host:port:db:user:password
   localhost:5432:postgres:postgres:postgres
 
-You can use a command string like:
+You can use a `command` string like:
 
-  "psql -h localhost -U postgres"
+  "psql -h localhost -U postgres"        (command line)
 
 or
 
-  "psql postgres://postgres@localhost"
+  "psql postgres://postgres@localhost"   (connection URL)
 
  - https://www.postgresql.org/docs/14/libpq-pgpass.html
 
-See |conjure-client-sql-stdio-configuration| and the documentation for the SQL
-command line client that you want to use.
+Please note that connecting to databases can be a security risk so consult the
+appropriate people for your particular situation and environment.
+  
 
-Once configured, you should be able to evaluate files and forms as you would
-with other Conjure supported languages.
+You can use another SQL database with its command line client so check the
+|conjure-client-sql-stdio-configuration and the documentation for that command
+line client.
+
+Once configured, you should be able to evaluate files and statements
+(equivalent to Lisp forms) as you would with other Conjure supported
+languages.
 
 Check out `:ConjureSchool` if you're unsure about what evaluation operations
 you can perform.
@@ -121,7 +125,8 @@ All configuration can be set as described in |conjure-configuration|.
 TROUBLESHOOTING                         *conjure-client-sql-stdio-trouble*
 
 If you get an error message like "SQLComplete:The dbext plugin must be loaded
-for dynamic SQL completion", you add this Vimscript to your Neovim configuration:
+for dynamic SQL completion", you can add this Vimscript to your Neovim
+configuration:
 
   " Default to static completion for SQL
   let g:omni_sql_default_compl_type = 'syntax'

@@ -8,11 +8,11 @@
 ;;      snd program is compiled with the defaults and includes s7 scheme and no
 ;;      GUI.
 ;;
-;;   2. Running `snd` outside of directory that it was compiled in can result
-;;      in errors when evaluating some forms. A symptom of doing so is not
-;;      finding the `with-sound` macro.
+;;   2. Running `snd` outside of the directory that it was compiled in can
+;;      result in errors when evaluating some forms. A symptom of doing so is
+;;      not finding the `with-sound` macro.
 ;;
-;;      To be able to run snd outside of the directory where it was compiled
+;;      To be able to run `snd` outside of the directory where it was compiled
 ;;      set the SND_PATH environment variable before running Neovim with
 ;;      Conjure to use the snd-s7 client.
 ;;
