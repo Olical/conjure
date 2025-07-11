@@ -1,16 +1,18 @@
 -- [nfnl] fnl/conjure/stack.fnl
 local _local_1_ = require("conjure.nfnl.module")
 local autoload = _local_1_["autoload"]
-local a = autoload("conjure.aniseed.core")
-local function push(s, v)
+local define = _local_1_["define"]
+local core = autoload("conjure.nfnl.core")
+local M = define("conjure.stack")
+M.push = function(s, v)
   table.insert(s, v)
   return s
 end
-local function pop(s)
+M.pop = function(s)
   table.remove(s)
   return s
 end
-local function peek(s)
-  return a.last(s)
+M.peek = function(s)
+  return core.last(s)
 end
-return {push = push, pop = pop, peek = peek}
+return M

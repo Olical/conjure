@@ -1,73 +1,75 @@
--- [nfnl] Compiled from fnl/nfnl/fs.fnl by https://github.com/Olical/nfnl, do not edit.
+-- [nfnl] fnl/nfnl/fs.fnl
 local _local_1_ = require("conjure.nfnl.module")
 local autoload = _local_1_["autoload"]
+local define = _local_1_["define"]
 local core = autoload("conjure.nfnl.core")
 local str = autoload("conjure.nfnl.string")
-local function basename(path)
+local M = define("conjure.nfnl.fs")
+M.basename = function(path)
   if path then
     return vim.fn.fnamemodify(path, ":h")
   else
     return nil
   end
 end
-local function filename(path)
+M.filename = function(path)
   if path then
     return vim.fn.fnamemodify(path, ":t")
   else
     return nil
   end
 end
-local function file_name_root(path)
+M["file-name-root"] = function(path)
   if path then
     return vim.fn.fnamemodify(path, ":r")
   else
     return nil
   end
 end
-local function full_path(path)
+M["full-path"] = function(path)
   if path then
     return vim.fn.fnamemodify(path, ":p")
   else
     return nil
   end
 end
-local function mkdirp(dir)
+M.mkdirp = function(dir)
   if dir then
     return vim.fn.mkdir(dir, "p")
   else
     return nil
   end
 end
-local function replace_extension(path, ext)
+M["replace-extension"] = function(path, ext)
   if path then
-    return (file_name_root(path) .. ("." .. ext))
+    return (M["file-name-root"](path) .. ("." .. ext))
   else
     return nil
   end
 end
-local function read_first_line(path)
-  local f = io.open(path)
+M["read-first-line"] = function(path)
+  local f = io.open(path, "r")
   if (f and not core["string?"](f)) then
-    local line = f:read()
+    local line = f:read("*line")
     f:close()
     return line
   else
     return nil
   end
 end
-local function absglob(dir, expr)
+M.absglob = function(dir, expr)
   return vim.fn.globpath(dir, expr, true, true)
 end
-local function relglob(dir, expr)
+M.relglob = function(dir, expr)
   local dir_len = (2 + string.len(dir))
   local function _9_(_241)
     return string.sub(_241, dir_len)
   end
-  return core.map(_9_, absglob(dir, expr))
+  return core.map(_9_, M.absglob(dir, expr))
 end
-local function glob_dir_newer_3f(a_dir, b_dir, expr, b_dir_path_fn)
+M["glob-dir-newer?"] = function(a_dir, b_dir, expr, b_dir_path_fn)
   local newer_3f = false
-  for _, path in ipairs(relglob(a_dir, expr)) do
+  for _, path in ipairs(M.relglob(a_dir, expr)) do
     if (vim.fn.getftime((a_dir .. path)) > vim.fn.getftime((b_dir .. b_dir_path_fn(path)))) then
       newer_3f = true
     else
@@ -75,7 +77,7 @@ local function glob_dir_newer_3f(a_dir, b_dir, expr, b_dir_path_fn)
   end
   return newer_3f
 end
-local function path_sep()
+M["path-sep"] = function()
   local os = string.lower(jit.os)
   if (("linux" == os) or ("osx" == os) or ("bsd" == os) or ((1 == vim.fn.exists("+shellshash")) and vim.o.shellslash)) then
     return "/"
@@ -83,21 +85,21 @@ local function path_sep()
     return "\\"
   end
 end
-local function findfile(name, path)
+M.findfile = function(name, path)
   local res = vim.fn.findfile(name, path)
   if not core["empty?"](res) then
-    return full_path(res)
+    return M["full-path"](res)
   else
     return nil
   end
 end
-local function split_path(path)
-  return str.split(path, path_sep())
+M["split-path"] = function(path)
+  return str.split(path, M["path-sep"]())
 end
-local function join_path(parts)
-  return str.join(path_sep(), core.concat(parts))
+M["join-path"] = function(parts)
+  return str.join(M["path-sep"](), core.concat(parts))
 end
-local function replace_dirs(path, from, to)
+M["replace-dirs"] = function(path, from, to)
   local function _13_(segment)
     if (from == segment) then
       return to
@@ -105,13 +107,21 @@ local function replace_dirs(path, from, to)
       return segment
     end
   end
-  return join_path(core.map(_13_, split_path(path)))
+  return M["join-path"](core.map(_13_, M["split-path"](path)))
 end
-local function fnl_path__3elua_path(fnl_path)
-  return replace_dirs(replace_extension(fnl_path, "lua"), "fnl", "lua")
+M["fnl-path->lua-path"] = function(fnl_path)
+  return M["replace-dirs"](M["replace-extension"](fnl_path, "lua"), "fnl", "lua")
 end
-local function glob_matches_3f(dir, expr, path)
-  local regex = vim.regex(vim.fn.glob2regpat(join_path({dir, expr})))
+M["glob-matches?"] = function(dir, expr, path)
+  local regex = vim.regex(vim.fn.glob2regpat(M["join-path"]({dir, expr})))
   return regex:match_str(path)
 end
-return {basename = basename, filename = filename, ["file-name-root"] = file_name_root, ["full-path"] = full_path, mkdirp = mkdirp, ["replace-extension"] = replace_extension, absglob = absglob, relglob = relglob, ["glob-dir-newer?"] = glob_dir_newer_3f, ["path-sep"] = path_sep, findfile = findfile, ["split-path"] = split_path, ["join-path"] = join_path, ["read-first-line"] = read_first_line, ["replace-dirs"] = replace_dirs, ["fnl-path->lua-path"] = fnl_path__3elua_path, ["glob-matches?"] = glob_matches_3f}
+local uv = (vim.uv or vim.loop)
+M["exists?"] = function(path)
+  if path then
+    return ("table" == type(uv.fs_stat(path)))
+  else
+    return nil
+  end
+end
+return M

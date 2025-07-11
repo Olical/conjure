@@ -1,4 +1,4 @@
--- [nfnl] Compiled from fnl/nfnl/notify.fnl by https://github.com/Olical/nfnl, do not edit.
+-- [nfnl] fnl/nfnl/notify.fnl
 local _local_1_ = require("conjure.nfnl.module")
 local autoload = _local_1_["autoload"]
 local core = autoload("conjure.nfnl.core")
