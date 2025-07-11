@@ -38,8 +38,9 @@
 ; This should make it more intuitive to use <localLeader>ee to evaluate the
 ; "current form" and not be surprised that it wasn't what you thought.
 (fn M.form-node? [node]
-  (log.dbg "form-node?: node:type =" (node:type))
-  (log.dbg "form-node?: node:parent =" (node:parent))
+  ;; These debug messages will appear in the log buffer before the eval messages.
+  (log.dbg (.. "M.form-node?: node:type = " (a.pr-str (node:type))))
+  (log.dbg (.. "M.form-node?: node:parent = " (a.pr-str (node:parent))))
   (let [parent (node:parent)]
     (if (= "expression_statement" (node:type)) true
         (= "import_statement" (node:type)) true
@@ -137,6 +138,7 @@
   (= (string.sub s 1 3) "..."))
 
 (fn M.format-msg [msg]
+  (log.dbg (.. "M.format-msg: >> " msg "<<"))
   (->> (text.split-lines msg)
        (a.filter #(~= "" $1))
        (a.filter #(not (is-dots? $1)))))
@@ -167,6 +169,7 @@
       (log.append [cmd-result]))))
 
 (fn M.eval-str [opts]
+  (log.dbg (.. "M.eval-str opts >> " (a.pr-str opts) "<<"))
   (with-repl-or-warn
     (fn [repl]
       (repl.send
