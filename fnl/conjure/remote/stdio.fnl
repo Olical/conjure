@@ -1,24 +1,26 @@
-(local {: autoload} (require :conjure.nfnl.module))
+(local {: autoload : define} (require :conjure.nfnl.module))
 (local a (autoload :conjure.aniseed.core))
 (local str (autoload :conjure.aniseed.string))
 (local client (autoload :conjure.client))
 (local log (autoload :conjure.log))
 
-(local uv vim.loop)
+(local M (define :conjure.remote.stdio))
+(local uv vim.uv)
+
 
 (fn parse-prompt [s pat]
   (if (s:find pat)
     (values true (s:gsub pat ""))
     (values false s)))
 
-(fn parse-cmd [x]
+(fn M.parse-cmd [x]
   (if
     (a.table? x)
     {:cmd (a.first x)
      :args (a.rest x)}
 
     (a.string? x)
-    (parse-cmd (str.split x "%s"))))
+    (M.parse-cmd (str.split x "%s"))))
 
 (fn extend-env [vars]
   (->> (a.merge
@@ -29,7 +31,7 @@
          (fn [[k v]]
            (.. k "=" v)))))
 
-(fn start [opts]
+(fn M.start [opts]
   "Starts an external REPL and gives you hooks to send code to it and read
   responses back out. Tying an input to a result is near enough impossible
   through this stdio medium, so it's a best effort.
@@ -69,11 +71,14 @@
         (when (and next-msg (not repl.current))
           (table.remove repl.queue 1)
           (a.assoc repl :current next-msg)
-          (log.dbg "send" next-msg.code)
+          (log.dbg (.. "remote.stdio.next-in-queue; stdin:write next-msg.code >>" (a.pr-str next-msg.code) "<<"))
           (stdin:write next-msg.code))))
 
     (fn on-message [source err chunk]
-      (log.dbg "receive" source err chunk)
+      (log.dbg (.. "remote.stdio.on-message; receive source >>" source "<<"))
+      (log.dbg (.. "remote.stdio.on-message; receive err >>" (a.pr-str err) "<<"))
+      (log.dbg (.. "remote.stdio.on-message; receive chunk >>" (a.pr-str chunk) "<<"))
+      ; (log.dbg (.. "receive" source err chunk))
       (if err
         (do
           (opts.on-error err)
@@ -115,7 +120,7 @@
       (uv.process_kill repl.handle signal)
       nil)
 
-    (let [{: cmd : args} (parse-cmd opts.cmd)
+    (let [{: cmd : args} (M.parse-cmd opts.cmd)
           (handle pid-or-err)
           (uv.spawn cmd {:stdio [stdin stdout stderr]
                          :args args
@@ -145,5 +150,4 @@
           (client.schedule #(opts.on-error pid-or-err))
           (destroy))))))
 
-{: parse-cmd
- : start}
+M

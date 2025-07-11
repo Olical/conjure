@@ -27,8 +27,8 @@ state = client["new-state"](_3_)
 M["buf-suffix"] = ".py"
 M["comment-prefix"] = "# "
 M["form-node?"] = function(node)
-  log.dbg("form-node?: node:type =", node:type())
-  log.dbg("form-node?: node:parent =", node:parent())
+  log.dbg(("M.form-node?: node:type = " .. a["pr-str"](node:type())))
+  log.dbg(("M.form-node?: node:parent = " .. a["pr-str"](node:parent())))
   local parent = node:parent()
   if ("expression_statement" == node:type()) then
     return true
@@ -93,6 +93,7 @@ local function is_dots_3f(s)
   return (string.sub(s, 1, 3) == "...")
 end
 M["format-msg"] = function(msg)
+  log.dbg(("M.format-msg: >> " .. msg .. "<<"))
   local function _9_(_241)
     return not is_dots_3f(_241)
   end
@@ -136,6 +137,7 @@ local function log_repl_output(msgs)
   end
 end
 M["eval-str"] = function(opts)
+  log.dbg(("M.eval-str opts >> " .. a["pr-str"](opts) .. "<<"))
   local function _16_(repl)
     local function _17_(msgs)
       log_repl_output(msgs)
