@@ -93,3 +93,5 @@ let suzukiMoped = new Moped(3, 1.0);
 suzukiMoped;
 suzukiMoped.countWheels();
 suzukiMoped.engineDisplacement();
+
+process.stderr.write("error! some error occurred");
