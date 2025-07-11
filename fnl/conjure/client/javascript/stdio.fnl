@@ -8,14 +8,13 @@
 (local log (autoload :conjure.log))
 (local text (autoload :conjure.text))
 
-(local M (define :conjure.client.javascript.stdio))
+(local M (define :conjure.client.javascript.stdio {}))
 
 (config.merge {:client 
                {:javascript 
                 {:stdio 
                  {:command "node --experimental-repl-await -i"
-                  :prompt-pattern "> "
-                  :delay-stderr-ms 10}}}})
+                  :prompt-pattern "> "}}}})
 
 (when (config.get-in [:mapping :enable_defaults])
   (config.merge 
@@ -38,9 +37,6 @@
       (= :import_statement (node:type)) (= :class_declaration (node:type))
       (= :lexical_declaration (node:type)) (= :for_statement (node:type))))
 
-(fn is-dots? [s]
-  (= (string.sub s 1 3) "..."))
-
 (fn with-repl-or-warn [f opts]
   (let [repl (state :repl)]
     (if repl
@@ -51,9 +47,7 @@
                          (cfg [:mapping :start]))]))))
 
 (fn display-result [msg]
-  (->> msg
-       (a.map #(.. "(out) " $1))
-       log.append))
+  (log.append msg))
 
 (fn replace-require-path [s cwd]
   (if (string.find s :require)
@@ -125,16 +119,30 @@
          (str.join "\n")) "\n"))
 
 (fn replace-dots [s with]
-  (string.gsub s "%.%.%.%s?" with))
+  (let [(s _count) (string.gsub s "%.%.%.%s?" with)] s))
 
 (fn M.format-msg [msg]
   (->> (str.split msg "\n")
        (a.filter #(not= "" $1))
        (a.map #(replace-dots $1 ""))))
 
+(fn sanitize-msg [msg field]
+  (->> (str.split (a.get msg field) "\n")
+       (a.map #(replace-dots $1 ""))
+       (a.filter (partial (not str.blank?)))
+       (a.map #(.. "(" field ") " $1 "\n"))
+       (str.join "")))
+
+(fn prepare-out [msg]
+  (if (a.get msg :out) 
+      (sanitize-msg msg :out)
+
+      (a.get msg :err)
+      (sanitize-msg msg :err)))
+
 (fn M.unbatch [msgs]
   (->> msgs
-       (a.map #(or (a.get $1 :out) (a.get $1 :err)))
+       (a.map prepare-out)
        (str.join "")))
 
 (fn M.eval-str [opts]
