@@ -1,24 +1,25 @@
-(local {: autoload} (require :conjure.nfnl.module))
+(local {: autoload : define} (require :conjure.nfnl.module))
 (local a (autoload :conjure.aniseed.core))
 (local str (autoload :conjure.aniseed.string))
 (local client (autoload :conjure.client))
 (local log (autoload :conjure.log))
 
-(local uv vim.loop)
+(local M (define :conjure.remote.stdio-rt))
+(local uv vim.uv)
 
 (fn parse-prompt [s pat]
   (if (s:find pat)
     (values true (s:gsub pat ""))
     (values false s)))
 
-(fn parse-cmd [x]
+(fn M.parse-cmd [x]
   (if
     (a.table? x)
     {:cmd (a.first x)
      :args (a.rest x)}
 
     (a.string? x)
-    (parse-cmd (str.split x "%s"))))
+    (M.parse-cmd (str.split x "%s"))))
 
 (fn extend-env [vars]
   (->> (a.merge
@@ -32,7 +33,7 @@
 ; This function sets up internal functions before spawning a child
 ; process to run the repl. It's called by a client to start a repl
 ; and returns a modified repl table.
-(fn start [opts]
+(fn M.start [opts]
   "Starts an external REPL and gives you hooks to send code to it and read
   responses back out. Tying an input to a result is near enough impossible
   through this stdio medium, so it's a best effort.
@@ -121,7 +122,7 @@
       (uv.process_kill repl.handle signal)
       nil)
 
-    (let [{: cmd : args} (parse-cmd opts.cmd)
+    (let [{: cmd : args} (M.parse-cmd opts.cmd)
           (handle pid-or-err)
           (uv.spawn cmd {:stdio [stdin stdout stderr]
                          :args args
@@ -151,5 +152,4 @@
           (client.schedule #(opts.on-error pid-or-err))
           (destroy))))))
 
-{: parse-cmd
- : start}
+M

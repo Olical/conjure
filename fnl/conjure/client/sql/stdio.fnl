@@ -1,26 +1,22 @@
-(local {: autoload} (require :conjure.nfnl.module))
-(local a (autoload :conjure.aniseed.core))
-(local str (autoload :conjure.aniseed.string))
+(local {: autoload : define} (require :conjure.nfnl.module))
+(local a (autoload :conjure.nfnl.core))
+(local str (autoload :conjure.nfnl.string))
 (local client (autoload :conjure.client))
 (local log (autoload :conjure.log))
-(local text (autoload :conjure.text))
 (local stdio (autoload :conjure.remote.stdio-rt))
 (local config (autoload :conjure.config))
 (local mapping (autoload :conjure.mapping))
 (local ts (autoload :conjure.tree-sitter))
 
+(local M (define :conjure.client.sql.stdio))
+
 ;;------------------------------------------------------------
+;; NOTE: Uses fnl/conjure/remote/stdio-rt.fnl; not fnl/conjure/remote/stdio.fnl.
+;;
 ;; Based on fnl/conjure/client/fennel/stdio.fnl.
 ;;
-;; May work with other command line SQL clients besides PostgresQL's psql.
-;;
-;; Set up psql to use ~/.pgpass.
-;;   - https://www.postgresql.org/docs/14/libpq-pgpass.html
-;;
-;;   For "psql -U blogger postgres", use:
-;;     localhost:5432:postgres:blogger:secret
-;;
-;;   where the blogger user has been created in the postgres database.
+;; The parts that are copied from that client are bracketed by the comments
+;; with "from client/fennel/stdio.fnl".
 ;;------------------------------------------------------------
 
 (config.merge
@@ -43,11 +39,12 @@
 (local cfg (config.get-in-fn [:client :sql :stdio]))
 (local state (client.new-state #(do {:repl nil})))
 
-(local buf-suffix ".sql")
-(local comment-prefix "-- ")
+(set M.buf-suffix ".sql")
+(set M.comment-prefix "-- ")
 
 ;; Rough equivalent of a Lisp form.
-(fn get-form-modifier [node]
+(fn M.get-form-modifier [node]
+  (log.dbg "get-form-modifier: node:type = " (a.pr-str (node:type)))
   (if
     ;; Must either be a statement which we have to add ; to because the
     ;; tree-sitter node excludes it for some reason.
@@ -57,7 +54,8 @@
     ;; Or an unknown node that starts with a command escape character.
     ;; It has the type of ERROR at the time of writing, but this might change
     ;; if the tree sitter grammar is updated.
-    ;; We have to use the :raw override because the grammar returns all adjacent meta commands.
+    ;; We have to use the :raw override because the grammar returns all
+    ;; adjacent meta commands.
     ;; We just take the current line in this case.
     (a.string? (string.match (ts.node->str node) (cfg [:meta_prefix_pattern])))
     (let [line (vim.api.nvim_get_current_line)
@@ -73,7 +71,7 @@
 
 
 ;; Comment nodes are comment (--) and marginalia (/*...*/)
-(fn comment-node? [node]
+(fn M.comment-node? [node]
   (or (= "comment" (node:type))
       (= "marginalia" (node:type))))
 
@@ -81,7 +79,7 @@
   (let [repl (state :repl)]
     (if repl
       (f repl)
-      (log.append [(.. comment-prefix "No REPL running")]))))
+      (log.append [(.. M.comment-prefix "No REPL running")]))))
 
 ;;;;-------- from client/fennel/stdio.fnl ----------------------
 (fn format-message [msg]
@@ -94,12 +92,12 @@
 (fn display-result [msg]
   (log.append (remove-blank-lines msg)))
 
-(fn ->list [s]
+(fn M.->list [s]
   (if (a.first s)
     s
     [s]))
 
-(fn prep-code [opts]
+(fn M.prep-code [opts]
   (let [node (a.get opts :node)
         suffix (if (and node (= "statement" (node:type)))
                  ";\n"
@@ -113,47 +111,48 @@
 
     (.. code suffix)))
 
-(fn eval-str [opts]
+(fn M.eval-str [opts]
+  (log.dbg "eval-str: opts >> " (a.pr-str opts) "<<")
   (with-repl-or-warn
     (fn [repl]
       (repl.send
-        (prep-code opts)
+        (M.prep-code opts)
         (fn [msgs]
-          (let [msgs (->list msgs)]
+          (let [msgs (M.->list msgs)]
             (when opts.on-result
               (opts.on-result (str.join "\n" (remove-blank-lines (a.last msgs)))))
             (a.run! display-result msgs)))
         {:batch? false}))))
 ;;;;-------- End from client/fennel/stdio.fnl ------------------
 
-(fn eval-file [opts]
-  (eval-str (a.assoc opts :code (a.slurp opts.file-path))))
+(fn M.eval-file [opts]
+  (M.eval-str (a.assoc opts :code (a.slurp opts.file-path))))
 
-(fn interrupt []
+(fn M.interrupt []
   (with-repl-or-warn
     (fn [repl]
-      (log.append [(.. comment-prefix " Sending interrupt signal.")] {:break? true})
+      (log.append [(.. M.comment-prefix " Sending interrupt signal.")] {:break? true})
       (repl.send-signal :sigint))))
 
 (fn display-repl-status [status]
   (let [repl (state :repl)]
     (when repl
       (log.append
-        [(.. comment-prefix (a.pr-str (a.get-in repl [:opts :cmd])) " (" status ")")]
+        [(.. M.comment-prefix (a.pr-str (a.get-in repl [:opts :cmd])) " (" status ")")]
         {:break? true}))))
 
-(fn stop []
+(fn M.stop []
   (let [repl (state :repl)]
     (when repl
       (repl.destroy)
       (display-repl-status :stopped)
       (a.assoc (state) :repl nil))))
 
-(fn start []
-  (log.append [(.. comment-prefix "Starting SQL client...")])
+(fn M.start []
+  (log.append [(.. M.comment-prefix "Starting SQL client...")])
   (if (state :repl)
-    (log.append [(.. comment-prefix "Can't start, REPL is already running.")
-                 (.. comment-prefix "Stop the REPL with "
+    (log.append [(.. M.comment-prefix "Can't start, REPL is already running.")
+                 (.. M.comment-prefix "Stop the REPL with "
                      (config.get-in [:mapping :prefix])
                      (cfg [:mapping :stop]))]
                 {:break? true})
@@ -173,50 +172,35 @@
 
          :on-exit
          (fn [code signal]
-           (when (and (= :number (type code)) (> code 0))
-             (log.append [(.. comment-prefix "process exited with code " code)]))
-           (when (and (= :number (type signal)) (> signal 0))
-             (log.append [(.. comment-prefix "process exited with signal " signal)]))
-           (stop))
+           (log.dbg "process exited with code " (a.pr-str code))
+           (log.dbg "process exited with signal " (a.pr-str signal))
+           (M.stop))
 
          :on-stray-output
          (fn [msg]
            (display-result msg))}))))
 
-(fn on-load []
+(fn M.on-load []
   (when (config.get-in [:client_on_load])
-    (start)))
+    (M.start)))
 
-(fn on-exit []
-  (stop))
+(fn M.on-exit []
+  (M.stop))
 
-(fn on-filetype []
+(fn M.on-filetype []
   (mapping.buf
     :SqlStart (cfg [:mapping :start])
-    start
+    #(M.start)
     {:desc "Start the REPL"})
 
   (mapping.buf
     :SqlStop (cfg [:mapping :stop])
-    stop
+    #(M.stop)
     {:desc "Stop the REPL"})
 
   (mapping.buf
     :SqlInterrupt (cfg [:mapping :interrupt])
-    interrupt
+    #(M.interrupt)
     {:desc "Interrupt the current REPL"}))
 
-{: buf-suffix
- : comment-prefix
- : get-form-modifier
- : comment-node?
- : ->list
- : prep-code
- : eval-str
- : eval-file
- : interrupt
- : stop
- : start
- : on-load
- : on-exit
- : on-filetype}
+M

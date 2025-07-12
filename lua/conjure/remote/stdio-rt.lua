@@ -1,11 +1,13 @@
 -- [nfnl] fnl/conjure/remote/stdio-rt.fnl
 local _local_1_ = require("conjure.nfnl.module")
 local autoload = _local_1_["autoload"]
+local define = _local_1_["define"]
 local a = autoload("conjure.aniseed.core")
 local str = autoload("conjure.aniseed.string")
 local client = autoload("conjure.client")
 local log = autoload("conjure.log")
-local uv = vim.loop
+local M = define("conjure.remote.stdio-rt")
+local uv = vim.uv
 local function parse_prompt(s, pat)
   if s:find(pat) then
     return true, s:gsub(pat, "")
@@ -13,11 +15,11 @@ local function parse_prompt(s, pat)
     return false, s
   end
 end
-local function parse_cmd(x)
+M["parse-cmd"] = function(x)
   if a["table?"](x) then
     return {cmd = a.first(x), args = a.rest(x)}
   elseif a["string?"](x) then
-    return parse_cmd(str.split(x, "%s"))
+    return M["parse-cmd"](str.split(x, "%s"))
   else
     return nil
   end
@@ -30,7 +32,7 @@ local function extend_env(vars)
   end
   return a.map(_5_, a["kv-pairs"](a.merge(vim.fn.environ(), vars)))
 end
-local function start(opts)
+M.start = function(opts)
   local stdin = uv.new_pipe(false)
   local stdout = uv.new_pipe(false)
   local stderr = uv.new_pipe(false)
@@ -145,7 +147,7 @@ local function start(opts)
     uv.process_kill(repl.handle, signal)
     return nil
   end
-  local _let_26_ = parse_cmd(opts.cmd)
+  local _let_26_ = M["parse-cmd"](opts.cmd)
   local cmd = _let_26_["cmd"]
   local args = _let_26_["args"]
   local handle, pid_or_err = uv.spawn(cmd, {stdio = {stdin, stdout, stderr}, args = args, env = extend_env(a["merge!"]({INPUTRC = "/dev/null", TERM = "dumb"}, opts.env))}, client["schedule-wrap"](on_exit))
@@ -165,4 +167,4 @@ local function start(opts)
     return destroy()
   end
 end
-return {["parse-cmd"] = parse_cmd, start = start}
+return M

@@ -1,8 +1,8 @@
 -- Samples to try.
--- Prerequisite:
---  1. Set up POSTGRES_URL environment variable with connection string.
---     $ psql $POSTGRES_URL
 --
+-- Prerequisites:
+--   1. The psql command (comes with a PostgreSQL database installation).
+--   2. A running PostgreSQL database.
 --
 --  customers        orders            lines             items
 --  +----------+     +-----------+     +-----------+     +-------------+
@@ -16,8 +16,15 @@
 --  +----------+
 --
 
--- Try these with :let g:conjure#client#sql#stdio#command = "psql -U blogger postgres"
--- Must have ~/.pgpass with "chmod 600" set up with blogger's password for postgres database.
+-- meta commands
+-- - Check for tables:
+--     1. psql
+--          \d
+
+--     2. duckdb
+--          .tables foo
+--          .tables bar
+
 
 -- DDL
 DROP TABLE items;
@@ -25,20 +32,12 @@ DROP TABLE customers;
 DROP TABLE orders;
 DROP TABLE lines;
 
--- Check for tables:   \d
 
 CREATE TABLE items (
     id integer primary key
   , sku varchar(40)
   , description varchar(100)
 );
-
-INSERT INTO items VALUES (1, 'ZF-193-1111', 'Super Cleaner'); -- $19.99
-INSERT INTO items VALUES (2, 'JF-794-1315', 'Super Soaker'); -- $25.19
-INSERT INTO items VALUES (3, 'MH-100-1310', 'Super Fine'); -- $27.79
-INSERT INTO items VALUES (4, 'WF-992-3191', 'Ultra Fine'); -- $29.29
-INSERT INTO items VALUES (5, 'GS-093-1811', 'Super Duper'); -- $9.09
-
 
 CREATE TABLE customers (
     id integer primary key
@@ -50,18 +49,12 @@ CREATE TABLE customers (
   , country varchar(40)
 );
 
-INSERT INTO customers VALUES (1, 'John Doe', '92-112 Beta Center Lane', 'Downtown', 'HI', 96718-3214);
-INSERT INTO customers VALUES (2, 'Mary Jane Pond', '42 Answer Lane', 'Paia', 'HI', 96712-2148);
-INSERT INTO customers VALUES (3, 'Zachary Pena', '911 Tower Boulevard', 'Punaluu', 'HI', 96735-1449);
-
-
 CREATE TABLE orders (
     id integer primary key
   , cust_id integer
   , line_id integer
   , order_num varchar(20)
 );
-
 
 CREATE TABLE lines (
     id integer primary key
@@ -71,30 +64,39 @@ CREATE TABLE lines (
 );
 
 
--- duckdb meta commands
-.tables foo
-.tables bar
+-- DML
+INSERT INTO items VALUES (1, 'ZF-193-1111', 'Super Cleaner'); -- $19.99
+INSERT INTO items VALUES (2, 'JF-794-1315', 'Super Soaker'); -- $25.19
+INSERT INTO items VALUES (3, 'MH-100-1310', 'Super Fine'); -- $27.79
+INSERT INTO items VALUES (4, 'WF-992-3191', 'Ultra Fine'); -- $29.29
+INSERT INTO items VALUES (5, 'GS-093-1811', 'Super Duper'); -- $9.09
 
+INSERT INTO customers VALUES (1, 'John Doe', '92-112 Beta Center Lane', 'Downtown', 'HI', 96718-3214);
+INSERT INTO customers VALUES (2, 'Mary Jane Pond', '42 Answer Lane', 'Paia', 'HI', 96712-2148);
+INSERT INTO customers VALUES (3, 'Zachary Pena', '911 Tower Boulevard', 'Punaluu', 'HI', 96735-1449);
 
--- John has no orders.
+-- Functional scenarios:
+--   1. John has no orders.
 
--- Zack has an order with 1 item.
+--   2. Zack has an order with 1 item.
 INSERT INTO lines VALUES (1, 1, 29.29, 32);
 INSERT INTO orders VALUES (1, 3, 1, 'AA-00001');
 
--- MJ has an order of 2 items.
+--   3. MJ has an order of 2 items.
 INSERT INTO lines VALUES (2, 2, 19.99, 2);
 INSERT INTO lines VALUES (3, 5, 9.09, 41);
 INSERT INTO orders VALUES (2, 2, 2, 'AA-00002');
 INSERT INTO orders VALUES (3, 2, 3, 'AA-00002');
 
--- Zack has an order with 3 items.
+--   4. Zack has an order with 3 items.
 INSERT INTO lines VALUES (4, 4, 19.99, 7);
 INSERT INTO lines VALUES (5, 5, 25.19, 5);
 INSERT INTO lines VALUES (6, 3, 29.29, 1);
 INSERT INTO orders VALUES (4, 3, 4, 'AA-00003');
 INSERT INTO orders VALUES (5, 3, 5, 'AA-00003');
 INSERT INTO orders VALUES (6, 3, 6, 'AA-00003');
+
+-- Other miscellaneous things:
 
 -- Evaluate the following before sending an interrupt.
 SELECT 1;
@@ -148,6 +150,7 @@ LEFT JOIN customers d ON c.cust_id = d.id;
 /*Select all the columns
 of all the records in the Customers table:*/
 SELECT * FROM customers;
+
 SELECT /*id,*/ description, sku FROM items;
 SELECT * FROM orders;
 SELECT * FROM lines;
