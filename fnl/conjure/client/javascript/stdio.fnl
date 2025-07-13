@@ -108,14 +108,15 @@
                   (.. async-kw "function " name "(" args ")" final-body))))))
 
 (fn prep-code [s]
-  (.. 
-    (->> (str.split (replace-arrows s) "\n")
-         (a.filter #(not= "" $1))
-         (a.map #(-> $1
-                     str.trim 
-                     replace-imports
-                     (replace-require-path (vim.uv.fs_realpath (vim.fn.expand "%:p:h")))))
-         (str.join "\n")) "\n"))
+  (-> (str.split (replace-arrows s) "\n")
+      (->> (a.filter #(not= "" $1))
+           (a.map #(-> $1
+                       str.trim 
+                       replace-imports
+                       (replace-require-path 
+                         (vim.uv.fs_realpath (vim.fn.expand "%:p:h")))))
+           (str.join "\n"))
+      (.. "\n")))
 
 (fn replace-dots [s with]
   (let [(s _count) (string.gsub s "%.%.%.%s?" with)] s))
