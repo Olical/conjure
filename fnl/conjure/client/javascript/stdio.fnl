@@ -1,6 +1,6 @@
 (local {: autoload : define} (require :conjure.nfnl.module))
-(local a (autoload :nfnl.core))
-(local str (autoload :nfnl.string))
+(local a (autoload :conjure.nfnl.core))
+(local str (autoload :conjure.nfnl.string))
 (local stdio (autoload :conjure.remote.stdio))
 (local config (autoload :conjure.config))
 (local mapping (autoload :conjure.mapping))
@@ -92,11 +92,10 @@
         expr (or (ts:match "=%s*(.*)") ts)
         parens "^%s*%b()%s*=>"
         ident "^%s*[%a_$][%w_$]*%s*=>"]
-    (if (not (or (ts:find "=> ") (ts:find "%f[%w]function%f[%W]")))
-        false)
-    (if (expr:match parens) true)
-    (if (expr:match ident) true)
-    false))
+    (if (not (or (ts:find "=> ") (ts:find "%f[%w]function%f[%W]"))) false
+        (expr:match parens) true
+        (expr:match ident) true
+        false)))
 
 (fn replace-arrows [s]
   (if (not (is-arrow-fn? s)) s
