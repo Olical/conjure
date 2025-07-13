@@ -99,7 +99,17 @@ local function replace_arrows(s)
   if not is_arrow_fn_3f(s) then
     return s
   else
-    local function _15_(name, before_args, args, body)
+    local decl
+    if text["starts-with"](s, "const") then
+      decl = "const"
+    elseif text["starts-with"](s, "let") then
+      decl = "let"
+    else
+      decl = nil
+    end
+    local pattern = (decl .. "%s*([%w_]+)%s*=%s*(.-)%((.-)%)%s*=>%s*(.*)")
+    local replace_fn
+    local function _16_(name, before_args, args, body)
       local async_kw
       if before_args:find("async") then
         async_kw = "async "
@@ -114,42 +124,43 @@ local function replace_arrows(s)
       end
       return (async_kw .. "function " .. name .. "(" .. args .. ")" .. final_body)
     end
-    return s:gsub("const%s*([%w_]+)%s*=%s*(.-)%((.-)%)%s*=>%s*(.*)", _15_)
+    replace_fn = _16_
+    return s:gsub(pattern, replace_fn)
   end
 end
 local function prep_code(s)
-  local function _19_(_241)
+  local function _20_(_241)
     return replace_require_path(replace_imports(str.trim(_241)), vim.uv.fs_realpath(vim.fn.expand("%:p:h")))
   end
-  local function _20_(_241)
+  local function _21_(_241)
     return ("" ~= _241)
   end
-  return (str.join("\n", a.map(_19_, a.filter(_20_, str.split(replace_arrows(s), "\n")))) .. "\n")
+  return (str.join("\n", a.map(_20_, a.filter(_21_, str.split(replace_arrows(s), "\n")))) .. "\n")
 end
 local function replace_dots(s, with)
   local s0, _count = string.gsub(s, "%.%.%.%s?", with)
   return s0
 end
 M["format-msg"] = function(msg)
-  local function _21_(_241)
+  local function _22_(_241)
     return replace_dots(_241, "")
   end
-  local function _22_(_241)
+  local function _23_(_241)
     return ("" ~= _241)
   end
-  return a.map(_21_, a.filter(_22_, str.split(msg, "\n")))
+  return a.map(_22_, a.filter(_23_, str.split(msg, "\n")))
 end
 local function sanitize_msg(msg, field)
-  local function _23_(_241)
+  local function _24_(_241)
     return ("(" .. field .. ") " .. _241 .. "\n")
   end
-  local function _24_(...)
+  local function _25_(...)
     return not str["blank?"](...)
   end
-  local function _25_(_241)
+  local function _26_(_241)
     return replace_dots(_241, "")
   end
-  return str.join("", a.map(_23_, a.filter(_24_, a.map(_25_, str.split(a.get(msg, field), "\n")))))
+  return str.join("", a.map(_24_, a.filter(_25_, a.map(_26_, str.split(a.get(msg, field), "\n")))))
 end
 local function prepare_out(msg)
   if a.get(msg, "out") then
@@ -164,8 +175,8 @@ M.unbatch = function(msgs)
   return str.join("", a.map(prepare_out, msgs))
 end
 M["eval-str"] = function(opts)
-  local function _27_(repl)
-    local function _28_(msgs)
+  local function _28_(repl)
+    local function _29_(msgs)
       local msgs0 = M["format-msg"](M.unbatch(msgs))
       display_result(msgs0)
       if opts["on-result"] then
@@ -174,9 +185,9 @@ M["eval-str"] = function(opts)
         return nil
       end
     end
-    return repl.send(prep_code(opts.code), _28_, {["batch?"] = true})
+    return repl.send(prep_code(opts.code), _29_, {["batch?"] = true})
   end
-  return with_repl_or_warn(_27_)
+  return with_repl_or_warn(_28_)
 end
 M["eval-file"] = function(opts)
   return M["eval-str"](a.assoc(opts, "code", a.slurp(opts["file-path"])))
@@ -204,20 +215,20 @@ M.start = function()
   if state("repl") then
     return log.append({(M["comment-prefix"] .. "Can't start, REPL is already running."), (M["comment-prefix"] .. "Stop the REPL with " .. config["get-in"]({"mapping", "prefix"}) .. cfg({"mapping", "stop"}))}, {["break?"] = true})
   else
-    local function _32_()
+    local function _33_()
       display_repl_status("started")
-      local function _33_(repl)
-        local function _34_(msgs)
+      local function _34_(repl)
+        local function _35_(msgs)
           return display_result(M["format-msg"](M.unbatch(msgs)))
         end
-        return repl.send(prep_code(M["initialise-repl-code"]), _34_, {batch = true})
+        return repl.send(prep_code(M["initialise-repl-code"]), _35_, {batch = true})
       end
-      return with_repl_or_warn(_33_)
+      return with_repl_or_warn(_34_)
     end
-    local function _35_(err)
+    local function _36_(err)
       return display_repl_status(err)
     end
-    local function _36_(code, signal)
+    local function _37_(code, signal)
       if (("number" == type(code)) and (code > 0)) then
         log.append({(M["comment-prefix"] .. "process exited with code " .. code)})
       else
@@ -228,17 +239,17 @@ M.start = function()
       end
       return M.stop()
     end
-    local function _39_(msg)
+    local function _40_(msg)
       return log.dbg(M["format-msg"](M.unbatch({msg})), {["join-first?"] = true})
     end
-    return a.assoc(state(), "repl", stdio.start({["prompt-pattern"] = cfg({"prompt-pattern"}), cmd = cfg({"command"}), ["delay-stderr-ms"] = cfg({"delay-stderr-ms"}), ["on-success"] = _32_, ["on-error"] = _35_, ["on-exit"] = _36_, ["on-stray-output"] = _39_}))
+    return a.assoc(state(), "repl", stdio.start({["prompt-pattern"] = cfg({"prompt-pattern"}), cmd = cfg({"command"}), ["delay-stderr-ms"] = cfg({"delay-stderr-ms"}), ["on-success"] = _33_, ["on-error"] = _36_, ["on-exit"] = _37_, ["on-stray-output"] = _40_}))
   end
 end
 local function warning_msg()
-  local function _41_(_241)
+  local function _42_(_241)
     return log.append({_241})
   end
-  return a.map(_41_, {"// WARNING! Node.js REPL limitations require transformations:", "// 1. ES6 'import' statements are converted to 'require(...)' calls.", "// 2. Arrow functions ('const fn = () => ...') are converted to 'function fn() ...' declarations to allow re-definition."})
+  return a.map(_42_, {"// WARNING! Node.js REPL limitations require transformations:", "// 1. ES6 'import' statements are converted to 'require(...)' calls.", "// 2. Arrow functions ('const fn = () => ...') are converted to 'function fn() ...' declarations to allow re-definition."})
 end
 M["on-load"] = function()
   if config["get-in"]({"client_on_load"}) then
@@ -252,20 +263,20 @@ M["on-exit"] = function()
   return M.stop()
 end
 M.interrupt = function()
-  local function _43_(repl)
+  local function _44_(repl)
     log.append({(M["comment-prefix"] .. " Sending interrupt signal.")}, {["break?"] = true})
     return repl["send-signal"]("sigint")
   end
-  return with_repl_or_warn(_43_)
+  return with_repl_or_warn(_44_)
 end
 M["on-filetype"] = function()
   mapping.buf("JavascriptStart", cfg({"mapping", "start"}), M.start, {desc = "Start the Javascript REPL"})
   mapping.buf("JavascriptStop", cfg({"mapping", "stop"}), M.stop, {desc = "Stop the Javascript REPL"})
-  local function _44_()
+  local function _45_()
     M.stop()
     return M.start()
   end
-  mapping.buf("JavascriptRestart", cfg({"mapping", "restart"}), _44_, {desc = "Restart the Javascript REPL"})
+  mapping.buf("JavascriptRestart", cfg({"mapping", "restart"}), _45_, {desc = "Restart the Javascript REPL"})
   return mapping.buf("JavascriptInterrupt", cfg({"mapping", "interrupt"}), M.interrupt, {desc = "Interrupt the current evaluation"})
 end
 return M

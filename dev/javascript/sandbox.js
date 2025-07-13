@@ -60,6 +60,9 @@ const tlAsync = async (time) => {
 };
 await tlAsync(2000);
 
+let arrowPlus = (a, b) => a + b;
+arrowPlus(2, 3);
+
 // global imports are working as expected
 import { readFileSync } from "node:fs";
 readFileSync("./dev/javascript/math.js").toString();

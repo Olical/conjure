@@ -99,13 +99,16 @@
 
 (fn replace-arrows [s]
   (if (not (is-arrow-fn? s)) s
-      (s:gsub "const%s*([%w_]+)%s*=%s*(.-)%((.-)%)%s*=>%s*(.*)"
-              (fn [name before-args args body]
-                (let [async-kw (if (before-args:find :async) "async " "")
-                      final-body (if (body:find "^%s*%{")
-                                     (.. " " body)
-                                     (.. " { return " body " }"))]
-                  (.. async-kw "function " name "(" args ")" final-body))))))
+      (let [decl (if (text.starts-with s :const) "const" 
+                     (text.starts-with s :let) "let")
+            pattern (.. decl "%s*([%w_]+)%s*=%s*(.-)%((.-)%)%s*=>%s*(.*)")
+            replace-fn (fn [name before-args args body]
+                         (let [async-kw (if (before-args:find :async) "async " "")
+                               final-body (if (body:find "^%s*%{")
+                                              (.. " " body)
+                                              (.. " { return " body " }"))]
+                           (.. async-kw "function " name "(" args ")" final-body)))]
+        (s:gsub pattern replace-fn))))
 
 (fn prep-code [s]
   (-> (str.split (replace-arrows s) "\n")
