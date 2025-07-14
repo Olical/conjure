@@ -3,7 +3,11 @@
 (local guile (require :conjure.client.guile.socket))
 (local config (require :conjure.config))
 (local fake-socket (require :conjure-spec.client.guile.fake-socket))
+(local ts (require :conjure.tree-sitter))
 (require :conjure-spec.assertions)
+
+(tset package.loaded "conjure.remote.socket" fake-socket)
+(tset ts :valid-str? (fn [_ _] true))
 
 (local completion-code-define-match "%(define%* %(%%conjure:get%-guile%-completions")
 
@@ -13,7 +17,6 @@
 
 (describe "conjure.client.guile.socket"
   (fn []
-    (tset package.loaded "conjure.remote.socket" fake-socket)
     (describe "context extraction"
       (fn [] 
         (it "returns nil for hello world"

@@ -65,13 +65,15 @@
 (fn eval-str [opts]
   (with-repl-or-warn
     (fn [repl]
-      (repl.send
+      (if (ts.valid-str? :scheme opts.code) 
+       (repl.send
         (.. opts.code "\n")
         (fn [msgs]
           (let [msgs (-> msgs unbatch format-msg)]
             (opts.on-result (a.last msgs))
             (log.append msgs)))
-        {:batch? true}))))
+        {:batch? true})
+       (log.append [(.. comment-prefix "eval error: could not parse form")])))))
 
 (fn eval-file [opts]
   (eval-str (a.assoc opts :code (.. "(load \"" opts.file-path "\")"))))

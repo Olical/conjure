@@ -55,12 +55,16 @@ local function format_msg(msg)
 end
 local function eval_str(opts)
   local function _9_(repl)
-    local function _10_(msgs)
-      local msgs0 = format_msg(unbatch(msgs))
-      opts["on-result"](a.last(msgs0))
-      return log.append(msgs0)
+    if ts["valid-str?"]("scheme", opts.code) then
+      local function _10_(msgs)
+        local msgs0 = format_msg(unbatch(msgs))
+        opts["on-result"](a.last(msgs0))
+        return log.append(msgs0)
+      end
+      return repl.send((opts.code .. "\n"), _10_, {["batch?"] = true})
+    else
+      return log.append({(comment_prefix .. "eval error: could not parse form")})
     end
-    return repl.send((opts.code .. "\n"), _10_, {["batch?"] = true})
   end
   return with_repl_or_warn(_9_)
 end
@@ -84,13 +88,13 @@ local function start()
   if state("repl") then
     return log.append({(comment_prefix .. "Can't start, REPL is already running."), (comment_prefix .. "Stop the REPL with " .. config["get-in"]({"mapping", "prefix"}) .. cfg({"mapping", "stop"}))}, {["break?"] = true})
   else
-    local function _12_()
+    local function _13_()
       return display_repl_status("started")
     end
-    local function _13_(err)
+    local function _14_(err)
       return display_repl_status(err)
     end
-    local function _14_(code, signal)
+    local function _15_(code, signal)
       if (("number" == type(code)) and (code > 0)) then
         log.append({(comment_prefix .. "process exited with code " .. code)})
       else
@@ -101,18 +105,18 @@ local function start()
       end
       return stop()
     end
-    local function _17_(msg)
+    local function _18_(msg)
       return log.append(format_msg(msg))
     end
-    return a.assoc(state(), "repl", stdio.start({["prompt-pattern"] = cfg({"prompt_pattern"}), cmd = cfg({"command"}), ["on-success"] = _12_, ["on-error"] = _13_, ["on-exit"] = _14_, ["on-stray-output"] = _17_}))
+    return a.assoc(state(), "repl", stdio.start({["prompt-pattern"] = cfg({"prompt_pattern"}), cmd = cfg({"command"}), ["on-success"] = _13_, ["on-error"] = _14_, ["on-exit"] = _15_, ["on-stray-output"] = _18_}))
   end
 end
 local function interrupt()
-  local function _19_(repl)
+  local function _20_(repl)
     log.append({(comment_prefix .. " Sending interrupt signal.")}, {["break?"] = true})
     return repl["send-signal"]("sigint")
   end
-  return with_repl_or_warn(_19_)
+  return with_repl_or_warn(_20_)
 end
 local function on_load()
   return start()

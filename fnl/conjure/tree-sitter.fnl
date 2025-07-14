@@ -200,6 +200,14 @@
        vim.treesitter.require_language)
    lang))
 
+(fn valid-str? [lang code]
+  (-?> (vim.treesitter.get_string_parser code lang)
+       (#(doto $1 (: :parse)))
+       (: :trees)
+       (a.get-in [1])
+       (: :root)
+       (#(not ($1:has_error)))))
+
 {: enabled?
  : parse!
  : node->str
@@ -215,4 +223,5 @@
  : node-surrounded-by-form-pair-chars?
  : node-prefixed-by-chars?
  : get-form
- : add-language}
+ : add-language
+ : valid-str?}
