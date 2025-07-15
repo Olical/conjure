@@ -13,6 +13,10 @@ local function set_repl_connected(repl)
   repl["status"] = "connected"
   return nil
 end
+local function set_repl_busy(repl)
+  repl["current"] = "some command"
+  return nil
+end
 local function _2_()
   package.loaded["conjure.remote.socket"] = fake_socket
   local function _3_()
@@ -283,7 +287,35 @@ local function _2_()
       assert.same({}, calls)
       return assert.same({}, callback_results[1])
     end
-    return it("Does not execute completions in REPL when connected but completions disabled", _39_)
+    it("Does not execute completions in REPL when connected but completions disabled", _39_)
+    local function _43_()
+      config.merge({client = {guile = {socket = {pipename = "fake-pipe", host_port = nil, enable_completions = true}}}}, {["overwrite?"] = true})
+      local calls = {}
+      local spy_send
+      local function _44_(call)
+        return table.insert(calls, call)
+      end
+      spy_send = _44_
+      local fake_repl
+      local function _45_()
+      end
+      fake_repl = {send = spy_send, status = nil, destroy = _45_}
+      local callback_results = {}
+      local fake_callback
+      local function _46_(result)
+        return table.insert(callback_results, result)
+      end
+      fake_callback = _46_
+      fake_socket["set-fake-repl"](fake_repl)
+      guile.connect({})
+      set_repl_connected(fake_repl)
+      set_repl_busy(fake_repl)
+      guile.completions({cb = fake_callback, prefix = "something"})
+      guile.disconnect()
+      assert.same({}, calls)
+      return assert.same({}, callback_results[1])
+    end
+    return it("Does not execute completions in REPL when connected but busy", _43_)
   end
   return describe("enable completions config setting", _33_)
 end
