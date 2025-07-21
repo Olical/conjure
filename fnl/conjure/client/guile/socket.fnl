@@ -37,7 +37,7 @@
 (local base-module "(guile)")
 (local default-context "(guile-user)")
 
-(set M.valid-str? #(ts.valid-str? :scheme $1))
+(fn M.valid-str? [code] (ts.valid-str? :scheme code))
 
 (fn normalize-context [arg] 
   (let [tokens  (str.split arg "%s+") 

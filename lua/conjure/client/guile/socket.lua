@@ -28,10 +28,9 @@ M["buf-suffix"] = ".scm"
 M["comment-prefix"] = "; "
 local base_module = "(guile)"
 local default_context = "(guile-user)"
-local function _4_(_241)
-  return ts["valid-str?"]("scheme", _241)
+M["valid-str?"] = function(code)
+  return ts["valid-str?"]("scheme", code)
 end
-M["valid-str?"] = _4_
 local function normalize_context(arg)
   local tokens = str.split(arg, "%s+")
   local context = ("(" .. str.join(" ", tokens) .. ")")
@@ -68,10 +67,10 @@ local function format_message(msg)
   end
 end
 local function display_result(msg)
-  local function _8_(_241)
+  local function _7_(_241)
     return ("" ~= _241)
   end
-  return log.append(a.filter(_8_, format_message(msg)))
+  return log.append(a.filter(_7_, format_message(msg)))
 end
 local function clean_input_code(code)
   local clean = str.trim(code)
@@ -89,13 +88,13 @@ local function build_switch_module_command(context)
 end
 local function init_module(repl, context)
   log.dbg(("Initializing module for context " .. context))
-  local function _10_(_)
+  local function _9_(_)
   end
-  repl.send((build_switch_module_command(context) .. "\n,import " .. base_module), _10_)
+  repl.send((build_switch_module_command(context) .. "\n,import " .. base_module), _9_)
   if completions_enabled_3f() then
-    local function _11_(_)
+    local function _10_(_)
     end
-    return repl.send(cmpl["guile-repl-completion-code"], _11_)
+    return repl.send(cmpl["guile-repl-completion-code"], _10_)
   else
     return nil
   end
@@ -109,7 +108,7 @@ local function ensure_module_initialized(repl, context)
   end
 end
 M["eval-str"] = function(opts)
-  local function _14_(repl)
+  local function _13_(repl)
     if M["valid-str?"](opts.code) then
       local context = (opts.context or default_context)
       ensure_module_initialized(repl, context)
@@ -117,7 +116,7 @@ M["eval-str"] = function(opts)
       if (nil ~= tmp_3_) then
         local tmp_3_0 = clean_input_code(tmp_3_)
         if (nil ~= tmp_3_0) then
-          local function _15_(msgs)
+          local function _14_(msgs)
             if ((1 == a.count(msgs)) and ("" == a["get-in"](msgs, {1, "out"}))) then
               a["assoc-in"](msgs, {1, "out"}, (M["comment-prefix"] .. "Empty result"))
             else
@@ -132,7 +131,7 @@ M["eval-str"] = function(opts)
               return nil
             end
           end
-          return repl.send(tmp_3_0, _15_, {["batch?"] = true})
+          return repl.send(tmp_3_0, _14_, {["batch?"] = true})
         else
           return nil
         end
@@ -143,43 +142,43 @@ M["eval-str"] = function(opts)
       return log.append({(M["comment-prefix"] .. "eval error: could not parse form")})
     end
   end
-  return with_repl_or_warn(_14_)
+  return with_repl_or_warn(_13_)
 end
 M["eval-file"] = function(opts)
   return M["eval-str"](a.assoc(opts, "code", ("(load \"" .. opts["file-path"] .. "\")")))
 end
 M["doc-str"] = function(opts)
-  local function _22_(_241)
+  local function _21_(_241)
     return (",d " .. _241)
   end
-  return M["eval-str"](a.update(opts, "code", _22_))
+  return M["eval-str"](a.update(opts, "code", _21_))
 end
 local function display_repl_status()
   local repl = state("repl")
   log.dbg(a.str("client.guile.socket: repl=", repl))
   if repl then
-    local _23_
+    local _22_
     do
       local pipename = a["get-in"](repl, {"opts", "pipename"})
       local host_port = a["get-in"](repl, {"opts", "host_port"})
       if pipename then
-        _23_ = (pipename .. " ")
+        _22_ = (pipename .. " ")
       elseif host_port then
-        _23_ = (host_port .. " ")
+        _22_ = (host_port .. " ")
       else
-        _23_ = "no pipename & no host-port"
+        _22_ = "no pipename & no host-port"
       end
     end
-    local _25_
+    local _24_
     do
       local err = a.get(repl, "err")
       if err then
-        _25_ = (" " .. err)
+        _24_ = (" " .. err)
       else
-        _25_ = ""
+        _24_ = ""
       end
     end
-    return log.append({(M["comment-prefix"] .. _23_ .. "(" .. repl.status .. _25_ .. ")")}, {["break?"] = true})
+    return log.append({(M["comment-prefix"] .. _22_ .. "(" .. repl.status .. _24_ .. ")")}, {["break?"] = true})
   else
     return nil
   end
@@ -202,13 +201,13 @@ local function parse_guile_result(s)
   if prompt then
     local ind1, _, result = s:find("%$%d+ = ([^\n]+)\n")
     local stray_output
-    local _29_
+    local _28_
     if result then
-      _29_ = ind1
+      _28_ = ind1
     else
-      _29_ = prompt
+      _28_ = prompt
     end
-    stray_output = s:sub(1, (_29_ - 1))
+    stray_output = s:sub(1, (_28_ - 1))
     if (#stray_output > 0) then
       log.append(text["prefixed-lines"](text["trim-last-newline"](stray_output), "; (out) "))
     else
@@ -226,9 +225,9 @@ M.connect = function(_opts)
   local cfg_host_port = cfg({"host_port"})
   local host_port
   if cfg_host_port then
-    local _let_33_ = vim.split(cfg_host_port, ":")
-    local host = _let_33_[1]
-    local port = _let_33_[2]
+    local _let_32_ = vim.split(cfg_host_port, ":")
+    local host = _let_32_[1]
+    local port = _let_32_[2]
     log.dbg(a.str("client.guile.socket: host=", host))
     log.dbg(a.str("client.guile.socket: port=", port))
     if (not host and not port) then
@@ -249,16 +248,16 @@ M.connect = function(_opts)
   end
   log.dbg(a.str("client.guile.socket: pipename=", pipename))
   log.dbg(a.str("client.guile.socket: host-port=", cfg_host_port))
-  local function _37_()
+  local function _36_()
     return display_repl_status()
   end
-  local function _38_(msg, repl)
+  local function _37_(msg, repl)
     display_result(msg)
-    local function _39_()
+    local function _38_()
     end
-    return repl.send(",q\n", _39_)
+    return repl.send(",q\n", _38_)
   end
-  return a.assoc(state(), "repl", socket.start({["parse-output"] = parse_guile_result, pipename = pipename, ["host-port"] = host_port, ["on-success"] = _37_, ["on-error"] = _38_, ["on-failure"] = M.disconnect, ["on-close"] = M.disconnect, ["on-stray-output"] = display_result}))
+  return a.assoc(state(), "repl", socket.start({["parse-output"] = parse_guile_result, pipename = pipename, ["host-port"] = host_port, ["on-success"] = _36_, ["on-error"] = _37_, ["on-failure"] = M.disconnect, ["on-close"] = M.disconnect, ["on-stray-output"] = display_result}))
 end
 local function connected_3f()
   if state("repl") then
@@ -274,24 +273,24 @@ M["on-exit"] = function()
   return M.disconnect()
 end
 M["on-filetype"] = function()
-  local function _41_()
+  local function _40_()
     return M.connect()
   end
-  mapping.buf("GuileConnect", cfg({"mapping", "connect"}), _41_, {desc = "Connect to a REPL"})
-  local function _42_()
+  mapping.buf("GuileConnect", cfg({"mapping", "connect"}), _40_, {desc = "Connect to a REPL"})
+  local function _41_()
     return M.disconnect()
   end
-  return mapping.buf("GuileDisconnect", cfg({"mapping", "disconnect"}), _42_, {desc = "Disconnect from the REPL"})
+  return mapping.buf("GuileDisconnect", cfg({"mapping", "disconnect"}), _41_, {desc = "Disconnect from the REPL"})
 end
 M.completions = function(opts)
   if (completions_enabled_3f() and connected_3f() and not busy_3f()) then
     local code = cmpl["build-completion-request"](opts.prefix)
     local result_fn
-    local function _43_(results)
+    local function _42_(results)
       local cmpl_list = cmpl["format-results"](results)
       return opts.cb(cmpl_list)
     end
-    result_fn = _43_
+    result_fn = _42_
     a.assoc(opts, "code", code)
     a.assoc(opts, "on-result", result_fn)
     a.assoc(opts, "passive?", true)

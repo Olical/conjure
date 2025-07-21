@@ -1,6 +1,5 @@
 (local {: describe : it : before_each : after_each } (require :plenary.busted))
 (local ts (require :conjure.tree-sitter))
-(local a (require :conjure.nfnl.core))
 
 (var saved-get-string-parser nil)
 

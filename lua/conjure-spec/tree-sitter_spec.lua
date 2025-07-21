@@ -5,7 +5,6 @@ local it = _local_1_["it"]
 local before_each = _local_1_["before_each"]
 local after_each = _local_1_["after_each"]
 local ts = require("conjure.tree-sitter")
-local a = require("conjure.nfnl.core")
 local saved_get_string_parser = nil
 local function _2_()
   local function _3_()
