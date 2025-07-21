@@ -15,6 +15,10 @@
   [repl]
   (tset repl :status :connected))
 
+(fn set-repl-busy
+  [repl]
+  (tset repl :current "some command"))
+
 (describe "conjure.client.guile.socket"
   (fn []
     (describe "context extraction"
@@ -246,6 +250,29 @@
 
                 (guile.connect {})
                 (set-repl-connected fake-repl)
+                (guile.completions {:cb fake-callback :prefix "something"})
+                (guile.disconnect)
+
+                (assert.same [] calls)
+                (assert.same [] (. callback-results 1)))))
+
+        (it "Does not execute completions in REPL when connected but busy"
+            (fn []
+              (config.merge {:client {:guile {:socket
+                               {:pipename "fake-pipe" :host_port nil
+                                :enable_completions true}}}}
+                            {:overwrite? true})
+              (let [
+                    calls []
+                    spy-send (fn [call] (table.insert calls call))
+                    fake-repl {:send spy-send :status nil :destroy (fn [])}
+                    callback-results  []
+                    fake-callback (fn [result] (table.insert callback-results result))]
+                (fake-socket.set-fake-repl fake-repl)
+
+                (guile.connect {})
+                (set-repl-connected fake-repl)
+                (set-repl-busy fake-repl)
                 (guile.completions {:cb fake-callback :prefix "something"})
                 (guile.disconnect)
 

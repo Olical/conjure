@@ -235,6 +235,10 @@
     true
     false))
 
+(fn busy? []
+  (and (connected?) 
+       (. (state :repl) :current)))
+
 (fn M.on-exit []
   (M.disconnect))
 
@@ -252,7 +256,7 @@
 (fn M.completions [opts]
   ;(when (not= nil opts)
   ;  (log.append [(.. "; completions() called with: " (a.pr-str opts))] {:break? true}))
-  (if (and (completions-enabled?) (connected?))
+  (if (and (completions-enabled?) (connected?) (not (busy?)))
     (let [code (cmpl.build-completion-request opts.prefix)
           result-fn
           (fn [results]

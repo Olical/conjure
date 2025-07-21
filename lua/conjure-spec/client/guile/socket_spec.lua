@@ -19,6 +19,10 @@ local function set_repl_connected(repl)
   repl["status"] = "connected"
   return nil
 end
+local function set_repl_busy(repl)
+  repl["current"] = "some command"
+  return nil
+end
 local function _3_()
   local function _4_()
     local function _5_()
@@ -288,7 +292,35 @@ local function _3_()
       assert.same({}, calls)
       return assert.same({}, callback_results[1])
     end
-    return it("Does not execute completions in REPL when connected but completions disabled", _40_)
+    it("Does not execute completions in REPL when connected but completions disabled", _40_)
+    local function _44_()
+      config.merge({client = {guile = {socket = {pipename = "fake-pipe", host_port = nil, enable_completions = true}}}}, {["overwrite?"] = true})
+      local calls = {}
+      local spy_send
+      local function _45_(call)
+        return table.insert(calls, call)
+      end
+      spy_send = _45_
+      local fake_repl
+      local function _46_()
+      end
+      fake_repl = {send = spy_send, status = nil, destroy = _46_}
+      local callback_results = {}
+      local fake_callback
+      local function _47_(result)
+        return table.insert(callback_results, result)
+      end
+      fake_callback = _47_
+      fake_socket["set-fake-repl"](fake_repl)
+      guile.connect({})
+      set_repl_connected(fake_repl)
+      set_repl_busy(fake_repl)
+      guile.completions({cb = fake_callback, prefix = "something"})
+      guile.disconnect()
+      assert.same({}, calls)
+      return assert.same({}, callback_results[1])
+    end
+    return it("Does not execute completions in REPL when connected but busy", _44_)
   end
   return describe("enable completions config setting", _34_)
 end
