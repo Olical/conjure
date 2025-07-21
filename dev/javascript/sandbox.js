@@ -97,4 +97,12 @@ suzukiMoped;
 suzukiMoped.countWheels();
 suzukiMoped.engineDisplacement();
 
+let array1 = [1, 2, 3, 4, 5, 6, 7, 8];
+
+array1
+  .map((x) => x * 2)
+  .map((x) => x + 3)
+  .map((x) => x / 6)
+  .filter((x) => x > 1);
+
 process.stderr.write("error! some error occurred");

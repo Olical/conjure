@@ -77,19 +77,14 @@ local function replace_imports(s)
     return s
   end
 end
-local function is_arrow_fn_3f(s)
-  if ("string" ~= type(s)) then
+local function is_arrow_fn_3f(code)
+  local pat
+  if string.find(code, "async") then
+    pat = ".*=%s*async%s+%(.*%)%s*=>"
   else
+    pat = ".*=%s*%(.*%)%s*=>"
   end
-  local ts = s:match("^%s*(.-)%s*$")
-  local expr = (ts:match("=%s*(.*)") or ts)
-  local parens = "^%s*%b()%s*=>"
-  local ident = "^%s*[%a_$][%w_$]*%s*=>"
-  if not (ts:find("=> ") or ts:find("%f[%w]function%f[%W]")) then
-    return false
-  elseif expr:match(parens) then
-    return true
-  elseif expr:match(ident) then
+  if string.match(code, pat) then
     return true
   else
     return false
@@ -128,39 +123,43 @@ local function replace_arrows(s)
     return s:gsub(pattern, replace_fn)
   end
 end
-local function prep_code(s)
-  local function _20_(_241)
-    return replace_require_path(replace_imports(str.trim(_241)), vim.uv.fs_realpath(vim.fn.expand("%:p:h")))
+local function prep_code_expr(e)
+  return replace_require_path(replace_imports(replace_arrows(string.gsub(e, "\n", " "))), vim.uv.fs_realpath(vim.fn.expand("%:p:h")))
+end
+local function prep_code_file(f)
+  return str.join("\n", a.map(prep_code_expr, str.split(f, "\n")))
+end
+local function prep_code(s, opts)
+  if a.get(opts, "file") then
+    return prep_code_file(s)
+  else
+    return (prep_code_expr(s) .. "\n")
   end
-  local function _21_(_241)
-    return ("" ~= _241)
-  end
-  return (str.join("\n", a.map(_20_, a.filter(_21_, str.split(replace_arrows(s), "\n")))) .. "\n")
 end
 local function replace_dots(s, with)
   local s0, _count = string.gsub(s, "%.%.%.%s?", with)
   return s0
 end
 M["format-msg"] = function(msg)
-  local function _22_(_241)
+  local function _21_(_241)
     return replace_dots(_241, "")
   end
-  local function _23_(_241)
+  local function _22_(_241)
     return ("" ~= _241)
   end
-  return a.map(_22_, a.filter(_23_, str.split(msg, "\n")))
+  return a.map(_21_, a.filter(_22_, str.split(msg, "\n")))
 end
 local function sanitize_msg(msg, field)
-  local function _24_(_241)
+  local function _23_(_241)
     return ("(" .. field .. ") " .. _241 .. "\n")
   end
-  local function _25_(...)
+  local function _24_(...)
     return not str["blank?"](...)
   end
-  local function _26_(_241)
+  local function _25_(_241)
     return replace_dots(_241, "")
   end
-  return str.join("", a.map(_24_, a.filter(_25_, a.map(_26_, str.split(a.get(msg, field), "\n")))))
+  return str.join("", a.map(_23_, a.filter(_24_, a.map(_25_, str.split(a.get(msg, field), "\n")))))
 end
 local function prepare_out(msg)
   if a.get(msg, "out") then
@@ -175,8 +174,8 @@ M.unbatch = function(msgs)
   return str.join("", a.map(prepare_out, msgs))
 end
 M["eval-str"] = function(opts)
-  local function _28_(repl)
-    local function _29_(msgs)
+  local function _27_(repl)
+    local function _28_(msgs)
       local msgs0 = M["format-msg"](M.unbatch(msgs))
       display_result(msgs0)
       if opts["on-result"] then
@@ -185,12 +184,12 @@ M["eval-str"] = function(opts)
         return nil
       end
     end
-    return repl.send(prep_code(opts.code), _29_, {["batch?"] = true})
+    return repl.send(prep_code(opts.code, opts), _28_, {["batch?"] = true})
   end
-  return with_repl_or_warn(_28_)
+  return with_repl_or_warn(_27_)
 end
 M["eval-file"] = function(opts)
-  return M["eval-str"](a.assoc(opts, "code", a.slurp(opts["file-path"])))
+  return M["eval-str"](a.assoc(opts, "code", a.slurp(opts["file-path"]), "file", true))
 end
 local function display_repl_status(status)
   local repl = state("repl")
@@ -215,20 +214,20 @@ M.start = function()
   if state("repl") then
     return log.append({(M["comment-prefix"] .. "Can't start, REPL is already running."), (M["comment-prefix"] .. "Stop the REPL with " .. config["get-in"]({"mapping", "prefix"}) .. cfg({"mapping", "stop"}))}, {["break?"] = true})
   else
-    local function _33_()
+    local function _32_()
       display_repl_status("started")
-      local function _34_(repl)
-        local function _35_(msgs)
+      local function _33_(repl)
+        local function _34_(msgs)
           return display_result(M["format-msg"](M.unbatch(msgs)))
         end
-        return repl.send(prep_code(M["initialise-repl-code"]), _35_, {batch = true})
+        return repl.send(prep_code(M["initialise-repl-code"], {file = false}), _34_, {batch = true})
       end
-      return with_repl_or_warn(_34_)
+      return with_repl_or_warn(_33_)
     end
-    local function _36_(err)
+    local function _35_(err)
       return display_repl_status(err)
     end
-    local function _37_(code, signal)
+    local function _36_(code, signal)
       if (("number" == type(code)) and (code > 0)) then
         log.append({(M["comment-prefix"] .. "process exited with code " .. code)})
       else
@@ -239,17 +238,17 @@ M.start = function()
       end
       return M.stop()
     end
-    local function _40_(msg)
+    local function _39_(msg)
       return log.dbg(M["format-msg"](M.unbatch({msg})), {["join-first?"] = true})
     end
-    return a.assoc(state(), "repl", stdio.start({["prompt-pattern"] = cfg({"prompt-pattern"}), cmd = cfg({"command"}), ["delay-stderr-ms"] = cfg({"delay-stderr-ms"}), ["on-success"] = _33_, ["on-error"] = _36_, ["on-exit"] = _37_, ["on-stray-output"] = _40_}))
+    return a.assoc(state(), "repl", stdio.start({["prompt-pattern"] = cfg({"prompt-pattern"}), cmd = cfg({"command"}), ["delay-stderr-ms"] = cfg({"delay-stderr-ms"}), ["on-success"] = _32_, ["on-error"] = _35_, ["on-exit"] = _36_, ["on-stray-output"] = _39_}))
   end
 end
 local function warning_msg()
-  local function _42_(_241)
+  local function _41_(_241)
     return log.append({_241})
   end
-  return a.map(_42_, {"// WARNING! Node.js REPL limitations require transformations:", "// 1. ES6 'import' statements are converted to 'require(...)' calls.", "// 2. Arrow functions ('const fn = () => ...') are converted to 'function fn() ...' declarations to allow re-definition."})
+  return a.map(_41_, {"// WARNING! Node.js REPL limitations require transformations:", "// 1. ES6 'import' statements are converted to 'require(...)' calls.", "// 2. Arrow functions ('const fn = () => ...') are converted to 'function fn() ...' declarations to allow re-definition."})
 end
 M["on-load"] = function()
   if config["get-in"]({"client_on_load"}) then
@@ -263,20 +262,20 @@ M["on-exit"] = function()
   return M.stop()
 end
 M.interrupt = function()
-  local function _44_(repl)
+  local function _43_(repl)
     log.append({(M["comment-prefix"] .. " Sending interrupt signal.")}, {["break?"] = true})
     return repl["send-signal"]("sigint")
   end
-  return with_repl_or_warn(_44_)
+  return with_repl_or_warn(_43_)
 end
 M["on-filetype"] = function()
   mapping.buf("JavascriptStart", cfg({"mapping", "start"}), M.start, {desc = "Start the Javascript REPL"})
   mapping.buf("JavascriptStop", cfg({"mapping", "stop"}), M.stop, {desc = "Stop the Javascript REPL"})
-  local function _45_()
+  local function _44_()
     M.stop()
     return M.start()
   end
-  mapping.buf("JavascriptRestart", cfg({"mapping", "restart"}), _45_, {desc = "Restart the Javascript REPL"})
+  mapping.buf("JavascriptRestart", cfg({"mapping", "restart"}), _44_, {desc = "Restart the Javascript REPL"})
   return mapping.buf("JavascriptInterrupt", cfg({"mapping", "interrupt"}), M.interrupt, {desc = "Interrupt the current evaluation"})
 end
 return M

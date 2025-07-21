@@ -86,15 +86,12 @@
         final-acc.result)
       s))
 
-(fn is-arrow-fn? [s]
-  (if (not= :string (type s)) false)
-  (let [ts (s:match "^%s*(.-)%s*$")
-        expr (or (ts:match "=%s*(.*)") ts)
-        parens "^%s*%b()%s*=>"
-        ident "^%s*[%a_$][%w_$]*%s*=>"]
-    (if (not (or (ts:find "=> ") (ts:find "%f[%w]function%f[%W]"))) false
-        (expr:match parens) true
-        (expr:match ident) true
+(fn is-arrow-fn? [code]
+  (let [pat (if (string.find code "async")
+               ".*=%s*async%s+%(.*%)%s*=>"
+                ".*=%s*%(.*%)%s*=>")]
+    (if (string.match code pat)
+        true 
         false)))
 
 (fn replace-arrows [s]
@@ -110,16 +107,24 @@
                            (.. async-kw "function " name "(" args ")" final-body)))]
         (s:gsub pattern replace-fn))))
 
-(fn prep-code [s]
-  (-> (str.split (replace-arrows s) "\n")
-      (->> (a.filter #(not= "" $1))
-           (a.map #(-> $1
-                       str.trim 
-                       replace-imports
-                       (replace-require-path 
-                         (vim.uv.fs_realpath (vim.fn.expand "%:p:h")))))
-           (str.join "\n"))
-      (.. "\n")))
+(fn prep-code-expr [e]
+  (-> e
+      (string.gsub "\n" " ")
+      replace-arrows
+      replace-imports
+      (replace-require-path 
+        (vim.uv.fs_realpath (vim.fn.expand "%:p:h")))))
+
+(fn prep-code-file [f]
+  (->> (str.split f "\n")
+      (a.map prep-code-expr)
+      (str.join "\n")))
+
+(fn prep-code [s opts]
+  (if (a.get opts :file)
+      (prep-code-file s)
+      
+      (.. (prep-code-expr s) "\n")))
 
 (fn replace-dots [s with]
   (let [(s _count) (string.gsub s "%.%.%.%s?" with)] s))
@@ -151,7 +156,7 @@
 (fn M.eval-str [opts]
   (with-repl-or-warn 
     (fn [repl]
-      (repl.send (prep-code opts.code)
+      (repl.send (prep-code opts.code opts)
                  (fn [msgs]
                    (let [msgs (-> msgs M.unbatch M.format-msg)]
                      (display-result msgs)
@@ -160,7 +165,8 @@
                  {:batch? true}))))
 
 (fn M.eval-file [opts]
-  (M.eval-str (a.assoc opts :code (a.slurp opts.file-path))))
+  (M.eval-str (a.assoc opts :code (a.slurp opts.file-path)
+                            :file true)))
 
 (fn display-repl-status [status]
   (let [repl (state :repl)]
@@ -198,7 +204,7 @@
              (with-repl-or-warn
                  (fn [repl]
                    (repl.send 
-                     (prep-code M.initialise-repl-code) 
+                     (prep-code M.initialise-repl-code {:file false}) 
                      (fn [msgs]
                        (display-result (-> msgs
                                            M.unbatch
