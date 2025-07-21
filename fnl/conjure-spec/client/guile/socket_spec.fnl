@@ -1,13 +1,9 @@
-(local {: describe : it : spy} (require :plenary.busted))
+(local {: describe : it } (require :plenary.busted))
 (local assert (require :luassert.assert))
 (local guile (require :conjure.client.guile.socket))
 (local config (require :conjure.config))
 (local fake-socket (require :conjure-spec.client.guile.fake-socket))
-(local ts (require :conjure.tree-sitter))
 (require :conjure-spec.assertions)
-
-(tset package.loaded "conjure.remote.socket" fake-socket)
-(tset ts :valid-str? (fn [_ _] true))
 
 (local completion-code-define-match "%(define%* %(%%conjure:get%-guile%-completions")
 
@@ -21,6 +17,9 @@
 
 (describe "conjure.client.guile.socket"
   (fn []
+    (tset package.loaded "conjure.remote.socket" fake-socket)
+    (tset guile :valid-str? (fn [_] true))
+
     (describe "context extraction"
       (fn [] 
         (it "returns nil for hello world"
@@ -41,12 +40,48 @@
         (it "returns nil for (define-m;odule (my-module))"
             (fn []
               (assert.are.equal nil (guile.context "(define-m;odule (my-module))"))))
-        (it "returns (another-module) for ;\n(define-module ( another-module ))"
+        (it "returns (another-module) for ;\\n(define-module ( another-module ))"
             (fn []
               (assert.are.equal "(another-module)" (guile.context ";\n(define-module ( another-module ))"))))
         (it "returns (a-module specification) for ;\\n(define-module\\n;some comments\\n( a-module\\n; more comments\\n specification))"
             (fn []
               (assert.are.equal "(a-module specification)" (guile.context ";\n(define-module\n;some comments\n( a-module\n; more comments\n specification))"))))))
+
+    (describe "eval-str" 
+      (fn []
+        (config.merge {:client {:guile {:socket
+                        {:pipename "fake-pipe" :host_port nil}}}}
+                      {:overwrite? true})
+        (it "does eval string when valid-str? returns true"
+            (fn []
+              (let [expected-code "(valid form)"
+                    calls []
+                    spy-send (fn [call] (table.insert calls call))
+                    fake-repl (fake-socket.build-fake-repl spy-send)]
+                (fake-socket.set-fake-repl fake-repl)
+
+                (guile.connect {})
+                (set-repl-connected fake-repl)
+                (guile.eval-str {:code expected-code :context nil})
+                (guile.disconnect)
+
+                (assert.are.equal (.. ",m (guile-user)\n" expected-code) (. calls 3)))))
+
+        (it "does not eval string when valid-str? returns false"
+            (fn []
+              (let [calls []
+                    spy-send (fn [call] (table.insert calls call))
+                    fake-repl (fake-socket.build-fake-repl spy-send)]
+                (tset guile :valid-str? (fn [_] false))
+                (fake-socket.set-fake-repl fake-repl)
+
+                (guile.connect {})
+                (set-repl-connected fake-repl)
+                (guile.eval-str {:code "(some invalid form" :context nil})
+                (guile.disconnect)
+
+                (assert.same [] calls)
+                (tset guile :valid-str? (fn [_] true)))))))
 
     (describe "module initialization"
       (fn []

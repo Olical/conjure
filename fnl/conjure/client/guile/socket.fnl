@@ -37,6 +37,8 @@
 (local base-module "(guile)")
 (local default-context "(guile-user)")
 
+(set M.valid-str? #(ts.valid-str? :scheme $1))
+
 (fn normalize-context [arg] 
   (let [tokens  (str.split arg "%s+") 
         context (.. "(" (str.join " " tokens) ")")]
@@ -110,7 +112,7 @@
 (fn M.eval-str [opts]
   (with-repl-or-warn
     (fn [repl]
-      (if (ts.valid-str? :scheme opts.code)
+      (if (M.valid-str? opts.code)
        (let [context (or opts.context default-context)]
         (ensure-module-initialized repl context) 
         (-?> (.. (build-switch-module-command context) "\n" opts.code)
