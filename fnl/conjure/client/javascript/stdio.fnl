@@ -8,7 +8,7 @@
 (local log (autoload :conjure.log))
 (local text (autoload :conjure.text))
 
-(local M (define :conjure.client.javascript.stdio {}))
+(local M (define :conjure.client.javascript.stdio))
 
 (config.merge {:client 
                {:javascript 
@@ -71,6 +71,8 @@
          "const { default: %1, %2 } = require(\"%4\");"]
         ["^%s*import%s+([\"'])(.-)%1%s*;?%s?" "require(\"%2\");"]])
 
+;; To avoid Node.js REPL complaints, imports are automatically converted for the user.
+;; See https://github.com/nodejs/node/issues/48084
 (fn replace-imports [s]
   (if (text.starts-with s :import)
       (let [initial-acc {:applied? false :result s}
@@ -94,6 +96,8 @@
         true 
         false)))
 
+;; Arrow functions are automatically transformed into standard functions, 
+;; allowing them to be redefined in the Node.js REPL.
 (fn replace-arrows [s]
   (if (not (is-arrow-fn? s)) s
       (let [decl (if (text.starts-with s :const) "const" 

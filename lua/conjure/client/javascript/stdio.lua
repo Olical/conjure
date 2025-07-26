@@ -10,7 +10,7 @@ local mapping = autoload("conjure.mapping")
 local client = autoload("conjure.client")
 local log = autoload("conjure.log")
 local text = autoload("conjure.text")
-local M = define("conjure.client.javascript.stdio", {})
+local M = define("conjure.client.javascript.stdio")
 config.merge({client = {javascript = {stdio = {command = "node --experimental-repl-await -i", ["prompt-pattern"] = "> "}}}})
 if config["get-in"]({"mapping", "enable_defaults"}) then
   config.merge({client = {javascript = {stdio = {mapping = {start = "cs", stop = "cS", restart = "cr", interrupt = "ei"}}}}})

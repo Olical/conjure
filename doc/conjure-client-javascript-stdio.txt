@@ -26,6 +26,10 @@ etc...)
 Check out `:ConjureSchool` if you're unsure about what evaluation operations
 you can perform.
 
+A client addresses Node.js REPL limitations by automatically transforming
+import statements into require calls and arrow functions into standard
+function declarations.
+
 ==============================================================================
 MAPPINGS                                  *conjure-client-javascript-stdio-mappings*
 
