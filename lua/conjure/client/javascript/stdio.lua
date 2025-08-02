@@ -90,6 +90,12 @@ local function is_arrow_fn_3f(code)
     return false
   end
 end
+local function remove_comments(s)
+  local cmt = "//.-\n"
+  local cmt2 = "%/%*.-%*%/"
+  local sub, _ = string.gsub(string.gsub(s, cmt, ""), cmt2, "")
+  return sub
+end
 local function replace_arrows(s)
   if not is_arrow_fn_3f(s) then
     return s
@@ -124,7 +130,7 @@ local function replace_arrows(s)
   end
 end
 local function prep_code_expr(e)
-  return replace_require_path(replace_imports(replace_arrows(string.gsub(e, "\n", " "))), vim.uv.fs_realpath(vim.fn.expand("%:p:h")))
+  return replace_require_path(replace_imports(replace_arrows(string.gsub(remove_comments(e), "\n", " "))), vim.uv.fs_realpath(vim.fn.expand("%:p:h")))
 end
 local function prep_code_file(f)
   return str.join("\n", a.map(prep_code_expr, str.split(f, "\n")))

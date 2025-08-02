@@ -100,9 +100,26 @@ suzukiMoped.engineDisplacement();
 let array1 = [1, 2, 3, 4, 5, 6, 7, 8];
 
 array1
+  // just a comment
   .map((x) => x * 2)
   .map((x) => x + 3)
+  /* multiline comments are ignored too */
   .map((x) => x / 6)
   .filter((x) => x > 1);
+
+let o = {
+  // Object with a comment inside
+  name: "",
+  age: 0,
+  /* change name of the object */
+  changeName: function (n) { this.name = n },
+  changeAge: function (a) { this.age = a },
+  getName: function () { return this.name },
+  getAge: function () { return this.age },
+  toString: function () { return `${name} ${age}` }
+}
+
+o
+o.changeName("Arola");
 
 process.stderr.write("error! some error occurred");

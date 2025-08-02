@@ -96,6 +96,15 @@
         true 
         false)))
 
+;; Before sending code to the REPL, all comments must be removed
+(fn remove-comments [s]
+  (let [cmt "//.-\n"
+        cmt2 "%/%*.-%*%/"
+        (sub _) (-> s  
+                (string.gsub cmt "")
+                (string.gsub cmt2 ""))]
+    sub))
+
 ;; Arrow functions are automatically transformed into standard functions, 
 ;; allowing them to be redefined in the Node.js REPL.
 (fn replace-arrows [s]
@@ -113,6 +122,7 @@
 
 (fn prep-code-expr [e]
   (-> e
+      remove-comments
       (string.gsub "\n" " ")
       replace-arrows
       replace-imports
