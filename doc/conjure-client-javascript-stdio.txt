@@ -48,6 +48,8 @@ options relevant to these mappings.
 <localleader>ei          Interrupt running command. Same as pressing Ctrl-C
                          in a cmdline REPL.
 
+<localleader>cs          Toggle stray out.
+
 ==============================================================================
 CONFIGURATION                        *conjure-client-javascript-stdio-configuration*
 
@@ -69,18 +71,24 @@ All configuration can be set as described in |conjure-configuration|.
             Restart a javascript REPL.
             Default: `"cr"`
 
-                                       *g:conjure#client#javascript#stdio#command*
+                                  *g:conjure#client#javascript#stdio#command*
 `g:conjure#client#javascript#stdio#command`
             Command used to start the javascript REPL, you can modify this to add
             arguments or change the command entirely.
             Default: `"node --experimental-repl-await -i"`
 
-                                *g:conjure#client#javascript#stdio#prompt_pattern*
+                                  *g:conjure#client#javascript#stdio#prompt_pattern*
 `g:conjure#client#javascript#stdio#prompt_pattern`
             Lua pattern to identify a new REPL prompt. This match signals to
             Conjure that the previous evaluation is complete and we're ready
             to submit more code as well as collect all output prior to the
             marker as the result.
             Default: `"> "`
+                                  *g:conjure#client#javascript#stdio#show_stray_out*
+`g:conjure#client#javascript#stdio#show_stray_out`
+            It's an option to reveal output from the REPL that didn't appear
+            immediately because it came from a slow or background process.
+            By default, it's switched off to prevent burdening the Conjure log buffer.
+            Default: false
 
 vim:tw=78:sw=2:ts=2:ft=help:norl:et:listchars=

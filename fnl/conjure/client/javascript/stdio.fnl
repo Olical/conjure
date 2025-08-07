@@ -14,7 +14,8 @@
                {:javascript 
                 {:stdio 
                  {:command "node --experimental-repl-await -i"
-                  :prompt-pattern "> "}}}})
+                  :prompt-pattern "> "
+                  :show_stray_out false}}}})
 
 (when (config.get-in [:mapping :enable_defaults])
   (config.merge 
@@ -24,11 +25,12 @@
        {:mapping {:start :cs
                   :stop :cS
                   :restart :cr
-                  :interrupt :ei}}}}}))
+                  :interrupt :ei
+                  :stray :cs}}}}}))
 
 (local cfg (config.get-in-fn [:client :javascript :stdio]))
-(local state (client.new-state #(do {:repl nil})))
 (set M.buf-suffix ".js")
+(local state (client.new-state (fn [] {:repl nil})))
 (set M.comment-prefix "// ")
 
 (fn M.form-node? [node]
@@ -243,10 +245,9 @@
 
            :on-stray-output
            (fn [msg]
-             (log.dbg (-> [msg] 
-                          M.unbatch
-                          M.format-msg)
-                      {:join-first? true}))}))))
+             (when (cfg [:show_stray_out]) 
+               (display-result 
+                 (-> [msg] M.unbatch M.format-msg))))}))))
 
 (fn warning-msg []
   (a.map #(log.append [$1])
@@ -271,6 +272,13 @@
                   {:break? true})
       (repl.send-signal :sigint))))
 
+(fn stray-out []
+  (config.merge {:client 
+                 {:javascript 
+                  {:stdio 
+                   {:show_stray_out (not (cfg [:show_stray_out]))}}}}
+                {:overwrite? true}))
+
 (fn M.on-filetype []
   (mapping.buf :JavascriptStart 
                (cfg [:mapping :start]) 
@@ -289,6 +297,10 @@
   (mapping.buf :JavascriptInterrupt 
                (cfg [:mapping :interrupt]) 
                M.interrupt
-               {:desc "Interrupt the current evaluation"}))
+               {:desc "Interrupt the current evaluation"})
+  (mapping.buf :JavascriptStray 
+               (cfg [:mapping :stray]) 
+               stray-out
+               {:desc "Toggle stray out"}))
 
 M

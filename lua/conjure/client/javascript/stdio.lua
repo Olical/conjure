@@ -11,18 +11,18 @@ local client = autoload("conjure.client")
 local log = autoload("conjure.log")
 local text = autoload("conjure.text")
 local M = define("conjure.client.javascript.stdio")
-config.merge({client = {javascript = {stdio = {command = "node --experimental-repl-await -i", ["prompt-pattern"] = "> "}}}})
+config.merge({client = {javascript = {stdio = {command = "node --experimental-repl-await -i", ["prompt-pattern"] = "> ", show_stray_out = false}}}})
 if config["get-in"]({"mapping", "enable_defaults"}) then
-  config.merge({client = {javascript = {stdio = {mapping = {start = "cs", stop = "cS", restart = "cr", interrupt = "ei"}}}}})
+  config.merge({client = {javascript = {stdio = {mapping = {start = "cs", stop = "cS", restart = "cr", interrupt = "ei", stray = "cs"}}}}})
 else
 end
 local cfg = config["get-in-fn"]({"client", "javascript", "stdio"})
+M["buf-suffix"] = ".js"
 local state
 local function _3_()
   return {repl = nil}
 end
 state = client["new-state"](_3_)
-M["buf-suffix"] = ".js"
 M["comment-prefix"] = "// "
 M["form-node?"] = function(node)
   return (("function_declaration" == node:type()) or ("export_statement" == node:type()) or ("try_statement" == node:type()) or ("expression_statement" == node:type()) or ("import_statement" == node:type()) or ("class_declaration" == node:type()) or ("lexical_declaration" == node:type()) or ("for_statement" == node:type()))
@@ -245,16 +245,20 @@ M.start = function()
       return M.stop()
     end
     local function _39_(msg)
-      return log.dbg(M["format-msg"](M.unbatch({msg})), {["join-first?"] = true})
+      if cfg({"show_stray_out"}) then
+        return display_result(M["format-msg"](M.unbatch({msg})))
+      else
+        return nil
+      end
     end
     return a.assoc(state(), "repl", stdio.start({["prompt-pattern"] = cfg({"prompt-pattern"}), cmd = cfg({"command"}), ["delay-stderr-ms"] = cfg({"delay-stderr-ms"}), ["on-success"] = _32_, ["on-error"] = _35_, ["on-exit"] = _36_, ["on-stray-output"] = _39_}))
   end
 end
 local function warning_msg()
-  local function _41_(_241)
+  local function _42_(_241)
     return log.append({_241})
   end
-  return a.map(_41_, {"// WARNING! Node.js REPL limitations require transformations:", "// 1. ES6 'import' statements are converted to 'require(...)' calls.", "// 2. Arrow functions ('const fn = () => ...') are converted to 'function fn() ...' declarations to allow re-definition."})
+  return a.map(_42_, {"// WARNING! Node.js REPL limitations require transformations:", "// 1. ES6 'import' statements are converted to 'require(...)' calls.", "// 2. Arrow functions ('const fn = () => ...') are converted to 'function fn() ...' declarations to allow re-definition."})
 end
 M["on-load"] = function()
   if config["get-in"]({"client_on_load"}) then
@@ -268,20 +272,24 @@ M["on-exit"] = function()
   return M.stop()
 end
 M.interrupt = function()
-  local function _43_(repl)
+  local function _44_(repl)
     log.append({(M["comment-prefix"] .. " Sending interrupt signal.")}, {["break?"] = true})
     return repl["send-signal"]("sigint")
   end
-  return with_repl_or_warn(_43_)
+  return with_repl_or_warn(_44_)
+end
+local function stray_out()
+  return config.merge({client = {javascript = {stdio = {show_stray_out = not cfg({"show_stray_out"})}}}}, {["overwrite?"] = true})
 end
 M["on-filetype"] = function()
   mapping.buf("JavascriptStart", cfg({"mapping", "start"}), M.start, {desc = "Start the Javascript REPL"})
   mapping.buf("JavascriptStop", cfg({"mapping", "stop"}), M.stop, {desc = "Stop the Javascript REPL"})
-  local function _44_()
+  local function _45_()
     M.stop()
     return M.start()
   end
-  mapping.buf("JavascriptRestart", cfg({"mapping", "restart"}), _44_, {desc = "Restart the Javascript REPL"})
-  return mapping.buf("JavascriptInterrupt", cfg({"mapping", "interrupt"}), M.interrupt, {desc = "Interrupt the current evaluation"})
+  mapping.buf("JavascriptRestart", cfg({"mapping", "restart"}), _45_, {desc = "Restart the Javascript REPL"})
+  mapping.buf("JavascriptInterrupt", cfg({"mapping", "interrupt"}), M.interrupt, {desc = "Interrupt the current evaluation"})
+  return mapping.buf("JavascriptStray", cfg({"mapping", "stray"}), stray_out, {desc = "Toggle stray out"})
 end
 return M
