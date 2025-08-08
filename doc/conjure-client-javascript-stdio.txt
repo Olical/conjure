@@ -48,7 +48,7 @@ options relevant to these mappings.
 <localleader>ei          Interrupt running command. Same as pressing Ctrl-C
                          in a cmdline REPL.
 
-<localleader>cs          Toggle stray out.
+<localleader>ts          Toggle stray out.
 
 ==============================================================================
 CONFIGURATION                        *conjure-client-javascript-stdio-configuration*
@@ -65,7 +65,7 @@ All configuration can be set as described in |conjure-configuration|.
 `g:conjure#client#javascript#stdio#mapping#stop`
             Stop any existing javascript REPL.
             Default: `"cS"`
-            
+
                                   *g:conjure#client#javascript#stdio#mapping#restart*
 `g:conjure#client#javascript#stdio#mapping#restart`
             Restart a javascript REPL.
