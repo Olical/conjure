@@ -300,6 +300,7 @@
    :none nil})
 
 (fn jump-to-latest []
+  (close-hud)
   (let [buf (upsert-buf)
         last-eval-start (vim.api.nvim_buf_get_extmark_by_id
                           buf state.jump-to-latest.ns

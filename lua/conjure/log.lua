@@ -274,6 +274,7 @@ local function last_line(buf, extra_offset)
 end
 local cursor_scroll_position__3ecommand = {top = "normal zt", center = "normal zz", bottom = "normal zb", none = nil}
 local function jump_to_latest()
+  close_hud()
   local buf = upsert_buf()
   local last_eval_start = vim.api.nvim_buf_get_extmark_by_id(buf, state["jump-to-latest"].ns, state["jump-to-latest"].mark, {})
   local function _39_(win)
