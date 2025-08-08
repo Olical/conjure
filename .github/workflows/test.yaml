@@ -9,7 +9,7 @@ jobs:
         # TODO: Get windows-latest working.
         # Currently errors with: ln: failed to create symbolic link '.test/nvim/pack/main/start/conjure' -> '../../../../../': File name too long
         os: [ubuntu-latest, macOS-latest]
-        neovim-version: ["0.9.5", "0.10.4", "stable"] # nightly is broken at the moment
+        neovim-version: ["0.10.4", "stable", "nightly"]
 
     runs-on: ${{ matrix.os }}
 
