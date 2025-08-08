@@ -169,7 +169,7 @@
      ";; Wonderful!"
      ";; Visual evaluation is great for specific sections of a form."
      (.. ";; You can also evaluate a given motion with " (map-str :eval_motion))
-     (.. ";; Try " (map-str :eval_motion) "iw below to evaluate the word.")
+     (.. ";; Try " (map-str :eval_motion) "iW below to evaluate the word.")
      "school.lesson-6-message"
      ""
      (.. ";; Use " (map-str :eval_motion) "a( to evaluate the lesson form.")
