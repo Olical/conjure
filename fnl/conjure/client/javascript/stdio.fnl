@@ -26,7 +26,7 @@
                   :stop :cS
                   :restart :cr
                   :interrupt :ei
-                  :stray :cs}}}}}))
+                  :stray :ts}}}}}))
 
 (local cfg (config.get-in-fn [:client :javascript :stdio]))
 (set M.buf-suffix ".js")

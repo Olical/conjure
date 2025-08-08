@@ -126,7 +126,7 @@ o.changeName("Arola");
 // show_stray_out option is activated in the config.
 // However, it can be activated dynamically in on of these ways:
 // lua vim.g["conjure#client#javascript#stdio#show_stray_out"]=true
-// in VIM's command-line mode and using the <localleader>cs key-mapping 
+// in VIM's command-line mode and using the <localleader>ts key-mapping 
 setTimeout(() => { console.log("hi") }, 300);
 
 process.stderr.write("error! some error occurred");

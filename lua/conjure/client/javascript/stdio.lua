@@ -13,7 +13,7 @@ local text = autoload("conjure.text")
 local M = define("conjure.client.javascript.stdio")
 config.merge({client = {javascript = {stdio = {command = "node --experimental-repl-await -i", ["prompt-pattern"] = "> ", show_stray_out = false}}}})
 if config["get-in"]({"mapping", "enable_defaults"}) then
-  config.merge({client = {javascript = {stdio = {mapping = {start = "cs", stop = "cS", restart = "cr", interrupt = "ei", stray = "cs"}}}}})
+  config.merge({client = {javascript = {stdio = {mapping = {start = "cs", stop = "cS", restart = "cr", interrupt = "ei", stray = "ts"}}}}})
 else
 end
 local cfg = config["get-in-fn"]({"client", "javascript", "stdio"})
