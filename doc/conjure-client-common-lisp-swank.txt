@@ -47,24 +47,34 @@ CONFIGURATION                 *conjure-client-common-lisp-swank-configuration*
 All configuration can be set as described in |conjure-configuration|.
 
 
-                                 *g:conjure#client#common_lisp#swank#mapping#start*
+                            *g:conjure#client#common_lisp#swank#mapping#start*
 `g:conjure#client#common_lisp#swank#mapping#connect`
             Connect to a running swank REPL.
             Default: `"cc"`
 
-                                  *g:conjure#client#common_lisp#swank#mapping#stop*
+                             *g:conjure#client#common_lisp#swank#mapping#stop*
 `g:conjure#client#common_lisp#swank#mapping#disconnect`
             Disconnect from the REPL.
             Default: `"cd"`
 
-                                  *g:conjure#client#common_lisp#swank#connection#default_host*
+                  *g:conjure#client#common_lisp#swank#connection#default_host*
 `g:conjure#client#common_lisp#swank#connection#default_host`
             The default swank host to connect to.
             Default: `"127.0.0.1"`
 
-                                  *g:conjure#client#common_lisp#swank#connection#default_port*
+                  *g:conjure#client#common_lisp#swank#connection#default_port*
 `g:conjure#client#common_lisp#swank#connection#default_port`
             The default swank port to connect to.
             Default: `"4005"`
+
+                       *g:conjure#client#common_lisp#swank#enable_completions*
+`g:conjure#client#common_lisp#swank#enable_completions`
+            Enable completion suggestions through tree sitter and via swank
+            simple-completions.
+
+            Example value:
+                     `false`
+
+            Default: `true`
 
 vim:tw=78:sw=2:ts=2:ft=help:norl:et:listchars=

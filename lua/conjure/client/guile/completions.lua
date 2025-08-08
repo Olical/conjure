@@ -3,8 +3,12 @@ local _local_1_ = require("conjure.nfnl.module")
 local autoload = _local_1_["autoload"]
 local define = _local_1_["define"]
 local a = autoload("conjure.nfnl.core")
+local scheme_dict = autoload("conjure.client.scheme.dict")
+local util = autoload("conjure.util")
+local tsc = autoload("conjure.tree-sitter-completions")
+local res = autoload("conjure.resources")
 local M = define("conjure.client.guile.completions")
-M["guile-repl-completion-code"] = "(use-modules ((ice-9 readline) \n      #:select (apropos-completion-function)\n      #:prefix %conjure:))\n  (define* (%conjure:get-guile-completions prefix #:optional (continued #f))\n      (let ((suggestion (%conjure:apropos-completion-function prefix continued)))\n        (if (not suggestion)\n          '()\n          (cons suggestion (%conjure:get-guile-completions prefix #t)))))"
+M["guile-repl-completion-code"] = res["get-resource-contents"]("client/guile/completion.scm")
 M["build-completion-request"] = function(prefix)
   return ("(%conjure:get-guile-completions " .. a["pr-str"](prefix) .. ")")
 end
@@ -26,5 +30,10 @@ M["format-results"] = function(rs)
   local last = table.remove(cmpls)
   table.insert(cmpls, 1, last)
   return cmpls
+end
+M["get-static-completions"] = function(prefix)
+  local dict = scheme_dict["get-dict"]("guile")
+  local prefix_filter = util["make-prefix-filter"](prefix)
+  return prefix_filter(util["concat-nodup"](tsc["get-completions-at-cursor"]("scheme", "scheme"), dict))
 end
 return M
