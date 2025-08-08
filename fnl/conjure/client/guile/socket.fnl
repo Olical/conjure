@@ -168,14 +168,17 @@
       (a.assoc (state) :repl nil)))
   (a.assoc (state) :known-contexts {}))
 
-(fn parse-guile-result [s]
+(fn M.parse-guile-result [s]
   (let [prompt (s:find "scheme@%([%w%-%s]+%)> ")]
     (if
       prompt
       (let [(ind1 _ result) (s:find "%$%d+ = ([^\n]+)\n")
             stray-output (s:sub
                            1
-                           (- (if result ind1 prompt) 1))]
+                           (- (if result
+                                  ind1
+                                  prompt)
+                              1))]
         (when (> (length stray-output) 0)
           (log.append
             (-> (text.trim-last-newline stray-output)
@@ -220,17 +223,17 @@
     (a.assoc
       (state) :repl
       (socket.start
-        {:parse-output parse-guile-result
-        :pipename pipename
-        :host-port host-port
-        :on-success (fn []
-                      (display-repl-status))
-        :on-error (fn [msg repl]
-                    (display-result msg)
-                    (repl.send ",q\n" (fn []))) ; Don't bother with debugger.
-        :on-failure M.disconnect
-        :on-close M.disconnect
-        :on-stray-output display-result}))))
+        {:parse-output M.parse-guile-result
+         :pipename pipename
+         :host-port host-port
+         :on-success (fn []
+                       (display-repl-status))
+         :on-error (fn [msg repl]
+                     (display-result msg)
+                     (repl.send ",q\n" (fn []))) ; Don't bother with debugger.
+         :on-failure M.disconnect
+         :on-close M.disconnect
+         :on-stray-output display-result}))))
 
 (fn connected? []
   (if (state :repl)

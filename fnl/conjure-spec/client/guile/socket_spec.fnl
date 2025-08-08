@@ -47,6 +47,16 @@
             (fn []
               (assert.are.equal "(a-module specification)" (guile.context ";\n(define-module\n;some comments\n( a-module\n; more comments\n specification))"))))))
 
+    (describe "parse-guile-result"
+      (fn []
+        (it "returns a result in the simple happy path"
+          (fn []
+            (assert.are.same
+              {:done? true
+               :error? false
+               :result "1234"}
+              (guile.parse-guile-result "$1 = 1234\nscheme@(guile-user)> "))))))
+
     (describe "eval-str" 
       (fn []
         (config.merge {:client {:guile {:socket

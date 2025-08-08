@@ -196,7 +196,7 @@ M.disconnect = function()
   end
   return a.assoc(state(), "known-contexts", {})
 end
-local function parse_guile_result(s)
+M["parse-guile-result"] = function(s)
   local prompt = s:find("scheme@%([%w%-%s]+%)> ")
   if prompt then
     local ind1, _, result = s:find("%$%d+ = ([^\n]+)\n")
@@ -257,7 +257,7 @@ M.connect = function(_opts)
     end
     return repl.send(",q\n", _38_)
   end
-  return a.assoc(state(), "repl", socket.start({["parse-output"] = parse_guile_result, pipename = pipename, ["host-port"] = host_port, ["on-success"] = _36_, ["on-error"] = _37_, ["on-failure"] = M.disconnect, ["on-close"] = M.disconnect, ["on-stray-output"] = display_result}))
+  return a.assoc(state(), "repl", socket.start({["parse-output"] = M["parse-guile-result"], pipename = pipename, ["host-port"] = host_port, ["on-success"] = _36_, ["on-error"] = _37_, ["on-failure"] = M.disconnect, ["on-close"] = M.disconnect, ["on-stray-output"] = display_result}))
 end
 local function connected_3f()
   if state("repl") then
