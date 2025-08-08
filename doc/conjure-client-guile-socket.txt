@@ -101,11 +101,11 @@ is printed.
 
             Default: `nil`
 
-                                      *g:conjure#client#guile#socket#enable_completions*
+                             *g:conjure#client#guile#socket#enable_completions*
 `g:conjure#client#guile#socket#enable_completions`
-            Enable completion suggestions through the repl via Guile's readline
-            apropos-completion-function, which offers completions for functions
-            and variables (all defines).
+            Enable completion suggestions through tree sitter and the REPL via 
+            Guile's readline apropos-completion-function, which offers 
+            completions for functions and variables (all defines).
 
             Example value:
                      `false`

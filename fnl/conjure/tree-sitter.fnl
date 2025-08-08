@@ -1,6 +1,5 @@
 (local {: autoload} (require :conjure.nfnl.module))
 (local a (autoload :conjure.nfnl.core))
-(local log (autoload :conjure.log))
 (local client (autoload :conjure.client))
 (local config (autoload :conjure.config))
 (local text (autoload :conjure.text))
@@ -98,6 +97,9 @@
   (when node
     (or (string.find (node:type) :sym)
         (client.optional-call :symbol-node? node))))
+
+(fn get-node-at-cursor []
+ (ts.get_node_at_cursor) )
 
 (fn get-leaf [node]
   "Return the leaf node under the cursor or nothing at all."
@@ -224,6 +226,7 @@
  : range
  : node->table
  : get-root
+ : get-node-at-cursor
  : leaf?
  : sym?
  : get-leaf

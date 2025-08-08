@@ -2,7 +2,6 @@
 local _local_1_ = require("conjure.nfnl.module")
 local autoload = _local_1_["autoload"]
 local a = autoload("conjure.nfnl.core")
-local log = autoload("conjure.log")
 local client = autoload("conjure.client")
 local config = autoload("conjure.config")
 local text = autoload("conjure.text")
@@ -108,6 +107,9 @@ local function sym_3f(node)
     return nil
   end
 end
+local function get_node_at_cursor()
+  return ts.get_node_at_cursor()
+end
 local function get_leaf(node)
   parse_21()
   local node0 = (node or ts.get_node_at_cursor())
@@ -193,4 +195,4 @@ local function valid_str_3f(lang, code)
   local root_node = get_root_node_for_str(lang, code)
   return (root_node and not root_node:has_error())
 end
-return {["enabled?"] = enabled_3f, ["parse!"] = parse_21, ["node->str"] = node__3estr, ["lisp-comment-node?"] = lisp_comment_node_3f, parent = parent, ["document?"] = document_3f, range = range, ["node->table"] = node__3etable, ["get-root"] = get_root, ["leaf?"] = leaf_3f, ["sym?"] = sym_3f, ["get-leaf"] = get_leaf, ["node-surrounded-by-form-pair-chars?"] = node_surrounded_by_form_pair_chars_3f, ["node-prefixed-by-chars?"] = node_prefixed_by_chars_3f, ["get-form"] = get_form, ["add-language"] = add_language, ["valid-str?"] = valid_str_3f}
+return {["enabled?"] = enabled_3f, ["parse!"] = parse_21, ["node->str"] = node__3estr, ["lisp-comment-node?"] = lisp_comment_node_3f, parent = parent, ["document?"] = document_3f, range = range, ["node->table"] = node__3etable, ["get-root"] = get_root, ["get-node-at-cursor"] = get_node_at_cursor, ["leaf?"] = leaf_3f, ["sym?"] = sym_3f, ["get-leaf"] = get_leaf, ["node-surrounded-by-form-pair-chars?"] = node_surrounded_by_form_pair_chars_3f, ["node-prefixed-by-chars?"] = node_prefixed_by_chars_3f, ["get-form"] = get_form, ["add-language"] = add_language, ["valid-str?"] = valid_str_3f}
