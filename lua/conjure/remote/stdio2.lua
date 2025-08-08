@@ -5,7 +5,7 @@ local a = autoload("conjure.aniseed.core")
 local str = autoload("conjure.aniseed.string")
 local client = autoload("conjure.client")
 local log = autoload("conjure.log")
-local uv = vim.loop
+local uv = vim.uv
 local function parse_cmd(x)
   if a["table?"](x) then
     return {cmd = a.first(x), args = a.rest(x)}

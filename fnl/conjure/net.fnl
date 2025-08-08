@@ -11,7 +11,7 @@
   (if (= host "::")
     host
     (-> host
-        (->> (vim.loop.getaddrinfo)
+        (->> (vim.uv.getaddrinfo)
              (a.filter #(= "inet" (a.get $1 :family)))
              (a.first))
         (a.get :addr))))
@@ -27,7 +27,7 @@
   (set state.sock-drawer (a.filter #(not= sock $1) state.sock-drawer)))
 
 (fn M.connect [{:  host : port : cb}]
-  (let [sock (vim.loop.new_tcp)
+  (let [sock (vim.uv.new_tcp)
         resolved-host (M.resolve host)]
 
     (when (not resolved-host)

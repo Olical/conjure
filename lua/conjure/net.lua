@@ -11,7 +11,7 @@ M.resolve = function(host)
     local function _2_(_241)
       return ("inet" == a.get(_241, "family"))
     end
-    return a.get(a.first(a.filter(_2_, vim.loop.getaddrinfo(host))), "addr")
+    return a.get(a.first(a.filter(_2_, vim.uv.getaddrinfo(host))), "addr")
   end
 end
 local state = {["sock-drawer"] = {}}
@@ -32,7 +32,7 @@ M.connect = function(_6_)
   local host = _6_["host"]
   local port = _6_["port"]
   local cb = _6_["cb"]
-  local sock = vim.loop.new_tcp()
+  local sock = vim.uv.new_tcp()
   local resolved_host = M.resolve(host)
   if not resolved_host then
     error("Failed to resolve host for Conjure connection")

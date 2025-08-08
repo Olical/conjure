@@ -210,9 +210,9 @@
      (tset ,mod-sym :aniseed/tests tests#)))
 
 (fn time [...]
-  `(let [start# (vim.loop.hrtime)
+  `(let [start# (vim.uv.hrtime)
          result# (do ,...)
-         end# (vim.loop.hrtime)]
+         end# (vim.uv.hrtime)]
      (print (.. "Elapsed time: " (/ (- end# start#) 1000000) " msecs"))
      result#))
 

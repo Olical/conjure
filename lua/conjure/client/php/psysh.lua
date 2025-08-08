@@ -148,7 +148,7 @@ end
 local function interrupt()
   local function _23_(repl)
     log.append({(comment_prefix .. " Sending interrupt signal.")}, {["break?"] = true})
-    return repl["send-signal"](vim.loop.constants.SIGINT)
+    return repl["send-signal"](vim.uv.constants.SIGINT)
   end
   return with_repl_or_warn(_23_)
 end

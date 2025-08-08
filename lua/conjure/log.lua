@@ -62,7 +62,7 @@ local function close_hud()
   return hook.exec("close-hud")
 end
 local function hud_lifetime_ms()
-  return (vim.loop.now() - state.hud["created-at-ms"])
+  return (vim.uv.now() - state.hud["created-at-ms"])
 end
 local function close_hud_passive()
   if (state.hud.id and (hud_lifetime_ms() > config["get-in"]({"log", "hud", "minimum_lifetime_ms"}))) then
@@ -205,7 +205,7 @@ local function _26_(opts)
     state.hud.id = vim.api.nvim_open_win(buf, false, win_opts)
     set_win_opts_21(state.hud.id)
   end
-  state.hud["created-at-ms"] = vim.loop.now()
+  state.hud["created-at-ms"] = vim.uv.now()
   if last_break then
     vim.api.nvim_win_set_cursor(state.hud.id, {1, 0})
     return vim.api.nvim_win_set_cursor(state.hud.id, {math.min((last_break + core.inc(math.floor((win_opts.height / 2)))), line_count), 0})

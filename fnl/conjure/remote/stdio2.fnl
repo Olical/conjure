@@ -4,7 +4,7 @@
 (local client (autoload :conjure.client))
 (local log (autoload :conjure.log))
 
-(local uv vim.loop)
+(local uv vim.uv)
 
 (fn parse-cmd [x]
   (if

@@ -74,7 +74,7 @@
   (hook.exec :close-hud))
 
 (fn hud-lifetime-ms []
-  (- (vim.loop.now) state.hud.created-at-ms))
+  (- (vim.uv.now) state.hud.created-at-ms))
 
 (fn close-hud-passive []
   (when (and state.hud.id
@@ -220,7 +220,7 @@
           (set state.hud.id (vim.api.nvim_open_win buf false win-opts))
           (set-win-opts! state.hud.id)))
 
-      (set state.hud.created-at-ms (vim.loop.now))
+      (set state.hud.created-at-ms (vim.uv.now))
 
       (if last-break
         (do
