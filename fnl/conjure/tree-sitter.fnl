@@ -1,5 +1,6 @@
 (local {: autoload} (require :conjure.nfnl.module))
 (local a (autoload :conjure.nfnl.core))
+(local log (autoload :conjure.log))
 (local client (autoload :conjure.client))
 (local config (autoload :conjure.config))
 (local text (autoload :conjure.text))
@@ -200,6 +201,20 @@
        vim.treesitter.require_language)
    lang))
 
+(fn get-root-node-for-str [lang code]
+  (let [parser (vim.treesitter.get_string_parser code lang)]
+    (parser:parse)
+    (let [trees (parser:trees)]
+      (when (and trees
+                 (> (length trees) 0))
+        (let [root-tree (. trees 1)]
+          (root-tree:root))))))
+
+(fn valid-str? [lang code]
+  (let [root-node (get-root-node-for-str lang code)]
+    (and root-node
+         (not (root-node:has_error)))))
+
 {: enabled?
  : parse!
  : node->str
@@ -215,4 +230,5 @@
  : node-surrounded-by-form-pair-chars?
  : node-prefixed-by-chars?
  : get-form
- : add-language}
+ : add-language
+ : valid-str?}

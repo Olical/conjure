@@ -37,6 +37,8 @@
 (local base-module "(guile)")
 (local default-context "(guile-user)")
 
+(fn M.valid-str? [code] (ts.valid-str? :scheme code))
+
 (fn normalize-context [arg] 
   (let [tokens  (str.split arg "%s+") 
         context (.. "(" (str.join " " tokens) ")")]
@@ -110,7 +112,8 @@
 (fn M.eval-str [opts]
   (with-repl-or-warn
     (fn [repl]
-      (let [context (or opts.context default-context)]
+      (if (M.valid-str? opts.code)
+       (let [context (or opts.context default-context)]
         (ensure-module-initialized repl context) 
         (-?> (.. (build-switch-module-command context) "\n" opts.code)
              (clean-input-code)
@@ -124,7 +127,8 @@
                    (opts.on-result (str.join "\n" (format-message (a.last msgs)))))
                  (when (not opts.passive?)
                    (a.run! display-result msgs)))
-               {:batch? true}))))))
+               {:batch? true})))
+       (log.append [(.. M.comment-prefix "eval error: could not parse form")])))))
 
 (fn M.eval-file [opts]
   (M.eval-str (a.assoc opts :code (.. "(load \"" opts.file-path "\")"))))
