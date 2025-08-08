@@ -13,3 +13,4 @@ __pycache__/
 /.lein-repl-history
 /.direnv
 .test/
+.DS_Store
