@@ -196,7 +196,7 @@ M.disconnect = function()
   end
   return a.assoc(state(), "known-contexts", {})
 end
-M["parse-guile-result"] = function(s)
+M["parse-guile-result"] = function(s, stray_output_fn)
   local prompt = s:find("scheme@%([%w%-%s]+%)> ")
   if prompt then
     local ind1, _, result = s:find("%$%d+ = ([^\n]+)\n")
@@ -209,7 +209,7 @@ M["parse-guile-result"] = function(s)
     end
     stray_output = s:sub(1, (_28_ - 1))
     if (#stray_output > 0) then
-      log.append(text["prefixed-lines"](text["trim-last-newline"](stray_output), "; (out) "))
+      stray_output_fn(text["prefixed-lines"](text["trim-last-newline"](stray_output), "; (out) "))
     else
     end
     return {["done?"] = true, result = result, ["error?"] = false}
@@ -248,16 +248,19 @@ M.connect = function(_opts)
   end
   log.dbg(a.str("client.guile.socket: pipename=", pipename))
   log.dbg(a.str("client.guile.socket: host-port=", cfg_host_port))
-  local function _36_()
+  local function _36_(_241)
+    return M["parse-guile-result"](_241, log.append)
+  end
+  local function _37_()
     return display_repl_status()
   end
-  local function _37_(msg, repl)
+  local function _38_(msg, repl)
     display_result(msg)
-    local function _38_()
+    local function _39_()
     end
-    return repl.send(",q\n", _38_)
+    return repl.send(",q\n", _39_)
   end
-  return a.assoc(state(), "repl", socket.start({["parse-output"] = M["parse-guile-result"], pipename = pipename, ["host-port"] = host_port, ["on-success"] = _36_, ["on-error"] = _37_, ["on-failure"] = M.disconnect, ["on-close"] = M.disconnect, ["on-stray-output"] = display_result}))
+  return a.assoc(state(), "repl", socket.start({["parse-output"] = _36_, pipename = pipename, ["host-port"] = host_port, ["on-success"] = _37_, ["on-error"] = _38_, ["on-failure"] = M.disconnect, ["on-close"] = M.disconnect, ["on-stray-output"] = display_result}))
 end
 local function connected_3f()
   if state("repl") then
@@ -273,24 +276,24 @@ M["on-exit"] = function()
   return M.disconnect()
 end
 M["on-filetype"] = function()
-  local function _40_()
+  local function _41_()
     return M.connect()
   end
-  mapping.buf("GuileConnect", cfg({"mapping", "connect"}), _40_, {desc = "Connect to a REPL"})
-  local function _41_()
+  mapping.buf("GuileConnect", cfg({"mapping", "connect"}), _41_, {desc = "Connect to a REPL"})
+  local function _42_()
     return M.disconnect()
   end
-  return mapping.buf("GuileDisconnect", cfg({"mapping", "disconnect"}), _41_, {desc = "Disconnect from the REPL"})
+  return mapping.buf("GuileDisconnect", cfg({"mapping", "disconnect"}), _42_, {desc = "Disconnect from the REPL"})
 end
 M.completions = function(opts)
   if (completions_enabled_3f() and connected_3f() and not busy_3f()) then
     local code = cmpl["build-completion-request"](opts.prefix)
     local result_fn
-    local function _42_(results)
+    local function _43_(results)
       local cmpl_list = cmpl["format-results"](results)
       return opts.cb(cmpl_list)
     end
-    result_fn = _42_
+    result_fn = _43_
     a.assoc(opts, "code", code)
     a.assoc(opts, "on-result", result_fn)
     a.assoc(opts, "passive?", true)

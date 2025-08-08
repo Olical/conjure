@@ -168,7 +168,7 @@
       (a.assoc (state) :repl nil)))
   (a.assoc (state) :known-contexts {}))
 
-(fn M.parse-guile-result [s]
+(fn M.parse-guile-result [s stray-output-fn]
   (let [prompt (s:find "scheme@%([%w%-%s]+%)> ")]
     (if
       prompt
@@ -180,7 +180,7 @@
                                   prompt)
                               1))]
         (when (> (length stray-output) 0)
-          (log.append
+          (stray-output-fn
             (-> (text.trim-last-newline stray-output)
                 (text.prefixed-lines "; (out) "))))
         {:done? true
@@ -223,7 +223,7 @@
     (a.assoc
       (state) :repl
       (socket.start
-        {:parse-output M.parse-guile-result
+        {:parse-output #(M.parse-guile-result $1 log.append)
          :pipename pipename
          :host-port host-port
          :on-success (fn []

@@ -55,7 +55,28 @@
               {:done? true
                :error? false
                :result "1234"}
-              (guile.parse-guile-result "$1 = 1234\nscheme@(guile-user)> "))))))
+              (guile.parse-guile-result "$1 = 1234\nscheme@(guile-user)> "))))
+
+        (it "handles single line output from display, missing a newline"
+          (fn []
+            (let [stray-output []
+                  capture-stray-output (fn [output]
+                                        (table.insert stray-output output))]
+              (assert.are.same
+                {:done? true
+                 :error? false
+                 :result nil}
+                (guile.parse-guile-result "hischeme@(guile-user)> " capture-stray-output))
+              (assert.are.same
+                [["; (out) hi"]]
+                stray-output))))
+        
+        (it "prompts with an error number report as an error"
+          (fn []
+            (assert.are.same
+              {:done? true
+               :error? true}
+              (guile.parse-guile-result "scheme@(guile-user) [1]> "))))))
 
     (describe "eval-str" 
       (fn []
