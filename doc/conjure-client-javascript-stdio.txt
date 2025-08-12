@@ -19,7 +19,7 @@ JavaScript file.
 Please make sure you have Node.js version 10 or above installed.
 
 Once you have tree sitter installed and configured (remember to run
-`:TSInstall javascript`!) you should be able to evaluate forms just like you would
+`:TSInstall javascript` `and :TSInstall typescript` for TypeScript support) you should be able to evaluate forms just like you would
 in any other Conjure supported language. (<localleader>ee, <localleader>er,
 etc...)
 
@@ -29,6 +29,36 @@ you can perform.
 A client addresses Node.js REPL limitations by automatically transforming
 import statements into require calls and arrow functions into standard
 function declarations.
+
+TypeScript support:
+1. Install NodeJS(v22 tested)
+2. Install ts-node(v10.9.2 tested)
+3. Create a minimal config file(tsconfig.json) in the root of a project: 
+   {
+     "ts-node": {
+       // ts-node config here
+       }
+     },
+     "compilerOptions": {
+         "target": "es2022",
+         "module": "es2022"
+     }
+   }
+4. Try it 
+
+Caveats: 
+1. Semicolons (`;`) are crucial, you can use a linter to add them automatically.
+2. Not all `import` statements are supported.
+3. Sometimes you can see this in the REPL:
+   "(out) /Users/user/conjure/dev/typescript/<repl>.ts:2
+    (out) export {};
+    (out) ^^^^^^
+    (out) Uncaught SyntaxError: Unexpected token 'export'"
+   You just need to re-evaluate a statement, this is some internal problem of
+   ts-node.
+4. When evaluating a file with `<localleader>ef`, it is better to activate 
+   `stray out` beforehand to see any errors during evaluation.
+
 
 ==============================================================================
 MAPPINGS                                  *conjure-client-javascript-stdio-mappings*
