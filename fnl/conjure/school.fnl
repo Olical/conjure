@@ -35,10 +35,17 @@
     "You've already completed this lesson! You can (u)ndo and run it again though if you'd like."))
 
 (fn start []
+  (when (and (not= vim.g.conjure#filetype#fennel "conjure.client.fennel.aniseed")
+             (not= vim.g.conjure#filetype#fennel "conjure.client.fennel.nfnl"))
+    (vim.notify_once
+      (.. "Warning: g:conjure#filetype#fennel not set to a supported client.\n"
+          "Overriding to 'conjure.client.fennel.nfnl'"))
+    (set vim.g.conjure#filetype#fennel "conjure.client.fennel.nfnl"))
+
   (when (not (editor.has-filetype? :fennel))
     (vim.notify_once
-      "Warning: No Fennel filetype found, falling back to Clojure syntax."
-      "Install https://github.com/atweiden/vim-fennel for better Fennel support.")
+      (.. "Warning: No Fennel filetype found, falling back to Clojure syntax.\n"
+          "Install https://github.com/atweiden/vim-fennel for better Fennel support."))
     (set vim.g.conjure#filetype#clojure vim.g.conjure#filetype#fennel)
     (nvim.ex.augroup :conjure_school_filetype)
     (nvim.ex.autocmd_)
