@@ -1,4 +1,5 @@
 (local {: autoload : define} (require :conjure.nfnl.module))
+(local a (require :conjure.nfnl.core))
 (local log (autoload :conjure.log))
 
 (local M (define :conjure.resources))
@@ -9,10 +10,7 @@
 
 (fn read-and-cache-file-contents [path]
   (log.dbg (.. path " resource not cached - reading"))
-  (let [file (io.open path "r")
-        content (if (= nil file) nil (file:read "*all"))]
-    (when (not= nil file)
-      (file:close))
+  (let [content (a.slurp path)]
     (tset cache path content)
     content))
 

@@ -1,14 +1,11 @@
 (local {: autoload : define} (require :conjure.nfnl.module))
-(local a (autoload :conjure.aniseed.core))
+(local a (autoload :conjure.nfnl.core))
 
-(local M (define :conjure.client.scheme.dict))
-(local dicts {})
-
-(fn M.get-dict [key]
-  (or (. dicts key) (. dicts :default)))
+(local M (define :conjure.client.scheme.keywords))
+(local lang-keywords {})
 
 ; These are from a common set of MIT, chicken, and chez scheme
-(tset dicts :default [
+(local common-keywords [
   "*" "+" "-" "/" "<" "<=" "=" ">" ">=" "abs" "acos" "and" "angle" "append" "apply"
 "asin" "assoc" "assq" "assv" "atan" "begin" "boolean?" "caaaar" "caaadr"
 "caaar" "caadar" "caaddr" "caadr" "caar" "cadaar" "cadadr" "cadar" "caddar"
@@ -44,12 +41,17 @@
 "vector-length" "vector-ref" "vector-set!" "vector?" "weak-cons" "weak-pair?"
 "with-input-from-file" "with-output-to-file" "write" "write-char" "zero?"])
 
-(tset dicts :guile (a.concat 
- (. dicts :default) 
- [ "ice-9" "srfi" "debug" "expect" "format" "ftw" "getopt-long" "history" "popen"
+(a.assoc lang-keywords :common common-keywords)
+
+(a.assoc lang-keywords :guile (a.concat 
+ common-keywords
+ ["ice-9" "srfi" "debug" "expect" "format" "ftw" "getopt-long" "history" "popen"
  "pretty-print" "q" "rdelim" "readline" "receive" "regex" "rw" "streams" "syncase"
  "threads" "documentation"
  "srfi-1" "srfi-2" "srfi-4" "srfi-6" "srfi-8" "srfi-9" "srfi-10" "srfi-11" 
  "srfi-13" "srfi-14" "srfi-16" "srfi-17" "srfi-19" "srfi-26" "srfi-31"]))
+
+(fn M.get-set [key]
+  (a.get lang-keywords key common-keywords))
 
 M

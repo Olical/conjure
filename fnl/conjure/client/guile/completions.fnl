@@ -1,6 +1,6 @@
 (local {: autoload : define} (require :conjure.nfnl.module))
 (local a (autoload :conjure.nfnl.core))
-(local scheme-dict (autoload :conjure.client.scheme.dict))
+(local keywords (autoload :conjure.client.scheme.keywords))
 (local util (autoload :conjure.util))
 (local tsc (autoload :conjure.tree-sitter-completions))
 (local res (autoload :conjure.resources))
@@ -23,10 +23,10 @@
     cmpls))
 
 (fn M.get-static-completions [prefix]
-  (let [dict (scheme-dict.get-dict :guile)
+  (let [keyword-set (keywords.get-set :guile)
         prefix-filter (util.make-prefix-filter prefix)]
     (prefix-filter (util.concat-nodup
       (tsc.get-completions-at-cursor :scheme :scheme)
-      dict))))
+      keyword-set))))
 
 M

@@ -2,23 +2,14 @@
 local _local_1_ = require("conjure.nfnl.module")
 local autoload = _local_1_["autoload"]
 local define = _local_1_["define"]
+local a = require("conjure.nfnl.core")
 local log = autoload("conjure.log")
 local M = define("conjure.resources")
 local resource_prefix = "res/"
 local cache = {}
 local function read_and_cache_file_contents(path)
   log.dbg((path .. " resource not cached - reading"))
-  local file = io.open(path, "r")
-  local content
-  if (nil == file) then
-    content = nil
-  else
-    content = file:read("*all")
-  end
-  if (nil ~= file) then
-    file:close()
-  else
-  end
+  local content = a.slurp(path)
   cache[path] = content
   return content
 end
