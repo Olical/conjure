@@ -1,7 +1,7 @@
 // Evaluate all of this:
-const add = (a: number, b: number) => a + b;
+const add = (a: number, b: number) => a + b
 
-add(38, 4);
+add(38, 4)
 
 8 + 5;
 (3 + 9 + 30) / 2;
@@ -75,8 +75,8 @@ minus(1, 2);
 import type { IMoped } from "./moped.ts";
 
 class Moped implements IMoped {
-  wheels: number;
-  engineDisplacement: number;
+  wheels: number
+  engineDisplacement: number
 
   constructor(wheels: number, engineDisplacement: number) {
     this.wheels = wheels;
@@ -142,11 +142,11 @@ setTimeout(() => {
 }, 300);
 
 // Decorators seem to be working
-type Constructor = {
+type Ctr = {
   new(...args: any[]): {};
 };
 
-function frozen<T extends Constructor>(constructor: T) {
+function frozen<T extends Ctr>(constructor: T) {
   Object.freeze(constructor);
   Object.freeze(constructor.prototype);
 
@@ -167,9 +167,9 @@ function logMethod(originalMethod: any, context: ClassMethodDecoratorContext) {
   const methodName = String(context.name);
 
   return function (this: any, ...args: any[]) {
-    console.log(`LOG: Entering method '${methodName}'.`);
-    const result = originalMethod.call(this, ...args);
-    console.log(`LOG: Exiting method '${methodName}'.`);
+    console.log(`LOG: Entering method '${methodName}'.`)
+    const result = originalMethod.call(this, ...args)
+    console.log(`LOG: Exiting method '${methodName}'.`)
     return result;
   };
 }
@@ -289,14 +289,14 @@ namespace UserModule {
     public adminLevel: number;
 
     constructor(username: string, email: string, adminLevel: number) {
-      this.username = username;
-      this.email = email;
+      this.username = username
+      this.email = email
       this.isActive = this.validateAdmin();
       this.adminLevel = adminLevel;
     }
 
     private validateAdmin(): boolean {
-      return this.adminLevel > 0;
+      return this.adminLevel > 0
     }
 
     public describeUser(): string {

@@ -75,7 +75,8 @@
       "\""))
 
 (fn replace-imports-path [s]
-  (if (string.find s :import)
+  (if (or (string.find s :import)
+          (string.find s :require))
       (string.gsub s "[\"\'](.-)[\"\']" 
                    (fn [m]
                      (if (text.starts-with m ".")
@@ -84,41 +85,53 @@
                          (.. "\"" m "\""))))
       s))
 
+;; replacement fn for "import {mod1 as m1, mod2 as m2 ...} from ...", "import {mod1, mod2} from ..."
+(fn replace-curly-import [s]
+  (let [pattern "import%s+%{(.-)%}%s+from%s+[\"'](.-)[\"']" 
+        replace-fn (fn [bd path]
+                     (let [spl (str.split bd ",")
+                           spl->nms (->> 
+                                      spl 
+                                      (a.map (fn [el] (el:gsub "as" ":")))
+                                      (str.join ", "))]
+
+                       (.. "const {" spl->nms "} = require(\"" path "\")")))
+        (repl _) (string.gsub s pattern replace-fn)]
+    repl))
+
 (local patterns-replacements
        [;; import * as `something` from "module"
         ["^%s*import%s+%*%s+as%s+([^%s]+)%s+from%s+([\"'])(.-)%2%s*"
          "const %1 = require(\"%3\")"]
-        ;; TODO: Fix multiple import aliases {route as rt, routeSync as rs}
-        ;; import { route as rt, routeSync as rs }  from "./index"; => const { route: rt, routeSync: rs} = require("./index")
-        ["^%s*import%s+%{%s*([^}]+)%s+as%s+([^}]+)%s+%}%s+from%s+[\"'](.-)%3%s*"
-         "const {%1:%2} = require(\"%3\");"]
         ;; import mod from "module"
         ["^%s*import%s+([^%s{]+)%s+from%s+([\"'])(.-)%2%s*"
          "const %1 = require(\"%3\")"]
-        ;; import {`first fn`, `second fn`} from "module"
-        ["^%s*import%s+%{([^}]+)%}%s+from%s+([\"'])(.-)%2%s*"
-         "const {%1} = require(\"%3\")"] 
         ;; import defaultExport, { export1 } from "module-name"; 
         ["^%s*import%s+([^%s{,]+)%s*,%s*%{([^}]+)%}%s+from%s+([\"'])(.-)%3%s*"
          "const { default: %1, %2 } = require(\"%4\")"]
         ["^%s*import%s+([\"'])(.-)%1%s*" "require(\"%2\");"]])
+
+(fn replace-imports-regex [s]
+  (let [initial-acc {:applied? false :result s}
+        final-acc (a.reduce 
+                    (fn [acc [pat repl]]
+                      (if acc.applied?
+                          acc
+                          (let [(r c) (string.gsub acc.result pat repl)]
+                            (if (> c 0)
+                                {:applied? true :result r}
+                                acc))))
+                    initial-acc patterns-replacements)]
+    final-acc.result))
 
 ;; To avoid Node.js REPL complaints, imports are automatically converted for the user.
 ;; See https://github.com/nodejs/node/issues/48084
 (fn replace-imports [s]
   (if (and (text.starts-with s :import)
            (not (text.starts-with s "import type")))
-      (let [ initial-acc {:applied? false :result s}
-            final-acc (a.reduce 
-                        (fn [acc [pat repl]]
-                          (if acc.applied?
-                              acc
-                              (let [(r c) (string.gsub acc.result pat repl)]
-                                (if (> c 0)
-                                    {:applied? true :result r}
-                                    acc))))
-                                initial-acc patterns-replacements)]
-        final-acc.result)
+      (-> s
+          replace-curly-import
+          replace-imports-regex)
       s))
 
 (fn is-arrow-fn? [code]
@@ -158,13 +171,37 @@
             (replace _) (s:gsub pattern replace-fn)]
         replace)))
 
+;; For better user experience, in some scenarios semicolons must be automatically appended 
+(fn add-semicolon [s]
+  (let [spl (str.split s "\n")
+        sub-fn (fn [ln]
+                 (if (or (text.starts-with ln :.)
+                         (string.match ln "%s*@")
+                         (text.ends-with ln "{")
+                         (text.ends-with ln ";")
+                         (str.blank? ln))
+                     ln
+                     (.. ln ";")))
+        sub (a.map sub-fn spl)]
+    (str.join " " sub)))
+
+(fn manage-semicolons [s]
+  (if (or 
+        (text.starts-with s "function")
+        (text.starts-with s "namespace")
+        (text.starts-with s "class")
+        (text.starts-with s "@"))
+      (add-semicolon s)
+      s))
+
 (fn prep-code-expr [e]
   (-> e
       remove-comments
-      (string.gsub "\n+" " ")
+      (string.gsub "%s+%." "%.")
       replace-imports-path
       replace-imports
-      replace-arrows))
+      replace-arrows
+      manage-semicolons))
 
 (fn prep-code-file [f]
   (->> (str.split f "\n")
