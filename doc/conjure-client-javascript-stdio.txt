@@ -47,16 +47,15 @@ TypeScript support:
 4. Try it 
 
 Caveats: 
-1. Semicolons (`;`) are crucial, you can use a linter to add them automatically.
-2. Not all `import` statements are supported.
-3. Sometimes you can see this in the REPL:
+1. Not all `import` statements are supported.
+2. Sometimes you can see this in the REPL:
    "(out) /Users/user/conjure/dev/typescript/<repl>.ts:2
     (out) export {};
     (out) ^^^^^^
     (out) Uncaught SyntaxError: Unexpected token 'export'"
    You just need to re-evaluate a statement, this is some internal problem of
    ts-node.
-4. When evaluating a file with `<localleader>ef`, it is better to activate 
+3. When evaluating a file with `<localleader>ef`, it is better to activate 
    `stray out` beforehand to see any errors during evaluation.
 
 
