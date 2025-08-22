@@ -42,8 +42,13 @@ local function append_or_warn(current_progress, lines)
   end
 end
 local function start()
+  if ((vim.g["conjure#filetype#fennel"] ~= "conjure.client.fennel.aniseed") and (vim.g["conjure#filetype#fennel"] ~= "conjure.client.fennel.nfnl")) then
+    vim.notify_once(("Warning: g:conjure#filetype#fennel not set to a supported client.\n" .. "Overriding to 'conjure.client.fennel.nfnl'"))
+    vim.g["conjure#filetype#fennel"] = "conjure.client.fennel.nfnl"
+  else
+  end
   if not editor["has-filetype?"]("fennel") then
-    vim.notify_once("Warning: No Fennel filetype found, falling back to Clojure syntax.", "Install https://github.com/atweiden/vim-fennel for better Fennel support.")
+    vim.notify_once(("Warning: No Fennel filetype found, falling back to Clojure syntax.\n" .. "Install https://github.com/atweiden/vim-fennel for better Fennel support."))
     vim.g["conjure#filetype#clojure"] = vim.g["conjure#filetype#fennel"]
     nvim.ex.augroup("conjure_school_filetype")
     nvim.ex.autocmd_()
@@ -61,13 +66,13 @@ local function start()
   local buf = upsert_buf()
   nvim.ex.edit(buf_name)
   vim.api.nvim_buf_set_lines(buf, 0, -1, false, {})
-  local _8_
+  local _9_
   if maplocalleader_was_unset_3f then
-    _8_ = {";; Your <localleader> wasn't configured so I've defaulted it to comma (,) for now.", ";; See :help localleader for more information. (let maplocalleader=\",\")"}
+    _9_ = {";; Your <localleader> wasn't configured so I've defaulted it to comma (,) for now.", ";; See :help localleader for more information. (let maplocalleader=\",\")"}
   else
-    _8_ = {(";; Your <localleader> is currently mapped to \"" .. vim.g.maplocalleader .. "\"")}
+    _9_ = {(";; Your <localleader> is currently mapped to \"" .. vim.g.maplocalleader .. "\"")}
   end
-  return append(core.concat({"(local school (require :conjure.school))", "", ";; Welcome to Conjure school!", ";; Grab yourself a nice beverage and let's get evaluating. I hope you enjoy!", "", ";; This language is Fennel, it's quite similar to Clojure.", ";; Conjure is written in Fennel, it's compiled to Lua and executed inside Neovim itself.", ";; This means we can work with a Lisp without installing or running anything else.", "", ";; Note: Some colorschemes will make the HUD unreadable, see here for more: https://git.io/JJ1Hl", "", ";; Let's learn how to evaluate it using Conjure's assortment of mappings.", ";; You can learn how to change these mappings with :help conjure-mappings", "", (";; Let's begin by evaluating the whole buffer using " .. map_str("eval_buf"))}, _8_, {"(school.lesson-1)"}))
+  return append(core.concat({"(local school (require :conjure.school))", "", ";; Welcome to Conjure school!", ";; Grab yourself a nice beverage and let's get evaluating. I hope you enjoy!", "", ";; This language is Fennel, it's quite similar to Clojure.", ";; Conjure is written in Fennel, it's compiled to Lua and executed inside Neovim itself.", ";; This means we can work with a Lisp without installing or running anything else.", "", ";; Note: Some colorschemes will make the HUD unreadable, see here for more: https://git.io/JJ1Hl", "", ";; Let's learn how to evaluate it using Conjure's assortment of mappings.", ";; You can learn how to change these mappings with :help conjure-mappings", "", (";; Let's begin by evaluating the whole buffer using " .. map_str("eval_buf"))}, _9_, {"(school.lesson-1)"}))
 end
 local function lesson_1()
   return append_or_warn(1, {"", ";; Good job!", ";; You'll notice the heads up display (HUD) appeared showing the result of the evaluation.", ";; All results are appended to a log buffer. If that log is not open, the HUD will appear.", ";; The HUD closes automatically when you move your cursor.", "", ";; You can open the log buffer in a few ways:", (";;  * Horizontally - " .. map_str("log_split")), (";;  * Vertically - " .. map_str("log_vsplit")), (";;  * New tab - " .. map_str("log_tab")), "", (";; All visible log windows (including the HUD) can be closed with " .. map_str("log_close_visible")), ";; Try opening and closing the log window to get the hang of those key mappings.", ";; It's a regular window and buffer, so you can edit and close it however you want.", ";; Feel free to leave the log open in a split for the next lesson to see how it behaves.", "", ";; If you ever need to clear your log you can use the reset mappings:", (";; * Soft reset (leaves windows open) - " .. map_str("log_reset_soft")), (";; * Hard reset (closes windows, deletes the buffer) - " .. map_str("log_reset_hard")), "", ";; Next, we have a form inside a comment. We want to evaluate that inner form, not the comment.", (";; Place your cursor on the inner form (the one inside the comment) and use " .. map_str("eval_current_form") .. " to evaluate it."), "(comment", "  (school.lesson-2))"})
