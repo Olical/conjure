@@ -1,5 +1,6 @@
 (local {: autoload : define} (require :conjure.nfnl.module))
 (local a (autoload :conjure.nfnl.core))
+(local log (autoload :conjure.log))
 (local ts (autoload :conjure.tree-sitter))
 (local util (autoload :conjure.util))
 (local res (autoload :conjure.resources))
@@ -94,14 +95,16 @@
             (table.insert results (get-node-text n buffer meta))
 
             (and (= :local.bind captured-label)
+                 (not (cursor-node:equal (n:parent)))
                  (is-in-scope cursor-node (get-nth-scope-parent 1 n scopes)))
             (table.insert results (get-node-text n buffer meta))
 
             (and (= :local.define captured-label)
+                 (not (cursor-node:equal (n:parent)))
                  (is-in-scope cursor-node (get-nth-scope-parent 2 n scopes)))
             (table.insert results (get-node-text n buffer meta)))))
 
-    (util.dedup results)))
+    (util.ordered-distinct results)))
 
 (fn M.get-completions-at-cursor [ts-lang cmpl-resource]
   "Use tree-sitter query to find completions in scope at cursor
@@ -116,5 +119,13 @@
     (if query
       (get-completions-for-query query)
       [])))
+
+(fn M.make-prefix-filter [prefix]
+  "Return function which filters words starting with prefix"
+  (let [sanitized-prefix (string.gsub (or prefix "") "%%" "%%%%")
+        prefix-pattern (.. "^" sanitized-prefix)
+        prefix-filter (fn [s] (string.match s prefix-pattern))] 
+    (fn [list] 
+      (a.filter prefix-filter list))))
 
 M

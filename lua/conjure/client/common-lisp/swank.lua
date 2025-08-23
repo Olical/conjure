@@ -310,7 +310,8 @@ local function build_completions(opts)
     local result_fn
     local function _42_(results)
       local parsed_results = format_for_cmpl(results)
-      local cmpl_list = util["concat-nodup"](static_completions, parsed_results)
+      local all_cmpl = a.concat(static_completions, parsed_results)
+      local cmpl_list = util["ordered-distinct"](all_cmpl)
       return opts.cb(cmpl_list)
     end
     result_fn = _42_

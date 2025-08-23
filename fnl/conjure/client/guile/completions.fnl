@@ -24,9 +24,10 @@
 
 (fn M.get-static-completions [prefix]
   (let [keyword-set (keywords.get-set :guile)
-        prefix-filter (util.make-prefix-filter prefix)]
-    (prefix-filter (util.concat-nodup
-      (tsc.get-completions-at-cursor :scheme :scheme)
-      keyword-set))))
+        ts-completions (tsc.get-completions-at-cursor :scheme :scheme)
+        all-cmpl (a.concat ts-completions keyword-set)
+        distinct-cmpl (util.ordered-distinct all-cmpl)
+        prefix-filter (tsc.make-prefix-filter prefix) ]
+    (prefix-filter distinct-cmpl)))
 
 M

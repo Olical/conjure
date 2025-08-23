@@ -33,7 +33,8 @@ M["format-results"] = function(rs)
 end
 M["get-static-completions"] = function(prefix)
   local keyword_set = keywords["get-set"]("guile")
-  local prefix_filter = util["make-prefix-filter"](prefix)
-  return prefix_filter(util["concat-nodup"](tsc["get-completions-at-cursor"]("scheme", "scheme"), keyword_set))
+  local ts_completions = tsc["get-completions-at-cursor"]("scheme", "scheme")
+  local prefix_filter = tsc["make-prefix-filter"](prefix)
+  return prefix_filter(util["ordered-distinct"](a.concat(ts_completions, keyword_set)))
 end
 return M

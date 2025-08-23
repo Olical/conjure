@@ -1,4 +1,5 @@
 (local {: autoload : define} (require :conjure.nfnl.module))
+(local a (require :conjure.nfnl.core))
 (local keywords (autoload :conjure.client.scheme.keywords))
 (local config (autoload :conjure.config))
 (local util (autoload :conjure.util))
@@ -17,9 +18,10 @@
   (let [stdio-command (config.get-in [:client :scheme :stdio :command])
         lang-key (get-lang-key-from-stdio-command stdio-command)
         keyword-set (keywords.get-set lang-key) 
-        prefix-filter (util.make-prefix-filter prefix)]
-    (prefix-filter (util.concat-nodup
-      (tsc.get-completions-at-cursor :scheme :scheme)
-      keyword-set))))
+        ts-cmpl (tsc.get-completions-at-cursor :scheme :scheme)
+        all-cmpl (a.concat ts-cmpl keyword-set)
+        distinct-cmpl (util.ordered-distinct all-cmpl)
+        prefix-filter (tsc.make-prefix-filter prefix)]
+    (prefix-filter distinct-cmpl)))
 
 M

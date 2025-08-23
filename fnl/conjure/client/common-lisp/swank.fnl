@@ -331,7 +331,8 @@
            result-fn
            (fn [results]
              (let [parsed-results (format-for-cmpl results)
-                   cmpl-list (util.concat-nodup static-completions parsed-results)]
+                   all-cmpl (a.concat static-completions parsed-results)
+                   cmpl-list (util.ordered-distinct all-cmpl)]
                ;(log.append [(.. "; in completions()'s result-fn, called with: " (a.pr-str results))] )
                ;(log.append [(..  "; in completions()'s result-fn, calling opts.cb with " (a.pr-str cmpl-list))])
                (opts.cb cmpl-list) ; return the list of completions

@@ -298,7 +298,9 @@ local function generate_completions(opts)
     local result_fn
     local function _44_(results)
       local cmpl_list = cmpl["format-results"](results)
-      return opts.cb(util["concat-nodup"](static_suggestions, cmpl_list))
+      local all_cmpl = a.concat(static_suggestions, cmpl_list)
+      local distinct_cmpl = util["ordered-distinct"](all_cmpl)
+      return opts.cb(distinct_cmpl)
     end
     result_fn = _44_
     a.assoc(opts, "code", code)

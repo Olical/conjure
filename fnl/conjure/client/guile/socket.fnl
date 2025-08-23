@@ -268,10 +268,12 @@
        (let [code (cmpl.build-completion-request opts.prefix)
              result-fn 
              (fn [results]
-               (let [cmpl-list (cmpl.format-results results)]
+               (let [cmpl-list (cmpl.format-results results)
+                     all-cmpl (a.concat static-suggestions cmpl-list)
+                     distinct-cmpl (util.ordered-distinct all-cmpl)]
                  ;(log.append [(.. "; in completions()'s result-fn, called with: " (a.pr-str results))] )
                  ;(log.append [(..  "; in completions()'s result-fn, calling opts.cb with " (a.pr-str cmpl-list))])
-                 (opts.cb (util.concat-nodup static-suggestions cmpl-list))
+                 (opts.cb distinct-cmpl)
                  ; return the list of completions
                  ))
             ]

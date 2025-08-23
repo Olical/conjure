@@ -2,6 +2,7 @@
 local _local_1_ = require("conjure.nfnl.module")
 local autoload = _local_1_["autoload"]
 local define = _local_1_["define"]
+local a = require("conjure.nfnl.core")
 local keywords = autoload("conjure.client.scheme.keywords")
 local config = autoload("conjure.config")
 local util = autoload("conjure.util")
@@ -22,7 +23,10 @@ M["get-completions"] = function(prefix)
   local stdio_command = config["get-in"]({"client", "scheme", "stdio", "command"})
   local lang_key = get_lang_key_from_stdio_command(stdio_command)
   local keyword_set = keywords["get-set"](lang_key)
-  local prefix_filter = util["make-prefix-filter"](prefix)
-  return prefix_filter(util["concat-nodup"](tsc["get-completions-at-cursor"]("scheme", "scheme"), keyword_set))
+  local ts_cmpl = tsc["get-completions-at-cursor"]("scheme", "scheme")
+  local all_cmpl = a.concat(ts_cmpl, keyword_set)
+  local distinct_cmpl = util["ordered-distinct"](all_cmpl)
+  local prefix_filter = tsc["make-prefix-filter"](prefix)
+  return prefix_filter(distinct_cmpl)
 end
 return M
