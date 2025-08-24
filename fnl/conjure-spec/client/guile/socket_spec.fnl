@@ -70,7 +70,7 @@
           (fn []
             (let [stray-output []
                   capture-stray-output (fn [output]
-                                        (table.insert stray-output output))]
+                                         (table.insert stray-output output))]
               (assert.are.same
                 {:done? true
                  :error? false
@@ -87,20 +87,19 @@
                :error? true}
               (guile.parse-guile-result "scheme@(guile-user) [1]> "))))
 
-        ; (it "handles multiple return values"
-        ;   (fn []
-        ;     (let [stray-output []
-        ;           capture-stray-output (fn [output]
-        ;                                 (table.insert stray-output output))]
-        ;       (assert.are.same
-        ;         {:done? true
-        ;          :error? false
-        ;          :result "(values 10 20 30)"}
-        ;         (guile.parse-guile-result "hi\n$1 = 10\n$2 = 20\n$3 = 30\nscheme@(guile-user)> " capture-stray-output))
-        ;       (assert.are.same
-        ;         [["; (out) hi"]]
-        ;         stray-output))))
-        ))
+        (it "handles multiple return values"
+          (fn []
+            (let [stray-output []
+                  capture-stray-output (fn [output]
+                                        (table.insert stray-output output))]
+              (assert.are.same
+                {:done? true
+                 :error? false
+                 :result "(values 10 20 30)"}
+                (guile.parse-guile-result "hi\n$1 = 10\n$2 = 20\n$3 = 30\nscheme@(guile-user)> " capture-stray-output))
+              (assert.are.same
+                [["; (out) hi"]]
+                stray-output))))))
 
     (describe "eval-str" 
       (fn []

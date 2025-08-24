@@ -198,22 +198,41 @@ M.disconnect = function()
   return a.assoc(state(), "known-contexts", {})
 end
 M["parse-guile-result"] = function(s, stray_output_fn)
-  local prompt = s:find("scheme@%([%w%-%s]+%)> ")
+  local find_prompt
+  local function _28_(s0)
+    return s0:find("scheme@%([%w%-%s]+%)> ")
+  end
+  find_prompt = _28_
+  local prompt = find_prompt(s)
   if prompt then
-    local ind1, _, result = s:find("%$%d+ = ([^\n]+)\n")
-    local stray_output
-    local _28_
-    if result then
-      _28_ = ind1
-    else
-      _28_ = prompt
+    local s_no_prompt = s:sub(0, (prompt - 1))
+    local lines = text["split-lines"](s_no_prompt)
+    local stray_output_lines = {}
+    local results = {}
+    for _n, line in ipairs(lines) do
+      local result = string.match(line, "^%$%d+ = (.*)$")
+      if result then
+        table.insert(results, result)
+      else
+        if ("" ~= line) then
+          table.insert(stray_output_lines, (M["comment-prefix"] .. "(out) " .. line))
+        else
+        end
+      end
     end
-    stray_output = s:sub(1, (_28_ - 1))
-    if (#stray_output > 0) then
-      stray_output_fn(text["prefixed-lines"](text["trim-last-newline"](stray_output), "; (out) "))
+    if (#stray_output_lines > 0) then
+      stray_output_fn(stray_output_lines)
     else
     end
-    return {["done?"] = true, result = result, ["error?"] = false}
+    local _32_
+    if (1 == #results) then
+      _32_ = a.first(results)
+    elseif (#results > 1) then
+      _32_ = ("(values " .. str.join(" ", results) .. ")")
+    else
+      _32_ = nil
+    end
+    return {["done?"] = true, result = _32_, ["error?"] = false}
   elseif s:find("scheme@%([%w%-%s]+%) %[%d+%]>") then
     return {["done?"] = true, ["error?"] = true, result = nil}
   else
@@ -226,9 +245,9 @@ M.connect = function(_opts)
   local cfg_host_port = cfg({"host_port"})
   local host_port
   if cfg_host_port then
-    local _let_32_ = vim.split(cfg_host_port, ":")
-    local host = _let_32_[1]
-    local port = _let_32_[2]
+    local _let_35_ = vim.split(cfg_host_port, ":")
+    local host = _let_35_[1]
+    local port = _let_35_[2]
     log.dbg(a.str("client.guile.socket: host=", host))
     log.dbg(a.str("client.guile.socket: port=", port))
     if (not host and not port) then
@@ -249,23 +268,23 @@ M.connect = function(_opts)
   end
   log.dbg(a.str("client.guile.socket: pipename=", pipename))
   log.dbg(a.str("client.guile.socket: host-port=", cfg_host_port))
-  local function _36_(_241)
+  local function _39_(_241)
     return M["parse-guile-result"](_241, log.append)
   end
-  local function _37_()
+  local function _40_()
     if completions_enabled_3f() then
       cmpl["get-static-completions"]()
     else
     end
     return display_repl_status()
   end
-  local function _39_(msg, repl)
+  local function _42_(msg, repl)
     display_result(msg)
-    local function _40_()
+    local function _43_()
     end
-    return repl.send(",q\n", _40_)
+    return repl.send(",q\n", _43_)
   end
-  return a.assoc(state(), "repl", socket.start({["parse-output"] = _36_, pipename = pipename, ["host-port"] = host_port, ["on-success"] = _37_, ["on-error"] = _39_, ["on-failure"] = M.disconnect, ["on-close"] = M.disconnect, ["on-stray-output"] = display_result}))
+  return a.assoc(state(), "repl", socket.start({["parse-output"] = _39_, pipename = pipename, ["host-port"] = host_port, ["on-success"] = _40_, ["on-error"] = _42_, ["on-failure"] = M.disconnect, ["on-close"] = M.disconnect, ["on-stray-output"] = display_result}))
 end
 local function connected_3f()
   if state("repl") then
@@ -281,14 +300,14 @@ M["on-exit"] = function()
   return M.disconnect()
 end
 M["on-filetype"] = function()
-  local function _42_()
+  local function _45_()
     return M.connect()
   end
-  mapping.buf("GuileConnect", cfg({"mapping", "connect"}), _42_, {desc = "Connect to a REPL"})
-  local function _43_()
+  mapping.buf("GuileConnect", cfg({"mapping", "connect"}), _45_, {desc = "Connect to a REPL"})
+  local function _46_()
     return M.disconnect()
   end
-  return mapping.buf("GuileDisconnect", cfg({"mapping", "disconnect"}), _43_, {desc = "Disconnect from the REPL"})
+  return mapping.buf("GuileDisconnect", cfg({"mapping", "disconnect"}), _46_, {desc = "Disconnect from the REPL"})
 end
 local function generate_completions(opts)
   local prefix = (opts.prefix or "")
@@ -296,13 +315,13 @@ local function generate_completions(opts)
   if (connected_3f() and not busy_3f()) then
     local code = cmpl["build-completion-request"](opts.prefix)
     local result_fn
-    local function _44_(results)
+    local function _47_(results)
       local cmpl_list = cmpl["format-results"](results)
       local all_cmpl = a.concat(static_suggestions, cmpl_list)
       local distinct_cmpl = util["ordered-distinct"](all_cmpl)
       return opts.cb(distinct_cmpl)
     end
-    result_fn = _44_
+    result_fn = _47_
     a.assoc(opts, "code", code)
     a.assoc(opts, "on-result", result_fn)
     a.assoc(opts, "passive?", true)

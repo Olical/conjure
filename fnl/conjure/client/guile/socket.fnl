@@ -170,23 +170,43 @@
   (a.assoc (state) :known-contexts {}))
 
 (fn M.parse-guile-result [s stray-output-fn]
-  (let [prompt (s:find "scheme@%([%w%-%s]+%)> ")]
+  (let [find-prompt (fn [s] (s:find "scheme@%([%w%-%s]+%)> "))
+        prompt (find-prompt s)]
     (if
       prompt
-      (let [(ind1 _ result) (s:find "%$%d+ = ([^\n]+)\n")
-            stray-output (s:sub
-                           1
-                           (- (if result
-                                  ind1
-                                  prompt)
-                              1))]
-        (when (> (length stray-output) 0)
-          (stray-output-fn
-            (-> (text.trim-last-newline stray-output)
-                (text.prefixed-lines "; (out) "))))
+      (let [s-no-prompt (s:sub 0 (- prompt 1))
+            lines (text.split-lines s-no-prompt)
+            stray-output-lines []
+            results []]
+        ;; Iterate over the lines of the output.
+        ;; A line structured as "$\d+ = (.*)" can be captured as as a member of results.
+        ;; Anything else gets appended to stray-output-lines with a "; (out) " prefix.
+
+        (each [_n line (ipairs lines)]
+          (let [result (string.match line "^%$%d+ = (.*)$")]
+            (if
+              result
+              (table.insert results result)
+
+              (when (not= "" line)
+                (table.insert stray-output-lines (.. M.comment-prefix "(out) " line))))))
+
+        (when (> (length stray-output-lines) 0)
+          (stray-output-fn stray-output-lines))
+
         {:done? true
          :error? false
-         :result result})
+
+         ;; Result is formed by either taking the single value of results if there's only one.
+         ;; Or if there's more than one we join them like "(values x y z)" where the variables are the results.
+         :result (if
+                   (= 1 (length results))
+                   (a.first results)
+
+                   (> (length results) 1)
+                   (.. "(values " (str.join " " results) ")")
+
+                   nil)})
 
       (s:find "scheme@%([%w%-%s]+%) %[%d+%]>")
       {:done? true
