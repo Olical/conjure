@@ -8,6 +8,9 @@
 (local client (autoload :conjure.client))
 (local log (autoload :conjure.log))
 (local ts (autoload :conjure.tree-sitter))
+(local cmpl (autoload :conjure.client.scheme.completions))
+
+(local M (define :conjure.client.scheme.stdio))
 
 (local M (define :conjure.client.scheme.stdio))
 
@@ -18,7 +21,8 @@
      {:command "mit-scheme"
       ;; Match "]=> " or "error> "
       :prompt_pattern "[%]e][=r]r?o?r?> "
-      :value_prefix_pattern "^;Value: "}}}})
+      :value_prefix_pattern "^;Value: "
+      :enable_completions true}}}})
 
 (when (config.get-in [:mapping :enable_defaults])
   (config.merge
@@ -31,12 +35,15 @@
 
 (local cfg (config.get-in-fn [:client :scheme :stdio]))
 (local state (client.new-state #(do {:repl nil})))
+
+(fn completions-enabled? []
+  (cfg [:enable_completions]))
+
 (set M.buf-suffix ".scm")
 (set M.comment-prefix "; ")
 (set M.form-node? ts.node-surrounded-by-form-pair-chars?)
 
 (fn M.valid-str? [code] (ts.valid-str? :scheme code))
-
 (fn with-repl-or-warn [f opts]
   (let [repl (state :repl)]
     (if repl
@@ -111,6 +118,8 @@
 
          :on-success
          (fn []
+           (when (completions-enabled?)
+             (cmpl.get-completions))
            (display-repl-status :started))
 
          :on-error
@@ -156,5 +165,14 @@
 
 (fn M.on-exit []
   (M.stop))
+
+(fn M.completions [opts]
+  ;(when (not= nil opts)
+  ;  (log.append [(.. "; completions() called with: " (a.pr-str opts))] {:break? true}))
+  (if (completions-enabled?)
+    (let [prefix (or (. opts :prefix) "")
+          suggestions (cmpl.get-completions prefix)]
+      (opts.cb suggestions))
+    (opts.cb [])))
 
 M

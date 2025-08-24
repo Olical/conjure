@@ -85,4 +85,15 @@ All configuration can be set as described in |conjure-configuration|.
             everything as a value.
             Default: `"^;Value: "`
 
+                            *g:conjure#client#scheme#stdio#enable_completions*
+`g:conjure#client#scheme#stdio#enable_completions`
+            Enable completion suggestions through tree sitter and known 
+            symbols.
+
+            Example value:
+                     `false`
+
+            Default: `true`
+
+
 vim:tw=78:sw=2:ts=2:ft=help:norl:et:listchars=

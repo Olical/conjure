@@ -1,0 +1,11 @@
+-- [nfnl] fnl/conjure/client/common-lisp/completions.fnl
+local _local_1_ = require("conjure.nfnl.module")
+local autoload = _local_1_["autoload"]
+local define = _local_1_["define"]
+local tsc = autoload("conjure.tree-sitter-completions")
+local M = define("conjure.client.common-lisp.completions")
+M["get-static-completions"] = function(prefix)
+  local prefix_filter = tsc["make-prefix-filter"](prefix)
+  return prefix_filter(tsc["get-completions-at-cursor"]("commonlisp", "common-lisp"))
+end
+return M

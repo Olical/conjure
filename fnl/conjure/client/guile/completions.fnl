@@ -1,17 +1,13 @@
 (local {: autoload : define} (require :conjure.nfnl.module))
 (local a (autoload :conjure.nfnl.core))
+(local keywords (autoload :conjure.client.scheme.keywords))
+(local util (autoload :conjure.util))
+(local tsc (autoload :conjure.tree-sitter-completions))
+(local res (autoload :conjure.resources))
 
 (local M (define :conjure.client.guile.completions))
 
-(set M.guile-repl-completion-code
- "(use-modules ((ice-9 readline) 
-      #:select (apropos-completion-function)
-      #:prefix %conjure:))
-  (define* (%conjure:get-guile-completions prefix #:optional (continued #f))
-      (let ((suggestion (%conjure:apropos-completion-function prefix continued)))
-        (if (not suggestion)
-          '()
-          (cons suggestion (%conjure:get-guile-completions prefix #t)))))")
+(set M.guile-repl-completion-code (res.get-resource-contents "client/guile/completion.scm"))
 
 (fn M.build-completion-request [prefix]
   (.. "(%conjure:get-guile-completions " (a.pr-str prefix) ")"))
@@ -25,5 +21,13 @@
         last (table.remove cmpls)]
     (table.insert cmpls 1 last)
     cmpls))
+
+(fn M.get-static-completions [prefix]
+  (let [keyword-set (keywords.get-set :guile)
+        ts-completions (tsc.get-completions-at-cursor :scheme :scheme)
+        all-cmpl (a.concat ts-completions keyword-set)
+        distinct-cmpl (util.ordered-distinct all-cmpl)
+        prefix-filter (tsc.make-prefix-filter prefix) ]
+    (prefix-filter distinct-cmpl)))
 
 M

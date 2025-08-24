@@ -9,6 +9,7 @@
 (local text (autoload :conjure.text))
 (local ts (autoload :conjure.tree-sitter))
 (local cmpl (autoload :conjure.client.guile.completions))
+(local util (autoload :conjure.util))
 
 (local M (define :conjure.client.guile.socket))
 
@@ -227,6 +228,8 @@
          :pipename pipename
          :host-port host-port
          :on-success (fn []
+                       (when (completions-enabled?)
+                         (cmpl.get-static-completions))
                        (display-repl-status))
          :on-error (fn [msg repl]
                      (display-result msg)
@@ -258,23 +261,33 @@
     #(M.disconnect)
     {:desc "Disconnect from the REPL"}))
 
+(fn generate-completions [opts]
+   (let [prefix (or (. opts :prefix) "")
+         static-suggestions (cmpl.get-static-completions prefix)]
+     (if (and (connected?) (not (busy?)))
+       (let [code (cmpl.build-completion-request opts.prefix)
+             result-fn 
+             (fn [results]
+               (let [cmpl-list (cmpl.format-results results)
+                     all-cmpl (a.concat static-suggestions cmpl-list)
+                     distinct-cmpl (util.ordered-distinct all-cmpl)]
+                 ;(log.append [(.. "; in completions()'s result-fn, called with: " (a.pr-str results))] )
+                 ;(log.append [(..  "; in completions()'s result-fn, calling opts.cb with " (a.pr-str cmpl-list))])
+                 (opts.cb distinct-cmpl)
+                 ; return the list of completions
+                 ))
+            ]
+         (a.assoc opts :code code)
+         (a.assoc opts :on-result result-fn)
+         (a.assoc opts :passive? true)
+         (M.eval-str opts))
+       (opts.cb static-suggestions))))
+
 (fn M.completions [opts]
   ;(when (not= nil opts)
   ;  (log.append [(.. "; completions() called with: " (a.pr-str opts))] {:break? true}))
-  (if (and (completions-enabled?) (connected?) (not (busy?)))
-    (let [code (cmpl.build-completion-request opts.prefix)
-          result-fn
-          (fn [results]
-            (let [cmpl-list (cmpl.format-results results)]
-              ;(log.append [(.. "; in completions()'s result-fn, called with: " (a.pr-str results))] )
-              ;(log.append [(..  "; in completions()'s result-fn, calling opts.cb with " (a.pr-str cmpl-list))])
-              (opts.cb cmpl-list) ; return the list of completions
-              ))
-          ]
-      (a.assoc opts :code code)
-      (a.assoc opts :on-result result-fn)
-      (a.assoc opts :passive? true)
-      (M.eval-str opts))
+  (if (completions-enabled?)
+    (generate-completions opts)
     (opts.cb [])))
 
 M

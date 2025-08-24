@@ -12,6 +12,7 @@ local str = autoload("conjure.nfnl.string")
 local text = autoload("conjure.text")
 local ts = autoload("conjure.tree-sitter")
 local cmpl = autoload("conjure.client.guile.completions")
+local util = autoload("conjure.util")
 local M = define("conjure.client.guile.socket")
 config.merge({client = {guile = {socket = {pipename = nil, host_port = nil, enable_completions = true}}}})
 if config["get-in"]({"mapping", "enable_defaults"}) then
@@ -252,15 +253,19 @@ M.connect = function(_opts)
     return M["parse-guile-result"](_241, log.append)
   end
   local function _37_()
+    if completions_enabled_3f() then
+      cmpl["get-static-completions"]()
+    else
+    end
     return display_repl_status()
   end
-  local function _38_(msg, repl)
+  local function _39_(msg, repl)
     display_result(msg)
-    local function _39_()
+    local function _40_()
     end
-    return repl.send(",q\n", _39_)
+    return repl.send(",q\n", _40_)
   end
-  return a.assoc(state(), "repl", socket.start({["parse-output"] = _36_, pipename = pipename, ["host-port"] = host_port, ["on-success"] = _37_, ["on-error"] = _38_, ["on-failure"] = M.disconnect, ["on-close"] = M.disconnect, ["on-stray-output"] = display_result}))
+  return a.assoc(state(), "repl", socket.start({["parse-output"] = _36_, pipename = pipename, ["host-port"] = host_port, ["on-success"] = _37_, ["on-error"] = _39_, ["on-failure"] = M.disconnect, ["on-close"] = M.disconnect, ["on-stray-output"] = display_result}))
 end
 local function connected_3f()
   if state("repl") then
@@ -276,28 +281,39 @@ M["on-exit"] = function()
   return M.disconnect()
 end
 M["on-filetype"] = function()
-  local function _41_()
+  local function _42_()
     return M.connect()
   end
-  mapping.buf("GuileConnect", cfg({"mapping", "connect"}), _41_, {desc = "Connect to a REPL"})
-  local function _42_()
+  mapping.buf("GuileConnect", cfg({"mapping", "connect"}), _42_, {desc = "Connect to a REPL"})
+  local function _43_()
     return M.disconnect()
   end
-  return mapping.buf("GuileDisconnect", cfg({"mapping", "disconnect"}), _42_, {desc = "Disconnect from the REPL"})
+  return mapping.buf("GuileDisconnect", cfg({"mapping", "disconnect"}), _43_, {desc = "Disconnect from the REPL"})
 end
-M.completions = function(opts)
-  if (completions_enabled_3f() and connected_3f() and not busy_3f()) then
+local function generate_completions(opts)
+  local prefix = (opts.prefix or "")
+  local static_suggestions = cmpl["get-static-completions"](prefix)
+  if (connected_3f() and not busy_3f()) then
     local code = cmpl["build-completion-request"](opts.prefix)
     local result_fn
-    local function _43_(results)
+    local function _44_(results)
       local cmpl_list = cmpl["format-results"](results)
-      return opts.cb(cmpl_list)
+      local all_cmpl = a.concat(static_suggestions, cmpl_list)
+      local distinct_cmpl = util["ordered-distinct"](all_cmpl)
+      return opts.cb(distinct_cmpl)
     end
-    result_fn = _43_
+    result_fn = _44_
     a.assoc(opts, "code", code)
     a.assoc(opts, "on-result", result_fn)
     a.assoc(opts, "passive?", true)
     return M["eval-str"](opts)
+  else
+    return opts.cb(static_suggestions)
+  end
+end
+M.completions = function(opts)
+  if completions_enabled_3f() then
+    return generate_completions(opts)
   else
     return opts.cb({})
   end

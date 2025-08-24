@@ -21,4 +21,19 @@ local function _5_()
   end
   return it("escapes sequences like <C-o>", _6_)
 end
-return describe("replace-termcodes", _5_)
+describe("replace-termcodes", _5_)
+local function _7_()
+  local function _8_()
+    return assert.same({"a"}, util["ordered-distinct"]({"a"}))
+  end
+  it("[:a] gives [:a]", _8_)
+  local function _9_()
+    return assert.same({"b", "a"}, util["ordered-distinct"]({"b", "b", "a"}))
+  end
+  it("[:b :b :a] gives [:b :a]", _9_)
+  local function _10_()
+    return assert.same({"b", "c", "a"}, util["ordered-distinct"]({"b", "c", "b", "a", "c", "a"}))
+  end
+  return it("[:b :c :b :a :c :a] gives [:b :c :a]", _10_)
+end
+return describe("ordered-distinct", _7_)

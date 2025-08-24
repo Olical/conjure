@@ -1,11 +1,28 @@
 -- [nfnl] fnl/conjure/util.fnl
-local function wrap_require_fn_call(mod, f)
-  local function _1_()
+local _local_1_ = require("conjure.nfnl.module")
+local autoload = _local_1_["autoload"]
+local define = _local_1_["define"]
+local a = autoload("nfnl.core")
+local M = define("conjure.util")
+M["wrap-require-fn-call"] = function(mod, f)
+  local function _2_()
     return require(mod)[f]()
   end
-  return _1_
+  return _2_
 end
-local function replace_termcodes(s)
+M["replace-termcodes"] = function(s)
   return vim.api.nvim_replace_termcodes(s, true, false, true)
 end
-return {["wrap-require-fn-call"] = wrap_require_fn_call, ["replace-termcodes"] = replace_termcodes}
+M["ordered-distinct"] = function(l)
+  local seen = {}
+  local result = {}
+  for _, v in ipairs(l) do
+    if not a.get(seen, v) then
+      a.assoc(seen, v, true)
+      table.insert(result, v)
+    else
+    end
+  end
+  return result
+end
+return M

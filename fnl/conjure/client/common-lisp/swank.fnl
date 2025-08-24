@@ -1,4 +1,4 @@
-(local {: autoload} (require :conjure.nfnl.module))
+(local {: autoload : define} (require :conjure.nfnl.module))
 (local a (autoload :conjure.aniseed.core))
 (local client (autoload :conjure.client))
 (local config (autoload :conjure.config))
@@ -8,10 +8,14 @@
 (local str (autoload :conjure.aniseed.string))
 (local text (autoload :conjure.text))
 (local ts (autoload :conjure.tree-sitter))
+(local cmpl (autoload :conjure.client.common-lisp.completions))
+(local util (autoload :conjure.util))
 
-(local buf-suffix ".lisp")
-(local comment-prefix "; ")
-(local form-node? ts.node-surrounded-by-form-pair-chars?)
+(local M (define :conjure.client.common-lisp.swank))
+
+(set M.buf-suffix ".lisp")
+(set M.comment-prefix "; ")
+(set M.form-node? ts.node-surrounded-by-form-pair-chars?)
 
 (fn iterate-backwards [f lines]
   (for [i (length lines) 1 (- 1)] (local line (. lines i))
@@ -20,7 +24,7 @@
         (lua "return res"))))
   nil)
 
-(fn context [_code]
+(fn M.context [_code]
   (let [[line _col] (vim.api.nvim_win_get_cursor 0)
         lines (vim.api.nvim_buf_get_lines 0 0 line false)]
     (iterate-backwards
@@ -40,7 +44,8 @@
    {:common_lisp
     {:swank
      {:connection {:default_host "127.0.0.1"
-                   :default_port "4005"}}}}})
+                   :default_port "4005"}
+      :enable_completions true}}}})
 
 (when (config.get-in [:mapping :enable_defaults])
   (config.merge
@@ -54,6 +59,9 @@
                   #(do
                      {:conn nil
                       :eval-id 0})))
+
+(fn completions-enabled? []
+  (config.get-in [:client :common_lisp :swank :enable_completions]))
 
 (fn with-conn-or-warn [f opts]
   (let [conn (state :conn)]
@@ -73,7 +81,7 @@
         [(.. "; " conn.host ":" conn.port " (" status ")")]
         {:break? true}))))
 
-(fn disconnect []
+(fn M.disconnect []
   (with-conn-or-warn
     (fn [conn]
       (conn.destroy)
@@ -105,14 +113,14 @@
              "\") \"" (or context "*package*") "\" t " eval-id ")"])
           cb)))))
 
-(fn connect [opts]
+(fn M.connect [opts]
   (log.dbg (.. "connect called with: " (a.pr-str opts)))
   (let [opts (or opts {})
         host (or opts.host (config.get-in [:client :common_lisp :swank :connection :default_host]))
         port (or opts.port (config.get-in [:client :common_lisp :swank :connection :default_port]))]
 
     (when (state :conn)
-      (disconnect))
+      (M.disconnect))
 
     (a.assoc
       (state) :conn
@@ -123,7 +131,7 @@
          :on-failure
          (fn [err]
            (display-conn-status err)
-           (disconnect))
+           (M.disconnect))
 
          :on-success
          (fn []
@@ -133,13 +141,13 @@
          (fn [err]
            (if err
              (display-conn-status err)
-             (disconnect)))}))
+             (M.disconnect)))}))
 
     (send ":ok" (fn [_]))))
 
 (fn try-ensure-conn []
   (when (not (connected?))
-    (connect {:silent? true})))
+    (M.connect {:silent? true})))
 
 (fn string-stream [str]
   "Convert a string into a byte-value iterator"
@@ -151,7 +159,7 @@
 
 (fn display-stdout [msg]
   (when (and (not= nil msg) (not= "" msg))
-    (log.append (text.prefixed-lines msg comment-prefix))))
+    (log.append (text.prefixed-lines msg M.comment-prefix))))
 
 
 (fn inner-results [received]
@@ -231,7 +239,7 @@
   ;;finally return vals
   vals)
 
-(fn parse-result [received]
+(fn M.parse-result [received]
   "Given the form (:return (:ok (\"\" \"(1 2 \\\"3\\\" 4)\")) 1) we want)])
   to extract both
   - the stdout, which is the first delimited quoted component
@@ -253,7 +261,7 @@
   (when (result? received)
     (unpack (parse-separated-list (inner-results received)))))
 
-(fn eval-str [opts]
+(fn M.eval-str [opts]
   (log.dbg (.. "eval-str() called with: " (a.pr-str opts)))
   (try-ensure-conn)
 
@@ -265,7 +273,7 @@
       (when (not (a.empty? opts.context))
         opts.context)
       (fn [msg] ;; handle results from Swank server
-        (let [(stdout result) (parse-result msg)]
+        (let [(stdout result) (M.parse-result msg)]
           (display-stdout stdout)
           (when (not= nil result)
             (when opts.on-result
@@ -274,71 +282,73 @@
             (when (not opts.passive?) ;; log results when not true
               (log.append (text.split-lines result)))))))))
 
-(fn doc-str [opts]
+(fn M.doc-str [opts]
   (try-ensure-conn)
-  (eval-str (a.update opts :code #(.. "(describe '" $1 ")"))))
+  (M.eval-str (a.update opts :code #(.. "(describe '" $1 ")"))))
 
-(fn eval-file [opts]
+(fn M.eval-file [opts]
   (try-ensure-conn)
-  (eval-str
+  (M.eval-str
     (a.assoc opts :code (.. "(load \"" opts.file-path "\")"))))
 
-(fn on-filetype []
+(fn M.on-filetype []
   (mapping.buf
     :CommonLispDisconnect
     (config.get-in [:client :common_lisp :swank :mapping :disconnect])
-    disconnect
+    M.disconnect
     {:desc "Disconnect from the REPL"})
 
   (mapping.buf
     :CommonLispConnect
     (config.get-in [:client :common_lisp :swank :mapping :connect])
-    #(connect {})
+    #(M.connect {})
     {:desc "Connect to a REPL"}))
 
-(fn on-load []
-  (connect {}))
+(fn M.on-load []
+  (when (completions-enabled?) 
+    (cmpl.get-static-completions)) ; initial scan of tree speeds up later queries
+  (M.connect {}))
 
-(fn on-exit []
-  (disconnect))
+(fn M.on-exit []
+  (M.disconnect))
+
+(fn build-completions-code 
+  [prefix context]
+  (.. "(swank:simple-completions " (a.pr-str prefix) " " (a.pr-str context) ")"))
+
+(fn format-for-cmpl
+  [rs]
+  (let [cmpls (parse-separated-list rs)]
+    (table.remove cmpls) ; last result is prefix
+    cmpls))
 
 ;; completions - partially copied from client/fennel/aniseed.fnl.
-(fn completions [opts]
+(fn build-completions [opts]
+ (let [prefix (or (. opts :prefix) "")
+       static-completions (cmpl.get-static-completions prefix)]
+   (if (connected?) 
+     (let [code (build-completions-code opts.prefix opts.context)
+           result-fn
+           (fn [results]
+             (let [parsed-results (format-for-cmpl results)
+                   all-cmpl (a.concat static-completions parsed-results)
+                   cmpl-list (util.ordered-distinct all-cmpl)]
+               ;(log.append [(.. "; in completions()'s result-fn, called with: " (a.pr-str results))] )
+               ;(log.append [(..  "; in completions()'s result-fn, calling opts.cb with " (a.pr-str cmpl-list))])
+               (opts.cb cmpl-list) ; return the list of completions
+               ))
+           ]
+       (a.assoc opts :code code)
+       (a.assoc opts :on-result result-fn)
+       (a.assoc opts :passive? true)
+       (M.eval-str opts))
+     (opts.cb static-completions))))
+
+(fn M.completions [opts]
   ;(when (not= nil opts)
   ;  (log.append [(.. "; completions() called with: " (a.pr-str opts))] {:break? true}))
-  (if (connected?) 
-    (let [code (.. "(swank:simple-completions " (a.pr-str opts.prefix) " " (a.pr-str opts.context) ")")
-          format-for-cmpl
-          (fn [rs]
-            (let [cmpls (parse-separated-list rs)
-                  last (table.remove cmpls)]
-              (table.insert cmpls 1 last)
-              cmpls))
-          result-fn
-          (fn [results]
-            (let [cmpl-list (format-for-cmpl results)]
-              ;(log.append [(.. "; in completions()'s result-fn, called with: " (a.pr-str results))] )
-              ;(log.append [(..  "; in completions()'s result-fn, calling opts.cb with " (a.pr-str cmpl-list))])
-              (opts.cb cmpl-list) ; return the list of completions
-              ))
-          ]
-      (a.assoc opts :code code)
-      (a.assoc opts :on-result result-fn)
-      (a.assoc opts :passive? true)
-      (eval-str opts))
+  (if (completions-enabled?)
+    (build-completions opts)
     (opts.cb [])))
 
-{: buf-suffix
- : comment-prefix
- : form-node?
- : context
- : disconnect
- : connect
- : parse-result
- : eval-str
- : doc-str
- : eval-file
- : on-filetype
- : on-load
- : on-exit
- : completions}
+M

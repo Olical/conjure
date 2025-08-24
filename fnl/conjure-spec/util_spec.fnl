@@ -23,3 +23,19 @@
           (assert.equals
             "hello\015world"
             (util.replace-termcodes "hello<C-o>world"))))))
+
+(describe
+  "ordered-distinct"
+  (fn []
+    (it "[:a] gives [:a]"
+        (fn []
+          (assert.same [:a] (util.ordered-distinct [:a]))))
+
+    (it "[:b :b :a] gives [:b :a]"
+        (fn []
+          (assert.same [:b :a] (util.ordered-distinct [:b :b :a]))))
+
+    (it "[:b :c :b :a :c :a] gives [:b :c :a]"
+        (fn []
+          (assert.same [:b :c :a] (util.ordered-distinct [:b :c :b :a :c :a]))))))
+
