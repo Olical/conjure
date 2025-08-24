@@ -184,7 +184,21 @@
     symbol: _ @_l)]
   . (list_lit
       (list_lit 
-        . (sym_lit) @local.define
+        . (sym_lit) @local.define)
+      @local.scope)
+  (#eq? @_pkg "cl")
+  (#any-of? @_l "flet" "labels" "macrolet"))
+@local.scope
+
+(list_lit
+  . 
+  [(sym_lit) @_l
+   (package_lit
+    package: _ @_pkg
+    symbol: _ @_l)]
+  . (list_lit
+      (list_lit 
+        . (sym_lit)
         . (list_lit (sym_lit) @local.bind)
         (#not-lua-match? @local.bind "^&.*")
         (#not-lua-match? @local.bind "^_$"))
