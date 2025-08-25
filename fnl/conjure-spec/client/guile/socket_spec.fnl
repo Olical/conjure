@@ -99,6 +99,20 @@
                 (guile.parse-guile-result "hi\n$1 = 10\n$2 = 20\n$3 = 30\nscheme@(guile-user)> " capture-stray-output))
               (assert.are.same
                 [["; (out) hi"]]
+                stray-output))))
+        
+        (it "return values with stray output that lacks a new line are parsed correctly"
+          (fn []
+            (let [stray-output []
+                  capture-stray-output (fn [output]
+                                        (table.insert stray-output output))]
+              (assert.are.same
+                {:done? true
+                 :error? false
+                 :result "(values 10 20 30)"}
+                (guile.parse-guile-result "hi$1 = 10\n$2 = 20\n$3 = 30\nscheme@(guile-user)> " capture-stray-output))
+              (assert.are.same
+                [["; (out) hi"]]
                 stray-output))))))
 
     (describe "eval-str" 

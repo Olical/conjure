@@ -206,7 +206,17 @@ M["parse-guile-result"] = function(s, stray_output_fn)
   local prompt = find_prompt(s)
   if prompt then
     local s_no_prompt = s:sub(0, (prompt - 1))
-    local lines = text["split-lines"](s_no_prompt)
+    local lines
+    local function _29_(line)
+      if string.match(line, "^(.-)%s*%$%d+ = .*$") then
+        local before = string.match(line, "^(.-)%s*%$%d+ = .*$")
+        local after = string.match(line, "^.-%s*(%$%d+ = .*)$")
+        return {before, after}
+      else
+        return {line}
+      end
+    end
+    lines = a.mapcat(_29_, text["split-lines"](s_no_prompt))
     local stray_output_lines = {}
     local results = {}
     for _n, line in ipairs(lines) do
@@ -224,15 +234,15 @@ M["parse-guile-result"] = function(s, stray_output_fn)
       stray_output_fn(stray_output_lines)
     else
     end
-    local _32_
+    local _34_
     if (1 == #results) then
-      _32_ = a.first(results)
+      _34_ = a.first(results)
     elseif (#results > 1) then
-      _32_ = ("(values " .. str.join(" ", results) .. ")")
+      _34_ = ("(values " .. str.join(" ", results) .. ")")
     else
-      _32_ = nil
+      _34_ = nil
     end
-    return {["done?"] = true, result = _32_, ["error?"] = false}
+    return {["done?"] = true, result = _34_, ["error?"] = false}
   elseif s:find("scheme@%([%w%-%s]+%) %[%d+%]>") then
     return {["done?"] = true, ["error?"] = true, result = nil}
   else
@@ -245,9 +255,9 @@ M.connect = function(_opts)
   local cfg_host_port = cfg({"host_port"})
   local host_port
   if cfg_host_port then
-    local _let_35_ = vim.split(cfg_host_port, ":")
-    local host = _let_35_[1]
-    local port = _let_35_[2]
+    local _let_37_ = vim.split(cfg_host_port, ":")
+    local host = _let_37_[1]
+    local port = _let_37_[2]
     log.dbg(a.str("client.guile.socket: host=", host))
     log.dbg(a.str("client.guile.socket: port=", port))
     if (not host and not port) then
@@ -268,23 +278,23 @@ M.connect = function(_opts)
   end
   log.dbg(a.str("client.guile.socket: pipename=", pipename))
   log.dbg(a.str("client.guile.socket: host-port=", cfg_host_port))
-  local function _39_(_241)
+  local function _41_(_241)
     return M["parse-guile-result"](_241, log.append)
   end
-  local function _40_()
+  local function _42_()
     if completions_enabled_3f() then
       cmpl["get-static-completions"]()
     else
     end
     return display_repl_status()
   end
-  local function _42_(msg, repl)
+  local function _44_(msg, repl)
     display_result(msg)
-    local function _43_()
+    local function _45_()
     end
-    return repl.send(",q\n", _43_)
+    return repl.send(",q\n", _45_)
   end
-  return a.assoc(state(), "repl", socket.start({["parse-output"] = _39_, pipename = pipename, ["host-port"] = host_port, ["on-success"] = _40_, ["on-error"] = _42_, ["on-failure"] = M.disconnect, ["on-close"] = M.disconnect, ["on-stray-output"] = display_result}))
+  return a.assoc(state(), "repl", socket.start({["parse-output"] = _41_, pipename = pipename, ["host-port"] = host_port, ["on-success"] = _42_, ["on-error"] = _44_, ["on-failure"] = M.disconnect, ["on-close"] = M.disconnect, ["on-stray-output"] = display_result}))
 end
 local function connected_3f()
   if state("repl") then
@@ -300,14 +310,14 @@ M["on-exit"] = function()
   return M.disconnect()
 end
 M["on-filetype"] = function()
-  local function _45_()
+  local function _47_()
     return M.connect()
   end
-  mapping.buf("GuileConnect", cfg({"mapping", "connect"}), _45_, {desc = "Connect to a REPL"})
-  local function _46_()
+  mapping.buf("GuileConnect", cfg({"mapping", "connect"}), _47_, {desc = "Connect to a REPL"})
+  local function _48_()
     return M.disconnect()
   end
-  return mapping.buf("GuileDisconnect", cfg({"mapping", "disconnect"}), _46_, {desc = "Disconnect from the REPL"})
+  return mapping.buf("GuileDisconnect", cfg({"mapping", "disconnect"}), _48_, {desc = "Disconnect from the REPL"})
 end
 local function generate_completions(opts)
   local prefix = (opts.prefix or "")
@@ -315,13 +325,13 @@ local function generate_completions(opts)
   if (connected_3f() and not busy_3f()) then
     local code = cmpl["build-completion-request"](opts.prefix)
     local result_fn
-    local function _47_(results)
+    local function _49_(results)
       local cmpl_list = cmpl["format-results"](results)
       local all_cmpl = a.concat(static_suggestions, cmpl_list)
       local distinct_cmpl = util["ordered-distinct"](all_cmpl)
       return opts.cb(distinct_cmpl)
     end
-    result_fn = _47_
+    result_fn = _49_
     a.assoc(opts, "code", code)
     a.assoc(opts, "on-result", result_fn)
     a.assoc(opts, "passive?", true)

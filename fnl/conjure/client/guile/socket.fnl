@@ -175,9 +175,18 @@
     (if
       prompt
       (let [s-no-prompt (s:sub 0 (- prompt 1))
-            lines (text.split-lines s-no-prompt)
+            lines (->> (text.split-lines s-no-prompt)
+                       (a.mapcat
+                         (fn [line]
+                           ;; If the line ends with a "$x = y" result we split this into two lines.
+                          (if (string.match line "^(.-)%s*%$%d+ = .*$")
+                            (let [before (string.match line "^(.-)%s*%$%d+ = .*$")
+                                  after (string.match line "^.-%s*(%$%d+ = .*)$")]
+                              [before after])
+                            [line]))))
             stray-output-lines []
             results []]
+
         ;; Iterate over the lines of the output.
         ;; A line structured as "$\d+ = (.*)" can be captured as as a member of results.
         ;; Anything else gets appended to stray-output-lines with a "; (out) " prefix.
