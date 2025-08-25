@@ -151,8 +151,10 @@ local function call(fn_name, ...)
   local f = get(fn_name)
   if f then
     return f(...)
-  else
+  elseif current() then
     return error(str.join({"Conjure client '", a.get(current_client_module_name(), "module-name"), "' doesn't support function: ", fn_name}))
+  else
+    return error("No Conjure client configured for the current file type.")
   end
 end
 local function optional_call(fn_name, ...)

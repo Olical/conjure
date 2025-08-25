@@ -108,11 +108,15 @@
   (let [f (get fn-name)]
     (if f
       (f ...)
+
+      (current)
       (error (str.join
                ["Conjure client '"
                 (a.get (current-client-module-name) :module-name)
                 "' doesn't support function: "
-                fn-name])))))
+                fn-name]))
+      
+      (error "No Conjure client configured for the current file type."))))
 
 (fn optional-call [fn-name ...]
   (let [f (get fn-name)]
