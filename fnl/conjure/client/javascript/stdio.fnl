@@ -6,30 +6,17 @@
 (local mapping (autoload :conjure.mapping))
 (local client (autoload :conjure.client))
 (local log (autoload :conjure.log))
-(local text (autoload :conjure.text))
+(local import-replacer (autoload :conjure.client.javascript.import-replacer))
+(local transformers (autoload :conjure.client.javascript.transformers))
+(local rt (autoload :conjure.client.javascript.repl))
 
 (local M (define :conjure.client.javascript.stdio))
 
-(fn filetype [] vim.bo.filetype)
-
-(local repl-type (if (= "javascript" (filetype))
-                     :js 
-                     
-                     (= "typescript" (filetype))
-                     :ts))
-
-(fn get-repl-cmd []
-  (if (= :js repl-type)
-      "node -i"
-
-      (= :ts repl-type)
-      "ts-node -i"))
-
+(rt.update-repl-cmd)
 (config.merge {:client 
                {:javascript 
                 {:stdio 
-                 {:command (get-repl-cmd)
-                  :args "NODE_OPTIONS=\'--experimental-repl-await\'"
+                 {:args "NODE_OPTIONS=\'--experimental-repl-await\'"
                   :prompt-pattern "> "
                   :show_stray_out false}}}})
 
@@ -69,139 +56,10 @@
 (fn display-result [msg]
   (log.append msg))
 
-(fn get-absolute-path [f]
-  (.. "\"" 
-      (vim.fn.fnamemodify (.. (vim.fn.expand "%:p:h") "/" f) ":p") 
-      "\""))
-
-(fn replace-imports-path [s]
-  (if (or (string.find s :import)
-          (string.find s :require))
-      (string.gsub s "[\"\'](.-)[\"\']" 
-                   (fn [m]
-                     (if (text.starts-with m ".")
-                         (get-absolute-path m)
-
-                         (.. "\"" m "\""))))
-      s))
-
-;; replacement fn for "import {mod1 as m1, mod2 as m2 ...} from ...", "import {mod1, mod2} from ..."
-(fn replace-curly-import [s]
-  (let [pattern "import%s+%{(.-)%}%s+from%s+[\"'](.-)[\"']" 
-        replace-fn (fn [bd path]
-                     (let [spl (str.split bd ",")
-                           spl->nms (->> 
-                                      spl 
-                                      (a.map (fn [el] (el:gsub "as" ":")))
-                                      (str.join ", "))]
-
-                       (.. "const {" spl->nms "} = require(\"" path "\")")))
-        (repl _) (string.gsub s pattern replace-fn)]
-    repl))
-
-(local patterns-replacements
-       [;; import * as `something` from "module"
-        ["^%s*import%s+%*%s+as%s+([^%s]+)%s+from%s+([\"'])(.-)%2%s*"
-         "const %1 = require(\"%3\")"]
-        ;; import mod from "module"
-        ["^%s*import%s+([^%s{]+)%s+from%s+([\"'])(.-)%2%s*"
-         "const %1 = require(\"%3\")"]
-        ;; import defaultExport, { export1 } from "module-name"; 
-        ["^%s*import%s+([^%s{,]+)%s*,%s*%{([^}]+)%}%s+from%s+([\"'])(.-)%3%s*"
-         "const { default: %1, %2 } = require(\"%4\")"]
-        ["^%s*import%s+([\"'])(.-)%1%s*" "require(\"%2\");"]])
-
-(fn replace-imports-regex [s]
-  (let [initial-acc {:applied? false :result s}
-        final-acc (a.reduce 
-                    (fn [acc [pat repl]]
-                      (if acc.applied?
-                          acc
-                          (let [(r c) (string.gsub acc.result pat repl)]
-                            (if (> c 0)
-                                {:applied? true :result r}
-                                acc))))
-                    initial-acc patterns-replacements)]
-    final-acc.result))
-
-;; To avoid Node.js REPL complaints, imports are automatically converted for the user.
-;; See https://github.com/nodejs/node/issues/48084
-(fn replace-imports [s]
-  (if (and (text.starts-with s :import)
-           (not (text.starts-with s "import type")))
-      (-> s
-          replace-curly-import
-          replace-imports-regex)
-      s))
-
-(fn is-arrow-fn? [code]
-  (when (or (text.starts-with code "let")
-            (text.starts-with code "const"))
-    (let [pat (if (string.find code "async")
-                  ".*=%s*async%s+%(.*%)%s*:+.*=>"
-                  ".*=%s*%(.*%)%s*:?.*=>")]
-      (if (string.match code pat)
-          true 
-          false))))
-
-;; Before sending code to the REPL, all comments must be removed
-(fn remove-comments [s]
-  (let [(sub _) (-> s  
-                    (string.gsub "%/%/.-\n" "")
-                    (string.gsub "%/%*.-%*%/" "")
-                    (string.gsub "^%/%/.*" "")
-                    (string.gsub "^%/.*" "")
-                    (string.gsub "^%s*%*.*" "")
-                    (string.gsub "^%s*%/%*+.*" ""))]
-    sub))
-
-;; Arrow functions are automatically transformed into standard functions, 
-;; allowing them to be redefined in the Node.js REPL.
-(fn replace-arrows [s]
-  (if (not (is-arrow-fn? s)) s
-      (let [decl (if (text.starts-with s :const) "const" 
-                     (text.starts-with s :let) "let")
-            pattern (.. decl "%s*([%w_]+)%s*=%s*(.-)%((.-)%)%s*(.-)%s*=>%s*(.*)")
-            replace-fn (fn [name before-args args after-args body]
-                         (let [async-kw (if (before-args:find :async) "async " "")
-                               final-body (if (body:find "^%s*%{")
-                                              (.. " " body)
-                                              (.. " { return " body " }"))]
-                           (.. async-kw "function " name "(" args ")" after-args final-body)))
-            (replace _) (s:gsub pattern replace-fn)]
-        replace)))
-
-;; For better user experience, in some scenarios semicolons must be automatically appended 
-(fn add-semicolon [s]
-  (let [spl (str.split s "\n")
-        sub-fn (fn [ln]
-                 (if (or (text.starts-with ln :.)
-                         (string.match ln "%s*@")
-                         (text.ends-with ln "{")
-                         (text.ends-with ln ";")
-                         (str.blank? ln))
-                     ln
-                     (.. ln ";")))
-        sub (a.map sub-fn spl)]
-    (str.join " " sub)))
-
-(fn manage-semicolons [s]
-  (if (or 
-        (text.starts-with s "function")
-        (text.starts-with s "namespace")
-        (text.starts-with s "class")
-        (text.starts-with s "@"))
-      (add-semicolon s)
-      s))
+(fn tap> [s] (log.append ["TAP>>" (a.pr-str s)]) s)
 
 (fn prep-code-expr [e]
-  (-> e
-      remove-comments
-      (string.gsub "%s+%." "%.")
-      replace-imports-path
-      replace-imports
-      replace-arrows
-      manage-semicolons))
+  (-> e import-replacer.replace-imports transformers.transform))
 
 (fn prep-code-file [f]
   (->> (str.split f "\n")
@@ -238,13 +96,6 @@
        (a.map prepare-out)
        (str.join "")))
 
-(fn delete-file [f]
-  (let [cmd (if (= 0 (vim.fn.has "macunix"))
-                "del"
-                "rm")]
-    (when (= 1 (vim.fn.filereadable f))
-      (os.execute (.. cmd " " f)))))
-
 (fn stray-out []
   (config.merge {:client 
                  {:javascript 
@@ -254,6 +105,7 @@
 
 (fn restart []
   (M.stop)
+  (rt.update-repl-cmd)
   (M.start))
 
 (fn M.eval-str [opts]
@@ -274,13 +126,13 @@
             tmp_name (.. opts.file-path "_tmp")
             _tmp (a.spit tmp_name c)]
         (log.dbg ["EVAL TEMP FILE: " tmp_name])
-        (repl.send (.. ".load " tmp_name "\n"))
-        (fn [msgs]
-          (let [msgs (-> msgs M.unbatch M.format-msg)]
-            (display-result msgs)
-            (when opts.on-result
-              (opts.on-result (str.join " " msgs)))))
-        (delete-file tmp_name)))))
+        (repl.send (.. ".load " tmp_name "\n")
+                   (fn [msgs]
+                     (let [msgs (-> msgs M.unbatch M.format-msg)]
+                       (display-result msgs)
+                       (when opts.on-result
+                         (opts.on-result (str.join " " msgs)))
+                       (vim.fs.rm tmp_name))))))))
 
 (fn display-repl-status [status]
   (let [repl (state :repl)]
