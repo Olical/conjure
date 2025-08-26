@@ -1,11 +1,10 @@
 -- [nfnl] fnl/conjure/client/janet/stdio.fnl
 local _local_1_ = require("conjure.nfnl.module")
 local autoload = _local_1_["autoload"]
-local a = autoload("conjure.aniseed.core")
-local str = autoload("conjure.aniseed.string")
+local core = autoload("conjure.nfnl.core")
+local str = autoload("conjure.nfnl.string")
 local stdio = autoload("conjure.remote.stdio")
 local config = autoload("conjure.config")
-local text = autoload("conjure.text")
 local mapping = autoload("conjure.mapping")
 local client = autoload("conjure.client")
 local log = autoload("conjure.log")
@@ -30,15 +29,15 @@ local function with_repl_or_warn(f, opts)
 end
 local function unbatch(msgs)
   local function _4_(_241)
-    return (a.get(_241, "out") or a.get(_241, "err"))
+    return (core.get(_241, "out") or core.get(_241, "err"))
   end
-  return {out = str.join("", a.map(_4_, msgs))}
+  return {out = str.join("", core.map(_4_, msgs))}
 end
 local function format_message(msg)
   local function _5_(_241)
     return ("" ~= _241)
   end
-  return a.filter(_5_, str.split(msg.out, "\n"))
+  return core.filter(_5_, str.split(msg.out, "\n"))
 end
 local function prep_code(s)
   return (s .. "\n")
@@ -48,7 +47,7 @@ local function eval_str(opts)
     local function _7_(msgs)
       local lines = format_message(unbatch(msgs))
       if opts["on-result"] then
-        opts["on-result"](a.last(lines))
+        opts["on-result"](core.last(lines))
       else
       end
       return log.append(lines)
@@ -58,18 +57,18 @@ local function eval_str(opts)
   return with_repl_or_warn(_6_)
 end
 local function eval_file(opts)
-  return eval_str(a.assoc(opts, "code", a.slurp(opts["file-path"])))
+  return eval_str(core.assoc(opts, "code", core.slurp(opts["file-path"])))
 end
 local function doc_str(opts)
   local function _9_(_241)
     return ("(doc " .. _241 .. ")")
   end
-  return eval_str(a.update(opts, "code", _9_))
+  return eval_str(core.update(opts, "code", _9_))
 end
 local function display_repl_status(status)
   local repl = state("repl")
   if repl then
-    return log.append({(comment_prefix .. a["pr-str"](a["get-in"](repl, {"opts", "cmd"})) .. " (" .. status .. ")")}, {["break?"] = true})
+    return log.append({(comment_prefix .. core["pr-str"](core["get-in"](repl, {"opts", "cmd"})) .. " (" .. status .. ")")}, {["break?"] = true})
   else
     return nil
   end
@@ -79,7 +78,7 @@ local function stop()
   if repl then
     repl.destroy()
     display_repl_status("stopped")
-    return a.assoc(state(), "repl", nil)
+    return core.assoc(state(), "repl", nil)
   else
     return nil
   end
@@ -108,7 +107,7 @@ local function start()
     local function _17_(msg)
       return log.append(format_message(msg))
     end
-    return a.assoc(state(), "repl", stdio.start({["prompt-pattern"] = cfg({"prompt_pattern"}), cmd = cfg({"command"}), ["on-success"] = _12_, ["on-error"] = _13_, ["on-exit"] = _14_, ["on-stray-output"] = _17_}))
+    return core.assoc(state(), "repl", stdio.start({["prompt-pattern"] = cfg({"prompt_pattern"}), cmd = cfg({"command"}), ["on-success"] = _12_, ["on-error"] = _13_, ["on-exit"] = _14_, ["on-stray-output"] = _17_}))
   end
 end
 local function on_load()

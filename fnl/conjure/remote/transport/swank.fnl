@@ -1,9 +1,8 @@
 (local {: autoload} (require :conjure.nfnl.module))
-(local a (autoload :conjure.aniseed.core))
-(local log (autoload :conjure.log))
+(local core (autoload :conjure.nfnl.core))
 
 (fn encode [msg]
-  (let [n (a.count msg)
+  (let [n (core.count msg)
         header (string.format "%06x" (+ 1 n))] ; Additional 1 for trailing newline
     (.. header msg "\n")))
 

@@ -2,8 +2,8 @@
 local _local_1_ = require("conjure.nfnl.module")
 local autoload = _local_1_["autoload"]
 local define = _local_1_["define"]
-local a = autoload("conjure.aniseed.core")
-local str = autoload("conjure.aniseed.string")
+local core = autoload("conjure.nfnl.core")
+local str = autoload("conjure.nfnl.string")
 local stdio = autoload("conjure.remote.stdio")
 local config = autoload("conjure.config")
 local text = autoload("conjure.text")
@@ -27,8 +27,8 @@ state = client["new-state"](_3_)
 M["buf-suffix"] = ".py"
 M["comment-prefix"] = "# "
 M["form-node?"] = function(node)
-  log.dbg(("M.form-node?: node:type = " .. a["pr-str"](node:type())))
-  log.dbg(("M.form-node?: node:parent = " .. a["pr-str"](node:parent())))
+  log.dbg(("M.form-node?: node:type = " .. core["pr-str"](node:type())))
+  log.dbg(("M.form-node?: node:parent = " .. core["pr-str"](node:parent())))
   local parent = node:parent()
   if ("expression_statement" == node:type()) then
     return true
@@ -74,7 +74,7 @@ end
 M["str-is-python-expr?"] = function(s)
   local parser = vim.treesitter.get_string_parser(s, "python")
   local result = parser:parse()
-  local tree = a.get(result, 1)
+  local tree = core.get(result, 1)
   local root = tree:root()
   return ((1 == root:child_count()) and M["is-expression?"](root:child(0)))
 end
@@ -100,17 +100,17 @@ M["format-msg"] = function(msg)
   local function _10_(_241)
     return ("" ~= _241)
   end
-  return a.filter(_9_, a.filter(_10_, text["split-lines"](msg)))
+  return core.filter(_9_, core.filter(_10_, text["split-lines"](msg)))
 end
 local function get_console_output_msgs(msgs)
   local function _11_(_241)
     return (M["comment-prefix"] .. "(out) " .. _241)
   end
-  return a.map(_11_, a.butlast(msgs))
+  return core.map(_11_, core.butlast(msgs))
 end
 local function get_expression_result(msgs)
-  local result = a.last(msgs)
-  if (a["nil?"](result) or is_dots_3f(result)) then
+  local result = core.last(msgs)
+  if (core["nil?"](result) or is_dots_3f(result)) then
     return nil
   else
     return result
@@ -118,15 +118,15 @@ local function get_expression_result(msgs)
 end
 M.unbatch = function(msgs)
   local function _13_(_241)
-    return (a.get(_241, "out") or a.get(_241, "err"))
+    return (core.get(_241, "out") or core.get(_241, "err"))
   end
-  return str.join("", a.map(_13_, msgs))
+  return str.join("", core.map(_13_, msgs))
 end
 local function log_repl_output(msgs)
   local msgs0 = M["format-msg"](M.unbatch(msgs))
   local console_output_msgs = get_console_output_msgs(msgs0)
   local cmd_result = get_expression_result(msgs0)
-  if not a["empty?"](console_output_msgs) then
+  if not core["empty?"](console_output_msgs) then
     log.append(console_output_msgs)
   else
   end
@@ -137,7 +137,7 @@ local function log_repl_output(msgs)
   end
 end
 M["eval-str"] = function(opts)
-  log.dbg(("M.eval-str opts >> " .. a["pr-str"](opts) .. "<<"))
+  log.dbg(("M.eval-str opts >> " .. core["pr-str"](opts) .. "<<"))
   local function _16_(repl)
     local function _17_(msgs)
       log_repl_output(msgs)
@@ -154,14 +154,14 @@ M["eval-str"] = function(opts)
   return with_repl_or_warn(_16_)
 end
 M["eval-file"] = function(opts)
-  return M["eval-str"](a.assoc(opts, "code", a.slurp(opts["file-path"])))
+  return M["eval-str"](core.assoc(opts, "code", core.slurp(opts["file-path"])))
 end
 M["get-help"] = function(code)
   return str.join("", {"help(", str.trim(code), ")"})
 end
 M["doc-str"] = function(opts)
   if M["str-is-python-expr?"](opts.code) then
-    return M["eval-str"](a.assoc(opts, "code", M["get-help"](opts.code)))
+    return M["eval-str"](core.assoc(opts, "code", M["get-help"](opts.code)))
   else
     return nil
   end
@@ -174,7 +174,7 @@ M.stop = function()
   if repl then
     repl.destroy()
     display_repl_status("stopped")
-    return a.assoc(state(), "repl", nil)
+    return core.assoc(state(), "repl", nil)
   else
     return nil
   end
@@ -217,7 +217,7 @@ M.start = function()
       local function _29_(msg)
         return log.dbg(M["format-msg"](M.unbatch({msg})), {["join-first?"] = true})
       end
-      return a.assoc(state(), "repl", stdio.start({["prompt-pattern"] = cfg({"prompt-pattern"}), cmd = cfg({"command"}), ["delay-stderr-ms"] = cfg({"delay-stderr-ms"}), ["on-success"] = _22_, ["on-error"] = _25_, ["on-exit"] = _26_, ["on-stray-output"] = _29_}))
+      return core.assoc(state(), "repl", stdio.start({["prompt-pattern"] = cfg({"prompt-pattern"}), cmd = cfg({"command"}), ["delay-stderr-ms"] = cfg({"delay-stderr-ms"}), ["on-success"] = _22_, ["on-error"] = _25_, ["on-exit"] = _26_, ["on-stray-output"] = _29_}))
     end
   end
 end

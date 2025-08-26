@@ -1,13 +1,13 @@
 -- [nfnl] fnl/conjure/client/rust/evcxr.fnl
 local _local_1_ = require("conjure.nfnl.module")
 local autoload = _local_1_["autoload"]
-local a = autoload("conjure.aniseed.core")
+local core = autoload("conjure.nfnl.core")
 local client = autoload("conjure.client")
 local config = autoload("conjure.config")
 local log = autoload("conjure.log")
 local mapping = autoload("conjure.mapping")
 local stdio = autoload("conjure.remote.stdio")
-local str = autoload("conjure.aniseed.string")
+local str = autoload("conjure.nfnl.string")
 local buf_suffix = ".rs"
 local comment_prefix = "// "
 config.merge({client = {rust = {evcxr = {command = "evcxr", prompt_pattern = ">> "}}}})
@@ -48,7 +48,7 @@ end
 local function display_repl_status(status)
   local repl = state("repl")
   if repl then
-    return log.append({(comment_prefix .. a["pr-str"](a["get-in"](repl, {"opts", "cmd"})) .. " (" .. status .. ")")}, {["break?"] = true})
+    return log.append({(comment_prefix .. core["pr-str"](core["get-in"](repl, {"opts", "cmd"})) .. " (" .. status .. ")")}, {["break?"] = true})
   else
     return log.append({status})
   end
@@ -57,7 +57,7 @@ local function display_result(msg)
   local function _7_(_241)
     return (comment_prefix .. _241)
   end
-  return log.append(a.map(_7_, msg))
+  return log.append(core.map(_7_, msg))
 end
 local function format_msg(msg)
   local function _8_(_241)
@@ -66,13 +66,13 @@ local function format_msg(msg)
   local function _9_(_241)
     return not ("" == _241)
   end
-  return a.filter(_8_, a.filter(_9_, str.split(msg, "\n")))
+  return core.filter(_8_, core.filter(_9_, str.split(msg, "\n")))
 end
 local function unbatch(msgs)
   local function _10_(_241)
-    return (a.get(_241, "out") or a.get(_241, "err"))
+    return (core.get(_241, "out") or core.get(_241, "err"))
   end
-  return str.join("", a.map(_10_, msgs))
+  return str.join("", core.map(_10_, msgs))
 end
 local function prep_code(s)
   return (s .. "\n")
@@ -82,7 +82,7 @@ local function stop()
   if repl then
     repl.destroy()
     display_repl_status("stopped")
-    return a.assoc(state(), "repl", nil)
+    return core.assoc(state(), "repl", nil)
   else
     return nil
   end
@@ -119,7 +119,7 @@ local function start()
     local function _19_(msg)
       return display_result(format_msg(unbatch({msg})), {["join-first?"] = true})
     end
-    return a.assoc(state(), "repl", stdio.start({["prompt-pattern"] = cfg({"prompt_pattern"}), cmd = cfg({"command"}), ["on-success"] = _12_, ["on-error"] = _15_, ["on-exit"] = _16_, ["on-stray-output"] = _19_}))
+    return core.assoc(state(), "repl", stdio.start({["prompt-pattern"] = cfg({"prompt_pattern"}), cmd = cfg({"command"}), ["on-success"] = _12_, ["on-error"] = _15_, ["on-exit"] = _16_, ["on-stray-output"] = _19_}))
   end
 end
 local function on_load()
@@ -131,7 +131,7 @@ end
 local function interrupt()
   local function _21_(repl)
     log.append({(comment_prefix .. " Sending interrupt signal.")}, {["break?"] = true})
-    return repl["send-signal"](vim.uv.constants.SIGINT)
+    return repl["send-signal"]("sigint")
   end
   return with_repl_or_warn(_21_)
 end
@@ -151,7 +151,7 @@ local function eval_str(opts)
   return with_repl_or_warn(_22_)
 end
 local function eval_file(opts)
-  return eval_str(a.assoc(opts, "code", a.slurp(opts["file-path"])))
+  return eval_str(core.assoc(opts, "code", core.slurp(opts["file-path"])))
 end
 local function on_filetype()
   mapping.buf("RustStart", cfg({"mapping", "start"}), start, {desc = "Start the Rust REPL"})

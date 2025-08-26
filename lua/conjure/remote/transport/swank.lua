@@ -1,10 +1,9 @@
 -- [nfnl] fnl/conjure/remote/transport/swank.fnl
 local _local_1_ = require("conjure.nfnl.module")
 local autoload = _local_1_["autoload"]
-local a = autoload("conjure.aniseed.core")
-local log = autoload("conjure.log")
+local core = autoload("conjure.nfnl.core")
 local function encode(msg)
-  local n = a.count(msg)
+  local n = core.count(msg)
   local header = string.format("%06x", (1 + n))
   return (header .. msg .. "\n")
 end

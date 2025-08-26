@@ -1,9 +1,9 @@
 -- [nfnl] fnl/conjure/client/hy/stdio.fnl
 local _local_1_ = require("conjure.nfnl.module")
 local autoload = _local_1_["autoload"]
-local a = autoload("conjure.aniseed.core")
+local core = autoload("conjure.nfnl.core")
 local extract = autoload("conjure.extract")
-local str = autoload("conjure.aniseed.string")
+local str = autoload("conjure.nfnl.string")
 local stdio = autoload("conjure.remote.stdio")
 local config = autoload("conjure.config")
 local text = autoload("conjure.text")
@@ -52,7 +52,7 @@ local function display_result(msg)
   local function _9_(_241)
     return ("" ~= _241)
   end
-  return log.append(a.map(_8_, a.filter(_9_, str.split((msg.err or msg.out), "\n"))))
+  return log.append(core.map(_8_, core.filter(_9_, str.split((msg.err or msg.out), "\n"))))
 end
 local function prep_code(s)
   return (s .. "\n")
@@ -66,8 +66,8 @@ local function eval_str(opts)
       local function _12_(_241)
         return not ("" == _241)
       end
-      msgs = a.filter(_12_, str.split((msg.err or msg.out), "\n"))
-      last_value = (a.last(msgs) or last_value)
+      msgs = core.filter(_12_, str.split((msg.err or msg.out), "\n"))
+      last_value = (core.last(msgs) or last_value)
       display_result(msg)
       if msg["done?"] then
         log.append({""})
@@ -113,7 +113,7 @@ end
 local function display_repl_status(status)
   local repl = state("repl")
   if repl then
-    return log.append({(comment_prefix .. a["pr-str"](a["get-in"](repl, {"opts", "cmd"})) .. " (" .. status .. ")")}, {["break?"] = true})
+    return log.append({(comment_prefix .. core["pr-str"](core["get-in"](repl, {"opts", "cmd"})) .. " (" .. status .. ")")}, {["break?"] = true})
   else
     return nil
   end
@@ -123,7 +123,7 @@ local function stop()
   if repl then
     repl.destroy()
     display_repl_status("stopped")
-    return a.assoc(state(), "repl", nil)
+    return core.assoc(state(), "repl", nil)
   else
     return nil
   end
@@ -156,7 +156,7 @@ local function start()
     local function _28_(msg)
       return display_result(msg)
     end
-    return a.assoc(state(), "repl", stdio.start({["prompt-pattern"] = cfg({"prompt_pattern"}), cmd = cfg({"command"}), ["on-success"] = _22_, ["on-error"] = _24_, ["on-exit"] = _25_, ["on-stray-output"] = _28_}))
+    return core.assoc(state(), "repl", stdio.start({["prompt-pattern"] = cfg({"prompt_pattern"}), cmd = cfg({"command"}), ["on-success"] = _22_, ["on-error"] = _24_, ["on-exit"] = _25_, ["on-stray-output"] = _28_}))
   end
 end
 local function on_load()

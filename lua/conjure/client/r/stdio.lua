@@ -1,8 +1,8 @@
 -- [nfnl] fnl/conjure/client/r/stdio.fnl
 local _local_1_ = require("conjure.nfnl.module")
 local autoload = _local_1_["autoload"]
-local a = autoload("conjure.aniseed.core")
-local str = autoload("conjure.aniseed.string")
+local core = autoload("conjure.nfnl.core")
+local str = autoload("conjure.nfnl.string")
 local stdio = autoload("conjure.remote.stdio")
 local config = autoload("conjure.config")
 local mapping = autoload("conjure.mapping")
@@ -33,9 +33,9 @@ local function with_repl_or_warn(f, _)
 end
 local function unbatch(msgs)
   local function _5_(_241)
-    return (a.get(_241, "out") or a.get(_241, "err"))
+    return (core.get(_241, "out") or core.get(_241, "err"))
   end
-  return {out = str.join("", a.map(_5_, msgs))}
+  return {out = str.join("", core.map(_5_, msgs))}
 end
 local function format_msg(msg)
   local function _6_(_241)
@@ -50,13 +50,13 @@ local function format_msg(msg)
       return (comment_prefix .. "(out) " .. line)
     end
   end
-  return a.filter(_6_, a.map(_7_, str.split(a.get(msg, "out"), "\n")))
+  return core.filter(_6_, core.map(_7_, str.split(core.get(msg, "out"), "\n")))
 end
 local function eval_str(opts)
   local function _9_(repl)
     local function _10_(msgs)
       local msgs0 = format_msg(unbatch(msgs))
-      opts["on-result"](a.last(msgs0))
+      opts["on-result"](core.last(msgs0))
       return log.append(msgs0)
     end
     return repl.send((opts.code .. "\n"), _10_, {["batch?"] = true})
@@ -64,7 +64,7 @@ local function eval_str(opts)
   return with_repl_or_warn(_9_)
 end
 local function eval_file(opts)
-  return eval_str(a.assoc(opts, "code", ("(load \"" .. opts["file-path"] .. "\")")))
+  return eval_str(core.assoc(opts, "code", ("(load \"" .. opts["file-path"] .. "\")")))
 end
 local function display_repl_status(status)
   return log.append({(comment_prefix .. cfg({"command"}) .. " (" .. (status or "no status") .. ")")}, {["break?"] = true})
@@ -74,7 +74,7 @@ local function stop()
   if repl then
     repl.destroy()
     display_repl_status("stopped")
-    return a.assoc(state(), "repl", nil)
+    return core.assoc(state(), "repl", nil)
   else
     return nil
   end
@@ -103,7 +103,7 @@ local function start()
     local function _17_(msg)
       return log.append(format_msg(msg))
     end
-    return a.assoc(state(), "repl", stdio.start({["prompt-pattern"] = cfg({"prompt_pattern"}), cmd = cfg({"command"}), ["on-success"] = _12_, ["on-error"] = _13_, ["on-exit"] = _14_, ["on-stray-output"] = _17_}))
+    return core.assoc(state(), "repl", stdio.start({["prompt-pattern"] = cfg({"prompt_pattern"}), cmd = cfg({"command"}), ["on-success"] = _12_, ["on-error"] = _13_, ["on-exit"] = _14_, ["on-stray-output"] = _17_}))
   end
 end
 local function interrupt()

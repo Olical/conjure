@@ -1,6 +1,6 @@
 (local {: autoload} (require :conjure.nfnl.module))
-(local a (autoload :conjure.aniseed.core))
-(local str (autoload :conjure.aniseed.string))
+(local core (autoload :conjure.nfnl.core))
+(local str (autoload :conjure.nfnl.string))
 (local stdio (autoload :conjure.remote.stdio))
 (local config (autoload :conjure.config))
 (local mapping (autoload :conjure.mapping))
@@ -39,16 +39,16 @@
 
 (fn unbatch [msgs]
   {:out (->> msgs
-          (a.map #(or (a.get $1 :out) (a.get $1 :err)))
+          (core.map #(or (core.get $1 :out) (core.get $1 :err)))
           (str.join ""))})
 
 (fn format-msg [msg]
   (->> (-> msg
-           (a.get :out)
+           (core.get :out)
            ; (string.gsub "^%s*" "")
            ; (string.gsub "%s+%d+%s*$" "")
            (str.split "\n"))
-       (a.map
+       (core.map
          (fn [line]
            (if
              (not (cfg [:value_prefix_pattern]))
@@ -58,7 +58,7 @@
              (string.gsub line (cfg [:value_prefix_pattern]) "")
 
              (.. comment-prefix "(out) " line))))
-       (a.filter #(not (str.blank? $1)))))
+       (core.filter #(not (str.blank? $1)))))
 
 (fn eval-str [opts]
   (with-repl-or-warn
@@ -67,12 +67,12 @@
         (.. opts.code "\n")
         (fn [msgs]
           (let [msgs (-> msgs unbatch format-msg)]
-            (opts.on-result (a.last msgs))
+            (opts.on-result (core.last msgs))
             (log.append msgs)))
         {:batch? true}))))
 
 (fn eval-file [opts]
-  (eval-str (a.assoc opts :code (.. "(load \"" opts.file-path "\")"))))
+  (eval-str (core.assoc opts :code (.. "(load \"" opts.file-path "\")"))))
 
 (fn display-repl-status [status]
   (log.append
@@ -86,7 +86,7 @@
     (when repl
       (repl.destroy)
       (display-repl-status :stopped)
-      (a.assoc (state) :repl nil))))
+      (core.assoc (state) :repl nil))))
 
 (fn start []
   (if (state :repl)
@@ -95,7 +95,7 @@
                      (config.get-in [:mapping :prefix])
                      (cfg [:mapping :stop]))]
                 {:break? true})
-    (a.assoc
+    (core.assoc
       (state) :repl
       (stdio.start
         {:prompt-pattern (cfg [:prompt_pattern])

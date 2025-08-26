@@ -1,5 +1,5 @@
 (local {: autoload} (require :conjure.nfnl.module))
-(local a (autoload :conjure.aniseed.core))
+(local core (autoload :conjure.nfnl.core))
 (local client (autoload :conjure.client))
 (local config (autoload :conjure.config))
 (local log (autoload :conjure.log))
@@ -53,7 +53,7 @@
     (fn [conn]
       (conn.destroy)
       (display-conn-status :disconnected)
-      (a.assoc (state) :conn nil))))
+      (core.assoc (state) :conn nil))))
 
 (fn send [opts]
   (let [{: msg : cb : row : col : file-path} opts]
@@ -87,7 +87,7 @@
 
          :on-success
          (fn []
-           (a.assoc (state) :conn conn)
+           (core.assoc (state) :conn conn)
            (display-conn-status :connected))
 
          :on-error
@@ -112,18 +112,18 @@
                (opts.on-result (text.strip-ansi-escape-sequences clean)))
              (when (not opts.passive?)
                (log.append (text.split-lines clean)))))
-     :row (a.get-in opts.range [:start 1] 1)
-     :col (a.get-in opts.range [:start 2] 1)
+     :row (core.get-in opts.range [:start 1] 1)
+     :col (core.get-in opts.range [:start 2] 1)
      :file-path opts.file-path}))
 
 (fn doc-str [opts]
   (try-ensure-conn)
-  (eval-str (a.update opts :code #(.. "(doc " $1 ")"))))
+  (eval-str (core.update opts :code #(.. "(doc " $1 ")"))))
 
 (fn eval-file [opts]
   (try-ensure-conn)
   (eval-str
-    (a.assoc opts :code (.. "(do (dofile \"" opts.file-path
+    (core.assoc opts :code (.. "(do (dofile \"" opts.file-path
                             "\" :env (fiber/getenv (fiber/current))) nil)"))))
 
 (fn on-filetype []

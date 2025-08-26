@@ -1,6 +1,6 @@
 (local {: autoload : define} (require :conjure.nfnl.module))
-(local a (autoload :conjure.aniseed.core))
-(local str (autoload :conjure.aniseed.string))
+(local core (autoload :conjure.nfnl.core))
+(local str (autoload :conjure.nfnl.string))
 (local stdio (autoload :conjure.remote.stdio))
 (local config (autoload :conjure.config))
 (local text (autoload :conjure.text))
@@ -39,8 +39,8 @@
 ; "current form" and not be surprised that it wasn't what you thought.
 (fn M.form-node? [node]
   ;; These debug messages will appear in the log buffer before the eval messages.
-  (log.dbg (.. "M.form-node?: node:type = " (a.pr-str (node:type))))
-  (log.dbg (.. "M.form-node?: node:parent = " (a.pr-str (node:parent))))
+  (log.dbg (.. "M.form-node?: node:type = " (core.pr-str (node:type))))
+  (log.dbg (.. "M.form-node?: node:parent = " (core.pr-str (node:parent))))
   (let [parent (node:parent)]
     (if (= "expression_statement" (node:type)) true
         (= "import_statement" (node:type)) true
@@ -111,7 +111,7 @@
   [s]
   (let [parser (vim.treesitter.get_string_parser s "python")
         result (parser:parse)
-        tree (a.get result 1)
+        tree (core.get result 1)
         root (tree:root)]
     (and (= 1 (root:child_count))
          (M.is-expression? (root:child 0)))))
@@ -140,36 +140,36 @@
 (fn M.format-msg [msg]
   (log.dbg (.. "M.format-msg: >> " msg "<<"))
   (->> (text.split-lines msg)
-       (a.filter #(~= "" $1))
-       (a.filter #(not (is-dots? $1)))))
+       (core.filter #(~= "" $1))
+       (core.filter #(not (is-dots? $1)))))
 
 (fn get-console-output-msgs [msgs]
-  (->> (a.butlast msgs)
-       (a.map #(.. M.comment-prefix "(out) " $1))))
+  (->> (core.butlast msgs)
+       (core.map #(.. M.comment-prefix "(out) " $1))))
 
 (fn get-expression-result [msgs]
-  (let [result (a.last msgs)]
+  (let [result (core.last msgs)]
     (if
-      (or (a.nil? result) (is-dots? result))
+      (or (core.nil? result) (is-dots? result))
       nil
       result)))
 
 (fn M.unbatch [msgs]
   (->> msgs
-       (a.map #(or (a.get $1 :out) (a.get $1 :err)))
+       (core.map #(or (core.get $1 :out) (core.get $1 :err)))
        (str.join "")))
 
 (fn log-repl-output [msgs]
   (let [msgs (-> msgs M.unbatch M.format-msg)
         console-output-msgs (get-console-output-msgs msgs)
         cmd-result (get-expression-result msgs)]
-    (when (not (a.empty? console-output-msgs))
+    (when (not (core.empty? console-output-msgs))
       (log.append console-output-msgs))
     (when cmd-result
       (log.append [cmd-result]))))
 
 (fn M.eval-str [opts]
-  (log.dbg (.. "M.eval-str opts >> " (a.pr-str opts) "<<"))
+  (log.dbg (.. "M.eval-str opts >> " (core.pr-str opts) "<<"))
   (with-repl-or-warn
     (fn [repl]
       (repl.send
@@ -183,14 +183,14 @@
         {:batch? true}))))
 
 (fn M.eval-file [opts]
-  (M.eval-str (a.assoc opts :code (a.slurp opts.file-path))))
+  (M.eval-str (core.assoc opts :code (core.slurp opts.file-path))))
 
 (fn M.get-help [code]
   (str.join "" ["help(" (str.trim code) ")"]))
 
 (fn M.doc-str [opts]
   (when (M.str-is-python-expr? opts.code)
-    (M.eval-str (a.assoc opts :code (M.get-help opts.code)))))
+    (M.eval-str (core.assoc opts :code (M.get-help opts.code)))))
 
 (fn display-repl-status [status]
   ( log.append
@@ -204,7 +204,7 @@
     (when repl
       (repl.destroy)
       (display-repl-status :stopped)
-      (a.assoc (state) :repl nil))))
+      (core.assoc (state) :repl nil))))
 
 (set M.initialise-repl-code
   ;; By default, there is no way for us to tell the difference between
@@ -236,7 +236,7 @@
       (log.append [(.. M.comment-prefix "(error) The python client requires a python treesitter parser in order to function.")
                    (.. M.comment-prefix "(error) See https://github.com/nvim-treesitter/nvim-treesitter")
                    (.. M.comment-prefix "(error) for installation instructions.")])
-      (a.assoc
+      (core.assoc
         (state) :repl
         (stdio.start
           {:prompt-pattern (cfg [:prompt-pattern])

@@ -1,6 +1,6 @@
 (local {: autoload : define} (require :conjure.nfnl.module))
-(local a (autoload :conjure.aniseed.core))
-(local str (autoload :conjure.aniseed.string))
+(local a (autoload :conjure.nfnl.core))
+(local str (autoload :conjure.nfnl.string))
 (local client (autoload :conjure.client))
 (local log (autoload :conjure.log))
 

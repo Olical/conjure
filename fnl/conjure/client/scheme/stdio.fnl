@@ -1,16 +1,13 @@
 (local {: autoload : define} (require :conjure.nfnl.module))
-(local a (autoload :conjure.aniseed.core))
-(local str (autoload :conjure.aniseed.string))
+(local core (autoload :conjure.nfnl.core))
+(local str (autoload :conjure.nfnl.string))
 (local stdio (autoload :conjure.remote.stdio))
 (local config (autoload :conjure.config))
-(local text (autoload :conjure.text))
 (local mapping (autoload :conjure.mapping))
 (local client (autoload :conjure.client))
 (local log (autoload :conjure.log))
 (local ts (autoload :conjure.tree-sitter))
 (local cmpl (autoload :conjure.client.scheme.completions))
-
-(local M (define :conjure.client.scheme.stdio))
 
 (local M (define :conjure.client.scheme.stdio))
 
@@ -52,16 +49,16 @@
 
 (fn M.unbatch [msgs]
   {:out (->> msgs
-          (a.map #(or (a.get $1 :out) (a.get $1 :err)))
+          (core.map #(or (core.get $1 :out) (core.get $1 :err)))
           (str.join ""))})
 
 (fn M.format-msg [msg]
   (->> (-> msg
-           (a.get :out)
+           (core.get :out)
            (string.gsub "^%s*" "")
            (string.gsub "%s+%d+%s*$" "")
            (str.split "\n"))
-       (a.map
+       (core.map
          (fn [line]
            (if
              (not (cfg [:value_prefix_pattern]))
@@ -71,7 +68,7 @@
              (string.gsub line (cfg [:value_prefix_pattern]) "")
 
              (.. M.comment-prefix "(out) " line))))
-       (a.filter #(not (str.blank? $1)))))
+       (core.filter #(not (str.blank? $1)))))
 
 (fn M.eval-str [opts]
   (with-repl-or-warn
@@ -81,13 +78,13 @@
           (.. opts.code "\n")
           (fn [msgs]
             (let [msgs (-> msgs M.unbatch M.format-msg)]
-              (opts.on-result (a.last msgs))
+              (opts.on-result (core.last msgs))
               (log.append msgs)))
           {:batch? true})
        (log.append [(.. M.comment-prefix "eval error: could not parse form")])))))
 
 (fn M.eval-file [opts]
-  (M.eval-str (a.assoc opts :code (.. "(load \"" opts.file-path "\")"))))
+  (M.eval-str (core.assoc opts :code (.. "(load \"" opts.file-path "\")"))))
 
 (fn display-repl-status [status]
   (log.append
@@ -101,7 +98,7 @@
     (when repl
       (repl.destroy)
       (display-repl-status :stopped)
-      (a.assoc (state) :repl nil))))
+      (core.assoc (state) :repl nil))))
 
 (fn M.start []
   (if (state :repl)
@@ -110,7 +107,7 @@
                      (config.get-in [:mapping :prefix])
                      (cfg [:mapping :stop]))]
                 {:break? true})
-    (a.assoc
+    (core.assoc
       (state) :repl
       (stdio.start
         {:prompt-pattern (cfg [:prompt_pattern])
@@ -168,7 +165,7 @@
 
 (fn M.completions [opts]
   ;(when (not= nil opts)
-  ;  (log.append [(.. "; completions() called with: " (a.pr-str opts))] {:break? true}))
+  ;  (log.append [(.. "; completions() called with: " (core.pr-str opts))] {:break? true}))
   (if (completions-enabled?)
     (let [prefix (or (. opts :prefix) "")
           suggestions (cmpl.get-completions prefix)]

@@ -1,7 +1,7 @@
 (local {: autoload} (require :conjure.nfnl.module))
-(local a (autoload :conjure.aniseed.core))
+(local core (autoload :conjure.nfnl.core))
 (local extract (autoload :conjure.extract))
-(local str (autoload :conjure.aniseed.string))
+(local str (autoload :conjure.nfnl.string))
 (local stdio (autoload :conjure.remote.stdio))
 (local config (autoload :conjure.config))
 (local text (autoload :conjure.text))
@@ -48,8 +48,8 @@
                  ""
                  (.. comment-prefix (if msg.err "(err)" "(out)") " "))]
     (->> (str.split (or msg.err msg.out) "\n")
-         (a.filter #(~= "" $1))
-         (a.map #(.. prefix $1))
+         (core.filter #(~= "" $1))
+         (core.map #(.. prefix $1))
          log.append)))
 
 (fn prep-code [s]
@@ -63,12 +63,12 @@
         (prep-code opts.code)
         (fn [msg]
           (log.dbg "msg" msg)
-          ; (let [msgs (a.filter #(not (= "" $1)) (str.split (or msg.err msg.out) "\n"))])
+          ; (let [msgs (core.filter #(not (= "" $1)) (str.split (or msg.err msg.out) "\n"))])
           (let [msgs (->> (str.split (or msg.err msg.out) "\n")
-                          (a.filter #(not (= "" $1))))]
+                          (core.filter #(not (= "" $1))))]
                 ; prefix (.. comment-prefix (if msg.err "(err)" "(out)") " ")]
-            (set last-value (or (a.last msgs) last-value))
-            ; (log.append (a.map #(.. prefix $1) msgs))
+            (set last-value (or (core.last msgs) last-value))
+            ; (log.append (core.map #(.. prefix $1) msgs))
             (display-result msg)
             (when msg.done?
               ; (log.append [(.. comment-prefix "Finished")])
@@ -100,7 +100,7 @@
   (let [repl (state :repl)]
     (when repl
       (log.append
-        [(.. comment-prefix (a.pr-str (a.get-in repl [:opts :cmd])) " (" status ")")]
+        [(.. comment-prefix (core.pr-str (core.get-in repl [:opts :cmd])) " (" status ")")]
         {:break? true}))))
 
 (fn stop []
@@ -108,7 +108,7 @@
     (when repl
       (repl.destroy)
       (display-repl-status :stopped)
-      (a.assoc (state) :repl nil))))
+      (core.assoc (state) :repl nil))))
 
 (fn start []
   (if (state :repl)
@@ -117,7 +117,7 @@
                      (config.get-in [:mapping :prefix])
                      (cfg [:mapping :stop]))]
                 {:break? true})
-    (a.assoc
+    (core.assoc
       (state) :repl
       (stdio.start
         {:prompt-pattern (cfg [:prompt_pattern])

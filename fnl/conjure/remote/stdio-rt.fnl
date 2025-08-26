@@ -1,6 +1,6 @@
 (local {: autoload : define} (require :conjure.nfnl.module))
-(local a (autoload :conjure.aniseed.core))
-(local str (autoload :conjure.aniseed.string))
+(local core (autoload :conjure.nfnl.core))
+(local str (autoload :conjure.nfnl.string))
 (local client (autoload :conjure.client))
 (local log (autoload :conjure.log))
 
@@ -14,19 +14,19 @@
 
 (fn M.parse-cmd [x]
   (if
-    (a.table? x)
-    {:cmd (a.first x)
-     :args (a.rest x)}
+    (core.table? x)
+    {:cmd (core.first x)
+     :args (core.rest x)}
 
-    (a.string? x)
+    (core.string? x)
     (M.parse-cmd (str.split x "%s"))))
 
 (fn extend-env [vars]
-  (->> (a.merge
+  (->> (core.merge
          (vim.fn.environ)
          vars)
-       (a.kv-pairs)
-       (a.map
+       (core.kv-pairs)
+       (core.map
          (fn [[k v]]
            (.. k "=" v)))))
 
@@ -54,7 +54,7 @@
                :current nil})
 
     (fn destroy []
-      ;; https://teukka.tech/vimloop.html
+      ;; https://teukkcore.tech/vimloop.html
       (pcall #(stdout:read_stop))
       (pcall #(stderr:read_stop))
       (pcall #(stdout:close))
@@ -73,10 +73,10 @@
       (client.schedule opts.on-exit code signal))
 
     (fn next-in-queue []
-      (let [next-msg (a.first repl.queue)]
+      (let [next-msg (core.first repl.queue)]
         (when next-msg
           (table.remove repl.queue 1)
-          (a.assoc repl :current next-msg)
+          (core.assoc repl :current next-msg)
           (log.dbg "send" next-msg.code)
           (stdin:write next-msg.code))))
 
@@ -88,12 +88,12 @@
           (destroy))
         (when chunk
           (let [(done? result) (parse-prompt chunk opts.prompt-pattern)
-                cb (a.get-in repl [:current :cb] opts.on-stray-output)]
+                cb (core.get-in repl [:current :cb] opts.on-stray-output)]
             (when cb
               (pcall #(cb {source result
                            :done? done?})))
             (when done? ; never gets here because done? is always false
-              (a.assoc repl :current nil)
+              (core.assoc repl :current nil)
               (next-in-queue))))))
 
     (fn on-stdout [err chunk]
@@ -108,7 +108,7 @@
       (table.insert
         repl.queue
         {:code code
-         :cb (if (a.get opts :batch?)
+         :cb (if (core.get opts :batch?)
                (let [msgs []]
                  (fn [msg]
                    (table.insert msgs msg)
@@ -127,7 +127,7 @@
           (uv.spawn cmd {:stdio [stdin stdout stderr]
                          :args args
                          :env (extend-env
-                                (a.merge!
+                                (core.merge!
                                   ;; Trying to disable custom readline config.
                                   ;; Doesn't work in practice but is probably close?
                                   ;; If you know how, please open a PR!
@@ -140,7 +140,7 @@
           (stdout:read_start (client.schedule-wrap on-stdout))
           (stderr:read_start (client.schedule-wrap on-stderr))
           (client.schedule #(opts.on-success))
-          (a.merge!
+          (core.merge!
             repl
             {:handle handle
              :pid pid-or-err

@@ -1,6 +1,6 @@
 (local {: autoload} (require :conjure.nfnl.module))
-(local a (autoload :conjure.aniseed.core))
-(local str (autoload :conjure.aniseed.string))
+(local core (autoload :conjure.nfnl.core))
+(local str (autoload :conjure.nfnl.string))
 (local client (autoload :conjure.client))
 (local log (autoload :conjure.log))
 
@@ -8,11 +8,11 @@
 
 (fn parse-cmd [x]
   (if
-    (a.table? x)
-    {:cmd (a.first x)
-     :args (a.rest x)}
+    (core.table? x)
+    {:cmd (core.first x)
+     :args (core.rest x)}
 
-    (a.string? x)
+    (core.string? x)
     (parse-cmd (str.split x "%s"))))
 
 {: parse-cmd}

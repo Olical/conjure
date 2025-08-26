@@ -1,7 +1,7 @@
 -- [nfnl] fnl/conjure/client/janet/netrepl.fnl
 local _local_1_ = require("conjure.nfnl.module")
 local autoload = _local_1_["autoload"]
-local a = autoload("conjure.aniseed.core")
+local core = autoload("conjure.nfnl.core")
 local client = autoload("conjure.client")
 local config = autoload("conjure.config")
 local log = autoload("conjure.log")
@@ -48,7 +48,7 @@ local function disconnect()
   local function _7_(conn)
     conn.destroy()
     display_conn_status("disconnected")
-    return a.assoc(state(), "conn", nil)
+    return core.assoc(state(), "conn", nil)
   end
   return with_conn_or_warn(_7_)
 end
@@ -79,7 +79,7 @@ local function connect(opts)
     return disconnect()
   end
   local function _11_()
-    a.assoc(state(), "conn", conn)
+    core.assoc(state(), "conn", conn)
     return display_conn_status("connected")
   end
   local function _12_(err)
@@ -113,18 +113,18 @@ local function eval_str(opts)
       return nil
     end
   end
-  return send({msg = (opts.code .. "\n"), cb = _15_, row = a["get-in"](opts.range, {"start", 1}, 1), col = a["get-in"](opts.range, {"start", 2}, 1), ["file-path"] = opts["file-path"]})
+  return send({msg = (opts.code .. "\n"), cb = _15_, row = core["get-in"](opts.range, {"start", 1}, 1), col = core["get-in"](opts.range, {"start", 2}, 1), ["file-path"] = opts["file-path"]})
 end
 local function doc_str(opts)
   try_ensure_conn()
   local function _18_(_241)
     return ("(doc " .. _241 .. ")")
   end
-  return eval_str(a.update(opts, "code", _18_))
+  return eval_str(core.update(opts, "code", _18_))
 end
 local function eval_file(opts)
   try_ensure_conn()
-  return eval_str(a.assoc(opts, "code", ("(do (dofile \"" .. opts["file-path"] .. "\" :env (fiber/getenv (fiber/current))) nil)")))
+  return eval_str(core.assoc(opts, "code", ("(do (dofile \"" .. opts["file-path"] .. "\" :env (fiber/getenv (fiber/current))) nil)")))
 end
 local function on_filetype()
   mapping.buf("JanetDisconnect", config["get-in"]({"client", "janet", "netrepl", "mapping", "disconnect"}), disconnect, {desc = "Disconnect from the REPL"})

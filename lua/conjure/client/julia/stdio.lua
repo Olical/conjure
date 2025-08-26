@@ -1,8 +1,8 @@
 -- [nfnl] fnl/conjure/client/julia/stdio.fnl
 local _local_1_ = require("conjure.nfnl.module")
 local autoload = _local_1_["autoload"]
-local a = autoload("conjure.aniseed.core")
-local str = autoload("conjure.aniseed.string")
+local core = autoload("conjure.nfnl.core")
+local str = autoload("conjure.nfnl.string")
 local stdio = autoload("conjure.remote.stdio")
 local config = autoload("conjure.config")
 local mapping = autoload("conjure.mapping")
@@ -39,19 +39,19 @@ local function prep_code(s)
 end
 local function unbatch(msgs)
   local function _5_(_241)
-    return (a.get(_241, "out") or a.get(_241, "err"))
+    return (core.get(_241, "out") or core.get(_241, "err"))
   end
-  return str.join("", a.map(_5_, msgs))
+  return str.join("", core.map(_5_, msgs))
 end
 local function format_msg(msg)
   local function _6_(_241)
     return ("" ~= _241)
   end
-  return a.filter(_6_, str.split(string.gsub(msg, "(.?[%w\n])(nothing)", "%1"), "\n"))
+  return core.filter(_6_, str.split(string.gsub(msg, "(.?[%w\n])(nothing)", "%1"), "\n"))
 end
 local function get_form_modifier(node)
   if (";" == ts["node->str"](node:next_sibling())) then
-    return {modifier = "raw", ["node-table"] = {content = (ts["node->str"](node) .. ";"), range = a["update-in"](ts.range(node), {"end", 2}, a.inc)}}
+    return {modifier = "raw", ["node-table"] = {content = (ts["node->str"](node) .. ";"), range = core["update-in"](ts.range(node), {"end", 2}, core.inc)}}
   else
     return nil
   end
@@ -72,18 +72,18 @@ local function eval_str(opts)
   return with_repl_or_warn(_8_)
 end
 local function eval_file(opts)
-  return eval_str(a.assoc(opts, "code", a.slurp(opts["file-path"])))
+  return eval_str(core.assoc(opts, "code", core.slurp(opts["file-path"])))
 end
 local function doc_str(opts)
   local function _11_(_241)
     return ("Main.eval(REPL.helpmode(\"" .. _241 .. "\"))")
   end
-  return eval_str(a.update(opts, "code", _11_))
+  return eval_str(core.update(opts, "code", _11_))
 end
 local function display_repl_status(status)
   local repl = state("repl")
   if repl then
-    return log.append({(comment_prefix .. a["pr-str"](a["get-in"](repl, {"opts", "cmd"})) .. " (" .. status .. ")")}, {["break?"] = true})
+    return log.append({(comment_prefix .. core["pr-str"](core["get-in"](repl, {"opts", "cmd"})) .. " (" .. status .. ")")}, {["break?"] = true})
   else
     return nil
   end
@@ -93,7 +93,7 @@ local function stop()
   if repl then
     repl.destroy()
     display_repl_status("stopped")
-    return a.assoc(state(), "repl", nil)
+    return core.assoc(state(), "repl", nil)
   else
     return nil
   end
@@ -129,7 +129,7 @@ local function start()
     local function _21_(msg)
       return log.append(format_msg(unbatch({msg})), {["join-first?"] = true})
     end
-    return a.assoc(state(), "repl", stdio.start({["prompt-pattern"] = cfg({"prompt_pattern"}), cmd = cfg({"command"}), ["on-success"] = _14_, ["on-error"] = _17_, ["on-exit"] = _18_, ["on-stray-output"] = _21_}))
+    return core.assoc(state(), "repl", stdio.start({["prompt-pattern"] = cfg({"prompt_pattern"}), cmd = cfg({"command"}), ["on-success"] = _14_, ["on-error"] = _17_, ["on-exit"] = _18_, ["on-stray-output"] = _21_}))
   end
 end
 local function on_load()

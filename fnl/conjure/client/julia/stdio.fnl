@@ -1,6 +1,6 @@
 (local {: autoload} (require :conjure.nfnl.module))
-(local a (autoload :conjure.aniseed.core))
-(local str (autoload :conjure.aniseed.string))
+(local core (autoload :conjure.nfnl.core))
+(local str (autoload :conjure.nfnl.string))
 (local stdio (autoload :conjure.remote.stdio))
 (local config (autoload :conjure.config))
 (local mapping (autoload :conjure.mapping))
@@ -60,14 +60,14 @@
 
 (fn unbatch [msgs]
   (->> msgs
-       (a.map #(or (a.get $1 :out) (a.get $1 :err)))
+       (core.map #(or (core.get $1 :out) (core.get $1 :err)))
        (str.join "")))
 
 (fn format-msg [msg]
   ; remove last "nothing" if preceded by character or newline.
   (->> (-> (string.gsub msg "(.?[%w\n])(nothing)" "%1")
            (str.split "\n"))
-       (a.filter #(~= "" $1))))
+       (core.filter #(~= "" $1))))
 
 (fn get-form-modifier [node]
   ;; When the next sibling is a semi-colon it means we need to override the
@@ -84,7 +84,7 @@
                   :content (.. (ts.node->str node) ";")
 
                   ;; Increment the end of the range by one.
-                  :range (a.update-in (ts.range node) [:end 2] a.inc)}}))
+                  :range (core.update-in (ts.range node) [:end 2] core.inc)}}))
 
 (fn eval-str [opts]
   (with-repl-or-warn
@@ -99,16 +99,16 @@
         {:batch? true}))))
 
 (fn eval-file [opts]
-  (eval-str (a.assoc opts :code (a.slurp opts.file-path))))
+  (eval-str (core.assoc opts :code (core.slurp opts.file-path))))
 
 (fn doc-str [opts]
-  (eval-str (a.update opts :code #(.. "Main.eval(REPL.helpmode(\"" $1 "\"))"))))
+  (eval-str (core.update opts :code #(.. "Main.eval(REPL.helpmode(\"" $1 "\"))"))))
 
 (fn display-repl-status [status]
   (let [repl (state :repl)]
     (when repl
       (log.append
-        [(.. comment-prefix (a.pr-str (a.get-in repl [:opts :cmd])) " (" status ")")]
+        [(.. comment-prefix (core.pr-str (core.get-in repl [:opts :cmd])) " (" status ")")]
         {:break? true}))))
 
 (fn stop []
@@ -116,7 +116,7 @@
     (when repl
       (repl.destroy)
       (display-repl-status :stopped)
-      (a.assoc (state) :repl nil))))
+      (core.assoc (state) :repl nil))))
 
 (fn start []
   (if (state :repl)
@@ -125,7 +125,7 @@
                      (config.get-in [:mapping :prefix])
                      (cfg [:mapping :stop]))]
                 {:break? true})
-    (a.assoc
+    (core.assoc
       (state) :repl
       (stdio.start
         {:prompt-pattern (cfg [:prompt_pattern])

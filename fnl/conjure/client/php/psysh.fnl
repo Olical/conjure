@@ -1,11 +1,11 @@
 (local {: autoload} (require :conjure.nfnl.module))
-(local a (autoload :conjure.aniseed.core))
+(local core (autoload :conjure.nfnl.core))
 (local client (autoload :conjure.client))
 (local config (autoload :conjure.config))
 (local log (autoload :conjure.log))
 (local mapping (autoload :conjure.mapping))
 (local stdio (autoload :conjure.remote.stdio))
-(local str (autoload :conjure.aniseed.string))
+(local str (autoload :conjure.nfnl.string))
 (local text (autoload :conjure.text) )
 
 (config.merge
@@ -63,25 +63,25 @@
   (let [repl (state :repl)]
     (if repl
       (log.append
-        [(.. comment-prefix (a.pr-str (a.get-in repl [:opts :cmd])) " (" status ")")]
+        [(.. comment-prefix (core.pr-str (core.get-in repl [:opts :cmd])) " (" status ")")]
         {:break? true})
       (log.append [status]))))
 
 (fn display-result [msg]
   (->> msg
-       (a.map #(.. comment-prefix $1))
+       (core.map #(.. comment-prefix $1))
        log.append))
 
 (fn format-msg [msg]
   (->> (str.split msg "\n")
-       (a.map #(str.trim $1))
-       (a.filter #(not (= "" $1)))
-       (a.filter #(text.starts-with $1 "= "))
-       (a.map #(string.sub $1 3))))
+       (core.map #(str.trim $1))
+       (core.filter #(not (= "" $1)))
+       (core.filter #(text.starts-with $1 "= "))
+       (core.map #(string.sub $1 3))))
 
 (fn unbatch [msgs]
   (->> msgs
-       (a.map #(or (a.get $1 :out) (a.get $1 :err)))
+       (core.map #(or (core.get $1 :out) (core.get $1 :err)))
        (str.join "")))
 
 (fn prep-code [s]
@@ -94,7 +94,7 @@
     (when repl
       (repl.destroy)
       (display-repl-status :stopped)
-      (a.assoc (state) :repl nil))))
+      (core.assoc (state) :repl nil))))
 
 (fn start []
   (if (state :repl)
@@ -103,7 +103,7 @@
                      (config.get-in [:mapping :prefix])
                      (cfg [:mapping :stop]))]
                 {:break? true})
-    (a.assoc
+    (core.assoc
       (state) :repl
       (stdio.start
         {:prompt-pattern (cfg [:prompt_pattern])
@@ -147,7 +147,7 @@
   (with-repl-or-warn
     (fn [repl]
       (log.append [(.. comment-prefix " Sending interrupt signal.")] {:break? true})
-      (repl.send-signal vim.uv.constants.SIGINT))))
+      (repl.send-signal :sigint))))
 
 ; Eval
 
@@ -164,8 +164,8 @@
         {:batch? true}))))
 
 (fn eval-file [opts]
-  (->> (a.slurp opts.file-path)
-       (a.assoc opts :code)
+  (->> (core.slurp opts.file-path)
+       (core.assoc opts :code)
        eval-str))
 
 (fn on-filetype []

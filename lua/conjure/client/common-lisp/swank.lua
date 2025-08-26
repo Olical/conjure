@@ -2,13 +2,13 @@
 local _local_1_ = require("conjure.nfnl.module")
 local autoload = _local_1_["autoload"]
 local define = _local_1_["define"]
-local a = autoload("conjure.aniseed.core")
+local core = autoload("conjure.nfnl.core")
 local client = autoload("conjure.client")
 local config = autoload("conjure.config")
 local log = autoload("conjure.log")
 local mapping = autoload("conjure.mapping")
 local remote = autoload("conjure.remote.swank")
-local str = autoload("conjure.aniseed.string")
+local str = autoload("conjure.nfnl.string")
 local text = autoload("conjure.text")
 local ts = autoload("conjure.tree-sitter")
 local cmpl = autoload("conjure.client.common-lisp.completions")
@@ -76,7 +76,7 @@ M.disconnect = function()
   local function _10_(conn)
     conn.destroy()
     display_conn_status("disconnected")
-    return a.assoc(state(), "conn", nil)
+    return core.assoc(state(), "conn", nil)
   end
   return with_conn_or_warn(_10_)
 end
@@ -88,15 +88,15 @@ local function escape_string(_in)
   return replace(replace(_in, "\\", "\\\\"), "\"", "\\\"")
 end
 local function send(msg, context, cb)
-  log.dbg(("swank.send called with msg: " .. a["pr-str"](msg) .. ", context: " .. a["pr-str"](context)))
+  log.dbg(("swank.send called with msg: " .. core["pr-str"](msg) .. ", context: " .. core["pr-str"](context)))
   local function _11_(conn)
-    local eval_id = a.get(a.update(state(), "eval-id", a.inc), "eval-id")
+    local eval_id = core.get(core.update(state(), "eval-id", core.inc), "eval-id")
     return remote.send(conn, str.join({"(:emacs-rex (swank:eval-and-grab-output \"", escape_string(msg), "\") \"", (context or "*package*"), "\" t ", eval_id, ")"}), cb)
   end
   return with_conn_or_warn(_11_)
 end
 M.connect = function(opts)
-  log.dbg(("connect called with: " .. a["pr-str"](opts)))
+  log.dbg(("connect called with: " .. core["pr-str"](opts)))
   local opts0 = (opts or {})
   local host = (opts0.host or config["get-in"]({"client", "common_lisp", "swank", "connection", "default_host"}))
   local port = (opts0.port or config["get-in"]({"client", "common_lisp", "swank", "connection", "default_port"}))
@@ -118,7 +118,7 @@ M.connect = function(opts)
       return M.disconnect()
     end
   end
-  a.assoc(state(), "conn", remote.connect({host = host, port = port, ["on-failure"] = _13_, ["on-success"] = _14_, ["on-error"] = _15_}))
+  core.assoc(state(), "conn", remote.connect({host = host, port = port, ["on-failure"] = _13_, ["on-success"] = _14_, ["on-error"] = _15_}))
   local function _17_(_)
   end
   return send(":ok", _17_)
@@ -172,7 +172,7 @@ local function parse_separated_list(string_to_parse)
     if opened_quote then
       if not escaped then
         opened_quote = false
-        table.insert(vals, str.join(a.map(string.char, stack)))
+        table.insert(vals, str.join(core.map(string.char, stack)))
         stack = {}
       else
       end
@@ -229,9 +229,9 @@ M["parse-result"] = function(received)
   end
 end
 M["eval-str"] = function(opts)
-  log.dbg(("eval-str() called with: " .. a["pr-str"](opts)))
+  log.dbg(("eval-str() called with: " .. core["pr-str"](opts)))
   try_ensure_conn()
-  if not a["empty?"](opts.code) then
+  if not core["empty?"](opts.code) then
     local _30_
     if ("buf" == opts.origin) then
       _30_ = ("(list " .. opts.code .. ")")
@@ -239,7 +239,7 @@ M["eval-str"] = function(opts)
       _30_ = opts.code
     end
     local _32_
-    if not a["empty?"](opts.context) then
+    if not core["empty?"](opts.context) then
       _32_ = opts.context
     else
       _32_ = nil
@@ -271,11 +271,11 @@ M["doc-str"] = function(opts)
   local function _39_(_241)
     return ("(describe '" .. _241 .. ")")
   end
-  return M["eval-str"](a.update(opts, "code", _39_))
+  return M["eval-str"](core.update(opts, "code", _39_))
 end
 M["eval-file"] = function(opts)
   try_ensure_conn()
-  return M["eval-str"](a.assoc(opts, "code", ("(load \"" .. opts["file-path"] .. "\")")))
+  return M["eval-str"](core.assoc(opts, "code", ("(load \"" .. opts["file-path"] .. "\")")))
 end
 M["on-filetype"] = function()
   mapping.buf("CommonLispDisconnect", config["get-in"]({"client", "common_lisp", "swank", "mapping", "disconnect"}), M.disconnect, {desc = "Disconnect from the REPL"})
@@ -295,7 +295,7 @@ M["on-exit"] = function()
   return M.disconnect()
 end
 local function build_completions_code(prefix, context)
-  return ("(swank:simple-completions " .. a["pr-str"](prefix) .. " " .. a["pr-str"](context) .. ")")
+  return ("(swank:simple-completions " .. core["pr-str"](prefix) .. " " .. core["pr-str"](context) .. ")")
 end
 local function format_for_cmpl(rs)
   local cmpls = parse_separated_list(rs)
@@ -310,14 +310,14 @@ local function build_completions(opts)
     local result_fn
     local function _42_(results)
       local parsed_results = format_for_cmpl(results)
-      local all_cmpl = a.concat(static_completions, parsed_results)
+      local all_cmpl = core.concat(static_completions, parsed_results)
       local cmpl_list = util["ordered-distinct"](all_cmpl)
       return opts.cb(cmpl_list)
     end
     result_fn = _42_
-    a.assoc(opts, "code", code)
-    a.assoc(opts, "on-result", result_fn)
-    a.assoc(opts, "passive?", true)
+    core.assoc(opts, "code", code)
+    core.assoc(opts, "on-result", result_fn)
+    core.assoc(opts, "passive?", true)
     return M["eval-str"](opts)
   else
     return opts.cb(static_completions)
