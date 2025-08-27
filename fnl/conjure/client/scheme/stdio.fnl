@@ -147,17 +147,17 @@
 (fn M.on-filetype []
   (mapping.buf
     :SchemeStart (cfg [:mapping :start])
-    M.start
+    #(M.start)
     {:desc "Start the REPL"})
 
   (mapping.buf
     :SchemeStop (cfg [:mapping :stop])
-    M.stop
+    #(M.stop)
     {:desc "Stop the REPL"})
 
   (mapping.buf
     :SchemeInterrupt (cfg [:mapping :interrupt])
-    M.interrupt
+    #(M.interrupt)
     {:desc "Interrupt the REPL"}))
 
 (fn M.on-exit []

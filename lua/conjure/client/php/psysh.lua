@@ -1,6 +1,7 @@
 -- [nfnl] fnl/conjure/client/php/psysh.fnl
 local _local_1_ = require("conjure.nfnl.module")
 local autoload = _local_1_["autoload"]
+local define = _local_1_["define"]
 local core = autoload("conjure.nfnl.core")
 local client = autoload("conjure.client")
 local config = autoload("conjure.config")
@@ -9,6 +10,7 @@ local mapping = autoload("conjure.mapping")
 local stdio = autoload("conjure.remote.stdio")
 local str = autoload("conjure.nfnl.string")
 local text = autoload("conjure.text")
+local M = define("conjure.client.php.psysh")
 config.merge({client = {php = {psysh = {command = "psysh -ir --no-color", prompt_pattern = "> ", ["delay-stderr-ms"] = 10}}}})
 if config["get-in"]({"mapping", "enable_defaults"}) then
   config.merge({client = {php = {psysh = {mapping = {start = "cs", stop = "cS", interrupt = "ei"}}}}})
@@ -20,9 +22,9 @@ local function _3_()
   return {repl = nil}
 end
 state = client["new-state"](_3_)
-local buf_suffix = ".php"
-local comment_prefix = "// "
-local function form_node_3f(node)
+M["buf-suffix"] = ".php"
+M["comment-prefix"] = "// "
+M["form-node?"] = function(node)
   log.dbg("form-node?: node:type =", node:type())
   log.dbg("form-node?: node:parent =", node:parent())
   local parent = node:parent()
@@ -53,20 +55,20 @@ local function with_repl_or_warn(f, opts)
   if repl then
     return f(repl)
   else
-    return log.append({(comment_prefix .. "No REPL running"), (comment_prefix .. "Start REPL with " .. config["get-in"]({"mapping", "prefix"}) .. cfg({"mapping", "start"}))})
+    return log.append({(M["comment-prefix"] .. "No REPL running"), (M["comment-prefix"] .. "Start REPL with " .. config["get-in"]({"mapping", "prefix"}) .. cfg({"mapping", "start"}))})
   end
 end
 local function display_repl_status(status)
   local repl = state("repl")
   if repl then
-    return log.append({(comment_prefix .. core["pr-str"](core["get-in"](repl, {"opts", "cmd"})) .. " (" .. status .. ")")}, {["break?"] = true})
+    return log.append({(M["comment-prefix"] .. core["pr-str"](core["get-in"](repl, {"opts", "cmd"})) .. " (" .. status .. ")")}, {["break?"] = true})
   else
     return log.append({status})
   end
 end
 local function display_result(msg)
   local function _7_(_241)
-    return (comment_prefix .. _241)
+    return (M["comment-prefix"] .. _241)
   end
   return log.append(core.map(_7_, msg))
 end
@@ -94,7 +96,7 @@ end
 local function prep_code(s)
   return (s .. "\n")
 end
-local function stop()
+M.stop = function()
   local repl = state("repl")
   if repl then
     repl.destroy()
@@ -104,9 +106,9 @@ local function stop()
     return nil
   end
 end
-local function start()
+M.start = function()
   if state("repl") then
-    return log.append({(comment_prefix .. "Can't start, REPL is already running."), (comment_prefix .. "Stop the REPL with " .. config["get-in"]({"mapping", "prefix"}) .. cfg({"mapping", "stop"}))}, {["break?"] = true})
+    return log.append({(M["comment-prefix"] .. "Can't start, REPL is already running."), (M["comment-prefix"] .. "Stop the REPL with " .. config["get-in"]({"mapping", "prefix"}) .. cfg({"mapping", "stop"}))}, {["break?"] = true})
   else
     local function _14_()
       display_repl_status("started")
@@ -124,14 +126,14 @@ local function start()
     end
     local function _18_(code, signal)
       if (("number" == type(code)) and (code > 0)) then
-        log.append({(comment_prefix .. "process exited with code " .. code)})
+        log.append({(M["comment-prefix"] .. "process exited with code " .. code)})
       else
       end
       if (("number" == type(signal)) and (signal > 0)) then
-        log.append({(comment_prefix .. "process exited with signal " .. signal)})
+        log.append({(M["comment-prefix"] .. "process exited with signal " .. signal)})
       else
       end
-      return stop()
+      return M.stop()
     end
     local function _21_(msg)
       return display_result(format_msg(unbatch({msg})), {["join-first?"] = true})
@@ -139,20 +141,20 @@ local function start()
     return core.assoc(state(), "repl", stdio.start({["prompt-pattern"] = cfg({"prompt_pattern"}), cmd = cfg({"command"}), ["on-success"] = _14_, ["on-error"] = _17_, ["on-exit"] = _18_, ["on-stray-output"] = _21_}))
   end
 end
-local function on_load()
-  return start()
+M["on-load"] = function()
+  return M.start()
 end
-local function on_exit()
-  return stop()
+M["on-exit"] = function()
+  return M.stop()
 end
-local function interrupt()
+M.interrupt = function()
   local function _23_(repl)
-    log.append({(comment_prefix .. " Sending interrupt signal.")}, {["break?"] = true})
+    log.append({(M["comment-prefix"] .. " Sending interrupt signal.")}, {["break?"] = true})
     return repl["send-signal"]("sigint")
   end
   return with_repl_or_warn(_23_)
 end
-local function eval_str(opts)
+M["eval-str"] = function(opts)
   local function _24_(repl)
     local function _25_(msgs)
       local msgs0 = format_msg(unbatch(msgs))
@@ -167,12 +169,21 @@ local function eval_str(opts)
   end
   return with_repl_or_warn(_24_)
 end
-local function eval_file(opts)
-  return eval_str(core.assoc(opts, "code", core.slurp(opts["file-path"])))
+M["eval-file"] = function(opts)
+  return M["eval-str"](core.assoc(opts, "code", core.slurp(opts["file-path"])))
 end
-local function on_filetype()
-  mapping.buf("phpStart", cfg({"mapping", "start"}), start, {desc = "Start the PHP REPL"})
-  mapping.buf("phpStop", cfg({"mapping", "stop"}), stop, {desc = "Stop the PHP REPL"})
-  return mapping.buf("phpInterrupt", cfg({"mapping", "interrupt"}), interrupt, {desc = "Interrupt the current evaluation"})
+M["on-filetype"] = function()
+  local function _27_()
+    return M.start()
+  end
+  mapping.buf("phpStart", cfg({"mapping", "start"}), _27_, {desc = "Start the PHP REPL"})
+  local function _28_()
+    return M.stop()
+  end
+  mapping.buf("phpStop", cfg({"mapping", "stop"}), _28_, {desc = "Stop the PHP REPL"})
+  local function _29_()
+    return M.interrupt()
+  end
+  return mapping.buf("phpInterrupt", cfg({"mapping", "interrupt"}), _29_, {desc = "Interrupt the current evaluation"})
 end
-return {["buf-suffix"] = buf_suffix, ["comment-prefix"] = comment_prefix, ["eval-str"] = eval_str, ["eval-file"] = eval_file, ["form-node?"] = form_node_3f, interrupt = interrupt, ["on-exit"] = on_exit, ["on-filetype"] = on_filetype, ["on-load"] = on_load, start = start, stop = stop}
+return M

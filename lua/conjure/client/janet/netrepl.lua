@@ -1,6 +1,7 @@
 -- [nfnl] fnl/conjure/client/janet/netrepl.fnl
 local _local_1_ = require("conjure.nfnl.module")
 local autoload = _local_1_["autoload"]
+local define = _local_1_["define"]
 local core = autoload("conjure.nfnl.core")
 local client = autoload("conjure.client")
 local config = autoload("conjure.config")
@@ -9,10 +10,11 @@ local mapping = autoload("conjure.mapping")
 local remote = autoload("conjure.remote.netrepl")
 local text = autoload("conjure.text")
 local ts = autoload("conjure.tree-sitter")
-local buf_suffix = ".janet"
-local comment_prefix = "# "
-local form_node_3f = ts["node-surrounded-by-form-pair-chars?"]
-local comment_node_3f = ts["lisp-comment-node?"]
+local M = define("conjure.client.hy.stdio")
+M["buf-suffix"] = ".janet"
+M["comment-prefix"] = "# "
+M["form-node?"] = ts["node-surrounded-by-form-pair-chars?"]
+M["comment-node?"] = ts["lisp-comment-node?"]
 config.merge({client = {janet = {netrepl = {connection = {default_host = "127.0.0.1", default_port = "9365"}}}}})
 if config["get-in"]({"mapping", "enable_defaults"}) then
   config.merge({client = {janet = {netrepl = {mapping = {connect = "cc", disconnect = "cd"}}}}})
@@ -44,7 +46,7 @@ local function display_conn_status(status)
   end
   return with_conn_or_warn(_6_)
 end
-local function disconnect()
+M.disconnect = function()
   local function _7_(conn)
     conn.destroy()
     display_conn_status("disconnected")
@@ -65,18 +67,18 @@ local function send(opts)
   end
   return with_conn_or_warn(_8_)
 end
-local function connect(opts)
+M.connect = function(opts)
   local opts0 = (opts or {})
   local host = (opts0.host or config["get-in"]({"client", "janet", "netrepl", "connection", "default_host"}))
   local port = (opts0.port or config["get-in"]({"client", "janet", "netrepl", "connection", "default_port"}))
   if state("conn") then
-    disconnect()
+    M.disconnect()
   else
   end
   local conn
   local function _10_(err)
     display_conn_status(err)
-    return disconnect()
+    return M.disconnect()
   end
   local function _11_()
     core.assoc(state(), "conn", conn)
@@ -86,7 +88,7 @@ local function connect(opts)
     if err then
       return display_conn_status(err)
     else
-      return disconnect()
+      return M.disconnect()
     end
   end
   conn = remote.connect({host = host, port = port, ["on-failure"] = _10_, ["on-success"] = _11_, ["on-error"] = _12_})
@@ -94,12 +96,12 @@ local function connect(opts)
 end
 local function try_ensure_conn()
   if not connected_3f() then
-    return connect({["silent?"] = true})
+    return M.connect({["silent?"] = true})
   else
     return nil
   end
 end
-local function eval_str(opts)
+M["eval-str"] = function(opts)
   try_ensure_conn()
   local function _15_(msg)
     local clean = text["trim-last-newline"](msg)
@@ -115,28 +117,31 @@ local function eval_str(opts)
   end
   return send({msg = (opts.code .. "\n"), cb = _15_, row = core["get-in"](opts.range, {"start", 1}, 1), col = core["get-in"](opts.range, {"start", 2}, 1), ["file-path"] = opts["file-path"]})
 end
-local function doc_str(opts)
+M["doc-str"] = function(opts)
   try_ensure_conn()
   local function _18_(_241)
     return ("(doc " .. _241 .. ")")
   end
-  return eval_str(core.update(opts, "code", _18_))
+  return M["eval-str"](core.update(opts, "code", _18_))
 end
-local function eval_file(opts)
+M["eval-file"] = function(opts)
   try_ensure_conn()
-  return eval_str(core.assoc(opts, "code", ("(do (dofile \"" .. opts["file-path"] .. "\" :env (fiber/getenv (fiber/current))) nil)")))
+  return M["eval-str"](core.assoc(opts, "code", ("(do (dofile \"" .. opts["file-path"] .. "\" :env (fiber/getenv (fiber/current))) nil)")))
 end
-local function on_filetype()
-  mapping.buf("JanetDisconnect", config["get-in"]({"client", "janet", "netrepl", "mapping", "disconnect"}), disconnect, {desc = "Disconnect from the REPL"})
+M["on-filetype"] = function()
   local function _19_()
-    return connect()
+    return M.disconnect()
   end
-  return mapping.buf("JanetConnect", config["get-in"]({"client", "janet", "netrepl", "mapping", "connect"}), _19_, {desc = "Connect to a REPL"})
+  mapping.buf("JanetDisconnect", config["get-in"]({"client", "janet", "netrepl", "mapping", "disconnect"}), _19_, {desc = "Disconnect from the REPL"})
+  local function _20_()
+    return M.connect()
+  end
+  return mapping.buf("JanetConnect", config["get-in"]({"client", "janet", "netrepl", "mapping", "connect"}), _20_, {desc = "Connect to a REPL"})
 end
-local function on_load()
-  return connect({})
+M["on-load"] = function()
+  return M.connect({})
 end
-local function on_exit()
-  return disconnect()
+M["on-exit"] = function()
+  return M.disconnect()
 end
-return {["buf-suffix"] = buf_suffix, ["comment-node?"] = comment_node_3f, ["comment-prefix"] = comment_prefix, connect = connect, disconnect = disconnect, ["doc-str"] = doc_str, ["eval-file"] = eval_file, ["eval-str"] = eval_str, ["form-node?"] = form_node_3f, ["on-exit"] = on_exit, ["on-filetype"] = on_filetype, ["on-load"] = on_load}
+return M

@@ -1,4 +1,4 @@
-(local {: autoload} (require :conjure.nfnl.module))
+(local {: autoload : define} (require :conjure.nfnl.module))
 (local core (autoload :conjure.nfnl.core))
 (local str (autoload :conjure.nfnl.string))
 (local stdio (autoload :conjure.remote.stdio))
@@ -7,6 +7,8 @@
 (local client (autoload :conjure.client))
 (local log (autoload :conjure.log))
 (local ts (autoload :conjure.tree-sitter))
+
+(local M (define :conjure.client.r.stdio))
 
 (config.merge
   {:client
@@ -27,22 +29,22 @@
 
 (local cfg (config.get-in-fn [:client :r :stdio]))
 (local state (client.new-state #(do {:repl nil})))
-(local buf-suffix ".r")
-(local comment-prefix "# ")
-(local form-node? ts.node-surrounded-by-form-pair-chars?)
+(set M.buf-suffix ".r")
+(set M.comment-prefix "# ")
+(set M.form-node? ts.node-surrounded-by-form-pair-chars?)
 
 (fn with-repl-or-warn [f _]
   (let [repl (state :repl)]
     (if repl
       (f repl)
-      (log.append [(.. comment-prefix "No REPL running")]))))
+      (log.append [(.. M.comment-prefix "No REPL running")]))))
 
-(fn unbatch [msgs]
+(fn M.unbatch [msgs]
   {:out (->> msgs
           (core.map #(or (core.get $1 :out) (core.get $1 :err)))
           (str.join ""))})
 
-(fn format-msg [msg]
+(fn M.format-msg [msg]
   (->> (-> msg
            (core.get :out)
            ; (string.gsub "^%s*" "")
@@ -57,41 +59,41 @@
              (string.match line (cfg [:value_prefix_pattern]))
              (string.gsub line (cfg [:value_prefix_pattern]) "")
 
-             (.. comment-prefix "(out) " line))))
+             (.. M.comment-prefix "(out) " line))))
        (core.filter #(not (str.blank? $1)))))
 
-(fn eval-str [opts]
+(fn M.eval-str [opts]
   (with-repl-or-warn
     (fn [repl]
       (repl.send
         (.. opts.code "\n")
         (fn [msgs]
-          (let [msgs (-> msgs unbatch format-msg)]
+          (let [msgs (-> msgs M.unbatch M.format-msg)]
             (opts.on-result (core.last msgs))
             (log.append msgs)))
         {:batch? true}))))
 
-(fn eval-file [opts]
-  (eval-str (core.assoc opts :code (.. "(load \"" opts.file-path "\")"))))
+(fn M.eval-file [opts]
+  (M.eval-str (core.assoc opts :code (.. "(load \"" opts.file-path "\")"))))
 
 (fn display-repl-status [status]
   (log.append
-    [(.. comment-prefix
+    [(.. M.comment-prefix
          (cfg [:command])
          " (" (or status "no status") ")")]
     {:break? true}))
 
-(fn stop []
+(fn M.stop []
   (let [repl (state :repl)]
     (when repl
       (repl.destroy)
       (display-repl-status :stopped)
       (core.assoc (state) :repl nil))))
 
-(fn start []
+(fn M.start []
   (if (state :repl)
-    (log.append [(.. comment-prefix "Can't start, REPL is already running.")
-                 (.. comment-prefix "Stop the REPL with "
+    (log.append [(.. M.comment-prefix "Can't start, REPL is already running.")
+                 (.. M.comment-prefix "Stop the REPL with "
                      (config.get-in [:mapping :prefix])
                      (cfg [:mapping :stop]))]
                 {:break? true})
@@ -112,53 +114,41 @@
          :on-exit
          (fn [code signal]
            (when (and (= :number (type code)) (> code 0))
-             (log.append [(.. comment-prefix "process exited with code " code)]))
+             (log.append [(.. M.comment-prefix "process exited with code " code)]))
            (when (and (= :number (type signal)) (> signal 0))
-             (log.append [(.. comment-prefix "process exited with signal " signal)]))
-           (stop))
+             (log.append [(.. M.comment-prefix "process exited with signal " signal)]))
+           (M.stop))
 
          :on-stray-output
          (fn [msg]
-           (log.append (format-msg msg)))}))))
+           (log.append (M.format-msg msg)))}))))
 
-(fn interrupt []
+(fn M.interrupt []
   (with-repl-or-warn
     (fn [repl]
-      (log.append [(.. comment-prefix " Sending interrupt signal.")] {:break? true})
+      (log.append [(.. M.comment-prefix " Sending interrupt signal.")] {:break? true})
       (repl.send-signal :sigint))))
 
-(fn on-load []
-  (start))
+(fn M.on-load []
+  (M.start))
 
-(fn on-filetype []
+(fn M.on-filetype []
   (mapping.buf
     :RStart (cfg [:mapping :start])
-    start
+    #(M.start)
     {:desc "Start the R REPL"})
 
   (mapping.buf
     :RStop (cfg [:mapping :stop])
-    stop
+    #(M.stop)
     {:desc "Stop the R REPL"})
 
   (mapping.buf
     :RInterrupt (cfg [:mapping :interrupt])
-    interrupt
+    #(M.interrupt)
     {:desc "Interrupt the R REPL"}))
 
-(fn on-exit []
-  (stop))
+(fn M.on-exit []
+  (M.stop))
 
-{: buf-suffix
- : comment-prefix
- : form-node?
- : unbatch
- : format-msg
- : eval-str
- : eval-file
- : stop
- : start
- : interrupt
- : on-load
- : on-filetype
- : on-exit }
+M

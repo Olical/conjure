@@ -1,4 +1,4 @@
-(local {: autoload} (require :conjure.nfnl.module))
+(local {: autoload : define} (require :conjure.nfnl.module))
 (local core (autoload :conjure.nfnl.core))
 (local client (autoload :conjure.client))
 (local config (autoload :conjure.config))
@@ -7,8 +7,10 @@
 (local stdio (autoload :conjure.remote.stdio))
 (local str (autoload :conjure.nfnl.string))
 
-(local buf-suffix ".rs")
-(local comment-prefix "// ")
+(local M (define :conjure.client.rust.evcxr))
+
+(set M.buf-suffix ".rs")
+(set M.comment-prefix "// ")
 
 (config.merge
   {:client
@@ -35,7 +37,7 @@
 ;;   expression_statement
 ;;   struct_item
 ;;   index_expression
-(fn form-node?
+(fn M.form-node?
   [node]
   (log.dbg "form-node?: node:type =" (node:type))
   (log.dbg "form-node?: node:parent =" (node:parent))
@@ -50,8 +52,8 @@
   (let [repl (state :repl)]
     (if repl
       (f repl)
-      (log.append [(.. comment-prefix "No REPL running")
-                   (.. comment-prefix
+      (log.append [(.. M.comment-prefix "No REPL running")
+                   (.. M.comment-prefix
                        "Start REPL with "
                        (config.get-in [:mapping :prefix])
                        (cfg [:mapping :start]))]))))
@@ -60,13 +62,13 @@
   (let [repl (state :repl)]
     (if repl
       (log.append
-        [(.. comment-prefix (core.pr-str (core.get-in repl [:opts :cmd])) " (" status ")")]
+        [(.. M.comment-prefix (core.pr-str (core.get-in repl [:opts :cmd])) " (" status ")")]
         {:break? true})
       (log.append [status]))))
 
 (fn display-result [msg]
   (->> msg
-       (core.map #(.. comment-prefix $1))
+       (core.map #(.. M.comment-prefix $1))
        log.append))
 
 (fn format-msg [msg]
@@ -84,17 +86,17 @@
 
 ; Start/Stop
 
-(fn stop []
+(fn M.stop []
   (let [repl (state :repl)]
     (when repl
       (repl.destroy)
       (display-repl-status :stopped)
       (core.assoc (state) :repl nil))))
 
-(fn start []
+(fn M.start []
   (if (state :repl)
-    (log.append [(.. comment-prefix "Can't start, REPL is already running.")
-                 (.. comment-prefix "Stop the REPL with "
+    (log.append [(.. M.comment-prefix "Can't start, REPL is already running.")
+                 (.. M.comment-prefix "Stop the REPL with "
                      (config.get-in [:mapping :prefix])
                      (cfg [:mapping :stop]))]
                 {:break? true})
@@ -123,30 +125,30 @@
          :on-exit
          (fn [code signal]
            (when (and (= :number (type code)) (> code 0))
-             (log.append [(.. comment-prefix "process exited with code " code)]))
+             (log.append [(.. M.comment-prefix "process exited with code " code)]))
            (when (and (= :number (type signal)) (> signal 0))
-             (log.append [(.. comment-prefix "process exited with signal " signal)]))
-           (stop))
+             (log.append [(.. M.comment-prefix "process exited with signal " signal)]))
+           (M.stop))
 
          :on-stray-output
          (fn [msg]
            (display-result (-> [msg] unbatch format-msg) {:join-first? true}))}))))
 
-(fn on-load []
-  (start))
+(fn M.on-load []
+  (M.start))
 
-(fn on-exit []
-  (stop))
+(fn M.on-exit []
+  (M.stop))
 
-(fn interrupt []
+(fn M.interrupt []
   (with-repl-or-warn
     (fn [repl]
-      (log.append [(.. comment-prefix " Sending interrupt signal.")] {:break? true})
+      (log.append [(.. M.comment-prefix " Sending interrupt signal.")] {:break? true})
       (repl.send-signal :sigint))))
 
 ; Eval
 
-(fn eval-str [opts]
+(fn M.eval-str [opts]
   (with-repl-or-warn
     (fn [repl]
       (repl.send
@@ -158,33 +160,23 @@
               (opts.on-result (str.join " " msgs)))))
         {:batch? true}))))
 
-(fn eval-file [opts]
-  (eval-str (core.assoc opts :code (core.slurp opts.file-path))))
+(fn M.eval-file [opts]
+  (M.eval-str (core.assoc opts :code (core.slurp opts.file-path))))
 
-(fn on-filetype []
+(fn M.on-filetype []
   (mapping.buf
     :RustStart (cfg [:mapping :start])
-    start
+    #(M.start)
     {:desc "Start the Rust REPL"})
 
   (mapping.buf
     :RustStop (cfg [:mapping :stop])
-    stop
+    #(M.stop)
     {:desc "Stop the Rust REPL"})
 
   (mapping.buf
     :RustInterrupt (cfg [:mapping :interrupt])
-    interrupt
+    #(M.interrupt)
     {:desc "Interrupt the current evaluation"}))
 
-{: buf-suffix
- : comment-prefix
- : eval-file
- : eval-str
- : form-node?
- : interrupt
- : on-exit
- : on-filetype
- : on-load
- : start
- : stop}
+M

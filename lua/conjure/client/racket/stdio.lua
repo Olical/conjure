@@ -145,9 +145,18 @@ M["on-load"] = function()
   return M.start()
 end
 M["on-filetype"] = function()
-  mapping.buf("RktStart", cfg({"mapping", "start"}), M.start, {desc = "Start the REPL"})
-  mapping.buf("RktStop", cfg({"mapping", "stop"}), M.stop, {desc = "Stop the REPL"})
-  return mapping.buf("RktInterrupt", cfg({"mapping", "interrupt"}), M.interrupt, {desc = "Interrupt the current evaluation"})
+  local function _23_()
+    return M.start()
+  end
+  mapping.buf("RktStart", cfg({"mapping", "start"}), _23_, {desc = "Start the REPL"})
+  local function _24_()
+    return M.stop()
+  end
+  mapping.buf("RktStop", cfg({"mapping", "stop"}), _24_, {desc = "Stop the REPL"})
+  local function _25_()
+    return M.interrupt()
+  end
+  return mapping.buf("RktInterrupt", cfg({"mapping", "interrupt"}), _25_, {desc = "Interrupt the current evaluation"})
 end
 M["on-exit"] = function()
   return M.stop()

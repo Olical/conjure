@@ -133,10 +133,26 @@ end
 M["on-load"] = function()
   return M.start()
 end
+<<<<<<< Updated upstream
 M["on-filetype"] = function()
   mapping.buf("SchemeStart", cfg({"mapping", "start"}), M.start, {desc = "Start the REPL"})
   mapping.buf("SchemeStop", cfg({"mapping", "stop"}), M.stop, {desc = "Stop the REPL"})
   return mapping.buf("SchemeInterrupt", cfg({"mapping", "interrupt"}), M.interrupt, {desc = "Interrupt the REPL"})
+=======
+M0["on-filetype"] = function()
+  local function _22_()
+    return M0.start()
+  end
+  mapping.buf("SchemeStart", cfg({"mapping", "start"}), _22_, {desc = "Start the REPL"})
+  local function _23_()
+    return M0.stop()
+  end
+  mapping.buf("SchemeStop", cfg({"mapping", "stop"}), _23_, {desc = "Stop the REPL"})
+  local function _24_()
+    return M0.interrupt()
+  end
+  return mapping.buf("SchemeInterrupt", cfg({"mapping", "interrupt"}), _24_, {desc = "Interrupt the REPL"})
+>>>>>>> Stashed changes
 end
 M["on-exit"] = function()
   return M.stop()

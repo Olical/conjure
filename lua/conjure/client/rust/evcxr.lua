@@ -1,6 +1,7 @@
 -- [nfnl] fnl/conjure/client/rust/evcxr.fnl
 local _local_1_ = require("conjure.nfnl.module")
 local autoload = _local_1_["autoload"]
+local define = _local_1_["define"]
 local core = autoload("conjure.nfnl.core")
 local client = autoload("conjure.client")
 local config = autoload("conjure.config")
@@ -8,8 +9,9 @@ local log = autoload("conjure.log")
 local mapping = autoload("conjure.mapping")
 local stdio = autoload("conjure.remote.stdio")
 local str = autoload("conjure.nfnl.string")
-local buf_suffix = ".rs"
-local comment_prefix = "// "
+local M = define("conjure.client.rust.evcxr")
+M["buf-suffix"] = ".rs"
+M["comment-prefix"] = "// "
 config.merge({client = {rust = {evcxr = {command = "evcxr", prompt_pattern = ">> "}}}})
 if config["get-in"]({"mapping", "enable_defaults"}) then
   config.merge({client = {rust = {evcxr = {mapping = {start = "cs", stop = "cS", interrupt = "ei"}}}}})
@@ -21,7 +23,7 @@ local function _3_()
   return {repl = nil}
 end
 state = client["new-state"](_3_)
-local function form_node_3f(node)
+M["form-node?"] = function(node)
   log.dbg("form-node?: node:type =", node:type())
   log.dbg("form-node?: node:parent =", node:parent())
   local parent = node:parent()
@@ -42,20 +44,20 @@ local function with_repl_or_warn(f, opts)
   if repl then
     return f(repl)
   else
-    return log.append({(comment_prefix .. "No REPL running"), (comment_prefix .. "Start REPL with " .. config["get-in"]({"mapping", "prefix"}) .. cfg({"mapping", "start"}))})
+    return log.append({(M["comment-prefix"] .. "No REPL running"), (M["comment-prefix"] .. "Start REPL with " .. config["get-in"]({"mapping", "prefix"}) .. cfg({"mapping", "start"}))})
   end
 end
 local function display_repl_status(status)
   local repl = state("repl")
   if repl then
-    return log.append({(comment_prefix .. core["pr-str"](core["get-in"](repl, {"opts", "cmd"})) .. " (" .. status .. ")")}, {["break?"] = true})
+    return log.append({(M["comment-prefix"] .. core["pr-str"](core["get-in"](repl, {"opts", "cmd"})) .. " (" .. status .. ")")}, {["break?"] = true})
   else
     return log.append({status})
   end
 end
 local function display_result(msg)
   local function _7_(_241)
-    return (comment_prefix .. _241)
+    return (M["comment-prefix"] .. _241)
   end
   return log.append(core.map(_7_, msg))
 end
@@ -77,7 +79,7 @@ end
 local function prep_code(s)
   return (s .. "\n")
 end
-local function stop()
+M.stop = function()
   local repl = state("repl")
   if repl then
     repl.destroy()
@@ -87,9 +89,9 @@ local function stop()
     return nil
   end
 end
-local function start()
+M.start = function()
   if state("repl") then
-    return log.append({(comment_prefix .. "Can't start, REPL is already running."), (comment_prefix .. "Stop the REPL with " .. config["get-in"]({"mapping", "prefix"}) .. cfg({"mapping", "stop"}))}, {["break?"] = true})
+    return log.append({(M["comment-prefix"] .. "Can't start, REPL is already running."), (M["comment-prefix"] .. "Stop the REPL with " .. config["get-in"]({"mapping", "prefix"}) .. cfg({"mapping", "stop"}))}, {["break?"] = true})
   else
     local function _12_()
       display_repl_status("started")
@@ -107,14 +109,14 @@ local function start()
     end
     local function _16_(code, signal)
       if (("number" == type(code)) and (code > 0)) then
-        log.append({(comment_prefix .. "process exited with code " .. code)})
+        log.append({(M["comment-prefix"] .. "process exited with code " .. code)})
       else
       end
       if (("number" == type(signal)) and (signal > 0)) then
-        log.append({(comment_prefix .. "process exited with signal " .. signal)})
+        log.append({(M["comment-prefix"] .. "process exited with signal " .. signal)})
       else
       end
-      return stop()
+      return M.stop()
     end
     local function _19_(msg)
       return display_result(format_msg(unbatch({msg})), {["join-first?"] = true})
@@ -122,20 +124,20 @@ local function start()
     return core.assoc(state(), "repl", stdio.start({["prompt-pattern"] = cfg({"prompt_pattern"}), cmd = cfg({"command"}), ["on-success"] = _12_, ["on-error"] = _15_, ["on-exit"] = _16_, ["on-stray-output"] = _19_}))
   end
 end
-local function on_load()
-  return start()
+M["on-load"] = function()
+  return M.start()
 end
-local function on_exit()
-  return stop()
+M["on-exit"] = function()
+  return M.stop()
 end
-local function interrupt()
+M.interrupt = function()
   local function _21_(repl)
-    log.append({(comment_prefix .. " Sending interrupt signal.")}, {["break?"] = true})
+    log.append({(M["comment-prefix"] .. " Sending interrupt signal.")}, {["break?"] = true})
     return repl["send-signal"]("sigint")
   end
   return with_repl_or_warn(_21_)
 end
-local function eval_str(opts)
+M["eval-str"] = function(opts)
   local function _22_(repl)
     local function _23_(msgs)
       local msgs0 = format_msg(unbatch(msgs))
@@ -150,12 +152,21 @@ local function eval_str(opts)
   end
   return with_repl_or_warn(_22_)
 end
-local function eval_file(opts)
-  return eval_str(core.assoc(opts, "code", core.slurp(opts["file-path"])))
+M["eval-file"] = function(opts)
+  return M["eval-str"](core.assoc(opts, "code", core.slurp(opts["file-path"])))
 end
-local function on_filetype()
-  mapping.buf("RustStart", cfg({"mapping", "start"}), start, {desc = "Start the Rust REPL"})
-  mapping.buf("RustStop", cfg({"mapping", "stop"}), stop, {desc = "Stop the Rust REPL"})
-  return mapping.buf("RustInterrupt", cfg({"mapping", "interrupt"}), interrupt, {desc = "Interrupt the current evaluation"})
+M["on-filetype"] = function()
+  local function _25_()
+    return M.start()
+  end
+  mapping.buf("RustStart", cfg({"mapping", "start"}), _25_, {desc = "Start the Rust REPL"})
+  local function _26_()
+    return M.stop()
+  end
+  mapping.buf("RustStop", cfg({"mapping", "stop"}), _26_, {desc = "Stop the Rust REPL"})
+  local function _27_()
+    return M.interrupt()
+  end
+  return mapping.buf("RustInterrupt", cfg({"mapping", "interrupt"}), _27_, {desc = "Interrupt the current evaluation"})
 end
-return {["buf-suffix"] = buf_suffix, ["comment-prefix"] = comment_prefix, ["eval-file"] = eval_file, ["eval-str"] = eval_str, ["form-node?"] = form_node_3f, interrupt = interrupt, ["on-exit"] = on_exit, ["on-filetype"] = on_filetype, ["on-load"] = on_load, start = start, stop = stop}
+return M

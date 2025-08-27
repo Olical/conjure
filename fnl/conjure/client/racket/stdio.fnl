@@ -147,17 +147,17 @@
 (fn M.on-filetype []
   (mapping.buf
     :RktStart (cfg [:mapping :start])
-    M.start
+    #(M.start)
     {:desc "Start the REPL"})
 
   (mapping.buf
     :RktStop (cfg [:mapping :stop])
-    M.stop
+    #(M.stop)
     {:desc "Stop the REPL"})
 
   (mapping.buf
     :RktInterrupt (cfg [:mapping :interrupt])
-    M.interrupt
+    #(M.interrupt)
     {:desc "Interrupt the current evaluation"}))
 
 (fn M.on-exit []
