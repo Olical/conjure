@@ -9,28 +9,20 @@
 (local str (autoload :conjure.nfnl.string))
 (local repl (autoload :conjure.nfnl.repl))
 (local fs (autoload :conjure.nfnl.fs))
+(local def-str-util (autoload :conjure.client.fennel.def-str-util))
 
-(local M
-  (define :conjure.client.fennel.nfnl
-    {:comment-node? ts.lisp-comment-node?
-     :buf-suffix ".fnl"
-     :comment-prefix "; "}))
+(local M (define :conjure.client.fennel.nfnl
+           {:comment-node? ts.lisp-comment-node?
+            :buf-suffix :.fnl
+            :comment-prefix "; "}))
 
 (fn M.form-node? [node]
   (ts.node-surrounded-by-form-pair-chars? node [["#(" ")"]]))
 
-(config.merge
-  {:client
-   {:fennel
-    {:nfnl
-     {}}}})
+(config.merge {:client {:fennel {:nfnl {}}}})
 
 (when (config.get-in [:mapping :enable_defaults])
-  (config.merge
-   {:client
-    {:fennel
-     {:nfnl
-      {:mapping {}}}}}))
+  (config.merge {:client {:fennel {:nfnl {:mapping {}}}}}))
 
 (local cfg (config.get-in-fn [:client :fennel :nfnl]))
 
@@ -40,20 +32,18 @@
   "Upserts a repl for the given path. Stored in the `repls` table.
   TODO: Add mappings or commands that allow us to reset the REPL state if they get stuck."
   (if (?. M.repls path)
-    (. M.repls path)
-    (let [r (repl.new
-              {:on-error
-               (fn [err-type err]
-                 (-> (str.join ["[" err-type "] " err])
-                     (text.strip-ansi-escape-sequences)
-                     (str.trim)
-                     (text.prefixed-lines "; ")
-                     (log.append)))
-               :cfg (let [config-map (nfnl-config.find-and-load (fs.file-name-root path))]
-                      (when config-map
-                        (nfnl-config.cfg-fn config-map)))})]
-      (tset M.repls path r)
-      r)))
+      (. M.repls path)
+      (let [r (repl.new {:on-error (fn [err-type err]
+                                     (-> (str.join ["[" err-type "] " err])
+                                         (text.strip-ansi-escape-sequences)
+                                         (str.trim)
+                                         (text.prefixed-lines "; ")
+                                         (log.append)))
+                         :cfg (let [config-map (nfnl-config.find-and-load (fs.file-name-root path))]
+                                (when config-map
+                                  (nfnl-config.cfg-fn config-map)))})]
+        (tset M.repls path r)
+        r)))
 
 (fn M.module-path [path]
   "Turns a full file path into a dot.delimited.module.path. We can then use this module path to perform live reloads by modifying the currently loaded module.
@@ -63,12 +53,11 @@
   TODO: Make this configurable so that non-standard Fennel setups also work. Maybe just read the .nfnl.fnl configuration since that is what we are supposed to be working with."
   (when path
     (let [parts (-> path (fs.file-name-root) (fs.split-path))
-          fnl-and-below (core.drop-while #(not= $1 "fnl") parts)]
-      (when (= "fnl" (core.first fnl-and-below))
+          fnl-and-below (core.drop-while #(not= $1 :fnl) parts)]
+      (when (= :fnl (core.first fnl-and-below))
         (str.join "." (core.rest fnl-and-below))))))
 
-(comment
-  (M.module-path "~/repos/Olical/conjure/fnl/conjure/client/fennel/nfnl.fnl"))
+(comment (M.module-path "~/repos/Olical/conjure/fnl/conjure/client/fennel/nfnl.fnl"))
 
 (fn M.eval-str [opts]
   "Client function, called by Conjure when evaluating a string."
@@ -76,20 +65,16 @@
         results (repl (.. opts.code "\n"))
         result-strs (core.map fennel.view results)
         mod-path (M.module-path opts.file-path)]
-
     ;; When we evaluate a whole file and it ends in a table, we merge that table into the loaded module.
     ;; This allows you to reload a module with ef or eb.
-    (when (and mod-path
-               (or (= :buf opts.origin) (= :file opts.origin))
+    (when (and mod-path (or (= :buf opts.origin) (= :file opts.origin))
                (core.table? (core.last results)))
       (let [mod (core.get package.loaded mod-path)]
         (tset package.loaded mod-path (core.merge! mod (core.last results)))))
-
     (when (not (core.empty? result-strs))
       (let [result (str.join "\n" result-strs)]
         (when opts.on-result
           (opts.on-result result))
-
         (log.append (text.split-lines result))))))
 
 (fn M.eval-file [opts]
@@ -102,5 +87,19 @@
   "Client function, called by Conjure when looking up documentation."
   (core.assoc opts :code (.. ",doc " opts.code))
   (M.eval-str opts))
+
+(fn M.def-str [opts]
+  "Client function, called by Conjure when jumping to definition." ; opts -> {:keys [code jumping? range]}
+  (if (ts.enabled?)
+      (def-str-util.search-and-jump opts.code (. opts.range.start 1))
+      (log.append ["jump to def is not supported because treesitter is not enabled or installed"])))
+
+(comment ;; testing code for def-str
+  (M.eval-file :dafa)
+  (def-str-util.search-and-jump :M.eval-file 99)
+  (def-str-util.search-targets def-str-util.def-query
+    (def-str-util.get-current-root)
+    0
+    99))
 
 M

@@ -1,4 +1,4 @@
--- [nfnl] fnl/conjure/client/fennel/nfnl.fnl
+-- [nfnl] Compiled from fnl/conjure/client/fennel/nfnl.fnl by https://github.com/Olical/nfnl, do not edit.
 local _local_1_ = require("conjure.nfnl.module")
 local autoload = _local_1_["autoload"]
 local define = _local_1_["define"]
@@ -12,6 +12,7 @@ local fennel = autoload("conjure.nfnl.fennel")
 local str = autoload("conjure.nfnl.string")
 local repl = autoload("conjure.nfnl.repl")
 local fs = autoload("conjure.nfnl.fs")
+local def_str_util = autoload("conjure.client.fennel.def-str-util")
 local M = define("conjure.client.fennel.nfnl", {["comment-node?"] = ts["lisp-comment-node?"], ["buf-suffix"] = ".fnl", ["comment-prefix"] = "; "})
 M["form-node?"] = function(node)
   return ts["node-surrounded-by-form-pair-chars?"](node, {{"#(", ")"}})
@@ -105,4 +106,12 @@ M["doc-str"] = function(opts)
   core.assoc(opts, "code", (",doc " .. opts.code))
   return M["eval-str"](opts)
 end
+M["def-str"] = function(opts)
+  if ts["enabled?"]() then
+    return def_str_util["search-and-jump"](opts.code, opts.range.start[1])
+  else
+    return log.append({"jump to def is not supported because treesitter is not enabled or installed"})
+  end
+end
+--[[ (M.eval-file "dafa") (def-str-util.search-and-jump "M.eval-file" 99) (def-str-util.search-targets def-str-util.def-query (def-str-util.get-current-root) 0 99) ]]
 return M
