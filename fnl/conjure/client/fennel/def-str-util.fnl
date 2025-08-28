@@ -3,6 +3,17 @@
 (local conjure-ts (autoload :conjure.tree-sitter))
 (local ts-utils (autoload :nvim-treesitter.ts_utils))
 (local vim-ts (autoload :vim.treesitter))
+(local fennel (autoload :nfnl.fennel))
+(local notify (autoload :nfnl.notify))
+
+(comment
+  ;; use `fennel.view` as pretty-print
+  ;; use `core.pr-str` as pretty-print
+ (fennel.view {:a 15 :b 16})
+ ;; use `notify.debug` as logging
+ (notify.info "hello")
+ )
+
 
 ;;TSQuery that matches `local, fn`
 (local def-query (vim-ts.query.parse :fennel
@@ -21,14 +32,6 @@
     rhs: (list
            call: (symbol) (#any-of? \"autoload\" \"require\")
            item: (string) @import.path)))"))
-
-(fn prt [t]
-  (each [k v (pairs t)]
-    (if (not= (type v) :table)
-        (print k v)
-        (do
-          (print k)
-          (prt v)))))
 
 (fn get-current-root []
   "Return the root-node of current buffer"
