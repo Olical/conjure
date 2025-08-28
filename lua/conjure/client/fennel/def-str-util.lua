@@ -48,7 +48,7 @@ local function search_and_jump(code_text, last_row)
   results = core.filter(_4_, curr_targets)
   if (#results > 0) then
     do
-      local node = core.first(results)
+      local node = core.last(results)
       local range = node.range
       vim.api.nvim_win_set_cursor(0, range.start)
     end

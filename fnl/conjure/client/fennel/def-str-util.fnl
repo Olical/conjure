@@ -49,7 +49,7 @@
                              curr-targets)]
     (if (> (length results) 0)
         (do
-          (let [node (core.first results)
+          (let [node (core.last results)
                 range node.range]
             (vim.api.nvim_win_set_cursor 0 range.start))
           results)
