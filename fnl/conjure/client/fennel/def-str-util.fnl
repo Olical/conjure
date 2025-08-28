@@ -13,6 +13,15 @@
 (fn_form
   name: [(symbol) (multi_symbol)] @fn.def)"))
 
+;;TSQuery that matches the module path imported by `require, autoload`
+(local path-query (vim-ts.query.parse :fennel
+"
+(local_form
+  (binding_pair
+    rhs: (list
+           call: (symbol) (#any-of? \"autoload\" \"require\")
+           item: (string) @import.path)))"))
+
 (fn prt [t]
   (each [k v (pairs t)]
     (if (not= (type v) :table)
@@ -42,16 +51,24 @@
 
 (comment (search-targets def-query (get-current-root) 0 20))
 
-(fn search-and-jump [code-text last-row]
-  (let [curr-targets (search-targets def-query (get-current-root) 0 last-row)
+(fn search-in-buffer [code-text last-row bufnr]
+  "Search defs inside one buffer"
+  (let [curr-targets (search-targets def-query (get-current-root) bufnr last-row)
         results (core.filter (fn [node-t]
                                (= code-text node-t.content))
                              curr-targets)]
+    results))
+
+(fn jump-to-range [range]
+  (vim.api.nvim_win_set_cursor 0 range.start))
+
+(fn search-and-jump [code-text last-row]
+  "Try jump in current file"
+  (let [results (search-in-buffer code-text last-row 0)]
     (if (> (length results) 0)
         (do
-          (let [node (core.last results)
-                range node.range]
-            (vim.api.nvim_win_set_cursor 0 range.start))
+          (let [node (core.last results)]
+            (jump-to-range node.range))
           results)
         {:result "definition not found"})))
 
@@ -61,4 +78,33 @@
   ;; 
   )
 
-{: search-and-jump : search-targets : def-query : get-current-root}
+(fn rest-str [s]
+  "equal to clojure's (str (rest s))"
+  (string.sub s 2 -1))
+
+(comment
+ (icollect [id node_t (ipairs (search-targets path-query (get-current-root) 0 30))]
+  (rest-str node_t.content)))
+ 
+(fn resolve-module-path [modname]
+  "Try to resolve a lua module to actual file path."
+  (package.searchpath modname package.path))
+
+(fn imported-modules []
+  "Return a list of resolved file paths for all require/autoload modules in current buffer."
+  (let [root (get-current-root)
+        ;; find out all the import module symbol
+        raw-mods (icollect [_ node-t (ipairs (search-targets path-query root 0 200))]
+                   (rest-str node-t.content))]
+    ;; resolve them all 
+    (icollect [_ m (ipairs raw-mods)]
+      (resolve-module-path m))))
+
+(imported-modules)
+
+{: search-and-jump
+ : search-targets
+ : def-query
+ : get-current-root}
+
+
