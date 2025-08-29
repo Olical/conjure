@@ -34,7 +34,9 @@ end
 M["get-static-completions"] = function(prefix)
   local keyword_set = keywords["get-set"]("guile")
   local ts_completions = tsc["get-completions-at-cursor"]("scheme", "scheme")
+  local all_cmpl = a.concat(ts_completions, keyword_set)
+  local distinct_cmpl = util["ordered-distinct"](all_cmpl)
   local prefix_filter = tsc["make-prefix-filter"](prefix)
-  return prefix_filter(util["ordered-distinct"](a.concat(ts_completions, keyword_set)))
+  return prefix_filter(distinct_cmpl)
 end
 return M
