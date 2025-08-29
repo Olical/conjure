@@ -6,6 +6,7 @@
 (local fennel (autoload :nfnl.fennel))
 (local notify (autoload :nfnl.notify))
 (local config (autoload :nfnl.config))
+(local {: get-buf-content-as-string} (autoload :nfnl.nvim))
 
 (comment
   ;; use `fennel.view` as pretty-print
@@ -34,10 +35,11 @@
            call: (symbol) (#any-of? \"autoload\" \"require\")
            item: (string) @import.path)))"))
 
-(fn get-current-root []
+(fn get-current-root [bufnr lang]
   "Return the root-node of current buffer"
-  (let [bufnr 0
-        parser (vim-ts.get_parser bufnr)
+  (let [bufnr (or bufnr 0)
+        lang (or lang "fennel")
+        parser (vim-ts.get_parser bufnr lang)
         tree (. (parser:parse) 1)]
     (tree:root)))
 
@@ -57,7 +59,31 @@
 
 (fn search-in-buffer [code-text last-row bufnr]
   "Search defs inside one buffer"
-  (let [curr-targets (search-targets def-query (get-current-root) bufnr last-row)
+  (let [curr-targets (search-targets def-query (get-current-root bufnr) bufnr last-row)
+        results (core.filter (fn [node-t]
+                               (= code-text node-t.content))
+                             curr-targets)]
+    results))
+
+(fn search-ext-targets [query root-node bufnr last]
+  "Based on the TS:Query, root-node, bufnr, list all the possible search targets."
+  (let [last (or last -1)
+        lines (vim.api.nvim_buf_get_lines bufnr 0 -1 false)
+        ]
+    (icollect [id node (query:iter_captures root-node bufnr 0 last)]
+      (let [range (conjure-ts.range node)
+            start-row (core.get-in range [:start 1])
+            start-col (core.get-in range [:start 2])
+            end-row (core.get-in range [:end 1])
+            end-col (core.get-in range [:end 2])]
+        (let [content (string.sub (core.get lines start-row) (+ 1 start-col) (+ 1 end-col))]
+          {:content content
+           :range range})))))
+
+
+(fn search-in-ext-buffer [code-text last-row bufnr]
+  "Search defs inside one buffer"
+  (let [curr-targets (search-ext-targets def-query (get-current-root bufnr) bufnr last-row)
         results (core.filter (fn [node-t]
                                (= code-text node-t.content))
                              curr-targets)]
@@ -98,24 +124,37 @@
 
 (fn search-in-file [code-text file-path]
   "Open file-path buffer, search for code-text, and jump if found."
-  (let [buf (vim.fn.bufadd file-path)]
-    (vim.fn.bufload buf)
-    (let [cross-results (search-in-buffer code-text -1 buf)]
+  (let [bufnr (vim.fn.bufadd file-path)]
+    (vim.fn.bufload bufnr)
+    (let [cross-results (search-in-ext-buffer code-text -1 bufnr)]
       (when (> (length cross-results) 0)
-        (vim.api.nvim_set_current_buf buf)
+        (vim.api.nvim_set_current_buf bufnr)
         (jump-to-range (. (core.last cross-results) :range))
-        (core.last cross-results)))))
+        (core.last cross-results)
+        (lua "return 1"))
+      (vim.api.nvim_buf_delete bufnr {}))))
 
 (comment
-;; TODO: fix from search-in-file 
-(local f 
- "/Users/laurencechen/.local/share/nvim/plugged/nfnl/fnl/nfnl/notify.fnl"
-  )
+;; init
+  (local f  "/Users/laurencechen/.local/share/nvim/plugged/nfnl/fnl/nfnl/notify.fnl" )
+  (local bufnr (vim.fn.bufadd f))
+  (vim.fn.bufload bufnr)
+
+(search-ext-targets def-query (get-current-root bufnr "fennel") bufnr)
+(search-in-ext-buffer "debug" -1 bufnr)
 (search-in-file "debug" f)
+
 )
+
+(fn remove-module-name [s]
+  (let [(start-index end-index) (string.find s "%.")]
+    (if start-index
+      (string.sub s (+ 1 start-index))
+      s)))
 
 (fn search-and-jump [code-text last-row]
   "Try jump in current file"
+  (print code-text last-row)
   (let [results (search-in-buffer code-text last-row 0)
         fnl-imports (imported-modules resolve-fnl-module-path last-row)]
     (if (> (length results) 0)
@@ -127,8 +166,10 @@
         (> (length fnl-imports) 0)
         ;; cross fnl module jump
         (do
-         (each [_ file-path (ipairs fnl-imports)]
-          (let [r (search-in-file code-text file-path)]
+          (core.pr (length fnl-imports))
+          (each [_ file-path (ipairs fnl-imports)]
+          (let [code-text (remove-module-name code-text)
+                r (search-in-file code-text file-path)]
             (when r (lua "return r"))))
          {:result "definition not found"}))))
 
