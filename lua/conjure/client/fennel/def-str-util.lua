@@ -7,6 +7,7 @@ local ts_utils = autoload("nvim-treesitter.ts_utils")
 local vim_ts = autoload("vim.treesitter")
 local fennel = autoload("nfnl.fennel")
 local notify = autoload("nfnl.notify")
+local config = autoload("nfnl.config")
 --[[ (fennel.view {:a 15 :b 16}) (notify.info "hello") ]]
 local def_query = vim_ts.query.parse("fennel", "\n(local_form\n (binding_pair\n   lhs: (symbol_binding) @local.def)) \n(fn_form\n  name: [(symbol) (multi_symbol)] @fn.def)")
 local path_query = vim_ts.query.parse("fennel", "\n(local_form\n  (binding_pair\n    rhs: (list\n           call: (symbol) (#any-of? \"autoload\" \"require\")\n           item: (string) @import.path)))")
@@ -51,7 +52,7 @@ local function resolve_lua_module_path(modname)
   return package.searchpath(("lua." .. modname), package.path)
 end
 local function resolve_fnl_module_path(modname)
-  return package.searchpath(modname, fennel.path)
+  return package.searchpath(modname, config.default()["fennel-path"])
 end
 local function imported_modules(resolve, last_row)
   local root = get_current_root()

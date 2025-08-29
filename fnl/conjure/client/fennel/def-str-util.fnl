@@ -5,6 +5,7 @@
 (local vim-ts (autoload :vim.treesitter))
 (local fennel (autoload :nfnl.fennel))
 (local notify (autoload :nfnl.notify))
+(local config (autoload :nfnl.config))
 
 (comment
   ;; use `fennel.view` as pretty-print
@@ -75,7 +76,7 @@
 
 (fn resolve-fnl-module-path [modname]
   "Try to resolve a fnl module via fennel.path"
-  (package.searchpath modname fennel.path))
+  (package.searchpath modname (. (config.default) :fennel-path)))
 
 
 (fn imported-modules [resolve last-row]
@@ -106,13 +107,12 @@
         (core.last cross-results)))))
 
 (comment
+;; TODO: fix from search-in-file 
 (local f 
  "/Users/laurencechen/.local/share/nvim/plugged/nfnl/fnl/nfnl/notify.fnl"
   )
 (search-in-file "debug" f)
 )
- 
-  
 
 (fn search-and-jump [code-text last-row]
   "Try jump in current file"
