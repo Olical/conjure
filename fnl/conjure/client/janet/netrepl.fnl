@@ -8,7 +8,7 @@
 (local text (autoload :conjure.text))
 (local ts (autoload :conjure.tree-sitter))
 
-(local M (define :conjure.client.hy.stdio))
+(local M (define :conjure.client.janet.netrepl))
 
 (set M.buf-suffix ".janet")
 (set M.comment-prefix "# ")
