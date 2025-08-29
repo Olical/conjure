@@ -65,15 +65,72 @@
 (fn jump-to-range [range]
   (vim.api.nvim_win_set_cursor 0 range.start))
 
+(fn rest-str [s]
+  "equal to clojure's (str (rest s))"
+  (string.sub s 2 -1))
+
+(fn resolve-lua-module-path [modname]
+  "Try to resolve a lua module via package.path"
+  (package.searchpath (.. "lua." modname) package.path))
+
+(fn resolve-fnl-module-path [modname]
+  "Try to resolve a fnl module via fennel.path"
+  (package.searchpath modname fennel.path))
+
+
+(fn imported-modules [resolve last-row]
+  "Return a list of resolved file paths for all require/autoload modules in current buffer."
+  (let [root (get-current-root)
+        ;; find out all the import module symbol
+        raw-mods (icollect [_ node-t (ipairs (search-targets path-query root 0 last-row))]
+                   (rest-str node-t.content))]
+    ;; resolve them all
+    (icollect [_ m (ipairs raw-mods)]
+      (resolve m))))
+
+(comment
+ (icollect [id node_t (ipairs (search-targets path-query (get-current-root) 0 30))]
+  (rest-str node_t.content))
+ 
+ (imported-modules resolve-fnl-module-path -1) 
+ )
+
+(fn search-in-file [code-text file-path]
+  "Open file-path buffer, search for code-text, and jump if found."
+  (let [buf (vim.fn.bufadd file-path)]
+    (vim.fn.bufload buf)
+    (let [cross-results (search-in-buffer code-text -1 buf)]
+      (when (> (length cross-results) 0)
+        (vim.api.nvim_set_current_buf buf)
+        (jump-to-range (. (core.last cross-results) :range))
+        (core.last cross-results)))))
+
+(comment
+(local f 
+ "/Users/laurencechen/.local/share/nvim/plugged/nfnl/fnl/nfnl/notify.fnl"
+  )
+(search-in-file "debug" f)
+)
+ 
+  
+
 (fn search-and-jump [code-text last-row]
   "Try jump in current file"
-  (let [results (search-in-buffer code-text last-row 0)]
+  (let [results (search-in-buffer code-text last-row 0)
+        fnl-imports (imported-modules resolve-fnl-module-path last-row)]
     (if (> (length results) 0)
+        ;; local jump
         (do
           (let [node (core.last results)]
             (jump-to-range node.range))
           results)
-        {:result "definition not found"})))
+        (> (length fnl-imports) 0)
+        ;; cross fnl module jump
+        (do
+         (each [_ file-path (ipairs fnl-imports)]
+          (let [r (search-in-file code-text file-path)]
+            (when r (lua "return r"))))
+         {:result "definition not found"}))))
 
 (comment ;;
   (search-and-jump :search-and-jump 39)
@@ -81,29 +138,6 @@
   ;; 
   )
 
-(fn rest-str [s]
-  "equal to clojure's (str (rest s))"
-  (string.sub s 2 -1))
-
-(comment
- (icollect [id node_t (ipairs (search-targets path-query (get-current-root) 0 30))]
-  (rest-str node_t.content)))
- 
-(fn resolve-module-path [modname]
-  "Try to resolve a lua module to actual file path."
-  (package.searchpath modname package.path))
-
-(fn imported-modules []
-  "Return a list of resolved file paths for all require/autoload modules in current buffer."
-  (let [root (get-current-root)
-        ;; find out all the import module symbol
-        raw-mods (icollect [_ node-t (ipairs (search-targets path-query root 0 200))]
-                   (rest-str node-t.content))]
-    ;; resolve them all 
-    (icollect [_ m (ipairs raw-mods)]
-      (resolve-module-path m))))
-
-(imported-modules)
 
 {: search-and-jump
  : search-targets

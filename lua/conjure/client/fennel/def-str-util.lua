@@ -19,17 +19,17 @@ end
 local function search_targets(query, root_node, bufnr, last)
   local bufnr0 = (bufnr or 0)
   local last0 = (last or ( - 1))
-  local tbl_21_ = {}
-  local i_22_ = 0
+  local tbl_21_auto = {}
+  local i_22_auto = 0
   for id, node in query:iter_captures(root_node, bufnr0, 0, last0) do
-    local val_23_ = conjure_ts["node->table"](node)
-    if (nil ~= val_23_) then
-      i_22_ = (i_22_ + 1)
-      tbl_21_[i_22_] = val_23_
+    local val_23_auto = conjure_ts["node->table"](node)
+    if (nil ~= val_23_auto) then
+      i_22_auto = (i_22_auto + 1)
+      tbl_21_auto[i_22_auto] = val_23_auto
     else
     end
   end
-  return tbl_21_
+  return tbl_21_auto
 end
 --[[ (search-targets def-query (get-current-root) 0 20) ]]
 local function search_in_buffer(code_text, last_row, bufnr)
@@ -44,53 +44,78 @@ end
 local function jump_to_range(range)
   return vim.api.nvim_win_set_cursor(0, range.start)
 end
+local function rest_str(s)
+  return string.sub(s, 2, -1)
+end
+local function resolve_lua_module_path(modname)
+  return package.searchpath(("lua." .. modname), package.path)
+end
+local function resolve_fnl_module_path(modname)
+  return package.searchpath(modname, fennel.path)
+end
+local function imported_modules(resolve, last_row)
+  local root = get_current_root()
+  local raw_mods
+  do
+    local tbl_21_auto = {}
+    local i_22_auto = 0
+    for _, node_t in ipairs(search_targets(path_query, root, 0, last_row)) do
+      local val_23_auto = rest_str(node_t.content)
+      if (nil ~= val_23_auto) then
+        i_22_auto = (i_22_auto + 1)
+        tbl_21_auto[i_22_auto] = val_23_auto
+      else
+      end
+    end
+    raw_mods = tbl_21_auto
+  end
+  local tbl_21_auto = {}
+  local i_22_auto = 0
+  for _, m in ipairs(raw_mods) do
+    local val_23_auto = resolve(m)
+    if (nil ~= val_23_auto) then
+      i_22_auto = (i_22_auto + 1)
+      tbl_21_auto[i_22_auto] = val_23_auto
+    else
+    end
+  end
+  return tbl_21_auto
+end
+--[[ (icollect [id node_t (ipairs (search-targets path-query (get-current-root) 0 30))] (rest-str node_t.content)) (imported-modules resolve-fnl-module-path -1) ]]
+local function search_in_file(code_text, file_path)
+  local buf = vim.fn.bufadd(file_path)
+  vim.fn.bufload(buf)
+  local cross_results = search_in_buffer(code_text, -1, buf)
+  if (#cross_results > 0) then
+    vim.api.nvim_set_current_buf(buf)
+    jump_to_range(core.last(cross_results).range)
+    return core.last(cross_results)
+  else
+    return nil
+  end
+end
+--[[ (local f "/Users/laurencechen/.local/share/nvim/plugged/nfnl/fnl/nfnl/notify.fnl") (search-in-file "debug" f) ]]
 local function search_and_jump(code_text, last_row)
   local results = search_in_buffer(code_text, last_row, 0)
+  local fnl_imports = imported_modules(resolve_fnl_module_path, last_row)
   if (#results > 0) then
     do
       local node = core.last(results)
       jump_to_range(node.range)
     end
     return results
-  else
-    return {result = "definition not found"}
-  end
-end
---[[ (search-and-jump "search-and-jump" 39) (search-and-jump "search-and-jump" 49) ]]
-local function rest_str(s)
-  return string.sub(s, 2, -1)
-end
---[[ (icollect [id node_t (ipairs (search-targets path-query (get-current-root) 0 30))] (rest-str node_t.content)) ]]
-local function resolve_module_path(modname)
-  return package.searchpath(modname, package.path)
-end
-local function imported_modules()
-  local root = get_current_root()
-  local raw_mods
-  do
-    local tbl_21_ = {}
-    local i_22_ = 0
-    for _, node_t in ipairs(search_targets(path_query, root, 0, 200)) do
-      local val_23_ = rest_str(node_t.content)
-      if (nil ~= val_23_) then
-        i_22_ = (i_22_ + 1)
-        tbl_21_[i_22_] = val_23_
+  elseif (#fnl_imports > 0) then
+    for _, file_path in ipairs(fnl_imports) do
+      local r = search_in_file(code_text, file_path)
+      if r then
+        return r
       else
       end
     end
-    raw_mods = tbl_21_
+    return {result = "definition not found"}
+  else
+    return nil
   end
-  local tbl_21_ = {}
-  local i_22_ = 0
-  for _, m in ipairs(raw_mods) do
-    local val_23_ = resolve_module_path(m)
-    if (nil ~= val_23_) then
-      i_22_ = (i_22_ + 1)
-      tbl_21_[i_22_] = val_23_
-    else
-    end
-  end
-  return tbl_21_
 end
-imported_modules()
+--[[ (search-and-jump "search-and-jump" 39) (search-and-jump "search-and-jump" 49) ]]
 return {["search-and-jump"] = search_and_jump, ["search-targets"] = search_targets, ["def-query"] = def_query, ["get-current-root"] = get_current_root}
