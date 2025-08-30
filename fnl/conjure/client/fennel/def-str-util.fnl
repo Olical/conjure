@@ -8,14 +8,6 @@
 (local config (autoload :nfnl.config))
 (local {: get-buf-content-as-string} (autoload :nfnl.nvim))
 
-(comment
-  ;; use `fennel.view` as pretty-print
-  ;; use `core.pr-str` as pretty-print
- (fennel.view {:a 15 :b 16})
- ;; use `notify.debug` as logging
- (notify.info "hello")
- )
-
 
 ;;TSQuery that matches `local, fn`
 (local def-query (vim-ts.query.parse :fennel
@@ -154,7 +146,6 @@
 
 (fn search-and-jump [code-text last-row]
   "Try jump in current file"
-  (print code-text last-row)
   (let [results (search-in-buffer code-text last-row 0)
         fnl-imports (imported-modules resolve-fnl-module-path last-row)]
     (if (> (length results) 0)
@@ -166,7 +157,6 @@
         (> (length fnl-imports) 0)
         ;; cross fnl module jump
         (do
-          (core.pr (length fnl-imports))
           (each [_ file-path (ipairs fnl-imports)]
           (let [code-text (remove-module-name code-text)
                 r (search-in-file code-text file-path)]

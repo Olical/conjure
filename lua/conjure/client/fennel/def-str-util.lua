@@ -10,7 +10,6 @@ local notify = autoload("nfnl.notify")
 local config = autoload("nfnl.config")
 local _local_2_ = autoload("nfnl.nvim")
 local get_buf_content_as_string = _local_2_["get-buf-content-as-string"]
---[[ (fennel.view {:a 15 :b 16}) (notify.info "hello") ]]
 local def_query = vim_ts.query.parse("fennel", "\n(local_form\n (binding_pair\n   lhs: (symbol_binding) @local.def)) \n(fn_form\n  name: [(symbol) (multi_symbol)] @fn.def)")
 local path_query = vim_ts.query.parse("fennel", "\n(local_form\n  (binding_pair\n    rhs: (list\n           call: (symbol) (#any-of? \"autoload\" \"require\")\n           item: (string) @import.path)))")
 local function get_current_root(bufnr, lang)
@@ -142,7 +141,6 @@ local function remove_module_name(s)
   end
 end
 local function search_and_jump(code_text, last_row)
-  print(code_text, last_row)
   local results = search_in_buffer(code_text, last_row, 0)
   local fnl_imports = imported_modules(resolve_fnl_module_path, last_row)
   if (#results > 0) then
@@ -152,7 +150,6 @@ local function search_and_jump(code_text, last_row)
     end
     return results
   elseif (#fnl_imports > 0) then
-    core.pr(#fnl_imports)
     for _, file_path in ipairs(fnl_imports) do
       local code_text0 = remove_module_name(code_text)
       local r = search_in_file(code_text0, file_path)
