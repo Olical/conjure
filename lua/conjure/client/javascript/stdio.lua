@@ -28,7 +28,7 @@ end
 state = client["new-state"](_3_)
 M["comment-prefix"] = "// "
 M["form-node?"] = function(node)
-  return (("function_declaration" == node:type()) or ("export_statement" == node:type()) or ("try_statement" == node:type()) or ("expression_statement" == node:type()) or ("import_statement" == node:type()) or ("class_declaration" == node:type()) or ("type_alias_declaration" == node:type()) or ("enum_declaration" == node:type()) or ("lexical_declaration" == node:type()) or ("for_statement" == node:type()) or ("for_in_statement" == node:type()))
+  return (("function_declaration" == node:type()) or ("export_statement" == node:type()) or ("try_statement" == node:type()) or ("expression_statement" == node:type()) or ("import_statement" == node:type()) or ("class_declaration" == node:type()) or ("type_alias_declaration" == node:type()) or ("enum_declaration" == node:type()) or ("lexical_declaration" == node:type()) or ("for_statement" == node:type()) or ("for_in_statement" == node:type()) or ("interface_declaration" == node:type()))
 end
 local function with_repl_or_warn(f, opts)
   local repl = state("repl")
@@ -46,7 +46,7 @@ local function tap_3e(s)
   return s
 end
 local function prep_code_expr(e)
-  return transformers.transform(import_replacer["replace-imports"](e))
+  return import_replacer["replace-imports"](transformers.transform(e))
 end
 local function prep_code_file(f)
   return str.join("\n", a.map(prep_code_expr, str.split(f, "\n")))
@@ -127,7 +127,7 @@ M["eval-file"] = function(opts)
         opts["on-result"](str.join(" ", msgs0))
       else
       end
-      return vim.fs.rm(tmp_name)
+      return vim.uv.fs_unlink(tmp_name, nil)
     end
     return repl.send((".load " .. tmp_name .. "\n"), _15_)
   end

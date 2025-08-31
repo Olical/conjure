@@ -24,7 +24,7 @@ local function is_arrow_fn_3f(code)
   end
 end
 M["remove-comments"] = function(s)
-  local sub, _ = string.gsub(string.gsub(string.gsub(string.gsub(string.gsub(s, "%/%*.-%*%/", ""), "[^%S]%/%/.-\n", "\n"), "^%/.*", ""), "^%s*%*.*", ""), "^%s*%/%*+.*", "")
+  local sub, _ = string.gsub(string.gsub(string.gsub(string.gsub(string.gsub(string.gsub(s, "^//.-\n", ""), "%s*[^:]//.-\n", "\n"), "([^:]//).-\n", ""), "%/%*.-%*%/", ""), "^%s*%*.*", ""), "^%s*%/%*+.*", "")
   return sub
 end
 M["replace-arrows"] = function(s)
@@ -61,14 +61,18 @@ M["replace-arrows"] = function(s)
     return replace
   end
 end
+local function not_declaration_3f(ln)
+  return (not (text["starts-with"](ln, "let") or text["starts-with"](ln, "const")) and (string.match(ln, ".-%&%&.-") or text["starts-with"](ln, "?") or text["starts-with"](ln, ":")))
+end
 local function add_semicolon(s)
   local spl = str.split(s, "\n")
   local sub_fn
   local function _10_(ln)
-    if (text["starts-with"](ln, ".") or string.match(ln, "%s*@") or text["ends-with"](ln, "{") or text["ends-with"](ln, ";") or str["blank?"](ln)) then
-      return ln
+    local ln0 = str.trim(ln)
+    if (text["starts-with"](ln0, ".") or string.match(ln0, "%s*@") or text["ends-with"](ln0, "{") or text["ends-with"](ln0, ";") or text["ends-with"](ln0, ",") or not_declaration_3f(ln0) or str["blank?"](ln0)) then
+      return ln0
     else
-      return (ln .. ";")
+      return (ln0 .. ";")
     end
   end
   sub_fn = _10_
@@ -76,16 +80,16 @@ local function add_semicolon(s)
   return str.join(" ", sub)
 end
 M["manage-semicolons"] = function(s)
-  if (text["starts-with"](s, "function") or text["starts-with"](s, "namespace") or text["starts-with"](s, "class") or text["starts-with"](s, "@")) then
+  if (text["starts-with"](s, "function") or text["starts-with"](s, "namespace") or text["starts-with"](s, "class") or text["starts-with"](s, "@") or string.match(s, ".-%s*:%s*%[.-%]%s*=%s*.-")) then
     return add_semicolon(s)
   else
     return s
   end
 end
 local function flat_dot_lines(s)
-  return string.gsub(s, "%s+%.", "%.")
+  return string.gsub(s, "%s+", " ")
 end
 M.transform = function(s)
-  return M["manage-semicolons"](M["replace-arrows"](flat_dot_lines(M["remove-comments"](s))))
+  return M["replace-arrows"](flat_dot_lines(M["manage-semicolons"](M["remove-comments"](s))))
 end
 return M

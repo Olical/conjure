@@ -18,9 +18,10 @@
 ;; Before sending code to the REPL, all comments must be removed
 (fn M.remove-comments [s]
   (let [(sub _) (-> s  
+                    (string.gsub "^//.-\n" "")
+                    (string.gsub "%s*[^:]//.-\n" "\n")
+                    (string.gsub "([^:]//).-\n" "")
                     (string.gsub "%/%*.-%*%/" "")
-                    (string.gsub "[^%S]%/%/.-\n" "\n")
-                    (string.gsub "^%/.*" "")
                     (string.gsub "^%s*%*.*" "")
                     (string.gsub "^%s*%/%*+.*" ""))]
     sub))
@@ -41,17 +42,27 @@
             (replace _) (s:gsub pattern replace-fn)]
         replace)))
 
+(fn not-declaration? [ln]
+  (and (not (or (text.starts-with ln "let")
+                (text.starts-with ln "const")))
+       (or (string.match ln ".-%&%&.-")
+           (text.starts-with ln "?")
+           (text.starts-with ln ":"))))
+
 ;; For better user experience, in some scenarios semicolons must be automatically appended 
 (fn add-semicolon [s]
   (let [spl (str.split s "\n")
         sub-fn (fn [ln]
-                 (if (or (text.starts-with ln :.)
-                         (string.match ln "%s*@")
-                         (text.ends-with ln "{")
-                         (text.ends-with ln ";")
-                         (str.blank? ln))
-                     ln
-                     (.. ln ";")))
+                 (let [ln (str.trim ln)]
+                   (if (or (text.starts-with ln :.)
+                           (string.match ln "%s*@")
+                           (text.ends-with ln "{")
+                           (text.ends-with ln ";")
+                           (text.ends-with ln ",")
+                           (not-declaration? ln)
+                           (str.blank? ln))
+                       ln
+                       (.. ln ";"))))
         sub (a.map sub-fn spl)]
     (str.join " " sub)))
 
@@ -60,18 +71,19 @@
         (text.starts-with s "function")
         (text.starts-with s "namespace")
         (text.starts-with s "class")
-        (text.starts-with s "@"))
+        (text.starts-with s "@")
+        (string.match s ".-%s*:%s*%[.-%]%s*=%s*.-"))
       (add-semicolon s)
       s))
 
 (fn flat-dot-lines [s]
-  (string.gsub s "%s+%." "%."))
+  (string.gsub s "%s+" " "))
 
 (fn M.transform [s]
   (-> s 
       M.remove-comments 
+      M.manage-semicolons
       flat-dot-lines
-      M.replace-arrows
-      M.manage-semicolons))
+      M.replace-arrows))
 
 M
