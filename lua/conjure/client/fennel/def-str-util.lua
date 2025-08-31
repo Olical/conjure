@@ -118,7 +118,7 @@ local function imported_modules(resolve, last_row)
   return tbl_21_auto
 end
 --[[ (icollect [id node_t (ipairs (search-targets path-query (get-current-root) 0 30))] (rest-str node_t.content)) (imported-modules resolve-fnl-module-path -1) ]]
-local function search_in_file(code_text, file_path)
+local function search_in_ext_file(code_text, file_path)
   local bufnr = vim.fn.bufadd(file_path)
   vim.fn.bufload(bufnr)
   local cross_results = search_in_ext_buffer(code_text, -1, bufnr)
@@ -131,7 +131,7 @@ local function search_in_file(code_text, file_path)
   end
   return vim.api.nvim_buf_delete(bufnr, {})
 end
---[[ (local f "/Users/laurencechen/.local/share/nvim/plugged/nfnl/fnl/nfnl/notify.fnl") (local bufnr (vim.fn.bufadd f)) (vim.fn.bufload bufnr) (search-ext-targets def-query (get-current-root bufnr "fennel") bufnr) (search-in-ext-buffer "debug" -1 bufnr) (search-in-file "debug" f) ]]
+--[[ (local f "/Users/laurencechen/.local/share/nvim/plugged/nfnl/fnl/nfnl/notify.fnl") (local bufnr (vim.fn.bufadd f)) (vim.fn.bufload bufnr) (search-ext-targets def-query (get-current-root bufnr "fennel") bufnr) (search-in-ext-buffer "debug" -1 bufnr) (search-in-ext-file "debug" f) ]]
 local function remove_module_name(s)
   local start_index, end_index = string.find(s, "%.")
   if start_index then
@@ -152,7 +152,7 @@ local function search_and_jump(code_text, last_row)
   elseif (#fnl_imports > 0) then
     for _, file_path in ipairs(fnl_imports) do
       local code_text0 = remove_module_name(code_text)
-      local r = search_in_file(code_text0, file_path)
+      local r = search_in_ext_file(code_text0, file_path)
       if r then
         return r
       else

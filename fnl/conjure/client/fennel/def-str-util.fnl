@@ -111,7 +111,7 @@
            (rest-str node_t.content))
   (imported-modules resolve-fnl-module-path -1))
 
-(fn search-in-file [code-text file-path]
+(fn search-in-ext-file [code-text file-path]
   "Open file-path buffer, search for code-text, and jump if found."
   (let [bufnr (vim.fn.bufadd file-path)]
     (vim.fn.bufload bufnr)
@@ -130,7 +130,7 @@
   (vim.fn.bufload bufnr)
   (search-ext-targets def-query (get-current-root bufnr :fennel) bufnr)
   (search-in-ext-buffer :debug -1 bufnr)
-  (search-in-file :debug f))
+  (search-in-ext-file :debug f))
 
 (fn remove-module-name [s]
   (let [(start-index end-index) (string.find s "%.")]
@@ -139,7 +139,7 @@
         s)))
 
 (fn search-and-jump [code-text last-row]
-  "Try jump in current file"
+  "Try jump in local file and fennel modules"
   (let [results (search-in-buffer code-text last-row 0)
         fnl-imports (imported-modules resolve-fnl-module-path last-row)]
     (if (> (length results) 0) ;; local jump
@@ -151,7 +151,7 @@
         (do
           (each [_ file-path (ipairs fnl-imports)]
             (let [code-text (remove-module-name code-text)
-                  r (search-in-file code-text file-path)]
+                  r (search-in-ext-file code-text file-path)]
               (when r (lua "return r"))))
           {:result "definition not found"}))))
 
