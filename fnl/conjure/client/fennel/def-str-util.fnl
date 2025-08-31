@@ -8,7 +8,6 @@
 (local config (autoload :nfnl.config))
 (local {: get-buf-content-as-string} (autoload :nfnl.nvim))
 
-
 ;;TSQuery that matches `local, fn`
 (local def-query (vim-ts.query.parse :fennel
                                      "
@@ -20,7 +19,7 @@
 
 ;;TSQuery that matches the module path imported by `require, autoload`
 (local path-query (vim-ts.query.parse :fennel
-"
+                                      "
 (local_form
   (binding_pair
     rhs: (list
@@ -28,9 +27,9 @@
            item: (string) @import.path)))"))
 
 (fn get-current-root [bufnr lang]
-  "Return the root-node of current buffer"
+  "Return the root-node of bufnr or current buffer"
   (let [bufnr (or bufnr 0)
-        lang (or lang "fennel")
+        lang (or lang :fennel)
         parser (vim-ts.get_parser bufnr lang)
         tree (. (parser:parse) 1)]
     (tree:root)))
@@ -51,31 +50,32 @@
 
 (fn search-in-buffer [code-text last-row bufnr]
   "Search defs inside one buffer"
-  (let [curr-targets (search-targets def-query (get-current-root bufnr) bufnr last-row)
+  (let [curr-targets (search-targets def-query (get-current-root bufnr) bufnr
+                                     last-row)
         results (core.filter (fn [node-t]
                                (= code-text node-t.content))
                              curr-targets)]
     results))
 
 (fn search-ext-targets [query root-node bufnr last]
-  "Based on the TS:Query, root-node, bufnr, list all the possible search targets."
+  "Based on the TS:Query, root-node, bufnr, list all the possible search targets.
+   bufnr is ext-buffer, so that we cannot access node.content directly."
   (let [last (or last -1)
-        lines (vim.api.nvim_buf_get_lines bufnr 0 -1 false)
-        ]
+        lines (vim.api.nvim_buf_get_lines bufnr 0 -1 false)]
     (icollect [id node (query:iter_captures root-node bufnr 0 last)]
       (let [range (conjure-ts.range node)
             start-row (core.get-in range [:start 1])
             start-col (core.get-in range [:start 2])
             end-row (core.get-in range [:end 1])
             end-col (core.get-in range [:end 2])]
-        (let [content (string.sub (core.get lines start-row) (+ 1 start-col) (+ 1 end-col))]
-          {:content content
-           :range range})))))
-
+        (let [content (string.sub (core.get lines start-row) (+ 1 start-col)
+                                  (+ 1 end-col))]
+          {: content : range})))))
 
 (fn search-in-ext-buffer [code-text last-row bufnr]
-  "Search defs inside one buffer"
-  (let [curr-targets (search-ext-targets def-query (get-current-root bufnr) bufnr last-row)
+  "Search defs inside ext buffer (not current buffer)"
+  (let [curr-targets (search-ext-targets def-query (get-current-root bufnr)
+                                         bufnr last-row)
         results (core.filter (fn [node-t]
                                (= code-text node-t.content))
                              curr-targets)]
@@ -90,29 +90,26 @@
 
 (fn resolve-lua-module-path [modname]
   "Try to resolve a lua module via package.path"
-  (package.searchpath (.. "lua." modname) package.path))
+  (package.searchpath (.. :lua. modname) package.path))
 
 (fn resolve-fnl-module-path [modname]
   "Try to resolve a fnl module via fennel.path"
   (package.searchpath modname (. (config.default) :fennel-path)))
 
-
 (fn imported-modules [resolve last-row]
   "Return a list of resolved file paths for all require/autoload modules in current buffer."
-  (let [root (get-current-root)
-        ;; find out all the import module symbol
-        raw-mods (icollect [_ node-t (ipairs (search-targets path-query root 0 last-row))]
+  (let [root (get-current-root) ;; find out all the import module symbol
+        raw-mods (icollect [_ node-t (ipairs (search-targets path-query root 0
+                                                             last-row))]
                    (rest-str node-t.content))]
     ;; resolve them all
     (icollect [_ m (ipairs raw-mods)]
       (resolve m))))
 
-(comment
- (icollect [id node_t (ipairs (search-targets path-query (get-current-root) 0 30))]
-  (rest-str node_t.content))
- 
- (imported-modules resolve-fnl-module-path -1) 
- )
+(comment (icollect [id node_t (ipairs (search-targets path-query
+                                                      (get-current-root) 0 30))]
+           (rest-str node_t.content))
+  (imported-modules resolve-fnl-module-path -1))
 
 (fn search-in-file [code-text file-path]
   "Open file-path buffer, search for code-text, and jump if found."
@@ -126,42 +123,37 @@
         (lua "return 1"))
       (vim.api.nvim_buf_delete bufnr {}))))
 
-(comment
-;; init
-  (local f  "/Users/laurencechen/.local/share/nvim/plugged/nfnl/fnl/nfnl/notify.fnl" )
+(comment ;; init
+  (local f
+         :/Users/laurencechen/.local/share/nvim/plugged/nfnl/fnl/nfnl/notify.fnl)
   (local bufnr (vim.fn.bufadd f))
   (vim.fn.bufload bufnr)
-
-(search-ext-targets def-query (get-current-root bufnr "fennel") bufnr)
-(search-in-ext-buffer "debug" -1 bufnr)
-(search-in-file "debug" f)
-
-)
+  (search-ext-targets def-query (get-current-root bufnr :fennel) bufnr)
+  (search-in-ext-buffer :debug -1 bufnr)
+  (search-in-file :debug f))
 
 (fn remove-module-name [s]
   (let [(start-index end-index) (string.find s "%.")]
     (if start-index
-      (string.sub s (+ 1 start-index))
-      s)))
+        (string.sub s (+ 1 start-index))
+        s)))
 
 (fn search-and-jump [code-text last-row]
   "Try jump in current file"
   (let [results (search-in-buffer code-text last-row 0)
         fnl-imports (imported-modules resolve-fnl-module-path last-row)]
-    (if (> (length results) 0)
-        ;; local jump
+    (if (> (length results) 0) ;; local jump
         (do
           (let [node (core.last results)]
             (jump-to-range node.range))
           results)
-        (> (length fnl-imports) 0)
-        ;; cross fnl module jump
+        (> (length fnl-imports) 0) ;; cross fnl module jump
         (do
           (each [_ file-path (ipairs fnl-imports)]
-          (let [code-text (remove-module-name code-text)
-                r (search-in-file code-text file-path)]
-            (when r (lua "return r"))))
-         {:result "definition not found"}))))
+            (let [code-text (remove-module-name code-text)
+                  r (search-in-file code-text file-path)]
+              (when r (lua "return r"))))
+          {:result "definition not found"}))))
 
 (comment ;;
   (search-and-jump :search-and-jump 39)
@@ -169,10 +161,4 @@
   ;; 
   )
 
-
-{: search-and-jump
- : search-targets
- : def-query
- : get-current-root}
-
-
+{: search-and-jump : search-targets : def-query : get-current-root}
