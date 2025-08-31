@@ -113,5 +113,4 @@ M["def-str"] = function(opts)
     return log.append({"jump to def is not supported because treesitter is not enabled or installed"})
   end
 end
---[[ (M.eval-file "dafa") (def-str-util.search-and-jump "M.eval-file" 99) (def-str-util.search-targets def-str-util.def-query (def-str-util.get-current-root) 0 99) ]]
 return M

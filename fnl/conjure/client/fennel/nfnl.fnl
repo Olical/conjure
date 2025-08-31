@@ -110,12 +110,4 @@
       (def-str-util.search-and-jump opts.code (. opts.range.start 1))
       (log.append ["jump to def is not supported because treesitter is not enabled or installed"])))
 
-(comment ;; testing code for def-str
-  (M.eval-file :dafa)
-  (def-str-util.search-and-jump :M.eval-file 99)
-  (def-str-util.search-targets def-str-util.def-query
-    (def-str-util.get-current-root)
-    0
-    99))
-
 M
