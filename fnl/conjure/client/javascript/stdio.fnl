@@ -42,7 +42,7 @@
       (= :import_statement (node:type)) (= :class_declaration (node:type))
       (= :type_alias_declaration (node:type)) (= :enum_declaration  (node:type))
       (= :lexical_declaration (node:type)) (= :for_statement (node:type))
-      (= :for_in_statement  (node:type))))
+      (= :for_in_statement  (node:type)) (= :interface_declaration (node:type))))
 
 (fn with-repl-or-warn [f opts]
   (let [repl (state :repl)]
@@ -59,7 +59,7 @@
 (fn tap> [s] (log.append ["TAP>>" (a.pr-str s)]) s)
 
 (fn prep-code-expr [e]
-  (-> e import-replacer.replace-imports transformers.transform))
+  (-> e transformers.transform import-replacer.replace-imports))
 
 (fn prep-code-file [f]
   (->> (str.split f "\n")
@@ -132,7 +132,7 @@
                        (display-result msgs)
                        (when opts.on-result
                          (opts.on-result (str.join " " msgs)))
-                       (vim.fs.rm tmp_name))))))))
+                       (vim.uv.fs_unlink tmp_name nil))))))))
 
 (fn display-repl-status [status]
   (let [repl (state :repl)]
