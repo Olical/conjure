@@ -1,5 +1,5 @@
 (local {: autoload : define} (require :conjure.nfnl.module))
-(local a (autoload :nfnl.core))
+(local a (autoload :conjure.nfnl.core))
 
 (local M (define :conjure.util))
 
