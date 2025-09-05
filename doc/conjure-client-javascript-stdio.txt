@@ -33,7 +33,7 @@ function declarations.
 TypeScript support:
 1. Install NodeJS(v22 tested)
 2. Install ts-node(v10.9.2 tested)
-3. Create a minimal config file(tsconfig.json) in the root of a project: 
+3. Create a minimal config file(tsconfig.json) in the root of a project:
    {
      "ts-node": {
        // ts-node config here
@@ -44,9 +44,9 @@ TypeScript support:
          "module": "es2022"
      }
    }
-4. Try it 
+4. Try it
 
-Caveats: 
+Caveats:
 1. Not all `import` statements are supported.
 2. Sometimes you can see this in the REPL:
    "(out) /Users/user/conjure/dev/typescript/<repl>.ts:2
@@ -55,7 +55,7 @@ Caveats:
     (out) Uncaught SyntaxError: Unexpected token 'export'"
    You just need to re-evaluate a statement, this is some internal problem of
    ts-node.
-3. When evaluating a file with `<localleader>ef`, it is better to activate 
+3. When evaluating a file with `<localleader>ef`, it is better to activate
    `stray out` beforehand to see any errors during evaluation.
 
 
@@ -95,16 +95,19 @@ All configuration can be set as described in |conjure-configuration|.
             Stop any existing javascript REPL.
             Default: `"cS"`
 
-                                  *g:conjure#client#javascript#stdio#mapping#restart*
+                               *g:conjure#client#javascript#stdio#mapping#restart*
 `g:conjure#client#javascript#stdio#mapping#restart`
             Restart a javascript REPL.
             Default: `"cr"`
 
-                                  *g:conjure#client#javascript#stdio#command*
-`g:conjure#client#javascript#stdio#command`
-            Command used to start the javascript REPL, you can modify this to add
-            arguments or change the command entirely.
-            Default: `"node --experimental-repl-await -i"`
+                                          *g:conjure#client#javascript#stdio#args*
+`g:conjure#client#javascript#stdio#args`
+            Args appended to the REPL command. Useful if you need to toggle
+            features off or on in `node` or `ts-node` (which is selected
+            automatically depending on your filetype).
+
+            `node` automatically includes `--experimental-repl-await` too.
+            Default: `"-i"`
 
                                   *g:conjure#client#javascript#stdio#prompt_pattern*
 `g:conjure#client#javascript#stdio#prompt_pattern`
