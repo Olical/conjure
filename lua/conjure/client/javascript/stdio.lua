@@ -11,9 +11,7 @@ local client = autoload("conjure.client")
 local log = autoload("conjure.log")
 local import_replacer = autoload("conjure.client.javascript.import-replacer")
 local transformers = autoload("conjure.client.javascript.transformers")
-local rt = autoload("conjure.client.javascript.repl")
 local M = define("conjure.client.javascript.stdio")
-rt["update-repl-cmd"]()
 config.merge({client = {javascript = {stdio = {args = "NODE_OPTIONS='--experimental-repl-await'", ["prompt-pattern"] = "> ", show_stray_out = false}}}})
 if config["get-in"]({"mapping", "enable_defaults"}) then
   config.merge({client = {javascript = {stdio = {mapping = {start = "cs", stop = "cS", restart = "cr", interrupt = "ei", stray = "ts"}}}}})
@@ -96,7 +94,6 @@ local function stray_out()
 end
 local function restart()
   M.stop()
-  rt["update-repl-cmd"]()
   return M.start()
 end
 M["eval-str"] = function(opts)
@@ -152,24 +149,33 @@ M.stop = function()
   end
 end
 M["initialise-repl-code"] = ""
+local function repl_command_for_filetype()
+  if ("javascript" == vim.bo.filetype) then
+    return "node -i"
+  elseif ("typescript" == vim.bo.filetype) then
+    return "ts-node -i"
+  else
+    return nil
+  end
+end
 M.start = function()
   if state("repl") then
     return log.append({(M["comment-prefix"] .. "Can't start, REPL is already running."), (M["comment-prefix"] .. "Stop the REPL with " .. config["get-in"]({"mapping", "prefix"}) .. cfg({"mapping", "stop"}))}, {["break?"] = true})
   else
-    local function _19_()
+    local function _20_()
       display_repl_status("started")
-      local function _20_(repl)
-        local function _21_(msgs)
+      local function _21_(repl)
+        local function _22_(msgs)
           return display_result(M["format-msg"](M.unbatch(msgs)))
         end
-        return repl.send(prep_code(M["initialise-repl-code"]), _21_, {batch = true})
+        return repl.send(prep_code(M["initialise-repl-code"]), _22_, {batch = true})
       end
-      return with_repl_or_warn(_20_)
+      return with_repl_or_warn(_21_)
     end
-    local function _22_(err)
+    local function _23_(err)
       return display_repl_status(err)
     end
-    local function _23_(code, signal)
+    local function _24_(code, signal)
       if (("number" == type(code)) and (code > 0)) then
         log.append({(M["comment-prefix"] .. "process exited with code " .. code)})
       else
@@ -180,21 +186,21 @@ M.start = function()
       end
       return M.stop()
     end
-    local function _26_(msg)
+    local function _27_(msg)
       if cfg({"show_stray_out"}) then
         return display_result(M["format-msg"](M.unbatch({msg})))
       else
         return nil
       end
     end
-    return a.assoc(state(), "repl", stdio.start({["prompt-pattern"] = cfg({"prompt-pattern"}), cmd = cfg({"command"}), ["delay-stderr-ms"] = cfg({"delay-stderr-ms"}), ["on-success"] = _19_, ["on-error"] = _22_, ["on-exit"] = _23_, ["on-stray-output"] = _26_}))
+    return a.assoc(state(), "repl", stdio.start({["prompt-pattern"] = cfg({"prompt-pattern"}), cmd = repl_command_for_filetype(), ["delay-stderr-ms"] = cfg({"delay-stderr-ms"}), ["on-success"] = _20_, ["on-error"] = _23_, ["on-exit"] = _24_, ["on-stray-output"] = _27_}))
   end
 end
 local function warning_msg()
-  local function _29_(_241)
+  local function _30_(_241)
     return log.append({_241})
   end
-  return a.map(_29_, {"// WARNING! Node.js REPL limitations require transformations:", "// 1. ES6 'import' statements are converted to 'require(...)' calls.", "// 2. Arrow functions ('const fn = () => ...') are converted to 'function fn() ...' declarations to allow re-definition."})
+  return a.map(_30_, {"// WARNING! Node.js REPL limitations require transformations:", "// 1. ES6 'import' statements are converted to 'require(...)' calls.", "// 2. Arrow functions ('const fn = () => ...') are converted to 'function fn() ...' declarations to allow re-definition."})
 end
 M["on-load"] = function()
   if config["get-in"]({"client_on_load"}) then
@@ -208,11 +214,11 @@ M["on-exit"] = function()
   return M.stop()
 end
 M.interrupt = function()
-  local function _31_(repl)
+  local function _32_(repl)
     log.append({(M["comment-prefix"] .. " Sending interrupt signal.")}, {["break?"] = true})
     return repl["send-signal"]("sigint")
   end
-  return with_repl_or_warn(_31_)
+  return with_repl_or_warn(_32_)
 end
 M["on-filetype"] = function()
   mapping.buf("JavascriptStart", cfg({"mapping", "start"}), M.start, {desc = "Start the Javascript REPL"})

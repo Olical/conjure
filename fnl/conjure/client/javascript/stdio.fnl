@@ -8,23 +8,21 @@
 (local log (autoload :conjure.log))
 (local import-replacer (autoload :conjure.client.javascript.import-replacer))
 (local transformers (autoload :conjure.client.javascript.transformers))
-(local rt (autoload :conjure.client.javascript.repl))
 
 (local M (define :conjure.client.javascript.stdio))
 
-(rt.update-repl-cmd)
-(config.merge {:client 
-               {:javascript 
-                {:stdio 
+(config.merge {:client
+               {:javascript
+                {:stdio
                  {:args "NODE_OPTIONS=\'--experimental-repl-await\'"
                   :prompt-pattern "> "
                   :show_stray_out false}}}})
 
 (when (config.get-in [:mapping :enable_defaults])
-  (config.merge 
-    {:client 
-     {:javascript 
-      {:stdio 
+  (config.merge
+    {:client
+     {:javascript
+      {:stdio
        {:mapping {:start :cs
                   :stop :cS
                   :restart :cr
@@ -85,7 +83,7 @@
        (str.join "")))
 
 (fn prepare-out [msg]
-  (if (a.get msg :out) 
+  (if (a.get msg :out)
       (sanitize-msg msg :out)
 
       (a.get msg :err)
@@ -97,19 +95,18 @@
        (str.join "")))
 
 (fn stray-out []
-  (config.merge {:client 
-                 {:javascript 
-                  {:stdio 
+  (config.merge {:client
+                 {:javascript
+                  {:stdio
                    {:show_stray_out (not (cfg [:show_stray_out]))}}}}
                 {:overwrite? true}))
 
 (fn restart []
   (M.stop)
-  (rt.update-repl-cmd)
   (M.start))
 
 (fn M.eval-str [opts]
-  (with-repl-or-warn 
+  (with-repl-or-warn
     (fn [repl]
       (repl.send (prep-code opts.code)
                  (fn [msgs]
@@ -120,7 +117,7 @@
                  {:batch? true}))))
 
 (fn M.eval-file [opts]
-  (with-repl-or-warn 
+  (with-repl-or-warn
     (fn [repl]
       (let [c (prep-code-file (a.slurp opts.file-path))
             tmp_name (.. opts.file-path "_tmp")
@@ -150,6 +147,16 @@
 
 (set M.initialise-repl-code "")
 
+(fn repl-command-for-filetype []
+  ;; TODO Move the -i to the args config, let users configure args (they are currently unused so that env var does nothing)
+  (if
+    (= :javascript vim.bo.filetype)
+    "node -i"
+
+    (= :typescript vim.bo.filetype)
+    "ts-node -i"))
+
+
 (fn M.start []
   (if (state :repl)
       (log.append [(.. M.comment-prefix "Can't start, REPL is already running.")
@@ -157,20 +164,20 @@
                        (config.get-in [:mapping :prefix])
                        (cfg [:mapping :stop]))]
                   {:break? true})
-      (a.assoc 
+      (a.assoc
         (state) :repl
         (stdio.start
           {:prompt-pattern (cfg [:prompt-pattern])
-           :cmd (cfg [:command])
+           :cmd (repl-command-for-filetype)
            :delay-stderr-ms (cfg [:delay-stderr-ms])
 
-           :on-success 
+           :on-success
            (fn []
              (display-repl-status :started)
              (with-repl-or-warn
                  (fn [repl]
-                   (repl.send 
-                     (prep-code M.initialise-repl-code) 
+                   (repl.send
+                     (prep-code M.initialise-repl-code)
                      (fn [msgs]
                        (display-result (-> msgs
                                            M.unbatch
@@ -187,7 +194,7 @@
                                "process exited with code "
                                code)]))
                       (when (and (= :number (type signal)) (> signal 0))
-                        (log.append 
+                        (log.append
                           [(.. M.comment-prefix
                                "process exited with signal "
                                signal)]))
@@ -195,8 +202,8 @@
 
            :on-stray-output
            (fn [msg]
-             (when (cfg [:show_stray_out]) 
-               (display-result 
+             (when (cfg [:show_stray_out])
+               (display-result
                  (-> [msg] M.unbatch M.format-msg))))}))))
 
 (fn warning-msg []
@@ -215,7 +222,7 @@
 (fn M.on-exit [] (M.stop))
 
 (fn M.interrupt []
-  (with-repl-or-warn 
+  (with-repl-or-warn
     (fn [repl]
       (log.append [(.. M.comment-prefix
                        " Sending interrupt signal.")]
@@ -223,24 +230,24 @@
       (repl.send-signal :sigint))))
 
 (fn M.on-filetype []
-  (mapping.buf :JavascriptStart 
-               (cfg [:mapping :start]) 
+  (mapping.buf :JavascriptStart
+               (cfg [:mapping :start])
                M.start
                {:desc "Start the Javascript REPL"})
-  (mapping.buf :JavascriptStop 
+  (mapping.buf :JavascriptStop
                (cfg [:mapping :stop])
                M.stop
                {:desc "Stop the Javascript REPL"})
-  (mapping.buf :JavascriptRestart 
+  (mapping.buf :JavascriptRestart
                (cfg [:mapping :restart])
-               restart  
+               restart
                {:desc "Restart the Javascript REPL"})
-  (mapping.buf :JavascriptInterrupt 
-               (cfg [:mapping :interrupt]) 
+  (mapping.buf :JavascriptInterrupt
+               (cfg [:mapping :interrupt])
                M.interrupt
                {:desc "Interrupt the current evaluation"})
-  (mapping.buf :JavascriptStray 
-               (cfg [:mapping :stray]) 
+  (mapping.buf :JavascriptStray
+               (cfg [:mapping :stray])
                stray-out
                {:desc "Toggle stray out"}))
 
