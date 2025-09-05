@@ -14,7 +14,7 @@
 (config.merge {:client
                {:javascript
                 {:stdio
-                 {:args "NODE_OPTIONS=\'--experimental-repl-await\'"
+                 {:args "-i"
                   :prompt-pattern "> "
                   :show_stray_out false}}}})
 
@@ -148,13 +148,12 @@
 (set M.initialise-repl-code "")
 
 (fn repl-command-for-filetype []
-  ;; TODO Move the -i to the args config, let users configure args (they are currently unused so that env var does nothing)
   (if
     (= :javascript vim.bo.filetype)
-    "node -i"
+    "node --experimental-repl-await"
 
     (= :typescript vim.bo.filetype)
-    "ts-node -i"))
+    "ts-node"))
 
 
 (fn M.start []
@@ -168,7 +167,7 @@
         (state) :repl
         (stdio.start
           {:prompt-pattern (cfg [:prompt-pattern])
-           :cmd (repl-command-for-filetype)
+           :cmd (.. (repl-command-for-filetype) " " (cfg [:args]))
            :delay-stderr-ms (cfg [:delay-stderr-ms])
 
            :on-success
