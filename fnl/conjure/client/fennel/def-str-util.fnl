@@ -12,7 +12,10 @@
  (binding_pair
    lhs: (symbol_binding) @local.def)) 
 (fn_form
-  name: [(symbol) (multi_symbol)] @fn.def)"))
+  name: (symbol) @fn.def)
+(fn_form
+  name: (multi_symbol
+    member: (symbol_fragment) @fn.def))"))
 
 ;;TSQuery that matches the module path imported by `require, autoload`
 (local path-query (vim-ts.query.parse :fennel
@@ -139,7 +142,8 @@
 (fn search-and-jump [code-text last-row]
   "Try jump in local file and fennel modules"
   (notify.debug (.. "code-text: " code-text))
-  (let [results (search-in-buffer code-text last-row 0)
+  (let [code-text (remove-module-name code-text)
+        results (search-in-buffer code-text last-row 0)
         fnl-imports (imported-modules resolve-fnl-module-path last-row)]
     (if (> (length results) 0) ;; local jump
         (do
@@ -152,8 +156,7 @@
           (notify.debug (.. "fnl-path: " (. (config.default) :fennel-path)))
           (notify.debug (.. "search symbol in the following fnl libs: " (core.pr-str fnl-imports)))
           (each [_ file-path (ipairs fnl-imports)]
-            (let [code-text (remove-module-name code-text)
-                  r (search-in-ext-file code-text file-path)]
+            (let [r (search-in-ext-file code-text file-path)]
               (notify.debug (.. "search in file-path: " file-path " for code-text " code-text))
               (when r (lua "return r"))))
           {:result "definition not found"}))))
