@@ -3,13 +3,8 @@ local _local_1_ = require("conjure.nfnl.module")
 local autoload = _local_1_["autoload"]
 local core = autoload("conjure.nfnl.core")
 local conjure_ts = autoload("conjure.tree-sitter")
-local ts_utils = autoload("nvim-treesitter.ts_utils")
 local vim_ts = autoload("vim.treesitter")
-local fennel = autoload("nfnl.fennel")
-local notify = autoload("nfnl.notify")
-local config = autoload("nfnl.config")
-local _local_2_ = autoload("nfnl.nvim")
-local get_buf_content_as_string = _local_2_["get-buf-content-as-string"]
+local config = autoload("conjure.nfnl.config")
 local def_query = vim_ts.query.parse("fennel", "\n(local_form\n (binding_pair\n   lhs: (symbol_binding) @local.def)) \n(fn_form\n  name: [(symbol) (multi_symbol)] @fn.def)")
 local path_query = vim_ts.query.parse("fennel", "\n(local_form\n  (binding_pair\n    rhs: (list\n           call: (symbol) (#any-of? \"autoload\" \"require\")\n           item: (string) @import.path)))")
 local function get_current_root(bufnr, lang)
@@ -38,10 +33,10 @@ end
 local function search_in_buffer(code_text, last_row, bufnr)
   local curr_targets = search_targets(def_query, get_current_root(bufnr), bufnr, last_row)
   local results
-  local function _4_(node_t)
+  local function _3_(node_t)
     return (code_text == node_t.content)
   end
-  results = core.filter(_4_, curr_targets)
+  results = core.filter(_3_, curr_targets)
   return results
 end
 local function search_ext_targets(query, root_node, bufnr, last)
@@ -71,10 +66,10 @@ end
 local function search_in_ext_buffer(code_text, last_row, bufnr)
   local curr_targets = search_ext_targets(def_query, get_current_root(bufnr), bufnr, last_row)
   local results
-  local function _6_(node_t)
+  local function _5_(node_t)
     return (code_text == node_t.content)
   end
-  results = core.filter(_6_, curr_targets)
+  results = core.filter(_5_, curr_targets)
   return results
 end
 local function jump_to_range(range)

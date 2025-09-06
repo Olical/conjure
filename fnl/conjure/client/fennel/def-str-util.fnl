@@ -1,12 +1,8 @@
 (local {: autoload} (require :conjure.nfnl.module))
 (local core (autoload :conjure.nfnl.core))
 (local conjure-ts (autoload :conjure.tree-sitter))
-(local ts-utils (autoload :nvim-treesitter.ts_utils))
 (local vim-ts (autoload :vim.treesitter))
-(local fennel (autoload :nfnl.fennel))
-(local notify (autoload :nfnl.notify))
-(local config (autoload :nfnl.config))
-(local {: get-buf-content-as-string} (autoload :nfnl.nvim))
+(local config (autoload :conjure.nfnl.config))
 
 ;;TSQuery that matches `local, fn`
 (local def-query (vim-ts.query.parse :fennel
