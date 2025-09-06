@@ -3,6 +3,7 @@
 (local conjure-ts (autoload :conjure.tree-sitter))
 (local vim-ts (autoload :vim.treesitter))
 (local config (autoload :conjure.nfnl.config))
+(local notify (autoload :conjure.nfnl.notify))
 
 ;;TSQuery that matches `local, fn`
 (local def-query (vim-ts.query.parse :fennel
@@ -98,6 +99,7 @@
         raw-mods (icollect [_ node-t (ipairs (search-targets path-query root 0
                                                              last-row))]
                    (rest-str node-t.content))]
+    (notify.debug (.. "raw-mods: " (core.pr-str raw-mods)))
     ;; resolve them all
     (icollect [_ m (ipairs raw-mods)]
       (resolve m))))
@@ -136,6 +138,7 @@
 
 (fn search-and-jump [code-text last-row]
   "Try jump in local file and fennel modules"
+  (notify.debug (.. "code-text: " code-text))
   (let [results (search-in-buffer code-text last-row 0)
         fnl-imports (imported-modules resolve-fnl-module-path last-row)]
     (if (> (length results) 0) ;; local jump
@@ -145,9 +148,13 @@
           results)
         (> (length fnl-imports) 0) ;; cross fnl module jump
         (do
+          (notify.debug "begin cross fnl module jump")
+          (notify.debug (.. "fnl-path: " (. (config.default) :fennel-path)))
+          (notify.debug (.. "search symbol in the following fnl libs: " (core.pr-str fnl-imports)))
           (each [_ file-path (ipairs fnl-imports)]
             (let [code-text (remove-module-name code-text)
                   r (search-in-ext-file code-text file-path)]
+              (notify.debug (.. "search in file-path: " file-path " for code-text " code-text))
               (when r (lua "return r"))))
           {:result "definition not found"}))))
 
