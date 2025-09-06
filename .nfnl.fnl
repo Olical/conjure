@@ -1,5 +1,5 @@
-(local core (require :nfnl.core))
-(local config (require :nfnl.config))
+(local core (require :conjure.nfnl.core))
+(local config (require :conjure.nfnl.config))
 (local defaults (config.default))
 
 {:compiler-options (core.merge
