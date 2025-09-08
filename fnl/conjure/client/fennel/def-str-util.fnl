@@ -139,25 +139,35 @@
         (string.sub s (+ 1 start-index))
         s)))
 
+(fn reverse [xs]
+  (let [new-list []
+        n (length xs)]
+    (for [i n 1 -1]
+      (table.insert new-list (. xs i)))
+    new-list))
+
 (fn search-and-jump [code-text last-row]
   "Try jump in local file and fennel modules"
   (notify.debug (.. "code-text: " code-text))
   (let [code-text (remove-module-name code-text)
         results (search-in-buffer code-text last-row 0)
-        fnl-imports (imported-modules resolve-fnl-module-path last-row)]
+        fnl-imports (imported-modules resolve-fnl-module-path last-row)
+        r-fnl-imports (reverse fnl-imports)]
     (if (> (length results) 0) ;; local jump
         (do
           (let [node (core.last results)]
             (jump-to-range node.range))
           results)
-        (> (length fnl-imports) 0) ;; cross fnl module jump
+        (> (length r-fnl-imports) 0) ;; cross fnl module jump
         (do
           (notify.debug "begin cross fnl module jump")
           (notify.debug (.. "fnl-path: " (. (config.default) :fennel-path)))
-          (notify.debug (.. "search symbol in the following fnl libs: " (core.pr-str fnl-imports)))
-          (each [_ file-path (ipairs fnl-imports)]
+          (notify.debug (.. "search symbol in the following fnl libs: "
+                            (core.pr-str r-fnl-imports)))
+          (each [_ file-path (ipairs r-fnl-imports)]
             (let [r (search-in-ext-file code-text file-path)]
-              (notify.debug (.. "search in file-path: " file-path " for code-text " code-text))
+              (notify.debug (.. "search in file-path: " file-path
+                                " for code-text " code-text))
               (when r (lua "return r"))))
           {:result "definition not found"}))))
 
