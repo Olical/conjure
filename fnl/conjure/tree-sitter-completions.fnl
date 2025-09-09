@@ -82,7 +82,7 @@
 
 (fn get-completions-for-query [query]
   (let [buffer         (vim.api.nvim_get_current_buf)
-        cursor-node    (ts.get-node-at-cursor) 
+        cursor-node    (vim.treesitter.get_node) 
         (row _)        (unpack (vim.api.nvim_win_get_cursor 0))
         scope-captures (query:iter_captures (cursor-node:root) buffer 0 row)
         scopes         (extract-scopes query scope-captures)

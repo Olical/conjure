@@ -6,11 +6,6 @@
 
 ;; Initially based on https://github.com/savq/conjure-julia <3
 
-(local ts
-  (let [(ok? x) (pcall #(require :nvim-treesitter.ts_utils))]
-    (when ok?
-      x)))
-
 (fn enabled? []
   "Do we have tree-sitter support in the current nvim, buffer and filetype. If
   this is false, you might need to install
@@ -19,7 +14,6 @@
 
   See also: g:conjure#extract#tree_sitter#enabled"
   (if (and
-        (= :table (type ts))
         (config.get-in [:extract :tree_sitter :enabled])
         (let [(ok? parser) (pcall vim.treesitter.get_parser)]
           (and ok? parser)))
@@ -77,7 +71,7 @@
   "Get the root node below the entire document."
   (parse!)
 
-  (let [node (or node (ts.get_node_at_cursor))
+  (let [node (or node (vim.treesitter.get_node))
         parent-node (parent node)]
     (if
       (document? node) nil
@@ -98,14 +92,11 @@
     (or (string.find (node:type) :sym)
         (client.optional-call :symbol-node? node))))
 
-(fn get-node-at-cursor []
- (ts.get_node_at_cursor) )
-
 (fn get-leaf [node]
   "Return the leaf node under the cursor or nothing at all."
   (parse!)
 
-  (let [node (or node (ts.get_node_at_cursor))]
+  (let [node (or node (vim.treesitter.get_node))]
     (when (or (leaf? node) (sym? node))
       (var node node)
       (while (sym? (parent node))
@@ -146,7 +137,7 @@
   (when (not node)
     (parse!))
 
-  (let [node (or node (ts.get_node_at_cursor))]
+  (let [node (or node (vim.treesitter.get_node))]
     (if
       ;; If we're already at the root then we're not in a form.
       (document? node)
@@ -226,7 +217,6 @@
  : range
  : node->table
  : get-root
- : get-node-at-cursor
  : leaf?
  : sym?
  : get-leaf

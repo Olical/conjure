@@ -5,26 +5,13 @@ local a = autoload("conjure.nfnl.core")
 local client = autoload("conjure.client")
 local config = autoload("conjure.config")
 local text = autoload("conjure.text")
-local ts
-do
-  local ok_3f, x = nil, nil
-  local function _2_()
-    return require("nvim-treesitter.ts_utils")
-  end
-  ok_3f, x = pcall(_2_)
-  if ok_3f then
-    ts = x
-  else
-    ts = nil
-  end
-end
 local function enabled_3f()
-  local and_4_ = ("table" == type(ts)) and config["get-in"]({"extract", "tree_sitter", "enabled"})
-  if and_4_ then
+  local and_2_ = config["get-in"]({"extract", "tree_sitter", "enabled"})
+  if and_2_ then
     local ok_3f, parser = pcall(vim.treesitter.get_parser)
-    and_4_ = (ok_3f and parser)
+    and_2_ = (ok_3f and parser)
   end
-  if and_4_ then
+  if and_2_ then
     return true
   else
     return false
@@ -81,7 +68,7 @@ local function node__3etable(node)
 end
 local function get_root(node)
   parse_21()
-  local node0 = (node or ts.get_node_at_cursor())
+  local node0 = (node or vim.treesitter.get_node())
   local parent_node = parent(node0)
   if document_3f(node0) then
     return nil
@@ -107,12 +94,9 @@ local function sym_3f(node)
     return nil
   end
 end
-local function get_node_at_cursor()
-  return ts.get_node_at_cursor()
-end
 local function get_leaf(node)
   parse_21()
-  local node0 = (node or ts.get_node_at_cursor())
+  local node0 = (node or vim.treesitter.get_node())
   if (leaf_3f(node0) or sym_3f(node0)) then
     local node1 = node0
     while sym_3f(parent(node1)) do
@@ -126,43 +110,43 @@ end
 local function node_surrounded_by_form_pair_chars_3f(node, extra_pairs)
   local node_str = node__3estr(node)
   local first_and_last_chars = text["first-and-last-chars"](node_str)
-  local function _18_(_17_)
-    local start = _17_[1]
-    local _end = _17_[2]
+  local function _16_(_15_)
+    local start = _15_[1]
+    local _end = _15_[2]
     return (first_and_last_chars == (start .. _end))
   end
-  local or_19_ = a.some(_18_, config["get-in"]({"extract", "form_pairs"}))
-  if not or_19_ then
-    local function _21_(_20_)
-      local start = _20_[1]
-      local _end = _20_[2]
+  local or_17_ = a.some(_16_, config["get-in"]({"extract", "form_pairs"}))
+  if not or_17_ then
+    local function _19_(_18_)
+      local start = _18_[1]
+      local _end = _18_[2]
       return (vim.startswith(node_str, start) and vim.endswith(node_str, _end))
     end
-    or_19_ = a.some(_21_, extra_pairs)
+    or_17_ = a.some(_19_, extra_pairs)
   end
-  return (or_19_ or false)
+  return (or_17_ or false)
 end
 local function node_prefixed_by_chars_3f(node, prefixes)
   local node_str = node__3estr(node)
-  local function _22_(prefix)
+  local function _20_(prefix)
     return vim.startswith(node_str, prefix)
   end
-  return (a.some(_22_, prefixes) or false)
+  return (a.some(_20_, prefixes) or false)
 end
 local function get_form(node)
   if not node then
     parse_21()
   else
   end
-  local node0 = (node or ts.get_node_at_cursor())
+  local node0 = (node or vim.treesitter.get_node())
   if document_3f(node0) then
     return nil
   elseif (leaf_3f(node0) or (false == client["optional-call"]("form-node?", node0))) then
     return get_form(parent(node0))
   else
-    local _let_24_ = (client["optional-call"]("get-form-modifier", node0) or {})
-    local modifier = _let_24_["modifier"]
-    local res = _let_24_
+    local _let_22_ = (client["optional-call"]("get-form-modifier", node0) or {})
+    local modifier = _let_22_["modifier"]
+    local res = _let_22_
     if (not modifier or ("none" == modifier)) then
       return node0
     elseif ("parent" == modifier) then
@@ -195,4 +179,4 @@ local function valid_str_3f(lang, code)
   local root_node = get_root_node_for_str(lang, code)
   return (root_node and not root_node:has_error())
 end
-return {["enabled?"] = enabled_3f, ["parse!"] = parse_21, ["node->str"] = node__3estr, ["lisp-comment-node?"] = lisp_comment_node_3f, parent = parent, ["document?"] = document_3f, range = range, ["node->table"] = node__3etable, ["get-root"] = get_root, ["get-node-at-cursor"] = get_node_at_cursor, ["leaf?"] = leaf_3f, ["sym?"] = sym_3f, ["get-leaf"] = get_leaf, ["node-surrounded-by-form-pair-chars?"] = node_surrounded_by_form_pair_chars_3f, ["node-prefixed-by-chars?"] = node_prefixed_by_chars_3f, ["get-form"] = get_form, ["add-language"] = add_language, ["valid-str?"] = valid_str_3f}
+return {["enabled?"] = enabled_3f, ["parse!"] = parse_21, ["node->str"] = node__3estr, ["lisp-comment-node?"] = lisp_comment_node_3f, parent = parent, ["document?"] = document_3f, range = range, ["node->table"] = node__3etable, ["get-root"] = get_root, ["leaf?"] = leaf_3f, ["sym?"] = sym_3f, ["get-leaf"] = get_leaf, ["node-surrounded-by-form-pair-chars?"] = node_surrounded_by_form_pair_chars_3f, ["node-prefixed-by-chars?"] = node_prefixed_by_chars_3f, ["get-form"] = get_form, ["add-language"] = add_language, ["valid-str?"] = valid_str_3f}

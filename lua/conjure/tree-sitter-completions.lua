@@ -101,7 +101,7 @@ local function get_node_text(node, buffer, meta)
 end
 local function get_completions_for_query(query)
   local buffer = vim.api.nvim_get_current_buf()
-  local cursor_node = ts["get-node-at-cursor"]()
+  local cursor_node = vim.treesitter.get_node()
   local row, _ = unpack(vim.api.nvim_win_get_cursor(0))
   local scope_captures = query:iter_captures(cursor_node:root(), buffer, 0, row)
   local scopes = extract_scopes(query, scope_captures)
