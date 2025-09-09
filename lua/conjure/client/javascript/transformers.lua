@@ -80,7 +80,7 @@ local function add_semicolon(s)
   return str.join(" ", sub)
 end
 M["manage-semicolons"] = function(s)
-  if (text["starts-with"](s, "function") or text["starts-with"](s, "namespace") or text["starts-with"](s, "class") or text["starts-with"](s, "@") or string.match(s, ".-%s*:%s*%[.-%]%s*=%s*.-")) then
+  if (string.match(s, ".*function.*%(") or text["starts-with"](s, "namespace") or text["starts-with"](s, "class") or text["starts-with"](s, "@") or string.match(s, "%(.*%{") or string.match(s, ".-%s*:%s*%[.-%]%s*=%s*.-")) then
     return add_semicolon(s)
   else
     return s

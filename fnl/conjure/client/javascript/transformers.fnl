@@ -68,10 +68,11 @@
 
 (fn M.manage-semicolons [s]
   (if (or 
-        (text.starts-with s "function")
+        (string.match s ".*function.*%(")
         (text.starts-with s "namespace")
         (text.starts-with s "class")
         (text.starts-with s "@")
+        (string.match s "%(.*%{")
         (string.match s ".-%s*:%s*%[.-%]%s*=%s*.-"))
       (add-semicolon s)
       s))
