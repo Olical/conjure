@@ -6,7 +6,15 @@
 (local notify (autoload :conjure.nfnl.notify))
 
 ;;TSQuery that matches `local, fn`
-(local def-query (vim-ts.query.parse :fennel
+(local def-local-query (vim-ts.query.parse :fennel
+                                     "
+(local_form
+ (binding_pair
+   lhs: (symbol_binding) @local.def)) 
+(fn_form
+  name: [(symbol) (multi_symbol)] @local.fn.def)"))
+
+(local def-ext-query (vim-ts.query.parse :fennel
                                      "
 (local_form
  (binding_pair
@@ -34,7 +42,7 @@
         tree (. (parser:parse) 1)]
     (tree:root)))
 
-(fn search-targets [query root-node bufnr last]
+(fn search-targets [query root-node bufnr last first]
   "Based on the TS:Query, root-node, bufnr, list all the possible search targets"
   ;; Return data like 
   ;; [{:content "conjure-ts"
@@ -42,15 +50,16 @@
   ;;   :range {:end [2 16] :start [2 7]}}
   ;;  ...
   (let [bufnr (or bufnr 0)
-        last (or last (- 1))]
-    (icollect [id node (query:iter_captures root-node bufnr 0 last)]
+        last (or last (- 1))
+        first (or first 0)]
+    (icollect [id node (query:iter_captures root-node bufnr first last)]
       (conjure-ts.node->table node))))
 
-(comment (search-targets def-query (get-current-root) 0 20))
+(comment (search-targets def-local-query (get-current-root) 0 20))
 
 (fn search-in-buffer [code-text last-row bufnr]
   "Search defs inside one buffer"
-  (let [curr-targets (search-targets def-query (get-current-root bufnr) bufnr
+  (let [curr-targets (search-targets def-local-query (get-current-root bufnr) bufnr
                                      last-row)
         results (core.filter (fn [node-t]
                                (= code-text node-t.content))
@@ -74,7 +83,7 @@
 
 (fn search-in-ext-buffer [code-text last-row bufnr]
   "Search defs inside ext buffer (not current buffer)"
-  (let [curr-targets (search-ext-targets def-query (get-current-root bufnr)
+  (let [curr-targets (search-ext-targets def-ext-query (get-current-root bufnr)
                                          bufnr last-row)
         results (core.filter (fn [node-t]
                                (= code-text node-t.content))
@@ -96,11 +105,11 @@
   "Try to resolve a fnl module via fennel.path"
   (package.searchpath modname (. (config.default) :fennel-path)))
 
-(fn imported-modules [resolve last-row]
+(fn imported-modules [resolve last-row first-row]
   "Return a list of resolved file paths for all require/autoload modules in current buffer."
   (let [root (get-current-root) ;; find out all the import module symbol
         raw-mods (icollect [_ node-t (ipairs (search-targets path-query root 0
-                                                             last-row))]
+                                                             last-row first-row))]
                    (rest-str node-t.content))]
     (notify.debug (.. "raw-mods: " (core.pr-str raw-mods)))
     ;; resolve them all
@@ -134,15 +143,21 @@
          :/Users/laurencechen/.local/share/nvim/plugged/nfnl/fnl/nfnl/notify.fnl)
   (local bufnr (vim.fn.bufadd f))
   (vim.fn.bufload bufnr)
-  (search-ext-targets def-query (get-current-root bufnr :fennel) bufnr)
+  (search-ext-targets def-local-query (get-current-root bufnr :fennel) bufnr)
   (search-in-ext-buffer :debug -1 bufnr)
   (search-in-ext-file :debug f))
 
-(fn remove-module-name [s]
-  (let [(start-index end-index) (string.find s "%.")]
+(fn fn-name [s]
+  (let [(start-index _) (string.find s "%.")]
     (if start-index
         (string.sub s (+ 1 start-index))
         s)))
+
+(fn module-name [s]
+  (let [(start-index _) (string.find s "%.")]
+    (if start-index
+        (string.sub s 1 (- start-index 1))
+        nil)))
 
 (fn reverse [xs]
   (let [new-list []
@@ -151,33 +166,47 @@
       (table.insert new-list (. xs i)))
     new-list))
 
+(fn cross-jump [fn-text fnl-imports]
+  (notify.debug (.. "fnl-path: " (. (config.default) :fennel-path)))
+  (notify.debug (.. "search symbol in the following fnl libs: "
+                            (core.pr-str fnl-imports)))
+  (let [results []]
+    (each [_ file-path (ipairs fnl-imports)]
+      (notify.debug (.. "search in file-path: " file-path
+                          " for fn-text " fn-text ))
+      (let [r (search-in-ext-file fn-text file-path)]
+        (notify.debug (.. "get result " (tostring r) " from search"))
+        (table.insert results r)))
+        (when (not (core.some core.identity results))
+          {:result "definition not found"})))
+
 (fn search-and-jump [code-text last-row]
   "Try jump in local file and fennel modules"
   (notify.debug (.. "code-text: " code-text))
-  (let [code-text (remove-module-name code-text)
-        results (search-in-buffer code-text last-row 0)
-        fnl-imports (imported-modules resolve-fnl-module-path last-row)
-        r-fnl-imports (reverse fnl-imports)]
+  (let [results (search-in-buffer code-text last-row 0)
+        module-text (module-name code-text)
+        module-results (search-in-buffer module-text last-row 0) 
+        fn-text (fn-name code-text)
+        fnl-imports (imported-modules resolve-fnl-module-path last-row)]
     (if (> (length results) 0) ;; local jump
         (do
           (let [node (core.last results)]
             (jump-to-range node.range))
           results)
-        (> (length r-fnl-imports) 0) ;; cross fnl module jump
+        (> (length module-results) 0) ;; direct cross fnl module jump
         (do
+          (notify.debug "begin direct cross fnl module jump to certain module")
+          (notify.debug (core.str module-results))
+          (let [target (core.first module-results)
+                end-row  (core.get-in target [:range :end 1]) 
+                fnl-imports (imported-modules resolve-fnl-module-path end-row (- end-row 1))]
+            (cross-jump fn-text fnl-imports)))
+        (> (length fnl-imports) 0) ;; cross fnl module jump
+        (do 
           (notify.debug "begin cross fnl module jump")
-          (notify.debug (.. "fnl-path: " (. (config.default) :fennel-path)))
-          (notify.debug (.. "search symbol in the following fnl libs: "
-                            (core.pr-str r-fnl-imports)))
-          (let [results []]
-            (each [_ file-path (ipairs r-fnl-imports)]
-              (let [r (search-in-ext-file code-text file-path)]
-                (notify.debug (.. "search in file-path: " file-path
-                                " for code-text " code-text 
-                                " result " (tostring r)))
-                (table.insert results r)))
-            (when (not (core.some core.identity results))
-              {:result "definition not found"}))))))
+          (let [r-fnl-imports (reverse fnl-imports)]
+            (cross-jump fn-text r-fnl-imports)))
+        )))
 
 (comment ;;
   (search-and-jump :search-and-jump 39)
@@ -185,4 +214,5 @@
   ;; 
   )
 
-{: search-and-jump : search-targets : def-query : get-current-root}
+{: search-and-jump : search-targets : get-current-root : def-local-query : def-ext-query
+ : imported-modules : resolve-fnl-module-path}
