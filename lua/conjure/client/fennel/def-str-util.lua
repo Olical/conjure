@@ -123,10 +123,11 @@ local function search_in_ext_file(code_text, file_path)
     vim.api.nvim_set_current_buf(bufnr)
     jump_to_range(core.last(cross_results).range)
     core.last(cross_results)
-    return 1
+    return true
   else
+    vim.api.nvim_buf_delete(bufnr, {})
+    return false
   end
-  return vim.api.nvim_buf_delete(bufnr, {})
 end
 --[[ (local f "/Users/laurencechen/.local/share/nvim/plugged/nfnl/fnl/nfnl/notify.fnl") (local bufnr (vim.fn.bufadd f)) (vim.fn.bufload bufnr) (search-ext-targets def-query (get-current-root bufnr "fennel") bufnr) (search-in-ext-buffer "debug" -1 bufnr) (search-in-ext-file "debug" f) ]]
 local function remove_module_name(s)
@@ -161,15 +162,17 @@ local function search_and_jump(code_text, last_row)
     notify.debug("begin cross fnl module jump")
     notify.debug(("fnl-path: " .. config.default()["fennel-path"]))
     notify.debug(("search symbol in the following fnl libs: " .. core["pr-str"](r_fnl_imports)))
+    local results0 = {}
     for _, file_path in ipairs(r_fnl_imports) do
       local r = search_in_ext_file(code_text0, file_path)
-      notify.debug(("search in file-path: " .. file_path .. " for code-text " .. code_text0))
-      if r then
-        return r
-      else
-      end
+      notify.debug(("search in file-path: " .. file_path .. " for code-text " .. code_text0 .. " result " .. tostring(r)))
+      table.insert(results0, r)
     end
-    return {result = "definition not found"}
+    if not core.some(core.identity, results0) then
+      return {result = "definition not found"}
+    else
+      return nil
+    end
   else
     return nil
   end

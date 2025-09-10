@@ -117,12 +117,17 @@
   (let [bufnr (vim.fn.bufadd file-path)]
     (vim.fn.bufload bufnr)
     (let [cross-results (search-in-ext-buffer code-text -1 bufnr)]
-      (when (> (length cross-results) 0)
-        (vim.api.nvim_set_current_buf bufnr)
-        (jump-to-range (. (core.last cross-results) :range))
-        (core.last cross-results)
-        (lua "return 1"))
-      (vim.api.nvim_buf_delete bufnr {}))))
+      (if (> (length cross-results) 0)
+          (do
+            ;; found
+            (vim.api.nvim_set_current_buf bufnr)
+            (jump-to-range (. (core.last cross-results) :range))
+            (core.last cross-results)
+            true)
+          (do
+            ;; not found
+            (vim.api.nvim_buf_delete bufnr {})
+            false)))))
 
 (comment ;; init
   (local f
@@ -164,12 +169,15 @@
           (notify.debug (.. "fnl-path: " (. (config.default) :fennel-path)))
           (notify.debug (.. "search symbol in the following fnl libs: "
                             (core.pr-str r-fnl-imports)))
-          (each [_ file-path (ipairs r-fnl-imports)]
-            (let [r (search-in-ext-file code-text file-path)]
-              (notify.debug (.. "search in file-path: " file-path
-                                " for code-text " code-text))
-              (when r (lua "return r"))))
-          {:result "definition not found"}))))
+          (let [results []]
+            (each [_ file-path (ipairs r-fnl-imports)]
+              (let [r (search-in-ext-file code-text file-path)]
+                (notify.debug (.. "search in file-path: " file-path
+                                " for code-text " code-text 
+                                " result " (tostring r)))
+                (table.insert results r)))
+            (when (not (core.some core.identity results))
+              {:result "definition not found"}))))))
 
 (comment ;;
   (search-and-jump :search-and-jump 39)
