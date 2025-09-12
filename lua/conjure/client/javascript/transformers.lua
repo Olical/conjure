@@ -69,7 +69,7 @@ local function add_semicolon(s)
   local sub_fn
   local function _10_(ln)
     local ln0 = str.trim(ln)
-    if (text["starts-with"](ln0, ".") or string.match(ln0, "%s*@") or text["ends-with"](ln0, "{") or text["ends-with"](ln0, ";") or text["ends-with"](ln0, ",") or not_declaration_3f(ln0) or str["blank?"](ln0)) then
+    if (text["starts-with"](ln0, ".") or string.match(ln0, "%s*@") or text["ends-with"](ln0, "(") or text["ends-with"](ln0, "[") or text["ends-with"](ln0, "{") or text["ends-with"](ln0, ";") or text["ends-with"](ln0, ",") or not_declaration_3f(ln0) or str["blank?"](ln0)) then
       return ln0
     else
       return (ln0 .. ";")
