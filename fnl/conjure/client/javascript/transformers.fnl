@@ -56,6 +56,8 @@
                  (let [ln (str.trim ln)]
                    (if (or (text.starts-with ln :.)
                            (string.match ln "%s*@")
+                           (text.ends-with ln "(")
+                           (text.ends-with ln "[")
                            (text.ends-with ln "{")
                            (text.ends-with ln ";")
                            (text.ends-with ln ",")
