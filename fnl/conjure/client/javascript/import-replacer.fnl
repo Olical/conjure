@@ -1,73 +1,125 @@
 (local {: autoload : define } (require :conjure.nfnl.module))
-(local a (autoload :conjure.nfnl.core))
+(local tsc (autoload :conjure.client.javascript.ts-common))
 (local text (autoload :conjure.text))
-(local str (autoload :conjure.nfnl.string))
 
 (local M (define :conjure.client.javascript.import-replacer))
 
-(fn get-absolute-path [f]
-  (string.format
-    "%q"
-    (vim.fs.normalize (vim.fs.joinpath (vim.fn.expand "%:p:h") f))))
+(fn parse-import-source [node code]
+  (let [source-node (tsc.get-child node "source")
+        source-text (and source-node (tsc.get-text source-node code))
+        source-path (and source-text
+                         (string.match source-text "^['\"`](.+)['\"`]$"))
+        resolved-path (and source-path (tsc.resolve-path source-path))]
 
-(fn replace-imports-path [s]
-  (if (or (string.find s :import)
-          (string.find s :require))
-      (string.gsub s "[\"\'](.-)[\"\']" 
-                   (fn [m]
-                     (if (text.starts-with m ".")
-                         (get-absolute-path m)
+    {:text source-text
+     :path source-path
+     :resolved-path resolved-path}))
 
-                         (.. "\"" m "\""))))
-      s))
+(fn is-type-import? [node code]
+  (let [first-child (node:child 0)
+        second-child (node:child 1)]
+    (and first-child
+         (= (tsc.get-text first-child code) "import")
+         second-child
+         (= (tsc.get-text second-child code) "type"))))
 
-(fn curly-replacer [bd]
-  (let [spl (str.split bd ",")
-        spl->nms (->> 
-                   spl 
-                   (a.map (fn [el] (el:gsub " as " ": ")))
-                   (str.join ","))]
-    spl->nms))
+(fn clean-named-imports [node code]
+  (let [text (tsc.get-text node code)]
+    (-> text
+        (string.gsub "^{%s*" "")
+        (string.gsub "%s*}$" "")
+        tsc.transform-as-syntax)))
 
-(local patterns-replacements 
-  [["^%s*import%s+([\"'])(.-)%1%s*" "require(\"%2\")"]
-   ["^%s*import%s+([^%s{]+)%s+from%s+([\"'])(.-)%2%s*"
-    "const %1 = require(\"%3\")"]
-   ["import%s+%{(.-)%}%s+from%s+[\"'](.-)[\"']"
-    (fn [bd path]
-      (string.format "const {%s} = require(\"%s\")"
-                     (curly-replacer bd) path))]
-   ["^%s*import%s+([^%s{,]+)%s*,%s*%{([^}]+)%}%s+from%s+([\"'])(.-)%3%s*"
-    (fn [default curly _ mod]
-      (string.format "const {%s,%s} = require(\"%s\")" 
-                     default (curly-replacer curly) mod))]
-   ["^%s*import%s+(.-)%s*%,%s*%*%s*as%s+(.-)%s*from%s+[\"'](.-)[\"']%s*"
-    (fn [default nm mod]
-      (string.format "const %s = require(\"%s\");\nconst %s = %s.default"
-                     nm mod default nm))]
-   ["^%s*import%s+%*%s+as%s+([^%s]+)%s+from%s+([\"'])(.-)%2%s*"
-    (fn [alias _ mod]
-      (string.format "const %s = require(\"%s\")" alias mod))]])
+(fn transform-type-import [node code source]
+  (if (and source.resolved-path source.text)
+      (-> (tsc.get-text node code)
+          (string.gsub (vim.pesc source.text)
+                       (string.format "\"%s\"" source.resolved-path)))
+      (tsc.get-text node code)))
 
-(fn M.replace-imports-regex [s]
-  (let [initial-acc {:applied? false :result s}
-        r-fn (fn [acc [pat repl]]
-                      (if acc.applied?
-                          acc
-                          (let [(r c) (string.gsub acc.result pat repl)]
-                            (if (> c 0)
-                                {:applied? true :result r}
-                                acc))))
-        final-acc (a.reduce r-fn initial-acc patterns-replacements)]
-    final-acc.result))
+(fn transform-plain-import [source]
+  (when source.resolved-path
+      (string.format "require(\"%s\");" source.resolved-path)))
 
-;; To avoid Node.js REPL complaints, imports are automatically converted for the user.
-;; See https://github.com/nodejs/node/issues/48084
-(fn M.replace-imports [s]
-  (let [s (replace-imports-path s)]
-    (if (and (text.starts-with s :import)
-             (not (text.starts-with s "import type")))
-        (M.replace-imports-regex s)
-        s)))
+;; Namespace import: import * as name from "module"
+(fn transform-namespace-import [namespace-import code source]
+  (when source.resolved-path
+    (let [alias (tsc.get-text (tsc.get-child namespace-import "identifier") code)]
+      (string.format "const %s = require(\"%s\");" alias source.resolved-path))))
+
+;; Default import only: import name from "module"
+(fn transform-default-import [default-import code source]
+  (when source.resolved-path
+    (let [name (tsc.get-text default-import code)]
+      (string.format "const %s = require(\"%s\");" name source.resolved-path))))
+
+;; Named imports only: import { a, b } from "module"
+(fn transform-named-import [named-imports code source]
+  (when source.resolved-path
+    (string.format "const {%s} = require(\"%s\");"
+                   (clean-named-imports named-imports code)
+                   source.resolved-path)))
+
+;; Mixed import: import defaultName, { a, b } from "module"
+(fn transform-mixed-import [default-import named-imports code source]
+  (let [default-name (tsc.get-text default-import code)
+        clean-imports (clean-named-imports named-imports code)]
+    (when source.resolved-path
+        (.. (string.format "const %s = require(\"%s\");" default-name source.resolved-path)
+            " "
+            (string.format "const {%s} = require(\"%s\");" clean-imports source.resolved-path)))))
+
+(fn M.import-statement [handle-statement]
+     (fn [node code]
+       (let [source (parse-import-source node code)
+             import-clause (tsc.find-child-by-type node "import_clause")
+             fallback (fn [] (handle-statement node code))]
+
+         (if (is-type-import? node code)
+             (transform-type-import node code source)
+
+             (not import-clause)
+             (or (transform-plain-import source)
+                 (fallback))
+
+             (let [default-import (tsc.find-child-by-type import-clause "identifier")
+                   namespace-import (tsc.find-child-by-type import-clause "namespace_import")
+                   named-imports (tsc.find-child-by-type import-clause "named_imports")]
+
+               (if namespace-import
+                   (or (transform-namespace-import namespace-import code source)
+                       (fallback))
+
+                   (and default-import (not named-imports))
+                   (or (transform-default-import default-import code source)
+                       (fallback))
+
+                   (and named-imports (not default-import))
+                   (or (transform-named-import named-imports code source)
+                       (fallback))
+
+                   (and default-import named-imports)
+                   (or (transform-mixed-import default-import named-imports code source)
+                       (fallback))
+
+                   (fallback)))))))
+
+(fn M.call-expression [default]
+  (fn [node code]
+    (let [function-node (tsc.get-child node "function")
+          function-text (and function-node (tsc.get-text function-node code))
+          arguments-node (tsc.get-child node "arguments")]
+      (if (and (= function-text "require") arguments-node)
+          (let [first-arg (and arguments-node (arguments-node:child 1))
+                arg-text (and first-arg (tsc.get-text first-arg code))
+                arg-path (and arg-text (string.match arg-text "^['\"`](.+)['\"`]$"))]
+            (if (and arg-path (text.starts-with arg-path "."))
+                (let [resolved-path (tsc.resolve-path arg-path)
+                      quote-char (string.match arg-text "^(['\"`])")
+                      new-arg (string.format "%s%s%s" quote-char resolved-path quote-char)]
+                  (-> (tsc.get-text node code)
+                      (string.gsub (vim.pesc arg-text) new-arg)))
+                (default node code)))
+          (default node code)))))
 
 M
