@@ -1,5 +1,5 @@
-(local {: autoload} (require :conjure.nfnl.module))
-(local a (autoload :conjure.aniseed.core))
+(local {: autoload : define} (require :conjure.nfnl.module))
+(local core (autoload :conjure.nfnl.core))
 (local client (autoload :conjure.client))
 (local config (autoload :conjure.config))
 (local debugger (autoload :conjure.client.clojure.nrepl.debugger))
@@ -7,34 +7,36 @@
 (local log (autoload :conjure.log))
 (local nrepl (autoload :conjure.remote.nrepl))
 (local state (autoload :conjure.client.clojure.nrepl.state))
-(local str (autoload :conjure.aniseed.string))
+(local str (autoload :conjure.nfnl.string))
 (local timer (autoload :conjure.timer))
 (local ui (autoload :conjure.client.clojure.nrepl.ui))
 (local uuid (autoload :conjure.uuid))
 (local fs (autoload :conjure.nfnl.fs))
 
-(fn with-conn-or-warn [f opts]
+(local M (define :conjure.client.clojure.nrepl.server))
+
+(fn M.with-conn-or-warn [f opts]
   (let [conn (state.get :conn)]
     (if conn
       (f conn)
       (do
-        (when (not (a.get opts :silent?))
+        (when (not (core.get opts :silent?))
           (log.append ["; No connection"]))
-        (when (a.get opts :else)
+        (when (core.get opts :else)
           (opts.else))))))
 
-(fn connected? []
+(fn M.connected? []
   (if (state.get :conn)
     true
     false))
 
-(fn send [msg cb]
-  (with-conn-or-warn
+(fn M.send [msg cb]
+  (M.with-conn-or-warn
     (fn [conn]
       (conn.send msg cb))))
 
 (fn display-conn-status [status]
-  (with-conn-or-warn
+  (M.with-conn-or-warn
     (fn [conn]
       (log.append [(str.join
                      ["; " conn.host ":" conn.port " (" status ")"
@@ -42,24 +44,24 @@
                         (str.join [": " conn.port_file_path]))])]
                   {:break? true}))))
 
-(fn disconnect []
-  (with-conn-or-warn
+(fn M.disconnect []
+  (M.with-conn-or-warn
     (fn [conn]
       (conn.destroy)
       (display-conn-status :disconnected)
-      (a.assoc (state.get) :conn nil))))
+      (core.assoc (state.get) :conn nil))))
 
-(fn close-session [session cb]
-  (send
-    {:op :close :session (a.get session :id)}
+(fn M.close-session [session cb]
+  (M.send
+    {:op :close :session (core.get session :id)}
     cb))
 
-(fn assume-session [session]
-  (a.assoc (state.get :conn) :session (a.get session :id))
+(fn M.assume-session [session]
+  (core.assoc (state.get :conn) :session (core.get session :id))
   (log.append [(str.join ["; Assumed session: " (session.str)])]
               {:break? true}))
 
-(fn un-comment [code]
+(fn M.un-comment [code]
   (when code
     (string.gsub code "^#_" "")))
 
@@ -94,26 +96,26 @@
        :nrepl.middleware.print/buffer-size
        (config.get-in [:client :clojure :nrepl :eval :print_buffer_size])})))
 
-(fn eval [opts cb]
-  (with-conn-or-warn
+(fn M.eval [opts cb]
+  (M.with-conn-or-warn
     (fn [_]
-      (send
-        (a.merge
+      (M.send
+        (core.merge
           {:op :eval
            :ns opts.context
-           :code (un-comment opts.code)
+           :code (M.un-comment opts.code)
            :file opts.file-path
-           :line (a.get-in opts [:range :start 1])
-           :column (-?> (a.get-in opts [:range :start 2]) (a.inc))
+           :line (core.get-in opts [:range :start 1])
+           :column (-?> (core.get-in opts [:range :start 2]) (core.inc))
            :session opts.session}
           (print-opts))
         cb))))
 
-(fn load-file [opts cb]
-  (with-conn-or-warn
+(fn M.load-file [opts cb]
+  (M.with-conn-or-warn
     (fn [_]
-      (send
-        (a.merge
+      (M.send
+        (core.merge
           {:op :load-file
            :file opts.code
            :file-name (fs.filename opts.file-path)
@@ -123,26 +125,26 @@
         cb))))
 
 (fn with-session-ids [cb]
-  (with-conn-or-warn
+  (M.with-conn-or-warn
     (fn [_]
-      (send
+      (M.send
         {:op :ls-sessions
          :session :no-session}
         (fn [msg]
-          (let [sessions (a.get msg :sessions)]
+          (let [sessions (core.get msg :sessions)]
             (when (= :table (type sessions))
               (table.sort sessions))
             (cb sessions)))))))
 
-(fn pretty-session-type [st]
-  (a.get
+(fn M.pretty-session-type [st]
+  (core.get
     {:clj :Clojure
      :cljs :ClojureScript
      :cljr :ClojureCLR}
     st
     "Unknown https://github.com/Olical/conjure/wiki/Frequently-asked-questions#what-does-unknown-mean-in-the-log-when-connecting-to-a-clojure-nrepl"))
 
-(fn session-type [id cb]
+(fn M.session-type [id cb]
   (let [state {:done? false}]
 
     ;; Let's not wait forever just to check the type of a session.
@@ -157,7 +159,7 @@
       ;; Hard coding this because it shouldn't matter too much.
       200)
 
-    (send
+    (M.send
       {:op :eval
        :code (.. "#?("
                      (str.join
@@ -170,73 +172,73 @@
        :session id}
       (nrepl.with-all-msgs-fn
         (fn [msgs]
-          (let [st (a.some #(a.get $1 :value) msgs)]
+          (let [st (core.some #(core.get $1 :value) msgs)]
             (when (not state.done?)
               (set state.done? true)
               (cb (when st (str.trim st))))))))))
 
-(fn enrich-session-id [id cb]
-  (session-type
+(fn M.enrich-session-id [id cb]
+  (M.session-type
     id
     (fn [st]
       (let [t {:id id
                :type st
-               :pretty-type (pretty-session-type st)
+               :pretty-type (M.pretty-session-type st)
                :name (uuid.pretty id)}]
-        (a.assoc t :str #(str.join [t.name " (" t.pretty-type ")"]))
+        (core.assoc t :str #(str.join [t.name " (" t.pretty-type ")"]))
         (cb t)))))
 
-(fn with-sessions [cb]
+(fn M.with-sessions [cb]
   (with-session-ids
     (fn [sess-ids]
       (let [rich []
-            total (a.count sess-ids)]
+            total (core.count sess-ids)]
         (if (= 0 total)
           (cb [])
-          (a.run!
+          (core.run!
             (fn [id]
               (log.dbg "with-sessions id for enrichment" id)
               (when id
-                (enrich-session-id
+                (M.enrich-session-id
                   id
                   (fn [t]
                     (table.insert rich t)
-                    (when (= total (a.count rich))
+                    (when (= total (core.count rich))
                       (table.sort
                         rich
-                        #(< (a.get $1 :name)
-                            (a.get $2 :name)))
+                        #(< (core.get $1 :name)
+                            (core.get $2 :name)))
                       (cb rich))))))
             sess-ids))))))
 
-(fn clone-session [session]
-  (send
+(fn M.clone-session [session]
+  (M.send
     {:op :clone
-     :session (a.get session :id)
+     :session (core.get session :id)
      :client-name "Conjure"}
     (nrepl.with-all-msgs-fn
       (fn [msgs]
-        (let [session-id (a.some #(a.get $1 :new-session) msgs)]
+        (let [session-id (core.some #(core.get $1 :new-session) msgs)]
           (log.dbg "clone-session id for enrichment" id)
           (when session-id
-            (enrich-session-id session-id assume-session)))))))
+            (M.enrich-session-id session-id M.assume-session)))))))
 
-(fn assume-or-create-session []
-  (a.assoc (state.get :conn) :session nil)
-  (with-sessions
+(fn M.assume-or-create-session []
+  (core.assoc (state.get :conn) :session nil)
+  (M.with-sessions
     (fn [sessions]
-      (if (a.empty? sessions)
-        (clone-session)
-        (assume-session (a.first sessions))))))
+      (if (core.empty? sessions)
+        (M.clone-session)
+        (M.assume-session (core.first sessions))))))
 
 (fn eval-preamble [cb]
   (let [queue-size (config.get-in [:client :clojure :nrepl :tap :queue_size])
         pretty-print-test-failures? (config.get-in [:client :clojure :nrepl :test :pretty_print_test_failures])]
-    (send
+    (M.send
       {:op :eval
        :code (str.join
                "\n"
-               (a.concat
+               (core.concat
                  ["(create-ns 'conjure.internal)"
                    "(intern 'conjure.internal 'initial-ns (symbol (str *ns*)))"
 
@@ -301,89 +303,89 @@
         (nrepl.with-all-msgs-fn cb)))))
 
 (fn capture-describe []
-  (send
+  (M.send
     {:op :describe}
     (fn [msg]
-      (a.assoc (state.get :conn) :describe msg))))
+      (core.assoc (state.get :conn) :describe msg))))
 
-(fn with-conn-and-ops-or-warn [op-names f opts]
+(fn M.with-conn-and-ops-or-warn [op-names f opts]
   "Takes a sequential table of op names and calls your function f with an
   associative table of the shape {:op-name true} if any exist. If not, your
   function is not called and a warning is displayed."
-  (with-conn-or-warn
+  (M.with-conn-or-warn
     (fn [conn]
       (let [found-ops
-            (a.reduce
+            (core.reduce
               (fn [acc op]
-                (if (a.get-in conn [:describe :ops op])
-                  (a.assoc acc op true)
+                (if (core.get-in conn [:describe :ops op])
+                  (core.assoc acc op true)
                   acc))
               {}
               op-names)]
 
-        (if (not (a.empty? found-ops))
+        (if (not (core.empty? found-ops))
           (f conn found-ops)
           (do
-            (when (not (a.get opts :silent?))
+            (when (not (core.get opts :silent?))
               (log.append
                 ["; None of the required operations are supported by this nREPL."
                  "; Ensure your nREPL is up to date."
                  "; Consider installing or updating the CIDER middleware."
                  "; https://docs.cider.mx/cider-nrepl/usage.html"]))
-            (when (a.get opts :else)
+            (when (core.get opts :else)
               (opts.else))))))
     opts))
 
-(fn handle-input-request [msg]
-  (send
+(fn M.handle-input-request [msg]
+  (M.send
     {:op :stdin
      :stdin (.. (or (extract.prompt "Input required: ")
                     "")
                 "\n")
      :session msg.session}))
 
-(fn connect [{: host : port : cb : port_file_path : connect-opts}]
+(fn M.connect [{: host : port : cb : port_file_path : connect-opts}]
   (when (state.get :conn)
-    (disconnect))
+    (M.disconnect))
 
-  (a.assoc
+  (core.assoc
     (state.get) :conn
-    (a.merge!
+    (core.merge!
       (nrepl.connect
-        (a.merge
+        (core.merge
           {:host host
            :port port
 
            :on-failure
            (fn [err]
              (display-conn-status err)
-             (disconnect))
+             (M.disconnect))
 
            :on-success
            (fn []
              (display-conn-status :connected)
              (capture-describe)
-             (assume-or-create-session)
+             (M.assume-or-create-session)
              (eval-preamble cb))
 
            :on-error
            (fn [err]
              (if err
                (display-conn-status err)
-               (disconnect)))
+               (M.disconnect)))
 
            :on-message
            (fn [msg]
              (when msg.status.unknown-session
                (log.append ["; Unknown session, correcting"])
-               (assume-or-create-session))
+               (M.assume-or-create-session))
              (when msg.status.namespace-not-found
                (log.append [(str.join ["; Namespace not found: " msg.ns])])))
 
            :side-effect-callback
            (fn [msg]
              (when msg.status.need-input
-               (client.schedule handle-input-request msg))
+               (client.schedule M.handle-input-request msg))
 
              (when msg.status.need-debug-input
                (client.schedule debugger.handle-input-request msg)))
@@ -397,21 +399,4 @@
       {:seen-ns {}
        :port_file_path port_file_path})))
 
-{: assume-or-create-session
- : assume-session
- : clone-session
- : close-session
- : connect
- : connected?
- : disconnect
- : enrich-session-id
- : eval
- : handle-input-request
- : pretty-session-type
- : send
- : session-type
- : un-comment
- : with-conn-and-ops-or-warn
- : with-conn-or-warn
- : with-sessions
- : load-file}
+M
