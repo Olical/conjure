@@ -166,7 +166,7 @@ local function with_info(opts, f)
   local function _32_(conn, ops)
     local _33_
     if ops.info then
-      _33_ = {op = "info", ns = (opts.context or "user"), symbol = opts.code, session = conn.session}
+      _33_ = {op = "info", ns = (opts.context or "user"), symbol = opts.code, session = conn.session, ["download-sources-jar"] = 1}
     elseif ops.lookup then
       _33_ = {op = "lookup", ns = (opts.context or "user"), sym = opts.code, session = conn.session}
     else

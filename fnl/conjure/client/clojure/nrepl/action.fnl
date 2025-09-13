@@ -113,7 +113,8 @@
           {:op :info
            :ns (or opts.context "user")
            :symbol opts.code
-           :session conn.session}
+           :session conn.session
+           :download-sources-jar 1}
 
           ops.lookup
           {:op :lookup
