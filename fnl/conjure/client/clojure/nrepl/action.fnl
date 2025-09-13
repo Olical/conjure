@@ -1,5 +1,5 @@
-(local {: autoload} (require :conjure.nfnl.module))
-(local a (autoload :conjure.aniseed.core))
+(local {: autoload : define} (require :conjure.nfnl.module))
+(local core (autoload :conjure.nfnl.core))
 (local auto-repl (autoload :conjure.client.clojure.nrepl.auto-repl))
 (local config (autoload :conjure.config))
 (local editor (autoload :conjure.editor))
@@ -9,13 +9,13 @@
 (local ll (autoload :conjure.linked-list))
 (local log (autoload :conjure.log))
 (local nrepl (autoload :conjure.remote.nrepl))
-(local nvim (autoload :conjure.aniseed.nvim))
 (local parse (autoload :conjure.client.clojure.nrepl.parse))
 (local server (autoload :conjure.client.clojure.nrepl.server))
-(local str (autoload :conjure.aniseed.string))
+(local str (autoload :conjure.nfnl.string))
 (local text (autoload :conjure.text))
 (local ui (autoload :conjure.client.clojure.nrepl.ui))
-(local view (autoload :conjure.aniseed.view))
+
+(local M (define :conjure.client.clojure.nrepl.action))
 
 (fn require-ns [ns]
   (when ns
@@ -25,81 +25,81 @@
 
 (local cfg (config.get-in-fn [:client :clojure :nrepl]))
 
-(fn passive-ns-require []
+(fn M.passive-ns-require []
   (when (and (cfg [:eval :auto_require])
              (server.connected?))
     (require-ns (extract.context))))
 
-(fn connect-port-file [opts]
+(fn M.connect-port-file [opts]
   (let [resolved-path (-?>> (cfg [:connection :port_files]) (fs.resolve-above))
         resolved (when resolved-path
-                   (let [port (a.slurp resolved-path)]
+                   (let [port (core.slurp resolved-path)]
                      (when port
                        {:path resolved-path
                         :port (tonumber port)})))]
     (if resolved
-      (server.connect
-        {:host (cfg [:connection :default_host])
-         :port_file_path (?. resolved :path)
-         :port (?. resolved :port)
-         :cb (fn []
-               (let [cb (a.get opts :cb)]
-                 (when cb
-                   (cb)))
-               (passive-ns-require))
-         :connect-opts (a.get opts :connect-opts)})
-      (when (not (a.get opts :silent?))
-        (log.append ["; No nREPL port file found"] {:break? true})
-        (auto-repl.upsert-auto-repl-proc)))))
+        (server.connect
+          {:host (cfg [:connection :default_host])
+           :port_file_path (?. resolved :path)
+           :port (?. resolved :port)
+           :cb (fn []
+                 (let [cb (core.get opts :cb)]
+                   (when cb
+                     (cb)))
+                 (M.passive-ns-require))
+           :connect-opts (core.get opts :connect-opts)})
+        (when (not (core.get opts :silent?))
+          (log.append ["; No nREPL port file found"] {:break? true})
+          (auto-repl.upsert-auto-repl-proc)))))
 
 (hook.define
   :client-clojure-nrepl-passive-connect
   (fn [cb]
-    (connect-port-file
+    (M.connect-port-file
       {:silent? true
        :cb cb})))
 
 (fn try-ensure-conn [cb]
   (if (not (server.connected?))
-    (hook.exec :client-clojure-nrepl-passive-connect cb)
-    (when cb
-      (cb))))
+      (hook.exec :client-clojure-nrepl-passive-connect cb)
+      (when cb
+        (cb))))
 
-(fn connect-host-port [opts]
+(fn M.connect-host-port [opts]
   (if (and (not opts.host) (not opts.port))
-    (connect-port-file)
-    (let [parsed-port (when (= :string (type opts.port))
-                        (tonumber opts.port))]
+      (M.connect-port-file)
+      (let [parsed-port (when (= :string (type opts.port))
+                          (tonumber opts.port))]
 
-      (if parsed-port
-        (server.connect
-          {:host (or opts.host (cfg [:connection :default_host]))
-           :port parsed-port
-           :cb passive-ns-require})
-        (log.append [(str.join ["; Could not parse '" (or opts.port "nil") "' as a port number"])])))))
+        (if parsed-port
+            (server.connect
+              {:host (or opts.host (cfg [:connection :default_host]))
+               :port parsed-port
+               :cb M.passive-ns-require})
+            (log.append [(str.join ["; Could not parse '" (or opts.port "nil") "' as a port number"])])))))
 
 (fn eval-cb-fn [opts]
   (fn [resp]
-    (when (and (a.get opts :on-result)
-               (a.get resp :value))
+    (when (and (core.get opts :on-result)
+               (core.get resp :value))
       (opts.on-result resp.value))
 
-    (let [cb (a.get opts :cb)]
+    (let [cb (core.get opts :cb)]
       (if cb
-        (cb resp)
-        (when (not opts.passive?)
-          (ui.display-result resp opts))))))
+          (cb resp)
+          (when (not opts.passive?)
+            (ui.display-result resp opts))))))
 
-(fn eval-str [opts]
+(fn M.eval-str [opts]
   (try-ensure-conn
     (fn []
       (server.with-conn-or-warn
         (fn [conn]
-          (when (and opts.context (not (a.get-in conn [:seen-ns opts.context])))
+          (when (and opts.context (not (core.get-in conn [:seen-ns opts.context])))
             (server.eval
               {:code (.. "(ns " opts.context ")")}
               (fn []))
-            (a.assoc-in conn [:seen-ns opts.context] true))
+            (core.assoc-in conn [:seen-ns opts.context] true))
 
           (server.eval opts (eval-cb-fn opts)))))))
 
@@ -125,67 +125,67 @@
                (or (. msg :info) msg))))))))
 
 (fn java-info->lines [{: arglists-str : class : member : javadoc}]
-  (a.concat
+  (core.concat
     [(str.join
-       (a.concat ["; " class]
-                 (when member
-                   ["/" member])))]
-    (when (not (a.empty? arglists-str))
+       (core.concat ["; " class]
+                    (when member
+                      ["/" member])))]
+    (when (not (core.empty? arglists-str))
       [(.. "; (" (str.join " " (text.split-lines arglists-str)) ")")])
     (when javadoc
       [(.. "; " javadoc)])))
 
-(fn doc-str [opts]
+(fn M.doc-str [opts]
   (try-ensure-conn
     (fn []
       (require-ns "clojure.repl")
       (server.eval
-        (a.merge
+        (core.merge
           {} opts
           {:code (.. "(clojure.repl/doc " opts.code ")")})
         (nrepl.with-all-msgs-fn
           (fn [msgs]
-            (if (a.some (fn [msg]
-                          (or (a.get msg :out)
-                              (a.get msg :err)))
-                        msgs)
-              (a.run!
-                #(ui.display-result
-                   $1
-                   {:simple-out? true :ignore-nil? true})
-                msgs)
-              (do
-                (log.append ["; No results for (doc ...), checking nREPL info ops"])
-                (with-info
-                  opts
-                  (fn [info]
-                    (if
-                      (a.nil? info)
-                      (log.append ["; No information found, all I can do is wish you good luck and point you to https://duckduckgo.com/"])
+            (if (core.some (fn [msg]
+                             (or (core.get msg :out)
+                                 (core.get msg :err)))
+                           msgs)
+                (core.run!
+                  #(ui.display-result
+                     $1
+                     {:simple-out? true :ignore-nil? true})
+                  msgs)
+                (do
+                  (log.append ["; No results for (doc ...), checking nREPL info ops"])
+                  (with-info
+                    opts
+                    (fn [info]
+                      (if
+                        (core.nil? info)
+                        (log.append ["; No information found, all I can do is wish you good luck and point you to https://duckduckgo.com/"])
 
-                      (= :string (type info.javadoc))
-                      (log.append (java-info->lines info))
+                        (= :string (type info.javadoc))
+                        (log.append (java-info->lines info))
 
-                      (= :string (type info.doc))
-                      (log.append
-                        (a.concat
-                          [(str.join ["; " info.ns "/" info.name])
-                           (str.join ["; " info.arglists-str])]
-                          (text.prefixed-lines info.doc "; ")))
+                        (= :string (type info.doc))
+                        (log.append
+                          (core.concat
+                            [(str.join ["; " info.ns "/" info.name])
+                             (str.join ["; " info.arglists-str])]
+                            (text.prefixed-lines info.doc "; ")))
 
-                      (log.append
-                        (a.concat
-                          ["; Unknown result, it may still be helpful"]
-                          (text.prefixed-lines (view.serialise info) "; "))))))))))))))
+                        (log.append
+                          (core.concat
+                            ["; Unknown result, it may still be helpful"]
+                            (text.prefixed-lines (core.pr-str info) "; "))))))))))))))
 
 (fn nrepl->nvim-path [path]
   (if
     (text.starts-with path "jar:file:")
     (string.gsub path "^jar:file:(.+)!/?(.+)$"
                  (fn [zip file]
-                   (if (> (tonumber (string.sub nvim.g.loaded_zipPlugin 2)) 31)
-                     (.. "zipfile://" zip "::" file)
-                     (.. "zipfile:" zip "::" file))))
+                   (if (> (tonumber (string.sub vim.g.loaded_zipPlugin 2)) 31)
+                       (.. "zipfile://" zip "::" file)
+                       (.. "zipfile:" zip "::" file))))
 
     (text.starts-with path "file:")
     (string.gsub path "^file:(.+)$"
@@ -194,21 +194,21 @@
 
     path))
 
-(fn def-str [opts]
+(fn M.def-str [opts]
   (try-ensure-conn
     (fn []
       (with-info
         opts
         (fn [info]
           (if
-            (a.nil? info)
+            (core.nil? info)
             (log.append ["; No definition information found"])
 
             info.candidates
             (log.append
-              (a.concat
+              (core.concat
                 ["; Multiple candidates found"]
-                (a.map #(.. $1 "/" opts.code) (a.keys info.candidates))))
+                (core.map #(.. $1 "/" opts.code) (core.keys info.candidates))))
 
             (and info.file info.line)
             (let [column (or info.column 1)
@@ -227,27 +227,27 @@
 
 
             (log.append ["; Unsupported target"
-                         (.. "; " (a.pr-str info))])))))))
+                         (.. "; " (core.pr-str info))])))))))
 
-(fn escape-backslashes [s]
+(fn M.escape-backslashes [s]
   (s:gsub "\\" "\\\\"))
 
-(fn eval-file [opts]
+(fn M.eval-file [opts]
   (try-ensure-conn
     (fn []
       (server.with-conn-or-warn
         (fn [conn]
           (server.load-file
-            (a.assoc opts :code (a.slurp opts.file-path))
+            (core.assoc opts :code (core.slurp opts.file-path))
             (eval-cb-fn opts)))))))
 
-(fn interrupt []
+(fn M.interrupt []
   (try-ensure-conn
     (fn []
       (server.with-conn-or-warn
         (fn [conn]
-          (let [msgs (->> (a.vals conn.msgs)
-                          (a.filter
+          (let [msgs (->> (core.vals conn.msgs)
+                          (core.filter
                             (fn [msg]
                               (= :eval msg.msg.op))))
 
@@ -263,40 +263,40 @@
                       (log.append
                         [(.. "; Interrupted: "
                              (if code
-                               (text.left-sample
-                                 code
-                                 (editor.percent-width
-                                   (cfg [:interrupt :sample_limit])))
-                               (.. "session: " (sess.str) "")))]
+                                 (text.left-sample
+                                   code
+                                   (editor.percent-width
+                                     (cfg [:interrupt :sample_limit])))
+                                 (.. "session: " (sess.str) "")))]
                         {:break? true}))))]
 
-            (if (a.empty? msgs)
-              (order-66 {:session conn.session})
-              (do
-                (table.sort
-                  msgs
-                  (fn [a b]
-                    (< a.sent-at b.sent-at)))
-                (order-66 (a.get (a.first msgs) :msg))))))))))
+            (if (core.empty? msgs)
+                (order-66 {:session conn.session})
+                (do
+                  (table.sort
+                    msgs
+                    (fn [a b]
+                      (< a.sent-at b.sent-at)))
+                  (order-66 (core.get (core.first msgs) :msg))))))))))
 
 (fn eval-str-fn [code]
   (fn []
-    (nvim.ex.ConjureEval code)))
+    (vim.api.nvim_exec2 (.. "ConjureEval " code) {})))
 
-(local last-exception (eval-str-fn "*e"))
-(local result-1 (eval-str-fn "*1"))
-(local result-2 (eval-str-fn "*2"))
-(local result-3 (eval-str-fn "*3"))
-(local view-tap (eval-str-fn "(conjure.internal/dump-tap-queue!)"))
+(set M.last-exception (eval-str-fn "*e"))
+(set M.result-1 (eval-str-fn "*1"))
+(set M.result-2 (eval-str-fn "*2"))
+(set M.result-3 (eval-str-fn "*3"))
+(set M.view-tap (eval-str-fn "(conjure.internal/dump-tap-queue!)"))
 
-(fn view-source []
+(fn M.view-source []
   (try-ensure-conn
     (fn []
-      (let [word (a.get (extract.word) :content)]
-        (when (not (a.empty? word))
+      (let [word (core.get (extract.word) :content)]
+        (when (not (core.empty? word))
           (log.append [(.. "; source (word): " word)] {:break? true})
           (require-ns "clojure.repl")
-          (eval-str
+          (M.eval-str
             {:code (.. "(clojure.repl/source " word ")")
              :context (extract.context)
              :cb #(ui.display-result
@@ -307,14 +307,14 @@
 (fn eval-macro-expand [expander]
   (try-ensure-conn
     (fn []
-      (let [form (a.get (extract.form {}) :content)]
-        (when (not (a.empty? form))
+      (let [form (core.get (extract.form {}) :content)]
+        (when (not (core.empty? form))
           (log.append [(.. "; " expander " (form): " form)] {:break? true})
-          (eval-str
+          (M.eval-str
             {:code (..
                      (if (= :clojure.walk/macroexpand-all expander)
-                       "(require 'clojure.walk) "
-                       "")
+                         "(require 'clojure.walk) "
+                         "")
                      "(" expander " '" form ")")
              :context (extract.context)
              :cb #(ui.display-result
@@ -322,58 +322,58 @@
                     {:raw-out? true
                      :ignore-nil? true})}))))))
 
-(fn macro-expand-1 []
+(fn M.macro-expand-1 []
   (eval-macro-expand :macroexpand-1))
 
-(fn macro-expand []
+(fn M.macro-expand []
   (eval-macro-expand :macroexpand))
 
-(fn macro-expand-all []
+(fn M.macro-expand-all []
   (eval-macro-expand :clojure.walk/macroexpand-all))
 
-(fn clone-current-session []
+(fn M.clone-current-session []
   (try-ensure-conn
     (fn []
       (server.with-conn-or-warn
         (fn [conn]
           (server.enrich-session-id
-            (a.get conn :session)
+            (core.get conn :session)
             server.clone-session))))))
 
-(fn clone-fresh-session []
+(fn M.clone-fresh-session []
   (try-ensure-conn
     (fn []
       (server.with-conn-or-warn
         (fn [conn]
           (server.clone-session))))))
 
-(fn close-current-session []
+(fn M.close-current-session []
   (try-ensure-conn
     (fn []
       (server.with-conn-or-warn
         (fn [conn]
           (server.enrich-session-id
-            (a.get conn :session)
+            (core.get conn :session)
             (fn [sess]
-              (a.assoc conn :session nil)
+              (core.assoc conn :session nil)
               (log.append [(.. "; Closed current session: " (sess.str))]
                           {:break? true})
               (server.close-session sess #(server.assume-or-create-session)))))))))
 
-(fn display-sessions [cb]
+(fn M.display-sessions [cb]
   (try-ensure-conn
     (fn []
       (server.with-sessions
         (fn [sessions]
           (ui.display-sessions sessions cb))))))
 
-(fn close-all-sessions []
+(fn M.close-all-sessions []
   (try-ensure-conn
     (fn []
       (server.with-sessions
         (fn [sessions]
-          (a.run! server.close-session sessions)
-          (log.append [(.. "; Closed all sessions (" (a.count sessions) ")")]
+          (core.run! server.close-session sessions)
+          (log.append [(.. "; Closed all sessions (" (core.count sessions) ")")]
                       {:break? true})
           (server.clone-session))))))
 
@@ -384,41 +384,41 @@
         (fn [conn]
           (server.with-sessions
             (fn [sessions]
-              (if (= 1 (a.count sessions))
-                (log.append ["; No other sessions"] {:break? true})
-                (let [session (a.get conn :session)]
-                  (->> sessions
-                       (ll.create)
-                       (ll.cycle)
-                       (ll.until #(f session $1))
-                       (ll.val)
-                       (server.assume-session)))))))))))
+              (if (= 1 (core.count sessions))
+                  (log.append ["; No other sessions"] {:break? true})
+                  (let [session (core.get conn :session)]
+                    (->> sessions
+                         (ll.create)
+                         (ll.cycle)
+                         (ll.until #(f session $1))
+                         (ll.val)
+                         (server.assume-session)))))))))))
 
-(fn next-session []
+(fn M.next-session []
   (cycle-session
     (fn [current node]
-      (= current (a.get (->> node (ll.prev) (ll.val)) :id)))))
+      (= current (core.get (->> node (ll.prev) (ll.val)) :id)))))
 
-(fn prev-session []
+(fn M.prev-session []
   (cycle-session
     (fn [current node]
-      (= current (a.get (->> node (ll.next) (ll.val)) :id)))))
+      (= current (core.get (->> node (ll.next) (ll.val)) :id)))))
 
-(fn select-session-interactive []
+(fn M.select-session-interactive []
   (try-ensure-conn
     (fn []
       (server.with-sessions
         (fn [sessions]
-          (if (= 1 (a.count sessions))
-            (log.append ["; No other sessions"] {:break? true})
-            (vim.ui.select
-              sessions
-              {:prompt "Select an nREPL session:"
-               :format_item #(.. $.name " (" $.pretty-type ", " $.id ")")}
-              (fn [session]
-                (server.assume-session session)))))))))
+          (if (= 1 (core.count sessions))
+              (log.append ["; No other sessions"] {:break? true})
+              (vim.ui.select
+                sessions
+                {:prompt "Select an nREPL session:"
+                 :format_item #(.. $.name " (" $.pretty-type ", " $.id ")")}
+                (fn [session]
+                  (server.assume-session session)))))))))
 
-(local test-runners
+(set M.test-runners
   {:clojure
    {:namespace "clojure.test"
     :all-fn "run-all-tests"
@@ -446,7 +446,7 @@
 
 (fn test-cfg [k]
   (let [runner (cfg [:test :runner])]
-    (or (a.get-in test-runners [runner k])
+    (or (core.get-in M.test-runners [runner k])
         (error (str.join ["No test-runners configuration for " runner " / " k])))))
 
 (fn require-test-runner []
@@ -464,7 +464,7 @@
         (test-cfg :default-call-suffix))
     ")"))
 
-(fn run-all-tests []
+(fn M.run-all-tests []
   (try-ensure-conn
     (fn []
       (log.append ["; run-all-tests"] {:break? true})
@@ -492,38 +492,38 @@
               :raw-out? (cfg [:test :raw_out])
               :ignore-nil? true}))))))
 
-(fn run-current-ns-tests []
+(fn M.run-current-ns-tests []
   (run-ns-tests (extract.context)))
 
-(fn run-alternate-ns-tests []
+(fn M.run-alternate-ns-tests []
   (let [current-ns (extract.context)]
     (run-ns-tests
       (if (text.ends-with current-ns "-test")
-        current-ns
-        (.. current-ns "-test")))))
+          current-ns
+          (.. current-ns "-test")))))
 
-(fn extract-test-name-from-form [form]
+(fn M.extract-test-name-from-form [form]
   (var seen-deftest? false)
   (-> (parse.strip-meta form)
       (str.split "%s+")
       (->>
-        (a.some
+        (core.some
           (fn [part]
             (if
-              (a.some (fn [config-current-form-name]
-                        (text.ends-with part config-current-form-name))
-                      (cfg [:test :current_form_names]))
+              (core.some (fn [config-current-form-name]
+                           (text.ends-with part config-current-form-name))
+                         (cfg [:test :current_form_names]))
               (do (set seen-deftest? true) false)
 
               seen-deftest?
               part))))))
 
-(fn run-current-test []
+(fn M.run-current-test []
   (try-ensure-conn
     (fn []
       (let [form (extract.form {:root? true})]
         (when form
-          (let [test-name (extract-test-name-from-form form.content)]
+          (let [test-name (M.extract-test-name-from-form form.content)]
             (when test-name
               (log.append [(.. "; run-current-test: " test-name)]
                           {:break? true})
@@ -537,22 +537,22 @@
                  :context (extract.context)}
                 (nrepl.with-all-msgs-fn
                   (fn [msgs]
-                    (if (and (= 2 (a.count msgs))
-                             (= "nil" (a.get (a.first msgs) :value)))
-                      (log.append ["; Success!"])
-                      (a.run! #(ui.display-result
-                                 $1
-                                 {:simple-out? true
-                                  :raw-out? (cfg [:test :raw_out])
-                                  :ignore-nil? true})
-                              msgs))))))))))))
+                    (if (and (= 2 (core.count msgs))
+                             (= "nil" (core.get (core.first msgs) :value)))
+                        (log.append ["; Success!"])
+                        (core.run! #(ui.display-result
+                                      $1
+                                      {:simple-out? true
+                                       :raw-out? (cfg [:test :raw_out])
+                                       :ignore-nil? true})
+                                   msgs))))))))))))
 
 (fn refresh-impl [op]
   (server.with-conn-and-ops-or-warn
     [op]
     (fn [conn]
       (server.send
-        (a.merge
+        (core.merge
           {:op op
            :session conn.session
            :after (cfg [:refresh :after])
@@ -577,21 +577,21 @@
 (fn use-clj-reload-backend? []
   (= (cfg [:refresh :backend]) "clj-reload"))
 
-(fn refresh-changed []
+(fn M.refresh-changed []
   (let [use-clj-reload? (use-clj-reload-backend?)]
     (try-ensure-conn
       (fn []
         (log.append [(str.join ["; Refreshing changed namespaces using '" (if use-clj-reload? "clj-reload" "tools.namespace") "'"])] {:break? true})
         (refresh-impl (if use-clj-reload? :cider.clj-reload/reload :refresh))))))
 
-(fn refresh-all []
+(fn M.refresh-all []
   (let [use-clj-reload? (use-clj-reload-backend?)]
     (try-ensure-conn
       (fn []
         (log.append [(str.join ["; Refreshing all namespaces using '" (if use-clj-reload? "clj-reload" "tools.namespace") "'"])] {:break? true})
         (refresh-impl (if use-clj-reload? :cider.clj-reload/reload-all :refresh-all))))))
 
-(fn refresh-clear []
+(fn M.refresh-clear []
   (let [use-clj-reload? (use-clj-reload-backend?)]
     (try-ensure-conn
       (fn []
@@ -606,7 +606,7 @@
                 (fn [msgs]
                   (log.append ["; Clearing complete"]))))))))))
 
-(fn shadow-select [build]
+(fn M.shadow-select [build]
   (try-ensure-conn
     (fn []
       (server.with-conn-or-warn
@@ -615,9 +615,9 @@
           (server.eval
             {:code (.. "#?(:clj (shadow.cljs.devtools.api/nrepl-select :" build ") :cljs :already-selected)")}
             ui.display-result)
-          (passive-ns-require))))))
+          (M.passive-ns-require))))))
 
-(fn piggieback [code]
+(fn M.piggieback [code]
   (try-ensure-conn
     (fn []
       (server.with-conn-or-warn
@@ -627,13 +627,13 @@
           (server.eval
             {:code (.. "(cider.piggieback/cljs-repl " code ")")}
             ui.display-result)
-          (passive-ns-require))))))
+          (M.passive-ns-require))))))
 
 (fn clojure->vim-completion [{:candidate word
-                                 :type kind
-                                 : ns
-                                 :doc info
-                                 : arglists}]
+                              :type kind
+                              : ns
+                              :doc info
+                              : arglists}]
   {:word word
    :menu (str.join
            " "
@@ -642,7 +642,7 @@
               (str.join " " arglists))])
    :info (when (= :string (type info))
            info)
-   :kind (when (not (a.empty? kind))
+   :kind (when (not (core.empty? kind))
            (string.upper
              (string.sub kind 1 1)))})
 
@@ -651,28 +651,28 @@
     (when root-form
       (let [{: content : range} root-form
             lines (text.split-lines content)
-            [row col] (nvim.win_get_cursor 0)
-            lrow (- row (a.get-in range [:start 1]))
-            line-index (a.inc lrow)
+            [row col] (vim.api.nvim_win_get_cursor 0)
+            lrow (- row (core.get-in range [:start 1]))
+            line-index (core.inc lrow)
             lcol (if (= lrow 0)
-                   (- col (a.get-in range [:start 2]))
-                   col)
-            original (a.get lines line-index)
+                     (- col (core.get-in range [:start 2]))
+                     col)
+            original (core.get lines line-index)
             spliced (.. (string.sub
                           original
                           1 lcol)
                         "__prefix__"
                         (string.sub
                           original
-                          (a.inc lcol)))]
+                          (core.inc lcol)))]
         (-> lines
-            (a.assoc line-index spliced)
+            (core.assoc line-index spliced)
             (->> (str.join "\n")))))))
 
 (fn enhanced-cljs-completion? []
   (cfg [:completion :cljs :use_suitable]))
 
-(fn completions [opts]
+(fn M.completions [opts]
   (server.with-conn-and-ops-or-warn
     [:complete :completions]
     (fn [conn ops]
@@ -697,14 +697,14 @@
            :prefix opts.prefix})
 
         (nrepl.with-all-msgs-fn
-            (fn [msgs]
-              (->> (a.get (a.last msgs) :completions)
-                   (a.map clojure->vim-completion)
-                   (opts.cb))))))
+          (fn [msgs]
+            (->> (core.get (core.last msgs) :completions)
+                 (core.map clojure->vim-completion)
+                 (opts.cb))))))
     {:silent? true
      :else opts.cb}))
 
-(fn out-subscribe []
+(fn M.out-subscribe []
   (try-ensure-conn)
   (log.append ["; Subscribing to out"] {:break? true})
   (server.with-conn-and-ops-or-warn
@@ -712,7 +712,7 @@
     (fn [conn]
       (server.send {:op :out-subscribe}))))
 
-(fn out-unsubscribe []
+(fn M.out-unsubscribe []
   (try-ensure-conn)
   (log.append ["; Unsubscribing from out"] {:break? true})
   (server.with-conn-and-ops-or-warn
@@ -720,43 +720,4 @@
     (fn [conn]
       (server.send {:op :out-unsubscribe}))))
 
-{: clone-current-session
- : clone-fresh-session
- : close-all-sessions
- : close-current-session
- : completions
- : connect-host-port
- : connect-port-file
- : def-str
- : display-sessions
- : doc-str
- : escape-backslashes
- : eval-file
- : eval-str
- : extract-test-name-from-form
- : interrupt
- : last-exception
- : next-session
- : out-subscribe
- : out-unsubscribe
- : passive-ns-require
- : piggieback
- : prev-session
- : refresh-all
- : refresh-changed
- : refresh-clear
- : result-1
- : result-2
- : result-3
- : run-all-tests
- : run-alternate-ns-tests
- : run-current-ns-tests
- : run-current-test
- : select-session-interactive
- : shadow-select
- : test-runners
- : view-source
- : view-tap
- : macro-expand-1
- : macro-expand
- : macro-expand-all}
+M
