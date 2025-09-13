@@ -6,7 +6,6 @@
 (local mapping (autoload :conjure.mapping))
 (local client (autoload :conjure.client))
 (local log (autoload :conjure.log))
-(local import-replacer (autoload :conjure.client.javascript.import-replacer))
 (local transformers (autoload :conjure.client.javascript.transformers))
 
 (local M (define :conjure.client.javascript.stdio))
@@ -57,12 +56,7 @@
 (fn tap> [s] (log.append ["TAP>>" (a.pr-str s)]) s)
 
 (fn prep-code-expr [e]
-  (-> e transformers.transform import-replacer.replace-imports))
-
-(fn prep-code-file [f]
-  (->> (str.split f "\n")
-       (a.map prep-code-expr)
-       (str.join "\n")))
+  (-> e transformers.transform))
 
 (fn prep-code [s]
   (.. (prep-code-expr s) "\n"))
@@ -95,11 +89,14 @@
        (str.join "")))
 
 (fn stray-out []
-  (config.merge {:client
+  (let [status (cfg [:show_stray_out])
+        on? (if status "OFF" "ON")
+        _ (log.append [(.. "(STRAY OUT IS " on? ")")])]
+    (config.merge {:client
                  {:javascript
                   {:stdio
-                   {:show_stray_out (not (cfg [:show_stray_out]))}}}}
-                {:overwrite? true}))
+                   {:show_stray_out (not status)}}}}
+                {:overwrite? true})))
 
 (fn restart []
   (M.stop)
@@ -119,7 +116,7 @@
 (fn M.eval-file [opts]
   (with-repl-or-warn
     (fn [repl]
-      (let [c (prep-code-file (a.slurp opts.file-path))
+      (let [c (prep-code-expr (a.slurp opts.file-path))
             tmp_name (.. opts.file-path "_tmp")
             _tmp (a.spit tmp_name c)]
         (log.dbg ["EVAL TEMP FILE: " tmp_name])
