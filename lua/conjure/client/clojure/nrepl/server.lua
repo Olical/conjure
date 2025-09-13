@@ -15,6 +15,7 @@ local timer = autoload("conjure.timer")
 local ui = autoload("conjure.client.clojure.nrepl.ui")
 local uuid = autoload("conjure.uuid")
 local fs = autoload("conjure.nfnl.fs")
+local resources = autoload("conjure.resources")
 local M = define("conjure.client.clojure.nrepl.server")
 M["with-conn-or-warn"] = function(f, opts)
   local conn = state.get("conn")
@@ -232,38 +233,39 @@ end
 local function eval_preamble(cb)
   local queue_size = config["get-in"]({"client", "clojure", "nrepl", "tap", "queue_size"})
   local pretty_print_test_failures_3f = config["get-in"]({"client", "clojure", "nrepl", "test", "pretty_print_test_failures"})
-  local _39_
-  if pretty_print_test_failures_3f then
-    _39_ = {"(defmethod clojure.test/report :fail [m]", "  (clojure.test/with-test-out", "    (clojure.test/inc-report-counter :fail)", "    (println \"\nFAIL in\" (clojure.test/testing-vars-str m))", "    (when (seq clojure.test/*testing-contexts*) (println (clojure.test/testing-contexts-str)))", "    (when-let [message (:message m)] (println message))", "    (print \"expected:\" (with-out-str (prn (:expected m))))", "    (print \"  actual:\" (with-out-str (prn (:actual m))))", "    (when (and (seq? (:actual m))", "               (= #'clojure.core/not (resolve (first (:actual m))))", "               (seq? (second (:actual m)))", "               (= #'clojure.core/= (resolve (first (second (:actual m)))))", "               (= 3 (count (second (:actual m)))))", "      (let [[missing extra _] (clojure.data/diff (second (second (:actual m))) (last (second (:actual m))))", "            missing-str (with-out-str (pp/pprint missing))", "            missing-lines (clojure.string/split-lines missing-str)", "            extra-str (with-out-str (pp/pprint extra))", "            extra-lines (clojure.string/split-lines extra-str)]", "        (when (some? missing) (doseq [m missing-lines] (println \"- \" m)))", "        (when (some? extra) (doseq [e extra-lines] (println \"+ \" e)))))))"}
-  else
-    _39_ = nil
+  local function _39_()
+    if pretty_print_test_failures_3f then
+      return "true"
+    else
+      return "false"
+    end
   end
-  local function _41_()
+  local function _40_()
     if cb then
       return nrepl["with-all-msgs-fn"](cb)
     else
       return nil
     end
   end
-  return M.send({op = "eval", code = str.join("\n", core.concat({"(create-ns 'conjure.internal)", "(intern 'conjure.internal 'initial-ns (symbol (str *ns*)))", "(ns conjure.internal", "  (:require [clojure.pprint :as pp] [clojure.test] [clojure.data] [clojure.string]))", "(when-not (find-ns 'cider.nrepl.pprint)", "  (create-ns 'cider.nrepl.pprint)", "  (intern 'cider.nrepl.pprint 'pprint", "    (fn pprint [val w opts]", "      (apply pp/write val", "        (mapcat identity (assoc opts :stream w))))))", "(defn bounded-conj [queue x limit]", "  (->> x (conj queue) (take limit)))", ("(def tap-queue-size " .. queue_size .. ")"), "(defonce tap-queue! (atom (list)))", "(defonce enqueue-tap!", "  (fn [x] (swap! tap-queue! bounded-conj x tap-queue-size)))", "(when (resolve 'add-tap)", "  (remove-tap enqueue-tap!)", "  (add-tap enqueue-tap!))", "(defn dump-tap-queue! []", "  (reverse (first (reset-vals! tap-queue! (list)))))"}, _39_, {"(in-ns initial-ns)"}))}, _41_())
+  return M.send({op = "eval", code = string.gsub(string.gsub(resources["get-resource-contents"]("client/clojure/preamble.cljc"), ":conjure%.template/queue%-size", queue_size), ":conjure%.template/pretty%-print%-test%-failures%?", _39_())}, _40_())
 end
 local function capture_describe()
-  local function _42_(msg)
+  local function _41_(msg)
     return core.assoc(state.get("conn"), "describe", msg)
   end
-  return M.send({op = "describe"}, _42_)
+  return M.send({op = "describe"}, _41_)
 end
 M["with-conn-and-ops-or-warn"] = function(op_names, f, opts)
-  local function _43_(conn)
+  local function _42_(conn)
     local found_ops
-    local function _44_(acc, op)
+    local function _43_(acc, op)
       if core["get-in"](conn, {"describe", "ops", op}) then
         return core.assoc(acc, op, true)
       else
         return acc
       end
     end
-    found_ops = core.reduce(_44_, {}, op_names)
+    found_ops = core.reduce(_43_, {}, op_names)
     if not core["empty?"](found_ops) then
       return f(conn, found_ops)
     else
@@ -278,39 +280,39 @@ M["with-conn-and-ops-or-warn"] = function(op_names, f, opts)
       end
     end
   end
-  return M["with-conn-or-warn"](_43_, opts)
+  return M["with-conn-or-warn"](_42_, opts)
 end
 M["handle-input-request"] = function(msg)
   return M.send({op = "stdin", stdin = ((extract.prompt("Input required: ") or "") .. "\n"), session = msg.session})
 end
-M.connect = function(_49_)
-  local host = _49_["host"]
-  local port = _49_["port"]
-  local cb = _49_["cb"]
-  local port_file_path = _49_["port_file_path"]
-  local connect_opts = _49_["connect-opts"]
+M.connect = function(_48_)
+  local host = _48_["host"]
+  local port = _48_["port"]
+  local cb = _48_["cb"]
+  local port_file_path = _48_["port_file_path"]
+  local connect_opts = _48_["connect-opts"]
   if state.get("conn") then
     M.disconnect()
   else
   end
-  local function _51_(err)
+  local function _50_(err)
     display_conn_status(err)
     return M.disconnect()
   end
-  local function _52_()
+  local function _51_()
     display_conn_status("connected")
     capture_describe()
     M["assume-or-create-session"]()
     return eval_preamble(cb)
   end
-  local function _53_(err)
+  local function _52_(err)
     if err then
       return display_conn_status(err)
     else
       return M.disconnect()
     end
   end
-  local function _55_(msg)
+  local function _54_(msg)
     if msg.status["unknown-session"] then
       log.append({"; Unknown session, correcting"})
       M["assume-or-create-session"]()
@@ -322,7 +324,7 @@ M.connect = function(_49_)
       return nil
     end
   end
-  local function _58_(msg)
+  local function _57_(msg)
     if msg.status["need-input"] then
       client.schedule(M["handle-input-request"], msg)
     else
@@ -333,9 +335,9 @@ M.connect = function(_49_)
       return nil
     end
   end
-  local function _61_(msg)
+  local function _60_(msg)
     return ui["display-result"](msg)
   end
-  return core.assoc(state.get(), "conn", core["merge!"](nrepl.connect(core.merge({host = host, port = port, ["on-failure"] = _51_, ["on-success"] = _52_, ["on-error"] = _53_, ["on-message"] = _55_, ["side-effect-callback"] = _58_, ["default-callback"] = _61_}, connect_opts)), {["seen-ns"] = {}, port_file_path = port_file_path}))
+  return core.assoc(state.get(), "conn", core["merge!"](nrepl.connect(core.merge({host = host, port = port, ["on-failure"] = _50_, ["on-success"] = _51_, ["on-error"] = _52_, ["on-message"] = _54_, ["side-effect-callback"] = _57_, ["default-callback"] = _60_}, connect_opts)), {["seen-ns"] = {}, port_file_path = port_file_path}))
 end
 return M
