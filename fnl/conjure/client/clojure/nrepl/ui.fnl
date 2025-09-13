@@ -1,10 +1,12 @@
-(local {: autoload} (require :conjure.nfnl.module))
-(local a (autoload :conjure.aniseed.core))
+(local {: autoload : define} (require :conjure.nfnl.module))
+(local core (autoload :conjure.nfnl.core))
 (local config (autoload :conjure.config))
 (local log (autoload :conjure.log))
 (local state (autoload :conjure.client.clojure.nrepl.state))
-(local str (autoload :conjure.aniseed.string))
+(local str (autoload :conjure.nfnl.string))
 (local text (autoload :conjure.text))
+
+(local M (define :clojure.client.clojure.nrepl.ui))
 
 (local cfg (config.get-in-fn [:client :clojure :nrepl]))
 
@@ -12,14 +14,14 @@
   (let [next-key (if resp.out :out resp.err :err)
         key (state.get :join-next :key)]
     (when (or next-key resp.value)
-      (a.assoc (state.get) :join-next
-               (when (and next-key
-                          (not (text.trailing-newline?
-                                 (a.get resp next-key))))
-                 {:key next-key})))
+      (core.assoc (state.get) :join-next
+                  (when (and next-key
+                             (not (text.trailing-newline?
+                                    (core.get resp next-key))))
+                    {:key next-key})))
     (and next-key (= key next-key))))
 
-(fn display-result [resp opts]
+(fn M.display-result [resp opts]
   (local opts (or opts {}))
   (let [joined? (handle-join-line resp)]
     (log.append
@@ -47,18 +49,19 @@
       {:join-first? joined?
        :low-priority? (not (not (or resp.out resp.err)))})))
 
-(fn display-sessions [sessions cb]
+(fn M.display-sessions [sessions cb]
   (let [current (state.get :conn :session)]
     (log.append
-      (a.concat [(.. "; Sessions (" (a.count sessions) "):")]
-                (a.map-indexed
-                  (fn [[idx session]]
-                    (str.join
-                      ["; " (if (= current session.id) ">" " ")
-                       idx " - " (session.str)]))
-                  sessions))
+      (core.concat
+        [(.. "; Sessions (" (core.count sessions) "):")]
+        (core.map-indexed
+          (fn [[idx session]]
+            (str.join
+              ["; " (if (= current session.id) ">" " ")
+               idx " - " (session.str)]))
+          sessions))
       {:break? true})
     (when cb
       (cb))))
 
-{: display-result : display-sessions }
+M
