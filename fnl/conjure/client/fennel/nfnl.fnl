@@ -9,6 +9,7 @@
 (local str (autoload :conjure.nfnl.string))
 (local repl (autoload :conjure.nfnl.repl))
 (local fs (autoload :conjure.nfnl.fs))
+(local def-str-util (autoload :conjure.client.fennel.def-str-util))
 
 (local M
   (define :conjure.client.fennel.nfnl
@@ -102,5 +103,11 @@
   "Client function, called by Conjure when looking up documentation."
   (core.assoc opts :code (.. ",doc " opts.code))
   (M.eval-str opts))
+
+(fn M.def-str [opts]
+  "Client function, called by Conjure when jumping to definition." ; opts -> {:keys [code jumping? range]}
+  (if (ts.enabled?)
+      (def-str-util.search-and-jump opts.code (. opts.range.start 1))
+      (log.append ["jump to def is not supported because treesitter is not enabled or installed"])))
 
 M
