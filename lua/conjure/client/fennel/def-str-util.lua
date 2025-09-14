@@ -6,9 +6,10 @@ local conjure_ts = autoload("conjure.tree-sitter")
 local vim_ts = autoload("vim.treesitter")
 local config = autoload("conjure.nfnl.config")
 local notify = autoload("conjure.nfnl.notify")
-local def_local_query = vim_ts.query.parse("fennel", "\n(local_form\n (binding_pair\n   lhs: (symbol_binding) @local.def)) \n(fn_form\n  name: [(symbol) (multi_symbol)] @local.fn.def)")
-local def_ext_query = vim_ts.query.parse("fennel", "\n(local_form\n (binding_pair\n   lhs: (symbol_binding) @local.def)) \n(fn_form\n  name: (symbol) @fn.def)\n(fn_form\n  name: (multi_symbol\n    member: (symbol_fragment) @fn.def))")
-local path_query = vim_ts.query.parse("fennel", "\n(local_form\n  (binding_pair\n    rhs: (list\n           call: (symbol) (#any-of? \"autoload\" \"require\")\n           item: (string) @import.path)))")
+local res = autoload("conjure.resources")
+local def_local_query = vim_ts.query.parse("fennel", res["get-resource-contents"]("queries/fennel/local-def.scm"))
+local def_ext_query = vim_ts.query.parse("fennel", res["get-resource-contents"]("queries/fennel/ext-def.scm"))
+local path_query = vim_ts.query.parse("fennel", res["get-resource-contents"]("queries/fennel/import-path.scm"))
 local function get_current_root(bufnr, lang)
   local bufnr0 = (bufnr or 0)
   local lang0 = (lang or "fennel")
@@ -201,4 +202,4 @@ local function search_and_jump(code_text, last_row)
   end
 end
 --[[ (search-and-jump "search-and-jump" 39) (search-and-jump "search-and-jump" 49) ]]
-return {["search-and-jump"] = search_and_jump, ["search-targets"] = search_targets, ["get-current-root"] = get_current_root, ["def-local-query"] = def_local_query, ["def-ext-query"] = def_ext_query, ["imported-modules"] = imported_modules, ["resolve-fnl-module-path"] = resolve_fnl_module_path}
+return {["search-and-jump"] = search_and_jump, ["search-targets"] = search_targets, ["get-current-root"] = get_current_root, ["def-local-query"] = def_local_query, ["def-ext-query"] = def_ext_query, ["path-query"] = path_query, ["imported-modules"] = imported_modules, ["resolve-fnl-module-path"] = resolve_fnl_module_path}

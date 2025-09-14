@@ -4,35 +4,22 @@
 (local vim-ts (autoload :vim.treesitter))
 (local config (autoload :conjure.nfnl.config))
 (local notify (autoload :conjure.nfnl.notify))
+(local res (autoload :conjure.resources))
 
-;;TSQuery that matches `local, fn`
-(local def-local-query (vim-ts.query.parse :fennel
-                                     "
-(local_form
- (binding_pair
-   lhs: (symbol_binding) @local.def)) 
-(fn_form
-  name: [(symbol) (multi_symbol)] @local.fn.def)"))
+;;TSQuery that matches `local, fn, M.fn`
+(local def-local-query (vim-ts.query.parse
+                         :fennel
+                         (res.get-resource-contents "queries/fennel/local-def.scm")))
 
-(local def-ext-query (vim-ts.query.parse :fennel
-                                     "
-(local_form
- (binding_pair
-   lhs: (symbol_binding) @local.def)) 
-(fn_form
-  name: (symbol) @fn.def)
-(fn_form
-  name: (multi_symbol
-    member: (symbol_fragment) @fn.def))"))
+;;TSQuery that matches `local, fn, M.(fn) `
+(local def-ext-query (vim-ts.query.parse
+                       :fennel
+                       (res.get-resource-contents "queries/fennel/ext-def.scm")))
 
 ;;TSQuery that matches the module path imported by `require, autoload`
-(local path-query (vim-ts.query.parse :fennel
-                                      "
-(local_form
-  (binding_pair
-    rhs: (list
-           call: (symbol) (#any-of? \"autoload\" \"require\")
-           item: (string) @import.path)))"))
+(local path-query (vim-ts.query.parse
+                    :fennel
+                    (res.get-resource-contents "queries/fennel/import-path.scm")))
 
 (fn get-current-root [bufnr lang]
   "Return the root-node of bufnr or current buffer"
@@ -215,4 +202,4 @@
   )
 
 {: search-and-jump : search-targets : get-current-root : def-local-query : def-ext-query
- : imported-modules : resolve-fnl-module-path}
+ : path-query : imported-modules : resolve-fnl-module-path}
