@@ -1,5 +1,5 @@
-(local {: autoload} (require :conjure.nfnl.module))
-(local a (autoload :conjure.aniseed.core))
+(local {: autoload : define} (require :conjure.nfnl.module))
+(local core (autoload :conjure.nfnl.core))
 (local action (autoload :conjure.client.clojure.nrepl.action))
 (local auto-repl (autoload :conjure.client.clojure.nrepl.auto-repl))
 (local config (autoload :conjure.config))
@@ -7,12 +7,14 @@
 (local mapping (autoload :conjure.mapping))
 (local parse (autoload :conjure.client.clojure.nrepl.parse))
 (local server (autoload :conjure.client.clojure.nrepl.server))
-(local str (autoload :conjure.aniseed.string))
+(local str (autoload :conjure.nfnl.string))
 (local ts (autoload :conjure.tree-sitter))
 (local util (autoload :conjure.util))
 
-(local buf-suffix ".cljc")
-(local comment-prefix "; ")
+(local M (define :conjure.client.clojure.nrepl))
+
+(set M.buf-suffix ".cljc")
+(set M.comment-prefix "; ")
 (local cfg (config.get-in-fn [:client :clojure :nrepl]))
 
 (local reader-macro-pairs
@@ -31,14 +33,14 @@
    "^{"
    "^:"])
 
-(fn form-node? [node]
+(fn M.form-node? [node]
   (or (ts.node-surrounded-by-form-pair-chars? node reader-macro-pairs)
       (ts.node-prefixed-by-chars? node reader-macros)))
 
-(fn symbol-node? [node]
+(fn M.symbol-node? [node]
   (string.find (node:type) :kwd))
 
-(local comment-node? ts.lisp-comment-node?)
+(set M.comment-node? ts.lisp-comment-node?)
 
 (config.merge
   {:client
@@ -125,34 +127,34 @@
         :refresh_all "ra"
         :refresh_clear "rc"}}}}}))
 
-(fn context [header]
+(fn M.context [header]
   (-?> header
        (parse.strip-shebang)
        (parse.strip-meta)
        (parse.strip-comments)
        (string.match "%(%s*ns%s+([^)]*)")
        (str.split "%s+")
-       (a.first)))
+       (core.first)))
 
-(fn eval-file [opts]
+(fn M.eval-file [opts]
   (action.eval-file opts))
 
-(fn eval-str [opts]
+(fn M.eval-str [opts]
   (action.eval-str opts))
 
-(fn doc-str [opts]
+(fn M.doc-str [opts]
   (action.doc-str opts))
 
-(fn def-str [opts]
+(fn M.def-str [opts]
   (action.def-str opts))
 
-(fn completions [opts]
+(fn M.completions [opts]
   (action.completions opts))
 
-(fn connect [opts]
+(fn M.connect [opts]
   (action.connect-host-port opts))
 
-(fn on-filetype []
+(fn M.on-filetype []
   (mapping.buf
     :CljDisconnect (cfg [:mapping :disconnect])
     (util.wrap-require-fn-call :conjure.client.clojure.nrepl.server :disconnect)
@@ -291,14 +293,14 @@
   (vim.api.nvim_buf_create_user_command
     0
     "ConjureShadowSelect"
-    #(action.shadow-select (a.get $ :args))
+    #(action.shadow-select (core.get $ :args))
     {:force true
      :nargs 1})
 
   (vim.api.nvim_buf_create_user_command
     0
     "ConjurePiggieback"
-    #(action.piggieback (a.get $ :args))
+    #(action.piggieback (core.get $ :args))
     {:force true
      :nargs 1})
 
@@ -331,25 +333,11 @@
 
   (action.passive-ns-require))
 
-(fn on-load []
+(fn M.on-load []
   (action.connect-port-file))
 
-(fn on-exit []
+(fn M.on-exit []
   (auto-repl.delete-auto-repl-port-file)
   (server.disconnect))
 
-{: buf-suffix
- : comment-node?
- : comment-prefix
- : completions
- : connect
- : context
- : def-str
- : doc-str
- : eval-file
- : eval-str
- : form-node?
- : on-exit
- : on-filetype
- : on-load
- : symbol-node?}
+M

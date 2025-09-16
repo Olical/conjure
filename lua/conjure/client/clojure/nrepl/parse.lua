@@ -1,5 +1,8 @@
 -- [nfnl] fnl/conjure/client/clojure/nrepl/parse.fnl
-local function strip_meta(s)
+local _local_1_ = require("conjure.nfnl.module")
+local define = _local_1_["define"]
+local M = define("conjure.client.clojure.nrepl.parse")
+M["strip-meta"] = function(s)
   if (nil ~= s) then
     local tmp_3_ = string.gsub(s, "%^:.-%s+", "")
     if (nil ~= tmp_3_) then
@@ -11,18 +14,18 @@ local function strip_meta(s)
     return nil
   end
 end
-local function strip_comments(s)
+M["strip-comments"] = function(s)
   if (nil ~= s) then
     return string.gsub(s, ";.-[\n$]", "")
   else
     return nil
   end
 end
-local function strip_shebang(s)
+M["strip-shebang"] = function(s)
   if (nil ~= s) then
     return string.gsub(s, "^#![^\n]*\n", "")
   else
     return nil
   end
 end
-return {["strip-comments"] = strip_comments, ["strip-meta"] = strip_meta, ["strip-shebang"] = strip_shebang}
+return M

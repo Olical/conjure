@@ -1,12 +1,14 @@
 -- [nfnl] fnl/conjure/client/clojure/nrepl/ui.fnl
 local _local_1_ = require("conjure.nfnl.module")
 local autoload = _local_1_["autoload"]
-local a = autoload("conjure.aniseed.core")
+local define = _local_1_["define"]
+local core = autoload("conjure.nfnl.core")
 local config = autoload("conjure.config")
 local log = autoload("conjure.log")
 local state = autoload("conjure.client.clojure.nrepl.state")
-local str = autoload("conjure.aniseed.string")
+local str = autoload("conjure.nfnl.string")
 local text = autoload("conjure.text")
+local M = define("clojure.client.clojure.nrepl.ui")
 local cfg = config["get-in-fn"]({"client", "clojure", "nrepl"})
 local function handle_join_line(resp)
   local next_key
@@ -20,18 +22,18 @@ local function handle_join_line(resp)
   local key = state.get("join-next", "key")
   if (next_key or resp.value) then
     local function _3_()
-      if (next_key and not text["trailing-newline?"](a.get(resp, next_key))) then
+      if (next_key and not text["trailing-newline?"](core.get(resp, next_key))) then
         return {key = next_key}
       else
         return nil
       end
     end
-    a.assoc(state.get(), "join-next", _3_())
+    core.assoc(state.get(), "join-next", _3_())
   else
   end
   return (next_key and (key == next_key))
 end
-local function display_result(resp, opts)
+M["display-result"] = function(resp, opts)
   local opts0 = (opts or {})
   local joined_3f = handle_join_line(resp)
   local _5_
@@ -58,7 +60,7 @@ local function display_result(resp, opts)
   end
   return log.append(_5_, {["join-first?"] = joined_3f, ["low-priority?"] = not not (resp.out or resp.err)})
 end
-local function display_sessions(sessions, cb)
+M["display-sessions"] = function(sessions, cb)
   local current = state.get("conn", "session")
   local function _11_(_10_)
     local idx = _10_[1]
@@ -71,11 +73,11 @@ local function display_sessions(sessions, cb)
     end
     return str.join({"; ", _12_, idx, " - ", session.str()})
   end
-  log.append(a.concat({("; Sessions (" .. a.count(sessions) .. "):")}, a["map-indexed"](_11_, sessions)), {["break?"] = true})
+  log.append(core.concat({("; Sessions (" .. core.count(sessions) .. "):")}, core["map-indexed"](_11_, sessions)), {["break?"] = true})
   if cb then
     return cb()
   else
     return nil
   end
 end
-return {["display-result"] = display_result, ["display-sessions"] = display_sessions}
+return M
