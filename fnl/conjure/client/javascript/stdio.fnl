@@ -114,19 +114,7 @@
                  {:batch? true}))))
 
 (fn M.eval-file [opts]
-  (with-repl-or-warn
-    (fn [repl]
-      (let [c (prep-code-expr (a.slurp opts.file-path))
-            tmp_name (.. opts.file-path "_tmp")
-            _tmp (a.spit tmp_name c)]
-        (log.dbg ["EVAL TEMP FILE: " tmp_name])
-        (repl.send (.. ".load " tmp_name "\n")
-                   (fn [msgs]
-                     (let [msgs (-> msgs M.unbatch M.format-msg)]
-                       (display-result msgs)
-                       (when opts.on-result
-                         (opts.on-result (str.join " " msgs)))
-                       (vim.uv.fs_unlink tmp_name nil))))))))
+  (M.eval-str (a.assoc opts :code (a.slurp opts.file-path))))
 
 (fn display-repl-status [status]
   (let [repl (state :repl)]
