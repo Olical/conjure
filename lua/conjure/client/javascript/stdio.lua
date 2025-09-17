@@ -116,23 +116,7 @@ M["eval-str"] = function(opts)
   return with_repl_or_warn(_12_)
 end
 M["eval-file"] = function(opts)
-  local function _15_(repl)
-    local c = prep_code_expr(a.slurp(opts["file-path"]))
-    local tmp_name = (opts["file-path"] .. "_tmp")
-    local _tmp = a.spit(tmp_name, c)
-    log.dbg({"EVAL TEMP FILE: ", tmp_name})
-    local function _16_(msgs)
-      local msgs0 = M["format-msg"](M.unbatch(msgs))
-      display_result(msgs0)
-      if opts["on-result"] then
-        opts["on-result"](str.join(" ", msgs0))
-      else
-      end
-      return vim.uv.fs_unlink(tmp_name, nil)
-    end
-    return repl.send((".load " .. tmp_name .. "\n"), _16_)
-  end
-  return with_repl_or_warn(_15_)
+  return M["eval-str"](a.assoc(opts, "code", a.slurp(opts["file-path"])))
 end
 local function display_repl_status(status)
   local repl = state("repl")
@@ -166,20 +150,20 @@ M.start = function()
   if state("repl") then
     return log.append({(M["comment-prefix"] .. "Can't start, REPL is already running."), (M["comment-prefix"] .. "Stop the REPL with " .. config["get-in"]({"mapping", "prefix"}) .. cfg({"mapping", "stop"}))}, {["break?"] = true})
   else
-    local function _21_()
+    local function _18_()
       display_repl_status("started")
-      local function _22_(repl)
-        local function _23_(msgs)
+      local function _19_(repl)
+        local function _20_(msgs)
           return display_result(M["format-msg"](M.unbatch(msgs)))
         end
-        return repl.send(prep_code(M["initialise-repl-code"]), _23_, {batch = true})
+        return repl.send(prep_code(M["initialise-repl-code"]), _20_, {batch = true})
       end
-      return with_repl_or_warn(_22_)
+      return with_repl_or_warn(_19_)
     end
-    local function _24_(err)
+    local function _21_(err)
       return display_repl_status(err)
     end
-    local function _25_(code, signal)
+    local function _22_(code, signal)
       if (("number" == type(code)) and (code > 0)) then
         log.append({(M["comment-prefix"] .. "process exited with code " .. code)})
       else
@@ -190,21 +174,21 @@ M.start = function()
       end
       return M.stop()
     end
-    local function _28_(msg)
+    local function _25_(msg)
       if cfg({"show_stray_out"}) then
         return display_result(M["format-msg"](M.unbatch({msg})))
       else
         return nil
       end
     end
-    return a.assoc(state(), "repl", stdio.start({["prompt-pattern"] = cfg({"prompt-pattern"}), cmd = (repl_command_for_filetype() .. " " .. cfg({"args"})), ["delay-stderr-ms"] = cfg({"delay-stderr-ms"}), ["on-success"] = _21_, ["on-error"] = _24_, ["on-exit"] = _25_, ["on-stray-output"] = _28_}))
+    return a.assoc(state(), "repl", stdio.start({["prompt-pattern"] = cfg({"prompt-pattern"}), cmd = (repl_command_for_filetype() .. " " .. cfg({"args"})), ["delay-stderr-ms"] = cfg({"delay-stderr-ms"}), ["on-success"] = _18_, ["on-error"] = _21_, ["on-exit"] = _22_, ["on-stray-output"] = _25_}))
   end
 end
 local function warning_msg()
-  local function _31_(_241)
+  local function _28_(_241)
     return log.append({_241})
   end
-  return a.map(_31_, {"// WARNING! Node.js REPL limitations require transformations:", "// 1. ES6 'import' statements are converted to 'require(...)' calls.", "// 2. Arrow functions ('const fn = () => ...') are converted to 'function fn() ...' declarations to allow re-definition."})
+  return a.map(_28_, {"// WARNING! Node.js REPL limitations require transformations:", "// 1. ES6 'import' statements are converted to 'require(...)' calls.", "// 2. Arrow functions ('const fn = () => ...') are converted to 'function fn() ...' declarations to allow re-definition."})
 end
 M["on-load"] = function()
   if config["get-in"]({"client_on_load"}) then
@@ -218,11 +202,11 @@ M["on-exit"] = function()
   return M.stop()
 end
 M.interrupt = function()
-  local function _33_(repl)
+  local function _30_(repl)
     log.append({(M["comment-prefix"] .. " Sending interrupt signal.")}, {["break?"] = true})
     return repl["send-signal"]("sigint")
   end
-  return with_repl_or_warn(_33_)
+  return with_repl_or_warn(_30_)
 end
 M["on-filetype"] = function()
   mapping.buf("JavascriptStart", cfg({"mapping", "start"}), M.start, {desc = "Start the Javascript REPL"})
