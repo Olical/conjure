@@ -1,13 +1,13 @@
 // Evaluate all of this:
-const add = (a, b) => a + b;
+const add = (a, b) => a + b
 
-add(38, 4);
+add(38, 4)
 
 8 + 5;
 (3 + 9 + 30) / 2;
 
 // prints "hello" into the REPL
-("hello");
+("hello")
 
 // calling console.log prints a result to the REPL
 console.log("hello world");
@@ -75,8 +75,8 @@ minus(1, 200);
 
 // classes are supported
 class Moped {
-  wheels;
-  engine;
+  wheels
+  engine
 
   constructor(wheels, engine) {
     this.wheels = wheels;
