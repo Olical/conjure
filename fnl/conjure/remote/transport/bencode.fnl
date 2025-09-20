@@ -119,7 +119,7 @@
   (case (type x)
     :string (.. (length x) ":" x)
     :number (do
-              (assert (= (% x 1) 0) (.. "bencode: non‑integer number " x))
+              (assert (= (% x 1) 0) (.. "bencode: non-integer number " x))
               (->> x (wrap :i :e)))
     :table (if (is-list? x)
                (->> (core.vals x) (core.map encode) (table.concat) (wrap :l :e))

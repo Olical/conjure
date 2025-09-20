@@ -160,7 +160,7 @@ local function encode(x)
   if (_23_ == "string") then
     return (#x .. ":" .. x)
   elseif (_23_ == "number") then
-    assert(((x % 1) == 0), ("bencode: non\226\128\145integer number " .. x))
+    assert(((x % 1) == 0), ("bencode: non-integer number " .. x))
     return wrap("i", "e", x)
   elseif (_23_ == "table") then
     if is_list_3f(x) then
