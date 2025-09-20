@@ -66,7 +66,10 @@
       (if
         err (opts.on-error err)
         (not chunk) (opts.on-error)
-        (->> (bencode.decode-all state.bc chunk)
+        (->> (let [(ok? res) (pcall bencode.decode-all state.bc chunk)]
+               (if ok?
+                 res
+                 (error (.. "conjure.remote.nrepl: Failed to decode message, maybe a different server is running on this port?\n" res))))
              (a.run!
                (fn [msg]
                  (log.dbg "receive" msg)

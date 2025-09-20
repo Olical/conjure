@@ -82,7 +82,15 @@ local function connect(opts)
         end
         return opts["on-message"](msg)
       end
-      return a["run!"](_8_, bencode["decode-all"](state.bc, chunk))
+      local function _12_()
+        local ok_3f, res = pcall(bencode["decode-all"], state.bc, chunk)
+        if ok_3f then
+          return res
+        else
+          return error(("conjure.remote.nrepl: Failed to decode message, maybe a different server is running on this port?\n" .. res))
+        end
+      end
+      return a["run!"](_8_, _12_())
     end
   end
   local function process_message_queue()
@@ -90,10 +98,10 @@ local function connect(opts)
     if not a["empty?"](state["message-queue"]) then
       local msgs = state["message-queue"]
       state["message-queue"] = {}
-      local function _13_(args)
+      local function _15_(args)
         return process_message(unpack(args))
       end
-      return a["run!"](_13_, msgs)
+      return a["run!"](_15_, msgs)
     else
       return nil
     end
@@ -108,7 +116,7 @@ local function connect(opts)
     end
   end
   local function handle_connect_fn()
-    local function _16_(err)
+    local function _18_(err)
       if err then
         return opts["on-failure"](err)
       else
@@ -116,7 +124,7 @@ local function connect(opts)
         return opts["on-success"]()
       end
     end
-    return client["schedule-wrap"](_16_)
+    return client["schedule-wrap"](_18_)
   end
   conn = a["merge!"](conn, {send = send}, net.connect({host = opts.host, port = opts.port, cb = handle_connect_fn()}))
   return conn
