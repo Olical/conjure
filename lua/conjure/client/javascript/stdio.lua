@@ -136,7 +136,7 @@ M.stop = function()
     return nil
   end
 end
-M["initialise-repl-code"] = ""
+M["initialise-repl-code"] = "1+1"
 local function repl_command_for_filetype()
   if ("javascript" == vim.bo.filetype) then
     return "node --experimental-repl-await"

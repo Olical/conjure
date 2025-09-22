@@ -130,7 +130,9 @@
       (display-repl-status :stopped)
       (a.assoc (state) :repl nil))))
 
-(set M.initialise-repl-code "")
+;; To get rid of the "Uncaught SyntaxError: Unexpected token 'export'", 
+;; the REPL silently evaluates the following expression: 
+(set M.initialise-repl-code "1+1")
 
 (fn repl-command-for-filetype []
   (if
