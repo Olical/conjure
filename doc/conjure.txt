@@ -991,6 +991,7 @@ your dotfiles.
  - |conjure-client-clojure-nrepl|
  - |conjure-client-janet-netrepl|
  - |conjure-client-janet-stdio|
+ - |conjure-client-javascript-stdio|
  - |conjure-client-hy-stdio|
  - |conjure-client-racket-stdio|
  - |conjure-client-scheme-stdio|

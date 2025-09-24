@@ -11,7 +11,7 @@ local client = autoload("conjure.client")
 local log = autoload("conjure.log")
 local transformers = autoload("conjure.client.javascript.transformers")
 local M = define("conjure.client.javascript.stdio")
-config.merge({client = {javascript = {stdio = {args = "-i", ["prompt-pattern"] = "> ", show_stray_out = false}}}})
+config.merge({client = {javascript = {stdio = {["typescript-cmd"] = "ts-node", ["javascript-cmd"] = "node --experimental-repl-await", args = "-i", ["prompt-pattern"] = "> ", show_stray_out = false}}}})
 if config["get-in"]({"mapping", "enable_defaults"}) then
   config.merge({client = {javascript = {stdio = {mapping = {start = "cs", stop = "cS", restart = "cr", interrupt = "ei", stray = "ts"}}}}})
 else
@@ -139,9 +139,9 @@ end
 M["initialise-repl-code"] = "1+1"
 local function repl_command_for_filetype()
   if ("javascript" == vim.bo.filetype) then
-    return "node --experimental-repl-await"
+    return cfg({"javascript-cmd"})
   elseif ("typescript" == vim.bo.filetype) then
-    return "ts-node"
+    return cfg({"typescript-cmd"})
   else
     return nil
   end
