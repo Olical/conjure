@@ -19,7 +19,7 @@ JavaScript file.
 Please make sure you have Node.js version 10 or above installed.
 
 Once you have tree sitter installed and configured (remember to run
-`:TSInstall javascript`!) you should be able to evaluate forms just like you would
+`:TSInstall javascript` `and :TSInstall typescript` for TypeScript support) you should be able to evaluate forms just like you would
 in any other Conjure supported language. (<localleader>ee, <localleader>er,
 etc...)
 
@@ -29,6 +29,27 @@ you can perform.
 A client addresses Node.js REPL limitations by automatically transforming
 import statements into require calls and arrow functions into standard
 function declarations.
+
+TypeScript support:
+1. Install NodeJS(v16 - v22 tested, >22 do not work)
+2. Install ts-node(v10.9.2 tested)
+3. Create a minimal config file(tsconfig.json) in the root of a project:
+   {
+     "ts-node": {
+       // ts-node config here
+       }
+     },
+     "compilerOptions": {
+         "target": "es2022",
+         "module": "es2022"
+     }
+   }
+4. Try it
+
+Caveats:
+1. When evaluating a file with `<localleader>ef`, it is better to activate
+   `stray out` beforehand to see any errors during evaluation.
+
 
 ==============================================================================
 MAPPINGS                                  *conjure-client-javascript-stdio-mappings*
@@ -56,6 +77,16 @@ CONFIGURATION                        *conjure-client-javascript-stdio-configurat
 All configuration can be set as described in |conjure-configuration|.
 
 
+                                 *g:conjure#client#javascript#stdio#typescript_cmd
+`g:conjure#client#javascript#stdio#typescript_cmd`
+            Specifies the command for the TypeScript REPL shell.
+            Default: `"ts-node"`
+
+                                 *g:conjure#client#javascript#stdio#javascript_cmd
+`g:conjure#client#javascript#stdio#javascript_cmd
+            Specifies the command for the JavaScript REPL shell.
+            Default: `"node --experimental-repl-await"`
+
                                  *g:conjure#client#javascript#stdio#mapping#start*
 `g:conjure#client#javascript#stdio#mapping#start`
             Start the javascript REPL if it's not running already.
@@ -66,16 +97,19 @@ All configuration can be set as described in |conjure-configuration|.
             Stop any existing javascript REPL.
             Default: `"cS"`
 
-                                  *g:conjure#client#javascript#stdio#mapping#restart*
+                               *g:conjure#client#javascript#stdio#mapping#restart*
 `g:conjure#client#javascript#stdio#mapping#restart`
             Restart a javascript REPL.
             Default: `"cr"`
 
-                                  *g:conjure#client#javascript#stdio#command*
-`g:conjure#client#javascript#stdio#command`
-            Command used to start the javascript REPL, you can modify this to add
-            arguments or change the command entirely.
-            Default: `"node --experimental-repl-await -i"`
+                                          *g:conjure#client#javascript#stdio#args*
+`g:conjure#client#javascript#stdio#args`
+            Args appended to the REPL command. Useful if you need to toggle
+            features off or on in `node` or `ts-node` (which is selected
+            automatically depending on your filetype).
+
+            `node` automatically includes `--experimental-repl-await` too.
+            Default: `"-i"`
 
                                   *g:conjure#client#javascript#stdio#prompt_pattern*
 `g:conjure#client#javascript#stdio#prompt_pattern`
@@ -89,6 +123,6 @@ All configuration can be set as described in |conjure-configuration|.
             It's an option to reveal output from the REPL that didn't appear
             immediately because it came from a slow or background process.
             By default, it's switched off to prevent burdening the Conjure log buffer.
-            Default: false
+            Default: `"false"`
 
 vim:tw=78:sw=2:ts=2:ft=help:norl:et:listchars=

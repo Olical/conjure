@@ -6,22 +6,24 @@
 (local mapping (autoload :conjure.mapping))
 (local client (autoload :conjure.client))
 (local log (autoload :conjure.log))
-(local text (autoload :conjure.text))
+(local transformers (autoload :conjure.client.javascript.transformers))
 
 (local M (define :conjure.client.javascript.stdio))
 
-(config.merge {:client 
-               {:javascript 
-                {:stdio 
-                 {:command "node --experimental-repl-await -i"
-                  :prompt-pattern "> "
+(config.merge {:client
+               {:javascript
+                {:stdio
+                 {:typescript_cmd "ts-node"
+                  :javascript_cmd "node --experimental-repl-await"
+                  :args "-i"
+                  :prompt_pattern "> "
                   :show_stray_out false}}}})
 
 (when (config.get-in [:mapping :enable_defaults])
-  (config.merge 
-    {:client 
-     {:javascript 
-      {:stdio 
+  (config.merge
+    {:client
+     {:javascript
+      {:stdio
        {:mapping {:start :cs
                   :stop :cS
                   :restart :cr
@@ -37,7 +39,9 @@
   (or (= :function_declaration (node:type)) (= :export_statement (node:type))
       (= :try_statement (node:type)) (= :expression_statement (node:type))
       (= :import_statement (node:type)) (= :class_declaration (node:type))
-      (= :lexical_declaration (node:type)) (= :for_statement (node:type))))
+      (= :type_alias_declaration (node:type)) (= :enum_declaration  (node:type))
+      (= :lexical_declaration (node:type)) (= :for_statement (node:type))
+      (= :for_in_statement  (node:type)) (= :interface_declaration (node:type))))
 
 (fn with-repl-or-warn [f opts]
   (let [repl (state :repl)]
@@ -51,96 +55,13 @@
 (fn display-result [msg]
   (log.append msg))
 
-(fn replace-require-path [s cwd]
-  (if (string.find s :require)
-      (string.gsub s "require%(\"(.-)\"%)"
-                   (fn [m]
-                     (if (text.starts-with m "./")
-                         (.. "require(\"" cwd (m:sub 2) "\")")
-                         (.. "require(\"" m "\")"))))
-      s))
-
-(local patterns-replacements
-       [["^%s*import%s+%{%s*([^}]+)%s+as%s+([^}]+)%s+%}%s+from%s+[\"'](%w+:?%w+)[\"']%s*;?%s?"
-         "const {%1:%2} = require(\"%3\");"]
-        ["^%s*import%s+([^%s{]+)%s+from%s+([\"'])(.-)%2%s*;?%s?"
-         "const %1 = require(\"%3\");"]
-        ["^%s*import%s+%*%s+as%s+([^%s]+)%s+from%s+([\"'])(.-)%2%s*;?%s?"
-         "const %1 = require(\"%3\");"]
-        ["^%s*import%s+%{([^}]+)%}%s+from%s+([\"'])(.-)%2%s*;?%s?"
-         "const {%1} = require(\"%3\");"]
-        ["^%s*import%s+([^%s{,]+)%s*,%s*%{([^}]+)%}%s+from%s+([\"'])(.-)%3%s*;?%s?"
-         "const { default: %1, %2 } = require(\"%4\");"]
-        ["^%s*import%s+([\"'])(.-)%1%s*;?%s?" "require(\"%2\");"]])
-
-;; To avoid Node.js REPL complaints, imports are automatically converted for the user.
-;; See https://github.com/nodejs/node/issues/48084
-(fn replace-imports [s]
-  (if (text.starts-with s :import)
-      (let [initial-acc {:applied? false :result s}
-            final-acc (a.reduce 
-                        (fn [acc [pat repl]]
-                          (if acc.applied?
-                              acc
-                              (let [(r c) (string.gsub acc.result pat repl)]
-                                (if (> c 0)
-                                    {:applied? true :result r}
-                                    acc))))
-                                initial-acc patterns-replacements)]
-        final-acc.result)
-      s))
-
-(fn is-arrow-fn? [code]
-  (let [pat (if (string.find code "async")
-               ".*=%s*async%s+%(.*%)%s*=>"
-                ".*=%s*%(.*%)%s*=>")]
-    (if (string.match code pat)
-        true 
-        false)))
-
-;; Before sending code to the REPL, all comments must be removed
-(fn remove-comments [s]
-  (let [cmt "//.-\n"
-        cmt2 "%/%*.-%*%/"
-        (sub _) (-> s  
-                (string.gsub cmt "")
-                (string.gsub cmt2 ""))]
-    sub))
-
-;; Arrow functions are automatically transformed into standard functions, 
-;; allowing them to be redefined in the Node.js REPL.
-(fn replace-arrows [s]
-  (if (not (is-arrow-fn? s)) s
-      (let [decl (if (text.starts-with s :const) "const" 
-                     (text.starts-with s :let) "let")
-            pattern (.. decl "%s*([%w_]+)%s*=%s*(.-)%((.-)%)%s*=>%s*(.*)")
-            replace-fn (fn [name before-args args body]
-                         (let [async-kw (if (before-args:find :async) "async " "")
-                               final-body (if (body:find "^%s*%{")
-                                              (.. " " body)
-                                              (.. " { return " body " }"))]
-                           (.. async-kw "function " name "(" args ")" final-body)))]
-        (s:gsub pattern replace-fn))))
+(fn tap> [s] (log.append ["TAP>>" (a.pr-str s)]) s)
 
 (fn prep-code-expr [e]
-  (-> e
-      remove-comments
-      (string.gsub "\n" " ")
-      replace-arrows
-      replace-imports
-      (replace-require-path 
-        (vim.uv.fs_realpath (vim.fn.expand "%:p:h")))))
+  (-> e transformers.transform))
 
-(fn prep-code-file [f]
-  (->> (str.split f "\n")
-      (a.map prep-code-expr)
-      (str.join "\n")))
-
-(fn prep-code [s opts]
-  (if (a.get opts :file)
-      (prep-code-file s)
-      
-      (.. (prep-code-expr s) "\n")))
+(fn prep-code [s]
+  (.. (prep-code-expr s) "\n"))
 
 (fn replace-dots [s with]
   (let [(s _count) (string.gsub s "%.%.%.%s?" with)] s))
@@ -158,7 +79,7 @@
        (str.join "")))
 
 (fn prepare-out [msg]
-  (if (a.get msg :out) 
+  (if (a.get msg :out)
       (sanitize-msg msg :out)
 
       (a.get msg :err)
@@ -169,10 +90,24 @@
        (a.map prepare-out)
        (str.join "")))
 
+(fn stray-out []
+  (let [status (cfg [:show_stray_out])
+        on? (if status "OFF" "ON")
+        _ (log.append [(.. "(STRAY OUT IS " on? ")")])]
+    (config.merge {:client
+                 {:javascript
+                  {:stdio
+                   {:show_stray_out (not status)}}}}
+                {:overwrite? true})))
+
+(fn restart []
+  (M.stop)
+  (M.start))
+
 (fn M.eval-str [opts]
-  (with-repl-or-warn 
+  (with-repl-or-warn
     (fn [repl]
-      (repl.send (prep-code opts.code opts)
+      (repl.send (prep-code opts.code)
                  (fn [msgs]
                    (let [msgs (-> msgs M.unbatch M.format-msg)]
                      (display-result msgs)
@@ -181,8 +116,7 @@
                  {:batch? true}))))
 
 (fn M.eval-file [opts]
-  (M.eval-str (a.assoc opts :code (a.slurp opts.file-path)
-                            :file true)))
+  (M.eval-str (a.assoc opts :code (a.slurp opts.file-path))))
 
 (fn display-repl-status [status]
   (let [repl (state :repl)]
@@ -198,7 +132,18 @@
       (display-repl-status :stopped)
       (a.assoc (state) :repl nil))))
 
-(set M.initialise-repl-code "")
+;; To get rid of the "Uncaught SyntaxError: Unexpected token 'export'", 
+;; the REPL silently evaluates the following expression: 
+(set M.initialise-repl-code "1+1")
+
+(fn repl-command-for-filetype []
+  (if
+    (= :javascript vim.bo.filetype)
+    (cfg [:javascript_cmd])
+
+    (= :typescript vim.bo.filetype)
+    (cfg [:typescript_cmd])))
+
 
 (fn M.start []
   (if (state :repl)
@@ -207,20 +152,20 @@
                        (config.get-in [:mapping :prefix])
                        (cfg [:mapping :stop]))]
                   {:break? true})
-      (a.assoc 
+      (a.assoc
         (state) :repl
         (stdio.start
-          {:prompt-pattern (cfg [:prompt-pattern])
-           :cmd (cfg [:command])
+          {:prompt-pattern (cfg [:prompt_pattern])
+           :cmd (.. (repl-command-for-filetype) " " (cfg [:args]))
            :delay-stderr-ms (cfg [:delay-stderr-ms])
 
-           :on-success 
+           :on-success
            (fn []
              (display-repl-status :started)
              (with-repl-or-warn
                  (fn [repl]
-                   (repl.send 
-                     (prep-code M.initialise-repl-code {:file false}) 
+                   (repl.send
+                     (prep-code M.initialise-repl-code)
                      (fn [msgs]
                        (display-result (-> msgs
                                            M.unbatch
@@ -237,7 +182,7 @@
                                "process exited with code "
                                code)]))
                       (when (and (= :number (type signal)) (> signal 0))
-                        (log.append 
+                        (log.append
                           [(.. M.comment-prefix
                                "process exited with signal "
                                signal)]))
@@ -245,8 +190,8 @@
 
            :on-stray-output
            (fn [msg]
-             (when (cfg [:show_stray_out]) 
-               (display-result 
+             (when (cfg [:show_stray_out])
+               (display-result
                  (-> [msg] M.unbatch M.format-msg))))}))))
 
 (fn warning-msg []
@@ -265,41 +210,32 @@
 (fn M.on-exit [] (M.stop))
 
 (fn M.interrupt []
-  (with-repl-or-warn 
+  (with-repl-or-warn
     (fn [repl]
       (log.append [(.. M.comment-prefix
                        " Sending interrupt signal.")]
                   {:break? true})
       (repl.send-signal :sigint))))
 
-(fn stray-out []
-  (config.merge {:client 
-                 {:javascript 
-                  {:stdio 
-                   {:show_stray_out (not (cfg [:show_stray_out]))}}}}
-                {:overwrite? true}))
-
 (fn M.on-filetype []
-  (mapping.buf :JavascriptStart 
-               (cfg [:mapping :start]) 
+  (mapping.buf :JavascriptStart
+               (cfg [:mapping :start])
                M.start
                {:desc "Start the Javascript REPL"})
-  (mapping.buf :JavascriptStop 
+  (mapping.buf :JavascriptStop
                (cfg [:mapping :stop])
                M.stop
                {:desc "Stop the Javascript REPL"})
-  (mapping.buf :JavascriptRestart 
+  (mapping.buf :JavascriptRestart
                (cfg [:mapping :restart])
-               (fn []
-                 (M.stop)
-                 (M.start))
+               restart
                {:desc "Restart the Javascript REPL"})
-  (mapping.buf :JavascriptInterrupt 
-               (cfg [:mapping :interrupt]) 
+  (mapping.buf :JavascriptInterrupt
+               (cfg [:mapping :interrupt])
                M.interrupt
                {:desc "Interrupt the current evaluation"})
-  (mapping.buf :JavascriptStray 
-               (cfg [:mapping :stray]) 
+  (mapping.buf :JavascriptStray
+               (cfg [:mapping :stray])
                stray-out
                {:desc "Toggle stray out"}))
 
