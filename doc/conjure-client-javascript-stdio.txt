@@ -77,6 +77,16 @@ CONFIGURATION                        *conjure-client-javascript-stdio-configurat
 All configuration can be set as described in |conjure-configuration|.
 
 
+                                 *g:conjure#client#javascript#stdio#typescript_cmd
+`g:conjure#client#javascript#stdio#typescript_cmd`
+            Specifies the command for the TypeScript REPL shell.
+            Default: `"ts-node"`
+
+                                 *g:conjure#client#javascript#stdio#javascript_cmd
+`g:conjure#client#javascript#stdio#javascript_cmd
+            Specifies the command for the JavaScript REPL shell.
+            Default: `"node --experimental-repl-await"`
+
                                  *g:conjure#client#javascript#stdio#mapping#start*
 `g:conjure#client#javascript#stdio#mapping#start`
             Start the javascript REPL if it's not running already.
@@ -113,6 +123,6 @@ All configuration can be set as described in |conjure-configuration|.
             It's an option to reveal output from the REPL that didn't appear
             immediately because it came from a slow or background process.
             By default, it's switched off to prevent burdening the Conjure log buffer.
-            Default: false
+            Default: `"false"`
 
 vim:tw=78:sw=2:ts=2:ft=help:norl:et:listchars=

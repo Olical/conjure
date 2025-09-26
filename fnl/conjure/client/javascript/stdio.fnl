@@ -13,10 +13,10 @@
 (config.merge {:client
                {:javascript
                 {:stdio
-                 {:typescript-cmd "ts-node"
-                  :javascript-cmd "node --experimental-repl-await"
+                 {:typescript_cmd "ts-node"
+                  :javascript_cmd "node --experimental-repl-await"
                   :args "-i"
-                  :prompt-pattern "> "
+                  :prompt_pattern "> "
                   :show_stray_out false}}}})
 
 (when (config.get-in [:mapping :enable_defaults])
@@ -139,10 +139,10 @@
 (fn repl-command-for-filetype []
   (if
     (= :javascript vim.bo.filetype)
-    (cfg [:javascript-cmd])
+    (cfg [:javascript_cmd])
 
     (= :typescript vim.bo.filetype)
-    (cfg [:typescript-cmd])))
+    (cfg [:typescript_cmd])))
 
 
 (fn M.start []
@@ -155,7 +155,7 @@
       (a.assoc
         (state) :repl
         (stdio.start
-          {:prompt-pattern (cfg [:prompt-pattern])
+          {:prompt-pattern (cfg [:prompt_pattern])
            :cmd (.. (repl-command-for-filetype) " " (cfg [:args]))
            :delay-stderr-ms (cfg [:delay-stderr-ms])
 

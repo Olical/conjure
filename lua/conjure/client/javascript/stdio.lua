@@ -11,7 +11,7 @@ local client = autoload("conjure.client")
 local log = autoload("conjure.log")
 local transformers = autoload("conjure.client.javascript.transformers")
 local M = define("conjure.client.javascript.stdio")
-config.merge({client = {javascript = {stdio = {["typescript-cmd"] = "ts-node", ["javascript-cmd"] = "node --experimental-repl-await", args = "-i", ["prompt-pattern"] = "> ", show_stray_out = false}}}})
+config.merge({client = {javascript = {stdio = {typescript_cmd = "ts-node", javascript_cmd = "node --experimental-repl-await", args = "-i", prompt_pattern = "> ", show_stray_out = false}}}})
 if config["get-in"]({"mapping", "enable_defaults"}) then
   config.merge({client = {javascript = {stdio = {mapping = {start = "cs", stop = "cS", restart = "cr", interrupt = "ei", stray = "ts"}}}}})
 else
@@ -139,9 +139,9 @@ end
 M["initialise-repl-code"] = "1+1"
 local function repl_command_for_filetype()
   if ("javascript" == vim.bo.filetype) then
-    return cfg({"javascript-cmd"})
+    return cfg({"javascript_cmd"})
   elseif ("typescript" == vim.bo.filetype) then
-    return cfg({"typescript-cmd"})
+    return cfg({"typescript_cmd"})
   else
     return nil
   end
@@ -181,7 +181,7 @@ M.start = function()
         return nil
       end
     end
-    return a.assoc(state(), "repl", stdio.start({["prompt-pattern"] = cfg({"prompt-pattern"}), cmd = (repl_command_for_filetype() .. " " .. cfg({"args"})), ["delay-stderr-ms"] = cfg({"delay-stderr-ms"}), ["on-success"] = _18_, ["on-error"] = _21_, ["on-exit"] = _22_, ["on-stray-output"] = _25_}))
+    return a.assoc(state(), "repl", stdio.start({["prompt-pattern"] = cfg({"prompt_pattern"}), cmd = (repl_command_for_filetype() .. " " .. cfg({"args"})), ["delay-stderr-ms"] = cfg({"delay-stderr-ms"}), ["on-success"] = _18_, ["on-error"] = _21_, ["on-exit"] = _22_, ["on-stray-output"] = _25_}))
   end
 end
 local function warning_msg()
