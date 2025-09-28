@@ -15,5 +15,5 @@ local function _3_()
   end
   return nil
 end
-M.tasks = {{name = "one logging call at a time", ["task-fn"] = _2_}, {name = "multiple log calls in a row", iterations = 100, ["task-fn"] = _3_}}
+M.tasks = {{name = "one logging call at a time", ["task-fn"] = _2_}, {name = "30 log calls in a row", iterations = 100, ["task-fn"] = _3_}}
 return M

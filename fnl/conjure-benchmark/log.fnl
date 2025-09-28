@@ -15,7 +15,7 @@
   M.tasks
   [{:name "one logging call at a time"
     :task-fn #(log.append lines)}
-   {:name "multiple log calls in a row"
+   {:name "30 log calls in a row"
     :iterations 100
     :task-fn (fn []
                (for [_i 1 30 1]
