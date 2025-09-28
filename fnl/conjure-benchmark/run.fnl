@@ -6,20 +6,20 @@
          package.path))
 
 (local core (require :conjure.nfnl.core))
-(local iterations 1000)
+(local default-iterations 1000)
 
-(fn benchmark-task [{: name : task-fn}]
-  (let [start (vim.uv.now)]
+(fn benchmark-task [{: name : task-fn : iterations}]
+  (let [start (vim.uv.now)
+        iterations (or iterations default-iterations)]
     (for [_i 1 iterations]
       (task-fn))
     (vim.uv.update_time)
     (let [duration (/ (- (vim.uv.now) start) iterations)]
-      (print "##" name (.. "[" duration "ms]")))))
+      (print "##" name (.. "x" iterations) (.. "[" duration "ms]")))))
 
 (fn benchmark-tasks [{: name : tasks}]
-  (print "Iterations:" iterations)
   (print "#" name)
   (core.run! benchmark-task tasks))
 
-(local bencode-bm (require "conjure-benchmark.bencode"))
-(benchmark-tasks bencode-bm)
+(benchmark-tasks (require "conjure-benchmark.bencode"))
+(benchmark-tasks (require "conjure-benchmark.log"))
