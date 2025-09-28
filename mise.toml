@@ -1,3 +1,6 @@
+[tools]
+node = "22"
+
 [tasks.sponsors]
 run = "scripts/sponsors.sh"
 
