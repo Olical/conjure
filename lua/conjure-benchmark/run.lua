@@ -6,6 +6,11 @@ local function benchmark_task(_1_)
   local name = _1_["name"]
   local task_fn = _1_["task-fn"]
   local iterations = _1_["iterations"]
+  local before_fn = _1_["before-fn"]
+  if before_fn then
+    before_fn()
+  else
+  end
   local start = vim.uv.now()
   local iterations0 = (iterations or default_iterations)
   for _i = 1, iterations0 do
@@ -15,9 +20,9 @@ local function benchmark_task(_1_)
   local duration = ((vim.uv.now() - start) / iterations0)
   return print("##", name, ("x" .. iterations0), ("[" .. duration .. "ms]"))
 end
-local function benchmark_tasks(_2_)
-  local name = _2_["name"]
-  local tasks = _2_["tasks"]
+local function benchmark_tasks(_3_)
+  local name = _3_["name"]
+  local tasks = _3_["tasks"]
   print("#", name)
   return core["run!"](benchmark_task, tasks)
 end

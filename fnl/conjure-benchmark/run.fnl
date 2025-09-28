@@ -8,7 +8,10 @@
 (local core (require :conjure.nfnl.core))
 (local default-iterations 1000)
 
-(fn benchmark-task [{: name : task-fn : iterations}]
+(fn benchmark-task [{: name : task-fn : iterations : before-fn}]
+  (when before-fn
+    (before-fn))
+
   (let [start (vim.uv.now)
         iterations (or iterations default-iterations)]
     (for [_i 1 iterations]

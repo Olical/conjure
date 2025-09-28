@@ -12,19 +12,24 @@
    "And yet another one."])
 
 (fn setup []
-  (set vim.o.filetype "fennel"))
+  (log.close-visible)
+  (vim.cmd "edit foo.fnl")
+  (log.vsplit))
 
 (set
   M.tasks
   [{:name "one logging call at a time"
-    :task-fn (fn []
-               (setup)
-               (log.append lines))}
-   {:name "30 log calls in a row"
+    :before-fn setup
+    :task-fn
+    (fn []
+      (log.append lines))}
+
+   {:name "50 log calls in a row"
     :iterations 100
-    :task-fn (fn []
-               (for [_i 1 30 1]
-                 (setup)
-                 (log.append lines)))}])
+    :before-fn setup
+    :task-fn
+    (fn []
+      (for [_i 1 50 1]
+        (log.append lines)))}])
 
 M
