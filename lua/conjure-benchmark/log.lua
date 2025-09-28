@@ -6,11 +6,17 @@ local log = require("conjure.log")
 local M = define("conjure-benchmark.log")
 M.name = "log"
 local lines = {"Hello, World! This is a logging call.", "And here's another line.", "And yet another one."}
+local function setup()
+  vim.o.filetype = "fennel"
+  return nil
+end
 local function _2_()
+  setup()
   return log.append(lines)
 end
 local function _3_()
   for _i = 1, 30, 1 do
+    setup()
     log.append(lines)
   end
   return nil
