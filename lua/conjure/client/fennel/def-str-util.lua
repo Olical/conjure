@@ -1,4 +1,4 @@
--- [nfnl] Compiled from fnl/conjure/client/fennel/def-str-util.fnl by https://github.com/Olical/nfnl, do not edit.
+-- [nfnl] fnl/conjure/client/fennel/def-str-util.fnl
 local _local_1_ = require("conjure.nfnl.module")
 local autoload = _local_1_["autoload"]
 local core = autoload("conjure.nfnl.core")
@@ -21,17 +21,17 @@ local function search_targets(query, root_node, bufnr, last, first)
   local bufnr0 = (bufnr or 0)
   local last0 = (last or ( - 1))
   local first0 = (first or 0)
-  local tbl_21_auto = {}
-  local i_22_auto = 0
+  local tbl_21_ = {}
+  local i_22_ = 0
   for id, node in query:iter_captures(root_node, bufnr0, first0, last0) do
-    local val_23_auto = conjure_ts["node->table"](node)
-    if (nil ~= val_23_auto) then
-      i_22_auto = (i_22_auto + 1)
-      tbl_21_auto[i_22_auto] = val_23_auto
+    local val_23_ = conjure_ts["node->table"](node)
+    if (nil ~= val_23_) then
+      i_22_ = (i_22_ + 1)
+      tbl_21_[i_22_] = val_23_
     else
     end
   end
-  return tbl_21_auto
+  return tbl_21_
 end
 --[[ (search-targets def-local-query (get-current-root) 0 20) ]]
 local function search_in_buffer(code_text, last_row, bufnr)
@@ -46,10 +46,10 @@ end
 local function search_ext_targets(query, root_node, bufnr, last)
   local last0 = (last or -1)
   local lines = vim.api.nvim_buf_get_lines(bufnr, 0, -1, false)
-  local tbl_21_auto = {}
-  local i_22_auto = 0
+  local tbl_21_ = {}
+  local i_22_ = 0
   for id, node in query:iter_captures(root_node, bufnr, 0, last0) do
-    local val_23_auto
+    local val_23_
     do
       local range = conjure_ts.range(node)
       local start_row = core["get-in"](range, {"start", 1})
@@ -57,15 +57,15 @@ local function search_ext_targets(query, root_node, bufnr, last)
       local end_row = core["get-in"](range, {"end", 1})
       local end_col = core["get-in"](range, {"end", 2})
       local content = string.sub(core.get(lines, start_row), (1 + start_col), (1 + end_col))
-      val_23_auto = {content = content, range = range}
+      val_23_ = {content = content, range = range}
     end
-    if (nil ~= val_23_auto) then
-      i_22_auto = (i_22_auto + 1)
-      tbl_21_auto[i_22_auto] = val_23_auto
+    if (nil ~= val_23_) then
+      i_22_ = (i_22_ + 1)
+      tbl_21_[i_22_] = val_23_
     else
     end
   end
-  return tbl_21_auto
+  return tbl_21_
 end
 local function search_in_ext_buffer(code_text, last_row, bufnr)
   local curr_targets = search_ext_targets(def_ext_query, get_current_root(bufnr), bufnr, last_row)
@@ -92,30 +92,30 @@ local function imported_modules(resolve, last_row, first_row)
   local root = get_current_root()
   local raw_mods
   do
-    local tbl_21_auto = {}
-    local i_22_auto = 0
+    local tbl_21_ = {}
+    local i_22_ = 0
     for _, node_t in ipairs(search_targets(path_query, root, 0, last_row, first_row)) do
-      local val_23_auto = rest_str(node_t.content)
-      if (nil ~= val_23_auto) then
-        i_22_auto = (i_22_auto + 1)
-        tbl_21_auto[i_22_auto] = val_23_auto
+      local val_23_ = rest_str(node_t.content)
+      if (nil ~= val_23_) then
+        i_22_ = (i_22_ + 1)
+        tbl_21_[i_22_] = val_23_
       else
       end
     end
-    raw_mods = tbl_21_auto
+    raw_mods = tbl_21_
   end
   notify.debug(("raw-mods: " .. core["pr-str"](raw_mods)))
-  local tbl_21_auto = {}
-  local i_22_auto = 0
+  local tbl_21_ = {}
+  local i_22_ = 0
   for _, m in ipairs(raw_mods) do
-    local val_23_auto = resolve(m)
-    if (nil ~= val_23_auto) then
-      i_22_auto = (i_22_auto + 1)
-      tbl_21_auto[i_22_auto] = val_23_auto
+    local val_23_ = resolve(m)
+    if (nil ~= val_23_) then
+      i_22_ = (i_22_ + 1)
+      tbl_21_[i_22_] = val_23_
     else
     end
   end
-  return tbl_21_auto
+  return tbl_21_
 end
 --[[ (icollect [id node_t (ipairs (search-targets path-query (get-current-root) 0 30))] (rest-str node_t.content)) (imported-modules resolve-fnl-module-path -1) ]]
 local function search_in_ext_file(code_text, file_path)
