@@ -459,8 +459,9 @@
           batched-opts {:clientsuppress-hud? true
                         :low-priority? true}]
       (each [_ [lines opts] (ipairs buffer)]
-        (each [_ line (ipairs lines)]
-          (table.insert batched-lines line))
+        (when (not (core.empty? lines))
+          (each [_ line (ipairs lines)]
+            (table.insert batched-lines line)))
 
         ;; Flush eagerly when we see this.
         (when (core.get opts :break?)
