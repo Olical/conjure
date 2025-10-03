@@ -103,33 +103,48 @@ end
 describe("call", _23_)
 local function _26_()
   local function _27_()
-    local function _28_()
+    do
+      local f
+      local function _28_(...)
+        return nc.concat(...)
+      end
+      f = client.wrap(_28_, {1}, {2})
+      assert.same({1, 2, 3, 4}, f({3}, {4}))
+    end
+    return nil
+  end
+  return it("passes all arguments through", _27_)
+end
+describe("wrap", _26_)
+local function _29_()
+  local function _30_()
+    local function _31_()
       return client.call("->list", "foo")
     end
-    assert.same({"foo"}, client["with-filetype"]("sql", _28_))
+    assert.same({"foo"}, client["with-filetype"]("sql", _31_))
     return nil
   end
-  it("executes a function from a client", _27_)
-  local function _29_()
-    local function _30_()
+  it("executes a function from a client", _30_)
+  local function _32_()
+    local function _33_()
       return client["optional-call"]("does-not-exist", "foo")
     end
-    assert.same(nil, client["with-filetype"]("sql", _30_))
+    assert.same(nil, client["with-filetype"]("sql", _33_))
     return nil
   end
-  return it("skips it if the function does not exist", _29_)
+  return it("skips it if the function does not exist", _32_)
 end
-describe("optional-call", _26_)
-local function _31_()
-  local function _32_()
+describe("optional-call", _29_)
+local function _34_()
+  local function _35_()
     local suffixes = {}
-    local function _33_()
+    local function _36_()
       return table.insert(suffixes, client.get("buf-suffix"))
     end
-    client["each-loaded-client"](_33_)
+    client["each-loaded-client"](_36_)
     assert.same(nc.sort({".sql", ".fnl"}), nc.sort(suffixes))
     return nil
   end
-  return it("runs a function for each loaded client", _32_)
+  return it("runs a function for each loaded client", _35_)
 end
-return describe("each-loaded-client", _31_)
+return describe("each-loaded-client", _34_)
