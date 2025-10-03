@@ -115,7 +115,7 @@
                 (a.get (current-client-module-name) :module-name)
                 "' doesn't support function: "
                 fn-name]))
-      
+
       (error "No Conjure client configured for the current file type."))))
 
 (fn optional-call [fn-name ...]
