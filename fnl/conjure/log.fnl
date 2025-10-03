@@ -13,15 +13,17 @@
 
 (local M (define :conjure.log))
 
-(local state
-  {:last-open-cmd :vsplit
-   :hud {:id nil
-         :timer nil
-         :created-at-ms 0
-         :low-priority-spam {:streak 0
-                             :help-displayed? false}}
-   :jump-to-latest {:mark nil
-                    :ns (vim.api.nvim_create_namespace "conjure_log_jump_to_latest")}})
+(set M.state
+  (or
+    M.state
+    {:last-open-cmd :vsplit
+     :hud {:id nil
+           :timer nil
+           :created-at-ms 0
+           :low-priority-spam {:streak 0
+                               :help-displayed? false}}
+     :jump-to-latest {:mark nil
+                      :ns (vim.api.nvim_create_namespace "conjure_log_jump_to_latest")}}))
 
 (fn break []
   (str.join
@@ -38,8 +40,8 @@
   (vim.endswith name (log-buf-name)))
 
 (fn on-new-log-buf [buf]
-  (set state.jump-to-latest.mark
-       (vim.api.nvim_buf_set_extmark buf state.jump-to-latest.ns 0 0 {}))
+  (set M.state.jump-to-latest.mark
+       (vim.api.nvim_buf_set_extmark buf M.state.jump-to-latest.ns 0 0 {}))
 
   (when (and vim.diagnostic (= false (config.get-in [:log :diagnostics])))
     (if (= 1 (vim.fn.has "nvim-0.10"))
@@ -63,32 +65,32 @@
     (client.wrap on-new-log-buf)))
 
 (fn M.clear-close-hud-passive-timer []
-  (core.update-in state [:hud :timer] timer.destroy))
+  (core.update-in M.state [:hud :timer] timer.destroy))
 
 (hook.define
   :close-hud
   (fn []
-    (when state.hud.id
-      (pcall vim.api.nvim_win_close state.hud.id true)
-      (set state.hud.id nil))))
+    (when M.state.hud.id
+      (pcall vim.api.nvim_win_close M.state.hud.id true)
+      (set M.state.hud.id nil))))
 
 (fn M.close-hud []
   (M.clear-close-hud-passive-timer)
   (hook.exec :close-hud))
 
 (fn M.hud-lifetime-ms []
-  (- (vim.uv.now) state.hud.created-at-ms))
+  (- (vim.uv.now) M.state.hud.created-at-ms))
 
 (fn M.close-hud-passive []
-  (when (and state.hud.id
+  (when (and M.state.hud.id
              (> (M.hud-lifetime-ms)
                 (config.get-in [:log :hud :minimum_lifetime_ms])))
     (let [delay (config.get-in [:log :hud :passive_close_delay])]
       (if (= 0 delay)
         (M.close-hud)
-        (when (not (core.get-in state [:hud :timer]))
+        (when (not (core.get-in M.state [:hud :timer]))
           (core.assoc-in
-            state [:hud :timer]
+            M.state [:hud :timer]
             (timer.defer M.close-hud delay)))))))
 
 (fn break-lines [buf]
@@ -174,12 +176,12 @@
   ;; When we see a bunch of low-priority? messages opening the HUD repeatedly
   ;; we display a bit of help _once_ that can prevent this spam in the future
   ;; for the user.
-  (when (not (core.get-in state [:hud :low-priority-spam :help-displayed?]))
+  (when (not (core.get-in M.state [:hud :low-priority-spam :help-displayed?]))
     (if low-priority?
-      (core.update-in state [:hud :low-priority-spam :streak] core.inc)
-      (core.assoc-in state [:hud :low-priority-spam :streak] 0))
+      (core.update-in M.state [:hud :low-priority-spam :streak] core.inc)
+      (core.assoc-in M.state [:hud :low-priority-spam :streak] 0))
 
-    (when (> (core.get-in state [:hud :low-priority-spam :streak]) low-priority-streak-threshold)
+    (when (> (core.get-in M.state [:hud :low-priority-spam :streak]) low-priority-streak-threshold)
       (let [pref (client.get :comment-prefix)]
         (client.schedule
           (. (require :conjure.log) :append)
@@ -187,7 +189,7 @@
            (.. pref "Set this option to suppress this kind of output for this session.")
            (.. pref "  :let g:conjure#log#hud#ignore_low_priority = v:true")]
           {:break? true}))
-      (core.assoc-in state [:hud :low-priority-spam :help-displayed?] true))))
+      (core.assoc-in M.state [:hud :low-priority-spam :help-displayed?] true))))
 
 (hook.define
   :display-hud
@@ -213,28 +215,28 @@
              :zindex (config.get-in [:log :hud :zindex])
              :border border})]
 
-      (when (and state.hud.id (not (vim.api.nvim_win_is_valid state.hud.id)))
+      (when (and M.state.hud.id (not (vim.api.nvim_win_is_valid M.state.hud.id)))
         (M.close-hud))
 
-      (if state.hud.id
-        (vim.api.nvim_win_set_buf state.hud.id buf)
+      (if M.state.hud.id
+        (vim.api.nvim_win_set_buf M.state.hud.id buf)
         (do
           (handle-low-priority-spam! (core.get opts :low-priority?))
-          (set state.hud.id (vim.api.nvim_open_win buf false win-opts))
-          (set-win-opts! state.hud.id)))
+          (set M.state.hud.id (vim.api.nvim_open_win buf false win-opts))
+          (set-win-opts! M.state.hud.id)))
 
-      (set state.hud.created-at-ms (vim.uv.now))
+      (set M.state.hud.created-at-ms (vim.uv.now))
 
       (if last-break
         (do
-          (vim.api.nvim_win_set_cursor state.hud.id [1 0])
-          (vim.api.nvim_win_set_cursor state.hud.id
+          (vim.api.nvim_win_set_cursor M.state.hud.id [1 0])
+          (vim.api.nvim_win_set_cursor M.state.hud.id
             [(math.min
                (+ last-break
                   (core.inc (math.floor (/ win-opts.height 2))))
                line-count)
              0]))
-        (vim.api.nvim_win_set_cursor state.hud.id [line-count 0])))))
+        (vim.api.nvim_win_set_cursor M.state.hud.id [line-count 0])))))
 
 (fn display-hud [opts]
   (when (and (config.get-in [:log :hud :enabled])
@@ -305,8 +307,8 @@
   (M.close-hud)
   (let [buf (upsert-buf)
         last-eval-start (vim.api.nvim_buf_get_extmark_by_id
-                          buf state.jump-to-latest.ns
-                          state.jump-to-latest.mark {})]
+                          buf M.state.jump-to-latest.ns
+                          M.state.jump-to-latest.mark {})]
     (with-buf-wins
       buf
       (fn [win]
@@ -318,7 +320,7 @@
           (when cmd
             (vim.api.nvim_win_call win (fn [] (vim.cmd cmd)))))))))
 
-(fn M.append [lines opts]
+(fn M.immediate-append [lines opts]
   (let [line-count (core.count lines)]
     (when (> line-count 0)
       (var visible-scrolling-log? false)
@@ -413,23 +415,23 @@
 
           ;; This mark is used when jumping to the latest log entry.
           (vim.api.nvim_buf_set_extmark
-            buf state.jump-to-latest.ns
+            buf M.state.jump-to-latest.ns
             (if join-first?
               old-lines
               (core.inc old-lines)) 0
-            {:id state.jump-to-latest.mark})
+            {:id M.state.jump-to-latest.mark})
 
           (with-buf-wins
             buf
             (fn [win]
               (set visible-scrolling-log?
-                   (and (not= win state.hud.id)
+                   (and (not= win M.state.hud.id)
                         (win-visible? win)
                         (or jump-to-latest?
                             (>= (win-botline win) old-lines))))
 
               (set visible-log?
-                   (and (not= win state.hud.id)
+                   (and (not= win M.state.hud.id)
                         (win-visible? win)))
 
               (let [[row _] (vim.api.nvim_win_get_cursor win)]
@@ -450,8 +452,14 @@
             (display-hud opts)
             (trim buf)))))))
 
+(fn M.append [...]
+  (M.immediate-append ...))
+
+(fn M.flush []
+  nil)
+
 (fn create-win [cmd]
-  (set state.last-open-cmd cmd)
+  (set M.state.last-open-cmd cmd)
   (let [buf (upsert-buf)]
     (vim.cmd (string.format "keepalt %s %s %s" 
                             (if (config.get-in [:log :botright]) "botright" "")
@@ -481,7 +489,7 @@
 
 (fn find-windows []
   (let [buf (upsert-buf)]
-    (core.filter (fn [win] (and (not= state.hud.id win)
+    (core.filter (fn [win] (and (not= M.state.hud.id win)
                              (= buf (vim.api.nvim_win_get_buf win))))
               (vim.api.nvim_tabpage_list_wins 0))))
 
@@ -495,9 +503,9 @@
 (fn M.toggle []
   (let [windows (find-windows)]
     (if (core.empty? windows)
-      (when (or (= state.last-open-cmd :split)
-                (= state.last-open-cmd :vsplit))
-        (create-win state.last-open-cmd))
+      (when (or (= M.state.last-open-cmd :split)
+                (= M.state.last-open-cmd :vsplit))
+        (create-win M.state.last-open-cmd))
       (M.close-visible windows))))
 
 (fn M.dbg [desc ...]
