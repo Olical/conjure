@@ -3,6 +3,12 @@
 (local extract (require :conjure.extract))
 (local {: with-buf} (require :conjure-spec.util))
 
+(fn ex [...]
+  (let [result (extract.form ...)]
+    (when result
+      (set result.node nil))
+    result))
+
 (describe :extract
   (fn []
     (describe :current-form
@@ -15,46 +21,46 @@
                 (assert.same {:range {:start [3 9]
                                       :end [3 16]}
                               :content "(* 10 2)"}
-                              (extract.form {}))))
+                              (ex {}))))
             (it "on the opening paren"
               (fn []
                 (at [3 9])
                 (assert.same {:range {:start [3 9]
                                       :end [3 16]}
                               :content "(* 10 2)"}
-                              (extract.form {}))))
+                              (ex {}))))
             (it "on the closing paren"
               (fn []
                 (at [3 16])
                 (assert.same {:range {:start [3 9]
                                       :end [3 16]}
                               :content "(* 10 2)"}
-                              (extract.form {}))))
+                              (ex {}))))
             (it "one before the inner form"
               (fn []
                 (at [3 8])
                 (assert.same {:range {:start [3 0]
                                       :end [3 17]}
                               :content "(+ 10 20 (* 10 2))"}
-                              (extract.form {}))))
+                              (ex {}))))
             (it "on the last paren of the outer form"
               (fn []
                 (at [3 17])
                 (assert.same {:range {:start [3 0]
                                       :end [3 17]}
                               :content "(+ 10 20 (* 10 2))"}
-                              (extract.form {}))))
+                              (ex {}))))
             (it "matching nothing"
               (fn []
                 (at [2 0])
-                (assert.are.equals nil (extract.form {}))))
+                (assert.are.equals nil (ex {}))))
             (it "ns form"
               (fn []
                 (at [1 0])
                 (assert.same {:range {:start [1 0]
                                       :end [1 7]}
                               :content "(ns foo)"}
-                              (extract.form {}))))))))
+                              (ex {}))))))))
     (describe :root-form
       (fn []
         (with-buf ["(ns foo)" "" "(+ 10 20 (* 10 2))"]
@@ -65,33 +71,32 @@
                   (assert.same {:range {:start [3 0]
                                         :end [3 17]}
                                 :content "(+ 10 20 (* 10 2))"}
-                                (extract.form {:root? true}))))
+                                (ex {:root? true}))))
             (it "root from the root"
               (fn []
                 (at [3 6])
                 (assert.same {:range {:start [3 0]
                                       :end [3 17]}
                               :content "(+ 10 20 (* 10 2))"}
-                              (extract.form {:root? true}))))
+                              (ex {:root? true}))))
             (it "root from the opening paren of the root"
               (fn []
                 (at [3 0])
                 (assert.same {:range {:start [3 0]
                                       :end [3 17]}
                               :content "(+ 10 20 (* 10 2))"}
-                              (extract.form {:root? true}))))
+                              (ex {:root? true}))))
             (it "root from the opening paren of the child form"
               (fn []
                 (at [3 9])
                 (assert.same {:range {:start [3 0]
                                       :end [3 17]}
                               :content "(+ 10 20 (* 10 2))"}
-                              (extract.form {:root? true}))))
+                              (ex {:root? true}))))
             (it "matching nothing for root"
               (fn []
                 (at [2 0])
-                (assert.equals nil
-                                (extract.form {:root? true}))))))))
+                (assert.equals nil (ex {:root? true}))))))))
     (describe :ignoring-comments
       (fn []
         (with-buf ["(ns ohno)" "" "(inc" " ; ()" " 5)"]
@@ -102,14 +107,14 @@
                 (assert.same {:range {:start [3 0]
                                       :end [5 2]}
                               :content "(inc\n ; ()\n 5)"}
-                              (extract.form {}))))
+                              (ex {}))))
             (it "skips the comment paren with root form"
               (fn []
                 (at [4 0])
                 (assert.same {:range {:start [3 0]
                                       :end [5 2]}
                               :content "(inc\n ; ()\n 5)"}
-                              (extract.form {:root? true}))))))))
+                              (ex {:root? true}))))))))
     (describe :escaped-parens
       (fn []
         (with-buf ["(str \\))"]
@@ -120,7 +125,7 @@
                 (assert.same {:range {:start [1 0]
                                       :end [1 7]}
                               :content "(str \\))"}
-                              (extract.form {}))))))
+                              (ex {}))))))
         (with-buf
           ["(ns foo)"
            ""
@@ -138,4 +143,4 @@
                 (assert.same {:range {:start [5 0]
                                       :end [5 6]}
                               :content "(+ 1 2)"}
-                              (extract.form {:root? true}))))))))))
+                              (ex {:root? true}))))))))))
