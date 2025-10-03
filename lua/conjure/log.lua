@@ -411,8 +411,11 @@ M.flush = function()
       for _, _63_ in ipairs(buffer0) do
         local lines = _63_[1]
         local opts = _63_[2]
-        for _0, line in ipairs(lines) do
-          table.insert(batched_lines, line)
+        if not core["empty?"](lines) then
+          for _0, line in ipairs(lines) do
+            table.insert(batched_lines, line)
+          end
+        else
         end
         if core.get(opts, "break?") then
           batched_opts["break?"] = true
@@ -445,8 +448,8 @@ M["setup-auto-flush"] = function()
 end
 M.append = function(lines, opts)
   do
-    local _let_69_ = client["current-client-module-name"]()
-    local filetype = _let_69_["filetype"]
+    local _let_70_ = client["current-client-module-name"]()
+    local filetype = _let_70_["filetype"]
     local buffer0 = (M.state.buffers[filetype] or {})
     table.insert(buffer0, {lines, opts})
     M.state.buffers[filetype] = buffer0
@@ -460,13 +463,13 @@ end
 local function create_win(cmd)
   M.state["last-open-cmd"] = cmd
   local buf = upsert_buf()
-  local _71_
+  local _72_
   if config["get-in"]({"log", "botright"}) then
-    _71_ = "botright"
+    _72_ = "botright"
   else
-    _71_ = ""
+    _72_ = ""
   end
-  vim.cmd(string.format("keepalt %s %s %s", _71_, cmd, buffer.resolve(log_buf_name())))
+  vim.cmd(string.format("keepalt %s %s %s", _72_, cmd, buffer.resolve(log_buf_name())))
   vim.api.nvim_win_set_cursor(0, {vim.api.nvim_buf_line_count(buf), 0})
   set_win_opts_21(0)
   return buffer.unlist(buf)
@@ -497,16 +500,16 @@ M.buf = function()
 end
 local function find_windows()
   local buf = upsert_buf()
-  local function _75_(win)
+  local function _76_(win)
     return ((M.state.hud.id ~= win) and (buf == vim.api.nvim_win_get_buf(win)))
   end
-  return core.filter(_75_, vim.api.nvim_tabpage_list_wins(0))
+  return core.filter(_76_, vim.api.nvim_tabpage_list_wins(0))
 end
 local function close(windows)
-  local function _76_(_241)
+  local function _77_(_241)
     return vim.api.nvim_win_close(_241, true)
   end
-  return core["run!"](_76_, windows)
+  return core["run!"](_77_, windows)
 end
 M["close-visible"] = function()
   M["close-hud"]()
