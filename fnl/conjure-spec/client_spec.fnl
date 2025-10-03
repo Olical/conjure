@@ -90,6 +90,16 @@
           (client.with-filetype "sql" #(client.call :->list :foo)))
         nil))))
 
+(describe "wrap"
+  (fn []
+    (it "passes all arguments through"
+      (fn []
+        (let [f (client.wrap (fn [...] (nc.concat ...)) [1] [2])]
+        (assert.same
+          [1 2 3 4]
+          (f [3] [4])))
+        nil))))
+
 (describe "optional-call"
   (fn []
     (it "executes a function from a client"
