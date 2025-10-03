@@ -1,6 +1,7 @@
 -- [nfnl] fnl/conjure/timer.fnl
 local _local_1_ = require("conjure.nfnl.module")
 local define = _local_1_["define"]
+local vim = _G.vim
 local M = define("conjure.timer")
 M.defer = function(f, ms)
   local t = vim.uv.new_timer()
@@ -14,5 +15,10 @@ M.destroy = function(t)
   else
   end
   return nil
+end
+M.interval = function(ms, f)
+  local t = vim.uv.new_timer()
+  t:start(ms, ms, vim.schedule_wrap(f))
+  return t
 end
 return M

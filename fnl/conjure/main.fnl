@@ -1,8 +1,12 @@
-(local {: autoload} (require :conjure.nfnl.module))
+(local {: autoload : define} (require :conjure.nfnl.module))
 (local mapping (autoload :conjure.mapping))
 (local config (autoload :conjure.config))
+(local log (autoload :conjure.log))
 
-(fn main []
-  (mapping.init (config.filetypes)))
+(local M (define :conjure.main))
 
-{: main}
+(fn M.main []
+  (mapping.init (config.filetypes))
+  (log.setup-auto-flush))
+
+M

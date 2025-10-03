@@ -5,6 +5,7 @@
 (local str (autoload :conjure.aniseed.string))
 (local config (autoload :conjure.config))
 (local dyn (autoload :conjure.dynamic))
+(local vim _G.vim)
 
 (local state-key (dyn.new #(do :default)))
 
@@ -96,7 +97,7 @@
   result)
 
 (fn current []
-  (let [{: module-name : filetype : extension}
+  (let [{: module-name : filetype : _extension}
         (current-client-module-name)]
     (when module-name
       (load-module filetype module-name))))

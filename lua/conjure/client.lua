@@ -7,6 +7,7 @@ local fennel = autoload("conjure.aniseed.fennel")
 local str = autoload("conjure.aniseed.string")
 local config = autoload("conjure.config")
 local dyn = autoload("conjure.dynamic")
+local vim = _G.vim
 local state_key
 local function _2_()
   return "default"
@@ -137,7 +138,7 @@ local function current()
   local _let_24_ = current_client_module_name()
   local module_name = _let_24_["module-name"]
   local filetype0 = _let_24_["filetype"]
-  local extension0 = _let_24_["extension"]
+  local _extension = _let_24_["_extension"]
   if module_name then
     return load_module(filetype0, module_name)
   else
