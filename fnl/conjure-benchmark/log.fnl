@@ -1,6 +1,6 @@
 (local {: define} (require :conjure.nfnl.module))
-(local core (require :conjure.nfnl.core))
 (local log (require :conjure.log))
+(local vim _G.vim)
 
 (local M (define :conjure-benchmark.log))
 
@@ -22,7 +22,8 @@
     :before-fn setup
     :task-fn
     (fn []
-      (log.append lines))}
+      (log.append lines)
+      (log.flush))}
 
    {:name "50 log calls in a row"
     :iterations 100
@@ -30,6 +31,7 @@
     :task-fn
     (fn []
       (for [_i 1 50 1]
-        (log.append lines)))}])
+        (log.append lines))
+      (log.flush))}])
 
 M
