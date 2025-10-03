@@ -101,6 +101,7 @@
    {:wrap false
     :diagnostics false
     :treesitter true
+    :auto_flush_interval_ms 100
     :split {:width nil
             :height nil}
     :hud {:width 0.42

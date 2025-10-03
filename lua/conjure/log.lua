@@ -14,7 +14,7 @@ local timer = autoload("conjure.timer")
 local sponsors = require("conjure.sponsors")
 local vim = _G.vim
 local M = define("conjure.log")
-M.state = (M.state or {["last-open-cmd"] = "vsplit", hud = {id = nil, timer = nil, ["created-at-ms"] = 0, ["low-priority-spam"] = {streak = 0, ["help-displayed?"] = false}}, ["jump-to-latest"] = {mark = nil, ns = vim.api.nvim_create_namespace("conjure_log_jump_to_latest")}})
+M.state = (M.state or {["last-open-cmd"] = "vsplit", buffers = {}, hud = {id = nil, timer = nil, ["created-at-ms"] = 0, ["low-priority-spam"] = {streak = 0, ["help-displayed?"] = false}}, ["jump-to-latest"] = {mark = nil, ns = vim.api.nvim_create_namespace("conjure_log_jump_to_latest")}})
 local function _break()
   return str.join({client.get("comment-prefix"), string.rep("-", config["get-in"]({"log", "break_length"}))})
 end
@@ -403,22 +403,70 @@ M["immediate-append"] = function(lines, opts)
     return nil
   end
 end
-M.append = function(...)
-  return M["immediate-append"](...)
-end
 M.flush = function()
+  for filetype, buffer0 in pairs(M.state.buffers) do
+    do
+      local batched_lines = {}
+      local batched_opts = {["clientsuppress-hud?"] = true, ["low-priority?"] = true}
+      for _, _63_ in ipairs(buffer0) do
+        local lines = _63_[1]
+        local opts = _63_[2]
+        for _0, line in ipairs(lines) do
+          table.insert(batched_lines, line)
+        end
+        if core.get(opts, "break?") then
+          batched_opts["break?"] = true
+        else
+        end
+        if core.get(opts, "join-first?") then
+          batched_opts["join-first?"] = true
+        else
+        end
+        if not core.get(opts, "suppress-hud?") then
+          batched_opts["suppress-hud?"] = nil
+        else
+        end
+        if not core.get(opts, "low-priority?") then
+          batched_opts["low-priority?"] = nil
+        else
+        end
+      end
+      if not core["empty?"](batched_lines) then
+        client["with-filetype"](filetype, M["immediate-append"], batched_lines, batched_opts)
+      else
+      end
+    end
+    M.state.buffers[filetype] = nil
+  end
   return nil
+end
+M["setup-auto-flush"] = function()
+  return timer.interval(config["get-in"]({"log", "auto_flush_interval_ms"}), M.flush)
+end
+M.append = function(lines, opts)
+  do
+    local _let_69_ = client["current-client-module-name"]()
+    local filetype = _let_69_["filetype"]
+    local buffer0 = (M.state.buffers[filetype] or {})
+    table.insert(buffer0, {lines, opts})
+    M.state.buffers[filetype] = buffer0
+  end
+  if (core.get(opts, "break?") or core.get(opts, "join-first?")) then
+    return M.flush()
+  else
+    return nil
+  end
 end
 local function create_win(cmd)
   M.state["last-open-cmd"] = cmd
   local buf = upsert_buf()
-  local _63_
+  local _71_
   if config["get-in"]({"log", "botright"}) then
-    _63_ = "botright"
+    _71_ = "botright"
   else
-    _63_ = ""
+    _71_ = ""
   end
-  vim.cmd(string.format("keepalt %s %s %s", _63_, cmd, buffer.resolve(log_buf_name())))
+  vim.cmd(string.format("keepalt %s %s %s", _71_, cmd, buffer.resolve(log_buf_name())))
   vim.api.nvim_win_set_cursor(0, {vim.api.nvim_buf_line_count(buf), 0})
   set_win_opts_21(0)
   return buffer.unlist(buf)
@@ -449,16 +497,16 @@ M.buf = function()
 end
 local function find_windows()
   local buf = upsert_buf()
-  local function _67_(win)
+  local function _75_(win)
     return ((M.state.hud.id ~= win) and (buf == vim.api.nvim_win_get_buf(win)))
   end
-  return core.filter(_67_, vim.api.nvim_tabpage_list_wins(0))
+  return core.filter(_75_, vim.api.nvim_tabpage_list_wins(0))
 end
 local function close(windows)
-  local function _68_(_241)
+  local function _76_(_241)
     return vim.api.nvim_win_close(_241, true)
   end
-  return core["run!"](_68_, windows)
+  return core["run!"](_76_, windows)
 end
 M["close-visible"] = function()
   M["close-hud"]()

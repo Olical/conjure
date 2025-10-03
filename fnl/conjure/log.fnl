@@ -17,6 +17,7 @@
   (or
     M.state
     {:last-open-cmd :vsplit
+     :buffers {}
      :hud {:id nil
            :timer nil
            :created-at-ms 0
@@ -452,11 +453,45 @@
             (display-hud opts)
             (trim buf)))))))
 
-(fn M.append [...]
-  (M.immediate-append ...))
-
 (fn M.flush []
-  nil)
+  (each [filetype buffer (pairs M.state.buffers)]
+    (let [batched-lines []
+          batched-opts {:clientsuppress-hud? true
+                        :low-priority? true}]
+      (each [_ [lines opts] (ipairs buffer)]
+        (each [_ line (ipairs lines)]
+          (table.insert batched-lines line))
+
+        ;; Flush eagerly when we see this.
+        (when (core.get opts :break?)
+          (tset batched-opts :break? true))
+
+        ;; Flush eagerly when we see this.
+        (when (core.get opts :join-first?)
+          (tset batched-opts :join-first? true))
+
+        ;; Only if ALL are true.
+        (when (not (core.get opts :suppress-hud?))
+          (tset batched-opts :suppress-hud? nil))
+
+        ;; Only if ALL are true.
+        (when (not (core.get opts :low-priority?))
+          (tset batched-opts :low-priority? nil)))
+      (when (not (core.empty? batched-lines))
+        (client.with-filetype filetype M.immediate-append batched-lines batched-opts)))
+      (tset M.state.buffers filetype nil)))
+
+(fn M.setup-auto-flush []
+  (timer.interval (config.get-in [:log :auto_flush_interval_ms]) M.flush))
+
+(fn M.append [lines opts]
+  (let [{: filetype} (client.current-client-module-name)
+        buffer (or (. M.state.buffers filetype) [])]
+    (table.insert buffer [lines opts])
+    (tset M.state.buffers filetype buffer))
+
+  (when (or (core.get opts :break?) (core.get opts :join-first?))
+    (M.flush)))
 
 (fn create-win [cmd]
   (set M.state.last-open-cmd cmd)
