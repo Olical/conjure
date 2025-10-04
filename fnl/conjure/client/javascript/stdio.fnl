@@ -134,7 +134,7 @@
 
 ;; To get rid of the "Uncaught SyntaxError: Unexpected token 'export'", 
 ;; the REPL silently evaluates the following expression: 
-(set M.initialise-repl-code "1+1")
+(set M.initialise-repl-code "")
 
 (fn repl-command-for-filetype []
   (if
@@ -162,6 +162,7 @@
            :on-success
            (fn []
              (display-repl-status :started)
+             (let [repl (state :repl)] (repl.send "1+1;"))
              (with-repl-or-warn
                  (fn [repl]
                    (repl.send

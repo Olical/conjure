@@ -17,11 +17,13 @@
 
 (fn is-type-import? [node code]
   (let [first-child (node:child 0)
-        second-child (node:child 1)]
-    (and first-child
+        second-child (node:child 1)
+        contains-type (string.find (tsc.get-text second-child code) "type")]
+    (or (and first-child
          (= (tsc.get-text first-child code) "import")
          second-child
-         (= (tsc.get-text second-child code) "type"))))
+         (= (tsc.get-text second-child code) "type"))
+        contains-type)))
 
 (fn clean-named-imports [node code]
   (let [text (tsc.get-text node code)]
@@ -34,7 +36,8 @@
   (if (and source.resolved-path source.text)
       (-> (tsc.get-text node code)
           (string.gsub (vim.pesc source.text)
-                       (string.format "\"%s\"" source.resolved-path)))
+                       (string.format "\"%s\"" source.resolved-path))
+          (.. ";"))
       (tsc.get-text node code)))
 
 (fn transform-plain-import [source]

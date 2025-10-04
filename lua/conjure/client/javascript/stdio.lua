@@ -136,7 +136,7 @@ M.stop = function()
     return nil
   end
 end
-M["initialise-repl-code"] = "1+1"
+M["initialise-repl-code"] = ""
 local function repl_command_for_filetype()
   if ("javascript" == vim.bo.filetype) then
     return cfg({"javascript_cmd"})
@@ -152,6 +152,10 @@ M.start = function()
   else
     local function _18_()
       display_repl_status("started")
+      do
+        local repl = state("repl")
+        repl.send("1+1;")
+      end
       local function _19_(repl)
         local function _20_(msgs)
           return display_result(M["format-msg"](M.unbatch(msgs)))

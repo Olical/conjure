@@ -5,3 +5,6 @@ export interface IMoped {
   countWheels: () => number;
   getEngineDisplacement: () => number;
 }
+
+export type ConvertOptions = string;
+export type OptimizationOptions = number;

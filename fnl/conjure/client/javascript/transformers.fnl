@@ -82,6 +82,17 @@
 (set node-handlers.call_expression
      (ir.call-expression node-handlers.default))
 
+(set node-handlers.export_statement
+     (fn [node code]
+       (let [child (node:child 1)]
+         (case (child:type)
+           (where (or "interface_declaration" "class_declaration")) 
+           (node-handlers.default node code)
+
+           "export_clause" ""
+
+           _ (node-handlers.default child code)))))
+
 (each [_ t (pairs
              [:expression_statement
               :variable_declaration
@@ -90,11 +101,11 @@
               :break_statement
               :continue_statement
               :debugger_statement
-              :export_statement
               :class_declaration
               :field_definition
               :public_field_definition
-              :function_declaration])]
+              :function_declaration ])]
+
   (set (. node-handlers t) handle-statement))
 
 (fn M.transform [s]

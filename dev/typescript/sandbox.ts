@@ -72,7 +72,7 @@ import { minus } from "../javascript/math.js";
 
 minus(1, 2);
 
-import type { IMoped } from "./moped.ts";
+import type { IMoped } from "./moped.ts"
 
 class Moped implements IMoped {
   wheels: number
@@ -324,3 +324,13 @@ for (let user of users) {
 }
 
 process.stderr.write("error! some error occurred");
+
+import {
+  type ConvertOptions as CrateConvertOptions,
+  type OptimizationOptions,
+} from "./moped";
+
+export const expFn = () => "export fn";
+expFn()
+export function funFun() { return "export function Fun" }
+export { }
