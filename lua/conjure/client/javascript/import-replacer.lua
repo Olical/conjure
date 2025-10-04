@@ -15,7 +15,8 @@ end
 local function is_type_import_3f(node, code)
   local first_child = node:child(0)
   local second_child = node:child(1)
-  return (first_child and (tsc["get-text"](first_child, code) == "import") and second_child and (tsc["get-text"](second_child, code) == "type"))
+  local contains_type = string.find(tsc["get-text"](second_child, code), "type")
+  return ((first_child and (tsc["get-text"](first_child, code) == "import") and second_child and (tsc["get-text"](second_child, code) == "type")) or contains_type)
 end
 local function clean_named_imports(node, code)
   local text0 = tsc["get-text"](node, code)
@@ -23,7 +24,7 @@ local function clean_named_imports(node, code)
 end
 local function transform_type_import(node, code, source)
   if (source["resolved-path"] and source.text) then
-    return string.gsub(tsc["get-text"](node, code), vim.pesc(source.text), string.format("\"%s\"", source["resolved-path"]))
+    return (string.gsub(tsc["get-text"](node, code), vim.pesc(source.text), string.format("\"%s\"", source["resolved-path"])) .. ";")
   else
     return tsc["get-text"](node, code)
   end

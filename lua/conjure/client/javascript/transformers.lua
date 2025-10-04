@@ -109,7 +109,20 @@ end
 node_handlers.member_expression = _14_
 node_handlers.import_statement = ir["import-statement"](handle_statement)
 node_handlers.call_expression = ir["call-expression"](node_handlers.default)
-for _, t in pairs({"expression_statement", "variable_declaration", "return_statement", "throw_statement", "break_statement", "continue_statement", "debugger_statement", "export_statement", "class_declaration", "field_definition", "public_field_definition", "function_declaration"}) do
+local function _16_(node, code)
+  local child = node:child(1)
+  local _17_ = child:type()
+  if ((_17_ == "interface_declaration") or (_17_ == "class_declaration")) then
+    return node_handlers.default(node, code)
+  elseif (_17_ == "export_clause") then
+    return ""
+  else
+    local _ = _17_
+    return node_handlers.default(child, code)
+  end
+end
+node_handlers.export_statement = _16_
+for _, t in pairs({"expression_statement", "variable_declaration", "return_statement", "throw_statement", "break_statement", "continue_statement", "debugger_statement", "class_declaration", "field_definition", "public_field_definition", "function_declaration"}) do
   node_handlers[t] = handle_statement
 end
 M.transform = function(s)
