@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 
 XDG_CONFIG_HOME=$(pwd)/.test
-export XDG_CONFIG_HOME
+XDG_DATA_HOME=$(pwd)/.test/data
+XDG_STATE_HOME=$(pwd)/.test/state
+export XDG_CONFIG_HOME XDG_DATA_HOME XDG_STATE_HOME
 
 nvim --headless -c 'PlenaryBustedDirectory lua/conjure-spec'
