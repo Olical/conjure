@@ -1,17 +1,17 @@
 -- [nfnl] fnl/conjure/client/lua/neovim.fnl
 local _local_1_ = require("conjure.nfnl.module")
 local autoload = _local_1_["autoload"]
-local a = autoload("conjure.aniseed.core")
-local str = autoload("conjure.aniseed.string")
+local define = _local_1_["define"]
+local core = autoload("conjure.nfnl.core")
+local str = autoload("conjure.nfnl.string")
 local config = autoload("conjure.config")
 local mapping = autoload("conjure.mapping")
 local log = autoload("conjure.log")
 local fs = autoload("conjure.fs")
 local extract = autoload("conjure.extract")
-local buf_suffix = ".lua"
-local comment_prefix = "-- "
-local function form_node_3f(node)
-  return (("function_call" == node:type()) or ("function_definition" == node:type()) or ("function_declaration" == node:type()) or ("local_declaration" == node:type()) or ("variable_declaration" == node:type()) or ("if_statement" == node:type()))
+local M = define("conjure.client.lua.neovim", {["buf-suffix"] = ".lua", ["comment-prefix"] = "-- "})
+M["form-node?"] = function(node)
+  return (("function_call" == node:type()) or ("function_definition" == node:type()) or ("function_declaration" == node:type()) or ("local_declaration" == node:type()) or ("variable_declaration" == node:type()) or ("if_statement" == node:type()) or ("for_statement" == node:type()) or ("assignment_statement" == node:type()))
 end
 config.merge({client = {lua = {neovim = {persistent = "debug"}}}})
 if config["get-in"]({"mapping", "enable_defaults"}) then
@@ -19,47 +19,47 @@ if config["get-in"]({"mapping", "enable_defaults"}) then
 else
 end
 local cfg = config["get-in-fn"]({"client", "lua", "neovim"})
-local repls = {}
-local function reset_env(filename)
+M.repls = (M.repls or {})
+M["reset-env"] = function(filename)
   local filename0 = (filename or fs["localise-path"](extract["file-path"]()))
-  repls[filename0] = nil
-  return log.append({(comment_prefix .. "Reset environment for " .. filename0)}, {["break?"] = true})
+  M.repls[filename0] = nil
+  return log.append({(M["comment-prefix"] .. "Reset environment for " .. filename0)}, {["break?"] = true})
 end
-local function reset_all_envs()
+M["reset-all-envs"] = function()
   local function _3_(filename)
-    repls[filename] = nil
+    M.repls[filename] = nil
     return nil
   end
-  a["run!"](_3_, a.keys(repls))
-  return log.append({(comment_prefix .. "Reset all environments")}, {["break?"] = true})
+  core["run!"](_3_, core.keys(M.repls))
+  return log.append({(M["comment-prefix"] .. "Reset all environments")}, {["break?"] = true})
 end
-local function on_filetype()
+M["on-filetype"] = function()
   local function _4_()
-    return reset_env()
+    return M["reset-env"]()
   end
-  mapping.buf("LuaResetEnv", cfg({"mapping", "reset_env"}), _4_)
+  mapping.buf("LuaResetEnv", cfg({"mapping", "reset_env"}), _4_, {desc = "Reset the Lua REPL environment"})
   local function _5_()
-    return reset_all_envs()
+    return M["reset-all-envs"]()
   end
-  return mapping.buf("LuaResetAllEnvs", cfg({"mapping", "reset_all_envs"}), _5_)
+  return mapping.buf("LuaResetAllEnvs", cfg({"mapping", "reset_all_envs"}), _5_, {desc = "Reset all Lua REPL environments"})
 end
 local function display(out, ret, err)
   local outs
   local function _6_(_241)
-    return (comment_prefix .. "(out) " .. _241)
+    return (M["comment-prefix"] .. "(out) " .. _241)
   end
   local function _7_(_241)
     return ("" ~= _241)
   end
-  outs = a.map(_6_, a.filter(_7_, str.split((out or ""), "\n")))
+  outs = core.map(_6_, core.filter(_7_, str.split((out or ""), "\n")))
   local errs
   local function _8_(_241)
-    return (comment_prefix .. "(err) " .. _241)
+    return (M["comment-prefix"] .. "(err) " .. _241)
   end
   local function _9_(_241)
     return ("" ~= _241)
   end
-  errs = a.map(_8_, a.filter(_9_, str.split((err or ""), "\n")))
+  errs = core.map(_8_, core.filter(_9_, str.split((err or ""), "\n")))
   log.append(outs)
   log.append(errs)
   return log.append(str.split(("res = " .. vim.inspect(ret)), "\n"))
@@ -76,7 +76,7 @@ local function lua_compile(opts)
     end
   end
 end
-local function default_env()
+M["default-env"] = function()
   local base = setmetatable({["REDIRECTED-OUTPUT"] = "", io = setmetatable({}, {__index = _G.io})}, {__index = _G})
   local print_redirected
   local function _12_(...)
@@ -101,16 +101,16 @@ local function default_env()
   return base
 end
 local function pcall_default(f)
-  local env = default_env()
+  local env = M["default-env"]()
   setfenv(f, env)
   local status, ret = pcall(f)
   return status, ret, env["REDIRECTED-OUTPUT"]
 end
 local function pcall_persistent_debug(file, f)
-  repls[file] = (repls[file] or {})
-  repls[file]["env"] = (repls[file].env or default_env())
-  repls[file].env["REDIRECTED-OUTPUT"] = ""
-  setfenv(f, repls[file].env)
+  M.repls[file] = (M.repls[file] or {})
+  M.repls[file]["env"] = (M.repls[file].env or M["default-env"]())
+  M.repls[file].env["REDIRECTED-OUTPUT"] = ""
+  setfenv(f, M.repls[file].env)
   local collect_env
   local function _15_(_, _0)
     debug.sethook()
@@ -120,7 +120,7 @@ local function pcall_persistent_debug(file, f)
     while n do
       n, v = debug.getlocal(2, i)
       if n then
-        repls[file].env[n] = v
+        M.repls[file].env[n] = v
         i = (i + 1)
       else
       end
@@ -130,7 +130,7 @@ local function pcall_persistent_debug(file, f)
   collect_env = _15_
   debug.sethook(collect_env, "r")
   local status, ret = pcall(f)
-  return status, ret, repls[file].env["REDIRECTED-OUTPUT"]
+  return status, ret, M.repls[file].env["REDIRECTED-OUTPUT"]
 end
 local function lua_eval(opts)
   local f, e = lua_compile(opts)
@@ -159,7 +159,7 @@ local function lua_eval(opts)
     return "", nil, ("Compilation error: " .. e)
   end
 end
-local function eval_str(opts)
+M["eval-str"] = function(opts)
   local out, ret, err = lua_eval(opts)
   display(out, ret, err)
   if opts["on-result"] then
@@ -168,8 +168,8 @@ local function eval_str(opts)
     return nil
   end
 end
-local function eval_file(opts)
-  reset_env(opts["file-path"])
+M["eval-file"] = function(opts)
+  M["reset-env"](opts["file-path"])
   local out, ret, err = lua_eval(opts)
   display(out, ret, err)
   if opts["on-result"] then
@@ -178,4 +178,4 @@ local function eval_file(opts)
     return nil
   end
 end
-return {["buf-suffix"] = buf_suffix, ["comment-prefix"] = comment_prefix, ["form-node?"] = form_node_3f, ["reset-env"] = reset_env, ["reset-all-envs"] = reset_all_envs, ["on-filetype"] = on_filetype, ["default-env"] = default_env, ["eval-str"] = eval_str, ["eval-file"] = eval_file}
+return M
