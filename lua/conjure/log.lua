@@ -447,14 +447,19 @@ M["setup-auto-flush"] = function()
   return timer.interval(config["get-in"]({"log", "auto_flush_interval_ms"}), M.flush)
 end
 M.append = function(lines, opts)
+  local eager_3f = (core.get(opts, "break?") or core.get(opts, "join-first?"))
+  if eager_3f then
+    M.flush()
+  else
+  end
   do
-    local _let_70_ = client["current-client-module-name"]()
-    local filetype = _let_70_["filetype"]
+    local _let_71_ = client["current-client-module-name"]()
+    local filetype = _let_71_["filetype"]
     local buffer0 = (M.state.buffers[filetype] or {})
     table.insert(buffer0, {lines, opts})
     M.state.buffers[filetype] = buffer0
   end
-  if (core.get(opts, "break?") or core.get(opts, "join-first?")) then
+  if eager_3f then
     return M.flush()
   else
     return nil
@@ -463,13 +468,13 @@ end
 local function create_win(cmd)
   M.state["last-open-cmd"] = cmd
   local buf = upsert_buf()
-  local _72_
+  local _73_
   if config["get-in"]({"log", "botright"}) then
-    _72_ = "botright"
+    _73_ = "botright"
   else
-    _72_ = ""
+    _73_ = ""
   end
-  vim.cmd(string.format("keepalt %s %s %s", _72_, cmd, buffer.resolve(log_buf_name())))
+  vim.cmd(string.format("keepalt %s %s %s", _73_, cmd, buffer.resolve(log_buf_name())))
   vim.api.nvim_win_set_cursor(0, {vim.api.nvim_buf_line_count(buf), 0})
   set_win_opts_21(0)
   return buffer.unlist(buf)
@@ -500,16 +505,16 @@ M.buf = function()
 end
 local function find_windows()
   local buf = upsert_buf()
-  local function _76_(win)
+  local function _77_(win)
     return ((M.state.hud.id ~= win) and (buf == vim.api.nvim_win_get_buf(win)))
   end
-  return core.filter(_76_, vim.api.nvim_tabpage_list_wins(0))
+  return core.filter(_77_, vim.api.nvim_tabpage_list_wins(0))
 end
 local function close(windows)
-  local function _77_(_241)
+  local function _78_(_241)
     return vim.api.nvim_win_close(_241, true)
   end
-  return core["run!"](_77_, windows)
+  return core["run!"](_78_, windows)
 end
 M["close-visible"] = function()
   M["close-hud"]()

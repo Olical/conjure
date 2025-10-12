@@ -486,13 +486,18 @@
   (timer.interval (config.get-in [:log :auto_flush_interval_ms]) M.flush))
 
 (fn M.append [lines opts]
-  (let [{: filetype} (client.current-client-module-name)
-        buffer (or (. M.state.buffers filetype) [])]
-    (table.insert buffer [lines opts])
-    (tset M.state.buffers filetype buffer))
+  (let [eager? (or (core.get opts :break?) (core.get opts :join-first?))]
+    (when eager?
+      (M.flush))
 
-  (when (or (core.get opts :break?) (core.get opts :join-first?))
-    (M.flush)))
+    (let [{: filetype} (client.current-client-module-name)
+          buffer (or (. M.state.buffers filetype) [])]
+
+      (table.insert buffer [lines opts])
+      (tset M.state.buffers filetype buffer))
+
+    (when eager?
+      (M.flush))))
 
 (fn create-win [cmd]
   (set M.state.last-open-cmd cmd)
