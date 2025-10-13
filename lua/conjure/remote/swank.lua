@@ -1,16 +1,18 @@
 -- [nfnl] fnl/conjure/remote/swank.fnl
 local _local_1_ = require("conjure.nfnl.module")
 local autoload = _local_1_["autoload"]
-local a = autoload("conjure.aniseed.core")
+local define = _local_1_["define"]
+local core = autoload("conjure.nfnl.core")
 local client = autoload("conjure.client")
 local net = autoload("conjure.net")
 local trn = autoload("conjure.remote.transport.swank")
-local function send(conn, msg, cb)
+local M = define("conjure.remote.swank")
+M.send = function(conn, msg, cb)
   table.insert(conn.queue, 1, (cb or false))
   conn.sock:write(trn.encode(msg))
   return nil
 end
-local function connect(opts)
+M.connect = function(opts)
   local conn = {decode = trn.decode, queue = {}}
   local function handle_message(err, chunk)
     if (err or not chunk) then
@@ -35,7 +37,7 @@ local function connect(opts)
       return opts["on-success"]()
     end
   end
-  conn = a.merge(conn, net.connect({host = opts.host, port = opts.port, cb = client["schedule-wrap"](_5_)}))
+  conn = core.merge(conn, net.connect({host = opts.host, port = opts.port, cb = client["schedule-wrap"](_5_)}))
   return conn
 end
-return {send = send, connect = connect}
+return M

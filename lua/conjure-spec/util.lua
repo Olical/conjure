@@ -1,17 +1,16 @@
 -- [nfnl] fnl/conjure-spec/util.fnl
-local nvim = require("conjure.aniseed.nvim")
 local function with_buf(lines, f)
   local at
   local function _1_(cursor)
-    return nvim.win_set_cursor(0, cursor)
+    return vim.api.nvim_win_set_cursor(0, cursor)
   end
   at = _1_
-  nvim.ex.silent_("syntax", "on")
-  nvim.ex.silent_("filetype", "on")
-  nvim.ex.silent_("set", "filetype", "clojure")
-  nvim.ex.silent_("edit", (nvim.fn.tempname() .. "_test.clj"))
-  nvim.buf_set_lines(0, 0, -1, false, lines)
+  vim.cmd("silent! syntax on")
+  vim.cmd("silent! filetype on")
+  vim.cmd("silent! set filetype=clojure")
+  vim.cmd(("silent! edit " .. vim.fn.tempname() .. "_test.clj"))
+  vim.api.nvim_buf_set_lines(0, 0, -1, false, lines)
   f(at)
-  return nvim.ex.silent_("bdelete!")
+  return vim.cmd("silent! bdelete!")
 end
 return {["with-buf"] = with_buf}

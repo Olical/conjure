@@ -3,7 +3,6 @@ local _local_1_ = require("plenary.busted")
 local describe = _local_1_["describe"]
 local it = _local_1_["it"]
 local assert = require("luassert.assert")
-local nvim = require("conjure.aniseed.nvim")
 local process = require("conjure.process")
 local function _2_()
   local function _3_()
@@ -36,7 +35,7 @@ local function _2_()
     end
     it("the running check handles nils", _10_)
     local function _11_()
-      return assert.are.equals(1, nvim.fn.bufexists(sh.buf))
+      return assert.are.equals(1, vim.fn.bufexists(sh.buf))
     end
     it("a buffer is created for the terminal / process", _11_)
     local function _12_()

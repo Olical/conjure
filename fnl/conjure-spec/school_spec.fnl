@@ -1,7 +1,6 @@
 (local {: describe : it} (require :plenary.busted))
 (local assert (require :luassert.assert))
 (local school (require :conjure.school))
-(local nvim (require :conjure.aniseed.nvim))
 
 (describe "running :ConjureSchool"
   (fn []
@@ -9,10 +8,10 @@
 
     (it "buffer has correct name"
         (fn []
-          (assert.are.equals "conjure-school.fnl" (nvim.fn.bufname))))
+          (assert.are.equals "conjure-school.fnl" (vim.fn.bufname))))
 
     (it "buffer requires conjure.school module"
         (fn []
-          (assert.same ["(local school (require :conjure.school))"] (nvim.buf_get_lines 0 0 1 false))))
+          (assert.same ["(local school (require :conjure.school))"] (vim.api.nvim_buf_get_lines 0 0 1 false))))
 
-    (nvim.ex.bdelete "conjure-school.fnl")))
+    (vim.cmd.bdelete "conjure-school.fnl")))

@@ -1,13 +1,15 @@
 -- [nfnl] fnl/conjure/remote/nrepl.fnl
 local _local_1_ = require("conjure.nfnl.module")
 local autoload = _local_1_["autoload"]
-local a = autoload("conjure.aniseed.core")
+local define = _local_1_["define"]
+local core = autoload("conjure.nfnl.core")
 local bencode = autoload("conjure.remote.transport.bencode")
 local client = autoload("conjure.client")
 local log = autoload("conjure.log")
 local net = autoload("conjure.net")
 local uuid = autoload("conjure.uuid")
-local function with_all_msgs_fn(cb)
+local M = define("conjure.remote.nrepl")
+M["with-all-msgs-fn"] = function(cb)
   local acc = {}
   local function _2_(msg)
     table.insert(acc, msg)
@@ -19,26 +21,26 @@ local function with_all_msgs_fn(cb)
   end
   return _2_
 end
-local function enrich_status(msg)
-  local ks = a.get(msg, "status")
+M["enrich-status"] = function(msg)
+  local ks = core.get(msg, "status")
   local status = {}
   local function _4_(k)
-    return a.assoc(status, k, true)
+    return core.assoc(status, k, true)
   end
-  a["run!"](_4_, ks)
-  a.assoc(msg, "status", status)
+  core["run!"](_4_, ks)
+  core.assoc(msg, "status", status)
   return msg
 end
-local function connect(opts)
+M.connect = function(opts)
   local state = {["message-queue"] = {}, bc = bencode.new(), msgs = {}, ["awaiting-process?"] = false}
   local conn = {session = nil, state = state}
   local function send(msg, cb)
     local msg_id = uuid.v4()
-    a.assoc(msg, "id", msg_id)
+    core.assoc(msg, "id", msg_id)
     if ("no-session" == msg.session) then
-      a.assoc(msg, "session", nil)
+      core.assoc(msg, "session", nil)
     elseif (not msg.session and conn.session) then
-      a.assoc(msg, "session", conn.session)
+      core.assoc(msg, "session", conn.session)
     else
     end
     log.dbg("send", msg)
@@ -48,7 +50,7 @@ local function connect(opts)
       end
       or_6_ = _7_
     end
-    a["assoc-in"](state, {"msgs", msg_id}, {msg = msg, cb = or_6_, ["sent-at"] = os.time()})
+    core["assoc-in"](state, {"msgs", msg_id}, {msg = msg, cb = or_6_, ["sent-at"] = os.time()})
     conn.sock:write(bencode.encode(msg))
     return nil
   end
@@ -60,7 +62,7 @@ local function connect(opts)
     else
       local function _8_(msg)
         log.dbg("receive", msg)
-        enrich_status(msg)
+        M["enrich-status"](msg)
         do
           local ok_3f, err0 = pcall(opts["side-effect-callback"], msg)
           if not ok_3f then
@@ -69,7 +71,7 @@ local function connect(opts)
           end
         end
         do
-          local cb = a["get-in"](state, {"msgs", msg.id, "cb"}, opts["default-callback"])
+          local cb = core["get-in"](state, {"msgs", msg.id, "cb"}, opts["default-callback"])
           local ok_3f, err0 = pcall(cb, msg)
           if not ok_3f then
             opts["on-error"](err0)
@@ -77,7 +79,7 @@ local function connect(opts)
           end
         end
         if msg.status.done then
-          a["assoc-in"](state, {"msgs", msg.id}, nil)
+          core["assoc-in"](state, {"msgs", msg.id}, nil)
         else
         end
         return opts["on-message"](msg)
@@ -90,18 +92,18 @@ local function connect(opts)
           return error(("conjure.remote.nrepl: Failed to decode message, maybe a different server is running on this port?\n" .. res))
         end
       end
-      return a["run!"](_8_, _12_())
+      return core["run!"](_8_, _12_())
     end
   end
   local function process_message_queue()
     state["awaiting-process?"] = false
-    if not a["empty?"](state["message-queue"]) then
+    if not core["empty?"](state["message-queue"]) then
       local msgs = state["message-queue"]
       state["message-queue"] = {}
       local function _15_(args)
         return process_message(unpack(args))
       end
-      return a["run!"](_15_, msgs)
+      return core["run!"](_15_, msgs)
     else
       return nil
     end
@@ -126,7 +128,7 @@ local function connect(opts)
     end
     return client["schedule-wrap"](_18_)
   end
-  conn = a["merge!"](conn, {send = send}, net.connect({host = opts.host, port = opts.port, cb = handle_connect_fn()}))
+  conn = core["merge!"](conn, {send = send}, net.connect({host = opts.host, port = opts.port, cb = handle_connect_fn()}))
   return conn
 end
-return {connect = connect, ["enrich-status"] = enrich_status, ["with-all-msgs-fn"] = with_all_msgs_fn}
+return M

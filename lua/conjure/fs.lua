@@ -1,22 +1,24 @@
 -- [nfnl] fnl/conjure/fs.fnl
 local _local_1_ = require("conjure.nfnl.module")
 local autoload = _local_1_["autoload"]
-local a = autoload("conjure.aniseed.core")
-local str = autoload("conjure.aniseed.string")
+local define = _local_1_["define"]
+local core = autoload("conjure.nfnl.core")
+local str = autoload("conjure.nfnl.string")
 local config = autoload("conjure.config")
 local nfs = autoload("conjure.nfnl.fs")
+local M = define("conjure.fs")
 local path_sep = nfs["path-sep"]()
-local function env(k)
+M.env = function(k)
   local v = vim.fn.getenv(k)
-  if (a["string?"](v) and not a["empty?"](v)) then
+  if (core["string?"](v) and not core["empty?"](v)) then
     return v
   else
     return nil
   end
 end
-local function config_dir()
+M["config-dir"] = function()
   local function _3_()
-    if env("XDG_CONFIG_HOME") then
+    if M.env("XDG_CONFIG_HOME") then
       return "$XDG_CONFIG_HOME/conjure"
     else
       return "~/.config/conjure"
@@ -24,104 +26,103 @@ local function config_dir()
   end
   return vim.fs.normalize(_3_())
 end
-local function absolute_path(path)
+M["absolute-path"] = function(path)
   return vim.fs.normalize(vim.fn.fnamemodify(path, ":p"))
 end
-local function findfile(name, path)
+M.findfile = function(name, path)
   local res = vim.fn.findfile(name, path)
-  if not a["empty?"](res) then
-    return absolute_path(res)
+  if not core["empty?"](res) then
+    return M["absolute-path"](res)
   else
     return nil
   end
 end
-local function split_path(path)
+M["split-path"] = function(path)
   return vim.split(path, path_sep, {trimempty = true})
 end
-local function join_path(parts)
-  return str.join(path_sep, a.concat(parts))
+M["join-path"] = function(parts)
+  return str.join(path_sep, core.concat(parts))
 end
-local function parent_dir(path)
-  local res = join_path(a.butlast(split_path(path)))
+M["parent-dir"] = function(path)
+  local res = M["join-path"](core.butlast(M["split-path"](path)))
   if ("" == res) then
     return nil
   else
     return (path_sep .. res)
   end
 end
-local function upwards_file_search(file_names, from_dir)
-  if (from_dir and not a["empty?"](file_names)) then
+M["upwards-file-search"] = function(file_names, from_dir)
+  if (from_dir and not core["empty?"](file_names)) then
     local result
     local function _6_(file_name)
-      return findfile(file_name, from_dir)
+      return M.findfile(file_name, from_dir)
     end
-    result = a.some(_6_, file_names)
+    result = core.some(_6_, file_names)
     if result then
       return result
     else
-      return upwards_file_search(file_names, parent_dir(from_dir))
+      return M["upwards-file-search"](file_names, M["parent-dir"](from_dir))
     end
   else
     return nil
   end
 end
-local function resolve_above(names)
-  return (upwards_file_search(names, vim.fn.expand("%:p:h")) or upwards_file_search(names, vim.fn.getcwd()) or upwards_file_search(names, config_dir()))
+M["resolve-above"] = function(names)
+  return (M["upwards-file-search"](names, vim.fn.expand("%:p:h")) or M["upwards-file-search"](names, vim.fn.getcwd()) or M["upwards-file-search"](names, M["config-dir"]()))
 end
-local function file_readable_3f(path)
+M["file-readable?"] = function(path)
   return (1 == vim.fn.filereadable(path))
 end
-local function resolve_relative_to(path, root)
+M["resolve-relative-to"] = function(path, root)
   local function loop(parts)
-    if a["empty?"](parts) then
+    if core["empty?"](parts) then
       return path
     else
-      if file_readable_3f(join_path(a.concat({root}, parts))) then
-        return join_path(parts)
+      if M["file-readable?"](M["join-path"](core.concat({root}, parts))) then
+        return M["join-path"](parts)
       else
-        return loop(a.rest(parts))
+        return loop(core.rest(parts))
       end
     end
   end
-  return loop(split_path(path))
+  return loop(M["split-path"](path))
 end
-local function resolve_relative(path)
+M["resolve-relative"] = function(path)
   local relative_file_root = config["get-in"]({"relative_file_root"})
   if relative_file_root then
-    return resolve_relative_to(path, relative_file_root)
+    return M["resolve-relative-to"](path, relative_file_root)
   else
     return path
   end
 end
-local function apply_path_subs(path, path_subs)
+M["apply-path-subs"] = function(path, path_subs)
   local function _13_(path0, _12_)
     local pat = _12_[1]
     local rep = _12_[2]
     return path0:gsub(pat, rep)
   end
-  return a.reduce(_13_, path, a["kv-pairs"](path_subs))
+  return core.reduce(_13_, path, core["kv-pairs"](path_subs))
 end
-local function localise_path(path)
-  return resolve_relative(apply_path_subs(path, config["get-in"]({"path_subs"})))
+M["localise-path"] = function(path)
+  return M["resolve-relative"](M["apply-path-subs"](path, config["get-in"]({"path_subs"})))
 end
-local function current_source()
+M["current-source"] = function()
   local info = debug.getinfo(2, "S")
-  if vim.startswith(a.get(info, "source"), "@") then
+  if vim.startswith(core.get(info, "source"), "@") then
     return string.sub(info.source, 2)
   else
     return nil
   end
 end
-local conjure_source_directory
 do
-  local src = current_source()
+  local src = M["current-source"]()
   if src then
-    conjure_source_directory = vim.fs.dirname(vim.fs.dirname(vim.fs.dirname(src)))
+    M["conjure-source-directory"] = vim.fs.dirname(vim.fs.dirname(vim.fs.dirname(src)))
   else
-    conjure_source_directory = nil
+    M["conjure-source-directory"] = nil
   end
 end
-local function file_path__3emodule_name(file_path)
+M["file-path->module-name"] = function(file_path)
   if file_path then
     local function _16_(mod_name)
       local mod_path = string.gsub(mod_name, "%.", path_sep)
@@ -131,9 +132,9 @@ local function file_path__3emodule_name(file_path)
         return nil
       end
     end
-    return a.some(_16_, a.keys(package.loaded))
+    return core.some(_16_, core.keys(package.loaded))
   else
     return nil
   end
 end
-return {env = env, ["config-dir"] = config_dir, ["absolute-path"] = absolute_path, findfile = findfile, ["split-path"] = split_path, ["join-path"] = join_path, ["parent-dir"] = parent_dir, ["upwards-file-search"] = upwards_file_search, ["resolve-above"] = resolve_above, ["file-readable?"] = file_readable_3f, ["resolve-relative-to"] = resolve_relative_to, ["resolve-relative"] = resolve_relative, ["apply-path-subs"] = apply_path_subs, ["localise-path"] = localise_path, ["current-source"] = current_source, ["conjure-source-directory"] = conjure_source_directory, ["file-path->module-name"] = file_path__3emodule_name}
+return M

@@ -1,12 +1,14 @@
 -- [nfnl] fnl/conjure/remote/netrepl.fnl
 local _local_1_ = require("conjure.nfnl.module")
 local autoload = _local_1_["autoload"]
-local a = autoload("conjure.aniseed.core")
+local define = _local_1_["define"]
+local core = autoload("conjure.nfnl.core")
 local client = autoload("conjure.client")
 local log = autoload("conjure.log")
 local net = autoload("conjure.net")
 local trn = autoload("conjure.remote.transport.netrepl")
-local function send(conn, msg, cb, prompt_3f)
+local M = define("conjure.remote.netrepl")
+M.send = function(conn, msg, cb, prompt_3f)
   log.dbg("send", msg)
   table.insert(conn.queue, 1, (cb or false))
   if prompt_3f then
@@ -16,7 +18,7 @@ local function send(conn, msg, cb, prompt_3f)
   conn.sock:write(trn.encode(msg))
   return nil
 end
-local function connect(opts)
+M.connect = function(opts)
   local conn = {decode = trn.decoder(), queue = {}}
   local function handle_message(err, chunk)
     if (err or not chunk) then
@@ -31,19 +33,19 @@ local function connect(opts)
           return nil
         end
       end
-      return a["run!"](_3_, conn.decode(chunk))
+      return core["run!"](_3_, conn.decode(chunk))
     end
   end
   local function _6_(err)
     if err then
       return opts["on-failure"](err)
     else
-      send(conn, (opts.name or "Conjure"))
+      M.send(conn, (opts.name or "Conjure"))
       conn.sock:read_start(client["schedule-wrap"](handle_message))
       return opts["on-success"]()
     end
   end
-  conn = a.merge(conn, net.connect({host = opts.host, port = opts.port, cb = client["schedule-wrap"](_6_)}))
+  conn = core.merge(conn, net.connect({host = opts.host, port = opts.port, cb = client["schedule-wrap"](_6_)}))
   return conn
 end
-return {connect = connect, send = send}
+return M

@@ -1,7 +1,6 @@
 (local {: describe : it} (require :plenary.busted))
 (local assert (require :luassert.assert))
 (local fs (require :conjure.fs))
-(local nvim (require :conjure.aniseed.nvim))
 
 (describe "fs"
   (fn []
@@ -9,13 +8,13 @@
       (fn []
         (it "returns the default config dir when XDG_CONFIG_HOME is not set"
           (fn []
-            (nvim.fn.setenv "XDG_CONFIG_HOME" "")
-            (nvim.fn.setenv "HOME" "/home/conjure")
+            (vim.fn.setenv "XDG_CONFIG_HOME" "")
+            (vim.fn.setenv "HOME" "/home/conjure")
             (assert.equals "/home/conjure/.config/conjure" (fs.config-dir)))))
 
         (it "returns the XDG config dir when XDG_CONFIG_HOME is set"
           (fn []
-            (nvim.fn.setenv "XDG_CONFIG_HOME" "/home/conjure/.config")
+            (vim.fn.setenv "XDG_CONFIG_HOME" "/home/conjure/.config")
             (assert.equals "/home/conjure/.config/conjure" (fs.config-dir))))))
 
     (describe "findfile"
@@ -26,7 +25,7 @@
 
         (it "returns the correct file path for an existing file"
           (fn []
-            (assert.equals (.. (nvim.fn.getcwd) "/README.adoc") (fs.findfile "README.adoc"))))))
+            (assert.equals (.. (vim.fn.getcwd) "/README.adoc") (fs.findfile "README.adoc"))))))
 
     (describe "file-readable?"
       (fn []
@@ -72,15 +71,15 @@
           (fn []
             (assert.equals "fnl/conjure/fs.fnl"
               (fs.resolve-relative-to
-                (.. (nvim.fn.getcwd) "/fnl/conjure/fs.fnl")
-                (nvim.fn.getcwd)))))
+                (.. (vim.fn.getcwd) "/fnl/conjure/fs.fnl")
+                (vim.fn.getcwd)))))
 
         (it "falls back to the original path if it can't be resolved"
           (fn []
             (assert.equals "/foo/bar/fnl/conjure/fs.fnl-nope"
               (fs.resolve-relative-to
                 "/foo/bar/fnl/conjure/fs.fnl-nope"
-                (nvim.fn.getcwd)))))))
+                (vim.fn.getcwd)))))))
 
     (describe "apply-path-subs"
       (fn []
@@ -138,28 +137,28 @@
       (fn []
         (it "returns nil when no match is found"
           (fn []
-            (assert.equals nil (fs.upwards-file-search [] (nvim.fn.getcwd)))
-            (assert.equals nil (fs.upwards-file-search ["thisbetternotexist"] (nvim.fn.getcwd)))))
+            (assert.equals nil (fs.upwards-file-search [] (vim.fn.getcwd)))
+            (assert.equals nil (fs.upwards-file-search ["thisbetternotexist"] (vim.fn.getcwd)))))
 
         (it "finds a file in the current directory"
           (fn []
-            (assert.equals (.. (nvim.fn.getcwd) "/README.adoc")
-              (fs.upwards-file-search ["README.adoc"] (nvim.fn.getcwd)))))
+            (assert.equals (.. (vim.fn.getcwd) "/README.adoc")
+              (fs.upwards-file-search ["README.adoc"] (vim.fn.getcwd)))))
 
         (it "walks upwards to find a file"
           (fn []
-            (assert.equals (.. (nvim.fn.getcwd) "/README.adoc")
-              (fs.upwards-file-search ["README.adoc"] (.. (nvim.fn.getcwd) "/fnl/conjure/client/clojure/nrepl")))))
+            (assert.equals (.. (vim.fn.getcwd) "/README.adoc")
+              (fs.upwards-file-search ["README.adoc"] (.. (vim.fn.getcwd) "/fnl/conjure/client/clojure/nrepl")))))
 
         (it "returns early when matching below first"
           (fn []
-            (assert.equals (.. (nvim.fn.getcwd) "/fnl/conjure-spec/.fs.test")
-              (fs.upwards-file-search ["README.adoc" ".fs.test"] (.. (nvim.fn.getcwd) "/fnl/conjure-spec/client/clojure/nrepl")))))
+            (assert.equals (.. (vim.fn.getcwd) "/fnl/conjure-spec/.fs.test")
+              (fs.upwards-file-search ["README.adoc" ".fs.test"] (.. (vim.fn.getcwd) "/fnl/conjure-spec/client/clojure/nrepl")))))
 
         (it "returns early when matching at the same level first"
           (fn []
-            (assert.equals (.. (nvim.fn.getcwd) "/fnl/conjure-spec/.fs.test")
-              (fs.upwards-file-search ["README.adoc" ".fs.test"] (.. (nvim.fn.getcwd) "/fnl/conjure-spec")))))))
+            (assert.equals (.. (vim.fn.getcwd) "/fnl/conjure-spec/.fs.test")
+              (fs.upwards-file-search ["README.adoc" ".fs.test"] (.. (vim.fn.getcwd) "/fnl/conjure-spec")))))))
 
     (describe "resolve-above"
       (fn []
@@ -170,11 +169,11 @@
 
         (it "finds a file in the current directory"
           (fn []
-            (assert.equals (.. (nvim.fn.getcwd) "/README.adoc")
+            (assert.equals (.. (vim.fn.getcwd) "/README.adoc")
               (fs.resolve-above ["README.adoc"]))))))
 
     (describe "conjure-source-directory"
       (fn []
         (it "returns the current working directory"
           (fn []
-            (assert.equals (.. (nvim.fn.getcwd) "/.test/nvim/pack/main/start/conjure") fs.conjure-source-directory))))))
+            (assert.equals (.. (vim.fn.getcwd) "/.test/nvim/pack/main/start/conjure") fs.conjure-source-directory))))))

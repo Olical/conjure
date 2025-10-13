@@ -1,5 +1,5 @@
 (local {: autoload : define} (require :conjure.nfnl.module))
-(local a (autoload :conjure.aniseed.core))
+(local core (autoload :conjure.nfnl.core))
 
 (import-macros {: augroup : autocmd} :conjure.macros)
 
@@ -12,9 +12,9 @@
     host
     (-> host
         (->> (vim.uv.getaddrinfo)
-             (a.filter #(= "inet" (a.get $1 :family)))
-             (a.first))
-        (a.get :addr))))
+             (core.filter #(= "inet" (core.get $1 :family)))
+             (core.first))
+        (core.get :addr))))
 
 (local state {:sock-drawer []})
 
@@ -24,7 +24,7 @@
     (sock:shutdown)
     (sock:close))
 
-  (set state.sock-drawer (a.filter #(not= sock $1) state.sock-drawer)))
+  (set state.sock-drawer (core.filter #(not= sock $1) state.sock-drawer)))
 
 (fn M.connect [{:  host : port : cb}]
   (let [sock (vim.uv.new_tcp)
@@ -42,7 +42,7 @@
      :port port}))
 
 (fn destroy-all-socks []
-  (a.run! destroy-sock state.sock-drawer))
+  (core.run! destroy-sock state.sock-drawer))
 
 (local group (vim.api.nvim_create_augroup "conjure-net-sock-cleanup" {}))
 (vim.api.nvim_create_autocmd

@@ -1,6 +1,5 @@
 (local {: describe : it} (require :plenary.busted))
 (local assert (require :luassert.assert))
-(local nvim (require :conjure.aniseed.nvim))
 (local process (require :conjure.process))
 
 (describe "conjure.process"
@@ -31,7 +30,7 @@
               (assert.are.equals false (process.running? nil))))
           (it "a buffer is created for the terminal / process"
             (fn []
-              (assert.are.equals 1 (nvim.fn.bufexists sh.buf))))
+              (assert.are.equals 1 (vim.fn.bufexists sh.buf))))
           (it "stopping returns the process table"
             (fn []
               (assert.are.equals sh (process.stop sh))))

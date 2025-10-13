@@ -2,16 +2,16 @@
 local _local_1_ = require("conjure.nfnl.module")
 local autoload = _local_1_["autoload"]
 local define = _local_1_["define"]
-local a = autoload("conjure.aniseed.core")
+local core = autoload("conjure.nfnl.core")
 local M = define("conjure.net", {})
 M.resolve = function(host)
   if (host == "::") then
     return host
   else
     local function _2_(_241)
-      return ("inet" == a.get(_241, "family"))
+      return ("inet" == core.get(_241, "family"))
     end
-    return a.get(a.first(a.filter(_2_, vim.uv.getaddrinfo(host))), "addr")
+    return core.get(core.first(core.filter(_2_, vim.uv.getaddrinfo(host))), "addr")
   end
 end
 local state = {["sock-drawer"] = {}}
@@ -25,7 +25,7 @@ local function destroy_sock(sock)
   local function _5_(_241)
     return (sock ~= _241)
   end
-  state["sock-drawer"] = a.filter(_5_, state["sock-drawer"])
+  state["sock-drawer"] = core.filter(_5_, state["sock-drawer"])
   return nil
 end
 M.connect = function(_6_)
@@ -46,7 +46,7 @@ M.connect = function(_6_)
   return {sock = sock, ["resolved-host"] = resolved_host, destroy = _8_, host = host, port = port}
 end
 local function destroy_all_socks()
-  return a["run!"](destroy_sock, state["sock-drawer"])
+  return core["run!"](destroy_sock, state["sock-drawer"])
 end
 local group = vim.api.nvim_create_augroup("conjure-net-sock-cleanup", {})
 vim.api.nvim_create_autocmd("VimLeavePre", {group = group, pattern = "*", callback = destroy_all_socks})

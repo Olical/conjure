@@ -4,18 +4,17 @@ local describe = _local_1_["describe"]
 local it = _local_1_["it"]
 local assert = require("luassert.assert")
 local fs = require("conjure.fs")
-local nvim = require("conjure.aniseed.nvim")
 local function _2_()
   local function _3_()
     local function _4_()
-      nvim.fn.setenv("XDG_CONFIG_HOME", "")
-      nvim.fn.setenv("HOME", "/home/conjure")
+      vim.fn.setenv("XDG_CONFIG_HOME", "")
+      vim.fn.setenv("HOME", "/home/conjure")
       return assert.equals("/home/conjure/.config/conjure", fs["config-dir"]())
     end
     return it("returns the default config dir when XDG_CONFIG_HOME is not set", _4_)
   end
   local function _5_()
-    nvim.fn.setenv("XDG_CONFIG_HOME", "/home/conjure/.config")
+    vim.fn.setenv("XDG_CONFIG_HOME", "/home/conjure/.config")
     return assert.equals("/home/conjure/.config/conjure", fs["config-dir"]())
   end
   return describe("config-dir", _3_, it("returns the XDG config dir when XDG_CONFIG_HOME is set", _5_))
@@ -26,7 +25,7 @@ local function _6_()
   end
   it("returns nil for non-existent files", _7_)
   local function _8_()
-    return assert.equals((nvim.fn.getcwd() .. "/README.adoc"), fs.findfile("README.adoc"))
+    return assert.equals((vim.fn.getcwd() .. "/README.adoc"), fs.findfile("README.adoc"))
   end
   return it("returns the correct file path for an existing file", _8_)
 end
@@ -70,11 +69,11 @@ local function _17_()
 end
 local function _20_()
   local function _21_()
-    return assert.equals("fnl/conjure/fs.fnl", fs["resolve-relative-to"]((nvim.fn.getcwd() .. "/fnl/conjure/fs.fnl"), nvim.fn.getcwd()))
+    return assert.equals("fnl/conjure/fs.fnl", fs["resolve-relative-to"]((vim.fn.getcwd() .. "/fnl/conjure/fs.fnl"), vim.fn.getcwd()))
   end
   it("resolves a path relative to a given base path", _21_)
   local function _22_()
-    return assert.equals("/foo/bar/fnl/conjure/fs.fnl-nope", fs["resolve-relative-to"]("/foo/bar/fnl/conjure/fs.fnl-nope", nvim.fn.getcwd()))
+    return assert.equals("/foo/bar/fnl/conjure/fs.fnl-nope", fs["resolve-relative-to"]("/foo/bar/fnl/conjure/fs.fnl-nope", vim.fn.getcwd()))
   end
   return it("falls back to the original path if it can't be resolved", _22_)
 end
@@ -120,24 +119,24 @@ local function _28_()
 end
 local function _32_()
   local function _33_()
-    assert.equals(nil, fs["upwards-file-search"]({}, nvim.fn.getcwd()))
-    return assert.equals(nil, fs["upwards-file-search"]({"thisbetternotexist"}, nvim.fn.getcwd()))
+    assert.equals(nil, fs["upwards-file-search"]({}, vim.fn.getcwd()))
+    return assert.equals(nil, fs["upwards-file-search"]({"thisbetternotexist"}, vim.fn.getcwd()))
   end
   it("returns nil when no match is found", _33_)
   local function _34_()
-    return assert.equals((nvim.fn.getcwd() .. "/README.adoc"), fs["upwards-file-search"]({"README.adoc"}, nvim.fn.getcwd()))
+    return assert.equals((vim.fn.getcwd() .. "/README.adoc"), fs["upwards-file-search"]({"README.adoc"}, vim.fn.getcwd()))
   end
   it("finds a file in the current directory", _34_)
   local function _35_()
-    return assert.equals((nvim.fn.getcwd() .. "/README.adoc"), fs["upwards-file-search"]({"README.adoc"}, (nvim.fn.getcwd() .. "/fnl/conjure/client/clojure/nrepl")))
+    return assert.equals((vim.fn.getcwd() .. "/README.adoc"), fs["upwards-file-search"]({"README.adoc"}, (vim.fn.getcwd() .. "/fnl/conjure/client/clojure/nrepl")))
   end
   it("walks upwards to find a file", _35_)
   local function _36_()
-    return assert.equals((nvim.fn.getcwd() .. "/fnl/conjure-spec/.fs.test"), fs["upwards-file-search"]({"README.adoc", ".fs.test"}, (nvim.fn.getcwd() .. "/fnl/conjure-spec/client/clojure/nrepl")))
+    return assert.equals((vim.fn.getcwd() .. "/fnl/conjure-spec/.fs.test"), fs["upwards-file-search"]({"README.adoc", ".fs.test"}, (vim.fn.getcwd() .. "/fnl/conjure-spec/client/clojure/nrepl")))
   end
   it("returns early when matching below first", _36_)
   local function _37_()
-    return assert.equals((nvim.fn.getcwd() .. "/fnl/conjure-spec/.fs.test"), fs["upwards-file-search"]({"README.adoc", ".fs.test"}, (nvim.fn.getcwd() .. "/fnl/conjure-spec")))
+    return assert.equals((vim.fn.getcwd() .. "/fnl/conjure-spec/.fs.test"), fs["upwards-file-search"]({"README.adoc", ".fs.test"}, (vim.fn.getcwd() .. "/fnl/conjure-spec")))
   end
   return it("returns early when matching at the same level first", _37_)
 end
@@ -148,13 +147,13 @@ local function _38_()
   end
   it("returns nil when no match is found", _39_)
   local function _40_()
-    return assert.equals((nvim.fn.getcwd() .. "/README.adoc"), fs["resolve-above"]({"README.adoc"}))
+    return assert.equals((vim.fn.getcwd() .. "/README.adoc"), fs["resolve-above"]({"README.adoc"}))
   end
   return it("finds a file in the current directory", _40_)
 end
 local function _41_()
   local function _42_()
-    return assert.equals((nvim.fn.getcwd() .. "/.test/nvim/pack/main/start/conjure"), fs["conjure-source-directory"])
+    return assert.equals((vim.fn.getcwd() .. "/.test/nvim/pack/main/start/conjure"), fs["conjure-source-directory"])
   end
   return it("returns the current working directory", _42_)
 end

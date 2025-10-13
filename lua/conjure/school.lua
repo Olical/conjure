@@ -5,7 +5,6 @@ local core = autoload("conjure.nfnl.core")
 local buffer = autoload("conjure.buffer")
 local config = autoload("conjure.config")
 local editor = autoload("conjure.editor")
-local nvim = autoload("conjure.aniseed.nvim")
 local str = autoload("conjure.nfnl.string")
 local buf_name = "conjure-school.fnl"
 local function upsert_buf()
@@ -50,10 +49,7 @@ local function start()
   if not editor["has-filetype?"]("fennel") then
     vim.notify_once(("Warning: No Fennel filetype found, falling back to Clojure syntax.\n" .. "Install https://github.com/atweiden/vim-fennel for better Fennel support."))
     vim.g["conjure#filetype#clojure"] = vim.g["conjure#filetype#fennel"]
-    nvim.ex.augroup("conjure_school_filetype")
-    nvim.ex.autocmd_()
-    nvim.ex.autocmd("BufNewFile,BufRead *.fnl setlocal filetype=clojure")
-    nvim.ex.augroup("END")
+    vim.api.nvim_create_autocmd({"BufNewFile", "BufRead"}, {group = vim.api.nvim_create_augroup("conjure_school_filetype", {clear = true}), pattern = "*.fnl", command = "setlocal filetype=clojure"})
   else
   end
   local maplocalleader_was_unset_3f
@@ -64,7 +60,7 @@ local function start()
     maplocalleader_was_unset_3f = nil
   end
   local buf = upsert_buf()
-  nvim.ex.edit(buf_name)
+  vim.cmd.edit(buf_name)
   vim.api.nvim_buf_set_lines(buf, 0, -1, false, {})
   local _9_
   if maplocalleader_was_unset_3f then
