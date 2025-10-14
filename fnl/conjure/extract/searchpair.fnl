@@ -1,8 +1,9 @@
-(local {: autoload} (require :conjure.nfnl.module))
-(local a (autoload :conjure.aniseed.core))
-
-(local str (autoload :conjure.aniseed.string))
+(local {: autoload : define} (require :conjure.nfnl.module))
+(local core (autoload :conjure.nfnl.core))
+(local str (autoload :conjure.nfnl.string))
 (local config (autoload :conjure.config))
+
+(local M (define :conjure.extract.searchpair))
 
 ;; All of the code related to the searchpair / searchpairpos based form
 ;; extraction. If you use Tree Sitter for all of the languages you work
@@ -17,19 +18,19 @@
   (let [lines (vim.api.nvim_buf_get_lines
                 0 (- srow 1) erow false)]
     (-> lines
-        (a.update
+        (core.update
           (length lines)
           (fn [s]
             (string.sub s 0 ecol)))
-        (a.update
+        (core.update
           1
           (fn [s]
             (string.sub s scol)))
         (->> (str.join "\n")))))
 
-(fn skip-match? []
+(fn M.skip-match? []
   (let [[row col] (vim.api.nvim_win_get_cursor 0)
-        stack (vim.fn.synstack row (a.inc col))
+        stack (vim.fn.synstack row (core.inc col))
         stack-size (length stack)]
     (if (or
           ;; Are we in a comment, string or regular expression?
@@ -45,7 +46,7 @@
           ;; https://github.com/Olical/conjure/issues/209
           (= "\\" (-> (vim.api.nvim_buf_get_lines
                         (vim.api.nvim_win_get_buf 0) (- row 1) row false)
-                      (a.first)
+                      (core.first)
                       (string.sub col col))))
       1
       0)))
@@ -79,16 +80,16 @@
         start (vim.fn.searchpairpos
                 safe-start-char "" safe-end-char
                 (.. flags "b" (if (= cursor-char start-char) "c" ""))
-                skip-match?)
+                M.skip-match?)
         end (vim.fn.searchpairpos
               safe-start-char "" safe-end-char
               (.. flags (if (= cursor-char end-char) "c" ""))
-              skip-match?)]
+              M.skip-match?)]
 
     (when (and (not (nil-pos? start))
                (not (nil-pos? end)))
-      {:range {:start [(a.first start) (a.dec (a.second start))]
-               :end [(a.first end) (a.dec (a.second end))]}
+      {:range {:start [(core.first start) (core.dec (core.second start))]
+               :end [(core.first end) (core.dec (core.second end))]}
        :content (read-range start end)})))
 
 (fn distance-gt [[al ac] [bl bc]]
@@ -100,11 +101,11 @@
         [el ec] range.end]
     [(- sl el) (- sc ec)]))
 
-(fn form [opts]
+(fn M.form [opts]
   (local forms
     (->> (config.get-in [:extract :form_pairs])
-         (a.map #(form* $1 opts))
-         (a.filter a.table?)))
+         (core.map #(form* $1 opts))
+         (core.filter core.table?)))
 
   (table.sort
     forms
@@ -113,8 +114,7 @@
        (range-distance $2.range)))
 
   (if opts.root?
-    (a.last forms)
-    (a.first forms)))
+    (core.last forms)
+    (core.first forms)))
 
-{: skip-match?
- : form}
+M

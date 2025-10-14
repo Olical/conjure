@@ -1,9 +1,11 @@
 -- [nfnl] fnl/conjure/extract/searchpair.fnl
 local _local_1_ = require("conjure.nfnl.module")
 local autoload = _local_1_["autoload"]
-local a = autoload("conjure.aniseed.core")
-local str = autoload("conjure.aniseed.string")
+local define = _local_1_["define"]
+local core = autoload("conjure.nfnl.core")
+local str = autoload("conjure.nfnl.string")
 local config = autoload("conjure.config")
+local M = define("conjure.extract.searchpair")
 local function nil_pos_3f(pos)
   return (not pos or (0 == unpack(pos)))
 end
@@ -19,13 +21,13 @@ local function read_range(_2_, _3_)
   local function _5_(s)
     return string.sub(s, scol)
   end
-  return str.join("\n", a.update(a.update(lines, #lines, _4_), 1, _5_))
+  return str.join("\n", core.update(core.update(lines, #lines, _4_), 1, _5_))
 end
-local function skip_match_3f()
+M["skip-match?"] = function()
   local _let_6_ = vim.api.nvim_win_get_cursor(0)
   local row = _let_6_[1]
   local col = _let_6_[2]
-  local stack = vim.fn.synstack(row, a.inc(col))
+  local stack = vim.fn.synstack(row, core.inc(col))
   local stack_size = #stack
   local and_7_ = (stack_size > 0)
   if and_7_ then
@@ -34,7 +36,7 @@ local function skip_match_3f()
   end
   local or_9_ = ("number" == type(and_7_))
   if not or_9_ then
-    or_9_ = ("\\" == string.sub(a.first(vim.api.nvim_buf_get_lines(vim.api.nvim_win_get_buf(0), (row - 1), row, false)), col, col))
+    or_9_ = ("\\" == string.sub(core.first(vim.api.nvim_buf_get_lines(vim.api.nvim_win_get_buf(0), (row - 1), row, false)), col, col))
   end
   if or_9_ then
     return 1
@@ -84,7 +86,7 @@ local function form_2a(_13_, _14_)
   else
     _19_ = ""
   end
-  start = vim.fn.searchpairpos(safe_start_char, "", safe_end_char, (flags .. "b" .. _19_), skip_match_3f)
+  start = vim.fn.searchpairpos(safe_start_char, "", safe_end_char, (flags .. "b" .. _19_), M["skip-match?"])
   local _end
   local _21_
   if (cursor_char == end_char) then
@@ -92,9 +94,9 @@ local function form_2a(_13_, _14_)
   else
     _21_ = ""
   end
-  _end = vim.fn.searchpairpos(safe_start_char, "", safe_end_char, (flags .. _21_), skip_match_3f)
+  _end = vim.fn.searchpairpos(safe_start_char, "", safe_end_char, (flags .. _21_), M["skip-match?"])
   if (not nil_pos_3f(start) and not nil_pos_3f(_end)) then
-    return {range = {start = {a.first(start), a.dec(a.second(start))}, ["end"] = {a.first(_end), a.dec(a.second(_end))}}, content = read_range(start, _end)}
+    return {range = {start = {core.first(start), core.dec(core.second(start))}, ["end"] = {core.first(_end), core.dec(core.second(_end))}}, content = read_range(start, _end)}
   else
     return nil
   end
@@ -113,20 +115,20 @@ local function range_distance(range)
   local ec = range["end"][2]
   return {(sl - el), (sc - ec)}
 end
-local function form(opts)
+M.form = function(opts)
   local forms
   local function _26_(_241)
     return form_2a(_241, opts)
   end
-  forms = a.filter(a["table?"], a.map(_26_, config["get-in"]({"extract", "form_pairs"})))
+  forms = core.filter(core["table?"], core.map(_26_, config["get-in"]({"extract", "form_pairs"})))
   local function _27_(_241, _242)
     return distance_gt(range_distance(_241.range), range_distance(_242.range))
   end
   table.sort(forms, _27_)
   if opts["root?"] then
-    return a.last(forms)
+    return core.last(forms)
   else
-    return a.first(forms)
+    return core.first(forms)
   end
 end
-return {["skip-match?"] = skip_match_3f, form = form}
+return M

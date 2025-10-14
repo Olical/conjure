@@ -1,17 +1,18 @@
 -- [nfnl] fnl/conjure/event.fnl
 local _local_1_ = require("conjure.nfnl.module")
 local autoload = _local_1_["autoload"]
-local nvim = autoload("conjure.aniseed.nvim")
-local a = autoload("conjure.aniseed.core")
+local define = _local_1_["define"]
+local core = autoload("conjure.nfnl.core")
 local text = autoload("conjure.text")
 local client = autoload("conjure.client")
-local str = autoload("conjure.aniseed.string")
-local function emit(...)
+local str = autoload("conjure.nfnl.string")
+local M = define("conjure.event")
+M.emit = function(...)
   do
-    local names = a.map(text["upper-first"], {...})
+    local names = core.map(text["upper-first"], {...})
     local function _2_()
-      while not a["empty?"](names) do
-        nvim.ex.doautocmd("User", ("Conjure" .. str.join(names)))
+      while not core["empty?"](names) do
+        vim.api.nvim_exec_autocmds("User", ("Conjure" .. str.join(names)))
         table.remove(names)
       end
       return nil
@@ -20,4 +21,4 @@ local function emit(...)
   end
   return nil
 end
-return {emit = emit}
+return M

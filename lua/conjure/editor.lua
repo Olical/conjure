@@ -1,33 +1,34 @@
 -- [nfnl] fnl/conjure/editor.fnl
 local _local_1_ = require("conjure.nfnl.module")
 local autoload = _local_1_["autoload"]
-local a = autoload("conjure.aniseed.core")
+local define = _local_1_["define"]
+local core = autoload("conjure.nfnl.core")
 local fs = autoload("conjure.fs")
-local nvim = autoload("conjure.aniseed.nvim")
 local util = autoload("conjure.util")
+local M = define("conjure.editor")
 local function percent_fn(total_fn)
   local function _2_(pc)
     return math.floor(((total_fn() / 100) * (pc * 100)))
   end
   return _2_
 end
-local function width()
+M.width = function()
   return vim.o.columns
 end
-local function height()
+M.height = function()
   return vim.o.lines
 end
-local percent_width = percent_fn(width)
-local percent_height = percent_fn(height)
-local function cursor_left()
+M["percent-width"] = percent_fn(M.width)
+M["percent-height"] = percent_fn(M.height)
+M["cursor-left"] = function()
   return vim.fn.screencol()
 end
-local function cursor_top()
+M["cursor-top"] = function()
   return vim.fn.screenrow()
 end
-local function go_to(path_or_win, line, column)
-  if a["string?"](path_or_win) then
-    nvim.ex.edit(fs["localise-path"](path_or_win))
+M["go-to"] = function(path_or_win, line, column)
+  if core["string?"](path_or_win) then
+    vim.cmd.edit(fs["localise-path"](path_or_win))
   else
   end
   local _4_
@@ -36,18 +37,18 @@ local function go_to(path_or_win, line, column)
   else
     _4_ = 0
   end
-  return nvim.win_set_cursor(_4_, {line, a.dec(column)})
+  return vim.api.nvim_win_set_cursor(_4_, {line, core.dec(column)})
 end
-local function go_to_mark(m)
-  return nvim.ex.normal_(("`" .. m))
+M["go-to-mark"] = function(m)
+  return vim.cmd(("normal! `" .. m))
 end
-local function go_back()
-  return nvim.ex.normal_(util["replace-termcodes"]("<c-o>"))
+M["go-back"] = function()
+  return vim.cmd(("normal! " .. util["replace-termcodes"]("<c-o>")))
 end
-local function has_filetype_3f(ft)
+M["has-filetype?"] = function(ft)
   local function _6_(_241)
     return (ft == _241)
   end
-  return a.some(_6_, nvim.fn.getcompletion(ft, "filetype"))
+  return core.some(_6_, nvim.fn.getcompletion(ft, "filetype"))
 end
-return {width = width, height = height, ["percent-width"] = percent_width, ["percent-height"] = percent_height, ["cursor-left"] = cursor_left, ["cursor-top"] = cursor_top, ["go-to"] = go_to, ["go-to-mark"] = go_to_mark, ["go-back"] = go_back, ["has-filetype?"] = has_filetype_3f}
+return M

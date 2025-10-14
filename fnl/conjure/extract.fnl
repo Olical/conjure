@@ -1,14 +1,14 @@
-(local {: autoload} (require :conjure.nfnl.module))
-(local a (autoload :conjure.aniseed.core))
-(local nvim (autoload :conjure.aniseed.nvim))
-(local nu (autoload :conjure.aniseed.nvim.util))
-(local str (autoload :conjure.aniseed.string))
+(local {: autoload : define} (require :conjure.nfnl.module))
+(local core (autoload :conjure.nfnl.core))
+(local str (autoload :conjure.nfnl.string))
 (local config (autoload :conjure.config))
 (local client (autoload :conjure.client))
 (local ts (autoload :conjure.tree-sitter))
 (local searchpair (autoload :conjure.extract.searchpair))
 
-(fn form [opts]
+(local M (define :conjure.extract))
+
+(fn M.form [opts]
   (if (ts.enabled?)
     (ts.node->table
       (if opts.root?
@@ -17,20 +17,20 @@
     (searchpair.form opts)))
 
 ; https://stackoverflow.com/questions/15020143/vim-script-check-if-the-cursor-is-on-the-current-word/15058922
-(fn legacy-word []
-  (let [cword (nvim.fn.expand "<cword>")
-        line (nvim.fn.getline ".")
+(fn M.legacy-word []
+  (let [cword (vim.fn.expand "<cword>")
+        line (vim.fn.getline ".")
         cword-index
-        (nvim.fn.strridx
+        (vim.fn.strridx
          line
          cword
-         (- (nvim.fn.col ".") 1))
-        line-num (nvim.fn.line ".")]
+         (- (vim.fn.col ".") 1))
+        line-num (vim.fn.line ".")]
    {:content cword
     :range {:start [line-num cword-index]
             :end [line-num (+ cword-index (length cword) -1)]}}))
 
-(fn word []
+(fn M.word []
   (if (ts.enabled?)
     (let [node (ts.get-leaf)]
       (if node
@@ -38,70 +38,66 @@
          :content (ts.node->str node)}
         {:range nil
          :content nil}))
-    (legacy-word)))
+    (M.legacy-word)))
 
-(fn file-path []
-  (nvim.fn.expand "%:p"))
+(fn M.file-path []
+  (vim.fn.expand "%:p"))
 
 (fn buf-last-line-length [buf]
-  (a.count (a.first (nvim.buf_get_lines buf (a.dec (nvim.buf_line_count buf)) -1 false))))
+  (core.count (core.first (vim.api.nvim_buf_get_lines buf (core.dec (vim.api.nvim_buf_line_count buf)) -1 false))))
 
-(fn range [start end]
-  {:content (str.join "\n" (nvim.buf_get_lines 0 start end false))
-   :range {:start [(a.inc start) 0]
+(fn M.range [start end]
+  {:content (str.join "\n" (vim.api.nvim_buf_get_lines 0 start end false))
+   :range {:start [(core.inc start) 0]
            :end [end (buf-last-line-length 0)]}})
 
-(fn buf []
-  (range 0 -1))
+(fn M.buf []
+  (M.range 0 -1))
 
 (fn getpos [expr]
-  (let [[_ start end _] (nvim.fn.getpos expr)]
-    [start (a.dec end)]))
+  (let [[_ start end _] (vim.fn.getpos expr)]
+    [start (core.dec end)]))
 
-(fn selection [{:kind kind :visual? visual?}]
-  (let [sel-backup nvim.o.selection]
-    (nvim.ex.let "g:conjure_selection_reg_backup = @@")
-    (set nvim.o.selection :inclusive)
+; Temporary replacement for nu.normal.
+;   (local nu (autoload :conjure.aniseed.nvim.util))
+(fn nu_normal [keys]
+  (vim.cmd (.. "silent exe \"normal! " keys "\"")))
+
+(fn M.selection [{:kind kind :visual? visual?}]
+  (let [sel-backup vim.o.selection]
+    (vim.cmd "let g:conjure_selection_reg_backup = @@")
+    (set vim.o.selection :inclusive)
 
     (if
-      visual? (nu.normal (.. "`<" kind "`>y"))
-      (= kind :line) (nu.normal "'[V']y")
-      (= kind :block) (nu.normal "`[`]y")
-      (nu.normal "`[v`]y"))
+      visual? (nu_normal (.. "`<" kind "`>y"))
+      (= kind :line) (nu_normal "'[V']y")
+      (= kind :block) (nu_normal "`[`]y")
+      (nu_normal "`[v`]y"))
 
-    (let [content (nvim.eval "@@")]
-      (set nvim.o.selection sel-backup)
-      (nvim.ex.let "@@ = g:conjure_selection_reg_backup")
+    (let [content (vim.api.nvim_eval "@@")]
+      (set vim.o.selection sel-backup)
+      (vim.cmd "let @@ = g:conjure_selection_reg_backup")
       {:content content
        :range {:start (getpos "'<")
                :end (getpos "'>")}})))
 
-(fn context []
+(fn M.context []
   (let [pat (client.get :context-pattern)
         f (if pat
             #(string.match $1 pat)
             (client.get :context))]
     (when f
-      (->> (nvim.buf_get_lines
+      (->> (vim.api.nvim_buf_get_lines
              0 0 (config.get-in [:extract :context_header_lines]) false)
            (str.join "\n")
            (f)))))
 
-(fn prompt [prefix]
-  (let [(ok? val) (pcall #(nvim.fn.input (or prefix "")))]
+(fn M.prompt [prefix]
+  (let [(ok? val) (pcall #(vim.fn.input (or prefix "")))]
     (when ok?
       val)))
 
-(fn prompt-char []
-  (nvim.fn.nr2char (nvim.fn.getchar)))
+(fn M.prompt-char []
+  (vim.fn.nr2char (vim.fn.getchar)))
 
-{: form
- : legacy-word
- : word
- : file-path
- : range
- : buf
- : selection
- : context
- : prompt
- : prompt-char}
+M
