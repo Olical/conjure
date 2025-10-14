@@ -41,6 +41,6 @@
   (vim.cmd (.. "normal! " (util.replace-termcodes "<c-o>"))))
 
 (fn M.has-filetype? [ft]
-  (core.some #(= ft $1) (nvim.fn.getcompletion ft :filetype)))
+  (core.some #(= ft $1) (vim.fn.getcompletion ft :filetype)))
 
 M

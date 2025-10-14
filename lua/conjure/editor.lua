@@ -49,6 +49,6 @@ M["has-filetype?"] = function(ft)
   local function _6_(_241)
     return (ft == _241)
   end
-  return core.some(_6_, nvim.fn.getcompletion(ft, "filetype"))
+  return core.some(_6_, vim.fn.getcompletion(ft, "filetype"))
 end
 return M
