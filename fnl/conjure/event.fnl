@@ -11,7 +11,7 @@
     (client.schedule
       (fn []
         (while (not (core.empty? names))
-          (vim.api.nvim_exec_autocmds :User (.. :Conjure (str.join names)))
+          (vim.cmd.doautocmd :User (.. :Conjure (str.join names)))
           (table.remove names)))))
   nil)
 

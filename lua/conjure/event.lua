@@ -12,7 +12,7 @@ M.emit = function(...)
     local names = core.map(text["upper-first"], {...})
     local function _2_()
       while not core["empty?"](names) do
-        vim.api.nvim_exec_autocmds("User", ("Conjure" .. str.join(names)))
+        vim.cmd.doautocmd("User", ("Conjure" .. str.join(names)))
         table.remove(names)
       end
       return nil
