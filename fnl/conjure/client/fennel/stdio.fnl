@@ -8,13 +8,14 @@
 (local client (autoload :conjure.client))
 (local log (autoload :conjure.log))
 (local ts (autoload :conjure.tree-sitter))
+(local vim _G.vim)
 
-(local M
-  (define :conjure.client.fennel.stdio
-    {:buf-suffix ".fnl"
-     :comment-prefix "; "
-     :form-node? ts.node-surrounded-by-form-pair-chars?
-     :comment-node? ts.lisp-comment-node?}))
+(local M (define :conjure.client.fennel.stdio))
+
+(set M.buf-suffix ".fnl")
+(set M.comment-prefix "; ")
+(set M.form-node? ts.node-surrounded-by-form-pair-chars?)
+(set M.comment-node? ts.lisp-comment-node?)
 
 (config.merge
   {:client
@@ -33,13 +34,13 @@
                   :eval_reload "eF"}}}}}))
 
 (local cfg (config.get-in-fn [:client :fennel :stdio]))
-(local state (client.new-state #(do {:repl nil})))
+(set M.state (or M.state (client.new-state #(do {:repl nil}))))
 
-(fn with-repl-or-warn [f opts]
-  (let [repl (state :repl)]
+(fn with-repl-or-warn [f _opts]
+  (let [repl (M.state :repl)]
     (if repl
-      (f repl)
-      (log.append [(.. M.comment-prefix "No REPL running")]))))
+        (f repl)
+        (log.append [(.. M.comment-prefix "No REPL running")]))))
 
 (fn format-message [msg]
   (str.split (or msg.out msg.err) "\n"))
@@ -83,28 +84,28 @@
   (M.eval-str (core.update opts :code #(.. ",doc " $1 "\n"))))
 
 (fn display-repl-status [status]
-  (let [repl (state :repl)]
+  (let [repl (M.state :repl)]
     (when repl
       (log.append
         [(.. M.comment-prefix (core.pr-str (core.get-in repl [:opts :cmd])) " (" status ")")]
         {:break? true}))))
 
 (fn M.stop []
-  (let [repl (state :repl)]
+  (let [repl (M.state :repl)]
     (when repl
       (repl.destroy)
       (display-repl-status :stopped)
-      (core.assoc (state) :repl nil))))
+      (core.assoc (M.state) :repl nil))))
 
 (fn M.start []
-  (if (state :repl)
+  (if (M.state :repl)
     (log.append [(.. M.comment-prefix "Can't start, REPL is already running.")
                  (.. M.comment-prefix "Stop the REPL with "
                      (config.get-in [:mapping :prefix])
                      (cfg [:mapping :stop]))]
                 {:break? true})
     (core.assoc
-      (state) :repl
+      (M.state) :repl
       (stdio.start
         {:prompt-pattern (cfg [:prompt_pattern])
          :cmd (cfg [:command])
