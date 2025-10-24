@@ -1,6 +1,6 @@
 -- [nfnl] fnl/conjure/client/javascript/ts-common.fnl
 local _local_1_ = require("conjure.nfnl.module")
-local define = _local_1_["define"]
+local define = _local_1_.define
 local text = require("conjure.text")
 local M = define("conjure.client.javascript.ts-common")
 M["resolve-path"] = function(path)

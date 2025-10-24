@@ -1,7 +1,7 @@
 -- [nfnl] fnl/conjure/client/javascript/import-replacer.fnl
 local _local_1_ = require("conjure.nfnl.module")
-local autoload = _local_1_["autoload"]
-local define = _local_1_["define"]
+local autoload = _local_1_.autoload
+local define = _local_1_.define
 local tsc = autoload("conjure.client.javascript.ts-common")
 local text = autoload("conjure.text")
 local M = define("conjure.client.javascript.import-replacer")

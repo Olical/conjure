@@ -1,7 +1,7 @@
 -- [nfnl] fnl/conjure/remote/transport/elisp.fnl
 local _local_1_ = require("conjure.nfnl.module")
-local autoload = _local_1_["autoload"]
-local define = _local_1_["define"]
+local autoload = _local_1_.autoload
+local define = _local_1_.define
 local core = autoload("conjure.nfnl.core")
 local stack = autoload("conjure.stack")
 local str = autoload("conjure.nfnl.string")
@@ -21,8 +21,8 @@ local function read_2a(cs, ctxs, result)
     local c = core.first(cs)
     local cs0 = core.rest(cs)
     local _let_2_ = (stack.peek(ctxs) or {})
-    local ctx_name = _let_2_["name"]
-    local ctx_value = _let_2_["value"]
+    local ctx_name = _let_2_.name
+    local ctx_value = _let_2_.value
     if (("list" == ctx_name) and (nil ~= result)) then
       table.insert(ctx_value, result)
       return read_2a(prev_cs, ctxs, nil)

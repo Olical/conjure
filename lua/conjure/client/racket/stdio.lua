@@ -1,7 +1,7 @@
 -- [nfnl] fnl/conjure/client/racket/stdio.fnl
 local _local_1_ = require("conjure.nfnl.module")
-local autoload = _local_1_["autoload"]
-local define = _local_1_["define"]
+local autoload = _local_1_.autoload
+local define = _local_1_.define
 local client = autoload("conjure.client")
 local config = autoload("conjure.config")
 local core = autoload("conjure.nfnl.core")

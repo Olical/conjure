@@ -1,6 +1,6 @@
 -- [nfnl] fnl/conjure/tree-sitter.fnl
 local _local_1_ = require("conjure.nfnl.module")
-local autoload = _local_1_["autoload"]
+local autoload = _local_1_.autoload
 local a = autoload("conjure.nfnl.core")
 local client = autoload("conjure.client")
 local config = autoload("conjure.config")
@@ -145,7 +145,7 @@ local function get_form(node)
     return get_form(parent(node0))
   else
     local _let_22_ = (client["optional-call"]("get-form-modifier", node0) or {})
-    local modifier = _let_22_["modifier"]
+    local modifier = _let_22_.modifier
     local res = _let_22_
     if (not modifier or ("none" == modifier)) then
       return node0

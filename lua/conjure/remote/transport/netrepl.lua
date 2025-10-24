@@ -1,6 +1,6 @@
 -- [nfnl] fnl/conjure/remote/transport/netrepl.fnl
 local _local_1_ = require("conjure.nfnl.module")
-local autoload = _local_1_["autoload"]
+local autoload = _local_1_.autoload
 local a = autoload("conjure.aniseed.core")
 local bit = autoload("bit")
 local function encode(msg)

@@ -1,7 +1,7 @@
 -- [nfnl] fnl/conjure/client/clojure/nrepl/debugger.fnl
 local _local_1_ = require("conjure.nfnl.module")
-local autoload = _local_1_["autoload"]
-local define = _local_1_["define"]
+local autoload = _local_1_.autoload
+local define = _local_1_.define
 local core = autoload("conjure.nfnl.core")
 local elisp = autoload("conjure.remote.transport.elisp")
 local extract = autoload("conjure.extract")

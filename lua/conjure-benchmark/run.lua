@@ -3,9 +3,9 @@ package.path = (vim.fn.getcwd() .. "/lua/?.lua;" .. vim.fn.getcwd() .. "/lua/?/i
 local core = require("conjure.nfnl.core")
 local default_iterations = 1000
 local function benchmark_task(_1_)
-  local name = _1_["name"]
+  local name = _1_.name
   local task_fn = _1_["task-fn"]
-  local iterations = _1_["iterations"]
+  local iterations = _1_.iterations
   local before_fn = _1_["before-fn"]
   if before_fn then
     before_fn()
@@ -21,8 +21,8 @@ local function benchmark_task(_1_)
   return print("##", name, ("x" .. iterations0), ("[" .. duration .. "ms]"))
 end
 local function benchmark_tasks(_3_)
-  local name = _3_["name"]
-  local tasks = _3_["tasks"]
+  local name = _3_.name
+  local tasks = _3_.tasks
   print("#", name)
   return core["run!"](benchmark_task, tasks)
 end

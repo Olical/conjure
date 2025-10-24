@@ -1,7 +1,7 @@
 -- [nfnl] fnl/conjure-spec/remote/transport/netrepl_spec.fnl
 local _local_1_ = require("plenary.busted")
-local describe = _local_1_["describe"]
-local it = _local_1_["it"]
+local describe = _local_1_.describe
+local it = _local_1_.it
 local before_each = _local_1_["before-each"]
 local assert = require("luassert.assert")
 local trn = require("conjure.remote.transport.netrepl")

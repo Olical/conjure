@@ -1,6 +1,6 @@
 -- [nfnl] .nvim.fnl
 local _local_1_ = require("nfnl.module")
-local autoload = _local_1_["autoload"]
+local autoload = _local_1_.autoload
 local reload = autoload("plenary.reload")
 local notify = autoload("nfnl.notify")
 vim.api.nvim_set_keymap("n", "<localleader>pt", "<Plug>PlenaryTestFile", {desc = "Run the current test file with plenary."})

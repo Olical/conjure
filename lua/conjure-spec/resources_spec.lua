@@ -1,11 +1,11 @@
 -- [nfnl] fnl/conjure-spec/resources_spec.fnl
 local _local_1_ = require("conjure.nfnl.module")
-local autoload = _local_1_["autoload"]
+local autoload = _local_1_.autoload
 local _local_2_ = require("plenary.busted")
-local describe = _local_2_["describe"]
-local it = _local_2_["it"]
-local spy = _local_2_["spy"]
-local before_each = _local_2_["before_each"]
+local describe = _local_2_.describe
+local it = _local_2_.it
+local spy = _local_2_.spy
+local before_each = _local_2_.before_each
 local assert = require("luassert.assert")
 local default_open
 local function _3_()

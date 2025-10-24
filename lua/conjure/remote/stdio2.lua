@@ -1,6 +1,6 @@
 -- [nfnl] fnl/conjure/remote/stdio2.fnl
 local _local_1_ = require("conjure.nfnl.module")
-local autoload = _local_1_["autoload"]
+local autoload = _local_1_.autoload
 local core = autoload("conjure.nfnl.core")
 local str = autoload("conjure.nfnl.string")
 local client = autoload("conjure.client")

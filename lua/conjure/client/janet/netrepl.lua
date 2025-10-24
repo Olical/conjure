@@ -1,7 +1,7 @@
 -- [nfnl] fnl/conjure/client/janet/netrepl.fnl
 local _local_1_ = require("conjure.nfnl.module")
-local autoload = _local_1_["autoload"]
-local define = _local_1_["define"]
+local autoload = _local_1_.autoload
+local define = _local_1_.define
 local core = autoload("conjure.nfnl.core")
 local client = autoload("conjure.client")
 local config = autoload("conjure.config")
@@ -55,10 +55,10 @@ M.disconnect = function()
   return with_conn_or_warn(_7_)
 end
 local function send(opts)
-  local msg = opts["msg"]
-  local cb = opts["cb"]
-  local row = opts["row"]
-  local col = opts["col"]
+  local msg = opts.msg
+  local cb = opts.cb
+  local row = opts.row
+  local col = opts.col
   local file_path = opts["file-path"]
   local function _8_(conn)
     remote.send(conn, ("\255(parser/where (dyn :parser) " .. row .. " " .. col .. ")"))

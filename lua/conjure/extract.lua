@@ -1,7 +1,7 @@
 -- [nfnl] fnl/conjure/extract.fnl
 local _local_1_ = require("conjure.nfnl.module")
-local autoload = _local_1_["autoload"]
-local define = _local_1_["define"]
+local autoload = _local_1_.autoload
+local define = _local_1_.define
 local core = autoload("conjure.nfnl.core")
 local str = autoload("conjure.nfnl.string")
 local config = autoload("conjure.config")
@@ -66,7 +66,7 @@ local function nu_normal(keys)
   return vim.cmd(("silent exe \"normal! " .. keys .. "\""))
 end
 M.selection = function(_7_)
-  local kind = _7_["kind"]
+  local kind = _7_.kind
   local visual_3f = _7_["visual?"]
   local sel_backup = vim.o.selection
   vim.cmd("let g:conjure_selection_reg_backup = @@")
@@ -103,7 +103,7 @@ M.context = function()
   end
 end
 M.prompt = function(prefix)
-  local ok_3f, val = nil, nil
+  local ok_3f, val
   local function _12_()
     return vim.fn.input((prefix or ""))
   end

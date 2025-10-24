@@ -1,7 +1,7 @@
 -- [nfnl] fnl/conjure-spec/dynamic_spec.fnl
 local _local_1_ = require("plenary.busted")
-local describe = _local_1_["describe"]
-local it = _local_1_["it"]
+local describe = _local_1_.describe
+local it = _local_1_.it
 local assert = require("luassert.assert")
 local dyn = require("conjure.dynamic")
 local function _2_()

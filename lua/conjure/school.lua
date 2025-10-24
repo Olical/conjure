@@ -1,6 +1,6 @@
 -- [nfnl] fnl/conjure/school.fnl
 local _local_1_ = require("conjure.nfnl.module")
-local autoload = _local_1_["autoload"]
+local autoload = _local_1_.autoload
 local core = autoload("conjure.nfnl.core")
 local buffer = autoload("conjure.buffer")
 local config = autoload("conjure.config")

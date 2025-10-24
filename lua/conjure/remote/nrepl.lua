@@ -1,7 +1,7 @@
 -- [nfnl] fnl/conjure/remote/nrepl.fnl
 local _local_1_ = require("conjure.nfnl.module")
-local autoload = _local_1_["autoload"]
-local define = _local_1_["define"]
+local autoload = _local_1_.autoload
+local define = _local_1_.define
 local core = autoload("conjure.nfnl.core")
 local bencode = autoload("conjure.remote.transport.bencode")
 local client = autoload("conjure.client")

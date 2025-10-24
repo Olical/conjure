@@ -1,7 +1,7 @@
 -- [nfnl] fnl/conjure-spec/client/clojure/nrepl/auto-repl_spec.fnl
 local _local_1_ = require("plenary.busted")
-local describe = _local_1_["describe"]
-local it = _local_1_["it"]
+local describe = _local_1_.describe
+local it = _local_1_.it
 local assert = require("luassert.assert")
 local auto_repl = require("conjure.client.clojure.nrepl.auto-repl")
 local function _2_()
@@ -11,8 +11,8 @@ local function _2_()
     end
     it("subject is foo", _4_)
     local _let_5_ = auto_repl.enportify("foo:$port")
-    local subject = _let_5_["subject"]
-    local port = _let_5_["port"]
+    local subject = _let_5_.subject
+    local port = _let_5_.port
     local function _6_()
       return assert.are.equals("string", type(port))
     end

@@ -1,7 +1,7 @@
 -- [nfnl] fnl/conjure/client/scheme/completions.fnl
 local _local_1_ = require("conjure.nfnl.module")
-local autoload = _local_1_["autoload"]
-local define = _local_1_["define"]
+local autoload = _local_1_.autoload
+local define = _local_1_.define
 local a = require("conjure.nfnl.core")
 local keywords = autoload("conjure.client.scheme.keywords")
 local config = autoload("conjure.config")

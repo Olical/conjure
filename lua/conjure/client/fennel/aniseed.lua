@@ -1,6 +1,6 @@
 -- [nfnl] fnl/conjure/client/fennel/aniseed.fnl
 local _local_1_ = require("conjure.nfnl.module")
-local autoload = _local_1_["autoload"]
+local autoload = _local_1_.autoload
 local a = autoload("conjure.aniseed.core")
 local client = autoload("conjure.client")
 local config = autoload("conjure.config")
@@ -98,7 +98,7 @@ end
 local function display_result(opts)
   if opts then
     local ok_3f = opts["ok?"]
-    local results = opts["results"]
+    local results = opts.results
     local result_str
     local _11_
     if ok_3f then
@@ -150,7 +150,7 @@ local function eval_str(opts)
       local eval_21 = repl({filename = opts["file-path"], moduleName = module_name(opts.context, opts["file-path"]), useMetadata = cfg({"use_metadata"}), ["fresh?"] = (("file" == opts.origin) or ("buf" == opts.origin) or text["starts-with"](opts.code, ("(module " .. (opts.context or ""))))})
       local _let_23_ = eval_21((opts.code .. "\n"))
       local ok_3f = _let_23_["ok?"]
-      local results = _let_23_["results"]
+      local results = _let_23_.results
       if ("ok" ~= a["get-in"](eval_21(":ok\n"), {"results", 1})) then
         log.append({"; REPL appears to be stuck, did you open a string or form and not close it?", str.join({"; You can use ", config["get-in"]({"mapping", "prefix"}), cfg({"mapping", "reset_repl"}), " to reset and repair the REPL."})})
       else
@@ -259,7 +259,7 @@ local function completions(opts)
   local mods = value__3ecompletions(package.loaded)
   local locals
   do
-    local ok_3f, m = nil, nil
+    local ok_3f, m
     local function _42_()
       return require(opts.context)
     end
@@ -289,7 +289,7 @@ local function completions(opts)
     return opts.cb(_47_())
   end
   result_fn = _44_
-  local ok_3f, err_or_res = nil, nil
+  local ok_3f, err_or_res
   if code then
     local function _48_()
       return eval_str({["file-path"] = opts["file-path"], context = opts.context, code = code, ["passive?"] = true, ["on-result-raw"] = result_fn})

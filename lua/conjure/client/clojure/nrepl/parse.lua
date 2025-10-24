@@ -1,6 +1,6 @@
 -- [nfnl] fnl/conjure/client/clojure/nrepl/parse.fnl
 local _local_1_ = require("conjure.nfnl.module")
-local define = _local_1_["define"]
+local define = _local_1_.define
 local M = define("conjure.client.clojure.nrepl.parse")
 M["strip-meta"] = function(s)
   if (nil ~= s) then

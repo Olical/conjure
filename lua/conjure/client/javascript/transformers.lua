@@ -1,7 +1,7 @@
 -- [nfnl] fnl/conjure/client/javascript/transformers.fnl
 local _local_1_ = require("conjure.nfnl.module")
-local define = _local_1_["define"]
-local autoload = _local_1_["autoload"]
+local define = _local_1_.define
+local autoload = _local_1_.autoload
 local tsc = autoload("conjure.client.javascript.ts-common")
 local ir = autoload("conjure.client.javascript.import-replacer")
 local M = define("conjure.client.javascript.transformers")
@@ -9,7 +9,7 @@ local node_handlers = {}
 local function transform(node, code)
   local node_type = node:type()
   local handler = (node_handlers[node_type] or node_handlers.default)
-  local _ok, result = nil, nil
+  local _ok, result
   local function _2_()
     return handler(node, code)
   end
@@ -63,13 +63,13 @@ local function transform_arrow_fn(arrow_fn, name, code)
   end
   local final_body
   do
-    local _9_ = body_node:type()
-    if (_9_ == "statement_block") then
+    local case_9_ = body_node:type()
+    if (case_9_ == "statement_block") then
       final_body = (" " .. body_text)
-    elseif (_9_ == "parenthesized_expression") then
+    elseif (case_9_ == "parenthesized_expression") then
       final_body = (" { return " .. body_text .. " }")
     else
-      local _ = _9_
+      local _ = case_9_
       final_body = (" { return " .. body_text .. " }")
     end
   end
@@ -111,13 +111,13 @@ node_handlers.import_statement = ir["import-statement"](handle_statement)
 node_handlers.call_expression = ir["call-expression"](node_handlers.default)
 local function _16_(node, code)
   local child = node:child(1)
-  local _17_ = child:type()
-  if ((_17_ == "interface_declaration") or (_17_ == "class_declaration")) then
+  local case_17_ = child:type()
+  if ((case_17_ == "interface_declaration") or (case_17_ == "class_declaration")) then
     return node_handlers.default(node, code)
-  elseif (_17_ == "export_clause") then
+  elseif (case_17_ == "export_clause") then
     return ""
   else
-    local _ = _17_
+    local _ = case_17_
     return node_handlers.default(child, code)
   end
 end

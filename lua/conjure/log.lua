@@ -1,7 +1,7 @@
 -- [nfnl] fnl/conjure/log.fnl
 local _local_1_ = require("conjure.nfnl.module")
-local autoload = _local_1_["autoload"]
-local define = _local_1_["define"]
+local autoload = _local_1_.autoload
+local define = _local_1_.define
 local core = autoload("conjure.nfnl.core")
 local str = autoload("conjure.nfnl.string")
 local buffer = autoload("conjure.buffer")
@@ -345,7 +345,7 @@ M["immediate-append"] = function(lines, opts)
     end
     local old_lines = vim.api.nvim_buf_line_count(buf)
     do
-      local ok_3f, err = nil, nil
+      local ok_3f, err
       local function _51_()
         local _52_
         if buffer["empty?"](buf) then
@@ -454,7 +454,7 @@ M.append = function(lines, opts)
   end
   do
     local _let_71_ = client["current-client-module-name"]()
-    local filetype = _let_71_["filetype"]
+    local filetype = _let_71_.filetype
     local buffer0 = (M.state.buffers[filetype] or {})
     table.insert(buffer0, {lines, opts})
     M.state.buffers[filetype] = buffer0

@@ -1,6 +1,6 @@
 -- [nfnl] fnl/conjure-spec/mock-tree-sitter-completions.fnl
 local _local_1_ = require("conjure.nfnl.module")
-local autoload = _local_1_["autoload"]
+local autoload = _local_1_.autoload
 local tsc = autoload("conjure.tree-sitter-completions")
 local mock_completions = {}
 local function set_mock_completions(r)

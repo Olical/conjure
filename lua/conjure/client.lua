@@ -1,7 +1,7 @@
 -- [nfnl] fnl/conjure/client.fnl
 local _local_1_ = require("conjure.nfnl.module")
-local autoload = _local_1_["autoload"]
-local define = _local_1_["define"]
+local autoload = _local_1_.autoload
+local define = _local_1_.define
 local core = autoload("conjure.nfnl.core")
 local fennel = autoload("conjure.nfnl.fennel")
 local str = autoload("conjure.nfnl.string")
@@ -47,7 +47,7 @@ M["new-state"] = function(init_fn)
 end
 local loaded = {}
 local function load_module(ft, name)
-  local ok_3f, result = nil, nil
+  local ok_3f, result
   local function _9_()
     return require(name)
   end
@@ -140,8 +140,8 @@ end
 M.current = function()
   local _let_25_ = M["current-client-module-name"]()
   local module_name = _let_25_["module-name"]
-  local filetype0 = _let_25_["filetype"]
-  local _extension = _let_25_["_extension"]
+  local filetype0 = _let_25_.filetype
+  local _extension = _let_25_._extension
   if module_name then
     return load_module(filetype0, module_name)
   else
@@ -171,7 +171,7 @@ M["optional-call"] = function(fn_name, ...)
 end
 M["each-loaded-client"] = function(f)
   local function _30_(_29_)
-    local filetype0 = _29_["filetype"]
+    local filetype0 = _29_.filetype
     return M["with-filetype"](filetype0, f)
   end
   return core["run!"](_30_, core.vals(loaded))

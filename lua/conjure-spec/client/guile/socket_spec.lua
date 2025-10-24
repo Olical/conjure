@@ -1,10 +1,10 @@
 -- [nfnl] fnl/conjure-spec/client/guile/socket_spec.fnl
 local _local_1_ = require("conjure.nfnl.module")
-local autoload = _local_1_["autoload"]
+local autoload = _local_1_.autoload
 local _local_2_ = require("plenary.busted")
-local describe = _local_2_["describe"]
-local it = _local_2_["it"]
-local before_each = _local_2_["before_each"]
+local describe = _local_2_.describe
+local it = _local_2_.it
+local before_each = _local_2_.before_each
 local a = autoload("conjure.nfnl.core")
 local assert = autoload("luassert.assert")
 local guile = autoload("conjure.client.guile.socket")

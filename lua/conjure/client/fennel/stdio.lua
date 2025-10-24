@@ -1,7 +1,7 @@
 -- [nfnl] fnl/conjure/client/fennel/stdio.fnl
 local _local_1_ = require("conjure.nfnl.module")
-local autoload = _local_1_["autoload"]
-local define = _local_1_["define"]
+local autoload = _local_1_.autoload
+local define = _local_1_.define
 local core = autoload("conjure.nfnl.core")
 local afs = autoload("conjure.nfnl.fs")
 local str = autoload("conjure.nfnl.string")

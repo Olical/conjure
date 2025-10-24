@@ -1,7 +1,7 @@
 -- [nfnl] fnl/conjure/client/fennel/nfnl.fnl
 local _local_1_ = require("conjure.nfnl.module")
-local autoload = _local_1_["autoload"]
-local define = _local_1_["define"]
+local autoload = _local_1_.autoload
+local define = _local_1_.define
 local ts = autoload("conjure.tree-sitter")
 local config = autoload("conjure.config")
 local nfnl_config = autoload("conjure.nfnl.config")

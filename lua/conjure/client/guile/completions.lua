@@ -1,7 +1,7 @@
 -- [nfnl] fnl/conjure/client/guile/completions.fnl
 local _local_1_ = require("conjure.nfnl.module")
-local autoload = _local_1_["autoload"]
-local define = _local_1_["define"]
+local autoload = _local_1_.autoload
+local define = _local_1_.define
 local a = autoload("conjure.nfnl.core")
 local keywords = autoload("conjure.client.scheme.keywords")
 local util = autoload("conjure.util")
@@ -13,17 +13,17 @@ M["build-completion-request"] = function(prefix)
   return ("(%conjure:get-guile-completions " .. a["pr-str"](prefix) .. ")")
 end
 local function parse_guile_completion_result(rs)
-  local tbl_21_ = {}
-  local i_22_ = 0
+  local tbl_26_ = {}
+  local i_27_ = 0
   for token in string.gmatch(rs, "\"([^\"^%s]+)\"") do
-    local val_23_ = token
-    if (nil ~= val_23_) then
-      i_22_ = (i_22_ + 1)
-      tbl_21_[i_22_] = val_23_
+    local val_28_ = token
+    if (nil ~= val_28_) then
+      i_27_ = (i_27_ + 1)
+      tbl_26_[i_27_] = val_28_
     else
     end
   end
-  return tbl_21_
+  return tbl_26_
 end
 M["format-results"] = function(rs)
   local cmpls = parse_guile_completion_result(rs)

@@ -1,7 +1,7 @@
 -- [nfnl] fnl/conjure-spec/client/fennel/aniseed_spec.fnl
 local _local_1_ = require("plenary.busted")
-local describe = _local_1_["describe"]
-local it = _local_1_["it"]
+local describe = _local_1_.describe
+local it = _local_1_.it
 local assert = require("luassert.assert")
 local a = require("conjure.nfnl.core")
 local ani = require("conjure.client.fennel.aniseed")
@@ -67,8 +67,8 @@ local function _2_()
     it("evaluates a form", _13_)
     local function _14_()
       local _let_15_ = eval_21("(fn hi [] 10)")
-      local raw = _let_15_["raw"]
-      local result = _let_15_["result"]
+      local raw = _let_15_.raw
+      local result = _let_15_.result
       assert.are.equals("function", type(a.first(raw)))
       assert.are.equals("string", type(result))
       return assert.is_not_nil(contains_3f(result, "#<function: "))
@@ -80,8 +80,8 @@ local function _2_()
     it("evaluates a function", _16_)
     local function _17_()
       local _let_18_ = eval_21("(ohno)")
-      local result = _let_18_["result"]
-      local raw = _let_18_["raw"]
+      local result = _let_18_.result
+      local raw = _let_18_.raw
       return assert.are.equals(contains_3f(result, "Compile error: unknown identifier: ohno"))
     end
     it("evaulates unknown identifier", _17_)

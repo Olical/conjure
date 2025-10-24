@@ -1,6 +1,6 @@
 -- [nfnl] fnl/conjure/remote/socket.fnl
 local _local_1_ = require("conjure.nfnl.module")
-local autoload = _local_1_["autoload"]
+local autoload = _local_1_.autoload
 local a = autoload("conjure.nfnl.core")
 local client = autoload("conjure.client")
 local log = autoload("conjure.log")
@@ -44,7 +44,7 @@ local function start(opts)
       local _let_5_ = opts["parse-output"](chunk)
       local done_3f = _let_5_["done?"]
       local error_3f = _let_5_["error?"]
-      local result = _let_5_["result"]
+      local result = _let_5_.result
       local cb = a["get-in"](repl, {"current", "cb"}, opts["on-stray-output"])
       if error_3f then
         opts["on-error"]({err = repl.buffer, ["done?"] = done_3f}, repl)

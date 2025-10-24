@@ -1,7 +1,7 @@
 -- [nfnl] fnl/conjure/resources.fnl
 local _local_1_ = require("conjure.nfnl.module")
-local autoload = _local_1_["autoload"]
-local define = _local_1_["define"]
+local autoload = _local_1_.autoload
+local define = _local_1_.define
 local a = require("conjure.nfnl.core")
 local log = autoload("conjure.log")
 local M = define("conjure.resources")

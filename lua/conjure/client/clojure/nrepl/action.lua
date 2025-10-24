@@ -1,7 +1,7 @@
 -- [nfnl] fnl/conjure/client/clojure/nrepl/action.fnl
 local _local_1_ = require("conjure.nfnl.module")
-local autoload = _local_1_["autoload"]
-local define = _local_1_["define"]
+local autoload = _local_1_.autoload
+local define = _local_1_.define
 local core = autoload("conjure.nfnl.core")
 local auto_repl = autoload("conjure.client.clojure.nrepl.auto-repl")
 local config = autoload("conjure.config")
@@ -188,9 +188,9 @@ local function with_info(opts, f)
 end
 local function java_info__3elines(_37_)
   local arglists_str = _37_["arglists-str"]
-  local class = _37_["class"]
-  local member = _37_["member"]
-  local javadoc = _37_["javadoc"]
+  local class = _37_.class
+  local member = _37_.member
+  local javadoc = _37_.javadoc
   local function _38_()
     if member then
       return {"/", member}
@@ -320,9 +320,9 @@ M.interrupt = function()
       msgs = core.filter(_62_, core.vals(conn.msgs))
       local order_66
       local function _64_(_63_)
-        local id = _63_["id"]
-        local session = _63_["session"]
-        local code = _63_["code"]
+        local id = _63_.id
+        local session = _63_.session
+        local code = _63_.code
         server.send({op = "interrupt", ["interrupt-id"] = id, session = session})
         local function _65_(sess)
           local _66_
@@ -723,11 +723,11 @@ M.piggieback = function(code)
   return try_ensure_conn(_138_)
 end
 local function clojure__3evim_completion(_140_)
-  local word = _140_["candidate"]
-  local kind = _140_["type"]
-  local ns = _140_["ns"]
-  local info = _140_["doc"]
-  local arglists = _140_["arglists"]
+  local word = _140_.candidate
+  local kind = _140_.type
+  local ns = _140_.ns
+  local info = _140_.doc
+  local arglists = _140_.arglists
   local function _141_()
     if arglists then
       return str.join(" ", arglists)
@@ -752,8 +752,8 @@ end
 local function extract_completion_context(prefix)
   local root_form = extract.form({["root?"] = true})
   if root_form then
-    local content = root_form["content"]
-    local range = root_form["range"]
+    local content = root_form.content
+    local range = root_form.range
     local lines = text["split-lines"](content)
     local _let_146_ = vim.api.nvim_win_get_cursor(0)
     local row = _let_146_[1]

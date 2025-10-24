@@ -1,6 +1,6 @@
 -- [nfnl] fnl/conjure-benchmark/log.fnl
 local _local_1_ = require("conjure.nfnl.module")
-local define = _local_1_["define"]
+local define = _local_1_.define
 local log = require("conjure.log")
 local vim = _G.vim
 local M = define("conjure-benchmark.log")

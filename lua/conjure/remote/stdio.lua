@@ -1,7 +1,7 @@
 -- [nfnl] fnl/conjure/remote/stdio.fnl
 local _local_1_ = require("conjure.nfnl.module")
-local autoload = _local_1_["autoload"]
-local define = _local_1_["define"]
+local autoload = _local_1_.autoload
+local define = _local_1_.define
 local a = autoload("conjure.nfnl.core")
 local str = autoload("conjure.nfnl.string")
 local client = autoload("conjure.client")
@@ -153,8 +153,8 @@ M.start = function(opts)
     return nil
   end
   local _let_27_ = M["parse-cmd"](opts.cmd)
-  local cmd = _let_27_["cmd"]
-  local args = _let_27_["args"]
+  local cmd = _let_27_.cmd
+  local args = _let_27_.args
   local handle, pid_or_err = uv.spawn(cmd, {stdio = {stdin, stdout, stderr}, args = args, env = extend_env(a["merge!"]({INPUTRC = "/dev/null", TERM = "dumb"}, opts.env))}, client["schedule-wrap"](on_exit))
   if handle then
     stdout:read_start(client["schedule-wrap"](on_stdout))

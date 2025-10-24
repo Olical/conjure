@@ -1,7 +1,7 @@
 -- [nfnl] fnl/conjure/client/clojure/nrepl/server.fnl
 local _local_1_ = require("conjure.nfnl.module")
-local autoload = _local_1_["autoload"]
-local define = _local_1_["define"]
+local autoload = _local_1_.autoload
+local define = _local_1_.define
 local core = autoload("conjure.nfnl.core")
 local client = autoload("conjure.client")
 local config = autoload("conjure.config")
@@ -286,10 +286,10 @@ M["handle-input-request"] = function(msg)
   return M.send({op = "stdin", stdin = ((extract.prompt("Input required: ") or "") .. "\n"), session = msg.session})
 end
 M.connect = function(_48_)
-  local host = _48_["host"]
-  local port = _48_["port"]
-  local cb = _48_["cb"]
-  local port_file_path = _48_["port_file_path"]
+  local host = _48_.host
+  local port = _48_.port
+  local cb = _48_.cb
+  local port_file_path = _48_.port_file_path
   local connect_opts = _48_["connect-opts"]
   if state.get("conn") then
     M.disconnect()

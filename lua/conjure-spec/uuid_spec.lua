@@ -1,7 +1,7 @@
 -- [nfnl] fnl/conjure-spec/uuid_spec.fnl
 local _local_1_ = require("plenary.busted")
-local describe = _local_1_["describe"]
-local it = _local_1_["it"]
+local describe = _local_1_.describe
+local it = _local_1_.it
 local assert = require("luassert.assert")
 local a = require("conjure.nfnl.core")
 local uuid = require("conjure.uuid")

@@ -1,7 +1,7 @@
 -- [nfnl] fnl/conjure/client/lua/neovim.fnl
 local _local_1_ = require("conjure.nfnl.module")
-local autoload = _local_1_["autoload"]
-local define = _local_1_["define"]
+local autoload = _local_1_.autoload
+local define = _local_1_.define
 local core = autoload("conjure.nfnl.core")
 local str = autoload("conjure.nfnl.string")
 local config = autoload("conjure.config")
@@ -80,7 +80,7 @@ M["default-env"] = function()
   local base = setmetatable({["REDIRECTED-OUTPUT"] = "", io = setmetatable({}, {__index = _G.io})}, {__index = _G})
   local print_redirected
   local function _12_(...)
-    base["REDIRECTED-OUTPUT"] = (base["REDIRECTED-OUTPUT"] .. str.join("\9", {...}) .. "\n")
+    base["REDIRECTED-OUTPUT"] = (base["REDIRECTED-OUTPUT"] .. str.join("\t", {...}) .. "\n")
     return nil
   end
   print_redirected = _12_
@@ -137,15 +137,15 @@ local function lua_eval(opts)
   if f then
     local pcall_custom
     do
-      local _17_ = cfg({"persistent"})
-      if (_17_ == "debug") then
-        local _18_ = opts["file-path"]
+      local case_17_ = cfg({"persistent"})
+      if (case_17_ == "debug") then
+        local partial_18_ = opts["file-path"]
         local function _19_(...)
-          return pcall_persistent_debug(_18_, ...)
+          return pcall_persistent_debug(partial_18_, ...)
         end
         pcall_custom = _19_
       else
-        local _ = _17_
+        local _ = case_17_
         pcall_custom = pcall_default
       end
     end

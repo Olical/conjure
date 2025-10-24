@@ -1,9 +1,9 @@
 -- [nfnl] fnl/conjure-spec/client/scheme/stdio_spec.fnl
 local _local_1_ = require("conjure.nfnl.module")
-local autoload = _local_1_["autoload"]
+local autoload = _local_1_.autoload
 local _local_2_ = require("plenary.busted")
-local describe = _local_2_["describe"]
-local it = _local_2_["it"]
+local describe = _local_2_.describe
+local it = _local_2_.it
 local assert = autoload("luassert.assert")
 local a = autoload("conjure.nfnl.core")
 local scheme = require("conjure.client.scheme.stdio")

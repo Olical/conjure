@@ -1,7 +1,7 @@
 -- [nfnl] fnl/conjure/eval.fnl
 local _local_1_ = require("conjure.nfnl.module")
-local autoload = _local_1_["autoload"]
-local define = _local_1_["define"]
+local autoload = _local_1_.autoload
+local define = _local_1_.define
 local core = autoload("conjure.nfnl.core")
 local str = autoload("conjure.nfnl.string")
 local extract = autoload("conjure.extract")
@@ -171,9 +171,9 @@ local def_str = M["wrap-emit"]("def", client_exec_fn("def", "def-str", {["suppre
 M["current-form"] = function(extra_opts)
   local form = extract.form({})
   if form then
-    local content = form["content"]
-    local range = form["range"]
-    local node = form["node"]
+    local content = form.content
+    local range = form.range
+    local node = form.node
     M["eval-str"](core.merge({code = content, range = range, node = node, origin = "current-form"}, extra_opts))
     return form
   else
@@ -185,9 +185,9 @@ M["replace-form"] = function()
   local win = vim.api.nvim_tabpage_get_win(0)
   local form = extract.form({})
   if form then
-    local content = form["content"]
-    local range = form["range"]
-    local node = form["node"]
+    local content = form.content
+    local range = form.range
+    local node = form.node
     local function _24_(result)
       buffer["replace-range"](buf, range, result)
       return editor["go-to"](win, core["get-in"](range, {"start", 1}), core.inc(core["get-in"](range, {"start", 2})))
@@ -201,9 +201,9 @@ end
 M["root-form"] = function()
   local form = extract.form({["root?"] = true})
   if form then
-    local content = form["content"]
-    local range = form["range"]
-    local node = form["node"]
+    local content = form.content
+    local range = form.range
+    local node = form.node
     return M["eval-str"]({code = content, range = range, node = node, origin = "root-form"})
   else
     return nil
@@ -212,7 +212,7 @@ end
 M["marked-form"] = function(mark)
   local comment_prefix = client.get("comment-prefix")
   local mark0 = (mark or extract["prompt-char"]())
-  local ok_3f, err = nil, nil
+  local ok_3f, err
   local function _27_()
     return editor["go-to-mark"](mark0)
   end
@@ -229,9 +229,9 @@ local function insert_result_comment(tag, input)
   local buf = vim.api.nvim_win_get_buf(0)
   local comment_prefix = (config["get-in"]({"eval", "comment_prefix"}) or client.get("comment-prefix"))
   if input then
-    local content = input["content"]
-    local range = input["range"]
-    local node = input["node"]
+    local content = input.content
+    local range = input.range
+    local node = input.node
     local function _29_(result)
       return buffer["append-prefixed-line"](buf, range["end"], comment_prefix, result)
     end
@@ -252,9 +252,9 @@ M["comment-word"] = function()
 end
 M.word = function()
   local _let_31_ = extract.word()
-  local content = _let_31_["content"]
-  local range = _let_31_["range"]
-  local node = _let_31_["node"]
+  local content = _let_31_.content
+  local range = _let_31_.range
+  local node = _let_31_.node
   if not core["empty?"](content) then
     return M["eval-str"]({code = content, range = range, node = node, origin = "word"})
   else
@@ -263,9 +263,9 @@ M.word = function()
 end
 M["doc-word"] = function()
   local _let_33_ = extract.word()
-  local content = _let_33_["content"]
-  local range = _let_33_["range"]
-  local node = _let_33_["node"]
+  local content = _let_33_.content
+  local range = _let_33_.range
+  local node = _let_33_.node
   if not core["empty?"](content) then
     return doc_str({code = content, range = range, node = node, origin = "word"})
   else
@@ -274,9 +274,9 @@ M["doc-word"] = function()
 end
 M["def-word"] = function()
   local _let_35_ = extract.word()
-  local content = _let_35_["content"]
-  local range = _let_35_["range"]
-  local node = _let_35_["node"]
+  local content = _let_35_.content
+  local range = _let_35_.range
+  local node = _let_35_.node
   if not core["empty?"](content) then
     return def_str({code = content, range = range, node = node, origin = "word"})
   else
@@ -285,8 +285,8 @@ M["def-word"] = function()
 end
 M.buf = function()
   local _let_37_ = extract.buf()
-  local content = _let_37_["content"]
-  local range = _let_37_["range"]
+  local content = _let_37_.content
+  local range = _let_37_.range
   return M["eval-str"]({code = content, range = range, origin = "buf"})
 end
 M.command = function(code)
@@ -294,14 +294,14 @@ M.command = function(code)
 end
 M.range = function(start, _end)
   local _let_38_ = extract.range(start, _end)
-  local content = _let_38_["content"]
-  local range = _let_38_["range"]
+  local content = _let_38_.content
+  local range = _let_38_.range
   return M["eval-str"]({code = content, range = range, origin = "range"})
 end
 M.selection = function(kind)
   local _let_39_ = extract.selection({kind = (kind or vim.fn.visualmode()), ["visual?"] = not kind})
-  local content = _let_39_["content"]
-  local range = _let_39_["range"]
+  local content = _let_39_.content
+  local range = _let_39_.range
   return M["eval-str"]({code = content, range = range, origin = "selection"})
 end
 local function wrap_completion_result(result)

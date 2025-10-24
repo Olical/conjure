@@ -1,6 +1,6 @@
 -- [nfnl] fnl/conjure-benchmark/bencode.fnl
 local _local_1_ = require("conjure.nfnl.module")
-local define = _local_1_["define"]
+local define = _local_1_.define
 local core = require("conjure.nfnl.core")
 local bencode = require("conjure.remote.transport.bencode")
 local M = define("conjure-benchmark.bencode")

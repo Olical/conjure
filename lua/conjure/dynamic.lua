@@ -1,7 +1,7 @@
 -- [nfnl] fnl/conjure/dynamic.fnl
 local _local_1_ = require("conjure.nfnl.module")
-local autoload = _local_1_["autoload"]
-local define = _local_1_["define"]
+local autoload = _local_1_.autoload
+local define = _local_1_.define
 local core = autoload("conjure.nfnl.core")
 local M = define("conjure.dynamic")
 local get_stack_key = "conjure.dynamic/get-stack"

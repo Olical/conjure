@@ -1,7 +1,7 @@
 -- [nfnl] fnl/conjure-spec/client/sql/stdio_spec.fnl
 local _local_1_ = require("plenary.busted")
-local describe = _local_1_["describe"]
-local it = _local_1_["it"]
+local describe = _local_1_.describe
+local it = _local_1_.it
 local assert = require("luassert.assert")
 local sql = require("conjure.client.sql.stdio")
 local function _2_()

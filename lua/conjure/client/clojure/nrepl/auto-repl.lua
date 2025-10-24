@@ -1,7 +1,7 @@
 -- [nfnl] fnl/conjure/client/clojure/nrepl/auto-repl.fnl
 local _local_1_ = require("conjure.nfnl.module")
-local autoload = _local_1_["autoload"]
-local define = _local_1_["define"]
+local autoload = _local_1_.autoload
+local define = _local_1_.define
 local core = autoload("conjure.nfnl.core")
 local client = autoload("conjure.client")
 local config = autoload("conjure.config")
@@ -31,8 +31,8 @@ M["delete-auto-repl-port-file"] = function()
 end
 M["upsert-auto-repl-proc"] = function()
   local _let_4_ = M.enportify(cfg({"connection", "auto_repl", "cmd"}))
-  local cmd = _let_4_["subject"]
-  local port = _let_4_["port"]
+  local cmd = _let_4_.subject
+  local port = _let_4_.port
   local port_file = cfg({"connection", "auto_repl", "port_file"})
   local enabled_3f = cfg({"connection", "auto_repl", "enabled"})
   local hidden_3f = cfg({"connection", "auto_repl", "hidden"})
