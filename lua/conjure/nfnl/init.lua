@@ -1,7 +1,10 @@
 -- [nfnl] fnl/nfnl/init.fnl
 local _local_1_ = require("conjure.nfnl.module")
-local autoload = _local_1_["autoload"]
+local autoload = _local_1_.autoload
+local define = _local_1_.define
 local callback = autoload("conjure.nfnl.callback")
+local vim = _G.vim
+local M = define("nfnl")
 local minimum_neovim_version = "0.9.0"
 if vim then
   if (0 == vim.fn.has(("nvim-" .. minimum_neovim_version))) then
@@ -15,7 +18,7 @@ if vim then
   end
 else
 end
-local function setup(opts)
+M.setup = function(opts)
   if opts then
     vim.g["nfnl#compile_on_write"] = opts.compile_on_write
     return nil
@@ -23,4 +26,4 @@ local function setup(opts)
     return nil
   end
 end
-return {setup = setup}
+return M

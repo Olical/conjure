@@ -1,9 +1,11 @@
 -- [nfnl] fnl/nfnl/fs.fnl
 local _local_1_ = require("conjure.nfnl.module")
-local autoload = _local_1_["autoload"]
-local define = _local_1_["define"]
+local autoload = _local_1_.autoload
+local define = _local_1_.define
 local core = autoload("conjure.nfnl.core")
 local str = autoload("conjure.nfnl.string")
+local vim = _G.vim
+local jit = _G.jit
 local M = define("conjure.nfnl.fs")
 M.basename = function(path)
   if path then

@@ -1,6 +1,6 @@
 -- [nfnl] fnl/nfnl/repl.fnl
 local _local_1_ = require("conjure.nfnl.module")
-local autoload = _local_1_["autoload"]
+local autoload = _local_1_.autoload
 local core = autoload("conjure.nfnl.core")
 local fennel = autoload("conjure.nfnl.fennel")
 local notify = autoload("conjure.nfnl.notify")

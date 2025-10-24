@@ -1,6 +1,6 @@
 -- [nfnl] fnl/nfnl/core.fnl
 local _local_1_ = require("conjure.nfnl.module")
-local autoload = _local_1_["autoload"]
+local autoload = _local_1_.autoload
 local fennel = autoload("conjure.nfnl.fennel")
 local function rand(n)
   return (math.random() * (n or 1))
@@ -326,7 +326,7 @@ local function get(t, k, d)
 end
 local function spit(path, content, opts)
   if path then
-    local _45_, _46_ = nil, nil
+    local _45_, _46_
     local function _47_()
       if get(opts, "append") then
         return "a"

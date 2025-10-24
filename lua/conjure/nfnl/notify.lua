@@ -1,6 +1,6 @@
 -- [nfnl] fnl/nfnl/notify.fnl
 local _local_1_ = require("conjure.nfnl.module")
-local autoload = _local_1_["autoload"]
+local autoload = _local_1_.autoload
 local core = autoload("conjure.nfnl.core")
 local function notify(level, ...)
   return vim.api.nvim_notify(core.str(...), level, {})

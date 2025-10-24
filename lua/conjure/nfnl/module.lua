@@ -15,13 +15,13 @@ M.autoload = function(name)
     end
   end
   ensure = _1_
-  local function _3_(t, ...)
+  local function _3_(_t, ...)
     return ensure()(...)
   end
-  local function _4_(t, k)
+  local function _4_(_t, k)
     return ensure()[k]
   end
-  local function _5_(t, k, v)
+  local function _5_(_t, k, v)
     ensure()[k] = v
     return nil
   end

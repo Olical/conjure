@@ -1,56 +1,60 @@
 -- [nfnl] fnl/nfnl/compile.fnl
 local _local_1_ = require("conjure.nfnl.module")
-local autoload = _local_1_["autoload"]
+local autoload = _local_1_.autoload
+local define = _local_1_.define
 local core = autoload("conjure.nfnl.core")
+local str = autoload("conjure.nfnl.string")
 local fs = autoload("conjure.nfnl.fs")
 local fennel = autoload("conjure.nfnl.fennel")
 local notify = autoload("conjure.nfnl.notify")
 local config = autoload("conjure.nfnl.config")
 local header = autoload("conjure.nfnl.header")
-local mod = {}
+local M = define("conjure.nfnl.compile")
 local function safe_target_3f(path)
   local line = fs["read-first-line"](path)
   return (not line or header["tagged?"](line))
 end
-local function macro_source_3f(source)
-  return string.find(source, "%s*;+%s*%[nfnl%-macro%]")
+M["macro-source?"] = function(_2_)
+  local source = _2_.source
+  local path = _2_.path
+  return ((string.find(source, "%s*;+%s*%[nfnl%-macro%]") and true) or (path and str["ends-with?"](path, ".fnlm")))
 end
-local function valid_source_files(glob_fn, _2_)
-  local root_dir = _2_["root-dir"]
-  local cfg = _2_["cfg"]
-  local function _3_(_241)
+local function valid_source_files(glob_fn, _3_)
+  local root_dir = _3_["root-dir"]
+  local cfg = _3_.cfg
+  local function _4_(_241)
     return glob_fn(root_dir, _241)
   end
-  return core.mapcat(_3_, cfg({"source-file-patterns"}))
+  return core.mapcat(_4_, cfg({"source-file-patterns"}))
 end
-local function valid_source_file_3f(path, _4_)
-  local root_dir = _4_["root-dir"]
-  local cfg = _4_["cfg"]
-  local function _5_(_241)
+local function valid_source_file_3f(path, _5_)
+  local root_dir = _5_["root-dir"]
+  local cfg = _5_.cfg
+  local function _6_(_241)
     return fs["glob-matches?"](root_dir, _241, path)
   end
-  return core.some(_5_, cfg({"source-file-patterns"}))
+  return core.some(_6_, cfg({"source-file-patterns"}))
 end
-mod["into-string"] = function(_6_)
-  local root_dir = _6_["root-dir"]
-  local path = _6_["path"]
-  local cfg = _6_["cfg"]
-  local source = _6_["source"]
-  local batch_3f = _6_["batch?"]
-  local opts = _6_
-  local macro_3f = macro_source_3f(source)
+M["into-string"] = function(_7_)
+  local root_dir = _7_["root-dir"]
+  local path = _7_.path
+  local cfg = _7_.cfg
+  local source = _7_.source
+  local batch_3f = _7_["batch?"]
+  local opts = _7_
+  local macro_3f = M["macro-source?"](opts)
   if (macro_3f and batch_3f) then
     return {status = "macros-are-not-compiled", ["source-path"] = path}
   elseif macro_3f then
     core["clear-table!"](fennel["macro-loaded"])
-    return mod["all-files"]({["root-dir"] = root_dir, cfg = cfg})
+    return M["all-files"]({["root-dir"] = root_dir, cfg = cfg})
   elseif config["config-file-path?"](path) then
     return {status = "nfnl-config-is-not-compiled", ["source-path"] = path}
   elseif not valid_source_file_3f(path, opts) then
     return {status = "path-is-not-in-source-file-patterns", ["source-path"] = path}
   else
     local rel_file_name = path:sub((2 + root_dir:len()))
-    local ok, res = nil, nil
+    local ok, res
     do
       fennel.path = cfg({"fennel-path"})
       fennel["macro-path"] = cfg({"fennel-macro-path"})
@@ -61,13 +65,13 @@ mod["into-string"] = function(_6_)
         notify.info("Successfully compiled: ", path)
       else
       end
-      local _8_
+      local _9_
       if cfg({"header-comment"}) then
-        _8_ = header["with-header"](rel_file_name, res)
+        _9_ = header["with-header"](rel_file_name, res)
       else
-        _8_ = res
+        _9_ = res
       end
-      return {status = "ok", ["source-path"] = path, result = (_8_ .. "\n")}
+      return {status = "ok", ["source-path"] = path, result = (_9_ .. "\n")}
     else
       if not batch_3f then
         notify.error(res)
@@ -77,20 +81,20 @@ mod["into-string"] = function(_6_)
     end
   end
 end
-mod["into-file"] = function(_13_)
-  local _root_dir = _13_["_root-dir"]
-  local cfg = _13_["cfg"]
-  local _source = _13_["_source"]
-  local path = _13_["path"]
-  local batch_3f = _13_["batch?"]
-  local opts = _13_
+M["into-file"] = function(_14_)
+  local _root_dir = _14_["_root-dir"]
+  local cfg = _14_.cfg
+  local _source = _14_._source
+  local path = _14_.path
+  local batch_3f = _14_["batch?"]
+  local opts = _14_
   local fnl_path__3elua_path = cfg({"fnl-path->lua-path"})
   local destination_path = fnl_path__3elua_path(path)
-  local _let_14_ = mod["into-string"](opts)
-  local status = _let_14_["status"]
-  local source_path = _let_14_["source-path"]
-  local result = _let_14_["result"]
-  local res = _let_14_
+  local _let_15_ = M["into-string"](opts)
+  local status = _let_15_.status
+  local source_path = _let_15_["source-path"]
+  local result = _let_15_.result
+  local res = _let_15_
   if ("ok" ~= status) then
     return res
   elseif (safe_target_3f(destination_path) or not cfg({"header-comment"})) then
@@ -105,16 +109,16 @@ mod["into-file"] = function(_13_)
     return {status = "destination-exists", ["source-path"] = path, ["destination-path"] = destination_path}
   end
 end
-mod["all-files"] = function(_17_)
-  local root_dir = _17_["root-dir"]
-  local cfg = _17_["cfg"]
-  local opts = _17_
-  local function _18_(path)
-    return mod["into-file"]({["root-dir"] = root_dir, path = path, cfg = cfg, source = core.slurp(path), ["batch?"] = true})
+M["all-files"] = function(_18_)
+  local root_dir = _18_["root-dir"]
+  local cfg = _18_.cfg
+  local opts = _18_
+  local function _19_(path)
+    return M["into-file"]({["root-dir"] = root_dir, path = path, cfg = cfg, source = core.slurp(path), ["batch?"] = true})
   end
-  local function _19_(_241)
+  local function _20_(_241)
     return fs["join-path"]({root_dir, _241})
   end
-  return core.map(_18_, core.map(_19_, valid_source_files(fs.relglob, opts)))
+  return core.map(_19_, core.map(_20_, valid_source_files(fs.relglob, opts)))
 end
-return mod
+return M

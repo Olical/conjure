@@ -1,5 +1,3 @@
-;; [nfnl-macro]
-
 ;; Copied over from Aniseed. Contains all of the def* module macro systems.
 ;; https://github.com/Olical/aniseed
 

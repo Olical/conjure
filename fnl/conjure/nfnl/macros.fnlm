@@ -1,9 +1,7 @@
-;; [nfnl-macro]
-
 (fn time [...]
-  `(let [start# (vim.uv.hrtime)
+  `(let [start# (vim.loop.hrtime)
          result# (do ,...)
-         end# (vim.uv.hrtime)]
+         end# (vim.loop.hrtime)]
      (print (.. "Elapsed time: " (/ (- end# start#) 1000000) " msecs"))
      result#))
 

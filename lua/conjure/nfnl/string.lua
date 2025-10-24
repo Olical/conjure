@@ -1,8 +1,10 @@
 -- [nfnl] fnl/nfnl/string.fnl
 local _local_1_ = require("conjure.nfnl.module")
-local autoload = _local_1_["autoload"]
+local autoload = _local_1_.autoload
+local define = _local_1_.define
 local core = autoload("conjure.nfnl.core")
-local function join(...)
+local M = define("conjure.nfnl.string")
+M.join = function(...)
   local args = {...}
   local function _2_(...)
     if (2 == core.count(args)) then
@@ -36,9 +38,9 @@ local function join(...)
   end
   return table.concat(result, sep)
 end
-local function split(s, pat)
-  local done_3f = false
+M.split = function(s, pat)
   local acc = {}
+  local done_3f = false
   local index = 1
   while not done_3f do
     local start, _end = string.find(s, pat, index)
@@ -52,19 +54,19 @@ local function split(s, pat)
   end
   return acc
 end
-local function blank_3f(s)
+M["blank?"] = function(s)
   return (core["empty?"](s) or not string.find(s, "[^%s]"))
 end
-local function triml(s)
+M.triml = function(s)
   return string.gsub(s, "^%s*(.-)", "%1")
 end
-local function trimr(s)
+M.trimr = function(s)
   return string.gsub(s, "(.-)%s*$", "%1")
 end
-local function trim(s)
+M.trim = function(s)
   return string.gsub(s, "^%s*(.-)%s*$", "%1")
 end
-local function ends_with_3f(s, suffix)
+M["ends-with?"] = function(s, suffix)
   local suffix_len = #suffix
   local s_len = #s
   if (s_len >= suffix_len) then
@@ -73,4 +75,4 @@ local function ends_with_3f(s, suffix)
     return false
   end
 end
-return {join = join, split = split, ["blank?"] = blank_3f, triml = triml, trimr = trimr, trim = trim, ["ends-with?"] = ends_with_3f}
+return M
