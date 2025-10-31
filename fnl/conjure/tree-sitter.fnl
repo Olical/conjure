@@ -90,6 +90,7 @@
 (fn sym? [node]
   (when node
     (or (string.find (node:type) :sym)
+        (= (node:type) :package_lit) ;; just for common lisp
         (client.optional-call :symbol-node? node))))
 
 (fn get-leaf [node]
