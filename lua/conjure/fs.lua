@@ -6,6 +6,7 @@ local core = autoload("conjure.nfnl.core")
 local str = autoload("conjure.nfnl.string")
 local config = autoload("conjure.config")
 local nfs = autoload("conjure.nfnl.fs")
+local vim = _G.vim
 local M = define("conjure.fs")
 local path_sep = nfs["path-sep"]()
 M.env = function(k)

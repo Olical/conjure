@@ -3,6 +3,7 @@
 (local str (autoload :conjure.nfnl.string))
 (local config (autoload :conjure.config))
 (local nfs (autoload :conjure.nfnl.fs))
+(local vim _G.vim)
 
 (local M (define :conjure.fs))
 
