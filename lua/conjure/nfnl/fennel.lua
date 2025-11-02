@@ -1,13 +1,13 @@
 -- SPDX-License-Identifier: MIT
 -- SPDX-FileCopyrightText: Calvin Rose and contributors
-package.preload["fennel.repl"] = package.preload["fennel.repl"] or function(...)
-  local _759_ = require("fennel.utils")
+package.preload["conjure.nfnl.fennel.repl"] = package.preload["conjure.nfnl.fennel.repl"] or function(...)
+  local _759_ = require("conjure.nfnl.fennel.utils")
   local utils = _759_
   local copy = _759_["copy"]
-  local parser = require("fennel.parser")
-  local compiler = require("fennel.compiler")
-  local specials = require("fennel.specials")
-  local view = require("fennel.view")
+  local parser = require("conjure.nfnl.fennel.parser")
+  local compiler = require("conjure.nfnl.fennel.compiler")
+  local specials = require("conjure.nfnl.fennel.specials")
+  local view = require("conjure.nfnl.fennel.view")
   local depth = 0
   local function prompt_for(top_3f)
     if top_3f then
@@ -765,14 +765,14 @@ package.preload["fennel.repl"] = package.preload["fennel.repl"] or function(...)
   end
   return setmetatable({["view-opts"] = {}}, repl_mt)
 end
-package.preload["fennel.specials"] = package.preload["fennel.specials"] or function(...)
-  local _529_ = require("fennel.utils")
+package.preload["conjure.nfnl.fennel.specials"] = package.preload["conjure.nfnl.fennel.specials"] or function(...)
+  local _529_ = require("conjure.nfnl.fennel.utils")
   local utils = _529_
   local pack = _529_["pack"]
   local unpack = _529_["unpack"]
-  local view = require("fennel.view")
-  local parser = require("fennel.parser")
-  local compiler = require("fennel.compiler")
+  local view = require("conjure.nfnl.fennel.view")
+  local parser = require("conjure.nfnl.fennel.parser")
+  local compiler = require("conjure.nfnl.fennel.compiler")
   local SPECIALS = compiler.scopes.global.specials
   local function str1(x)
     return tostring(x[1])
@@ -2399,7 +2399,7 @@ package.preload["fennel.specials"] = package.preload["fennel.specials"] or funct
     end
   end
   local function sandbox_fennel_module(modname)
-    if ((modname == "fennel.macros") or (package and package.loaded and ("table" == type(package.loaded[modname])) and (package.loaded[modname].metadata == compiler.metadata))) then
+    if ((modname == "conjure.nfnl.fennel.macros") or (package and package.loaded and ("table" == type(package.loaded[modname])) and (package.loaded[modname].metadata == compiler.metadata))) then
       local function _732_(_, ...)
         return (compiler.metadata):setall(...)
       end
@@ -2633,13 +2633,13 @@ package.preload["fennel.specials"] = package.preload["fennel.specials"] or funct
   doc_special("unquote", {"..."}, "Evaluate the argument even if it's in a quoted form.")
   return {["current-global-names"] = current_global_names, ["get-function-metadata"] = get_function_metadata, ["load-code"] = load_code, ["macro-loaded"] = macro_loaded, ["macro-searchers"] = macro_searchers, ["make-compiler-env"] = make_compiler_env, ["make-searcher"] = make_searcher, ["search-module"] = search_module, ["wrap-env"] = wrap_env, doc = doc_2a}
 end
-package.preload["fennel.compiler"] = package.preload["fennel.compiler"] or function(...)
-  local _299_ = require("fennel.utils")
+package.preload["conjure.nfnl.fennel.compiler"] = package.preload["conjure.nfnl.fennel.compiler"] or function(...)
+  local _299_ = require("conjure.nfnl.fennel.utils")
   local utils = _299_
   local unpack = _299_["unpack"]
-  local parser = require("fennel.parser")
-  local friend = require("fennel.friend")
-  local view = require("fennel.view")
+  local parser = require("conjure.nfnl.fennel.parser")
+  local friend = require("conjure.nfnl.fennel.friend")
+  local view = require("conjure.nfnl.fennel.view")
   local scopes = {compiler = nil, global = nil, macro = nil}
   local function make_scope(_3fparent)
     local parent = (_3fparent or scopes.global)
@@ -4114,8 +4114,8 @@ package.preload["fennel.compiler"] = package.preload["fennel.compiler"] or funct
   end
   return {["apply-deferred-scope-changes"] = apply_deferred_scope_changes, ["check-binding-valid"] = check_binding_valid, ["compile-stream"] = compile_stream, ["compile-string"] = compile_string, ["declare-local"] = declare_local, ["do-quote"] = do_quote, ["global-allowed?"] = global_allowed_3f, ["global-mangling"] = global_mangling, ["global-unmangling"] = global_unmangling, ["keep-side-effects"] = keep_side_effects, ["make-scope"] = make_scope, ["require-include"] = require_include, ["symbol-to-expression"] = symbol_to_expression, assert = assert_compile, autogensym = autogensym, compile = compile, compile1 = compile1, destructure = destructure, emit = emit, gensym = gensym, getinfo = getinfo, macroexpand = macroexpand_2a, metadata = make_metadata(), scopes = scopes, sourcemap = sourcemap, traceback = traceback}
 end
-package.preload["fennel.friend"] = package.preload["fennel.friend"] or function(...)
-  local _195_ = require("fennel.utils")
+package.preload["conjure.nfnl.fennel.friend"] = package.preload["conjure.nfnl.fennel.friend"] or function(...)
+  local _195_ = require("conjure.nfnl.fennel.utils")
   local utils = _195_
   local unpack = _195_["unpack"]
   local utf8_ok_3f, utf8 = pcall(require, "utf8")
@@ -4291,11 +4291,11 @@ package.preload["fennel.friend"] = package.preload["fennel.friend"] or function(
   end
   return {["assert-compile"] = assert_compile, ["parse-error"] = parse_error}
 end
-package.preload["fennel.parser"] = package.preload["fennel.parser"] or function(...)
-  local _194_ = require("fennel.utils")
+package.preload["conjure.nfnl.fennel.parser"] = package.preload["conjure.nfnl.fennel.parser"] or function(...)
+  local _194_ = require("conjure.nfnl.fennel.utils")
   local utils = _194_
   local unpack = _194_["unpack"]
-  local friend = require("fennel.friend")
+  local friend = require("conjure.nfnl.fennel.friend")
   local function granulate(getchunk)
     local c, index, done_3f = "", 1, false
     local function _213_(parser_state)
@@ -4867,7 +4867,7 @@ package.preload["fennel.parser"] = package.preload["fennel.parser"] or function(
   return {["string-stream"] = string_stream, ["sym-char?"] = sym_char_3f, granulate = granulate, parser = parser}
 end
 local utils = nil
-package.preload["fennel.view"] = package.preload["fennel.view"] or function(...)
+package.preload["conjure.nfnl.fennel.view"] = package.preload["conjure.nfnl.fennel.view"] or function(...)
   local type_order = {["function"] = 5, boolean = 2, number = 1, string = 3, table = 4, thread = 7, userdata = 6}
   local default_opts = {["detect-cycles?"] = true, ["empty-as-sequence?"] = false, ["escape-newlines?"] = false, ["line-length"] = 80, ["max-sparse-gap"] = 1, ["metamethod?"] = true, ["one-line?"] = false, ["prefer-colon?"] = false, ["utf8?"] = true, depth = 128}
   local lua_pairs = pairs
@@ -5535,8 +5535,8 @@ package.preload["fennel.view"] = package.preload["fennel.view"] or function(...)
   end
   return _view
 end
-package.preload["fennel.utils"] = package.preload["fennel.utils"] or function(...)
-  local view = require("fennel.view")
+package.preload["conjure.nfnl.fennel.utils"] = package.preload["conjure.nfnl.fennel.utils"] or function(...)
+  local view = require("conjure.nfnl.fennel.view")
   local version = "1.6.0"
   local unpack = (table.unpack or _G.unpack)
   local pack = nil
@@ -6120,12 +6120,12 @@ package.preload["fennel.utils"] = package.preload["fennel.utils"] or function(..
   end
   return {["ast-source"] = ast_source, ["call-of?"] = call_of_3f, ["comment?"] = comment_3f, ["debug-on?"] = debug_on_3f, ["every?"] = every_3f, ["expr?"] = expr_3f, ["fennel-module"] = nil, ["get-in"] = get_in, ["hook-opts"] = hook_opts, ["idempotent-expr?"] = idempotent_expr_3f, ["kv-table?"] = kv_table_3f, ["list?"] = list_3f, ["lua-keyword?"] = lua_keyword_3f, ["macro-path"] = table.concat({"./?.fnlm", "./?/init.fnlm", "./?.fnl", "./?/init-macros.fnl", "./?/init.fnl", getenv("FENNEL_MACRO_PATH")}, ";"), ["member?"] = member_3f, ["multi-sym?"] = multi_sym_3f, ["propagate-options"] = propagate_options, ["quoted?"] = quoted_3f, ["runtime-version"] = runtime_version, ["sequence?"] = sequence_3f, ["string?"] = string_3f, ["sym?"] = sym_3f, ["table?"] = table_3f, ["valid-lua-identifier?"] = valid_lua_identifier_3f, ["varg?"] = varg_3f, ["walk-tree"] = walk_tree, allpairs = allpairs, comment = comment_2a, copy = copy, expr = expr, hook = hook, len = len, list = list, maxn = maxn, pack = pack, path = table.concat({"./?.fnl", "./?/init.fnl", getenv("FENNEL_PATH")}, ";"), root = root, sequence = sequence, stablepairs = stablepairs, sym = sym, unpack = unpack, varg = varg, version = version, warn = warn}
 end
-utils = require("fennel.utils")
-local parser = require("fennel.parser")
-local compiler = require("fennel.compiler")
-local specials = require("fennel.specials")
-local repl = require("fennel.repl")
-local view = require("fennel.view")
+utils = require("conjure.nfnl.fennel.utils")
+local parser = require("conjure.nfnl.fennel.parser")
+local compiler = require("conjure.nfnl.fennel.compiler")
+local specials = require("conjure.nfnl.fennel.specials")
+local repl = require("conjure.nfnl.fennel.repl")
+local view = require("conjure.nfnl.fennel.view")
 local function eval_env(env, opts)
   if (env == "_COMPILER") then
     local env0 = specials["make-compiler-env"](nil, compiler.scopes.compiler, {}, opts)

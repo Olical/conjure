@@ -290,12 +290,12 @@ local function pr(...)
 end
 local function slurp(path)
   if path then
-    local _38_, _39_ = io.open(path, "r")
-    if ((_38_ == nil) and true) then
-      local _msg = _39_
+    local case_38_, case_39_ = io.open(path, "r")
+    if ((case_38_ == nil) and true) then
+      local _msg = case_39_
       return nil
-    elseif (nil ~= _38_) then
-      local f = _38_
+    elseif (nil ~= case_38_) then
+      local f = case_38_
       local content = f:read("*all")
       f:close()
       return content
@@ -326,7 +326,7 @@ local function get(t, k, d)
 end
 local function spit(path, content, opts)
   if path then
-    local _45_, _46_
+    local case_45_, case_46_
     local function _47_()
       if get(opts, "append") then
         return "a"
@@ -334,12 +334,12 @@ local function spit(path, content, opts)
         return "w"
       end
     end
-    _45_, _46_ = io.open(path, _47_())
-    if ((_45_ == nil) and (nil ~= _46_)) then
-      local msg = _46_
+    case_45_, case_46_ = io.open(path, _47_())
+    if ((case_45_ == nil) and (nil ~= case_46_)) then
+      local msg = case_46_
       return error(("Could not open file: " .. msg))
-    elseif (nil ~= _45_) then
-      local f = _45_
+    elseif (nil ~= case_45_) then
+      local f = case_45_
       f:write(content)
       f:close()
       return nil
