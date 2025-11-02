@@ -59,6 +59,9 @@ M["read-first-line"] = function(path)
     return nil
   end
 end
+M["absolute-path"] = function(path)
+  return vim.fs.normalize(vim.fn.fnamemodify(path, ":p"))
+end
 M.absglob = function(dir, expr)
   return vim.fn.globpath(dir, expr, true, true)
 end

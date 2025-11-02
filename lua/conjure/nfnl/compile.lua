@@ -17,7 +17,7 @@ end
 M["macro-source?"] = function(_2_)
   local source = _2_.source
   local path = _2_.path
-  return ((string.find(source, "%s*;+%s*%[nfnl%-macro%]") and true) or (path and str["ends-with?"](path, ".fnlm")))
+  return ((core["string?"](source) and string.find(source, "%s*;+%s*%[nfnl%-macro%]") and true) or (core["string?"](path) and path and str["ends-with?"](path, ".fnlm")))
 end
 local function valid_source_files(glob_fn, _3_)
   local root_dir = _3_["root-dir"]

@@ -9,6 +9,7 @@ local config = autoload("conjure.nfnl.config")
 local notify = autoload("conjure.nfnl.notify")
 local fs = autoload("conjure.nfnl.fs")
 local gc = autoload("conjure.nfnl.gc")
+local vim = _G.vim
 local M = define("conjure.nfnl.api")
 M["find-orphans"] = function(_2_)
   local passive_3f = _2_["passive?"]
@@ -70,7 +71,7 @@ M["compile-file"] = function(_13_)
   local root_dir = _let_14_["root-dir"]
   local cfg = _let_14_.cfg
   if config0 then
-    local path0 = fs["join-path"]({root_dir, vim.fn.expand((path or "%"))})
+    local path0 = fs["absolute-path"](vim.fn.expand((path or "%")))
     local result = compile["into-file"]({["root-dir"] = root_dir, cfg = cfg, path = path0, source = core.slurp(path0), ["batch?"] = true})
     notify.info("Compilation complete.\n", result)
     return result
