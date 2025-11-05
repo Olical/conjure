@@ -16,12 +16,6 @@ else
   git clone https://github.com/bakpakin/fennel.vim.git "$PACK_DIR/fennel.vim"
 fi
 
-if [ -d "$PACK_DIR/aniseed" ]; then
-  echo "aniseed already exists"
-else
-  git clone https://github.com/Olical/aniseed.git "$PACK_DIR/aniseed"
-fi
-
 if [ -d "$PACK_DIR/nfnl" ]; then
   echo "nfnl already exists"
 else
