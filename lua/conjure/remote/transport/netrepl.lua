@@ -1,17 +1,19 @@
 -- [nfnl] fnl/conjure/remote/transport/netrepl.fnl
 local _local_1_ = require("conjure.nfnl.module")
-local autoload = _local_1_.autoload
-local a = autoload("conjure.aniseed.core")
+local autoload = _local_1_["autoload"]
+local define = _local_1_["define"]
+local core = autoload("conjure.nfnl.core")
 local bit = autoload("bit")
-local function encode(msg)
-  local n = a.count(msg)
+local M = define("conjure.remote.transport.netrepl")
+M.encode = function(msg)
+  local n = core.count(msg)
   return (string.char(bit.band(n, 255), bit.band(bit.rshift(n, 8), 255), bit.band(bit.rshift(n, 16), 255), bit.band(bit.rshift(n, 24), 255)) .. msg)
 end
 local function split(chunk)
   local b0, b1, b2, b3 = string.byte(chunk, 1, 4)
   return bit.bor(bit.band(b0, 255), bit.lshift(bit.band(b1, 255), 8), bit.lshift(bit.band(b2, 255), 16), bit.lshift(bit.band(b3, 255), 24)), string.sub(chunk, 5)
 end
-local function decoder()
+M.decoder = function()
   local awaiting = nil
   local buffer = ""
   local function reset()
@@ -22,12 +24,12 @@ local function decoder()
   local function decode(chunk, acc)
     local acc0 = (acc or {})
     if awaiting then
-      local before = a.count(buffer)
-      local seen = a.count(chunk)
+      local before = core.count(buffer)
+      local seen = core.count(chunk)
       buffer = (buffer .. chunk)
       if (seen > awaiting) then
         local consumed = string.sub(buffer, 1, (before + awaiting))
-        local next_chunk = string.sub(chunk, a.inc(awaiting))
+        local next_chunk = string.sub(chunk, core.inc(awaiting))
         table.insert(acc0, consumed)
         reset()
         return decode(next_chunk, acc0)
@@ -47,4 +49,4 @@ local function decoder()
   end
   return decode
 end
-return {decoder = decoder, encode = encode}
+return M

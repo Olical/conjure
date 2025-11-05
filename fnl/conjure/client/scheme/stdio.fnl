@@ -73,7 +73,7 @@
 (fn M.eval-str [opts]
   (with-repl-or-warn
     (fn [repl]
-      (if (M.valid-str? opts.code) 
+      (if (M.valid-str? opts.code)
         (repl.send
           (.. opts.code "\n")
           (fn [msgs]

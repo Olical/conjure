@@ -282,7 +282,7 @@ configure the ones you care about one at a time you can set:
             with a vendorded copy of nfnl within Neovim. You can also swap to
             the legacy Aniseed based client or an stdio client if you wish to
             execute code in a sub-Lua process outside of Neovim.
-            Help: |conjure-client-fennel-nfnl|, |conjure-client-fennel-aniseed|, |conjure-client-fennel-stdio|
+            Help: |conjure-client-fennel-nfnl|, |conjure-client-fennel-stdio|
             Default: `"conjure.client.fennel.nfnl"`
 
                                                     *g:conjure#filetype#janet*
@@ -986,7 +986,6 @@ documentation below or through the `:help conjure-client-*` command. You can
 install more clients through 3rd party plugins or simply write your own within
 your dotfiles.
 
- - |conjure-client-fennel-aniseed|
  - |conjure-client-fennel-stdio|
  - |conjure-client-clojure-nrepl|
  - |conjure-client-janet-netrepl|
