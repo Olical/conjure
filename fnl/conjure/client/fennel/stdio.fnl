@@ -72,7 +72,7 @@
 (fn M.eval-reload []
   (let [file-path (vim.fn.expand "%")
         relative-no-suf (vim.fn.fnamemodify file-path ":.:r")
-        module-path (string.gsub relative-no-suf afs.path-sep ".")]
+        module-path (string.gsub relative-no-suf (afs.path-sep) ".")]
     (log.append [(.. M.comment-prefix ",reload " module-path)] {:break? true})
     (M.eval-str
       {:action :eval
