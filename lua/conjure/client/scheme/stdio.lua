@@ -11,6 +11,7 @@ local client = autoload("conjure.client")
 local log = autoload("conjure.log")
 local ts = autoload("conjure.tree-sitter")
 local cmpl = autoload("conjure.client.scheme.completions")
+local vim = _G.vim
 local M = define("conjure.client.scheme.stdio")
 config.merge({client = {scheme = {stdio = {command = "mit-scheme", prompt_pattern = "[%]e][=r]r?o?r?> ", value_prefix_pattern = "^;Value: ", enable_completions = true}}}})
 if config["get-in"]({"mapping", "enable_defaults"}) then
@@ -134,18 +135,28 @@ M["on-load"] = function()
   return M.start()
 end
 M["on-filetype"] = function()
-  local function _22_()
+  local function _23_(_22_)
+    local args = _22_.args
+    local function _24_(repl)
+      log.append({(M["comment-prefix"] .. "Sending input to REPL: " .. args)}, {["break?"] = true})
+      return repl["immediate-send"]((args .. "\n"))
+    end
+    with_repl_or_warn(_24_)
+    return nil
+  end
+  vim.api.nvim_create_user_command("ConjureSchemeInput", _23_, {nargs = 1})
+  local function _25_()
     return M.start()
   end
-  mapping.buf("SchemeStart", cfg({"mapping", "start"}), _22_, {desc = "Start the REPL"})
-  local function _23_()
+  mapping.buf("SchemeStart", cfg({"mapping", "start"}), _25_, {desc = "Start the REPL"})
+  local function _26_()
     return M.stop()
   end
-  mapping.buf("SchemeStop", cfg({"mapping", "stop"}), _23_, {desc = "Stop the REPL"})
-  local function _24_()
+  mapping.buf("SchemeStop", cfg({"mapping", "stop"}), _26_, {desc = "Stop the REPL"})
+  local function _27_()
     return M.interrupt()
   end
-  return mapping.buf("SchemeInterrupt", cfg({"mapping", "interrupt"}), _24_, {desc = "Interrupt the REPL"})
+  return mapping.buf("SchemeInterrupt", cfg({"mapping", "interrupt"}), _27_, {desc = "Interrupt the REPL"})
 end
 M["on-exit"] = function()
   return M.stop()

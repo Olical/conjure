@@ -7,6 +7,7 @@ local str = autoload("conjure.nfnl.string")
 local client = autoload("conjure.client")
 local log = autoload("conjure.log")
 local M = define("conjure.remote.stdio")
+local vim = _G.vim
 local uv = vim.uv
 local function parse_prompt(s, pat)
   if s:find(pat) then
@@ -148,6 +149,10 @@ M.start = function(opts)
     next_in_queue()
     return nil
   end
+  local function immediate_send(code)
+    stdin:write(code)
+    return nil
+  end
   local function send_signal(signal)
     uv.process_kill(repl.handle, signal)
     return nil
@@ -163,7 +168,7 @@ M.start = function(opts)
       return opts["on-success"]()
     end
     client.schedule(_28_)
-    return a["merge!"](repl, {handle = handle, pid = pid_or_err, send = send, opts = opts, ["send-signal"] = send_signal, destroy = destroy})
+    return a["merge!"](repl, {handle = handle, pid = pid_or_err, send = send, ["immediate-send"] = immediate_send, opts = opts, ["send-signal"] = send_signal, destroy = destroy})
   else
     local function _29_()
       return opts["on-error"](pid_or_err)

@@ -8,6 +8,7 @@
 (local inline (autoload :conjure.inline))
 (local school (autoload :conjure.school))
 (local util (autoload :conjure.util))
+(local vim _G.vim)
 
 (local M (define :conjure.mapping {}))
 

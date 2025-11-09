@@ -5,6 +5,7 @@
 (local log (autoload :conjure.log))
 
 (local M (define :conjure.remote.stdio))
+(local vim _G.vim)
 (local uv vim.uv)
 
 
@@ -116,6 +117,10 @@
       (next-in-queue)
       nil)
 
+    (fn immediate-send [code]
+      (stdin:write code)
+      nil)
+
     (fn send-signal [signal]
       (uv.process_kill repl.handle signal)
       nil)
@@ -143,6 +148,7 @@
             {:handle handle
              :pid pid-or-err
              :send send
+             :immediate-send immediate-send
              :opts opts
              :send-signal send-signal
              :destroy destroy}))

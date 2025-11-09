@@ -33,6 +33,12 @@ These mappings are the defaults, you can change them as described in
 See |conjure-client-scheme-stdio-configuration| for specific configuration
 options relevant to these mappings.
 
+:ConjureSchemeInput [input]
+                         When you invoke `(read)` over your REPL it will pause
+                         and await an input value. You can use
+                         `:ConjureSchemeInput "Hello, World!"` for example to
+                         send a string into the waiting REPL.
+
 <localleader>cs          Start the Scheme REPL if it's not running already.
 
 <localleader>cS          Stop any existing Scheme REPL.
@@ -87,7 +93,7 @@ All configuration can be set as described in |conjure-configuration|.
 
                             *g:conjure#client#scheme#stdio#enable_completions*
 `g:conjure#client#scheme#stdio#enable_completions`
-            Enable completion suggestions through tree sitter and known 
+            Enable completion suggestions through tree sitter and known
             symbols.
 
             Example value:

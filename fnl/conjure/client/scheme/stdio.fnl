@@ -8,6 +8,7 @@
 (local log (autoload :conjure.log))
 (local ts (autoload :conjure.tree-sitter))
 (local cmpl (autoload :conjure.client.scheme.completions))
+(local vim _G.vim)
 
 (local M (define :conjure.client.scheme.stdio))
 
@@ -145,6 +146,16 @@
   (M.start))
 
 (fn M.on-filetype []
+  (vim.api.nvim_create_user_command
+    "ConjureSchemeInput"
+    (fn [{: args}]
+      (with-repl-or-warn
+        (fn [repl]
+          (log.append [(.. M.comment-prefix "Sending input to REPL: " args)] {:break? true})
+          (repl.immediate-send (.. args "\n"))))
+      nil)
+    {:nargs 1})
+
   (mapping.buf
     :SchemeStart (cfg [:mapping :start])
     #(M.start)
