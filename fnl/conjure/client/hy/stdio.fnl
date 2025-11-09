@@ -85,8 +85,8 @@
   (let [obj (when (= "." (string.sub opts.code 1 1))
               (extract.prompt "Specify object or module: "))
         obj (.. (or obj "") opts.code)
-        code (.. "(if (in (mangle '" obj ") --macros--)
-                    (doc " obj ")
+        code (.. "(if (in (hy.mangle '" obj ") _hy_macros)
+                    (help (get _hy_macros (hy.mangle '" obj ")))
                     (help " obj "))")]
     (with-repl-or-warn
       (fn [repl]

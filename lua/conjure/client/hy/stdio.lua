@@ -97,7 +97,7 @@ M["doc-str"] = function(opts)
     obj = nil
   end
   local obj0 = ((obj or "") .. opts.code)
-  local code = ("(if (in (mangle '" .. obj0 .. ") --macros--)\n                    (doc " .. obj0 .. ")\n                    (help " .. obj0 .. "))")
+  local code = ("(if (in (hy.mangle '" .. obj0 .. ") _hy_macros)\n                    (help (get _hy_macros (hy.mangle '" .. obj0 .. ")))\n                    (help " .. obj0 .. "))")
   local function _16_(repl)
     local function _17_(msg)
       local _18_
