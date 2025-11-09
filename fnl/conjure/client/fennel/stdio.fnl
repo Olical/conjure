@@ -1,6 +1,6 @@
 (local {: autoload : define} (require :conjure.nfnl.module))
 (local core (autoload :conjure.nfnl.core))
-(local afs (autoload :conjure.nfnl.fs))
+(local nfs (autoload :conjure.nfnl.fs))
 (local str (autoload :conjure.nfnl.string))
 (local stdio (autoload :conjure.remote.stdio))
 (local config (autoload :conjure.config))
@@ -72,7 +72,7 @@
 (fn M.eval-reload []
   (let [file-path (vim.fn.expand "%")
         relative-no-suf (vim.fn.fnamemodify file-path ":.:r")
-        module-path (string.gsub relative-no-suf (afs.path-sep) ".")]
+        module-path (string.gsub relative-no-suf (nfs.path-sep) ".")]
     (log.append [(.. M.comment-prefix ",reload " module-path)] {:break? true})
     (M.eval-str
       {:action :eval

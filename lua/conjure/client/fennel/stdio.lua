@@ -3,7 +3,7 @@ local _local_1_ = require("conjure.nfnl.module")
 local autoload = _local_1_.autoload
 local define = _local_1_.define
 local core = autoload("conjure.nfnl.core")
-local afs = autoload("conjure.nfnl.fs")
+local nfs = autoload("conjure.nfnl.fs")
 local str = autoload("conjure.nfnl.string")
 local stdio = autoload("conjure.remote.stdio")
 local config = autoload("conjure.config")
@@ -76,7 +76,7 @@ end
 M["eval-reload"] = function()
   local file_path = vim.fn.expand("%")
   local relative_no_suf = vim.fn.fnamemodify(file_path, ":.:r")
-  local module_path = string.gsub(relative_no_suf, afs["path-sep"](), ".")
+  local module_path = string.gsub(relative_no_suf, nfs["path-sep"](), ".")
   log.append({(M["comment-prefix"] .. ",reload " .. module_path)}, {["break?"] = true})
   return M["eval-str"]({action = "eval", origin = "reload", ["file-path"] = file_path, code = (",reload " .. module_path)})
 end
