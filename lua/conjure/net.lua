@@ -1,7 +1,7 @@
 -- [nfnl] fnl/conjure/net.fnl
 local _local_1_ = require("conjure.nfnl.module")
-local autoload = _local_1_["autoload"]
-local define = _local_1_["define"]
+local autoload = _local_1_.autoload
+local define = _local_1_.define
 local core = autoload("conjure.nfnl.core")
 local M = define("conjure.net", {})
 M.resolve = function(host)
@@ -29,9 +29,9 @@ local function destroy_sock(sock)
   return nil
 end
 M.connect = function(_6_)
-  local host = _6_["host"]
-  local port = _6_["port"]
-  local cb = _6_["cb"]
+  local host = _6_.host
+  local port = _6_.port
+  local cb = _6_.cb
   local sock = vim.uv.new_tcp()
   local resolved_host = M.resolve(host)
   if not resolved_host then

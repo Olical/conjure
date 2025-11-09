@@ -156,13 +156,13 @@ local function wrap(prefix, suffix, x)
   return (prefix .. x .. suffix)
 end
 local function encode(x)
-  local _23_ = type(x)
-  if (_23_ == "string") then
+  local case_23_ = type(x)
+  if (case_23_ == "string") then
     return (#x .. ":" .. x)
-  elseif (_23_ == "number") then
+  elseif (case_23_ == "number") then
     assert(((x % 1) == 0), ("bencode: non-integer number " .. x))
     return wrap("i", "e", x)
-  elseif (_23_ == "table") then
+  elseif (case_23_ == "table") then
     if is_list_3f(x) then
       return wrap("l", "e", table.concat(core.map(encode, core.vals(x))))
     else
@@ -176,7 +176,7 @@ local function encode(x)
       return wrap("d", "e", table.concat(core["map-indexed"](_25_, x)))
     end
   else
-    local _ = _23_
+    local _ = case_23_
     return error(("bencode: unsupported type " .. type(x)))
   end
 end

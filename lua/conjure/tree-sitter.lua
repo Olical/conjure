@@ -89,7 +89,7 @@ local function leaf_3f(node)
 end
 local function sym_3f(node)
   if node then
-    return (string.find(node:type(), "sym") or node:type() == "package_lit" or client["optional-call"]("symbol-node?", node))
+    return (string.find(node:type(), "sym") or (node:type() == "package_lit") or client["optional-call"]("symbol-node?", node))
   else
     return nil
   end
