@@ -127,3 +127,10 @@ async def capture():
 await capture()
 result
 """
+
+import re
+#  To get `None` from the first evluation, adjust the Python client with:
+#    `:lua vim.g["conjure#client#python#stdio#delay-stderr-ms"] = 80`
+#
+import numpy as np
+
