@@ -69,11 +69,20 @@ All configuration can be set as described in |conjure-configuration|.
             Default: `"python3 -iq"`
 
                                 *g:conjure#client#python#stdio#prompt_pattern*
-`g:conjure#client#python#stdio#prompt_pattern`
+`g:conjure#client#python#stdio#prompt-pattern`
             Lua pattern to identify a new REPL prompt. This match signals to
             Conjure that the previous evaluation is complete and we're ready
             to submit more code as well as collect all output prior to the
             marker as the result.
             Default: `">>> "`
+
+                                *g:conjure#client#python#stdio#delay-stderr-ms*
+`g:conjure#client#python#stdio#delay-stderr-ms-pattern`
+            Number of milliseconds to delay the handling of messages on the
+            stderr channel after handling messages on the stdout channel.
+            This helps to order the messages so that statements that take
+            longer to evaluate have their messages handle in the correct
+            order. You may experience this with evaluating a statement such as
+            `import numpy as np`.
 
 vim:tw=78:sw=2:ts=2:ft=help:norl:et:listchars=
