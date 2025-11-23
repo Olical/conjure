@@ -69,7 +69,7 @@ All configuration can be set as described in |conjure-configuration|.
             Default: `"python3 -iq"`
 
                                 *g:conjure#client#python#stdio#prompt_pattern*
-`g:conjure#client#python#stdio#prompt-pattern`
+`g:conjure#client#python#stdio#prompt_pattern`
             Lua pattern to identify a new REPL prompt. This match signals to
             Conjure that the previous evaluation is complete and we're ready
             to submit more code as well as collect all output prior to the
