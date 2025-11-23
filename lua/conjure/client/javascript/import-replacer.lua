@@ -38,7 +38,8 @@ local function transform_plain_import(source)
 end
 local function transform_namespace_import(namespace_import, code, source)
   if source["resolved-path"] then
-    local alias = tsc["get-text"](tsc["get-child"](namespace_import, "identifier"), code)
+    local ident = tsc["find-child-by-type"](namespace_import, "identifier")
+    local alias = tsc["get-text"](ident, code)
     return string.format("const %s = require(\"%s\");", alias, source["resolved-path"])
   else
     return nil
