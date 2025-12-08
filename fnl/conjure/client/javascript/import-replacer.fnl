@@ -47,7 +47,8 @@
 ;; Namespace import: import * as name from "module"
 (fn transform-namespace-import [namespace-import code source]
   (when source.resolved-path
-    (let [alias (tsc.get-text (tsc.get-child namespace-import "identifier") code)]
+    (let [ident (tsc.find-child-by-type namespace-import "identifier")
+          alias (tsc.get-text ident code)]
       (string.format "const %s = require(\"%s\");" alias source.resolved-path))))
 
 ;; Default import only: import name from "module"

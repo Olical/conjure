@@ -1,20 +1,33 @@
 (local {: define : autoload } (require :conjure.nfnl.module))
+(local eval (autoload :conjure.eval))
 (local tsc (autoload :conjure.client.javascript.ts-common))
 (local ir (autoload :conjure.client.javascript.import-replacer))
+(local log (autoload :conjure.log))
+(local a (autoload :conjure.nfnl.core))
 
 (local M (define :conjure.client.javascript.transformers))
 
 (var node-handlers {})
 
+(fn handle-transform-error [err]
+  (let [opts (or (. eval.previous-evaluations  "conjure.client.javascript.stdio") {})
+        {:range range} opts
+        {:start start} (or range {})
+        [line col] (or start [])
+        {:ln eline :col ecol :info einfo} (if (= "table" (type err)) err {})
+        final-line (+ (or line 0) (or eline 0)) 
+        final-col (if ecol (+ 1 ecol) col)
+        info (or einfo "no info")]
+    (log.append [(.. "/* [ERROR] transforming node " 
+                     "at line " final-line
+                     " column " final-col
+                     ". Info: " info " */")])))
+
 (fn transform [node code]
   (let [node-type (node:type)
-        handler (or (. node-handlers node-type) node-handlers.default)]
-    (let [(_ok result)
-          (xpcall
-            (fn [] (handler node code))
-            (fn [err]
-              (.. "/* [ERROR] transforming node " node-type ": " err " */")))]
-      result)))
+        handler (or (. node-handlers node-type) node-handlers.default)
+        (_ok result) (xpcall (fn [] (handler node code)) handle-transform-error)]
+    result))
 
 (set node-handlers.default
      (fn [node code]
@@ -34,18 +47,44 @@
 (set node-handlers.comment
   (fn [_ _] ""))
 
+(fn forbidden-kw? [n code]
+    (let [t (n:type)
+          txt (tsc.get-text n code)]
+      (or (= t "this")
+          (= t "super")
+          (= t "meta_property")
+          (and (= t "identifier") (= txt "arguments"))
+          (= txt "new.target"))))
+
+(fn body-contains-forbidden-keyword? [node code]
+  (let [stack [node]]
+    (var found nil)
+    (while (and (not found) (next stack))
+      (let [n (table.remove stack)]
+        (if (forbidden-kw? n code)
+            (set found n)
+            (each [c (n:iter_children)]
+              (table.insert stack c)))))
+    found))
+
 (fn transform-arrow-fn [arrow-fn name code]
-  (let [params (tsc.get-text (tsc.get-child arrow-fn "parameters") code)
-        body-node (tsc.get-child arrow-fn "body")
-        body-text (transform body-node code)
-        first-child (arrow-fn:child 0)
-        async? (and first-child (= (first-child:type) "async"))
-        async-kw (if async? "async " "")
-        final-body (case (body-node:type)
-                     "statement_block" (.. " " body-text)
-                     "parenthesized_expression" (.. " { return " body-text " }")
-                     _ (.. " { return " body-text " }"))]
-    (.. async-kw "function " name params final-body)))
+  (let [body-node (tsc.get-child arrow-fn "body")
+        forbidden (body-contains-forbidden-keyword? body-node code)]
+    (if forbidden
+        (let [(ln col) (forbidden:start)]
+          (error {:info (.. "Cannot transform arrow function, it contains '" (forbidden:type) "'")
+                  :ln ln
+                  :col col}))
+        (let [params (tsc.get-text (tsc.get-child arrow-fn "parameters") code)
+              body-text (transform body-node code)
+              first-child (arrow-fn:child 0)
+              async? (and first-child (= (first-child:type) "async"))
+              async-kw (if async? "async " "")
+              final-body (case (body-node:type)
+                           "statement_block" (.. " " body-text)
+                           "parenthesized_expression" (.. " { return " body-text " }")
+                           _ (.. " { return " body-text " }"))]
+          (.. async-kw "function " name params final-body)))))
 
 (fn handle-statement [node code]
   (let [text (node-handlers.default node code)
