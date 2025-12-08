@@ -3,6 +3,7 @@
 (local tsc (autoload :conjure.client.javascript.ts-common))
 (local ir (autoload :conjure.client.javascript.import-replacer))
 (local log (autoload :conjure.log))
+(local a (autoload :conjure.nfnl.core))
 
 (local M (define :conjure.client.javascript.transformers))
 
@@ -46,23 +47,25 @@
 (set node-handlers.comment
   (fn [_ _] ""))
 
+(fn forbidden-kw? [n code]
+    (let [t (n:type)
+          txt (tsc.get-text n code)]
+      (or (= t "this")
+          (= t "super")
+          (= t "meta_property")
+          (and (= t "identifier") (= txt "arguments"))
+          (= txt "new.target"))))
+
 (fn body-contains-forbidden-keyword? [node code]
-  (var found nil)
-  (fn traverse [n]
-    (when (not found)
-      (let [ntype (n:type)]
-        (if
-          (or (= ntype "this") 
-              (= ntype "super")
-              (= ntype "meta_property") 
-              (and (= ntype "identifier") (= (tsc.get-text n code) "arguments"))
-              (= (tsc.get-text n code) "new.target")) 
-          (set found n)))
-      (when (not found)
-        (each [child (n:iter_children)]
-          (traverse child)))))
-  (traverse node)
-  found)
+  (let [stack [node]]
+    (var found nil)
+    (while (and (not found) (next stack))
+      (let [n (table.remove stack)]
+        (if (forbidden-kw? n code)
+            (set found n)
+            (each [c (n:iter_children)]
+              (table.insert stack c)))))
+    found))
 
 (fn transform-arrow-fn [arrow-fn name code]
   (let [body-node (tsc.get-child arrow-fn "body")

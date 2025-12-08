@@ -6,6 +6,7 @@ local eval = autoload("conjure.eval")
 local tsc = autoload("conjure.client.javascript.ts-common")
 local ir = autoload("conjure.client.javascript.import-replacer")
 local log = autoload("conjure.log")
+local a = autoload("conjure.nfnl.core")
 local M = define("conjure.client.javascript.transformers")
 local node_handlers = {}
 local function handle_transform_error(err)
@@ -77,30 +78,24 @@ local function _11_(_, _0)
   return ""
 end
 node_handlers.comment = _11_
+local function forbidden_kw_3f(n, code)
+  local t = n:type()
+  local txt = tsc["get-text"](n, code)
+  return ((t == "this") or (t == "super") or (t == "meta_property") or ((t == "identifier") and (txt == "arguments")) or (txt == "new.target"))
+end
 local function body_contains_forbidden_keyword_3f(node, code)
+  local stack = {node}
   local found = nil
-  local function traverse(n)
-    if not found then
-      do
-        local ntype = n:type()
-        if ((ntype == "this") or (ntype == "super") or (ntype == "meta_property") or ((ntype == "identifier") and (tsc["get-text"](n, code) == "arguments")) or (tsc["get-text"](n, code) == "new.target")) then
-          found = n
-        else
-        end
-      end
-      if not found then
-        for child in n:iter_children() do
-          traverse(child)
-        end
-        return nil
-      else
-        return nil
-      end
+  while (not found and next(stack)) do
+    local n = table.remove(stack)
+    if forbidden_kw_3f(n, code) then
+      found = n
     else
-      return nil
+      for c in n:iter_children() do
+        table.insert(stack, c)
+      end
     end
   end
-  traverse(node)
   return found
 end
 local function transform_arrow_fn(arrow_fn, name, code)
@@ -122,13 +117,13 @@ local function transform_arrow_fn(arrow_fn, name, code)
     end
     local final_body
     do
-      local case_16_ = body_node:type()
-      if (case_16_ == "statement_block") then
+      local case_14_ = body_node:type()
+      if (case_14_ == "statement_block") then
         final_body = (" " .. body_text)
-      elseif (case_16_ == "parenthesized_expression") then
+      elseif (case_14_ == "parenthesized_expression") then
         final_body = (" { return " .. body_text .. " }")
       else
-        local _ = case_16_
+        local _ = case_14_
         final_body = (" { return " .. body_text .. " }")
       end
     end
@@ -145,7 +140,7 @@ local function handle_statement(node, code)
     return (text .. ";")
   end
 end
-local function _20_(node, code)
+local function _18_(node, code)
   local var_decl = node:child(1)
   local value_node = (var_decl and (var_decl:type() == "variable_declarator") and tsc["get-child"](var_decl, "value"))
   if (value_node and ("arrow_function" == value_node:type())) then
@@ -155,8 +150,8 @@ local function _20_(node, code)
     return handle_statement(node, code)
   end
 end
-node_handlers.lexical_declaration = _20_
-local function _22_(node, code)
+node_handlers.lexical_declaration = _18_
+local function _20_(node, code)
   local obj = node:field("object")[1]
   if (obj and ((obj:type() == "call_expression") or (obj:type() == "member_expression"))) then
     local default_text = node_handlers.default(node, code)
@@ -166,22 +161,22 @@ local function _22_(node, code)
     return node_handlers.default(node, code)
   end
 end
-node_handlers.member_expression = _22_
+node_handlers.member_expression = _20_
 node_handlers.import_statement = ir["import-statement"](handle_statement)
 node_handlers.call_expression = ir["call-expression"](node_handlers.default)
-local function _24_(node, code)
+local function _22_(node, code)
   local child = node:child(1)
-  local case_25_ = child:type()
-  if ((case_25_ == "interface_declaration") or (case_25_ == "class_declaration")) then
+  local case_23_ = child:type()
+  if ((case_23_ == "interface_declaration") or (case_23_ == "class_declaration")) then
     return node_handlers.default(node, code)
-  elseif (case_25_ == "export_clause") then
+  elseif (case_23_ == "export_clause") then
     return ""
   else
-    local _ = case_25_
+    local _ = case_23_
     return node_handlers.default(child, code)
   end
 end
-node_handlers.export_statement = _24_
+node_handlers.export_statement = _22_
 for _, t in pairs({"expression_statement", "variable_declaration", "return_statement", "throw_statement", "break_statement", "continue_statement", "debugger_statement", "class_declaration", "field_definition", "public_field_definition", "function_declaration"}) do
   node_handlers[t] = handle_statement
 end
