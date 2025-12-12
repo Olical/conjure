@@ -2,7 +2,8 @@
 <p align="center"><a href="https://www.etsy.com/uk/shop/MysticalScribbles?ref=profile_header"><img src="https://conjure.oli.me.uk/images/lillian.png"/></a></p>
 ++++
 
-== https://oli.me.uk/Blog+archive/2020/Conversational+software+development/[Conversational software development] for https://neovim.io[Neovim] +
+== https://oli.me.uk/Blog+archive/2020/Conversational+software+development[Conversational software development] for https://neovim.io[Neovim] +
+
 https://discord.gg/wXAMr8F[image:https://img.shields.io/discord/732957595249410108.svg?label=&logo=discord&logoColor=ffffff&color=7389D8&labelColor=6A7EC2[Discord]]
 
 Conjure is an interactive environment for evaluating code within your running program.
