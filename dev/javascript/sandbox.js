@@ -116,7 +116,7 @@ let o = {
   changeAge: function (a) { this.age = a },
   getName: function () { return this.name },
   getAge: function () { return this.age },
-  toString: function () { return `${name} ${age}` }
+  toString: function () { return `${this.name} ${this.age}` }
 }
 
 o
@@ -130,3 +130,16 @@ o.changeName("Arola");
 setTimeout(() => { console.log("hi") }, 300);
 
 process.stderr.write("error! some error occurred");
+
+const arrowThis = () => {
+  let a = 1;
+  return this.a + 1;
+}
+
+function thisBody() {
+  const a = 47;
+  return ({ a: 99, get: function () { return this.a } })
+}
+
+const tb = thisBody();
+tb.get()

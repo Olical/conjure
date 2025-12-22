@@ -334,3 +334,8 @@ export const expFn = () => "export fn";
 expFn()
 export function funFun() { return "export function Fun" }
 export { }
+
+const arrowThis = () => {
+  let a = 1;
+  return this.a + 1;
+}
