@@ -12,6 +12,7 @@ else
 fi
 
 nvim \
+  --clean \
   --cmd "set rtp+=$PREFIX/conjure-main" \
   --cmd "source $PREFIX/conjure-main/plugin/conjure.lua" \
   -c "au VimEnter * ++nested ConjureSchool" &&
