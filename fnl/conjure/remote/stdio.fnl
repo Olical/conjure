@@ -59,7 +59,7 @@
       (pcall #(stderr:close))
       (pcall #(stdin:close))
       (when repl.handle
-        (pcall #(uv.process_kill repl.handle))
+        (pcall #(uv.process_kill repl.handle :sigkill))
         (pcall #(repl.handle:close)))
       nil)
 

@@ -61,7 +61,7 @@ M.start = function(opts)
     pcall(_10_)
     if repl.handle then
       local function _11_()
-        return uv.process_kill(repl.handle)
+        return uv.process_kill(repl.handle, "sigkill")
       end
       pcall(_11_)
       local function _12_()
