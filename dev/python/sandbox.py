@@ -28,14 +28,14 @@ def print_things_then_return():
         print(i)
     return "all done!"
 
+print_things_then_return()
+
 
 def newline_in_function_bug():
     return "hey\n\n" + "\\n" + "\n" + "ho"
 
-
 newline_in_function_bug()
 
-print_things_then_return()
 
 for i in range(20):
     print(i)
@@ -47,7 +47,6 @@ def fn_with_multiline_str():
     descriptive, multiline string.
     """
     print(f"Description: {description}")
-
 
 fn_with_multiline_str()
 
@@ -106,6 +105,33 @@ fib.cache_info()
 # CacheInfo(hits=28, misses=16, maxsize=None, currsize=16)
 
 
+# Need to have numpy and matplotlib packages installed.
+import numpy as np
+import matplotlib.pyplot as plt
+
+# numpy examples.
+
+# Sample code from: https://www.w3schools.com/python/matplotlib_pyplot.asp
+xpoints = np.array([0, 6])
+ypoints = np.array([0, 250])
+
+plt.plot(xpoints, ypoints)
+plt.show()
+
+
+# Need to have pandas package installed.
+import pandas
+
+mydata = {
+    'cars': ["BMW", "Volvo", "Ford"],
+    'passings': [3, 7, 2]
+}
+
+df = pandas.DataFrame(mydata)
+df['cars']
+df['passings']
+
+
 # Asyncio samples
 #   - Add '-m asyncio' to the python command to evaluate these.
 
@@ -127,3 +153,6 @@ async def capture():
 await capture()
 result
 """
+
+# This is here to make it clear that the entire buffer was evaluated.
+print("This is the end.")
