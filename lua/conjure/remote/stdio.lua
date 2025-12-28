@@ -2,7 +2,7 @@
 local _local_1_ = require("conjure.nfnl.module")
 local autoload = _local_1_.autoload
 local define = _local_1_.define
-local a = autoload("conjure.nfnl.core")
+local core = autoload("conjure.nfnl.core")
 local str = autoload("conjure.nfnl.string")
 local client = autoload("conjure.client")
 local log = autoload("conjure.log")
@@ -17,9 +17,9 @@ local function parse_prompt(s, pat)
   end
 end
 M["parse-cmd"] = function(x)
-  if a["table?"](x) then
-    return {cmd = a.first(x), args = a.rest(x)}
-  elseif a["string?"](x) then
+  if core["table?"](x) then
+    return {cmd = core.first(x), args = core.rest(x)}
+  elseif core["string?"](x) then
     return M["parse-cmd"](str.split(x, "%s"))
   else
     return nil
@@ -31,7 +31,7 @@ local function extend_env(vars)
     local v = _4_[2]
     return (k .. "=" .. v)
   end
-  return a.map(_5_, a["kv-pairs"](a.merge(vim.fn.environ(), vars)))
+  return core.map(_5_, core["kv-pairs"](core.merge(vim.fn.environ(), vars)))
 end
 M.start = function(opts)
   local stdin = uv.new_pipe(false)
@@ -77,27 +77,25 @@ M.start = function(opts)
     return client.schedule(opts["on-exit"], code, signal)
   end
   local function next_in_queue()
-    local next_msg = a.first(repl.queue)
+    local next_msg = core.first(repl.queue)
     if (next_msg and not repl.current) then
       table.remove(repl.queue, 1)
-      a.assoc(repl, "current", next_msg)
-      log.dbg(("remote.stdio.next-in-queue; stdin:write next-msg.code >>" .. a["pr-str"](next_msg.code) .. "<<"))
+      core.assoc(repl, "current", next_msg)
+      log.dbg(("remote.stdio.next-in-queue; sending next-msg.code:'" .. core.str(next_msg.code) .. "'"))
       return stdin:write(next_msg.code)
     else
       return nil
     end
   end
   local function on_message(source, err, chunk)
-    log.dbg(("remote.stdio.on-message; receive source >>" .. source .. "<<"))
-    log.dbg(("remote.stdio.on-message; receive err >>" .. a["pr-str"](err) .. "<<"))
-    log.dbg(("remote.stdio.on-message; receive chunk >>" .. a["pr-str"](chunk) .. "<<"))
+    log.dbg(("remote.stdio.on-message; from:" .. source .. ", err:'" .. core.str(err) .. "', chunk:'" .. core.str(chunk) .. "'"))
     if err then
       opts["on-error"](err)
       return destroy()
     else
       if chunk then
         local done_3f, result = parse_prompt(chunk, opts["prompt-pattern"])
-        local cb = a["get-in"](repl, {"current", "cb"}, opts["on-stray-output"])
+        local cb = core["get-in"](repl, {"current", "cb"}, opts["on-stray-output"])
         if cb then
           local function _15_()
             return cb({[source] = result, ["done?"] = done_3f})
@@ -106,7 +104,7 @@ M.start = function(opts)
         else
         end
         if done_3f then
-          a.assoc(repl, "current", nil)
+          core.assoc(repl, "current", nil)
           return next_in_queue()
         else
           return nil
@@ -131,7 +129,7 @@ M.start = function(opts)
   end
   local function send(code, cb, opts0)
     local _22_
-    if a.get(opts0, "batch?") then
+    if core.get(opts0, "batch?") then
       local msgs = {}
       local function _24_(msg)
         table.insert(msgs, msg)
@@ -160,7 +158,7 @@ M.start = function(opts)
   local _let_27_ = M["parse-cmd"](opts.cmd)
   local cmd = _let_27_.cmd
   local args = _let_27_.args
-  local handle, pid_or_err = uv.spawn(cmd, {stdio = {stdin, stdout, stderr}, args = args, env = extend_env(a["merge!"]({INPUTRC = "/dev/null", TERM = "dumb"}, opts.env))}, client["schedule-wrap"](on_exit))
+  local handle, pid_or_err = uv.spawn(cmd, {stdio = {stdin, stdout, stderr}, args = args, env = extend_env(core["merge!"]({INPUTRC = "/dev/null", TERM = "dumb"}, opts.env))}, client["schedule-wrap"](on_exit))
   if handle then
     stdout:read_start(client["schedule-wrap"](on_stdout))
     stderr:read_start(client["schedule-wrap"](on_stderr))
@@ -168,7 +166,7 @@ M.start = function(opts)
       return opts["on-success"]()
     end
     client.schedule(_28_)
-    return a["merge!"](repl, {handle = handle, pid = pid_or_err, send = send, ["immediate-send"] = immediate_send, opts = opts, ["send-signal"] = send_signal, destroy = destroy})
+    return core["merge!"](repl, {handle = handle, pid = pid_or_err, send = send, ["immediate-send"] = immediate_send, opts = opts, ["send-signal"] = send_signal, destroy = destroy})
   else
     local function _29_()
       return opts["on-error"](pid_or_err)
