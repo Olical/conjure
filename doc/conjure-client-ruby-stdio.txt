@@ -1,0 +1,103 @@
+                                                *conjure-client-ruby-stdio*
+
+==============================================================================
+CONTENTS                               *conjure-client-ruby-stdio-contents*
+
+    1. Introduction ........... |conjure-client-ruby-stdio-introduction|
+    2. Mappings ................... |conjure-client-ruby-stdio-mappings|
+    3. Configuration ......... |conjure-client-ruby-stdio-configuration|
+
+==============================================================================
+INTRODUCTION                       *conjure-client-ruby-stdio-introduction*
+>
+  irb is an interactive tool (Ruby REPL) used to execute Ruby expressions.
+
+Conjure starts a Ruby REPL within Neovim when you first open a Ruby (`.rb`)
+file. You can configure how the Ruby REPL is launched with the
+`g:conjure#client#ruby#stdio#command` configuration option.
+
+You should be able to evaluate files and forms as you would with other Conjure
+supported languages right away.
+
+Check out `:ConjureSchool` if you're unsure about what evaluation operations
+you can perform.
+
+ * https://ruby.github.io/irb/
+ * https://www.ruby-lang.org/en/documentation/
+
+==============================================================================
+MAPPINGS                               *conjure-client-ruby-stdio-mappings*
+
+These mappings are the defaults, you can change them as described in
+|conjure-mappings| and |conjure-configuration|.
+
+See |conjure-client-ruby-stdio-configuration| for specific configuration
+options relevant to these mappings.
+
+<localleader>cs          Start the Ruby REPL if it's not running already.
+
+<localleader>cS          Stop any existing Ruby REPL.
+
+<localleader>ei          Interrupt running command. Same as pressing Ctrl-C
+                         in a cmdline REPL.
+
+==============================================================================
+CONFIGURATION                     *conjure-client-ruby-stdio-configuration*
+
+All configuration can be set as described in |conjure-configuration|.
+
+These items are specific to the Ruby client.
+
+                                 *g:conjure#client#ruby#stdio#mapping#start*
+`g:conjure#client#ruby#stdio#mapping#start`
+            Start the Ruby REPL if it's not running already.
+            Default: `"cs"`
+
+                                  *g:conjure#client#ruby#stdio#mapping#stop*
+`g:conjure#client#ruby#stdio#mapping#stop`
+            Stop any existing Ruby REPL.
+            Default: `"cS"`
+
+                             *g:conjure#client#ruby#stdio#mapping#interrupt*
+`g:conjure#client#ruby#stdio#mapping#interrupt`
+            Send an interrupt signal to the REPL. Useful for hung processes.
+            Default: `"ei"`
+
+                                       *g:conjure#client#ruby#stdio#command*
+`g:conjure#client#ruby#stdio#command`
+            Command used to start the Ruby REPL, you can modify this to add
+            arguments or change the command entirely.
+
+            See https://ruby.github.io/irb/ for command line options and
+            configuration. You can store the command line options in a
+            configutation file, e.g. "$HOME/.config/irb/irbrc" ".irbrc" in the
+            current directory. See
+            https://ruby.github.io/irb/Configurations_md.html for details.
+
+            Please note that this client was built using the default options
+            so that the automated interaction is easier to parse. Hence, the
+            use of at least "--noecho-on-assignment" and
+            "--simple-prompt". The other options, "--no-pager",
+            "--nocolorize", and "--noautocomplete", help to minimize suprious
+            interactions from REPL.
+
+            Default: `"irb --no-pager --nocolorize --noautocomplete --noecho-on-assignment --simple-prompt"`
+
+                                *g:conjure#client#ruby#stdio#prompt_pattern*
+`g:conjure#client#ruby#stdio#prompt_pattern`
+            Lua pattern to identify a new REPL prompt. This match signals to
+            Conjure that the previous evaluation is complete and we're ready
+            to submit more code as well as collect all output prior to the
+            marker as the result.
+            Default: `">> "`
+
+                          *g:conjure#client#ruby#stdio#value_prefix_pattern*
+`g:conjure#client#ruby#stdio#value_prefix_pattern`
+            Lua pattern to identify a return value output as opposed to a
+            printed, non-code, string.
+            Default: `"=> "`
+
+
+vim:tw=78:sw=2:ts=2:ft=help:norl:et:listchars=
+
+
