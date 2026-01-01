@@ -54,9 +54,10 @@
    :path_subs nil
    :client_on_load true
 
-   :filetypes [:clojure :fennel :janet :javascript :hy :julia :racket :scheme 
+   :filetypes [:clojure :elixir :fennel :janet :javascript :hy :julia :racket :scheme
                :lua :lisp :python :rust :sql :typescript :php :r]
    :filetype {:clojure :conjure.client.clojure.nrepl
+              :elixir :conjure.client.elixir.stdio
               :fennel :conjure.client.fennel.nfnl
               :janet :conjure.client.janet.netrepl
               :hy :conjure.client.hy.stdio
