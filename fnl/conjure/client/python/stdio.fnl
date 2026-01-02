@@ -39,8 +39,9 @@
 ; "current form" and not be surprised that it wasn't what you thought.
 (fn M.form-node? [node]
   ;; These debug messages will appear in the log buffer before the eval messages.
-  (log.dbg (.. "M.form-node?: node:type = " (core.pr-str (node:type))))
-  (log.dbg (.. "M.form-node?: node:parent = " (core.pr-str (node:parent))))
+  (log.dbg "--------------------")
+  (log.dbg (.. "python.stdio.form-node?: node:type:" (core.pr-str (node:type))))
+  (log.dbg (.. "python.stdio.form-node?: node:parent:" (core.pr-str (node:parent))))
   (let [parent (node:parent)]
     (if (= "expression_statement" (node:type)) true
         (= "import_statement" (node:type)) true
@@ -118,7 +119,7 @@
 
 (fn get-exec-str
   [s]
-  (.. "import base64\nexec(base64.b64decode('" (b64.encode s) "'))\n"))
+  (.. "exec(base64.b64decode('" (b64.encode s) "'))\n"))
 
 (fn prep-code [s]
   (let [python-expr (M.str-is-python-expr? s)]
@@ -138,7 +139,7 @@
   (= (string.sub s 1 3) "..."))
 
 (fn M.format-msg [msg]
-  (log.dbg (.. "M.format-msg: >> " msg "<<"))
+  (log.dbg (.. "python.stdio.format-msg: msg:'" (core.str msg) "'"))
   (->> (text.split-lines msg)
        (core.filter #(~= "" $1))
        (core.filter #(not (is-dots? $1)))))
@@ -155,21 +156,25 @@
       result)))
 
 (fn M.unbatch [msgs]
+  (log.dbg (.. "python.stdio.unbatch: msgs:'" (core.str msgs) "'"))
   (->> msgs
        (core.map #(or (core.get $1 :out) (core.get $1 :err)))
        (str.join "")))
 
 (fn log-repl-output [msgs]
+  (log.dbg (.. "python.stdio.log-repl-output: msgs:'" (core.str msgs) "'"))
   (let [msgs (-> msgs M.unbatch M.format-msg)
         console-output-msgs (get-console-output-msgs msgs)
         cmd-result (get-expression-result msgs)]
     (when (not (core.empty? console-output-msgs))
+      (log.dbg (.. "python.stdio.log-repl-output: console-output-msgs:'" (core.str console-output-msgs) "'"))
       (log.append console-output-msgs))
     (when cmd-result
+      (log.dbg (.. "python.stdio.log-repl-output: cmd-result:'" (core.str cmd-result) "'"))
       (log.append [cmd-result]))))
 
 (fn M.eval-str [opts]
-  (log.dbg (.. "M.eval-str opts >> " (core.pr-str opts) "<<"))
+  (log.dbg (.. "python.stdio.eval-str opts:'" (core.str opts) "'"))
   (with-repl-or-warn
     (fn [repl]
       (repl.send
@@ -248,6 +253,10 @@
              (display-repl-status :started
               (with-repl-or-warn
                (fn [repl]
+                 (repl.send
+                   "import base64\n"
+                   (fn [msgs] nil)
+                   nil)
                  (repl.send
                    (prep-code M.initialise-repl-code)
                    (fn [msgs] nil)
