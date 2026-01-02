@@ -267,7 +267,7 @@ configure the ones you care about one at a time you can set:
             equivalent `g:conjure#filetype#[filetype]` configuration value.
 
             Default: >
-              ["clojure", "fennel", "janet", "hy", "julia", "racket",
+              ["clojure", "elixir", "fennel", "janet", "hy", "julia", "racket",
                "scheme", "lua", "lisp", "python", "ruby", "rust", "sql"]
 <
                                                   *g:conjure#filetype#clojure*
@@ -275,6 +275,12 @@ configure the ones you care about one at a time you can set:
             Client to use for `clojure` buffers.
             Help: |conjure-client-clojure-nrepl|
             Default: `"conjure.client.clojure.nrepl"`
+
+                                                   *g:conjure#filetype#elixir*
+`g:conjure#filetype#elixir`
+            Client to use for `Elixir` buffers.
+            Help: |conjure-client-elixir-stdio|
+            Default: `"conjure.client.elixir.stdio"`
 
                                                    *g:conjure#filetype#fennel*
 `g:conjure#filetype#fennel`
@@ -316,12 +322,15 @@ configure the ones you care about one at a time you can set:
             Help: |conjure-client-racket-stdio|
             Default: `"conjure.client.racket.stdio"`
 
-                                                   *g:conjure#filetype#ruby*
 `g:conjure#filetype#ruby`
             Client to use for `Ruby` buffers.
             Help: |conjure-client-ruby-stdio|
             Default: `"conjure.client.ruby.stdio"`
 
+`g:conjure#filetype#rust`
+            Client to use for `Rust` buffers.
+            Help: |conjure-client-rust-evcxr|
+            Default: `"conjure.client.rust.evcxr"`
                                                    *g:conjure#filetype#sql*
 `g:conjure#filetype#sql`
             Client to use for `SQL` buffers.
@@ -992,6 +1001,7 @@ documentation below or through the `:help conjure-client-*` command. You can
 install more clients through 3rd party plugins or simply write your own within
 your dotfiles.
 
+ - |conjure-client-elixir-stdio|
  - |conjure-client-fennel-aniseed|
  - |conjure-client-fennel-stdio|
  - |conjure-client-clojure-nrepl|

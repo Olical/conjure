@@ -1,0 +1,87 @@
+                                                *conjure-client-elixir-stdio*
+
+==============================================================================
+CONTENTS                               *conjure-client-elixir-stdio-contents*
+
+    1. Introduction ........... |conjure-client-elixir-stdio-introduction|
+    2. Mappings ................... |conjure-client-elixir-stdio-mappings|
+    3. Configuration ......... |conjure-client-elixir-stdio-configuration|
+
+==============================================================================
+INTRODUCTION                       *conjure-client-elixir-stdio-introduction*
+>
+  iex is an interactive tool (Elixir REPL) used to execute Elixir expressions.
+
+Conjure starts an Elixir REPL within Neovim when you first open an Elixir
+(`.ex`) file. You can configure how the Elixir REPL is launched with the
+`g:conjure#client#elixir#stdio#command` configuration option.
+
+You should be able to evaluate files and forms as you would with other Conjure
+supported languages right away.
+
+Check out `:ConjureSchool` if you're unsure about what evaluation operations
+you can perform.
+
+ * https://elixir-lang.org/
+ * https://hexdocs.pm/elixir/introduction.html
+
+==============================================================================
+MAPPINGS                               *conjure-client-elixir-stdio-mappings*
+
+These mappings are the defaults, you can change them as described in
+|conjure-mappings| and |conjure-configuration|.
+
+See |conjure-client-elixir-stdio-configuration| for specific configuration
+options relevant to these mappings.
+
+<localleader>cs          Start the Ruby REPL if it's not running already.
+
+<localleader>cS          Stop any existing Ruby REPL.
+
+<localleader>ei          Interrupt running command. Same as pressing Ctrl-C
+                         in a cmdline REPL.
+
+==============================================================================
+CONFIGURATION                     *conjure-client-elixir-stdio-configuration*
+
+All configuration can be set as described in |conjure-configuration|.
+
+These items are specific to the Elixir client.
+
+                                 *g:conjure#client#elixir#stdio#mapping#start*
+`g:conjure#client#elixir#stdio#mapping#start`
+            Start the Elixir REPL if it's not running already.
+            Default: `"cs"`
+
+                                  *g:conjure#client#elixir#stdio#mapping#stop*
+`g:conjure#client#elixir#stdio#mapping#stop`
+            Stop any existing Elixir REPL.
+            Default: `"cS"`
+
+`g:conjure#client#elixir#stdio#mapping#interrupt`
+            Interrupt any existing Elixir REPL.
+            Default: `"ci"`
+
+                                       *g:conjure#client#elixir#stdio#command*
+`g:conjure#client#elixir#stdio#command`
+            Command used to start the Elixir REPL, you can modify this to add
+            arguments or change the command entirely.
+
+            When using a different REPL you'll probably have to change the
+            `prompt_pattern` too! Have a look at the default REPL output and
+            write a Lua pattern that will match that prompt string as best as
+            you can.
+
+            Default: `"iex"`
+
+                                *g:conjure#client#elixir#stdio#prompt_pattern*
+`g:conjure#client#elixir#stdio#prompt_pattern`
+            Lua pattern to identify a new REPL prompt. This match signals to
+            Conjure that the previous evaluation is complete and we're ready
+            to submit more code as well as collect all output prior to the
+            marker as the result.
+            Default: `"iex%(%d+%)> "`
+
+
+vim:tw=78:sw=2:ts=2:ft=help:norl:et:listchars=
+
