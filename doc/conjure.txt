@@ -268,7 +268,7 @@ configure the ones you care about one at a time you can set:
 
             Default: >
               ["clojure", "fennel", "janet", "hy", "julia", "racket",
-               "scheme", "lua", "lisp", "python", "rust", "sql"]
+               "scheme", "lua", "lisp", "python", "ruby", "rust", "sql"]
 <
                                                   *g:conjure#filetype#clojure*
 `g:conjure#filetype#clojure`
@@ -315,6 +315,12 @@ configure the ones you care about one at a time you can set:
             Client to use for `racket` buffers.
             Help: |conjure-client-racket-stdio|
             Default: `"conjure.client.racket.stdio"`
+
+                                                   *g:conjure#filetype#ruby*
+`g:conjure#filetype#ruby`
+            Client to use for `Ruby` buffers.
+            Help: |conjure-client-ruby-stdio|
+            Default: `"conjure.client.ruby.stdio"`
 
                                                    *g:conjure#filetype#sql*
 `g:conjure#filetype#sql`
@@ -1001,6 +1007,7 @@ your dotfiles.
  - |conjure-client-python-stdio|
  - |conjure-client-snd-s7-stdio|
  - |conjure-client-sql-stdio|
+ - |conjure-client-ruby-stdio|
  - |conjure-client-rust-evcxr|
  - |conjure-client-common-lisp-swank|
 

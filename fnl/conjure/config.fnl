@@ -54,8 +54,8 @@
    :path_subs nil
    :client_on_load true
 
-   :filetypes [:clojure :fennel :janet :javascript :hy :julia :racket :scheme 
-               :lua :lisp :python :rust :sql :typescript :php :r]
+   :filetypes [:clojure :fennel :janet :javascript :hy :julia :racket :scheme
+               :lua :lisp :python :ruby :rust :sql :typescript :php :r]
    :filetype {:clojure :conjure.client.clojure.nrepl
               :fennel :conjure.client.fennel.nfnl
               :janet :conjure.client.janet.netrepl
@@ -68,6 +68,7 @@
               :lisp :conjure.client.common-lisp.swank
               :python :conjure.client.python.stdio
               :r :conjure.client.r.stdio
+              :ruby :conjure.client.ruby.stdio
               :rust :conjure.client.rust.evcxr
               :sql :conjure.client.sql.stdio
               :typescript :conjure.client.javascript.stdio
