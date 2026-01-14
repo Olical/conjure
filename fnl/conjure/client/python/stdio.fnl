@@ -250,8 +250,8 @@
 
            :on-success
            (fn []
-             (display-repl-status :started
-              (with-repl-or-warn
+             (display-repl-status :started)
+             (with-repl-or-warn
                (fn [repl]
                  (repl.send
                    "import base64\n"
@@ -260,7 +260,7 @@
                  (repl.send
                    (prep-code M.initialise-repl-code)
                    (fn [msgs] nil)
-                   nil)))))
+                   nil))))
 
            :on-error
            (fn [err]
