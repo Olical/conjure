@@ -162,7 +162,29 @@ local function get_form(node)
   end
 end
 local function add_language(lang)
-  return (vim.treesitter.language.add or vim.treesitter.language.require_language or vim.treesitter.require_language)(lang)
+  local add
+  do
+    local case_25_ = vim.treesitter
+    if ((_G.type(case_25_) == "table") and ((_G.type(case_25_.language) == "table") and (nil ~= case_25_.language.add))) then
+      local f = case_25_.language.add
+      add = f
+    elseif ((_G.type(case_25_) == "table") and ((_G.type(case_25_.language) == "table") and (nil ~= case_25_.language.require_language))) then
+      local f = case_25_.language.require_language
+      local function _26_(...)
+        return pcall(f, ...)
+      end
+      add = _26_
+    elseif ((_G.type(case_25_) == "table") and (nil ~= case_25_.require_language)) then
+      local f = case_25_.require_language
+      local function _27_(...)
+        return pcall(f, ...)
+      end
+      add = _27_
+    else
+      add = nil
+    end
+  end
+  return add(lang)
 end
 local function get_root_node_for_str(lang, code)
   local parser = vim.treesitter.get_string_parser(code, lang)
