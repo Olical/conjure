@@ -53,6 +53,7 @@
     (vim.treesitter.stop buf)
     (tset vim.bo buf :syntax "on"))
 
+  (math.randomseed (os.time))
   (vim.api.nvim_buf_set_lines
     buf 0 -1 false
     [(str.join [(client.get :comment-prefix)

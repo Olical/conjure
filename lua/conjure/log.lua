@@ -42,6 +42,7 @@ local function on_new_log_buf(buf)
     vim.bo[buf]["syntax"] = "on"
   else
   end
+  math.randomseed(os.time())
   return vim.api.nvim_buf_set_lines(buf, 0, -1, false, {str.join({client.get("comment-prefix"), "Sponsored by @", core.get(sponsors, core.inc(math.floor(core.rand(core.dec(core.count(sponsors)))))), " \226\157\164"})})
 end
 local function upsert_buf()
