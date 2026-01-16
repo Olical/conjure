@@ -92,17 +92,6 @@
           (when f
             (f result)))))))
 
-(fn M.file []
-  (event.emit :eval :file)
-  (let [opts {:file-path (fs.localise-path (extract.file-path))
-              :origin :file
-              :action :eval}]
-    (set opts.preview (preview opts))
-    (display-request opts)
-    (client.call
-      :eval-file
-      (with-on-result-hook opts))))
-
 (fn assoc-context [opts]
   (when (not opts.context)
     (set opts.context
@@ -141,6 +130,18 @@
             (vim.api.nvim_feedkeys "m'" "n" false))))
 
       (client.call f-name opts))))
+
+(fn M.file []
+  (event.emit :eval :file)
+  (let [opts {:file-path (fs.localise-path (extract.file-path))
+              :origin :file
+              :action :eval}]
+    (set opts.preview (preview opts))
+    ((client-exec-fn :eval :eval-file)
+     (if opts.passive?
+       opts
+       (with-on-result-hook opts)))
+    nil))
 
 (fn apply-gsubs [code]
   (when code
