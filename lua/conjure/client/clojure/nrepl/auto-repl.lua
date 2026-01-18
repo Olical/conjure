@@ -7,14 +7,16 @@ local client = autoload("conjure.client")
 local config = autoload("conjure.config")
 local log = autoload("conjure.log")
 local process = autoload("conjure.process")
+local server = autoload("conjure.client.clojure.nrepl.server")
 local state = autoload("conjure.client.clojure.nrepl.state")
+local vim = _G.vim
 local M = define("conjure.client.clojure.nrepl.auto-repl")
 local cfg = config["get-in-fn"]({"client", "clojure", "nrepl"})
 M.enportify = function(subject)
   if subject:find("$port") then
-    local server = vim.fn.serverstart("localhost:0")
-    local _ = vim.fn.serverstop(server)
-    local port = server:gsub("localhost:", "")
+    local server0 = vim.fn.serverstart("localhost:0")
+    local _ = vim.fn.serverstop(server0)
+    local port = server0:gsub("localhost:", "")
     return {subject = subject:gsub("$port", port), port = port}
   else
     return {subject = subject}
@@ -49,5 +51,22 @@ M["upsert-auto-repl-proc"] = function()
   else
     return nil
   end
+end
+M["stop-auto-repl-proc"] = function()
+  local proc = state.get("auto-repl-proc")
+  if process["running?"](proc) then
+    process.stop(proc)
+    M["delete-auto-repl-port-file"]()
+    core.assoc(state.get(), "auto-repl-proc", nil)
+    core.assoc(state.get(), "auto-repl-port", nil)
+    return log.append({"; Stopped auto-repl"})
+  else
+    return nil
+  end
+end
+M["restart-auto-repl-proc"] = function()
+  server.disconnect()
+  M["stop-auto-repl-proc"]()
+  return M["upsert-auto-repl-proc"]()
 end
 return M

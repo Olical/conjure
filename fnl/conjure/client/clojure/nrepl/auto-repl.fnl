@@ -4,7 +4,9 @@
 (local config (autoload :conjure.config))
 (local log (autoload :conjure.log))
 (local process (autoload :conjure.process))
+(local server (autoload :conjure.client.clojure.nrepl.server))
 (local state (autoload :conjure.client.clojure.nrepl.state))
+(local vim _G.vim)
 
 (local M (define :conjure.client.clojure.nrepl.auto-repl))
 
@@ -52,5 +54,21 @@
           (core.spit port-file port))
         (log.append [(.. "; Starting auto-repl: " cmd)])
         proc))))
+
+(fn M.stop-auto-repl-proc []
+  "Stops the auto REPL if running."
+  (let [proc (state.get :auto-repl-proc)]
+    (when (process.running? proc)
+      (process.stop proc)
+      (M.delete-auto-repl-port-file)
+      (core.assoc (state.get) :auto-repl-proc nil)
+      (core.assoc (state.get) :auto-repl-port nil)
+      (log.append ["; Stopped auto-repl"]))))
+
+(fn M.restart-auto-repl-proc []
+  "Restarts the auto REPL - disconnects, stops, starts fresh, and reconnects."
+  (server.disconnect)
+  (M.stop-auto-repl-proc)
+  (M.upsert-auto-repl-proc))
 
 M

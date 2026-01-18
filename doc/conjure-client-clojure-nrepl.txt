@@ -143,6 +143,11 @@ options relevant to these mappings.
 
 <localleader>rc          Clear the namespace refresh cache.
 
+<localleader>car         Restart the babashka auto-REPL. This will disconnect
+                         the current nREPL connection, stop the babashka
+                         process, and start a fresh one. Your next evaluation
+                         will automatically reconnect.
+
 ==============================================================================
 CONFIGURATION                     *conjure-client-clojure-nrepl-configuration*
 
@@ -491,6 +496,11 @@ All configuration can be set as described in |conjure-configuration|.
 `g:conjure#client#clojure#nrepl#mapping#refresh_clear`
             Clear the namespace refresh cache.
             Default: `rc`
+
+                    *g:conjure#client#clojure#nrepl#mapping#auto_repl_restart*
+`g:conjure#client#clojure#nrepl#mapping#auto_repl_restart`
+            Restart the babashka auto-REPL.
+            Default: `car`
 
                  *g:conjure#client#clojure#nrepl#completion#cljs#use_suitable*
 `g:conjure#client#clojure#nrepl#completion#cljs#use_suitable`

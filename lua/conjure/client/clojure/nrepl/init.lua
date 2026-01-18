@@ -28,7 +28,7 @@ end
 M["comment-node?"] = ts["lisp-comment-node?"]
 config.merge({client = {clojure = {nrepl = {connection = {default_host = "localhost", port_files = {".nrepl-port", ".shadow-cljs/nrepl.port"}, auto_repl = {enabled = true, cmd = "bb nrepl-server localhost:$port", port_file = ".nrepl-port", hidden = false}}, eval = {pretty_print = true, auto_require = true, print_quota = nil, print_function = "cider.nrepl.pprint/pprint", print_options = {length = 500, level = 50, right_margin = 72}, raw_out = false}, interrupt = {sample_limit = 0.3}, refresh = {after = nil, before = nil, dirs = nil, backend = "tools.namespace"}, test = {current_form_names = {"deftest"}, pretty_print_test_failures = true, runner = "clojure", call_suffix = nil, raw_out = false}, completion = {cljs = {use_suitable = true}, with_context = false}, tap = {queue_size = 16}}}}})
 if config["get-in"]({"mapping", "enable_defaults"}) then
-  config.merge({client = {clojure = {nrepl = {mapping = {disconnect = "cd", connect_port_file = "cf", interrupt = "ei", macro_expand_1 = "x1", macro_expand = "xr", macro_expand_all = "xa", last_exception = "ve", result_1 = "v1", result_2 = "v2", result_3 = "v3", view_source = "vs", view_tap = "vt", session_clone = "sc", session_fresh = "sf", session_close = "sq", session_close_all = "sQ", session_list = "sl", session_next = "sn", session_prev = "sp", session_select = "ss", run_all_tests = "ta", run_current_ns_tests = "tn", run_alternate_ns_tests = "tN", run_current_test = "tc", refresh_changed = "rr", refresh_all = "ra", refresh_clear = "rc"}}}}})
+  config.merge({client = {clojure = {nrepl = {mapping = {disconnect = "cd", connect_port_file = "cf", interrupt = "ei", macro_expand_1 = "x1", macro_expand = "xr", macro_expand_all = "xa", last_exception = "ve", result_1 = "v1", result_2 = "v2", result_3 = "v3", view_source = "vs", view_tap = "vt", session_clone = "sc", session_fresh = "sf", session_close = "sq", session_close_all = "sQ", session_list = "sl", session_next = "sn", session_prev = "sp", session_select = "ss", run_all_tests = "ta", run_current_ns_tests = "tn", run_alternate_ns_tests = "tN", run_current_test = "tc", refresh_changed = "rr", refresh_all = "ra", refresh_clear = "rc", auto_repl_restart = "car"}}}}})
 else
 end
 M.context = function(header)
@@ -109,6 +109,7 @@ M["on-filetype"] = function()
   mapping.buf("CljRefreshAll", cfg({"mapping", "refresh_all"}), util["wrap-require-fn-call"]("conjure.client.clojure.nrepl.action", "refresh-all"), {desc = "Refresh all namespaces"})
   mapping.buf("CljRefreshClear", cfg({"mapping", "refresh_clear"}), util["wrap-require-fn-call"]("conjure.client.clojure.nrepl.action", "refresh-clear"), {desc = "Clear the refresh cache"})
   mapping.buf("CljViewTap", cfg({"mapping", "view_tap"}), util["wrap-require-fn-call"]("conjure.client.clojure.nrepl.action", "view-tap"), {desc = "Show all tapped values and clear the queue"})
+  mapping.buf("CljAutoReplRestart", cfg({"mapping", "auto_repl_restart"}), util["wrap-require-fn-call"]("conjure.client.clojure.nrepl.auto-repl", "restart-auto-repl-proc"), {desc = "Restart the babashka auto-REPL"})
   local function _9_(_241)
     return action["shadow-select"](core.get(_241, "args"))
   end

@@ -125,7 +125,9 @@
 
         :refresh_changed "rr"
         :refresh_all "ra"
-        :refresh_clear "rc"}}}}}))
+        :refresh_clear "rc"
+
+        :auto_repl_restart "car"}}}}}))
 
 (fn M.context [header]
   (-?> header
@@ -289,6 +291,11 @@
     :CljViewTap (cfg [:mapping :view_tap])
     (util.wrap-require-fn-call :conjure.client.clojure.nrepl.action :view-tap)
     {:desc "Show all tapped values and clear the queue"})
+
+  (mapping.buf
+    :CljAutoReplRestart (cfg [:mapping :auto_repl_restart])
+    (util.wrap-require-fn-call :conjure.client.clojure.nrepl.auto-repl :restart-auto-repl-proc)
+    {:desc "Restart the babashka auto-REPL"})
 
   (vim.api.nvim_buf_create_user_command
     0
