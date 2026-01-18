@@ -190,29 +190,26 @@ M.start = function()
   if state("repl") then
     return log.append({(M["comment-prefix"] .. "Can't start, REPL is already running."), (M["comment-prefix"] .. "Stop the REPL with " .. config["get-in"]({"mapping", "prefix"}) .. cfg({"mapping", "stop"}))}, {["break?"] = true})
   else
-    local function _21_()
-      return ts["add-language"]("python")
-    end
-    if not pcall(_21_) then
+    if not ts["add-language"]("python") then
       return log.append({(M["comment-prefix"] .. "(error) The python client requires a python treesitter parser in order to function."), (M["comment-prefix"] .. "(error) See https://github.com/nvim-treesitter/nvim-treesitter"), (M["comment-prefix"] .. "(error) for installation instructions.")})
     else
-      local function _22_()
-        local function _23_(repl)
+      local function _21_()
+        local function _22_(repl)
+          local function _23_(msgs)
+            return nil
+          end
+          repl.send("import base64\n", _23_, nil)
           local function _24_(msgs)
             return nil
           end
-          repl.send("import base64\n", _24_, nil)
-          local function _25_(msgs)
-            return nil
-          end
-          return repl.send(prep_code(M["initialise-repl-code"]), _25_, nil)
+          return repl.send(prep_code(M["initialise-repl-code"]), _24_, nil)
         end
-        return display_repl_status("started", with_repl_or_warn(_23_))
+        return display_repl_status("started", with_repl_or_warn(_22_))
       end
-      local function _26_(err)
+      local function _25_(err)
         return display_repl_status(err)
       end
-      local function _27_(code, signal)
+      local function _26_(code, signal)
         if (("number" == type(code)) and (code > 0)) then
           log.append({(M["comment-prefix"] .. "process exited with code " .. code)})
         else
@@ -223,10 +220,10 @@ M.start = function()
         end
         return M.stop()
       end
-      local function _30_(msg)
+      local function _29_(msg)
         return log.dbg(M["format-msg"](M.unbatch({msg})), {["join-first?"] = true})
       end
-      return core.assoc(state(), "repl", stdio.start({["prompt-pattern"] = cfg({"prompt-pattern"}), cmd = cfg({"command"}), ["delay-stderr-ms"] = cfg({"delay-stderr-ms"}), ["on-success"] = _22_, ["on-error"] = _26_, ["on-exit"] = _27_, ["on-stray-output"] = _30_}))
+      return core.assoc(state(), "repl", stdio.start({["prompt-pattern"] = cfg({"prompt-pattern"}), cmd = cfg({"command"}), ["delay-stderr-ms"] = cfg({"delay-stderr-ms"}), ["on-success"] = _21_, ["on-error"] = _25_, ["on-exit"] = _26_, ["on-stray-output"] = _29_}))
     end
   end
 end
@@ -234,11 +231,11 @@ M["on-exit"] = function()
   return M.stop()
 end
 M.interrupt = function()
-  local function _33_(repl)
+  local function _32_(repl)
     log.append({(M["comment-prefix"] .. " Sending interrupt signal.")}, {["break?"] = true})
     return repl["send-signal"]("sigint")
   end
-  return with_repl_or_warn(_33_)
+  return with_repl_or_warn(_32_)
 end
 M["on-load"] = function()
   if config["get-in"]({"client_on_load"}) then
@@ -248,17 +245,17 @@ M["on-load"] = function()
   end
 end
 M["on-filetype"] = function()
-  local function _35_()
+  local function _34_()
     return M.start()
   end
-  mapping.buf("PythonStart", cfg({"mapping", "start"}), _35_, {desc = "Start the Python REPL"})
-  local function _36_()
+  mapping.buf("PythonStart", cfg({"mapping", "start"}), _34_, {desc = "Start the Python REPL"})
+  local function _35_()
     return M.stop()
   end
-  mapping.buf("PythonStop", cfg({"mapping", "stop"}), _36_, {desc = "Stop the Python REPL"})
-  local function _37_()
+  mapping.buf("PythonStop", cfg({"mapping", "stop"}), _35_, {desc = "Stop the Python REPL"})
+  local function _36_()
     return M.interrupt()
   end
-  return mapping.buf("PythonInterrupt", cfg({"mapping", "interrupt"}), _37_, {desc = "Interrupt the current evaluation"})
+  return mapping.buf("PythonInterrupt", cfg({"mapping", "interrupt"}), _36_, {desc = "Interrupt the current evaluation"})
 end
 return M

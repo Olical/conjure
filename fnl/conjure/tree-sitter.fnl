@@ -190,10 +190,11 @@
             node))))))
 
 (fn add-language [lang]
-  ((or vim.treesitter.language.add
-       vim.treesitter.language.require_language
-       vim.treesitter.require_language)
-   lang))
+  (let [add (case vim.treesitter
+              {:language {:add f}} f
+              {:language {:require_language f}} (partial pcall f)
+              {:require_language f} (partial pcall f))]
+    (add lang)))
 
 (fn get-root-node-for-str [lang code]
   (let [parser (vim.treesitter.get_string_parser code lang)]
