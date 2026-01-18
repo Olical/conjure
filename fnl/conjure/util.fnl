@@ -1,7 +1,14 @@
 (local {: autoload : define} (require :conjure.nfnl.module))
 (local a (autoload :conjure.nfnl.core))
+(local vim _G.vim)
 
 (local M (define :conjure.util))
+
+(fn M.os []
+  "Returns 'windows' or 'unix' based on the path separator."
+  (if (= "\\" (string.sub package.config 1 1))
+      :windows
+      :unix))
 
 (fn M.wrap-require-fn-call [mod f]
   "We deliberately don't pass args through here because functions can behave

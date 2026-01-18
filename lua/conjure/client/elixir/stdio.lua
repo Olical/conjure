@@ -9,19 +9,26 @@ local log = autoload("conjure.log")
 local mapping = autoload("conjure.mapping")
 local stdio = autoload("conjure.remote.stdio")
 local str = autoload("conjure.nfnl.string")
+local util = autoload("conjure.util")
 local vim = _G.vim
 local M = define("conjure.client.elixir.stdio")
-config.merge({client = {elixir = {stdio = {command = "iex --no-color", standalone_command = "iex --no-color", prompt_pattern = "iex%(%d+%)> "}}}})
+local iex_command
+if ("windows" == util.os()) then
+  iex_command = "iex.bat --no-color"
+else
+  iex_command = "iex --no-color"
+end
+config.merge({client = {elixir = {stdio = {command = iex_command, standalone_command = iex_command, prompt_pattern = "iex%(%d+%)> "}}}})
 if config["get-in"]({"mapping", "enable_defaults"}) then
   config.merge({client = {elixir = {stdio = {mapping = {start = "cs", stop = "cS", interrupt = "ei"}}}}})
 else
 end
 local cfg = config["get-in-fn"]({"client", "elixir", "stdio"})
 local state
-local function _3_()
+local function _4_()
   return {repl = nil}
 end
-state = client["new-state"](_3_)
+state = client["new-state"](_4_)
 M["buf-suffix"] = ".ex"
 M["comment-prefix"] = "# "
 M["form-node?"] = function(node)
@@ -79,58 +86,58 @@ local function prep_code(s)
   return (s .. "\n")
 end
 local function display_result(msg)
-  local function _6_(_241)
+  local function _7_(_241)
     return (M["comment-prefix"] .. _241)
   end
-  return log.append(core.map(_6_, msg))
+  return log.append(core.map(_7_, msg))
 end
 local function remove_prompts(msgs)
-  local function _7_(_241)
+  local function _8_(_241)
     return string.gsub(_241, "%.+%(%d+%)> +", "")
   end
-  local function _8_(_241)
+  local function _9_(_241)
     return core["nil?"](string.find(_241, "iex:%d+"))
   end
-  local function _9_(_241)
+  local function _10_(_241)
     return not ("" == _241)
   end
-  return core.map(_7_, core.filter(_8_, core.filter(_9_, str.split(msgs, "\n"))))
+  return core.map(_8_, core.filter(_9_, core.filter(_10_, str.split(msgs, "\n"))))
 end
 M.unbatch = function(msgs)
   log.dbg(("client.elixir.stdio.unbatch: msgs='" .. core.str(msgs) .. "'"))
-  local function _10_(_241)
+  local function _11_(_241)
     return str.join("\n", _241)
   end
-  local function _11_(_241)
+  local function _12_(_241)
     return remove_prompts(_241)
   end
-  local function _12_(_241)
+  local function _13_(_241)
     return (core.get(_241, "out") or core.get(_241, "err"))
   end
-  return {out = str.join(core.map(_10_, core.map(_11_, core.map(_12_, msgs))))}
+  return {out = str.join(core.map(_11_, core.map(_12_, core.map(_13_, msgs))))}
 end
 M["format-msg"] = function(msg)
   log.dbg(("client.elixir.stdio.format-msg: msg='" .. core.str(msg) .. "'"))
-  local function _13_(line)
+  local function _14_(line)
     return line
   end
-  local function _14_(_241)
+  local function _15_(_241)
     return not str["blank?"](_241)
   end
-  return core.map(_13_, core.filter(_14_, str.split(core.get(msg, "out"), "\n")))
+  return core.map(_14_, core.filter(_15_, str.split(core.get(msg, "out"), "\n")))
 end
 M["eval-str"] = function(opts)
   log.dbg(("client.elixir.stdio.eval-str: opts='" .. core.str(opts) .. "'"))
-  local function _15_(repl)
-    local function _16_(msgs)
+  local function _16_(repl)
+    local function _17_(msgs)
       local msgs0 = M["format-msg"](M.unbatch(msgs))
       log.dbg(("client.elixir.stdio.eval-str: in cb: msgs='" .. core.str(msgs0) .. "'"))
       opts["on-result"](str.join("\n", msgs0))
       return log.append(msgs0)
     end
-    return repl.send(prep_code(opts.code), _16_, {["batch?"] = true})
+    return repl.send(prep_code(opts.code), _17_, {["batch?"] = true})
   end
-  return with_repl_or_warn(_15_)
+  return with_repl_or_warn(_16_)
 end
 M["eval-file"] = function(opts)
   return M["eval-str"](core.assoc(opts, "code", core.slurp(opts["file-path"])))
@@ -178,55 +185,55 @@ M.start = function()
     config.merge({client = {elixir = {stdio = {command = run_cmd}}}}, {["overwrite?"] = true})
     log.dbg(("client.elixir.stdio.start: prompt_pattern='" .. cfg({"prompt_pattern"}) .. "', command='" .. cfg({"command"}) .. "'"))
     log.append({(M["comment-prefix"] .. "Using iex in " .. iex_mode)})
-    local function _21_()
+    local function _22_()
       display_repl_status("started")
-      local function _22_(repl)
-        local function _23_(msgs)
+      local function _23_(repl)
+        local function _24_(msgs)
           return display_result(M["format-msg"](M.unbatch(msgs)))
         end
-        return repl.send(prep_code(":help"), _23_, {["batch?"] = true})
+        return repl.send(prep_code(":help"), _24_, {["batch?"] = true})
       end
-      return with_repl_or_warn(_22_)
+      return with_repl_or_warn(_23_)
     end
-    local function _24_(err)
+    local function _25_(err)
       return display_repl_status(err)
     end
-    local function _25_(code, signal)
+    local function _26_(code, signal)
       log.append({(M["comment-prefix"] .. "process exited with code: " .. core.str(code))})
       log.append({(M["comment-prefix"] .. "process exited with signal: " .. core.str(signal))})
       return M.stop()
     end
-    local function _26_(msg)
+    local function _27_(msg)
       return log.append(M["format-msg"](msg))
     end
-    return core.assoc(state(), "repl", stdio.start({["prompt-pattern"] = cfg({"prompt_pattern"}), cmd = cfg({"command"}), ["on-success"] = _21_, ["on-error"] = _24_, ["on-exit"] = _25_, ["on-stray-output"] = _26_}))
+    return core.assoc(state(), "repl", stdio.start({["prompt-pattern"] = cfg({"prompt_pattern"}), cmd = cfg({"command"}), ["on-success"] = _22_, ["on-error"] = _25_, ["on-exit"] = _26_, ["on-stray-output"] = _27_}))
   end
 end
 M["on-exit"] = function()
   return M.stop()
 end
 M.interrupt = function()
-  local function _28_(repl)
+  local function _29_(repl)
     log.append({(M["comment-prefix"] .. "Sending interrupt signal.")}, {["break?"] = true})
     return repl["send-signal"]("sigint")
   end
-  return with_repl_or_warn(_28_)
+  return with_repl_or_warn(_29_)
 end
 M["on-load"] = function()
   return M.start()
 end
 M["on-filetype"] = function()
-  local function _29_()
+  local function _30_()
     return M.start()
   end
-  mapping.buf("ElixirStart", cfg({"mapping", "start"}), _29_, {desc = "Start the REPL"})
-  local function _30_()
+  mapping.buf("ElixirStart", cfg({"mapping", "start"}), _30_, {desc = "Start the REPL"})
+  local function _31_()
     return M.stop()
   end
-  mapping.buf("ElixirStop", cfg({"mapping", "stop"}), _30_, {desc = "Stop the REPL"})
-  local function _31_()
+  mapping.buf("ElixirStop", cfg({"mapping", "stop"}), _31_, {desc = "Stop the REPL"})
+  local function _32_()
     return M.interrupt()
   end
-  return mapping.buf("ElixirInterrupt", cfg({"mapping", "interrupt"}), _31_, {desc = "Interrupt the REPL"})
+  return mapping.buf("ElixirInterrupt", cfg({"mapping", "interrupt"}), _32_, {desc = "Interrupt the REPL"})
 end
 return M

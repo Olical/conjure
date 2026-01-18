@@ -6,6 +6,7 @@
 (local mapping (autoload :conjure.mapping))
 (local stdio (autoload :conjure.remote.stdio))
 (local str (autoload :conjure.nfnl.string))
+(local util (autoload :conjure.util))
 (local vim _G.vim)
 
 ;;============================================================
@@ -46,12 +47,16 @@
 
 (local M (define :conjure.client.elixir.stdio))
 
+(local iex-command (if (= :windows (util.os))
+                       "iex.bat --no-color"
+                       "iex --no-color"))
+
 (config.merge
   {:client
    {:elixir
     {:stdio
-     {:command "iex --no-color" ; M.start will overwrite this.
-      :standalone_command "iex --no-color"
+     {:command iex-command ; M.start will overwrite this.
+      :standalone_command iex-command
       :prompt_pattern "iex%(%d+%)> "}}}})
 
 (when (config.get-in [:mapping :enable_defaults])
