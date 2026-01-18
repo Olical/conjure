@@ -194,6 +194,7 @@ M.start = function()
       return log.append({(M["comment-prefix"] .. "(error) The python client requires a python treesitter parser in order to function."), (M["comment-prefix"] .. "(error) See https://github.com/nvim-treesitter/nvim-treesitter"), (M["comment-prefix"] .. "(error) for installation instructions.")})
     else
       local function _21_()
+        display_repl_status("started")
         local function _22_(repl)
           local function _23_(msgs)
             return nil
@@ -204,7 +205,7 @@ M.start = function()
           end
           return repl.send(prep_code(M["initialise-repl-code"]), _24_, nil)
         end
-        return display_repl_status("started", with_repl_or_warn(_22_))
+        return with_repl_or_warn(_22_)
       end
       local function _25_(err)
         return display_repl_status(err)
