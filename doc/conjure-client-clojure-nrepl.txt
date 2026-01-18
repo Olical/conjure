@@ -148,6 +148,14 @@ options relevant to these mappings.
                          process, and start a fresh one. Your next evaluation
                          will automatically reconnect.
 
+<localleader>x1          Run the current form wrapped in
+                         `(macroexpand-1 ...)`.
+
+<localleader>xr          Run the current form wrapped in `(macroexpand ...)`.
+
+<localleader>xa          Run the current form wrapped in
+                         `(clojure.walk/macroexpand-all ...)`.
+
 ==============================================================================
 CONFIGURATION                     *conjure-client-clojure-nrepl-configuration*
 
