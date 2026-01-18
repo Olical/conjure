@@ -74,13 +74,6 @@ local function with_on_result_hook(opts)
   end
   return core.update(opts, "on-result", _6_)
 end
-M.file = function()
-  event.emit("eval", "file")
-  local opts = {["file-path"] = fs["localise-path"](extract["file-path"]()), origin = "file", action = "eval"}
-  opts.preview = preview(opts)
-  display_request(opts)
-  return client.call("eval-file", with_on_result_hook(opts))
-end
 local function assoc_context(opts)
   if not opts.context then
     opts.context = (vim.b["conjure#context"] or extract.context())
@@ -114,13 +107,27 @@ local function client_exec_fn(action, f_name, base_opts)
   end
   return _11_
 end
+M.file = function()
+  event.emit("eval", "file")
+  local opts = {["file-path"] = fs["localise-path"](extract["file-path"]()), origin = "file", action = "eval"}
+  opts.preview = preview(opts)
+  local function _15_()
+    if opts["passive?"] then
+      return opts
+    else
+      return with_on_result_hook(opts)
+    end
+  end
+  client_exec_fn("eval", "eval-file")(_15_())
+  return nil
+end
 local function apply_gsubs(code)
   if code then
-    local function _17_(code0, _15_)
-      local name = _15_[1]
-      local _arg_16_ = _15_[2]
-      local pat = _arg_16_[1]
-      local rep = _arg_16_[2]
+    local function _18_(code0, _16_)
+      local name = _16_[1]
+      local _arg_17_ = _16_[2]
+      local pat = _arg_17_[1]
+      local rep = _arg_17_[2]
       local ok_3f, val_or_err = pcall(string.gsub, code0, pat, rep)
       if ok_3f then
         return val_or_err
@@ -129,7 +136,7 @@ local function apply_gsubs(code)
         return code0
       end
     end
-    return core.reduce(_17_, code, core["kv-pairs"]((vim.b["conjure#eval#gsubs"] or vim.g["conjure#eval#gsubs"])))
+    return core.reduce(_18_, code, core["kv-pairs"]((vim.b["conjure#eval#gsubs"] or vim.g["conjure#eval#gsubs"])))
   else
     return nil
   end
@@ -140,14 +147,14 @@ M["eval-str"] = function(opts)
   highlight_range(opts.range)
   event.emit("eval", "str")
   core.update(opts, "code", apply_gsubs)
-  local function _20_()
+  local function _21_()
     if opts["passive?"] then
       return opts
     else
       return with_on_result_hook(opts)
     end
   end
-  client_exec_fn("eval", "eval-str")(_20_())
+  client_exec_fn("eval", "eval-str")(_21_())
   return nil
 end
 M.previous = function()
@@ -160,11 +167,11 @@ M.previous = function()
   end
 end
 M["wrap-emit"] = function(name, f)
-  local function _22_(...)
+  local function _23_(...)
     event.emit(name)
     return f(...)
   end
-  return _22_
+  return _23_
 end
 local doc_str = M["wrap-emit"]("doc", client_exec_fn("doc", "doc-str"))
 local def_str = M["wrap-emit"]("def", client_exec_fn("def", "def-str", {["suppress-hud?"] = true, ["jumping?"] = true}))
@@ -188,11 +195,11 @@ M["replace-form"] = function()
     local content = form.content
     local range = form.range
     local node = form.node
-    local function _24_(result)
+    local function _25_(result)
       buffer["replace-range"](buf, range, result)
       return editor["go-to"](win, core["get-in"](range, {"start", 1}), core.inc(core["get-in"](range, {"start", 2})))
     end
-    M["eval-str"]({code = content, range = range, node = node, origin = "replace-form", ["suppress-hud?"] = true, ["on-result"] = _24_})
+    M["eval-str"]({code = content, range = range, node = node, origin = "replace-form", ["suppress-hud?"] = true, ["on-result"] = _25_})
     return form
   else
     return nil
@@ -213,10 +220,10 @@ M["marked-form"] = function(mark)
   local comment_prefix = client.get("comment-prefix")
   local mark0 = (mark or extract["prompt-char"]())
   local ok_3f, err
-  local function _27_()
+  local function _28_()
     return editor["go-to-mark"](mark0)
   end
-  ok_3f, err = pcall(_27_)
+  ok_3f, err = pcall(_28_)
   if ok_3f then
     M["current-form"]({origin = str.join({"marked-form [", mark0, "]"})})
     editor["go-back"]()
@@ -232,10 +239,10 @@ local function insert_result_comment(tag, input)
     local content = input.content
     local range = input.range
     local node = input.node
-    local function _29_(result)
+    local function _30_(result)
       return buffer["append-prefixed-line"](buf, range["end"], comment_prefix, result)
     end
-    M["eval-str"]({code = content, range = range, node = node, origin = str.join({"comment-", tag}), ["suppress-hud?"] = true, ["on-result"] = _29_})
+    M["eval-str"]({code = content, range = range, node = node, origin = str.join({"comment-", tag}), ["suppress-hud?"] = true, ["on-result"] = _30_})
     return input
   else
     return nil
@@ -251,10 +258,10 @@ M["comment-word"] = function()
   return insert_result_comment("word", extract.word())
 end
 M.word = function()
-  local _let_31_ = extract.word()
-  local content = _let_31_.content
-  local range = _let_31_.range
-  local node = _let_31_.node
+  local _let_32_ = extract.word()
+  local content = _let_32_.content
+  local range = _let_32_.range
+  local node = _let_32_.node
   if not core["empty?"](content) then
     return M["eval-str"]({code = content, range = range, node = node, origin = "word"})
   else
@@ -262,10 +269,10 @@ M.word = function()
   end
 end
 M["doc-word"] = function()
-  local _let_33_ = extract.word()
-  local content = _let_33_.content
-  local range = _let_33_.range
-  local node = _let_33_.node
+  local _let_34_ = extract.word()
+  local content = _let_34_.content
+  local range = _let_34_.range
+  local node = _let_34_.node
   if not core["empty?"](content) then
     return doc_str({code = content, range = range, node = node, origin = "word"})
   else
@@ -273,10 +280,10 @@ M["doc-word"] = function()
   end
 end
 M["def-word"] = function()
-  local _let_35_ = extract.word()
-  local content = _let_35_.content
-  local range = _let_35_.range
-  local node = _let_35_.node
+  local _let_36_ = extract.word()
+  local content = _let_36_.content
+  local range = _let_36_.range
+  local node = _let_36_.node
   if not core["empty?"](content) then
     return def_str({code = content, range = range, node = node, origin = "word"})
   else
@@ -284,24 +291,24 @@ M["def-word"] = function()
   end
 end
 M.buf = function()
-  local _let_37_ = extract.buf()
-  local content = _let_37_.content
-  local range = _let_37_.range
+  local _let_38_ = extract.buf()
+  local content = _let_38_.content
+  local range = _let_38_.range
   return M["eval-str"]({code = content, range = range, origin = "buf"})
 end
 M.command = function(code)
   return M["eval-str"]({code = code, origin = "command"})
 end
 M.range = function(start, _end)
-  local _let_38_ = extract.range(start, _end)
-  local content = _let_38_.content
-  local range = _let_38_.range
+  local _let_39_ = extract.range(start, _end)
+  local content = _let_39_.content
+  local range = _let_39_.range
   return M["eval-str"]({code = content, range = range, origin = "range"})
 end
 M.selection = function(kind)
-  local _let_39_ = extract.selection({kind = (kind or vim.fn.visualmode()), ["visual?"] = not kind})
-  local content = _let_39_.content
-  local range = _let_39_.range
+  local _let_40_ = extract.selection({kind = (kind or vim.fn.visualmode()), ["visual?"] = not kind})
+  local content = _let_40_.content
+  local range = _let_40_.range
   return M["eval-str"]({code = content, range = range, origin = "selection"})
 end
 local function wrap_completion_result(result)
@@ -313,16 +320,16 @@ local function wrap_completion_result(result)
 end
 M.completions = function(prefix, cb)
   local function cb_wrap(results)
-    local or_41_ = results
-    if not or_41_ then
+    local or_42_ = results
+    if not or_42_ then
       local tmp_3_ = config["get-in"]({"completion", "fallback"})
       if (nil ~= tmp_3_) then
-        or_41_ = vim.api.nvim_call_function(tmp_3_, {0, prefix})
+        or_42_ = vim.api.nvim_call_function(tmp_3_, {0, prefix})
       else
-        or_41_ = nil
+        or_42_ = nil
       end
     end
-    return cb(core.map(wrap_completion_result, or_41_))
+    return cb(core.map(wrap_completion_result, or_42_))
   end
   if ("function" == type(client.get("completions"))) then
     return client.call("completions", assoc_context({["file-path"] = extract["file-path"](), prefix = prefix, cb = cb_wrap}))
