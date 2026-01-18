@@ -34,9 +34,9 @@ These mappings are the defaults, you can change them as described in
 See |conjure-client-elixir-stdio-configuration| for specific configuration
 options relevant to these mappings.
 
-<localleader>cs          Start the Ruby REPL if it's not running already.
+<localleader>cs          Start the Elixir REPL if it's not running already.
 
-<localleader>cS          Stop any existing Ruby REPL.
+<localleader>cS          Stop any existing Elixir REPL.
 
 <localleader>ei          Interrupt running command. Same as pressing Ctrl-C
                          in a cmdline REPL.
