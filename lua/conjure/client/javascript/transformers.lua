@@ -177,7 +177,7 @@ local function _22_(node, code)
   end
 end
 node_handlers.export_statement = _22_
-for _, t in pairs({"expression_statement", "variable_declaration", "return_statement", "throw_statement", "break_statement", "continue_statement", "debugger_statement", "class_declaration", "field_definition", "public_field_definition", "function_declaration"}) do
+for _, t in pairs({"type_alias_declaration", "expression_statement", "variable_declaration", "return_statement", "throw_statement", "break_statement", "continue_statement", "debugger_statement", "class_declaration", "field_definition", "public_field_definition", "function_declaration"}) do
   node_handlers[t] = handle_statement
 end
 M.transform = function(s)

@@ -133,7 +133,8 @@
            _ (node-handlers.default child code)))))
 
 (each [_ t (pairs
-             [:expression_statement
+             [:type_alias_declaration
+              :expression_statement
               :variable_declaration
               :return_statement
               :throw_statement
