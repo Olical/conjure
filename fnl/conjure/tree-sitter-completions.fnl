@@ -1,6 +1,5 @@
 (local {: autoload : define} (require :conjure.nfnl.module))
 (local a (autoload :conjure.nfnl.core))
-(local log (autoload :conjure.log))
 (local ts (autoload :conjure.tree-sitter))
 (local util (autoload :conjure.util))
 (local res (autoload :conjure.resources))
@@ -70,7 +69,7 @@
 
 (fn is-in-scope [target scope]
   (or (= nil scope) ; nil implies global scope
-      (scope:equal target) 
+      (scope:equal target)
       (vim.treesitter.is_ancestor scope target)))
 
 (fn get-node-text [node buffer meta]
@@ -81,12 +80,16 @@
         base-text)))
 
 (fn get-completions-for-query [query]
+  ;; To avoid getting an invalid node when calling M.get-completions-at-cursor, ensure
+  ;; that the buffer is parsed.
+  ;; See the note for `:he treesitter.get_node` and `:he languagetree`.
+  (ts.parse!)
   (let [buffer         (vim.api.nvim_get_current_buf)
-        cursor-node    (vim.treesitter.get_node) 
+        cursor-node    (vim.treesitter.get_node)
         (row _)        (unpack (vim.api.nvim_win_get_cursor 0))
         scope-captures (query:iter_captures (cursor-node:root) buffer 0 row)
         scopes         (extract-scopes query scope-captures)
-        captures       (query:iter_captures (cursor-node:root) buffer 0 row) 
+        captures       (query:iter_captures (cursor-node:root) buffer 0 row)
         results        []]
 
     (each [id n meta captures]
@@ -112,7 +115,7 @@
   Arguments:
   - ts-lang: tree-sitter grammar language
   - cmpl-resource: query file resource path (queries/<cmpl-resource>/cmpl.scm)
-  
+
   Returns:
   - deduplicated array of strings"
   (let [query (get-completion-query ts-lang cmpl-resource)]
@@ -124,8 +127,8 @@
   "Return function which filters words starting with prefix"
   (let [sanitized-prefix (string.gsub (or prefix "") "%%" "%%%%")
         prefix-pattern (.. "^" sanitized-prefix)
-        prefix-filter (fn [s] (string.match s prefix-pattern))] 
-    (fn [list] 
+        prefix-filter (fn [s] (string.match s prefix-pattern))]
+    (fn [list]
       (a.filter prefix-filter list))))
 
 M

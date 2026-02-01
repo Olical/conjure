@@ -3,7 +3,6 @@ local _local_1_ = require("conjure.nfnl.module")
 local autoload = _local_1_.autoload
 local define = _local_1_.define
 local a = autoload("conjure.nfnl.core")
-local log = autoload("conjure.log")
 local ts = autoload("conjure.tree-sitter")
 local util = autoload("conjure.util")
 local res = autoload("conjure.resources")
@@ -100,6 +99,7 @@ local function get_node_text(node, buffer, meta)
   end
 end
 local function get_completions_for_query(query)
+  ts["parse!"]()
   local buffer = vim.api.nvim_get_current_buf()
   local cursor_node = vim.treesitter.get_node()
   local row, _ = unpack(vim.api.nvim_win_get_cursor(0))
