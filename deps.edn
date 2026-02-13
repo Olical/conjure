@@ -1,24 +1,24 @@
 {:paths ["dev/clojure/src"]
 
  :deps
- {org.clojure/clojure {:mvn/version "1.11.3"}
-  org.clojure/tools.logging {:mvn/version "1.1.0"}
-  lambdaisland/kaocha {:mvn/version "1.66.1034"}
-  nubank/matcher-combinators {:mvn/version "3.9.1"}}
+ {org.clojure/clojure {:mvn/version "1.12.4"}
+  org.clojure/tools.logging {:mvn/version "1.3.1"}
+  lambdaisland/kaocha {:mvn/version "1.91.1392"}
+  nubank/matcher-combinators {:mvn/version "3.10.0"}}
 
  :aliases
  {:nrepl
   {:extra-deps
-   {nrepl/nrepl {:mvn/version "1.4.0"}}}
+   {nrepl/nrepl {:mvn/version "1.5.2"}}}
 
   :cider
   {:extra-deps
-   {cider/cider-nrepl {:mvn/version "0.57.0"}}}
+   {cider/cider-nrepl {:mvn/version "0.58.0"}}}
 
   :cljs
   {:extra-deps
-   {org.clojure/clojurescript {:mvn/version "1.11.4"}}}
+   {org.clojure/clojurescript {:mvn/version "1.12.134"}}}
 
   :piggieback
   {:extra-deps
-   {cider/piggieback {:mvn/version "0.5.3"}}}}}
+   {cider/piggieback {:mvn/version "0.6.1"}}}}}
