@@ -25,6 +25,7 @@
 ; (set vim.g.conjure#filetype#fennel "conjure.client.fennel.nfnl")
 ; (set vim.g.conjure#filetype#scheme "conjure.client.snd-s7.stdio")
 ; (set vim.g.conjure#debug true)
+; (set vim.g.conjure#client#clojure#nrepl#eval#auto_require false)
 
 (set vim.g.conjure#client#scheme#stdio#command "chicken-csi -:c")
 (set vim.g.conjure#client#scheme#stdio#prompt_pattern "\n-#;%d-> ")

@@ -95,13 +95,17 @@
     (fn []
       (server.with-conn-or-warn
         (fn [conn]
-          (when (and opts.context (not (core.get-in conn [:seen-ns opts.context])))
-            (server.eval
-              {:code (.. "(ns " opts.context ")")}
-              (fn []))
-            (core.assoc-in conn [:seen-ns opts.context] true))
-
-          (server.eval opts (eval-cb-fn opts)))))))
+          (let [send-eval! #(server.eval opts (eval-cb-fn opts))]
+            (if (and opts.context (not (core.get-in conn [:seen-ns opts.context])))
+              (do
+                (server.eval
+                  {:code (.. "(ns " opts.context ")")
+                   :session (core.get opts :session)}
+                  (nrepl.with-all-msgs-fn
+                    (fn [_msgs]
+                      (send-eval!))))
+                (core.assoc-in conn [:seen-ns opts.context] true))
+              (send-eval!))))))))
 
 (fn with-info [opts f]
   (server.with-conn-and-ops-or-warn

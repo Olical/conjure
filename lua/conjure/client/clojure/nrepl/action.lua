@@ -149,85 +149,91 @@ end
 M["eval-str"] = function(opts)
   local function _28_()
     local function _29_(conn)
-      if (opts.context and not core["get-in"](conn, {"seen-ns", opts.context})) then
-        local function _30_()
-        end
-        server.eval({code = ("(ns " .. opts.context .. ")")}, _30_)
-        core["assoc-in"](conn, {"seen-ns", opts.context}, true)
-      else
+      local send_eval_21
+      local function _30_()
+        return server.eval(opts, eval_cb_fn(opts))
       end
-      return server.eval(opts, eval_cb_fn(opts))
+      send_eval_21 = _30_
+      if (opts.context and not core["get-in"](conn, {"seen-ns", opts.context})) then
+        local function _31_(_msgs)
+          return send_eval_21()
+        end
+        server.eval({code = ("(ns " .. opts.context .. ")"), session = core.get(opts, "session")}, nrepl["with-all-msgs-fn"](_31_))
+        return core["assoc-in"](conn, {"seen-ns", opts.context}, true)
+      else
+        return send_eval_21()
+      end
     end
     return server["with-conn-or-warn"](_29_)
   end
   return try_ensure_conn(_28_)
 end
 local function with_info(opts, f)
-  local function _32_(conn, ops)
-    local _33_
+  local function _33_(conn, ops)
+    local _34_
     if ops.info then
-      _33_ = {op = "info", ns = (opts.context or "user"), symbol = opts.code, session = conn.session, ["download-sources-jar"] = 1}
+      _34_ = {op = "info", ns = (opts.context or "user"), symbol = opts.code, session = conn.session, ["download-sources-jar"] = 1}
     elseif ops.lookup then
-      _33_ = {op = "lookup", ns = (opts.context or "user"), sym = opts.code, session = conn.session}
+      _34_ = {op = "lookup", ns = (opts.context or "user"), sym = opts.code, session = conn.session}
     else
-      _33_ = nil
+      _34_ = nil
     end
-    local function _35_(msg)
-      local function _36_()
+    local function _36_(msg)
+      local function _37_()
         if not msg.status["no-info"] then
           return (msg.info or msg)
         else
           return nil
         end
       end
-      return f(_36_())
+      return f(_37_())
     end
-    return server.send(_33_, _35_)
+    return server.send(_34_, _36_)
   end
-  return server["with-conn-and-ops-or-warn"]({"info", "lookup"}, _32_)
+  return server["with-conn-and-ops-or-warn"]({"info", "lookup"}, _33_)
 end
-local function java_info__3elines(_37_)
-  local arglists_str = _37_["arglists-str"]
-  local class = _37_.class
-  local member = _37_.member
-  local javadoc = _37_.javadoc
-  local function _38_()
+local function java_info__3elines(_38_)
+  local arglists_str = _38_["arglists-str"]
+  local class = _38_.class
+  local member = _38_.member
+  local javadoc = _38_.javadoc
+  local function _39_()
     if member then
       return {"/", member}
     else
       return nil
     end
   end
-  local _39_
+  local _40_
   if not core["empty?"](arglists_str) then
-    _39_ = {("; (" .. str.join(" ", text["split-lines"](arglists_str)) .. ")")}
+    _40_ = {("; (" .. str.join(" ", text["split-lines"](arglists_str)) .. ")")}
   else
-    _39_ = nil
+    _40_ = nil
   end
-  local function _41_()
+  local function _42_()
     if javadoc then
       return {("; " .. javadoc)}
     else
       return nil
     end
   end
-  return core.concat({str.join(core.concat({"; ", class}, _38_()))}, _39_, _41_())
+  return core.concat({str.join(core.concat({"; ", class}, _39_()))}, _40_, _42_())
 end
 M["doc-str"] = function(opts)
-  local function _42_()
+  local function _43_()
     require_ns("clojure.repl")
-    local function _43_(msgs)
-      local function _44_(msg)
+    local function _44_(msgs)
+      local function _45_(msg)
         return (core.get(msg, "out") or core.get(msg, "err"))
       end
-      if core.some(_44_, msgs) then
-        local function _45_(_241)
+      if core.some(_45_, msgs) then
+        local function _46_(_241)
           return ui["display-result"](_241, {["simple-out?"] = true, ["ignore-nil?"] = true})
         end
-        return core["run!"](_45_, msgs)
+        return core["run!"](_46_, msgs)
       else
         log.append({"; No results for (doc ...), checking nREPL info ops"})
-        local function _46_(info)
+        local function _47_(info)
           if core["nil?"](info) then
             return log.append({"; No information found, all I can do is wish you good luck and point you to https://duckduckgo.com/"})
           elseif ("string" == type(info.javadoc)) then
@@ -238,42 +244,42 @@ M["doc-str"] = function(opts)
             return log.append(core.concat({"; Unknown result, it may still be helpful"}, text["prefixed-lines"](core["pr-str"](info), "; ")))
           end
         end
-        return with_info(opts, _46_)
+        return with_info(opts, _47_)
       end
     end
-    return server.eval(core.merge({}, opts, {code = ("(clojure.repl/doc " .. opts.code .. ")")}), nrepl["with-all-msgs-fn"](_43_))
+    return server.eval(core.merge({}, opts, {code = ("(clojure.repl/doc " .. opts.code .. ")")}), nrepl["with-all-msgs-fn"](_44_))
   end
-  return try_ensure_conn(_42_)
+  return try_ensure_conn(_43_)
 end
 local function nrepl__3envim_path(path)
   if text["starts-with"](path, "jar:file:") then
-    local function _49_(zip, file)
+    local function _50_(zip, file)
       if (tonumber(string.sub(vim.g.loaded_zipPlugin, 2)) > 31) then
         return ("zipfile://" .. zip .. "::" .. file)
       else
         return ("zipfile:" .. zip .. "::" .. file)
       end
     end
-    return string.gsub(path, "^jar:file:(.+)!/?(.+)$", _49_)
+    return string.gsub(path, "^jar:file:(.+)!/?(.+)$", _50_)
   elseif text["starts-with"](path, "file:") then
-    local function _51_(file)
+    local function _52_(file)
       return file
     end
-    return string.gsub(path, "^file:(.+)$", _51_)
+    return string.gsub(path, "^file:(.+)$", _52_)
   else
     return path
   end
 end
 M["def-str"] = function(opts)
-  local function _53_()
-    local function _54_(info)
+  local function _54_()
+    local function _55_(info)
       if core["nil?"](info) then
         return log.append({"; No definition information found"})
       elseif info.candidates then
-        local function _55_(_241)
+        local function _56_(_241)
           return (_241 .. "/" .. opts.code)
         end
-        return log.append(core.concat({"; Multiple candidates found"}, core.map(_55_, core.keys(info.candidates))))
+        return log.append(core.concat({"; Multiple candidates found"}, core.map(_56_, core.keys(info.candidates))))
       elseif (info.file and info.line) then
         local column = (info.column or 1)
         local path = nrepl__3envim_path(info.file)
@@ -282,79 +288,79 @@ M["def-str"] = function(opts)
       elseif info.javadoc then
         return log.append({"; Can't open source, it's Java", ("; " .. info.javadoc)})
       elseif info["special-form"] then
-        local function _56_()
+        local function _57_()
           if info.url then
             return ("; " .. info.url)
           else
             return nil
           end
         end
-        return log.append({"; Can't open source, it's a special form", _56_()})
+        return log.append({"; Can't open source, it's a special form", _57_()})
       else
         return log.append({"; Unsupported target", ("; " .. core["pr-str"](info))})
       end
     end
-    return with_info(opts, _54_)
+    return with_info(opts, _55_)
   end
-  return try_ensure_conn(_53_)
+  return try_ensure_conn(_54_)
 end
 M["escape-backslashes"] = function(s)
   return s:gsub("\\", "\\\\")
 end
 M["eval-file"] = function(opts)
-  local function _58_()
-    local function _59_(conn)
+  local function _59_()
+    local function _60_(conn)
       return server["load-file"](core.assoc(opts, "code", core.slurp(opts["file-path"])), eval_cb_fn(opts))
     end
-    return server["with-conn-or-warn"](_59_)
+    return server["with-conn-or-warn"](_60_)
   end
-  return try_ensure_conn(_58_)
+  return try_ensure_conn(_59_)
 end
 M.interrupt = function()
-  local function _60_()
-    local function _61_(conn)
+  local function _61_()
+    local function _62_(conn)
       local msgs
-      local function _62_(msg)
+      local function _63_(msg)
         return ("eval" == msg.msg.op)
       end
-      msgs = core.filter(_62_, core.vals(conn.msgs))
+      msgs = core.filter(_63_, core.vals(conn.msgs))
       local order_66
-      local function _64_(_63_)
-        local id = _63_.id
-        local session = _63_.session
-        local code = _63_.code
+      local function _65_(_64_)
+        local id = _64_.id
+        local session = _64_.session
+        local code = _64_.code
         server.send({op = "interrupt", ["interrupt-id"] = id, session = session})
-        local function _65_(sess)
-          local _66_
+        local function _66_(sess)
+          local _67_
           if code then
-            _66_ = text["left-sample"](code, editor["percent-width"](cfg({"interrupt", "sample_limit"})))
+            _67_ = text["left-sample"](code, editor["percent-width"](cfg({"interrupt", "sample_limit"})))
           else
-            _66_ = ("session: " .. sess.str() .. "")
+            _67_ = ("session: " .. sess.str() .. "")
           end
-          return log.append({("; Interrupted: " .. _66_)}, {["break?"] = true})
+          return log.append({("; Interrupted: " .. _67_)}, {["break?"] = true})
         end
-        return server["enrich-session-id"](session, _65_)
+        return server["enrich-session-id"](session, _66_)
       end
-      order_66 = _64_
+      order_66 = _65_
       if core["empty?"](msgs) then
         return order_66({session = conn.session})
       else
-        local function _68_(a, b)
+        local function _69_(a, b)
           return (a["sent-at"] < b["sent-at"])
         end
-        table.sort(msgs, _68_)
+        table.sort(msgs, _69_)
         return order_66(core.get(core.first(msgs), "msg"))
       end
     end
-    return server["with-conn-or-warn"](_61_)
+    return server["with-conn-or-warn"](_62_)
   end
-  return try_ensure_conn(_60_)
+  return try_ensure_conn(_61_)
 end
 local function eval_str_fn(code)
-  local function _70_()
+  local function _71_()
     return vim.api.nvim_exec2(("ConjureEval " .. code), {})
   end
-  return _70_
+  return _71_
 end
 M["last-exception"] = eval_str_fn("*e")
 M["result-1"] = eval_str_fn("*1")
@@ -362,41 +368,41 @@ M["result-2"] = eval_str_fn("*2")
 M["result-3"] = eval_str_fn("*3")
 M["view-tap"] = eval_str_fn("(conjure.internal/dump-tap-queue!)")
 M["view-source"] = function()
-  local function _71_()
+  local function _72_()
     local word = core.get(extract.word(), "content")
     if not core["empty?"](word) then
       log.append({("; source (word): " .. word)}, {["break?"] = true})
       require_ns("clojure.repl")
-      local function _72_(_241)
+      local function _73_(_241)
         return ui["display-result"](_241, {["raw-out?"] = true, ["ignore-nil?"] = true})
       end
-      return M["eval-str"]({code = ("(clojure.repl/source " .. word .. ")"), context = extract.context(), cb = _72_})
+      return M["eval-str"]({code = ("(clojure.repl/source " .. word .. ")"), context = extract.context(), cb = _73_})
     else
       return nil
     end
   end
-  return try_ensure_conn(_71_)
+  return try_ensure_conn(_72_)
 end
 local function eval_macro_expand(expander)
-  local function _74_()
+  local function _75_()
     local form = core.get(extract.form({}), "content")
     if not core["empty?"](form) then
       log.append({("; " .. expander .. " (form): " .. form)}, {["break?"] = true})
-      local _75_
+      local _76_
       if ("clojure.walk/macroexpand-all" == expander) then
-        _75_ = "(require 'clojure.walk) "
+        _76_ = "(require 'clojure.walk) "
       else
-        _75_ = ""
+        _76_ = ""
       end
-      local function _77_(_241)
+      local function _78_(_241)
         return ui["display-result"](_241, {["raw-out?"] = true, ["ignore-nil?"] = true})
       end
-      return M["eval-str"]({code = (_75_ .. "(" .. expander .. " '" .. form .. ")"), context = extract.context(), cb = _77_})
+      return M["eval-str"]({code = (_76_ .. "(" .. expander .. " '" .. form .. ")"), context = extract.context(), cb = _78_})
     else
       return nil
     end
   end
-  return try_ensure_conn(_74_)
+  return try_ensure_conn(_75_)
 end
 M["macro-expand-1"] = function()
   return eval_macro_expand("macroexpand-1")
@@ -408,110 +414,110 @@ M["macro-expand-all"] = function()
   return eval_macro_expand("clojure.walk/macroexpand-all")
 end
 M["clone-current-session"] = function()
-  local function _79_()
-    local function _80_(conn)
+  local function _80_()
+    local function _81_(conn)
       return server["enrich-session-id"](core.get(conn, "session"), server["clone-session"])
     end
-    return server["with-conn-or-warn"](_80_)
+    return server["with-conn-or-warn"](_81_)
   end
-  return try_ensure_conn(_79_)
+  return try_ensure_conn(_80_)
 end
 M["clone-fresh-session"] = function()
-  local function _81_()
-    local function _82_(conn)
+  local function _82_()
+    local function _83_(conn)
       return server["clone-session"]()
     end
-    return server["with-conn-or-warn"](_82_)
+    return server["with-conn-or-warn"](_83_)
   end
-  return try_ensure_conn(_81_)
+  return try_ensure_conn(_82_)
 end
 M["close-current-session"] = function()
-  local function _83_()
-    local function _84_(conn)
-      local function _85_(sess)
+  local function _84_()
+    local function _85_(conn)
+      local function _86_(sess)
         core.assoc(conn, "session", nil)
         log.append({("; Closed current session: " .. sess.str())}, {["break?"] = true})
-        local function _86_()
+        local function _87_()
           return server["assume-or-create-session"]()
         end
-        return server["close-session"](sess, _86_)
+        return server["close-session"](sess, _87_)
       end
-      return server["enrich-session-id"](core.get(conn, "session"), _85_)
+      return server["enrich-session-id"](core.get(conn, "session"), _86_)
     end
-    return server["with-conn-or-warn"](_84_)
+    return server["with-conn-or-warn"](_85_)
   end
-  return try_ensure_conn(_83_)
+  return try_ensure_conn(_84_)
 end
 M["display-sessions"] = function(cb)
-  local function _87_()
-    local function _88_(sessions)
+  local function _88_()
+    local function _89_(sessions)
       return ui["display-sessions"](sessions, cb)
     end
-    return server["with-sessions"](_88_)
+    return server["with-sessions"](_89_)
   end
-  return try_ensure_conn(_87_)
+  return try_ensure_conn(_88_)
 end
 M["close-all-sessions"] = function()
-  local function _89_()
-    local function _90_(sessions)
+  local function _90_()
+    local function _91_(sessions)
       core["run!"](server["close-session"], sessions)
       log.append({("; Closed all sessions (" .. core.count(sessions) .. ")")}, {["break?"] = true})
       return server["clone-session"]()
     end
-    return server["with-sessions"](_90_)
+    return server["with-sessions"](_91_)
   end
-  return try_ensure_conn(_89_)
+  return try_ensure_conn(_90_)
 end
 local function cycle_session(f)
-  local function _91_()
-    local function _92_(conn)
-      local function _93_(sessions)
+  local function _92_()
+    local function _93_(conn)
+      local function _94_(sessions)
         if (1 == core.count(sessions)) then
           return log.append({"; No other sessions"}, {["break?"] = true})
         else
           local session = core.get(conn, "session")
-          local function _94_(_241)
+          local function _95_(_241)
             return f(session, _241)
           end
-          return server["assume-session"](ll.val(ll["until"](_94_, ll.cycle(ll.create(sessions)))))
+          return server["assume-session"](ll.val(ll["until"](_95_, ll.cycle(ll.create(sessions)))))
         end
       end
-      return server["with-sessions"](_93_)
+      return server["with-sessions"](_94_)
     end
-    return server["with-conn-or-warn"](_92_)
+    return server["with-conn-or-warn"](_93_)
   end
-  return try_ensure_conn(_91_)
+  return try_ensure_conn(_92_)
 end
 M["next-session"] = function()
-  local function _96_(current, node)
-    return (current == core.get(ll.val(ll.prev(node)), "id"))
-  end
-  return cycle_session(_96_)
-end
-M["prev-session"] = function()
   local function _97_(current, node)
-    return (current == core.get(ll.val(ll.next(node)), "id"))
+    return (current == core.get(ll.val(ll.prev(node)), "id"))
   end
   return cycle_session(_97_)
 end
+M["prev-session"] = function()
+  local function _98_(current, node)
+    return (current == core.get(ll.val(ll.next(node)), "id"))
+  end
+  return cycle_session(_98_)
+end
 M["select-session-interactive"] = function()
-  local function _98_()
-    local function _99_(sessions)
+  local function _99_()
+    local function _100_(sessions)
       if (1 == core.count(sessions)) then
         return log.append({"; No other sessions"}, {["break?"] = true})
       else
-        local function _100_(_241)
+        local function _101_(_241)
           return (_241.name .. " (" .. _241["pretty-type"] .. ", " .. _241.id .. ")")
         end
-        local function _101_(session)
+        local function _102_(session)
           return server["assume-session"](session)
         end
-        return vim.ui.select(sessions, {prompt = "Select an nREPL session:", format_item = _100_}, _101_)
+        return vim.ui.select(sessions, {prompt = "Select an nREPL session:", format_item = _101_}, _102_)
       end
     end
-    return server["with-sessions"](_99_)
+    return server["with-sessions"](_100_)
   end
-  return try_ensure_conn(_98_)
+  return try_ensure_conn(_99_)
 end
 M["test-runners"] = {clojure = {namespace = "clojure.test", ["all-fn"] = "run-all-tests", ["ns-fn"] = "run-tests", ["single-fn"] = "test-vars", ["default-call-suffix"] = "", ["name-prefix"] = "[(resolve '", ["name-suffix"] = ")]"}, clojurescript = {namespace = "cljs.test", ["all-fn"] = "run-all-tests", ["ns-fn"] = "run-tests", ["single-fn"] = "test-vars", ["default-call-suffix"] = "", ["name-prefix"] = "[(resolve '", ["name-suffix"] = ")]"}, kaocha = {namespace = "kaocha.repl", ["all-fn"] = "run-all", ["ns-fn"] = "run", ["single-fn"] = "run", ["default-call-suffix"] = "{:kaocha/color? false}", ["name-prefix"] = "#'", ["name-suffix"] = ""}}
 local function test_cfg(k)
@@ -525,52 +531,52 @@ local function test_runner_code(fn_config_name, ...)
   return ("(" .. str.join(" ", {(test_cfg("namespace") .. "/" .. test_cfg((fn_config_name .. "-fn"))), ...}) .. (cfg({"test", "call_suffix"}) or test_cfg("default-call-suffix")) .. ")")
 end
 M["run-all-tests"] = function()
-  local function _103_()
+  local function _104_()
     log.append({"; run-all-tests"}, {["break?"] = true})
     require_test_runner()
-    local function _104_(_241)
+    local function _105_(_241)
       return ui["display-result"](_241, {["simple-out?"] = true, ["raw-out?"] = cfg({"test", "raw_out"}), ["ignore-nil?"] = true})
     end
-    return server.eval({code = test_runner_code("all")}, _104_)
+    return server.eval({code = test_runner_code("all")}, _105_)
   end
-  return try_ensure_conn(_103_)
+  return try_ensure_conn(_104_)
 end
 local function run_ns_tests(ns)
-  local function _105_()
+  local function _106_()
     if ns then
       log.append({("; run-ns-tests: " .. ns)}, {["break?"] = true})
       require_test_runner()
-      local function _106_(_241)
+      local function _107_(_241)
         return ui["display-result"](_241, {["simple-out?"] = true, ["raw-out?"] = cfg({"test", "raw_out"}), ["ignore-nil?"] = true})
       end
-      return server.eval({code = test_runner_code("ns", ("'" .. ns))}, _106_)
+      return server.eval({code = test_runner_code("ns", ("'" .. ns))}, _107_)
     else
       return nil
     end
   end
-  return try_ensure_conn(_105_)
+  return try_ensure_conn(_106_)
 end
 M["run-current-ns-tests"] = function()
   return run_ns_tests(extract.context())
 end
 M["run-alternate-ns-tests"] = function()
   local current_ns = extract.context()
-  local function _108_()
+  local function _109_()
     if text["ends-with"](current_ns, "-test") then
       return current_ns
     else
       return (current_ns .. "-test")
     end
   end
-  return run_ns_tests(_108_())
+  return run_ns_tests(_109_())
 end
 M["extract-test-name-from-form"] = function(form)
   local seen_deftest_3f = false
-  local function _109_(part)
-    local function _110_(config_current_form_name)
+  local function _110_(part)
+    local function _111_(config_current_form_name)
       return text["ends-with"](part, config_current_form_name)
     end
-    if core.some(_110_, cfg({"test", "current_form_names"})) then
+    if core.some(_111_, cfg({"test", "current_form_names"})) then
       seen_deftest_3f = true
       return false
     elseif seen_deftest_3f then
@@ -579,27 +585,27 @@ M["extract-test-name-from-form"] = function(form)
       return nil
     end
   end
-  return core.some(_109_, str.split(parse["strip-meta"](form), "%s+"))
+  return core.some(_110_, str.split(parse["strip-meta"](form), "%s+"))
 end
 M["run-current-test"] = function()
-  local function _112_()
+  local function _113_()
     local form = extract.form({["root?"] = true})
     if form then
       local test_name = M["extract-test-name-from-form"](form.content)
       if test_name then
         log.append({("; run-current-test: " .. test_name)}, {["break?"] = true})
         require_test_runner()
-        local function _113_(msgs)
+        local function _114_(msgs)
           if ((2 == core.count(msgs)) and ("nil" == core.get(core.first(msgs), "value"))) then
             return log.append({"; Success!"})
           else
-            local function _114_(_241)
+            local function _115_(_241)
               return ui["display-result"](_241, {["simple-out?"] = true, ["raw-out?"] = cfg({"test", "raw_out"}), ["ignore-nil?"] = true})
             end
-            return core["run!"](_114_, msgs)
+            return core["run!"](_115_, msgs)
           end
         end
-        return server.eval({code = test_runner_code("single", (test_cfg("name-prefix") .. test_name .. test_cfg("name-suffix"))), context = extract.context()}, nrepl["with-all-msgs-fn"](_113_))
+        return server.eval({code = test_runner_code("single", (test_cfg("name-prefix") .. test_name .. test_cfg("name-suffix"))), context = extract.context()}, nrepl["with-all-msgs-fn"](_114_))
       else
         return nil
       end
@@ -607,11 +613,11 @@ M["run-current-test"] = function()
       return nil
     end
   end
-  return try_ensure_conn(_112_)
+  return try_ensure_conn(_113_)
 end
 local function refresh_impl(op)
-  local function _118_(conn)
-    local function _119_(msg)
+  local function _119_(conn)
+    local function _120_(msg)
       if msg.reloading then
         return log.append(msg.reloading)
       elseif msg.error then
@@ -624,130 +630,130 @@ local function refresh_impl(op)
         return ui["display-result"](msg)
       end
     end
-    return server.send(core.merge({op = op, session = conn.session, after = cfg({"refresh", "after"}), before = cfg({"refresh", "before"}), dirs = cfg({"refresh", "dirs"})}), _119_)
+    return server.send(core.merge({op = op, session = conn.session, after = cfg({"refresh", "after"}), before = cfg({"refresh", "before"}), dirs = cfg({"refresh", "dirs"})}), _120_)
   end
-  return server["with-conn-and-ops-or-warn"]({op}, _118_)
+  return server["with-conn-and-ops-or-warn"]({op}, _119_)
 end
 local function use_clj_reload_backend_3f()
   return (cfg({"refresh", "backend"}) == "clj-reload")
 end
 M["refresh-changed"] = function()
   local use_clj_reload_3f = use_clj_reload_backend_3f()
-  local function _121_()
-    local _122_
+  local function _122_()
+    local _123_
     if use_clj_reload_3f then
-      _122_ = "clj-reload"
+      _123_ = "clj-reload"
     else
-      _122_ = "tools.namespace"
+      _123_ = "tools.namespace"
     end
-    log.append({str.join({"; Refreshing changed namespaces using '", _122_, "'"})}, {["break?"] = true})
-    local function _124_()
+    log.append({str.join({"; Refreshing changed namespaces using '", _123_, "'"})}, {["break?"] = true})
+    local function _125_()
       if use_clj_reload_3f then
         return "cider.clj-reload/reload"
       else
         return "refresh"
       end
     end
-    return refresh_impl(_124_())
+    return refresh_impl(_125_())
   end
-  return try_ensure_conn(_121_)
+  return try_ensure_conn(_122_)
 end
 M["refresh-all"] = function()
   local use_clj_reload_3f = use_clj_reload_backend_3f()
-  local function _125_()
-    local _126_
+  local function _126_()
+    local _127_
     if use_clj_reload_3f then
-      _126_ = "clj-reload"
+      _127_ = "clj-reload"
     else
-      _126_ = "tools.namespace"
+      _127_ = "tools.namespace"
     end
-    log.append({str.join({"; Refreshing all namespaces using '", _126_, "'"})}, {["break?"] = true})
-    local function _128_()
+    log.append({str.join({"; Refreshing all namespaces using '", _127_, "'"})}, {["break?"] = true})
+    local function _129_()
       if use_clj_reload_3f then
         return "cider.clj-reload/reload-all"
       else
         return "refresh-all"
       end
     end
-    return refresh_impl(_128_())
+    return refresh_impl(_129_())
   end
-  return try_ensure_conn(_125_)
+  return try_ensure_conn(_126_)
 end
 M["refresh-clear"] = function()
   local use_clj_reload_3f = use_clj_reload_backend_3f()
-  local function _129_()
-    local _130_
+  local function _130_()
+    local _131_
     if use_clj_reload_3f then
-      _130_ = "clj-reload"
+      _131_ = "clj-reload"
     else
-      _130_ = "tools.namespace"
+      _131_ = "tools.namespace"
     end
-    log.append({str.join({"; Clearning reload cache using '", _130_, "'"})}, {["break?"] = true})
-    local function _132_(conn)
-      local _133_
+    log.append({str.join({"; Clearning reload cache using '", _131_, "'"})}, {["break?"] = true})
+    local function _133_(conn)
+      local _134_
       if use_clj_reload_3f then
-        _133_ = "cider.clj-reload/reload-clear"
+        _134_ = "cider.clj-reload/reload-clear"
       else
-        _133_ = "refresh-clear"
+        _134_ = "refresh-clear"
       end
-      local function _135_(msgs)
+      local function _136_(msgs)
         return log.append({"; Clearing complete"})
       end
-      return server.send({op = _133_, session = conn.session}, nrepl["with-all-msgs-fn"](_135_))
+      return server.send({op = _134_, session = conn.session}, nrepl["with-all-msgs-fn"](_136_))
     end
-    return server["with-conn-and-ops-or-warn"]({"refresh-clear"}, _132_)
+    return server["with-conn-and-ops-or-warn"]({"refresh-clear"}, _133_)
   end
-  return try_ensure_conn(_129_)
+  return try_ensure_conn(_130_)
 end
 M["shadow-select"] = function(build)
-  local function _136_()
-    local function _137_(conn)
+  local function _137_()
+    local function _138_(conn)
       log.append({("; shadow-cljs (select): " .. build)}, {["break?"] = true})
       server.eval({code = ("#?(:clj (shadow.cljs.devtools.api/nrepl-select :" .. build .. ") :cljs :already-selected)")}, ui["display-result"])
       return M["passive-ns-require"]()
     end
-    return server["with-conn-or-warn"](_137_)
+    return server["with-conn-or-warn"](_138_)
   end
-  return try_ensure_conn(_136_)
+  return try_ensure_conn(_137_)
 end
 M.piggieback = function(code)
-  local function _138_()
-    local function _139_(conn)
+  local function _139_()
+    local function _140_(conn)
       log.append({("; piggieback: " .. code)}, {["break?"] = true})
       require_ns("cider.piggieback")
       server.eval({code = ("(cider.piggieback/cljs-repl " .. code .. ")")}, ui["display-result"])
       return M["passive-ns-require"]()
     end
-    return server["with-conn-or-warn"](_139_)
+    return server["with-conn-or-warn"](_140_)
   end
-  return try_ensure_conn(_138_)
+  return try_ensure_conn(_139_)
 end
-local function clojure__3evim_completion(_140_)
-  local word = _140_.candidate
-  local kind = _140_.type
-  local ns = _140_.ns
-  local info = _140_.doc
-  local arglists = _140_.arglists
-  local function _141_()
+local function clojure__3evim_completion(_141_)
+  local word = _141_.candidate
+  local kind = _141_.type
+  local ns = _141_.ns
+  local info = _141_.doc
+  local arglists = _141_.arglists
+  local function _142_()
     if arglists then
       return str.join(" ", arglists)
     else
       return nil
     end
   end
-  local _142_
+  local _143_
   if ("string" == type(info)) then
-    _142_ = info
+    _143_ = info
   else
-    _142_ = nil
+    _143_ = nil
   end
-  local _144_
+  local _145_
   if not core["empty?"](kind) then
-    _144_ = string.upper(string.sub(kind, 1, 1))
+    _145_ = string.upper(string.sub(kind, 1, 1))
   else
-    _144_ = nil
+    _145_ = nil
   end
-  return {word = word, menu = str.join(" ", {ns, _141_()}), info = _142_, kind = _144_}
+  return {word = word, menu = str.join(" ", {ns, _142_()}), info = _143_, kind = _145_}
 end
 local function extract_completion_context(prefix)
   local root_form = extract.form({["root?"] = true})
@@ -755,9 +761,9 @@ local function extract_completion_context(prefix)
     local content = root_form.content
     local range = root_form.range
     local lines = text["split-lines"](content)
-    local _let_146_ = vim.api.nvim_win_get_cursor(0)
-    local row = _let_146_[1]
-    local col = _let_146_[2]
+    local _let_147_ = vim.api.nvim_win_get_cursor(0)
+    local row = _let_147_[1]
+    local col = _let_147_[2]
     local lrow = (row - core["get-in"](range, {"start", 1}))
     local line_index = core.inc(lrow)
     local lcol
@@ -777,48 +783,48 @@ local function enhanced_cljs_completion_3f()
   return cfg({"completion", "cljs", "use_suitable"})
 end
 M.completions = function(opts)
-  local function _149_(conn, ops)
-    local _150_
+  local function _150_(conn, ops)
+    local _151_
     if ops.complete then
-      local _151_
+      local _152_
       if cfg({"completion", "with_context"}) then
-        _151_ = extract_completion_context(opts.prefix)
+        _152_ = extract_completion_context(opts.prefix)
       else
-        _151_ = nil
+        _152_ = nil
       end
-      local _153_
+      local _154_
       if enhanced_cljs_completion_3f() then
-        _153_ = "t"
+        _154_ = "t"
       else
-        _153_ = nil
+        _154_ = nil
       end
-      _150_ = {op = "complete", session = conn.session, ns = opts.context, symbol = opts.prefix, context = _151_, ["extra-metadata"] = {"arglists", "doc"}, ["enhanced-cljs-completion?"] = _153_}
+      _151_ = {op = "complete", session = conn.session, ns = opts.context, symbol = opts.prefix, context = _152_, ["extra-metadata"] = {"arglists", "doc"}, ["enhanced-cljs-completion?"] = _154_}
     elseif ops.completions then
-      _150_ = {op = "completions", session = conn.session, ns = opts.context, prefix = opts.prefix}
+      _151_ = {op = "completions", session = conn.session, ns = opts.context, prefix = opts.prefix}
     else
-      _150_ = nil
+      _151_ = nil
     end
-    local function _156_(msgs)
+    local function _157_(msgs)
       return opts.cb(core.map(clojure__3evim_completion, core.get(core.last(msgs), "completions")))
     end
-    return server.send(_150_, nrepl["with-all-msgs-fn"](_156_))
+    return server.send(_151_, nrepl["with-all-msgs-fn"](_157_))
   end
-  return server["with-conn-and-ops-or-warn"]({"complete", "completions"}, _149_, {["silent?"] = true, ["else"] = opts.cb})
+  return server["with-conn-and-ops-or-warn"]({"complete", "completions"}, _150_, {["silent?"] = true, ["else"] = opts.cb})
 end
 M["out-subscribe"] = function()
   try_ensure_conn()
   log.append({"; Subscribing to out"}, {["break?"] = true})
-  local function _157_(conn)
+  local function _158_(conn)
     return server.send({op = "out-subscribe"})
   end
-  return server["with-conn-and-ops-or-warn"]({"out-subscribe"}, _157_)
+  return server["with-conn-and-ops-or-warn"]({"out-subscribe"}, _158_)
 end
 M["out-unsubscribe"] = function()
   try_ensure_conn()
   log.append({"; Unsubscribing from out"}, {["break?"] = true})
-  local function _158_(conn)
+  local function _159_(conn)
     return server.send({op = "out-unsubscribe"})
   end
-  return server["with-conn-and-ops-or-warn"]({"out-unsubscribe"}, _158_)
+  return server["with-conn-and-ops-or-warn"]({"out-unsubscribe"}, _159_)
 end
 return M
