@@ -341,7 +341,9 @@
   (action.passive-ns-require))
 
 (fn M.on-load []
-  (action.connect-port-file))
+  ;; Start up REPL only if g.conjure#client_on_load is v:true.
+  (when (config.get-in [:client_on_load])
+    (action.connect-port-file)))
 
 (fn M.on-exit []
   (auto-repl.delete-auto-repl-port-file)

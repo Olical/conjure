@@ -125,7 +125,11 @@ M["on-filetype"] = function()
   return action["passive-ns-require"]()
 end
 M["on-load"] = function()
-  return action["connect-port-file"]()
+  if config["get-in"]({"client_on_load"}) then
+    return action["connect-port-file"]()
+  else
+    return nil
+  end
 end
 M["on-exit"] = function()
   auto_repl["delete-auto-repl-port-file"]()

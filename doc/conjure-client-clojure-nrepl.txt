@@ -161,6 +161,13 @@ CONFIGURATION                     *conjure-client-clojure-nrepl-configuration*
 
 All configuration can be set as described in |conjure-configuration|.
 
+                      *g:conjure#client_on_load*
+`g:conjure#client_on_load`
+            When loading a Clojure file for the first time, connect to a
+            REPL automatically. If `false`, Conjure will still auto-connect
+            when you first eval something.
+            Default: `true`
+
                       *g:conjure#client#clojure#nrepl#connection#default_host*
 `g:conjure#client#clojure#nrepl#connection#default_host`
             When connecting to port files or via `:ConjureConnect` this is the
