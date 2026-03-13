@@ -51,6 +51,12 @@ CONFIGURATION                        *conjure-client-python-stdio-configuration*
 
 All configuration can be set as described in |conjure-configuration|.
 
+                                                    *g:conjure#client_on_load*
+`g:conjure#client_on_load`
+            A Python REPL is automatically started when a Python source file
+            is loaded. To not have this happen, set this configuration item to
+            `false`. See the entry in |conjure-configuration|.
+            Default: `true`
 
                                  *g:conjure#client#python#stdio#mapping#start*
 `g:conjure#client#python#stdio#mapping#start`
