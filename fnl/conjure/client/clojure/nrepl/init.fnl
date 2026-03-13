@@ -52,7 +52,8 @@
        :auto_repl {:enabled true
                    :hidden false
                    :cmd "bb nrepl-server localhost:$port"
-                   :port_file ".nrepl-port"}}
+                   :port_file ".nrepl-port"
+                   :stop_on_new_conn true}}
 
       :eval
       {:pretty_print true

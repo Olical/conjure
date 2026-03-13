@@ -1,4 +1,5 @@
 (local {: autoload : define} (require :conjure.nfnl.module))
+(local auto-repl (autoload :conjure.client.clojure.nrepl.auto-repl))
 (local core (autoload :conjure.nfnl.core))
 (local client (autoload :conjure.client))
 (local config (autoload :conjure.config))
@@ -288,6 +289,12 @@
 (fn M.connect [{: host : port : cb : port_file_path : connect-opts}]
   (when (state.get :conn)
     (M.disconnect))
+
+  (let [auto-repl-port (tonumber (state.get :auto-repl-port))]
+    (when (and auto-repl-port
+               (not= port auto-repl-port)
+               (config.get-in [:client :clojure :nrepl :connection :auto_repl :stop_on_new_conn]))
+      (auto-repl.stop-auto-repl-proc)))
 
   (core.assoc
     (state.get) :conn

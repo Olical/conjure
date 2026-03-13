@@ -220,6 +220,13 @@ All configuration can be set as described in |conjure-configuration|.
             Only used if you used the `$port` variable in your `cmd` setting.
             Default: `".nrepl-port"`
 
+          *g:conjure#client#clojure#nrepl#connection#auto_repl#stop_on_new_conn*
+`g:conjure#client#clojure#nrepl#connection#auto_repl#stop_on_new_conn`
+            Automatically stop the auto-repl process when connecting to a
+            different nREPL server. This prevents leaving a babashka REPL
+            running after you connect to your own nREPL.
+            Default: `true`
+
                             *g:conjure#client#clojure#nrepl#eval#pretty_print*
 `g:conjure#client#clojure#nrepl#eval#pretty_print`
             Should results be pretty printed by the nREPL server.

@@ -2,6 +2,7 @@
 local _local_1_ = require("conjure.nfnl.module")
 local autoload = _local_1_.autoload
 local define = _local_1_.define
+local auto_repl = autoload("conjure.client.clojure.nrepl.auto-repl")
 local core = autoload("conjure.nfnl.core")
 local client = autoload("conjure.client")
 local config = autoload("conjure.config")
@@ -295,24 +296,31 @@ M.connect = function(_48_)
     M.disconnect()
   else
   end
-  local function _50_(err)
+  do
+    local auto_repl_port = tonumber(state.get("auto-repl-port"))
+    if (auto_repl_port and (port ~= auto_repl_port) and config["get-in"]({"client", "clojure", "nrepl", "connection", "auto_repl", "stop_on_new_conn"})) then
+      auto_repl["stop-auto-repl-proc"]()
+    else
+    end
+  end
+  local function _51_(err)
     display_conn_status(err)
     return M.disconnect()
   end
-  local function _51_()
+  local function _52_()
     display_conn_status("connected")
     capture_describe()
     M["assume-or-create-session"]()
     return eval_preamble(cb)
   end
-  local function _52_(err)
+  local function _53_(err)
     if err then
       return display_conn_status(err)
     else
       return M.disconnect()
     end
   end
-  local function _54_(msg)
+  local function _55_(msg)
     if msg.status["unknown-session"] then
       log.append({"; Unknown session, correcting"})
       M["assume-or-create-session"]()
@@ -324,7 +332,7 @@ M.connect = function(_48_)
       return nil
     end
   end
-  local function _57_(msg)
+  local function _58_(msg)
     if msg.status["need-input"] then
       client.schedule(M["handle-input-request"], msg)
     else
@@ -335,9 +343,9 @@ M.connect = function(_48_)
       return nil
     end
   end
-  local function _60_(msg)
+  local function _61_(msg)
     return ui["display-result"](msg)
   end
-  return core.assoc(state.get(), "conn", core["merge!"](nrepl.connect(core.merge({host = host, port = port, ["on-failure"] = _50_, ["on-success"] = _51_, ["on-error"] = _52_, ["on-message"] = _54_, ["side-effect-callback"] = _57_, ["default-callback"] = _60_}, connect_opts)), {["seen-ns"] = {}, port_file_path = port_file_path}))
+  return core.assoc(state.get(), "conn", core["merge!"](nrepl.connect(core.merge({host = host, port = port, ["on-failure"] = _51_, ["on-success"] = _52_, ["on-error"] = _53_, ["on-message"] = _55_, ["side-effect-callback"] = _58_, ["default-callback"] = _61_}, connect_opts)), {["seen-ns"] = {}, port_file_path = port_file_path}))
 end
 return M
