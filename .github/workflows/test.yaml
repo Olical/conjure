@@ -31,4 +31,4 @@ jobs:
 
       - name: Test
         run: |
-          mise run -t neovim@${{ matrix.neovim-version }} test
+          mise run -t aqua:neovim/neovim@${{ matrix.neovim-version }} test

@@ -21,4 +21,4 @@ jobs:
 
       - name: Benchmark
         run: |
-          mise run -t neovim@${{ matrix.neovim-version }} benchmark
+          mise run -t aqua:neovim/neovim@${{ matrix.neovim-version }} benchmark
