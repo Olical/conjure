@@ -4,6 +4,8 @@ on: [push, pull_request]
 
 jobs:
   benchmark:
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     strategy:
       matrix:
         os: [ubuntu-latest]
@@ -18,7 +20,5 @@ jobs:
         uses: jdx/mise-action@v2
 
       - name: Benchmark
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           mise run -t neovim@${{ matrix.neovim-version }} benchmark

@@ -4,6 +4,8 @@ on: [push, pull_request]
 
 jobs:
   test:
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     strategy:
       matrix:
         # TODO: Get windows-latest working.
@@ -28,7 +30,5 @@ jobs:
           restore-keys: conjure-
 
       - name: Test
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           mise run -t neovim@${{ matrix.neovim-version }} test
