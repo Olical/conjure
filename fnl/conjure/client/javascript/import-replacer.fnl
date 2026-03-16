@@ -18,7 +18,8 @@
 (fn is-type-import? [node code]
   (let [first-child (node:child 0)
         second-child (node:child 1)
-        contains-type (string.find (tsc.get-text second-child code) "type")]
+        contains-type (and second-child
+                           (string.find (tsc.get-text second-child code) "type"))]
     (or (and first-child
          (= (tsc.get-text first-child code) "import")
          second-child

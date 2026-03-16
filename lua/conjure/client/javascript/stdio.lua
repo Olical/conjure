@@ -54,24 +54,21 @@ local function replace_dots(s, with)
 end
 M["format-msg"] = function(msg)
   local function _5_(_241)
-    return replace_dots(_241, "")
-  end
-  local function _6_(_241)
     return ("" ~= _241)
   end
-  return a.map(_5_, a.filter(_6_, str.split(msg, "\n")))
+  return a.filter(_5_, str.split(msg, "\n"))
 end
 local function sanitize_msg(msg, field)
-  local function _7_(_241)
+  local function _6_(_241)
     return ("(" .. field .. ") " .. _241 .. "\n")
   end
-  local function _8_(...)
+  local function _7_(...)
     return not str["blank?"](...)
   end
-  local function _9_(_241)
+  local function _8_(_241)
     return replace_dots(_241, "")
   end
-  return str.join("", a.map(_7_, a.filter(_8_, a.map(_9_, str.split(a.get(msg, field), "\n")))))
+  return str.join("", a.map(_6_, a.filter(_7_, a.map(_8_, str.split(a.get(msg, field), "\n")))))
 end
 local function prepare_out(msg)
   if a.get(msg, "out") then
@@ -101,8 +98,8 @@ local function restart()
   return M.start()
 end
 M["eval-str"] = function(opts)
-  local function _12_(repl)
-    local function _13_(msgs)
+  local function _11_(repl)
+    local function _12_(msgs)
       local msgs0 = M["format-msg"](M.unbatch(msgs))
       display_result(msgs0)
       if opts["on-result"] then
@@ -111,9 +108,9 @@ M["eval-str"] = function(opts)
         return nil
       end
     end
-    return repl.send(prep_code(opts.code), _13_, {["batch?"] = true})
+    return repl.send(prep_code(opts.code), _12_, {["batch?"] = true})
   end
-  return with_repl_or_warn(_12_)
+  return with_repl_or_warn(_11_)
 end
 M["eval-file"] = function(opts)
   return M["eval-str"](a.assoc(opts, "code", a.slurp(opts["file-path"])))
@@ -150,24 +147,24 @@ M.start = function()
   if state("repl") then
     return log.append({(M["comment-prefix"] .. "Can't start, REPL is already running."), (M["comment-prefix"] .. "Stop the REPL with " .. config["get-in"]({"mapping", "prefix"}) .. cfg({"mapping", "stop"}))}, {["break?"] = true})
   else
-    local function _18_()
+    local function _17_()
       display_repl_status("started")
       do
         local repl = state("repl")
         repl.send("1+1;")
       end
-      local function _19_(repl)
-        local function _20_(msgs)
+      local function _18_(repl)
+        local function _19_(msgs)
           return display_result(M["format-msg"](M.unbatch(msgs)))
         end
-        return repl.send(prep_code(M["initialise-repl-code"]), _20_, {batch = true})
+        return repl.send(prep_code(M["initialise-repl-code"]), _19_, {batch = true})
       end
-      return with_repl_or_warn(_19_)
+      return with_repl_or_warn(_18_)
     end
-    local function _21_(err)
+    local function _20_(err)
       return display_repl_status(err)
     end
-    local function _22_(code, signal)
+    local function _21_(code, signal)
       if (("number" == type(code)) and (code > 0)) then
         log.append({(M["comment-prefix"] .. "process exited with code " .. code)})
       else
@@ -178,21 +175,21 @@ M.start = function()
       end
       return M.stop()
     end
-    local function _25_(msg)
+    local function _24_(msg)
       if cfg({"show_stray_out"}) then
         return display_result(M["format-msg"](M.unbatch({msg})))
       else
         return nil
       end
     end
-    return a.assoc(state(), "repl", stdio.start({["prompt-pattern"] = cfg({"prompt_pattern"}), cmd = (repl_command_for_filetype() .. " " .. cfg({"args"})), ["delay-stderr-ms"] = cfg({"delay-stderr-ms"}), ["on-success"] = _18_, ["on-error"] = _21_, ["on-exit"] = _22_, ["on-stray-output"] = _25_}))
+    return a.assoc(state(), "repl", stdio.start({["prompt-pattern"] = cfg({"prompt_pattern"}), cmd = (repl_command_for_filetype() .. " " .. cfg({"args"})), ["delay-stderr-ms"] = cfg({"delay-stderr-ms"}), ["on-success"] = _17_, ["on-error"] = _20_, ["on-exit"] = _21_, ["on-stray-output"] = _24_}))
   end
 end
 local function warning_msg()
-  local function _28_(_241)
+  local function _27_(_241)
     return log.append({_241})
   end
-  return a.map(_28_, {"// WARNING! Node.js REPL limitations require transformations:", "// 1. ES6 'import' statements are converted to 'require(...)' calls.", "// 2. Arrow functions ('const fn = () => ...') are converted to 'function fn() ...' declarations to allow re-definition."})
+  return a.map(_27_, {"// WARNING! Node.js REPL limitations require transformations:", "// 1. ES6 'import' statements are converted to 'require(...)' calls.", "// 2. Arrow functions ('const fn = () => ...') are converted to 'function fn() ...' declarations to allow re-definition."})
 end
 M["on-load"] = function()
   if config["get-in"]({"client_on_load"}) then
@@ -206,11 +203,11 @@ M["on-exit"] = function()
   return M.stop()
 end
 M.interrupt = function()
-  local function _30_(repl)
+  local function _29_(repl)
     log.append({(M["comment-prefix"] .. " Sending interrupt signal.")}, {["break?"] = true})
     return repl["send-signal"]("sigint")
   end
-  return with_repl_or_warn(_30_)
+  return with_repl_or_warn(_29_)
 end
 M["on-filetype"] = function()
   mapping.buf("JavascriptStart", cfg({"mapping", "start"}), M.start, {desc = "Start the Javascript REPL"})
