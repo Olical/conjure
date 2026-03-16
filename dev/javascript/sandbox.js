@@ -143,3 +143,10 @@ function thisBody() {
 
 const tb = thisBody();
 tb.get()
+
+let msg = `await 
+            booboo`
+
+msg
+
+export { arrowThis }

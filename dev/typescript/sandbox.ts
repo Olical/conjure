@@ -335,7 +335,25 @@ expFn()
 export function funFun() { return "export function Fun" }
 export { }
 
-const arrowThis = () => {
-  let a = 1;
-  return this.a + 1;
-}
+// const arrowThis = () => {
+//   let a = 1;
+//   return this.a + 1;
+// }
+//
+// class Foo {
+//   a: number;
+//   fn: () => number;
+//   constructor() {
+//     this.a = 1
+//     this.fn = () => this.a
+//   }
+// }
+//
+// let foooooo = new Foo()
+// foooooo.fn()
+//
+//
+// let msg = `a 
+//            b`
+//
+// msg
