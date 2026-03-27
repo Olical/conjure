@@ -66,11 +66,11 @@ local function drain_pending_evals()
     return nil
   end
 end
-M["mark-ready!"] = function()
+M["mark-ready!"] = function(source)
   local conn = state.get("conn")
-  if conn then
+  if (conn and not conn["ready?"]) then
     conn["ready?"] = true
-    log.dbg("setup: connection ready")
+    log.dbg("setup: connection ready", (source or ""))
     return drain_pending_evals()
   else
     return nil
@@ -264,14 +264,14 @@ M["clone-session"] = function(session, cb)
   return M.send({op = "clone", session = core.get(session, "id"), ["client-name"] = "Conjure"}, nrepl["with-all-msgs-fn"](_40_))
 end
 M["assume-or-create-session"] = function(cb)
-  log.dbg("setup: assuming or creating session")
+  log.dbg("assuming or creating session")
   core.assoc(state.get("conn"), "session", nil)
   local function _44_(sessions)
     if core["empty?"](sessions) then
-      log.dbg("setup: no sessions found, cloning")
+      log.dbg("no sessions found, cloning")
       return M["clone-session"](nil, cb)
     else
-      log.dbg("setup: assuming first session")
+      log.dbg("assuming first session")
       return M["assume-session"](core.first(sessions), cb)
     end
   end
@@ -366,28 +366,39 @@ M.connect = function(_57_)
     log.dbg("setup: connection established, beginning setup chain")
     display_conn_status("connected")
     local function _62_()
-      local function _63_()
-        local function _64_()
-          if cb then
-            cb()
-          else
-          end
-          return M["mark-ready!"]()
-        end
-        return eval_preamble(_64_)
+      local conn = state.get("conn")
+      if (conn and not conn["ready?"]) then
+        log.append({"; Warning: connection setup timed out, forcing ready state"}, {["break?"] = true})
+        return M["mark-ready!"]("timeout")
+      else
+        return nil
       end
-      return M["assume-or-create-session"](_63_)
     end
-    return capture_describe(_62_)
+    timer.defer(_62_, 10000)
+    local function _64_()
+      local function _65_()
+        local function _66_()
+          M["mark-ready!"]()
+          if cb then
+            return cb()
+          else
+            return nil
+          end
+        end
+        return eval_preamble(_66_)
+      end
+      return M["assume-or-create-session"](_65_)
+    end
+    return capture_describe(_64_)
   end
-  local function _66_(err)
+  local function _68_(err)
     if err then
       return display_conn_status(err)
     else
       return M.disconnect()
     end
   end
-  local function _68_(msg)
+  local function _70_(msg)
     if msg.status["unknown-session"] then
       log.append({"; Unknown session, correcting"})
       M["assume-or-create-session"]()
@@ -399,7 +410,7 @@ M.connect = function(_57_)
       return nil
     end
   end
-  local function _71_(msg)
+  local function _73_(msg)
     if msg.status["need-input"] then
       client.schedule(M["handle-input-request"], msg)
     else
@@ -410,9 +421,9 @@ M.connect = function(_57_)
       return nil
     end
   end
-  local function _74_(msg)
+  local function _76_(msg)
     return ui["display-result"](msg)
   end
-  return core.assoc(state.get(), "conn", core["merge!"](nrepl.connect(core.merge({host = host, port = port, ["on-failure"] = _60_, ["on-success"] = _61_, ["on-error"] = _66_, ["on-message"] = _68_, ["side-effect-callback"] = _71_, ["default-callback"] = _74_}, connect_opts)), {["seen-ns"] = {}, port_file_path = port_file_path, ["pending-evals"] = {}, ["ready?"] = false}))
+  return core.assoc(state.get(), "conn", core["merge!"](nrepl.connect(core.merge({host = host, port = port, ["on-failure"] = _60_, ["on-success"] = _61_, ["on-error"] = _68_, ["on-message"] = _70_, ["side-effect-callback"] = _73_, ["default-callback"] = _76_}, connect_opts)), {["seen-ns"] = {}, port_file_path = port_file_path, ["pending-evals"] = {}, ["ready?"] = false}))
 end
 return M

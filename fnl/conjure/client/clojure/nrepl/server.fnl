@@ -52,11 +52,11 @@
         (set conn.pending-evals [])
         (core.run! (fn [f] (f conn)) pending)))))
 
-(fn M.mark-ready! []
+(fn M.mark-ready! [source]
   (let [conn (state.get :conn)]
-    (when conn
+    (when (and conn (not conn.ready?))
       (set conn.ready? true)
-      (log.dbg "setup: connection ready")
+      (log.dbg "setup: connection ready" (or source ""))
       (drain-pending-evals))))
 
 (fn M.send [msg cb]
@@ -257,16 +257,16 @@
                 (M.assume-session enriched-session cb)))))))))
 
 (fn M.assume-or-create-session [cb]
-  (log.dbg "setup: assuming or creating session")
+  (log.dbg "assuming or creating session")
   (core.assoc (state.get :conn) :session nil)
   (M.with-sessions
     (fn [sessions]
       (if (core.empty? sessions)
         (do
-          (log.dbg "setup: no sessions found, cloning")
+          (log.dbg "no sessions found, cloning")
           (M.clone-session nil cb))
         (do
-          (log.dbg "setup: assuming first session")
+          (log.dbg "assuming first session")
           (M.assume-session (core.first sessions) cb))))))
 
 (fn eval-preamble [cb]
@@ -357,15 +357,27 @@
            (fn []
              (log.dbg "setup: connection established, beginning setup chain")
              (display-conn-status :connected)
+
+             ;; Safety net: if the setup chain stalls, mark ready after
+             ;; a timeout so queued evals aren't stuck forever.
+             (timer.defer
+               (fn []
+                 (let [conn (state.get :conn)]
+                   (when (and conn (not conn.ready?))
+                     (log.append ["; Warning: connection setup timed out, forcing ready state"]
+                                 {:break? true})
+                     (M.mark-ready! :timeout))))
+               10000)
+
              (capture-describe
                (fn []
                  (M.assume-or-create-session
                    (fn []
                      (eval-preamble
                        (fn []
+                         (M.mark-ready!)
                          (when cb
-                           (cb))
-                         (M.mark-ready!))))))))
+                           (cb)))))))))
 
            :on-error
            (fn [err]
