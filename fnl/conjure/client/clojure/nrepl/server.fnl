@@ -288,11 +288,12 @@
   (log.dbg "setup: capturing describe")
   (M.send
     {:op :describe}
-    (fn [msg]
-      (core.assoc (state.get :conn) :describe msg)
-      (log.dbg "setup: describe captured")
-      (when cb
-        (cb)))))
+    (nrepl.with-all-msgs-fn
+      (fn [msgs]
+        (core.assoc (state.get :conn) :describe (core.first msgs))
+        (log.dbg "setup: describe captured")
+        (when cb
+          (cb))))))
 
 (fn M.with-conn-and-ops-or-warn [op-names f opts]
   "Takes a sequential table of op names and calls your function f with an
@@ -360,14 +361,17 @@
 
              ;; Safety net: if the setup chain stalls, mark ready after
              ;; a timeout so queued evals aren't stuck forever.
-             (timer.defer
-               (fn []
-                 (let [conn (state.get :conn)]
-                   (when (and conn (not conn.ready?))
+             ;; Capture the conn reference so we only act on this
+             ;; specific connection, not a different one from a reconnect.
+             (let [setup-conn (state.get :conn)]
+               (timer.defer
+                 (fn []
+                   (when (and (= setup-conn (state.get :conn))
+                              (not setup-conn.ready?))
                      (log.append ["; Warning: connection setup timed out, forcing ready state"]
                                  {:break? true})
-                     (M.mark-ready! :timeout))))
-               10000)
+                     (M.mark-ready! :timeout)))
+                 10000))
 
              (capture-describe
                (fn []

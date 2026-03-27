@@ -300,8 +300,8 @@ local function eval_preamble(cb)
 end
 local function capture_describe(cb)
   log.dbg("setup: capturing describe")
-  local function _49_(msg)
-    core.assoc(state.get("conn"), "describe", msg)
+  local function _49_(msgs)
+    core.assoc(state.get("conn"), "describe", core.first(msgs))
     log.dbg("setup: describe captured")
     if cb then
       return cb()
@@ -309,7 +309,7 @@ local function capture_describe(cb)
       return nil
     end
   end
-  return M.send({op = "describe"}, _49_)
+  return M.send({op = "describe"}, nrepl["with-all-msgs-fn"](_49_))
 end
 M["with-conn-and-ops-or-warn"] = function(op_names, f, opts)
   local function _51_(conn)
@@ -365,16 +365,18 @@ M.connect = function(_57_)
   local function _61_()
     log.dbg("setup: connection established, beginning setup chain")
     display_conn_status("connected")
-    local function _62_()
-      local conn = state.get("conn")
-      if (conn and not conn["ready?"]) then
-        log.append({"; Warning: connection setup timed out, forcing ready state"}, {["break?"] = true})
-        return M["mark-ready!"]("timeout")
-      else
-        return nil
+    do
+      local setup_conn = state.get("conn")
+      local function _62_()
+        if ((setup_conn == state.get("conn")) and not setup_conn["ready?"]) then
+          log.append({"; Warning: connection setup timed out, forcing ready state"}, {["break?"] = true})
+          return M["mark-ready!"]("timeout")
+        else
+          return nil
+        end
       end
+      timer.defer(_62_, 10000)
     end
-    timer.defer(_62_, 10000)
     local function _64_()
       local function _65_()
         local function _66_()
