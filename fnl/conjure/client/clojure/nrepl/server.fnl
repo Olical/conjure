@@ -32,6 +32,33 @@
     true
     false))
 
+(fn M.with-conn-ready-or-queue [f opts]
+  "Like with-conn-or-warn but also checks if the connection is ready.
+  If connected but not ready, queues the function to run once setup completes."
+  (M.with-conn-or-warn
+    (fn [conn]
+      (if conn.ready?
+        (f conn)
+        (do
+          (log.dbg "connection not ready, queueing eval")
+          (table.insert conn.pending-evals f))))
+    opts))
+
+(fn drain-pending-evals []
+  (let [conn (state.get :conn)]
+    (when (and conn (not (core.empty? conn.pending-evals)))
+      (log.dbg "setup: draining pending evals" (core.count conn.pending-evals))
+      (let [pending conn.pending-evals]
+        (set conn.pending-evals [])
+        (core.run! (fn [f] (f conn)) pending)))))
+
+(fn M.mark-ready! []
+  (let [conn (state.get :conn)]
+    (when conn
+      (set conn.ready? true)
+      (log.dbg "setup: connection ready")
+      (drain-pending-evals))))
+
 (fn M.send [msg cb]
   (M.with-conn-or-warn
     (fn [conn]
@@ -58,10 +85,12 @@
     {:op :close :session (core.get session :id)}
     cb))
 
-(fn M.assume-session [session]
+(fn M.assume-session [session cb]
   (core.assoc (state.get :conn) :session (core.get session :id))
   (log.append [(str.join ["; Assumed session: " (session.str)])]
-              {:break? true}))
+              {:break? true})
+  (when cb
+    (cb)))
 
 (fn M.un-comment [code]
   (when code
@@ -213,7 +242,7 @@
                       (cb rich))))))
             sess-ids))))))
 
-(fn M.clone-session [session]
+(fn M.clone-session [session cb]
   (M.send
     {:op :clone
      :session (core.get session :id)
@@ -221,19 +250,27 @@
     (nrepl.with-all-msgs-fn
       (fn [msgs]
         (let [session-id (core.some #(core.get $1 :new-session) msgs)]
-          (log.dbg "clone-session id for enrichment" id)
+          (log.dbg "clone-session id for enrichment" session-id)
           (when session-id
-            (M.enrich-session-id session-id M.assume-session)))))))
+            (M.enrich-session-id session-id
+              (fn [enriched-session]
+                (M.assume-session enriched-session cb)))))))))
 
-(fn M.assume-or-create-session []
+(fn M.assume-or-create-session [cb]
+  (log.dbg "setup: assuming or creating session")
   (core.assoc (state.get :conn) :session nil)
   (M.with-sessions
     (fn [sessions]
       (if (core.empty? sessions)
-        (M.clone-session)
-        (M.assume-session (core.first sessions))))))
+        (do
+          (log.dbg "setup: no sessions found, cloning")
+          (M.clone-session nil cb))
+        (do
+          (log.dbg "setup: assuming first session")
+          (M.assume-session (core.first sessions) cb))))))
 
 (fn eval-preamble [cb]
+  (log.dbg "setup: evaluating preamble")
   (let [queue-size (config.get-in [:client :clojure :nrepl :tap :queue_size])
         pretty-print-test-failures? (config.get-in [:client :clojure :nrepl :test :pretty_print_test_failures])]
     (M.send
@@ -241,14 +278,21 @@
        :code (-> (resources.get-resource-contents "client/clojure/preamble.cljc")
                  (string.gsub ":conjure%.template/queue%-size" queue-size)
                  (string.gsub ":conjure%.template/pretty%-print%-test%-failures%?" (if pretty-print-test-failures? "true" "false")))}
-      (when cb
-        (nrepl.with-all-msgs-fn cb)))))
+      (nrepl.with-all-msgs-fn
+        (fn [msgs]
+          (log.dbg "setup: preamble evaluated")
+          (when cb
+            (cb msgs)))))))
 
-(fn capture-describe []
+(fn capture-describe [cb]
+  (log.dbg "setup: capturing describe")
   (M.send
     {:op :describe}
     (fn [msg]
-      (core.assoc (state.get :conn) :describe msg))))
+      (core.assoc (state.get :conn) :describe msg)
+      (log.dbg "setup: describe captured")
+      (when cb
+        (cb)))))
 
 (fn M.with-conn-and-ops-or-warn [op-names f opts]
   "Takes a sequential table of op names and calls your function f with an
@@ -311,10 +355,17 @@
 
            :on-success
            (fn []
+             (log.dbg "setup: connection established, beginning setup chain")
              (display-conn-status :connected)
-             (capture-describe)
-             (M.assume-or-create-session)
-             (eval-preamble cb))
+             (capture-describe
+               (fn []
+                 (M.assume-or-create-session
+                   (fn []
+                     (eval-preamble
+                       (fn []
+                         (when cb
+                           (cb))
+                         (M.mark-ready!))))))))
 
            :on-error
            (fn [err]
@@ -345,6 +396,8 @@
           connect-opts))
 
       {:seen-ns {}
-       :port_file_path port_file_path})))
+       :port_file_path port_file_path
+       :ready? false
+       :pending-evals []})))
 
 M

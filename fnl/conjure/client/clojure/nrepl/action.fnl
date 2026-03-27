@@ -63,7 +63,9 @@
   (if (not (server.connected?))
       (hook.exec :client-clojure-nrepl-passive-connect cb)
       (when cb
-        (cb))))
+        (server.with-conn-ready-or-queue
+          (fn [_conn]
+            (cb))))))
 
 (fn M.connect-host-port [opts]
   (if (and (not opts.host) (not opts.port))
