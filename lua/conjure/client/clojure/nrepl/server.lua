@@ -70,6 +70,8 @@ M["mark-ready!"] = function(source)
   local conn = state.get("conn")
   if (conn and not conn["ready?"]) then
     conn["ready?"] = true
+    timer.destroy(conn["setup-timeout"])
+    conn["setup-timeout"] = nil
     log.dbg("setup: connection ready", (source or ""))
     return drain_pending_evals()
   else
@@ -97,6 +99,7 @@ local function display_conn_status(status)
 end
 M.disconnect = function()
   local function _14_(conn)
+    timer.destroy(conn["setup-timeout"])
     conn.destroy()
     display_conn_status("disconnected")
     return core.assoc(state.get(), "conn", nil)
@@ -375,7 +378,7 @@ M.connect = function(_57_)
           return nil
         end
       end
-      timer.defer(_62_, 10000)
+      setup_conn["setup-timeout"] = timer.defer(_62_, 10000)
     end
     local function _64_()
       local function _65_()
@@ -426,6 +429,6 @@ M.connect = function(_57_)
   local function _76_(msg)
     return ui["display-result"](msg)
   end
-  return core.assoc(state.get(), "conn", core["merge!"](nrepl.connect(core.merge({host = host, port = port, ["on-failure"] = _60_, ["on-success"] = _61_, ["on-error"] = _68_, ["on-message"] = _70_, ["side-effect-callback"] = _73_, ["default-callback"] = _76_}, connect_opts)), {["seen-ns"] = {}, port_file_path = port_file_path, ["pending-evals"] = {}, ["ready?"] = false}))
+  return core.assoc(state.get(), "conn", core["merge!"](nrepl.connect(core.merge({host = host, port = port, ["on-failure"] = _60_, ["on-success"] = _61_, ["on-error"] = _68_, ["on-message"] = _70_, ["side-effect-callback"] = _73_, ["default-callback"] = _76_}, connect_opts)), {["seen-ns"] = {}, port_file_path = port_file_path, ["pending-evals"] = {}, ["setup-timeout"] = nil, ["ready?"] = false}))
 end
 return M

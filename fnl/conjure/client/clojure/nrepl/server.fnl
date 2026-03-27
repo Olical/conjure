@@ -56,6 +56,8 @@
   (let [conn (state.get :conn)]
     (when (and conn (not conn.ready?))
       (set conn.ready? true)
+      (timer.destroy conn.setup-timeout)
+      (set conn.setup-timeout nil)
       (log.dbg "setup: connection ready" (or source ""))
       (drain-pending-evals))))
 
@@ -76,6 +78,7 @@
 (fn M.disconnect []
   (M.with-conn-or-warn
     (fn [conn]
+      (timer.destroy conn.setup-timeout)
       (conn.destroy)
       (display-conn-status :disconnected)
       (core.assoc (state.get) :conn nil))))
@@ -364,14 +367,15 @@
              ;; Capture the conn reference so we only act on this
              ;; specific connection, not a different one from a reconnect.
              (let [setup-conn (state.get :conn)]
-               (timer.defer
-                 (fn []
-                   (when (and (= setup-conn (state.get :conn))
-                              (not setup-conn.ready?))
-                     (log.append ["; Warning: connection setup timed out, forcing ready state"]
-                                 {:break? true})
-                     (M.mark-ready! :timeout)))
-                 10000))
+               (set setup-conn.setup-timeout
+                 (timer.defer
+                   (fn []
+                     (when (and (= setup-conn (state.get :conn))
+                                (not setup-conn.ready?))
+                       (log.append ["; Warning: connection setup timed out, forcing ready state"]
+                                   {:break? true})
+                       (M.mark-ready! :timeout)))
+                   10000)))
 
              (capture-describe
                (fn []
@@ -414,6 +418,7 @@
       {:seen-ns {}
        :port_file_path port_file_path
        :ready? false
-       :pending-evals []})))
+       :pending-evals []
+       :setup-timeout nil})))
 
 M
