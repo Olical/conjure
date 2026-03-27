@@ -712,19 +712,21 @@
      :else opts.cb}))
 
 (fn M.out-subscribe []
-  (try-ensure-conn)
-  (log.append ["; Subscribing to out"] {:break? true})
-  (server.with-conn-and-ops-or-warn
-    [:out-subscribe]
-    (fn [conn]
-      (server.send {:op :out-subscribe}))))
+  (try-ensure-conn
+    (fn []
+      (log.append ["; Subscribing to out"] {:break? true})
+      (server.with-conn-and-ops-or-warn
+        [:out-subscribe]
+        (fn [conn]
+          (server.send {:op :out-subscribe}))))))
 
 (fn M.out-unsubscribe []
-  (try-ensure-conn)
-  (log.append ["; Unsubscribing from out"] {:break? true})
-  (server.with-conn-and-ops-or-warn
-    [:out-unsubscribe]
-    (fn [conn]
-      (server.send {:op :out-unsubscribe}))))
+  (try-ensure-conn
+    (fn []
+      (log.append ["; Unsubscribing from out"] {:break? true})
+      (server.with-conn-and-ops-or-warn
+        [:out-unsubscribe]
+        (fn [conn]
+          (server.send {:op :out-unsubscribe}))))))
 
 M

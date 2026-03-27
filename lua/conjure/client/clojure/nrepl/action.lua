@@ -815,19 +815,23 @@ M.completions = function(opts)
   return server["with-conn-and-ops-or-warn"]({"complete", "completions"}, _151_, {["silent?"] = true, ["else"] = opts.cb})
 end
 M["out-subscribe"] = function()
-  try_ensure_conn()
-  log.append({"; Subscribing to out"}, {["break?"] = true})
-  local function _159_(conn)
-    return server.send({op = "out-subscribe"})
+  local function _159_()
+    log.append({"; Subscribing to out"}, {["break?"] = true})
+    local function _160_(conn)
+      return server.send({op = "out-subscribe"})
+    end
+    return server["with-conn-and-ops-or-warn"]({"out-subscribe"}, _160_)
   end
-  return server["with-conn-and-ops-or-warn"]({"out-subscribe"}, _159_)
+  return try_ensure_conn(_159_)
 end
 M["out-unsubscribe"] = function()
-  try_ensure_conn()
-  log.append({"; Unsubscribing from out"}, {["break?"] = true})
-  local function _160_(conn)
-    return server.send({op = "out-unsubscribe"})
+  local function _161_()
+    log.append({"; Unsubscribing from out"}, {["break?"] = true})
+    local function _162_(conn)
+      return server.send({op = "out-unsubscribe"})
+    end
+    return server["with-conn-and-ops-or-warn"]({"out-unsubscribe"}, _162_)
   end
-  return server["with-conn-and-ops-or-warn"]({"out-unsubscribe"}, _160_)
+  return try_ensure_conn(_161_)
 end
 return M
