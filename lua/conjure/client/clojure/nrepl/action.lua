@@ -342,7 +342,7 @@ M.interrupt = function()
           end
           return log.append({("; Interrupted: " .. _68_)}, {["break?"] = true})
         end
-        return server["enrich-session-id"](session, _67_)
+        return server["enrich-session-id"](session, _67_, server["session-type-timeout"])
       end
       order_66 = _66_
       if core["empty?"](msgs) then
@@ -419,7 +419,7 @@ end
 M["clone-current-session"] = function()
   local function _81_()
     local function _82_(conn)
-      return server["enrich-session-id"](core.get(conn, "session"), server["clone-session"])
+      return server["enrich-session-id"](core.get(conn, "session"), server["clone-session"], server["session-type-timeout"])
     end
     return server["with-conn-or-warn"](_82_)
   end
@@ -428,7 +428,7 @@ end
 M["clone-fresh-session"] = function()
   local function _83_()
     local function _84_(conn)
-      return server["clone-session"]()
+      return server["clone-session"](nil, nil, server["session-type-timeout"])
     end
     return server["with-conn-or-warn"](_84_)
   end
@@ -441,11 +441,11 @@ M["close-current-session"] = function()
         core.assoc(conn, "session", nil)
         log.append({("; Closed current session: " .. sess.str())}, {["break?"] = true})
         local function _88_()
-          return server["assume-or-create-session"]()
+          return server["assume-or-create-session"](nil, {timeout = server["session-type-timeout"]})
         end
         return server["close-session"](sess, _88_)
       end
-      return server["enrich-session-id"](core.get(conn, "session"), _87_)
+      return server["enrich-session-id"](core.get(conn, "session"), _87_, server["session-type-timeout"])
     end
     return server["with-conn-or-warn"](_86_)
   end
@@ -456,7 +456,7 @@ M["display-sessions"] = function(cb)
     local function _90_(sessions)
       return ui["display-sessions"](sessions, cb)
     end
-    return server["with-sessions"](_90_)
+    return server["with-sessions"](_90_, {timeout = server["session-type-timeout"]})
   end
   return try_ensure_conn(_89_)
 end
@@ -465,9 +465,9 @@ M["close-all-sessions"] = function()
     local function _92_(sessions)
       core["run!"](server["close-session"], sessions)
       log.append({("; Closed all sessions (" .. core.count(sessions) .. ")")}, {["break?"] = true})
-      return server["clone-session"]()
+      return server["clone-session"](nil, nil, server["session-type-timeout"])
     end
-    return server["with-sessions"](_92_)
+    return server["with-sessions"](_92_, {timeout = server["session-type-timeout"]})
   end
   return try_ensure_conn(_91_)
 end
@@ -485,7 +485,7 @@ local function cycle_session(f)
           return server["assume-session"](ll.val(ll["until"](_96_, ll.cycle(ll.create(sessions)))))
         end
       end
-      return server["with-sessions"](_95_)
+      return server["with-sessions"](_95_, {timeout = server["session-type-timeout"]})
     end
     return server["with-conn-or-warn"](_94_)
   end
@@ -518,7 +518,7 @@ M["select-session-interactive"] = function()
         return vim.ui.select(sessions, {prompt = "Select an nREPL session:", format_item = _102_}, _103_)
       end
     end
-    return server["with-sessions"](_101_)
+    return server["with-sessions"](_101_, {timeout = server["session-type-timeout"]})
   end
   return try_ensure_conn(_100_)
 end

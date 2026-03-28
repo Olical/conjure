@@ -17,6 +17,11 @@
 
 (local M (define :conjure.client.clojure.nrepl.server))
 
+;; Timeout in ms for session-type detection during runtime operations
+;; (session hopping, interrupt display, etc). During initial connection
+;; setup we use no timeout since user evals are gated behind the ready flag.
+(set M.session-type-timeout 200)
+
 (fn M.with-conn-or-warn [f opts]
   (let [conn (state.get :conn)]
     (if conn
@@ -44,6 +49,15 @@
           (table.insert conn.pending-evals f))))
     opts))
 
+(fn display-conn-status [status]
+  (M.with-conn-or-warn
+    (fn [conn]
+      (log.append [(str.join
+                     ["; " conn.host ":" conn.port " (" status ")"
+                      (when conn.port_file_path
+                        (str.join [": " conn.port_file_path]))])]
+                  {:break? true}))))
+
 (fn drain-pending-evals []
   (let [conn (state.get :conn)]
     (when (and conn (not (core.empty? conn.pending-evals)))
@@ -59,21 +73,13 @@
       (timer.destroy conn.setup-timeout)
       (set conn.setup-timeout nil)
       (log.dbg "setup: connection ready" (or source ""))
+      (display-conn-status :connected)
       (drain-pending-evals))))
 
 (fn M.send [msg cb]
   (M.with-conn-or-warn
     (fn [conn]
       (conn.send msg cb))))
-
-(fn display-conn-status [status]
-  (M.with-conn-or-warn
-    (fn [conn]
-      (log.append [(str.join
-                     ["; " conn.host ":" conn.port " (" status ")"
-                      (when conn.port_file_path
-                        (str.join [": " conn.port_file_path]))])]
-                  {:break? true}))))
 
 (fn M.disconnect []
   (M.with-conn-or-warn
@@ -90,7 +96,7 @@
 
 (fn M.assume-session [session cb]
   (core.assoc (state.get :conn) :session (core.get session :id))
-  (log.append [(str.join ["; Assumed session: " (session.str)])]
+  (log.append [(str.join ["; Session: " (session.str)])]
               {:break? true})
   (when cb
     (cb)))
@@ -178,20 +184,23 @@
     st
     "Unknown https://github.com/Olical/conjure/wiki/Frequently-asked-questions#what-does-unknown-mean-in-the-log-when-connecting-to-a-clojure-nrepl"))
 
-(fn M.session-type [id cb]
+(fn M.session-type [id cb timeout]
   (let [state {:done? false}]
 
-    ;; Let's not wait forever just to check the type of a session.
-    ;; This prevents long running processes preventing session hopping.
+    ;; When a timeout is provided, don't wait forever to check the
+    ;; type of a session. This prevents long running processes
+    ;; preventing session hopping.
     ;; https://github.com/Olical/conjure/issues/366
-    (timer.defer
-      (fn []
-        (when (not state.done?)
-          (set state.done? true)
-          (cb :unknown)))
-
-      ;; Hard coding this because it shouldn't matter too much.
-      200)
+    ;; During initial setup we pass nil to wait for the real answer
+    ;; since user evals are gated behind the ready flag anyway.
+    (when timeout
+      (timer.defer
+        (fn []
+          (when (not state.done?)
+            (set state.done? true)
+            (log.dbg "session-type timed out for" id)
+            (cb :unknown)))
+        timeout))
 
     (M.send
       {:op :eval
@@ -211,7 +220,7 @@
               (set state.done? true)
               (cb (when st (str.trim st))))))))))
 
-(fn M.enrich-session-id [id cb]
+(fn M.enrich-session-id [id cb timeout]
   (M.session-type
     id
     (fn [st]
@@ -220,9 +229,10 @@
                :pretty-type (M.pretty-session-type st)
                :name (uuid.pretty id)}]
         (core.assoc t :str #(str.join [t.name " (" t.pretty-type ")"]))
-        (cb t)))))
+        (cb t)))
+    timeout))
 
-(fn M.with-sessions [cb]
+(fn M.with-sessions [cb opts]
   (with-session-ids
     (fn [sess-ids]
       (let [rich []
@@ -242,10 +252,11 @@
                         rich
                         #(< (core.get $1 :name)
                             (core.get $2 :name)))
-                      (cb rich))))))
+                      (cb rich)))
+                  (core.get opts :timeout))))
             sess-ids))))))
 
-(fn M.clone-session [session cb]
+(fn M.clone-session [session cb timeout]
   (M.send
     {:op :clone
      :session (core.get session :id)
@@ -257,20 +268,23 @@
           (when session-id
             (M.enrich-session-id session-id
               (fn [enriched-session]
-                (M.assume-session enriched-session cb)))))))))
+                (M.assume-session enriched-session cb))
+              timeout)))))))
 
-(fn M.assume-or-create-session [cb]
-  (log.dbg "assuming or creating session")
-  (core.assoc (state.get :conn) :session nil)
-  (M.with-sessions
-    (fn [sessions]
-      (if (core.empty? sessions)
-        (do
-          (log.dbg "no sessions found, cloning")
-          (M.clone-session nil cb))
-        (do
-          (log.dbg "assuming first session")
-          (M.assume-session (core.first sessions) cb))))))
+(fn M.assume-or-create-session [cb opts]
+  (let [timeout (core.get opts :timeout)]
+    (log.dbg "assuming or creating session")
+    (core.assoc (state.get :conn) :session nil)
+    (M.with-sessions
+      (fn [sessions]
+        (if (core.empty? sessions)
+          (do
+            (log.dbg "no sessions found, cloning")
+            (M.clone-session nil cb timeout))
+          (do
+            (log.dbg "assuming first session")
+            (M.assume-session (core.first sessions) cb))))
+      {:timeout timeout})))
 
 (fn eval-preamble [cb]
   (log.dbg "setup: evaluating preamble")
@@ -360,7 +374,7 @@
            :on-success
            (fn []
              (log.dbg "setup: connection established, beginning setup chain")
-             (display-conn-status :connected)
+             (display-conn-status :connecting)
 
              ;; Safety net: if the setup chain stalls, mark ready after
              ;; a timeout so queued evals aren't stuck forever.
@@ -397,7 +411,7 @@
            (fn [msg]
              (when msg.status.unknown-session
                (log.append ["; Unknown session, correcting"])
-               (M.assume-or-create-session))
+               (M.assume-or-create-session nil {:timeout M.session-type-timeout}))
              (when msg.status.namespace-not-found
                (log.append [(str.join ["; Namespace not found: " msg.ns])])))
 
