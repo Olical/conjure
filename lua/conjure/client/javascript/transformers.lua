@@ -130,10 +130,8 @@ local function transform_arrow_fn(arrow_fn, name, code)
   local forbidden = body_contains_forbidden_keyword_3f(body_node, code)
   if forbidden then
     local ln, col = forbidden:start()
-    local par = arrow_fn:parent()
-    local par0 = handle_statement(par:parent(), code)
     handle_transform_error({type = "warn", info = ("Cannot transform arrow function, it contains '" .. forbidden:type() .. "'"), ln = ln, col = col})
-    return par0
+    return nil
   else
     local params = tsc["get-text"](tsc["get-child"](arrow_fn, "parameters"), code)
     local body_text = transform(body_node, code)
@@ -165,7 +163,7 @@ local function _19_(node, code)
   local value_node = (var_decl and (var_decl:type() == "variable_declarator") and tsc["get-child"](var_decl, "value"))
   if (value_node and ("arrow_function" == value_node:type())) then
     local name = tsc["get-text"](tsc["get-child"](var_decl, "name"), code)
-    return transform_arrow_fn(value_node, name, code)
+    return (transform_arrow_fn(value_node, name, code) or handle_statement(node, code))
   else
     return handle_statement(node, code)
   end

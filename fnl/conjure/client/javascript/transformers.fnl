@@ -95,15 +95,13 @@
   (let [body-node (tsc.get-child arrow-fn "body")
         forbidden (body-contains-forbidden-keyword? body-node code)]
     (if forbidden
-        (let [(ln col) (forbidden:start)
-              par (arrow-fn:parent)
-              par (handle-statement (par:parent) code)]
+        (let [(ln col) (forbidden:start) ]
           (handle-transform-error
             {:type :warn
              :info (.. "Cannot transform arrow function, it contains '" (forbidden:type) "'")
              :ln ln
              :col col})
-          par)
+          nil)
         (let [params (tsc.get-text (tsc.get-child arrow-fn "parameters") code)
               body-text (transform body-node code)
               first-child (arrow-fn:child 0)
@@ -123,7 +121,8 @@
                              (tsc.get-child var-decl "value"))]
          (if (and value-node (= "arrow_function" (value-node:type)))
              (let [name (tsc.get-text (tsc.get-child var-decl "name") code)]
-               (transform-arrow-fn value-node name code))
+               (or (transform-arrow-fn value-node name code)
+                   (handle-statement node code)))
              (handle-statement node code)))))
 
 (set node-handlers.member_expression
