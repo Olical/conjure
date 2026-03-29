@@ -18,6 +18,7 @@ local uuid = autoload("conjure.uuid")
 local fs = autoload("conjure.nfnl.fs")
 local resources = autoload("conjure.resources")
 local M = define("conjure.client.clojure.nrepl.server")
+M["session-type-timeout"] = 200
 M["with-conn-or-warn"] = function(f, opts)
   local conn = state.get("conn")
   if conn then
@@ -41,39 +42,83 @@ M["connected?"] = function()
     return false
   end
 end
-M.send = function(msg, cb)
+M["with-conn-ready-or-queue"] = function(f, opts)
   local function _6_(conn)
-    return conn.send(msg, cb)
+    if conn["ready?"] then
+      return f(conn)
+    else
+      log.dbg("connection not ready, queueing eval")
+      return table.insert(conn["pending-evals"], f)
+    end
   end
-  return M["with-conn-or-warn"](_6_)
+  return M["with-conn-or-warn"](_6_, opts)
 end
 local function display_conn_status(status)
-  local function _7_(conn)
-    local function _8_()
+  local function _8_(conn)
+    local function _9_()
       if conn.port_file_path then
         return str.join({": ", conn.port_file_path})
       else
         return nil
       end
     end
-    return log.append({str.join({"; ", conn.host, ":", conn.port, " (", status, ")", _8_()})}, {["break?"] = true})
+    return log.append({str.join({"; ", conn.host, ":", conn.port, " (", status, ")", _9_()})}, {["break?"] = true})
   end
-  return M["with-conn-or-warn"](_7_)
+  return M["with-conn-or-warn"](_8_)
+end
+local function drain_pending_evals()
+  local conn = state.get("conn")
+  if (conn and not core["empty?"](conn["pending-evals"])) then
+    log.dbg("setup: draining pending evals", core.count(conn["pending-evals"]))
+    local pending = conn["pending-evals"]
+    conn["pending-evals"] = {}
+    local function _10_(f)
+      return f(conn)
+    end
+    return core["run!"](_10_, pending)
+  else
+    return nil
+  end
+end
+M["mark-ready!"] = function(source)
+  local conn = state.get("conn")
+  if (conn and not conn["ready?"]) then
+    conn["ready?"] = true
+    timer.destroy(conn["setup-timeout"])
+    conn["setup-timeout"] = nil
+    log.dbg("setup: connection ready", (source or ""))
+    display_conn_status("connected")
+    return drain_pending_evals()
+  else
+    return nil
+  end
+end
+M.send = function(msg, cb)
+  local function _13_(conn)
+    return conn.send(msg, cb)
+  end
+  return M["with-conn-or-warn"](_13_)
 end
 M.disconnect = function()
-  local function _9_(conn)
+  local function _14_(conn)
+    timer.destroy(conn["setup-timeout"])
     conn.destroy()
     display_conn_status("disconnected")
     return core.assoc(state.get(), "conn", nil)
   end
-  return M["with-conn-or-warn"](_9_)
+  return M["with-conn-or-warn"](_14_)
 end
 M["close-session"] = function(session, cb)
   return M.send({op = "close", session = core.get(session, "id")}, cb)
 end
-M["assume-session"] = function(session)
+M["assume-session"] = function(session, cb)
   core.assoc(state.get("conn"), "session", core.get(session, "id"))
-  return log.append({str.join({"; Assumed session: ", session.str()})}, {["break?"] = true})
+  log.append({str.join({"; Session: ", session.str()})}, {["break?"] = true})
+  if cb then
+    return cb()
+  else
+    return nil
+  end
 end
 M["un-comment"] = function(code)
   if code then
@@ -91,29 +136,29 @@ local function print_opts()
   end
 end
 M.eval = function(opts, cb)
-  local function _12_(_)
-    local _13_
+  local function _18_(_)
+    local _19_
     do
       local tmp_3_ = core["get-in"](opts, {"range", "start", 2})
       if (nil ~= tmp_3_) then
-        _13_ = core.inc(tmp_3_)
+        _19_ = core.inc(tmp_3_)
       else
-        _13_ = nil
+        _19_ = nil
       end
     end
-    return M.send(core.merge({op = "eval", ns = opts.context, code = M["un-comment"](opts.code), file = opts["file-path"], line = core["get-in"](opts, {"range", "start", 1}), column = _13_, session = opts.session}, print_opts()), cb)
+    return M.send(core.merge({op = "eval", ns = opts.context, code = M["un-comment"](opts.code), file = opts["file-path"], line = core["get-in"](opts, {"range", "start", 1}), column = _19_, session = opts.session}, print_opts()), cb)
   end
-  return M["with-conn-or-warn"](_12_)
+  return M["with-conn-or-warn"](_18_)
 end
 M["load-file"] = function(opts, cb)
-  local function _15_(_)
+  local function _21_(_)
     return M.send(core.merge({op = "load-file", file = opts.code, ["file-name"] = fs.filename(opts["file-path"]), ["file-path"] = opts["file-path"], session = opts.session}, print_opts()), cb)
   end
-  return M["with-conn-or-warn"](_15_)
+  return M["with-conn-or-warn"](_21_)
 end
 local function with_session_ids(cb)
-  local function _16_(_)
-    local function _17_(msg)
+  local function _22_(_)
+    local function _23_(msg)
       local sessions = core.get(msg, "sessions")
       if ("table" == type(sessions)) then
         table.sort(sessions)
@@ -121,152 +166,172 @@ local function with_session_ids(cb)
       end
       return cb(sessions)
     end
-    return M.send({op = "ls-sessions", session = "no-session"}, _17_)
+    return M.send({op = "ls-sessions", session = "no-session"}, _23_)
   end
-  return M["with-conn-or-warn"](_16_)
+  return M["with-conn-or-warn"](_22_)
 end
 M["pretty-session-type"] = function(st)
   return core.get({clj = "Clojure", cljs = "ClojureScript", cljr = "ClojureCLR"}, st, "Unknown https://github.com/Olical/conjure/wiki/Frequently-asked-questions#what-does-unknown-mean-in-the-log-when-connecting-to-a-clojure-nrepl")
 end
-M["session-type"] = function(id, cb)
+M["session-type"] = function(id, cb, timeout)
   local state0 = {["done?"] = false}
-  local function _19_()
-    if not state0["done?"] then
-      state0["done?"] = true
-      return cb("unknown")
-    else
-      return nil
+  if timeout then
+    local function _25_()
+      if not state0["done?"] then
+        state0["done?"] = true
+        log.dbg("session-type timed out for", id)
+        return cb("unknown")
+      else
+        return nil
+      end
     end
+    timer.defer(_25_, timeout)
+  else
   end
-  timer.defer(_19_, 200)
-  local function _21_(msgs)
+  local function _28_(msgs)
     local st
-    local function _22_(_241)
+    local function _29_(_241)
       return core.get(_241, "value")
     end
-    st = core.some(_22_, msgs)
+    st = core.some(_29_, msgs)
     if not state0["done?"] then
       state0["done?"] = true
-      local function _23_()
+      local function _30_()
         if st then
           return str.trim(st)
         else
           return nil
         end
       end
-      return cb(_23_())
+      return cb(_30_())
     else
       return nil
     end
   end
-  return M.send({op = "eval", code = ("#?(" .. str.join(" ", {":clj 'clj", ":cljs 'cljs", ":cljr 'cljr", ":default 'unknown"}) .. ")"), session = id}, nrepl["with-all-msgs-fn"](_21_))
+  return M.send({op = "eval", code = ("#?(" .. str.join(" ", {":clj 'clj", ":cljs 'cljs", ":cljr 'cljr", ":default 'unknown"}) .. ")"), session = id}, nrepl["with-all-msgs-fn"](_28_))
 end
-M["enrich-session-id"] = function(id, cb)
-  local function _25_(st)
+M["enrich-session-id"] = function(id, cb, timeout)
+  local function _32_(st)
     local t = {id = id, type = st, ["pretty-type"] = M["pretty-session-type"](st), name = uuid.pretty(id)}
-    local function _26_()
+    local function _33_()
       return str.join({t.name, " (", t["pretty-type"], ")"})
     end
-    core.assoc(t, "str", _26_)
+    core.assoc(t, "str", _33_)
     return cb(t)
   end
-  return M["session-type"](id, _25_)
+  return M["session-type"](id, _32_, timeout)
 end
-M["with-sessions"] = function(cb)
-  local function _27_(sess_ids)
+M["with-sessions"] = function(cb, opts)
+  local function _34_(sess_ids)
     local rich = {}
     local total = core.count(sess_ids)
     if (0 == total) then
       return cb({})
     else
-      local function _28_(id)
+      local function _35_(id)
         log.dbg("with-sessions id for enrichment", id)
         if id then
-          local function _29_(t)
+          local function _36_(t)
             table.insert(rich, t)
             if (total == core.count(rich)) then
-              local function _30_(_241, _242)
+              local function _37_(_241, _242)
                 return (core.get(_241, "name") < core.get(_242, "name"))
               end
-              table.sort(rich, _30_)
+              table.sort(rich, _37_)
               return cb(rich)
             else
               return nil
             end
           end
-          return M["enrich-session-id"](id, _29_)
+          return M["enrich-session-id"](id, _36_, core.get(opts, "timeout"))
         else
           return nil
         end
       end
-      return core["run!"](_28_, sess_ids)
+      return core["run!"](_35_, sess_ids)
     end
   end
-  return with_session_ids(_27_)
+  return with_session_ids(_34_)
 end
-M["clone-session"] = function(session)
-  local function _34_(msgs)
+M["clone-session"] = function(session, cb, timeout)
+  local function _41_(msgs)
     local session_id
-    local function _35_(_241)
+    local function _42_(_241)
       return core.get(_241, "new-session")
     end
-    session_id = core.some(_35_, msgs)
-    log.dbg("clone-session id for enrichment", id)
+    session_id = core.some(_42_, msgs)
+    log.dbg("clone-session id for enrichment", session_id)
     if session_id then
-      return M["enrich-session-id"](session_id, M["assume-session"])
+      local function _43_(enriched_session)
+        return M["assume-session"](enriched_session, cb)
+      end
+      return M["enrich-session-id"](session_id, _43_, timeout)
     else
       return nil
     end
   end
-  return M.send({op = "clone", session = core.get(session, "id"), ["client-name"] = "Conjure"}, nrepl["with-all-msgs-fn"](_34_))
+  return M.send({op = "clone", session = core.get(session, "id"), ["client-name"] = "Conjure"}, nrepl["with-all-msgs-fn"](_41_))
 end
-M["assume-or-create-session"] = function()
+M["assume-or-create-session"] = function(cb, opts)
+  local timeout = core.get(opts, "timeout")
+  log.dbg("assuming or creating session")
   core.assoc(state.get("conn"), "session", nil)
-  local function _37_(sessions)
+  local function _45_(sessions)
     if core["empty?"](sessions) then
-      return M["clone-session"]()
+      log.dbg("no sessions found, cloning")
+      return M["clone-session"](nil, cb, timeout)
     else
-      return M["assume-session"](core.first(sessions))
+      log.dbg("assuming first session")
+      return M["assume-session"](core.first(sessions), cb)
     end
   end
-  return M["with-sessions"](_37_)
+  return M["with-sessions"](_45_, {timeout = timeout})
 end
 local function eval_preamble(cb)
+  log.dbg("setup: evaluating preamble")
   local queue_size = config["get-in"]({"client", "clojure", "nrepl", "tap", "queue_size"})
   local pretty_print_test_failures_3f = config["get-in"]({"client", "clojure", "nrepl", "test", "pretty_print_test_failures"})
-  local function _39_()
+  local function _47_()
     if pretty_print_test_failures_3f then
       return "true"
     else
       return "false"
     end
   end
-  local function _40_()
+  local function _48_(msgs)
+    log.dbg("setup: preamble evaluated")
     if cb then
-      return nrepl["with-all-msgs-fn"](cb)
+      return cb(msgs)
     else
       return nil
     end
   end
-  return M.send({op = "eval", code = string.gsub(string.gsub(resources["get-resource-contents"]("client/clojure/preamble.cljc"), ":conjure%.template/queue%-size", queue_size), ":conjure%.template/pretty%-print%-test%-failures%?", _39_())}, _40_())
+  return M.send({op = "eval", code = string.gsub(string.gsub(resources["get-resource-contents"]("client/clojure/preamble.cljc"), ":conjure%.template/queue%-size", queue_size), ":conjure%.template/pretty%-print%-test%-failures%?", _47_())}, nrepl["with-all-msgs-fn"](_48_))
 end
-local function capture_describe()
-  local function _41_(msg)
-    return core.assoc(state.get("conn"), "describe", msg)
+local function capture_describe(cb)
+  log.dbg("setup: capturing describe")
+  local function _50_(msgs)
+    core.assoc(state.get("conn"), "describe", core.first(msgs))
+    log.dbg("setup: describe captured")
+    if cb then
+      return cb()
+    else
+      return nil
+    end
   end
-  return M.send({op = "describe"}, _41_)
+  return M.send({op = "describe"}, nrepl["with-all-msgs-fn"](_50_))
 end
 M["with-conn-and-ops-or-warn"] = function(op_names, f, opts)
-  local function _42_(conn)
+  local function _52_(conn)
     local found_ops
-    local function _43_(acc, op)
+    local function _53_(acc, op)
       if core["get-in"](conn, {"describe", "ops", op}) then
         return core.assoc(acc, op, true)
       else
         return acc
       end
     end
-    found_ops = core.reduce(_43_, {}, op_names)
+    found_ops = core.reduce(_53_, {}, op_names)
     if not core["empty?"](found_ops) then
       return f(conn, found_ops)
     else
@@ -281,17 +346,17 @@ M["with-conn-and-ops-or-warn"] = function(op_names, f, opts)
       end
     end
   end
-  return M["with-conn-or-warn"](_42_, opts)
+  return M["with-conn-or-warn"](_52_, opts)
 end
 M["handle-input-request"] = function(msg)
   return M.send({op = "stdin", stdin = ((extract.prompt("Input required: ") or "") .. "\n"), session = msg.session})
 end
-M.connect = function(_48_)
-  local host = _48_.host
-  local port = _48_.port
-  local cb = _48_.cb
-  local port_file_path = _48_.port_file_path
-  local connect_opts = _48_["connect-opts"]
+M.connect = function(_58_)
+  local host = _58_.host
+  local port = _58_.port
+  local cb = _58_.cb
+  local port_file_path = _58_.port_file_path
+  local connect_opts = _58_["connect-opts"]
   if state.get("conn") then
     M.disconnect()
   else
@@ -303,27 +368,52 @@ M.connect = function(_48_)
     else
     end
   end
-  local function _51_(err)
+  local function _61_(err)
     display_conn_status(err)
     return M.disconnect()
   end
-  local function _52_()
-    display_conn_status("connected")
-    capture_describe()
-    M["assume-or-create-session"]()
-    return eval_preamble(cb)
+  local function _62_()
+    log.dbg("setup: connection established, beginning setup chain")
+    display_conn_status("connecting")
+    do
+      local setup_conn = state.get("conn")
+      local function _63_()
+        if ((setup_conn == state.get("conn")) and not setup_conn["ready?"]) then
+          log.append({"; Warning: connection setup timed out, forcing ready state"}, {["break?"] = true})
+          return M["mark-ready!"]("timeout")
+        else
+          return nil
+        end
+      end
+      setup_conn["setup-timeout"] = timer.defer(_63_, 10000)
+    end
+    local function _65_()
+      local function _66_()
+        local function _67_()
+          M["mark-ready!"]()
+          if cb then
+            return cb()
+          else
+            return nil
+          end
+        end
+        return eval_preamble(_67_)
+      end
+      return M["assume-or-create-session"](_66_)
+    end
+    return capture_describe(_65_)
   end
-  local function _53_(err)
+  local function _69_(err)
     if err then
       return display_conn_status(err)
     else
       return M.disconnect()
     end
   end
-  local function _55_(msg)
+  local function _71_(msg)
     if msg.status["unknown-session"] then
       log.append({"; Unknown session, correcting"})
-      M["assume-or-create-session"]()
+      M["assume-or-create-session"](nil, {timeout = M["session-type-timeout"]})
     else
     end
     if msg.status["namespace-not-found"] then
@@ -332,7 +422,7 @@ M.connect = function(_48_)
       return nil
     end
   end
-  local function _58_(msg)
+  local function _74_(msg)
     if msg.status["need-input"] then
       client.schedule(M["handle-input-request"], msg)
     else
@@ -343,9 +433,9 @@ M.connect = function(_48_)
       return nil
     end
   end
-  local function _61_(msg)
+  local function _77_(msg)
     return ui["display-result"](msg)
   end
-  return core.assoc(state.get(), "conn", core["merge!"](nrepl.connect(core.merge({host = host, port = port, ["on-failure"] = _51_, ["on-success"] = _52_, ["on-error"] = _53_, ["on-message"] = _55_, ["side-effect-callback"] = _58_, ["default-callback"] = _61_}, connect_opts)), {["seen-ns"] = {}, port_file_path = port_file_path}))
+  return core.assoc(state.get(), "conn", core["merge!"](nrepl.connect(core.merge({host = host, port = port, ["on-failure"] = _61_, ["on-success"] = _62_, ["on-error"] = _69_, ["on-message"] = _71_, ["side-effect-callback"] = _74_, ["default-callback"] = _77_}, connect_opts)), {["seen-ns"] = {}, port_file_path = port_file_path, ["pending-evals"] = {}, ["setup-timeout"] = nil, ["ready?"] = false}))
 end
 return M

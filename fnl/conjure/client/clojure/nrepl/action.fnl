@@ -63,7 +63,9 @@
   (if (not (server.connected?))
       (hook.exec :client-clojure-nrepl-passive-connect cb)
       (when cb
-        (cb))))
+        (server.with-conn-ready-or-queue
+          (fn [_conn]
+            (cb))))))
 
 (fn M.connect-host-port [opts]
   (if (and (not opts.host) (not opts.port))
@@ -273,7 +275,8 @@
                                    (editor.percent-width
                                      (cfg [:interrupt :sample_limit])))
                                  (.. "session: " (sess.str) "")))]
-                        {:break? true}))))]
+                        {:break? true}))
+                    server.session-type-timeout))]
 
             (if (core.empty? msgs)
                 (order-66 {:session conn.session})
@@ -343,14 +346,15 @@
         (fn [conn]
           (server.enrich-session-id
             (core.get conn :session)
-            server.clone-session))))))
+            server.clone-session
+            server.session-type-timeout))))))
 
 (fn M.clone-fresh-session []
   (try-ensure-conn
     (fn []
       (server.with-conn-or-warn
         (fn [conn]
-          (server.clone-session))))))
+          (server.clone-session nil nil server.session-type-timeout))))))
 
 (fn M.close-current-session []
   (try-ensure-conn
@@ -363,14 +367,16 @@
               (core.assoc conn :session nil)
               (log.append [(.. "; Closed current session: " (sess.str))]
                           {:break? true})
-              (server.close-session sess #(server.assume-or-create-session)))))))))
+              (server.close-session sess #(server.assume-or-create-session nil {:timeout server.session-type-timeout})))
+            server.session-type-timeout))))))
 
 (fn M.display-sessions [cb]
   (try-ensure-conn
     (fn []
       (server.with-sessions
         (fn [sessions]
-          (ui.display-sessions sessions cb))))))
+          (ui.display-sessions sessions cb))
+        {:timeout server.session-type-timeout}))))
 
 (fn M.close-all-sessions []
   (try-ensure-conn
@@ -380,7 +386,8 @@
           (core.run! server.close-session sessions)
           (log.append [(.. "; Closed all sessions (" (core.count sessions) ")")]
                       {:break? true})
-          (server.clone-session))))))
+          (server.clone-session nil nil server.session-type-timeout))
+        {:timeout server.session-type-timeout}))))
 
 (fn cycle-session [f]
   (try-ensure-conn
@@ -397,7 +404,8 @@
                          (ll.cycle)
                          (ll.until #(f session $1))
                          (ll.val)
-                         (server.assume-session)))))))))))
+                         (server.assume-session)))))
+            {:timeout server.session-type-timeout}))))))
 
 (fn M.next-session []
   (cycle-session
@@ -421,7 +429,8 @@
                 {:prompt "Select an nREPL session:"
                  :format_item #(.. $.name " (" $.pretty-type ", " $.id ")")}
                 (fn [session]
-                  (server.assume-session session)))))))))
+                  (server.assume-session session)))))
+        {:timeout server.session-type-timeout}))))
 
 (set M.test-runners
   {:clojure
@@ -710,19 +719,21 @@
      :else opts.cb}))
 
 (fn M.out-subscribe []
-  (try-ensure-conn)
-  (log.append ["; Subscribing to out"] {:break? true})
-  (server.with-conn-and-ops-or-warn
-    [:out-subscribe]
-    (fn [conn]
-      (server.send {:op :out-subscribe}))))
+  (try-ensure-conn
+    (fn []
+      (log.append ["; Subscribing to out"] {:break? true})
+      (server.with-conn-and-ops-or-warn
+        [:out-subscribe]
+        (fn [conn]
+          (server.send {:op :out-subscribe}))))))
 
 (fn M.out-unsubscribe []
-  (try-ensure-conn)
-  (log.append ["; Unsubscribing from out"] {:break? true})
-  (server.with-conn-and-ops-or-warn
-    [:out-unsubscribe]
-    (fn [conn]
-      (server.send {:op :out-unsubscribe}))))
+  (try-ensure-conn
+    (fn []
+      (log.append ["; Unsubscribing from out"] {:break? true})
+      (server.with-conn-and-ops-or-warn
+        [:out-unsubscribe]
+        (fn [conn]
+          (server.send {:op :out-unsubscribe}))))))
 
 M
