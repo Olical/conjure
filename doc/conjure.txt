@@ -795,7 +795,13 @@ configure the ones you care about one at a time you can set:
 `g:conjure#log#jump_to_latest#cursor_scroll_position`
             After jumping to the latest log entry, this decides where your
             cursor should appear on the screen by adjusting the scroll. Your
-            options are `top`, `center`, `bottom` and `none`.
+            options are `top`, `center`, `bottom`, `last`, and `none`.
+
+            `top`, `center`, and `bottom` refer to the where the cursor is
+            positioned relative to the log buffer window. The cursor is at the
+            beginning of the latest log entry.
+
+            `last` positions the cursor at the end of the log buffer.
 
             `none` will just leave the scroll wherever it naturally lands
             after moving the cursor to the latest log entry.
