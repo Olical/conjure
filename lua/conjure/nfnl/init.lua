@@ -1,24 +1,16 @@
 -- [nfnl] fnl/nfnl/init.fnl
 local _local_1_ = require("conjure.nfnl.module")
-local autoload = _local_1_.autoload
 local define = _local_1_.define
-local callback = autoload("conjure.nfnl.callback")
+local autoload = _local_1_.autoload
+local notify = autoload("conjure.nfnl.notify")
 local vim = _G.vim
 local M = define("nfnl")
-local minimum_neovim_version = "0.9.0"
 if vim then
-  if (0 == vim.fn.has(("nvim-" .. minimum_neovim_version))) then
-    error(("nfnl requires Neovim > v" .. minimum_neovim_version))
-  else
-  end
-  vim.api.nvim_create_autocmd({"Filetype"}, {group = vim.api.nvim_create_augroup("nfnl-setup", {}), pattern = "fennel", callback = callback["fennel-filetype-callback"]})
-  if ("fennel" == vim.o.filetype) then
-    callback["fennel-filetype-callback"]({file = vim.fn.expand("%"), buf = vim.api.nvim_get_current_buf()})
-  else
-  end
+  notify.warn("require(\"nfnl\") is deprecated. nfnl now activates via ftplugin. You can remove require(\"nfnl\") from your config.")
 else
 end
 M.setup = function(opts)
+  notify.warn("conjure.nfnl.setup() is deprecated. Set vim.g.nfnl#compile_on_write directly instead.")
   if opts then
     vim.g["nfnl#compile_on_write"] = opts.compile_on_write
     return nil

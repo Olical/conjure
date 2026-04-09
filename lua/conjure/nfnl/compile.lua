@@ -58,7 +58,7 @@ M["into-string"] = function(_7_)
     do
       fennel.path = cfg({"fennel-path"})
       fennel["macro-path"] = cfg({"fennel-macro-path"})
-      ok, res = pcall(fennel["compile-string"], source, core.merge({filename = path, warn = notify.warn}, cfg({"compiler-options"})))
+      ok, res = pcall(fennel["compile-string"], source, core.merge({filename = rel_file_name, warn = notify.warn}, cfg({"compiler-options"})))
     end
     if ok then
       if cfg({"verbose"}) then

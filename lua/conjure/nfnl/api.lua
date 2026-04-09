@@ -14,23 +14,33 @@ local M = define("conjure.nfnl.api")
 M["find-orphans"] = function(_2_)
   local passive_3f = _2_["passive?"]
   local dir = _2_.dir
+  local config0 = _2_.config
+  local root_dir = _2_["root-dir"]
+  local cfg = _2_.cfg
   local dir0 = (dir or vim.fn.getcwd())
-  local _let_3_ = config["find-and-load"](dir0)
-  local config0 = _let_3_.config
-  local root_dir = _let_3_["root-dir"]
-  local cfg = _let_3_.cfg
-  if config0 then
-    local orphan_files = gc["find-orphan-lua-files"]({["root-dir"] = root_dir, cfg = cfg})
+  local function _3_()
+    if config0 then
+      return {config = config0, ["root-dir"] = root_dir, cfg = cfg}
+    else
+      return config0["find-and-load"](dir0)
+    end
+  end
+  local _let_4_ = _3_()
+  local config1 = _let_4_.config
+  local root_dir0 = _let_4_["root-dir"]
+  local cfg0 = _let_4_.cfg
+  if config1 then
+    local orphan_files = gc["find-orphan-lua-files"]({["root-dir"] = root_dir0, cfg = cfg0})
     if core["empty?"](orphan_files) then
       if not passive_3f then
         notify.info("No orphan files detected.")
       else
       end
     else
-      local function _5_(f)
+      local function _6_(f)
         return (" - " .. f)
       end
-      notify.warn("Orphan files detected, delete them with :NfnlDeleteOrphans.\n", str.join("\n", core.map(_5_, orphan_files)))
+      notify.warn("Orphan files detected, delete them with :NfnlDeleteOrphans.\n", str.join("\n", core.map(_6_, orphan_files)))
     end
     return orphan_files
   else
@@ -38,22 +48,22 @@ M["find-orphans"] = function(_2_)
     return {}
   end
 end
-M["delete-orphans"] = function(_8_)
-  local dir = _8_.dir
+M["delete-orphans"] = function(_9_)
+  local dir = _9_.dir
   local dir0 = (dir or vim.fn.getcwd())
-  local _let_9_ = config["find-and-load"](dir0)
-  local config0 = _let_9_.config
-  local root_dir = _let_9_["root-dir"]
-  local cfg = _let_9_.cfg
+  local _let_10_ = config["find-and-load"](dir0)
+  local config0 = _let_10_.config
+  local root_dir = _let_10_["root-dir"]
+  local cfg = _let_10_.cfg
   if config0 then
     local orphan_files = gc["find-orphan-lua-files"]({["root-dir"] = root_dir, cfg = cfg})
     if core["empty?"](orphan_files) then
       notify.info("No orphan files detected.")
     else
-      local function _10_(f)
+      local function _11_(f)
         return (" - " .. f)
       end
-      notify.info("Deleting orphan files:\n", str.join("\n", core.map(_10_, orphan_files)))
+      notify.info("Deleting orphan files:\n", str.join("\n", core.map(_11_, orphan_files)))
       core.map(os.remove, orphan_files)
     end
     return orphan_files
@@ -62,14 +72,14 @@ M["delete-orphans"] = function(_8_)
     return {}
   end
 end
-M["compile-file"] = function(_13_)
-  local path = _13_.path
-  local dir = _13_.dir
+M["compile-file"] = function(_14_)
+  local path = _14_.path
+  local dir = _14_.dir
   local dir0 = (dir or vim.fn.getcwd())
-  local _let_14_ = config["find-and-load"](dir0)
-  local config0 = _let_14_.config
-  local root_dir = _let_14_["root-dir"]
-  local cfg = _let_14_.cfg
+  local _let_15_ = config["find-and-load"](dir0)
+  local config0 = _let_15_.config
+  local root_dir = _let_15_["root-dir"]
+  local cfg = _let_15_.cfg
   if config0 then
     local path0 = fs["absolute-path"](vim.fn.expand((path or "%")))
     local result = compile["into-file"]({["root-dir"] = root_dir, cfg = cfg, path = path0, source = core.slurp(path0), ["batch?"] = true})
@@ -82,10 +92,10 @@ M["compile-file"] = function(_13_)
 end
 M["compile-all-files"] = function(dir)
   local dir0 = (dir or vim.fn.getcwd())
-  local _let_16_ = config["find-and-load"](dir0)
-  local config0 = _let_16_.config
-  local root_dir = _let_16_["root-dir"]
-  local cfg = _let_16_.cfg
+  local _let_17_ = config["find-and-load"](dir0)
+  local config0 = _let_17_.config
+  local root_dir = _let_17_["root-dir"]
+  local cfg = _let_17_.cfg
   if config0 then
     local results = compile["all-files"]({["root-dir"] = root_dir, cfg = cfg})
     notify.info("Compilation complete.\n", results)

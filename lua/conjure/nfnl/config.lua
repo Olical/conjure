@@ -52,7 +52,7 @@ M.default = function(opts)
     return core.map(fs["join-path"], {{root_dir0, "?.fnl"}, {root_dir0, "?", "init.fnl"}, {root_dir0, "fnl", "?.fnl"}, {root_dir0, "fnl", "?", "init.fnl"}})
   end
   local function _13_(root_dir0)
-    return core.map(fs["join-path"], {{root_dir0, "?.fnlm"}, {root_dir0, "?", "init.fnlm"}, {root_dir0, "fnl", "?.fnlm"}, {root_dir0, "fnl", "?", "init.fnlm"}, {root_dir0, "?.fnl"}, {root_dir0, "?", "init.fnl"}, {root_dir0, "?", "init-macros.fnl"}, {root_dir0, "fnl", "?.fnl"}, {root_dir0, "fnl", "?", "init.fnl"}, {root_dir0, "fnl", "?", "init-macros.fnl"}})
+    return core.map(fs["join-path"], {{root_dir0, "?.fnlm"}, {root_dir0, "?", "init.fnlm"}, {root_dir0, "?", "init-macros.fnlm"}, {root_dir0, "fnl", "?.fnlm"}, {root_dir0, "fnl", "?", "init.fnlm"}, {root_dir0, "fnl", "?", "init-macros.fnlm"}, {root_dir0, "?.fnl"}, {root_dir0, "?", "init.fnl"}, {root_dir0, "?", "init-macros.fnl"}, {root_dir0, "fnl", "?.fnl"}, {root_dir0, "fnl", "?", "init.fnl"}, {root_dir0, "fnl", "?", "init-macros.fnl"}})
   end
   return {["header-comment"] = true, ["compiler-options"] = {["error-pinpoint"] = false}, ["orphan-detection"] = {["auto?"] = true, ["ignore-patterns"] = {}}, ["root-dir"] = root_dir, ["fennel-path"] = str.join(";", core.mapcat(_12_, dirs)), ["fennel-macro-path"] = str.join(";", core.mapcat(_13_, dirs)), ["source-file-patterns"] = {".*.fnl", "*.fnl", fs["join-path"]({"**", "*.fnl"})}, ["fnl-path->lua-path"] = fs["fnl-path->lua-path"], verbose = false}
 end
@@ -63,6 +63,7 @@ M["cfg-fn"] = function(t, opts)
   end
   return _14_
 end
+local notified = {}
 M["config-file-path?"] = function(path)
   return (config_file_name == fs.filename(path))
 end
@@ -75,7 +76,12 @@ M["find-and-load"] = function(dir)
       local config_source = vim.secure.read(config_file_path)
       local ok, config
       if core["nil?"](config_source) then
-        ok, config = false, (config_file_path .. " is not trusted, refusing to compile.")
+        if not notified[config_file_path] then
+          notified[config_file_path] = true
+          notify.info(config_file_path, " is not trusted yet. Open it and :trust to enable nfnl.")
+        else
+        end
+        ok, config = false, nil
       elseif (str["blank?"](config_source) or ("{}" == str.trim(config_source))) then
         ok, config = true, {}
       else
@@ -84,7 +90,11 @@ M["find-and-load"] = function(dir)
       if ok then
         _15_ = {config = config, ["root-dir"] = root_dir, cfg = M["cfg-fn"](config, {["root-dir"] = root_dir})}
       else
-        _15_ = notify.error(config)
+        if config then
+          _15_ = notify.error(config)
+        else
+          _15_ = nil
+        end
       end
     else
       _15_ = nil
