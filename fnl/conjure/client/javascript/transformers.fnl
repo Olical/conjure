@@ -40,7 +40,7 @@
 
 (fn subs-newline [code start prev-end]
   (let [subs (string.sub code (+ prev-end 1) start)
-        subs (string.gsub subs "[\r\n]+" " ")
+        subs (string.gsub subs "%s*[\r\n]+%s*" " ")
         (subs _) subs]
     subs))
 
@@ -57,7 +57,7 @@
                  (table.insert pieces (transform child code))
                  (set prev-end.val end)))
              (table.insert pieces (subs-newline code (let [(_ _ end) (node:end_)] end) prev-end.val))
-             (table.concat (a.remove (fn [p] (>= 0 (string.len p))) pieces) "")))))
+             (table.concat pieces "")))))
 
 (set node-handlers.comment
   (fn [_ _] ""))

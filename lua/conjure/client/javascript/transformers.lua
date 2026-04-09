@@ -55,7 +55,7 @@ local function transform(node, code)
 end
 local function subs_newline(code, start, prev_end)
   local subs = string.sub(code, (prev_end + 1), start)
-  local subs0 = string.gsub(subs, "[\r\n]+", " ")
+  local subs0 = string.gsub(subs, "%s*[\r\n]+%s*", " ")
   local subs1, _ = subs0
   return subs1
 end
@@ -84,17 +84,14 @@ local function _7_(node, code)
       _9_ = _end
     end
     table.insert(pieces, subs_newline(code, _9_, prev_end.val))
-    local function _10_(p)
-      return (0 >= string.len(p))
-    end
-    return table.concat(a.remove(_10_, pieces), "")
+    return table.concat(pieces, "")
   end
 end
 node_handlers.default = _7_
-local function _12_(_, _0)
+local function _11_(_, _0)
   return ""
 end
-node_handlers.comment = _12_
+node_handlers.comment = _11_
 local function forbidden_kw_3f(n, code)
   local t = n:type()
   local txt = tsc["get-text"](n, code)
@@ -145,20 +142,20 @@ local function transform_arrow_fn(arrow_fn, name, code)
     end
     local final_body
     do
-      local case_16_ = body_node:type()
-      if (case_16_ == "statement_block") then
+      local case_15_ = body_node:type()
+      if (case_15_ == "statement_block") then
         final_body = (" " .. body_text)
-      elseif (case_16_ == "parenthesized_expression") then
+      elseif (case_15_ == "parenthesized_expression") then
         final_body = (" { return " .. body_text .. " }")
       else
-        local _ = case_16_
+        local _ = case_15_
         final_body = (" { return " .. body_text .. " }")
       end
     end
     return (async_kw .. "function " .. name .. params .. final_body .. ";")
   end
 end
-local function _19_(node, code)
+local function _18_(node, code)
   local var_decl = node:child(1)
   local value_node = (var_decl and (var_decl:type() == "variable_declarator") and tsc["get-child"](var_decl, "value"))
   if (value_node and ("arrow_function" == value_node:type())) then
@@ -168,8 +165,8 @@ local function _19_(node, code)
     return handle_statement(node, code)
   end
 end
-node_handlers.lexical_declaration = _19_
-local function _21_(node, code)
+node_handlers.lexical_declaration = _18_
+local function _20_(node, code)
   local obj = node:field("object")[1]
   if (obj and ((obj:type() == "call_expression") or (obj:type() == "member_expression"))) then
     local default_text = node_handlers.default(node, code)
@@ -179,22 +176,22 @@ local function _21_(node, code)
     return node_handlers.default(node, code)
   end
 end
-node_handlers.member_expression = _21_
+node_handlers.member_expression = _20_
 node_handlers.import_statement = ir["import-statement"](handle_statement)
 node_handlers.call_expression = ir["call-expression"](node_handlers.default)
-local function _23_(node, code)
+local function _22_(node, code)
   local child = node:child(1)
-  local case_24_ = child:type()
-  if ((case_24_ == "interface_declaration") or (case_24_ == "class_declaration")) then
+  local case_23_ = child:type()
+  if ((case_23_ == "interface_declaration") or (case_23_ == "class_declaration")) then
     return node_handlers.default(node, code)
-  elseif (case_24_ == "export_clause") then
+  elseif (case_23_ == "export_clause") then
     return ""
   else
-    local _ = case_24_
+    local _ = case_23_
     return node_handlers.default(child, code)
   end
 end
-node_handlers.export_statement = _23_
+node_handlers.export_statement = _22_
 for _, t in pairs({"type_alias_declaration", "expression_statement", "variable_declaration", "return_statement", "throw_statement", "break_statement", "continue_statement", "debugger_statement", "class_declaration", "field_definition", "public_field_definition", "function_declaration"}) do
   node_handlers[t] = handle_statement
 end
