@@ -275,7 +275,7 @@ end
 M["last-line"] = function(buf, extra_offset)
   return core.first(vim.api.nvim_buf_get_lines((buf or upsert_buf()), (-2 + (extra_offset or 0)), -1, false))
 end
-M["cursor-scroll-position->command"] = {top = "normal zt", center = "normal zz", bottom = "normal zb", none = nil}
+M["cursor-scroll-position->command"] = {top = "normal zt", center = "normal zz", bottom = "normal zb", last = "normal G", none = nil}
 M["jump-to-latest"] = function()
   M["close-hud"]()
   local buf = upsert_buf()
@@ -530,7 +530,7 @@ M.toggle = function()
       return nil
     end
   else
-    return M["close-visible"](windows)
+    return M["close-visible"]()
   end
 end
 M.dbg = function(desc, ...)
