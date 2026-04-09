@@ -9,16 +9,25 @@
 
 (var node-handlers {})
 
+(local err-type->str
+  {:err "ERROR"
+   :warn "WARNING"})
+
+(fn table? [e] (= "table" (type e)) )
+
 (fn handle-transform-error [err]
-  (let [opts (or (. eval.previous-evaluations  "conjure.client.javascript.stdio") {})
+  (let [opts (or (. eval.previous-evaluations "conjure.client.javascript.stdio") {})
         {:range range} opts
         {:start start} (or range {})
         [line col] (or start [])
-        {:ln eline :col ecol :info einfo} (if (= "table" (type err)) err {})
+        err (if (table? err) err {})
+        {:ln eline :col ecol :info einfo :type tp} err
+        tp (or (. err-type->str tp) "ERROR")
         final-line (+ (or line 0) (or eline 0)) 
         final-col (if ecol (+ 1 ecol) col)
-        info (or einfo "no info")]
-    (log.append [(.. "/* [ERROR] transforming node " 
+        info (or einfo "no info")
+        pref (.. "[" tp "]")]
+    (log.append [(.. "/* " pref " transforming node "
                      "at line " final-line
                      " column " final-col
                      ". Info: " info " */")])))
@@ -29,20 +38,26 @@
         (_ok result) (xpcall (fn [] (handler node code)) handle-transform-error)]
     result))
 
+(fn subs-newline [code start prev-end]
+  (let [subs (string.sub code (+ prev-end 1) start)
+        subs (string.gsub subs "[\r\n]+" " ")
+        (subs _) subs]
+    subs))
+
 (set node-handlers.default
      (fn [node code]
        (if (= (node:child_count) 0)
            (tsc.get-text node code)
-           (let [pieces []]
-             (var prev-end (let [(_ _ b) (node:start)] b))
+           (let [pieces []
+                 prev-end {:val (let [(_ _ b) (node:start)] b)}]
              (each [child (node:iter_children)]
                (let [(_ _ start) (child:start)
-                     (_ _ stop) (child:end_)]
-                 (table.insert pieces (string.sub code (+ prev-end 1) start))
+                     (_ _ end) (child:end_)]
+                 (table.insert pieces (subs-newline code start prev-end.val))
                  (table.insert pieces (transform child code))
-                 (set prev-end stop)))
-             (table.insert pieces (string.sub code (+ prev-end 1) (let [(_ _ end) (node:end_)] end)))
-             (table.concat pieces "")))))
+                 (set prev-end.val end)))
+             (table.insert pieces (subs-newline code (let [(_ _ end) (node:end_)] end) prev-end.val))
+             (table.concat (a.remove (fn [p] (>= 0 (string.len p))) pieces) "")))))
 
 (set node-handlers.comment
   (fn [_ _] ""))
@@ -67,25 +82,6 @@
               (table.insert stack c)))))
     found))
 
-(fn transform-arrow-fn [arrow-fn name code]
-  (let [body-node (tsc.get-child arrow-fn "body")
-        forbidden (body-contains-forbidden-keyword? body-node code)]
-    (if forbidden
-        (let [(ln col) (forbidden:start)]
-          (error {:info (.. "Cannot transform arrow function, it contains '" (forbidden:type) "'")
-                  :ln ln
-                  :col col}))
-        (let [params (tsc.get-text (tsc.get-child arrow-fn "parameters") code)
-              body-text (transform body-node code)
-              first-child (arrow-fn:child 0)
-              async? (and first-child (= (first-child:type) "async"))
-              async-kw (if async? "async " "")
-              final-body (case (body-node:type)
-                           "statement_block" (.. " " body-text)
-                           "parenthesized_expression" (.. " { return " body-text " }")
-                           _ (.. " { return " body-text " }"))]
-          (.. async-kw "function " name params final-body)))))
-
 (fn handle-statement [node code]
   (let [text (node-handlers.default node code)
         trimmed (vim.fn.trim text)
@@ -95,6 +91,28 @@
         text
         (.. text ";"))))
 
+(fn transform-arrow-fn [arrow-fn name code]
+  (let [body-node (tsc.get-child arrow-fn "body")
+        forbidden (body-contains-forbidden-keyword? body-node code)]
+    (if forbidden
+        (let [(ln col) (forbidden:start) ]
+          (handle-transform-error
+            {:type :warn
+             :info (.. "Cannot transform arrow function, it contains '" (forbidden:type) "'")
+             :ln ln
+             :col col})
+          nil)
+        (let [params (tsc.get-text (tsc.get-child arrow-fn "parameters") code)
+              body-text (transform body-node code)
+              first-child (arrow-fn:child 0)
+              async? (and first-child (= (first-child:type) "async"))
+              async-kw (if async? "async " "")
+              final-body (case (body-node:type)
+                           "statement_block" (.. " " body-text)
+                           "parenthesized_expression" (.. " { return " body-text " }")
+                           _ (.. " { return " body-text " }"))]
+          (.. async-kw "function " name params final-body ";")))))
+
 (set node-handlers.lexical_declaration
      (fn [node code]
        (let [var-decl (node:child 1)
@@ -103,7 +121,8 @@
                              (tsc.get-child var-decl "value"))]
          (if (and value-node (= "arrow_function" (value-node:type)))
              (let [name (tsc.get-text (tsc.get-child var-decl "name") code)]
-               (transform-arrow-fn value-node name code))
+               (or (transform-arrow-fn value-node name code)
+                   (handle-statement node code)))
              (handle-statement node code)))))
 
 (set node-handlers.member_expression
@@ -133,7 +152,8 @@
            _ (node-handlers.default child code)))))
 
 (each [_ t (pairs
-             [:expression_statement
+             [:type_alias_declaration
+              :expression_statement
               :variable_declaration
               :return_statement
               :throw_statement
@@ -143,7 +163,7 @@
               :class_declaration
               :field_definition
               :public_field_definition
-              :function_declaration ])]
+              :function_declaration])]
 
   (set (. node-handlers t) handle-statement))
 
@@ -151,6 +171,6 @@
   (let [tree (tsc.get-tree s)
         root (tree:root)
         transformed (transform root s)]
-    (string.gsub transformed "%s*\n%s*" " ")))
+    (vim.fn.trim transformed)))
 
 M

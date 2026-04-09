@@ -68,8 +68,7 @@
 
 (fn M.format-msg [msg]
   (->> (str.split msg "\n")
-       (a.filter #(not= "" $1))
-       (a.map #(replace-dots $1 ""))))
+       (a.filter #(not= "" $1))))
 
 (fn sanitize-msg [msg field]
   (->> (str.split (a.get msg field) "\n")
