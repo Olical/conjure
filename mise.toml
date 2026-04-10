@@ -1,5 +1,7 @@
 [tools]
 node = "22"
+java = "temurin-25"
+clojure = "1.12"
 
 [tasks.sponsors]
 run = "scripts/sponsors.sh"
