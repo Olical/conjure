@@ -211,8 +211,18 @@ set these with normal VimL `let` expressions. Here's the full list of options
 available in the core plugin. Each language client also has its own set of
 mappings and settings you can alter.
 
-You can also set `b:` prefixed versions of all configuration values for buffer
-local settings that override their global counterparts.
+You can also set buffer local overrides via Lua, useful for per-filetype
+configuration in a `FileType` autocmd (must be set before `BufEnter`):
+>
+    vim.b["conjure#mapping#doc_word"] = false
+
+    vim.api.nvim_create_autocmd("FileType", {
+      pattern = "lua",
+      callback = function()
+        vim.b["conjure#mapping#doc_word"] = false
+      end,
+    })
+<
 
 As an example, we can change the default prefix from `<localleader>` to `,c`
 with the following command:
