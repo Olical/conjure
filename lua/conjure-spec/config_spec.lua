@@ -104,6 +104,36 @@ local function _12_()
     core.assoc(vim.g, "conjure#migration#good_key", nil)
     return assert.same(0, #warnings)
   end
-  return it("assoc-in does not warn for underscore keys", _19_)
+  it("assoc-in does not warn for underscore keys", _19_)
+  local function _21_()
+    local orig = vim.notify_once
+    core.assoc(vim.g, "conjure#migration#old-key", "legacy")
+    local function _22_(_, _0)
+      return nil
+    end
+    vim.notify_once = _22_
+    config.merge({migration = {old_key = "default"}})
+    local result = config["get-in"]({"migration", "old_key"})
+    vim.notify_once = orig
+    core.assoc(vim.g, "conjure#migration#old-key", nil)
+    return assert.same("legacy", result)
+  end
+  it("merge does not overwrite a value already set via the legacy hyphen key", _21_)
+  local function _23_()
+    local warnings = {}
+    local orig = vim.notify_once
+    core.assoc(vim.b, "conjure#migration#buf-key", "buffer-legacy")
+    local function _24_(msg, _)
+      return table.insert(warnings, msg)
+    end
+    vim.notify_once = _24_
+    local result = config["get-in"]({"migration", "buf_key"})
+    vim.notify_once = orig
+    core.assoc(vim.b, "conjure#migration#buf-key", nil)
+    assert.same("buffer-legacy", result)
+    assert.same(1, #warnings)
+    return assert.truthy(string.find(warnings[1], "deprecated", 1, true))
+  end
+  return it("get-in falls back to a hyphenated key in vim.b and emits a deprecation warning", _23_)
 end
 return describe("hyphen migration", _12_)

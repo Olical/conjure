@@ -86,4 +86,28 @@
           (config.assoc-in [:migration :good_key] :val)
           (set vim.notify orig)
           (core.assoc vim.g "conjure#migration#good_key" nil)
-          (assert.same 0 (length warnings)))))))
+          (assert.same 0 (length warnings)))))
+
+    (it "merge does not overwrite a value already set via the legacy hyphen key"
+      (fn []
+        (let [orig vim.notify_once]
+          (core.assoc vim.g "conjure#migration#old-key" :legacy)
+          (set vim.notify_once (fn [_ _] nil))
+          (config.merge {:migration {:old_key :default}})
+          (let [result (config.get-in [:migration :old_key])]
+            (set vim.notify_once orig)
+            (core.assoc vim.g "conjure#migration#old-key" nil)
+            (assert.same :legacy result)))))
+
+    (it "get-in falls back to a hyphenated key in vim.b and emits a deprecation warning"
+      (fn []
+        (let [warnings []
+              orig vim.notify_once]
+          (core.assoc vim.b "conjure#migration#buf-key" :buffer-legacy)
+          (set vim.notify_once (fn [msg _] (table.insert warnings msg)))
+          (let [result (config.get-in [:migration :buf_key])]
+            (set vim.notify_once orig)
+            (core.assoc vim.b "conjure#migration#buf-key" nil)
+            (assert.same :buffer-legacy result)
+            (assert.same 1 (length warnings))
+            (assert.truthy (string.find (. warnings 1) "deprecated" 1 true))))))))
