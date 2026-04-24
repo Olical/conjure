@@ -156,7 +156,7 @@
         (stdio.start
           {:prompt-pattern (cfg [:prompt_pattern])
            :cmd (.. (repl-command-for-filetype) " " (cfg [:args]))
-           :delay-stderr-ms (cfg [:delay-stderr-ms])
+           :delay-stderr-ms (cfg [:delay_stderr_ms])
 
            :on-success
            (fn []

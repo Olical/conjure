@@ -12,12 +12,12 @@ local mapping = autoload("conjure.mapping")
 local text = autoload("conjure.text")
 local ts = autoload("conjure.tree-sitter")
 local M = define("conjure.client.snd-s7.stdio")
-config.merge({client = {["snd-s7"] = {stdio = {command = "snd", prompt_pattern = "> "}}}})
+config.merge({client = {snd_s7 = {stdio = {command = "snd", prompt_pattern = "> "}}}})
 if config["get-in"]({"mapping", "enable_defaults"}) then
-  config.merge({client = {["snd-s7"] = {stdio = {mapping = {start = "cs", stop = "cS", interrupt = "ei"}}}}})
+  config.merge({client = {snd_s7 = {stdio = {mapping = {start = "cs", stop = "cS", interrupt = "ei"}}}}})
 else
 end
-local cfg = config["get-in-fn"]({"client", "snd-s7", "stdio"})
+local cfg = config["get-in-fn"]({"client", "snd_s7", "stdio"})
 local state
 local function _3_()
   return {repl = nil}

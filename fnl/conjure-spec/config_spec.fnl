@@ -38,3 +38,52 @@
         (assert.same :baz (config.get-in [:foo :bar]))
         (config.merge {:foo {:bar :de_dust2}} {:overwrite? true})
         (assert.same :de_dust2 (config.get-in [:foo :bar]))))))
+
+(describe "hyphen migration"
+  (fn []
+    (it "get-in falls back to a hyphenated key and emits a deprecation warning"
+      (fn []
+        (let [warnings []
+              orig vim.notify_once]
+          ; "migration" has no underscores, so gsub only replaces the leaf underscore
+          (core.assoc vim.g "conjure#migration#old-key" :legacy)
+          (set vim.notify_once (fn [msg _] (table.insert warnings msg)))
+          (let [result (config.get-in [:migration :old_key])]
+            (set vim.notify_once orig)
+            (core.assoc vim.g "conjure#migration#old-key" nil)
+            (assert.same :legacy result)
+            (assert.same 1 (length warnings))
+            (assert.truthy (string.find (. warnings 1) "deprecated" 1 true))))))
+
+    (it "get-in reads an underscore key normally without any warning"
+      (fn []
+        (let [warnings []
+              orig vim.notify_once]
+          (core.assoc vim.g "conjure#migration#new_key" :modern)
+          (set vim.notify_once (fn [msg _] (table.insert warnings msg)))
+          (let [result (config.get-in [:migration :new_key])]
+            (set vim.notify_once orig)
+            (core.assoc vim.g "conjure#migration#new_key" nil)
+            (assert.same :modern result)
+            (assert.same 0 (length warnings))))))
+
+    (it "assoc-in warns when a key segment contains a hyphen"
+      (fn []
+        (let [warnings []
+              orig vim.notify]
+          (set vim.notify (fn [msg _] (table.insert warnings msg)))
+          (config.assoc-in [:migration :bad-key] :val)
+          (set vim.notify orig)
+          (core.assoc vim.g "conjure#migration#bad-key" nil)
+          (assert.same 1 (length warnings))
+          (assert.truthy (string.find (. warnings 1) "hyphen" 1 true)))))
+
+    (it "assoc-in does not warn for underscore keys"
+      (fn []
+        (let [warnings []
+              orig vim.notify]
+          (set vim.notify (fn [msg _] (table.insert warnings msg)))
+          (config.assoc-in [:migration :good_key] :val)
+          (set vim.notify orig)
+          (core.assoc vim.g "conjure#migration#good_key" nil)
+          (assert.same 0 (length warnings)))))))

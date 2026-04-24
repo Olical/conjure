@@ -11,7 +11,7 @@ local client = autoload("conjure.client")
 local log = autoload("conjure.log")
 local ts = autoload("conjure.tree-sitter")
 local M = define("conjure.client.r.stdio")
-config.merge({client = {r = {stdio = {command = "R --vanilla --interactive --quiet", prompt_pattern = "> ", ["delay-stderr-ms"] = 16}}}})
+config.merge({client = {r = {stdio = {command = "R --vanilla --interactive --quiet", prompt_pattern = "> ", delay_stderr_ms = 16}}}})
 if config["get-in"]({"mapping", "enable_defaults"}) then
   config.merge({client = {r = {stdio = {mapping = {start = "cs", stop = "cS", interrupt = "ei"}}}}})
 else

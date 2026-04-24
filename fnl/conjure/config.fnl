@@ -9,7 +9,17 @@
 
 (fn M.get-in [ks]
   (let [key (ks->var ks)
-        v (or (core.get vim.b key) (core.get vim.g key))]
+        key-hy (string.gsub key "_" "-")
+        hy-val (when (not= key key-hy)
+                 (or (core.get vim.b key-hy)
+                     (core.get vim.g key-hy)))
+        v (or hy-val
+              (core.get vim.b key)
+              (core.get vim.g key))]
+    (when (not (core.nil? hy-val))
+      (vim.notify_once
+        (.. "conjure: '" key-hy "' is deprecated; rename to '" key "' (use underscores, not hyphens)")
+        vim.log.levels.WARN))
     (if (and (core.table? v)
              (core.get v vim.type_idx)
              (core.get v vim.val_idx))
@@ -24,8 +34,14 @@
     (M.get-in (core.concat prefix-ks ks))))
 
 (fn M.assoc-in [ks v]
-  (core.assoc vim.g (ks->var ks) v)
-  v)
+  (let [key (ks->var ks)]
+    (each [_ k (ipairs ks)]
+      (when (string.find (tostring k) "-" 1 true)
+        (vim.notify
+          (.. "conjure: config key '" (tostring k) "' in '" key "' contains a hyphen; use underscores instead")
+          vim.log.levels.WARN)))
+    (core.assoc vim.g key v)
+    v))
 
 (fn M.merge [tbl opts ks]
   "Merge a table into the config recursively. Won't overwrite any existing

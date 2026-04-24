@@ -29,7 +29,7 @@
 
 (config.merge
   {:client
-   {:snd-s7
+   {:snd_s7
     {:stdio
      {:command "snd"
       :prompt_pattern "> "}}}})
@@ -37,13 +37,13 @@
 (when (config.get-in [:mapping :enable_defaults])
   (config.merge
     {:client
-     {:snd-s7
+     {:snd_s7
       {:stdio
        {:mapping {:start "cs"
                   :stop "cS"
                   :interrupt "ei"}}}}}))
 
-(local cfg (config.get-in-fn [:client :snd-s7 :stdio]))
+(local cfg (config.get-in-fn [:client :snd_s7 :stdio]))
 (local state (client.new-state #(do {:repl nil})))
 
 (set M.buf-suffix ".scm")

@@ -16,7 +16,7 @@
     {:psysh
      {:command "psysh -ir --no-color"
       :prompt_pattern "> "
-      :delay-stderr-ms 10}}}})
+      :delay_stderr_ms 10}}}})
 
 (when (config.get-in [:mapping :enable_defaults])
   (config.merge

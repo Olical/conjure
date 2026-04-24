@@ -16,7 +16,7 @@
     {:stdio
      {:command "R --vanilla --interactive --quiet"
       :prompt_pattern "> "
-      :delay-stderr-ms 16}}}})
+      :delay_stderr_ms 16}}}})
 
 (when (config.get-in [:mapping :enable_defaults])
   (config.merge

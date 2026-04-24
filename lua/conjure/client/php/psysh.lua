@@ -11,7 +11,7 @@ local stdio = autoload("conjure.remote.stdio")
 local str = autoload("conjure.nfnl.string")
 local text = autoload("conjure.text")
 local M = define("conjure.client.php.psysh")
-config.merge({client = {php = {psysh = {command = "psysh -ir --no-color", prompt_pattern = "> ", ["delay-stderr-ms"] = 10}}}})
+config.merge({client = {php = {psysh = {command = "psysh -ir --no-color", prompt_pattern = "> ", delay_stderr_ms = 10}}}})
 if config["get-in"]({"mapping", "enable_defaults"}) then
   config.merge({client = {php = {psysh = {mapping = {start = "cs", stop = "cS", interrupt = "ei"}}}}})
 else

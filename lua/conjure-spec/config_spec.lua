@@ -45,4 +45,65 @@ local function _10_()
   end
   return it("merges more config into the tree, requires overwrite? if it already exists", _11_)
 end
-return describe("merge", _10_)
+describe("merge", _10_)
+local function _12_()
+  local function _13_()
+    local warnings = {}
+    local orig = vim.notify_once
+    core.assoc(vim.g, "conjure#migration#old-key", "legacy")
+    local function _14_(msg, _)
+      return table.insert(warnings, msg)
+    end
+    vim.notify_once = _14_
+    local result = config["get-in"]({"migration", "old_key"})
+    vim.notify_once = orig
+    core.assoc(vim.g, "conjure#migration#old-key", nil)
+    assert.same("legacy", result)
+    assert.same(1, #warnings)
+    return assert.truthy(string.find(warnings[1], "deprecated", 1, true))
+  end
+  it("get-in falls back to a hyphenated key and emits a deprecation warning", _13_)
+  local function _15_()
+    local warnings = {}
+    local orig = vim.notify_once
+    core.assoc(vim.g, "conjure#migration#new_key", "modern")
+    local function _16_(msg, _)
+      return table.insert(warnings, msg)
+    end
+    vim.notify_once = _16_
+    local result = config["get-in"]({"migration", "new_key"})
+    vim.notify_once = orig
+    core.assoc(vim.g, "conjure#migration#new_key", nil)
+    assert.same("modern", result)
+    return assert.same(0, #warnings)
+  end
+  it("get-in reads an underscore key normally without any warning", _15_)
+  local function _17_()
+    local warnings = {}
+    local orig = vim.notify
+    local function _18_(msg, _)
+      return table.insert(warnings, msg)
+    end
+    vim.notify = _18_
+    config["assoc-in"]({"migration", "bad-key"}, "val")
+    vim.notify = orig
+    core.assoc(vim.g, "conjure#migration#bad-key", nil)
+    assert.same(1, #warnings)
+    return assert.truthy(string.find(warnings[1], "hyphen", 1, true))
+  end
+  it("assoc-in warns when a key segment contains a hyphen", _17_)
+  local function _19_()
+    local warnings = {}
+    local orig = vim.notify
+    local function _20_(msg, _)
+      return table.insert(warnings, msg)
+    end
+    vim.notify = _20_
+    config["assoc-in"]({"migration", "good_key"}, "val")
+    vim.notify = orig
+    core.assoc(vim.g, "conjure#migration#good_key", nil)
+    return assert.same(0, #warnings)
+  end
+  return it("assoc-in does not warn for underscore keys", _19_)
+end
+return describe("hyphen migration", _12_)
