@@ -192,22 +192,18 @@ local function warning_msg()
   return a.map(_27_, {"// WARNING! Node.js REPL limitations require transformations:", "// 1. ES6 'import' statements are converted to 'require(...)' calls.", "// 2. Arrow functions ('const fn = () => ...') are converted to 'function fn() ...' declarations to allow re-definition."})
 end
 M["on-load"] = function()
-  if config["get-in"]({"client_on_load"}) then
-    M.start()
-    return warning_msg()
-  else
-    return log.append({"Not starting repl"})
-  end
+  M.start()
+  return warning_msg()
 end
 M["on-exit"] = function()
   return M.stop()
 end
 M.interrupt = function()
-  local function _29_(repl)
+  local function _28_(repl)
     log.append({(M["comment-prefix"] .. " Sending interrupt signal.")}, {["break?"] = true})
     return repl["send-signal"]("sigint")
   end
-  return with_repl_or_warn(_29_)
+  return with_repl_or_warn(_28_)
 end
 M["on-filetype"] = function()
   mapping.buf("JavascriptStart", cfg({"mapping", "start"}), M.start, {desc = "Start the Javascript REPL"})

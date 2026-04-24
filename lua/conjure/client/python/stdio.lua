@@ -239,24 +239,20 @@ M.interrupt = function()
   return with_repl_or_warn(_32_)
 end
 M["on-load"] = function()
-  if config["get-in"]({"client_on_load"}) then
-    return M.start()
-  else
-    return nil
-  end
+  return M.start()
 end
 M["on-filetype"] = function()
-  local function _34_()
+  local function _33_()
     return M.start()
   end
-  mapping.buf("PythonStart", cfg({"mapping", "start"}), _34_, {desc = "Start the Python REPL"})
-  local function _35_()
+  mapping.buf("PythonStart", cfg({"mapping", "start"}), _33_, {desc = "Start the Python REPL"})
+  local function _34_()
     return M.stop()
   end
-  mapping.buf("PythonStop", cfg({"mapping", "stop"}), _35_, {desc = "Stop the Python REPL"})
-  local function _36_()
+  mapping.buf("PythonStop", cfg({"mapping", "stop"}), _34_, {desc = "Stop the Python REPL"})
+  local function _35_()
     return M.interrupt()
   end
-  return mapping.buf("PythonInterrupt", cfg({"mapping", "interrupt"}), _36_, {desc = "Interrupt the current evaluation"})
+  return mapping.buf("PythonInterrupt", cfg({"mapping", "interrupt"}), _35_, {desc = "Interrupt the current evaluation"})
 end
 return M

@@ -201,11 +201,8 @@
           "// 2. Arrow functions ('const fn = () => ...') are converted to 'function fn() ...' declarations to allow re-definition."]))
 
 (fn M.on-load []
-  (if (config.get-in [:client_on_load])
-      (do
-        (M.start)
-        (warning-msg))
-      (log.append ["Not starting repl"])))
+  (M.start)
+  (warning-msg))
 
 (fn M.on-exit [] (M.stop))
 

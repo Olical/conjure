@@ -288,9 +288,7 @@
       (repl.send-signal :sigint))))
 
 (fn M.on-load []
-  ;; Start up REPL only if g.conjure#client_on_load is v:true.
-  (when (config.get-in [:client_on_load])
-    (M.start)))
+  (M.start))
 
 (fn M.on-filetype []
   (mapping.buf
