@@ -19,11 +19,10 @@ Conjure starts a SQL REPL within Neovim when you first open a SQL file unless
 you set `conjure#client_on_load` to `v:false`.
 
 This client was initially developed using PostgreSQL's `psql` command line
-client. Thus, the default configuration values for `command` and `prompt
-`pattern` are set for `psql`. The `command` string is set to use a connection
-URL to a `postgres` database with a `postgres` user and password of
-`postgres`. The database is served by a local PostgreSQL server listening on
-the default port.
+client. Thus, the default configuration values are geared towards `psql`. The
+`command` string is set to use a connection URL to a `postgres` database with
+a `postgres` user and password of `postgres`. The database is served by
+a local PostgreSQL server listening on the default port.
 
 Also, if you set up a `~/.pgpass` password file, like so:
 
@@ -42,7 +41,6 @@ or
 
 Please note that connecting to databases can be a security risk so consult the
 appropriate people for your particular situation and environment.
-  
 
 You can use another SQL database with its command line client so check the
 |conjure-client-sql-stdio-configuration and the documentation for that command
@@ -120,6 +118,21 @@ All configuration can be set as described in |conjure-configuration|.
             duckdb. When Conjure spots one of these it will avoid appending a
             semi-colon which is required to execute true statements.
             Default: `"^[.\\]%w"`
+
+                           *g:conjure#client#sql#stdio#doc_table*
+`g:conjure#client#sql#stdio#doc_table`
+            REPL command issued to show docs for a table.
+            Default: `"\\d"`
+
+                           *g:conjure#client#sql#stdio#doc_function*
+`g:conjure#client#sql#stdio#doc_function`
+            REPL command issued to show docs for a function.
+            Default: `"\\df+"`
+
+                           *g:conjure#client#sql#stdio#doc_statement*
+`g:conjure#client#sql#stdio#doc_statement`
+            REPL command issued to show docs for a statement.
+            Default: `"\\h"`
 
 ==============================================================================
 TROUBLESHOOTING                         *conjure-client-sql-stdio-trouble*

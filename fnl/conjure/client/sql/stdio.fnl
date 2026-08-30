@@ -7,6 +7,7 @@
 (local config (autoload :conjure.config))
 (local mapping (autoload :conjure.mapping))
 (local ts (autoload :conjure.tree-sitter))
+(local ts-sql (autoload :conjure.client.sql.tree-sitter))
 
 (local M (define :conjure.client.sql.stdio))
 
@@ -25,7 +26,10 @@
     {:stdio
      {:command "psql postgres://postgres:postgres@localhost/postgres"
       :meta_prefix_pattern "^[.\\]%w"
-      :prompt_pattern "=> "}}}})
+      :prompt_pattern "=> "
+      :doc_table "\\d"
+      :doc_function "\\df+"
+      :doc_statement "\\h"}}}})
 
 (when (config.get-in [:mapping :enable_defaults])
   (config.merge
@@ -37,7 +41,7 @@
                   :interrupt "ei"}}}}}))
 
 (local cfg (config.get-in-fn [:client :sql :stdio]))
-(local state (client.new-state #(do {:repl nil})))
+(local state (client.new-state #{:repl nil}))
 
 (set M.buf-suffix ".sql")
 (set M.comment-prefix "-- ")
@@ -124,6 +128,16 @@
             (a.run! display-result msgs)))
         {:batch? false}))))
 ;;;;-------- End from client/fennel/stdio.fnl ------------------
+
+(fn M.doc-str [opts]
+  (let [what (if (ts.enabled?)
+                 (ts-sql.describe-at-cursor)
+                 {:command (cfg [:doc_table]) :target opts.code})]
+    (case what
+      (where {: command : target} (not (a.empty? target)))
+      (M.eval-str (a.assoc opts :code (.. command " " target)))
+      _
+      (log.append [(.. M.comment-prefix "Nothing to describe under the cursor")]))))
 
 (fn M.eval-file [opts]
   (M.eval-str (a.assoc opts :code (a.slurp opts.file-path))))

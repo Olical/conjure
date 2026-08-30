@@ -10,18 +10,19 @@ local stdio = autoload("conjure.remote.stdio-rt")
 local config = autoload("conjure.config")
 local mapping = autoload("conjure.mapping")
 local ts = autoload("conjure.tree-sitter")
+local ts_sql = autoload("conjure.client.sql.tree-sitter")
 local M = define("conjure.client.sql.stdio")
-config.merge({client = {sql = {stdio = {command = "psql postgres://postgres:postgres@localhost/postgres", meta_prefix_pattern = "^[.\\]%w", prompt_pattern = "=> "}}}})
+config.merge({client = {sql = {stdio = {command = "psql postgres://postgres:postgres@localhost/postgres", meta_prefix_pattern = "^[.\\]%w", prompt_pattern = "=> ", doc_table = "\\d", doc_function = "\\df+", doc_statement = "\\h"}}}})
 if config["get-in"]({"mapping", "enable_defaults"}) then
   config.merge({client = {sql = {stdio = {mapping = {start = "cs", stop = "cS", interrupt = "ei"}}}}})
 else
 end
 local cfg = config["get-in-fn"]({"client", "sql", "stdio"})
 local state
-local function _3_()
+local function hashfn_3_()
   return {repl = nil}
 end
-state = client["new-state"](_3_)
+state = client["new-state"](hashfn_3_)
 M["buf-suffix"] = ".sql"
 M["comment-prefix"] = "-- "
 M["get-form-modifier"] = function(node)
@@ -53,10 +54,10 @@ local function format_message(msg)
   return str.split((msg.out or msg.err), "\n")
 end
 local function remove_blank_lines(msg)
-  local function _7_(_241)
+  local function hashfn_7_(_241)
     return not ("" == _241)
   end
-  return a.filter(_7_, format_message(msg))
+  return a.filter(hashfn_7_, format_message(msg))
 end
 local function display_result(msg)
   return log.append(remove_blank_lines(msg))
@@ -81,8 +82,8 @@ M["prep-code"] = function(opts)
 end
 M["eval-str"] = function(opts)
   log.dbg("eval-str: opts >> ", a["pr-str"](opts), "<<")
-  local function _10_(repl)
-    local function _11_(msgs)
+  local function fn_10_(repl)
+    local function fn_11_(msgs)
       local msgs0 = M["->list"](msgs)
       if opts["on-result"] then
         opts["on-result"](str.join("\n", remove_blank_lines(a.last(msgs0))))
@@ -90,19 +91,41 @@ M["eval-str"] = function(opts)
       end
       return a["run!"](display_result, msgs0)
     end
-    return repl.send(M["prep-code"](opts), _11_, {["batch?"] = false})
+    return repl.send(M["prep-code"](opts), fn_11_, {["batch?"] = false})
   end
-  return with_repl_or_warn(_10_)
+  return with_repl_or_warn(fn_10_)
+end
+M["doc-str"] = function(opts)
+  local what
+  if ts["enabled?"]() then
+    what = ts_sql["describe-at-cursor"]()
+  else
+    what = {command = cfg({"doc_table"}), target = opts.code}
+  end
+  local and_14_ = ((_G.type(what) == "table") and (nil ~= what.command) and (nil ~= what.target))
+  if and_14_ then
+    local command = what.command
+    local target = what.target
+    and_14_ = not a["empty?"](target)
+  end
+  if and_14_ then
+    local command = what.command
+    local target = what.target
+    return M["eval-str"](a.assoc(opts, "code", (command .. " " .. target)))
+  else
+    local _ = what
+    return log.append({(M["comment-prefix"] .. "Nothing to describe under the cursor")})
+  end
 end
 M["eval-file"] = function(opts)
   return M["eval-str"](a.assoc(opts, "code", a.slurp(opts["file-path"])))
 end
 M.interrupt = function()
-  local function _13_(repl)
+  local function fn_17_(repl)
     log.append({(M["comment-prefix"] .. " Sending interrupt signal.")}, {["break?"] = true})
     return repl["send-signal"]("sigint")
   end
-  return with_repl_or_warn(_13_)
+  return with_repl_or_warn(fn_17_)
 end
 local function display_repl_status(status)
   local repl = state("repl")
@@ -127,21 +150,21 @@ M.start = function()
   if state("repl") then
     return log.append({(M["comment-prefix"] .. "Can't start, REPL is already running."), (M["comment-prefix"] .. "Stop the REPL with " .. config["get-in"]({"mapping", "prefix"}) .. cfg({"mapping", "stop"}))}, {["break?"] = true})
   else
-    local function _16_()
+    local function fn_20_()
       return display_repl_status("started")
     end
-    local function _17_(err)
+    local function fn_21_(err)
       return display_repl_status(err)
     end
-    local function _18_(code, signal)
+    local function fn_22_(code, signal)
       log.dbg("process exited with code ", a["pr-str"](code))
       log.dbg("process exited with signal ", a["pr-str"](signal))
       return M.stop()
     end
-    local function _19_(msg)
+    local function fn_23_(msg)
       return display_result(msg)
     end
-    return a.assoc(state(), "repl", stdio.start({["prompt-pattern"] = cfg({"prompt_pattern"}), cmd = cfg({"command"}), ["on-success"] = _16_, ["on-error"] = _17_, ["on-exit"] = _18_, ["on-stray-output"] = _19_}))
+    return a.assoc(state(), "repl", stdio.start({["prompt-pattern"] = cfg({"prompt_pattern"}), cmd = cfg({"command"}), ["on-success"] = fn_20_, ["on-error"] = fn_21_, ["on-exit"] = fn_22_, ["on-stray-output"] = fn_23_}))
   end
 end
 M["on-load"] = function()
@@ -155,17 +178,17 @@ M["on-exit"] = function()
   return M.stop()
 end
 M["on-filetype"] = function()
-  local function _22_()
+  local function hashfn_26_()
     return M.start()
   end
-  mapping.buf("SqlStart", cfg({"mapping", "start"}), _22_, {desc = "Start the REPL"})
-  local function _23_()
+  mapping.buf("SqlStart", cfg({"mapping", "start"}), hashfn_26_, {desc = "Start the REPL"})
+  local function hashfn_27_()
     return M.stop()
   end
-  mapping.buf("SqlStop", cfg({"mapping", "stop"}), _23_, {desc = "Stop the REPL"})
-  local function _24_()
+  mapping.buf("SqlStop", cfg({"mapping", "stop"}), hashfn_27_, {desc = "Stop the REPL"})
+  local function hashfn_28_()
     return M.interrupt()
   end
-  return mapping.buf("SqlInterrupt", cfg({"mapping", "interrupt"}), _24_, {desc = "Interrupt the current REPL"})
+  return mapping.buf("SqlInterrupt", cfg({"mapping", "interrupt"}), hashfn_28_, {desc = "Interrupt the current REPL"})
 end
 return M
