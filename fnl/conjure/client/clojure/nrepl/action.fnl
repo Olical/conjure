@@ -465,7 +465,16 @@
     :single-fn "run"
     :default-call-suffix "{:kaocha/color? false}"
     :name-prefix "#'"
-    :name-suffix ""}})
+    :name-suffix ""}
+   :lazytest
+   {:namespace "lazytest.repl"
+    :all-fn "run-all-tests"
+    :ns-fn "run-tests"
+    :single-fn "run-test-var"
+    :default-call-suffix ""
+    :name-prefix "#'"
+    :name-suffix ""
+    :current-form-names ["defdescribe"]}})
 
 (fn test-cfg [k opt]
   (let [runner (cfg [:test :runner])]
