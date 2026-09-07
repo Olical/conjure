@@ -467,10 +467,12 @@
     :name-prefix "#'"
     :name-suffix ""}})
 
-(fn test-cfg [k]
+(fn test-cfg [k opt]
   (let [runner (cfg [:test :runner])]
     (or (core.get-in M.test-runners [runner k])
-        (error (str.join ["No test-runners configuration for " runner " / " k])))))
+        (if (= true (core.get opt :ignore-errors))
+          nil
+          (error (str.join ["No test-runners configuration for " runner " / " k]))))))
 
 (fn require-test-runner []
   (require-ns (test-cfg :namespace)))
@@ -526,20 +528,25 @@
           (.. current-ns "-test")))))
 
 (fn M.extract-test-name-from-form [form]
-  (var seen-deftest? false)
-  (-> (parse.strip-meta form)
-      (str.split "%s+")
-      (->>
-        (core.some
-          (fn [part]
-            (if
-              (core.some (fn [config-current-form-name]
-                           (text.ends-with part config-current-form-name))
-                         (cfg [:test :current_form_names]))
-              (do (set seen-deftest? true) false)
+  (let [current-form-names (or (test-cfg :current-form-names {:ignore-errors true})
+                               (cfg [:test :current_form_names]))]
+    (if (= nil current-form-names)
+      (error (str.join ["No value for current-form-names in test or runner configuration"])) 
+      (do
+        (var seen-deftest? false)
+        (-> (parse.strip-meta form)
+            (str.split "%s+")
+            (->>
+              (core.some
+                (fn [part]
+                  (if
+                    (core.some (fn [config-current-form-name]
+                                (text.ends-with part config-current-form-name))
+                              current-form-names)
+                    (do (set seen-deftest? true) false)
 
-              seen-deftest?
-              part))))))
+                    seen-deftest?
+                    part)))))))))
 
 (fn M.run-current-test []
   (try-ensure-conn
