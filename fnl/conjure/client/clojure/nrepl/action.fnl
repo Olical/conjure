@@ -449,7 +449,8 @@
     :single-fn "test-vars"
     :default-call-suffix ""
     :name-prefix "[(resolve '"
-    :name-suffix ")]"}
+    :name-suffix ")]"
+    :current-form-names ["deftest"]}
    :clojurescript
    {:namespace "cljs.test"
     :all-fn "run-all-tests"
@@ -457,7 +458,8 @@
     :single-fn "test-vars"
     :default-call-suffix ""
     :name-prefix "[(resolve '"
-    :name-suffix ")]"}
+    :name-suffix ")]"
+    :current-form-names ["deftest"]}
    :kaocha
    {:namespace "kaocha.repl"
     :all-fn "run-all"
@@ -465,7 +467,8 @@
     :single-fn "run"
     :default-call-suffix "{:kaocha/color? false}"
     :name-prefix "#'"
-    :name-suffix ""}
+    :name-suffix ""
+    :current-form-names ["deftest"]}
    :lazytest
    {:namespace "lazytest.repl"
     :all-fn "run-all-tests"
