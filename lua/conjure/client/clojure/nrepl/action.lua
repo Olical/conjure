@@ -537,10 +537,18 @@ M["select-session-interactive"] = function()
   end
   return try_ensure_conn(_103_)
 end
-M["test-runners"] = {clojure = {namespace = "clojure.test", ["all-fn"] = "run-all-tests", ["ns-fn"] = "run-tests", ["single-fn"] = "test-vars", ["default-call-suffix"] = "", ["name-prefix"] = "[(resolve '", ["name-suffix"] = ")]"}, clojurescript = {namespace = "cljs.test", ["all-fn"] = "run-all-tests", ["ns-fn"] = "run-tests", ["single-fn"] = "test-vars", ["default-call-suffix"] = "", ["name-prefix"] = "[(resolve '", ["name-suffix"] = ")]"}, kaocha = {namespace = "kaocha.repl", ["all-fn"] = "run-all", ["ns-fn"] = "run", ["single-fn"] = "run", ["default-call-suffix"] = "{:kaocha/color? false}", ["name-prefix"] = "#'", ["name-suffix"] = ""}}
-local function test_cfg(k)
+M["test-runners"] = {clojure = {namespace = "clojure.test", ["all-fn"] = "run-all-tests", ["ns-fn"] = "run-tests", ["single-fn"] = "test-vars", ["default-call-suffix"] = "", ["name-prefix"] = "[(resolve '", ["name-suffix"] = ")]", ["current-form-names"] = {"deftest"}}, clojurescript = {namespace = "cljs.test", ["all-fn"] = "run-all-tests", ["ns-fn"] = "run-tests", ["single-fn"] = "test-vars", ["default-call-suffix"] = "", ["name-prefix"] = "[(resolve '", ["name-suffix"] = ")]", ["current-form-names"] = {"deftest"}}, kaocha = {namespace = "kaocha.repl", ["all-fn"] = "run-all", ["ns-fn"] = "run", ["single-fn"] = "run", ["default-call-suffix"] = "{:kaocha/color? false}", ["name-prefix"] = "#'", ["name-suffix"] = "", ["current-form-names"] = {"deftest"}}, lazytest = {namespace = "lazytest.repl", ["all-fn"] = "run-all-tests", ["ns-fn"] = "run-tests", ["single-fn"] = "run-test-var", ["default-call-suffix"] = "", ["name-prefix"] = "#'", ["name-suffix"] = "", ["current-form-names"] = {"defdescribe"}}}
+local function test_cfg(k, opt)
   local runner = cfg({"test", "runner"})
-  return (core["get-in"](M["test-runners"], {runner, k}) or error(str.join({"No test-runners configuration for ", runner, " / ", k})))
+  local or_108_ = core["get-in"](M["test-runners"], {runner, k})
+  if not or_108_ then
+    if (true == core.get(opt, "ignore-errors")) then
+      or_108_ = nil
+    else
+      or_108_ = error(str.join({"No test-runners configuration for ", runner, " / ", k}))
+    end
+  end
+  return or_108_
 end
 local function require_test_runner()
   return require_ns(test_cfg("namespace"))
@@ -549,81 +557,86 @@ local function test_runner_code(fn_config_name, ...)
   return ("(" .. str.join(" ", {(test_cfg("namespace") .. "/" .. test_cfg((fn_config_name .. "-fn"))), ...}) .. (cfg({"test", "call_suffix"}) or test_cfg("default-call-suffix")) .. ")")
 end
 M["run-all-tests"] = function()
-  local function _108_()
+  local function _110_()
     log.append({"; run-all-tests"}, {["break?"] = true})
     require_test_runner()
-    local function _109_(_241)
+    local function _111_(_241)
       return ui["display-result"](_241, {["simple-out?"] = true, ["raw-out?"] = cfg({"test", "raw_out"}), ["ignore-nil?"] = true})
     end
-    return server.eval({code = test_runner_code("all")}, _109_)
+    return server.eval({code = test_runner_code("all")}, _111_)
   end
-  return try_ensure_conn(_108_)
+  return try_ensure_conn(_110_)
 end
 local function run_ns_tests(ns)
-  local function _110_()
+  local function _112_()
     if ns then
       log.append({("; run-ns-tests: " .. ns)}, {["break?"] = true})
       require_test_runner()
-      local function _111_(_241)
+      local function _113_(_241)
         return ui["display-result"](_241, {["simple-out?"] = true, ["raw-out?"] = cfg({"test", "raw_out"}), ["ignore-nil?"] = true})
       end
-      return server.eval({code = test_runner_code("ns", ("'" .. ns))}, _111_)
+      return server.eval({code = test_runner_code("ns", ("'" .. ns))}, _113_)
     else
       return nil
     end
   end
-  return try_ensure_conn(_110_)
+  return try_ensure_conn(_112_)
 end
 M["run-current-ns-tests"] = function()
   return run_ns_tests(extract.context())
 end
 M["run-alternate-ns-tests"] = function()
   local current_ns = extract.context()
-  local function _113_()
+  local function _115_()
     if text["ends-with"](current_ns, "-test") then
       return current_ns
     else
       return (current_ns .. "-test")
     end
   end
-  return run_ns_tests(_113_())
+  return run_ns_tests(_115_())
 end
 M["extract-test-name-from-form"] = function(form)
-  local seen_deftest_3f = false
-  local function _114_(part)
-    local function _115_(config_current_form_name)
-      return text["ends-with"](part, config_current_form_name)
+  local current_form_names = (test_cfg("current-form-names", {["ignore-errors"] = true}) or cfg({"test", "current_form_names"}))
+  if (nil == current_form_names) then
+    return error(str.join({"No value for current-form-names in test or runner configuration"}))
+  else
+    local seen_deftest_3f = false
+    local function _116_(part)
+      local function _117_(config_current_form_name)
+        return text["ends-with"](part, config_current_form_name)
+      end
+      if core.some(_117_, current_form_names) then
+        seen_deftest_3f = true
+        return false
+      elseif seen_deftest_3f then
+        return part
+      else
+        return nil
+      end
     end
-    if core.some(_115_, cfg({"test", "current_form_names"})) then
-      seen_deftest_3f = true
-      return false
-    elseif seen_deftest_3f then
-      return part
-    else
-      return nil
-    end
+    return core.some(_116_, str.split(parse["strip-meta"](form), "%s+"))
   end
-  return core.some(_114_, str.split(parse["strip-meta"](form), "%s+"))
 end
 M["run-current-test"] = function()
-  local function _117_()
+  local function _120_()
     local form = extract.form({["root?"] = true})
     if form then
       local test_name = M["extract-test-name-from-form"](form.content)
       if test_name then
         log.append({("; run-current-test: " .. test_name)}, {["break?"] = true})
         require_test_runner()
-        local function _118_(msgs)
+        local function _121_(msgs)
           if ((2 == core.count(msgs)) and ("nil" == core.get(core.first(msgs), "value"))) then
             return log.append({"; Success!"})
           else
-            local function _119_(_241)
+            local function _122_(_241)
               return ui["display-result"](_241, {["simple-out?"] = true, ["raw-out?"] = cfg({"test", "raw_out"}), ["ignore-nil?"] = true})
             end
-            return core["run!"](_119_, msgs)
+            return core["run!"](_122_, msgs)
           end
         end
-        return server.eval({code = test_runner_code("single", (test_cfg("name-prefix") .. test_name .. test_cfg("name-suffix"))), context = extract.context()}, nrepl["with-all-msgs-fn"](_118_))
+        return server.eval({code = test_runner_code("single", (test_cfg("name-prefix") .. test_name .. test_cfg("name-suffix"))), context = extract.context()}, nrepl["with-all-msgs-fn"](_121_))
       else
         return nil
       end
@@ -631,11 +644,36 @@ M["run-current-test"] = function()
       return nil
     end
   end
-  return try_ensure_conn(_117_)
+  return try_ensure_conn(_120_)
+end
+M["select-test-runner"] = function()
+  local test_runner_config_key = "conjure#client#clojure#nrepl#test#runner"
+  local active_test_runner = core.get(vim.g, test_runner_config_key)
+  local opts = {prompt = "Select a test-runner:"}
+  local test_runner_names = core.keys(M["test-runners"])
+  local choices
+  local function _126_(tr)
+    if (tr == active_test_runner) then
+      return str.join({tr, " (*)"})
+    else
+      return tr
+    end
+  end
+  choices = core.map(_126_, core.vals(test_runner_names))
+  table.sort(choices)
+  local function _128_(choice, _idx)
+    if choice then
+      vim.g[test_runner_config_key] = choice
+      return nil
+    else
+      return nil
+    end
+  end
+  return vim.ui.select(choices, opts, _128_)
 end
 local function refresh_impl(op)
-  local function _123_(conn)
-    local function _124_(msg)
+  local function _130_(conn)
+    local function _131_(msg)
       if msg.reloading then
         return log.append(msg.reloading)
       elseif msg.error then
@@ -648,130 +686,130 @@ local function refresh_impl(op)
         return ui["display-result"](msg)
       end
     end
-    return server.send(core.merge({op = op, session = conn.session, after = cfg({"refresh", "after"}), before = cfg({"refresh", "before"}), dirs = cfg({"refresh", "dirs"})}), _124_)
+    return server.send(core.merge({op = op, session = conn.session, after = cfg({"refresh", "after"}), before = cfg({"refresh", "before"}), dirs = cfg({"refresh", "dirs"})}), _131_)
   end
-  return server["with-conn-and-ops-or-warn"]({op}, _123_)
+  return server["with-conn-and-ops-or-warn"]({op}, _130_)
 end
 local function use_clj_reload_backend_3f()
   return (cfg({"refresh", "backend"}) == "clj-reload")
 end
 M["refresh-changed"] = function()
   local use_clj_reload_3f = use_clj_reload_backend_3f()
-  local function _126_()
-    local _127_
+  local function _133_()
+    local _134_
     if use_clj_reload_3f then
-      _127_ = "clj-reload"
+      _134_ = "clj-reload"
     else
-      _127_ = "tools.namespace"
+      _134_ = "tools.namespace"
     end
-    log.append({str.join({"; Refreshing changed namespaces using '", _127_, "'"})}, {["break?"] = true})
-    local function _129_()
+    log.append({str.join({"; Refreshing changed namespaces using '", _134_, "'"})}, {["break?"] = true})
+    local function _136_()
       if use_clj_reload_3f then
         return "cider.clj-reload/reload"
       else
         return "refresh"
       end
     end
-    return refresh_impl(_129_())
+    return refresh_impl(_136_())
   end
-  return try_ensure_conn(_126_)
+  return try_ensure_conn(_133_)
 end
 M["refresh-all"] = function()
   local use_clj_reload_3f = use_clj_reload_backend_3f()
-  local function _130_()
-    local _131_
+  local function _137_()
+    local _138_
     if use_clj_reload_3f then
-      _131_ = "clj-reload"
+      _138_ = "clj-reload"
     else
-      _131_ = "tools.namespace"
+      _138_ = "tools.namespace"
     end
-    log.append({str.join({"; Refreshing all namespaces using '", _131_, "'"})}, {["break?"] = true})
-    local function _133_()
+    log.append({str.join({"; Refreshing all namespaces using '", _138_, "'"})}, {["break?"] = true})
+    local function _140_()
       if use_clj_reload_3f then
         return "cider.clj-reload/reload-all"
       else
         return "refresh-all"
       end
     end
-    return refresh_impl(_133_())
+    return refresh_impl(_140_())
   end
-  return try_ensure_conn(_130_)
+  return try_ensure_conn(_137_)
 end
 M["refresh-clear"] = function()
   local use_clj_reload_3f = use_clj_reload_backend_3f()
-  local function _134_()
-    local _135_
+  local function _141_()
+    local _142_
     if use_clj_reload_3f then
-      _135_ = "clj-reload"
+      _142_ = "clj-reload"
     else
-      _135_ = "tools.namespace"
+      _142_ = "tools.namespace"
     end
-    log.append({str.join({"; Clearning reload cache using '", _135_, "'"})}, {["break?"] = true})
-    local function _137_(conn)
-      local _138_
+    log.append({str.join({"; Clearning reload cache using '", _142_, "'"})}, {["break?"] = true})
+    local function _144_(conn)
+      local _145_
       if use_clj_reload_3f then
-        _138_ = "cider.clj-reload/reload-clear"
+        _145_ = "cider.clj-reload/reload-clear"
       else
-        _138_ = "refresh-clear"
+        _145_ = "refresh-clear"
       end
-      local function _140_(msgs)
+      local function _147_(msgs)
         return log.append({"; Clearing complete"})
       end
-      return server.send({op = _138_, session = conn.session}, nrepl["with-all-msgs-fn"](_140_))
+      return server.send({op = _145_, session = conn.session}, nrepl["with-all-msgs-fn"](_147_))
     end
-    return server["with-conn-and-ops-or-warn"]({"refresh-clear"}, _137_)
+    return server["with-conn-and-ops-or-warn"]({"refresh-clear"}, _144_)
   end
-  return try_ensure_conn(_134_)
+  return try_ensure_conn(_141_)
 end
 M["shadow-select"] = function(build)
-  local function _141_()
-    local function _142_(conn)
+  local function _148_()
+    local function _149_(conn)
       log.append({("; shadow-cljs (select): " .. build)}, {["break?"] = true})
       server.eval({code = ("#?(:clj (shadow.cljs.devtools.api/nrepl-select :" .. build .. ") :cljs :already-selected)")}, ui["display-result"])
       return M["passive-ns-require"]()
     end
-    return server["with-conn-or-warn"](_142_)
+    return server["with-conn-or-warn"](_149_)
   end
-  return try_ensure_conn(_141_)
+  return try_ensure_conn(_148_)
 end
 M.piggieback = function(code)
-  local function _143_()
-    local function _144_(conn)
+  local function _150_()
+    local function _151_(conn)
       log.append({("; piggieback: " .. code)}, {["break?"] = true})
       require_ns("cider.piggieback")
       server.eval({code = ("(cider.piggieback/cljs-repl " .. code .. ")")}, ui["display-result"])
       return M["passive-ns-require"]()
     end
-    return server["with-conn-or-warn"](_144_)
+    return server["with-conn-or-warn"](_151_)
   end
-  return try_ensure_conn(_143_)
+  return try_ensure_conn(_150_)
 end
-local function clojure__3evim_completion(_145_)
-  local word = _145_.candidate
-  local kind = _145_.type
-  local ns = _145_.ns
-  local info = _145_.doc
-  local arglists = _145_.arglists
-  local function _146_()
+local function clojure__3evim_completion(_152_)
+  local word = _152_.candidate
+  local kind = _152_.type
+  local ns = _152_.ns
+  local info = _152_.doc
+  local arglists = _152_.arglists
+  local function _153_()
     if arglists then
       return str.join(" ", arglists)
     else
       return nil
     end
   end
-  local _147_
+  local _154_
   if ("string" == type(info)) then
-    _147_ = info
+    _154_ = info
   else
-    _147_ = nil
+    _154_ = nil
   end
-  local _149_
+  local _156_
   if not core["empty?"](kind) then
-    _149_ = string.upper(string.sub(kind, 1, 1))
+    _156_ = string.upper(string.sub(kind, 1, 1))
   else
-    _149_ = nil
+    _156_ = nil
   end
-  return {word = word, menu = str.join(" ", {ns, _146_()}), info = _147_, kind = _149_}
+  return {word = word, menu = str.join(" ", {ns, _153_()}), info = _154_, kind = _156_}
 end
 local function extract_completion_context(prefix)
   local root_form = extract.form({["root?"] = true})
@@ -779,9 +817,9 @@ local function extract_completion_context(prefix)
     local content = root_form.content
     local range = root_form.range
     local lines = text["split-lines"](content)
-    local _let_151_ = vim.api.nvim_win_get_cursor(0)
-    local row = _let_151_[1]
-    local col = _let_151_[2]
+    local _let_158_ = vim.api.nvim_win_get_cursor(0)
+    local row = _let_158_[1]
+    local col = _let_158_[2]
     local lrow = (row - core["get-in"](range, {"start", 1}))
     local line_index = core.inc(lrow)
     local lcol
@@ -801,52 +839,52 @@ local function enhanced_cljs_completion_3f()
   return cfg({"completion", "cljs", "use_suitable"})
 end
 M.completions = function(opts)
-  local function _154_(conn, ops)
-    local _155_
+  local function _161_(conn, ops)
+    local _162_
     if ops.complete then
-      local _156_
+      local _163_
       if cfg({"completion", "with_context"}) then
-        _156_ = extract_completion_context(opts.prefix)
+        _163_ = extract_completion_context(opts.prefix)
       else
-        _156_ = nil
+        _163_ = nil
       end
-      local _158_
+      local _165_
       if enhanced_cljs_completion_3f() then
-        _158_ = "t"
+        _165_ = "t"
       else
-        _158_ = nil
+        _165_ = nil
       end
-      _155_ = {op = "complete", session = conn.session, ns = opts.context, symbol = opts.prefix, context = _156_, ["extra-metadata"] = {"arglists", "doc"}, ["enhanced-cljs-completion?"] = _158_}
+      _162_ = {op = "complete", session = conn.session, ns = opts.context, symbol = opts.prefix, context = _163_, ["extra-metadata"] = {"arglists", "doc"}, ["enhanced-cljs-completion?"] = _165_}
     elseif ops.completions then
-      _155_ = {op = "completions", session = conn.session, ns = opts.context, prefix = opts.prefix}
+      _162_ = {op = "completions", session = conn.session, ns = opts.context, prefix = opts.prefix}
     else
-      _155_ = nil
+      _162_ = nil
     end
-    local function _161_(msgs)
+    local function _168_(msgs)
       return opts.cb(core.map(clojure__3evim_completion, core.get(core.last(msgs), "completions")))
     end
-    return server.send(_155_, nrepl["with-all-msgs-fn"](_161_))
+    return server.send(_162_, nrepl["with-all-msgs-fn"](_168_))
   end
-  return server["with-conn-and-ops-or-warn"]({"complete", "completions"}, _154_, {["silent?"] = true, ["else"] = opts.cb})
+  return server["with-conn-and-ops-or-warn"]({"complete", "completions"}, _161_, {["silent?"] = true, ["else"] = opts.cb})
 end
 M["out-subscribe"] = function()
-  local function _162_()
+  local function _169_()
     log.append({"; Subscribing to out"}, {["break?"] = true})
-    local function _163_(conn)
+    local function _170_(conn)
       return server.send({op = "out-subscribe"})
     end
-    return server["with-conn-and-ops-or-warn"]({"out-subscribe"}, _163_)
+    return server["with-conn-and-ops-or-warn"]({"out-subscribe"}, _170_)
   end
-  return try_ensure_conn(_162_)
+  return try_ensure_conn(_169_)
 end
 M["out-unsubscribe"] = function()
-  local function _164_()
+  local function _171_()
     log.append({"; Unsubscribing from out"}, {["break?"] = true})
-    local function _165_(conn)
+    local function _172_(conn)
       return server.send({op = "out-unsubscribe"})
     end
-    return server["with-conn-and-ops-or-warn"]({"out-unsubscribe"}, _165_)
+    return server["with-conn-and-ops-or-warn"]({"out-unsubscribe"}, _172_)
   end
-  return try_ensure_conn(_164_)
+  return try_ensure_conn(_171_)
 end
 return M

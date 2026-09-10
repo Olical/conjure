@@ -137,6 +137,9 @@ options relevant to these mappings.
                          execute this from anywhere in the form much like
                          evaluating the root form under the cursor.
 
+<localleader>ts          Set the active test-runner by selecting from the
+                         list of available test-runners.
+
 <localleader>rr          Refresh all changed namespaces.
 
 <localleader>ra          Refresh all namespaces, even unchanged.

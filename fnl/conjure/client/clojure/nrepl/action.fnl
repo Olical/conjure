@@ -449,7 +449,8 @@
     :single-fn "test-vars"
     :default-call-suffix ""
     :name-prefix "[(resolve '"
-    :name-suffix ")]"}
+    :name-suffix ")]"
+    :current-form-names ["deftest"]}
    :clojurescript
    {:namespace "cljs.test"
     :all-fn "run-all-tests"
@@ -457,7 +458,8 @@
     :single-fn "test-vars"
     :default-call-suffix ""
     :name-prefix "[(resolve '"
-    :name-suffix ")]"}
+    :name-suffix ")]"
+    :current-form-names ["deftest"]}
    :kaocha
    {:namespace "kaocha.repl"
     :all-fn "run-all"
@@ -465,12 +467,24 @@
     :single-fn "run"
     :default-call-suffix "{:kaocha/color? false}"
     :name-prefix "#'"
-    :name-suffix ""}})
+    :name-suffix ""
+    :current-form-names ["deftest"]}
+   :lazytest
+   {:namespace "lazytest.repl"
+    :all-fn "run-all-tests"
+    :ns-fn "run-tests"
+    :single-fn "run-test-var"
+    :default-call-suffix ""
+    :name-prefix "#'"
+    :name-suffix ""
+    :current-form-names ["defdescribe"]}})
 
-(fn test-cfg [k]
+(fn test-cfg [k opt]
   (let [runner (cfg [:test :runner])]
     (or (core.get-in M.test-runners [runner k])
-        (error (str.join ["No test-runners configuration for " runner " / " k])))))
+        (if (= true (core.get opt :ignore-errors))
+          nil
+          (error (str.join ["No test-runners configuration for " runner " / " k]))))))
 
 (fn require-test-runner []
   (require-ns (test-cfg :namespace)))
@@ -526,20 +540,25 @@
           (.. current-ns "-test")))))
 
 (fn M.extract-test-name-from-form [form]
-  (var seen-deftest? false)
-  (-> (parse.strip-meta form)
-      (str.split "%s+")
-      (->>
-        (core.some
-          (fn [part]
-            (if
-              (core.some (fn [config-current-form-name]
-                           (text.ends-with part config-current-form-name))
-                         (cfg [:test :current_form_names]))
-              (do (set seen-deftest? true) false)
+  (let [current-form-names (or (test-cfg :current-form-names {:ignore-errors true})
+                               (cfg [:test :current_form_names]))]
+    (if (= nil current-form-names)
+      (error (str.join ["No value for current-form-names in test or runner configuration"])) 
+      (do
+        (var seen-deftest? false)
+        (-> (parse.strip-meta form)
+            (str.split "%s+")
+            (->>
+              (core.some
+                (fn [part]
+                  (if
+                    (core.some (fn [config-current-form-name]
+                                (text.ends-with part config-current-form-name))
+                              current-form-names)
+                    (do (set seen-deftest? true) false)
 
-              seen-deftest?
-              part))))))
+                    seen-deftest?
+                    part)))))))))
 
 (fn M.run-current-test []
   (try-ensure-conn
@@ -569,6 +588,23 @@
                                        :raw-out? (cfg [:test :raw_out])
                                        :ignore-nil? true})
                                    msgs))))))))))))
+
+(fn M.select-test-runner []
+  (let [test-runner-config-key "conjure#client#clojure#nrepl#test#runner"
+        active-test-runner     (core.get vim.g test-runner-config-key)
+        opts                   {:prompt "Select a test-runner:"}
+        test-runner-names      (core.keys M.test-runners)
+        choices                (->> test-runner-names
+                                    core.vals
+                                    (core.map (fn [tr] (if (= tr active-test-runner)
+                                                           (str.join [tr " (*)"])
+                                                           tr))))]
+    (table.sort choices)
+    (vim.ui.select choices
+                   opts
+                   (fn [choice _idx]
+                     (when choice
+                       (tset vim.g test-runner-config-key choice))))))
 
 (fn refresh-impl [op]
   (server.with-conn-and-ops-or-warn
