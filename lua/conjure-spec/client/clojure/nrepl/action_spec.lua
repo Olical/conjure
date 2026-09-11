@@ -24,6 +24,36 @@ local function _2_()
     end
     return it("deftest form with metadata", _7_)
   end
-  return describe("extract-test-name-from-form", _3_)
+  describe("extract-test-name-from-form", _3_)
+  local function _8_()
+    vim.g["conjure#client#clojure#nrepl#test#current_form_names"] = {"tsetfed"}
+    vim.g["conjure#client#clojure#nrepl#test#runner"] = "clojurescript"
+    local function _9_()
+      return assert.are.equals("foo", action["extract-test-name-from-form"]("(deftest foo (+ 10 20))"))
+    end
+    return it("test-runner-specific deftest form", _9_)
+  end
+  describe("extract-test-runner-specific-name-from-form", _8_)
+  local function _10_()
+    vim.g["conjure#client#clojure#nrepl#test#current_form_names"] = {"deftest"}
+    vim.g["conjure#client#clojure#nrepl#test#runner"] = "unknown-runner"
+    local function _11_()
+      return assert.are.equals("foo", action["extract-test-name-from-form"]("(deftest foo (+ 10 20))"))
+    end
+    return it("test-runner-specific-unknown deftest form - uses fallback", _11_)
+  end
+  describe("extract-test-runner-specific-name-from-form-with-unknown-runner", _10_)
+  local function _12_()
+    vim.g["conjure#client#clojure#nrepl#test#current_form_names"] = nil
+    vim.g["conjure#client#clojure#nrepl#test#runner"] = "unknown-runner"
+    local function _13_()
+      local function _14_()
+        return action["extract-test-name-from-form"]("(deftest foo (+ 10 20))")
+      end
+      return assert.error.matches(_14_, "No value for current-form-names in test or runner configuration", 1, true)
+    end
+    return it("test-runner-specific-unknown deftest form - returns an error", _13_)
+  end
+  return describe("extract-test-runner-specific-name-from-form-with-no-config", _12_)
 end
 return describe("client.clojure.nrepl.action", _2_)
