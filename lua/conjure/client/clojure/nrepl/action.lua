@@ -649,18 +649,19 @@ end
 M["select-test-runner"] = function()
   local test_runner_config_key = "conjure#client#clojure#nrepl#test#runner"
   local active_test_runner = core.get(vim.g, test_runner_config_key)
-  local opts = {prompt = "Select a test-runner:"}
   local test_runner_names = core.keys(M["test-runners"])
-  local choices
-  local function _126_(tr)
-    if (tr == active_test_runner) then
-      return str.join({tr, " (*)"})
+  local choices = test_runner_names
+  local prompt = "Select a test-runner:"
+  local format_item_fn
+  local function _126_(item)
+    if (item == active_test_runner) then
+      return str.join({item, " (*)"})
     else
-      return tr
+      return item
     end
   end
-  choices = core.map(_126_, core.vals(test_runner_names))
-  table.sort(choices)
+  format_item_fn = _126_
+  local on_choice_fn
   local function _128_(choice, _idx)
     if choice then
       vim.g[test_runner_config_key] = choice
@@ -669,7 +670,9 @@ M["select-test-runner"] = function()
       return nil
     end
   end
-  return vim.ui.select(choices, opts, _128_)
+  on_choice_fn = _128_
+  table.sort(choices)
+  return vim.ui.select(choices, {prompt = prompt, format_item = format_item_fn}, on_choice_fn)
 end
 local function refresh_impl(op)
   local function _130_(conn)
