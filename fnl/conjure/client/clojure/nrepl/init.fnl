@@ -123,6 +123,7 @@
         :run_current_ns_tests "tn"
         :run_alternate_ns_tests "tN"
         :run_current_test "tc"
+        :select_test_runner "ts"
 
         :refresh_changed "rr"
         :refresh_all "ra"
@@ -272,6 +273,11 @@
     :CljRunCurrentTest (cfg [:mapping :run_current_test])
     (util.wrap-require-fn-call :conjure.client.clojure.nrepl.action :run-current-test)
     {:desc "Run the test under the cursor"})
+
+  (mapping.buf
+    :CljListTestRunners (cfg [:mapping :select_test_runner])
+    (util.wrap-require-fn-call :conjure.client.clojure.nrepl.action :select-test-runner)
+    {:desc "Select active test runner"})
 
   (mapping.buf
     :CljRefreshChanged (cfg [:mapping :refresh_changed])
