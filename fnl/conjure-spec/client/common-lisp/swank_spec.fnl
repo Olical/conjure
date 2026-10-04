@@ -177,4 +177,26 @@
                (format-swank-return "(\"dotimes\") \"dot\""))
               (swank.disconnect)
 
-              (assert.same ["dots" "dotimes"] (. completion-cb-calls 1)))))))))
+              (assert.same ["dots" "dotimes"] (. completion-cb-calls 1)))))))
+
+    (describe "macroexpand"
+      (fn []
+        (it "sends the current form to swank-macroexpand-1 and logs the expansion"
+          (fn []
+            (let [logged []
+                  orig-append mock-log.append]
+              (set mock-log.append (fn [lines] (table.insert logged lines)))
+              (vim.cmd "new")
+              (vim.api.nvim_buf_set_lines 0 0 -1 false ["(when a b)"])
+              (vim.api.nvim_win_set_cursor 0 [1 1])
+              (swank.connect {})
+              (swank.macroexpand :swank-macroexpand-1)
+              (assert.has-substring
+                "%(swank:swank%-macroexpand%-1 \\\"%(when a b%)\\\"%)"
+                (a.get-in mock-remote.send-calls [2 :msg]))
+              ((a.get-in mock-remote.send-calls [2 :cb])
+               "(:return (:ok (\"\" \"\\\"(IF A\n    B)\\\"\")) 2)")
+              (swank.disconnect)
+              (vim.cmd "bwipeout!")
+              (set mock-log.append orig-append)
+              (assert.same ["(IF A" "    B)"] (. logged 1)))))))))
