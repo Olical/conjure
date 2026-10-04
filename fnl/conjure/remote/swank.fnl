@@ -6,10 +6,32 @@
 
 (local M (define :conjure.remote.swank))
 
+(fn M.message-id [msg]
+  "The continuation id at the end of an :emacs-rex or :return message, or nil."
+  (string.match msg "^%((:[%w-]+) .* (%d+)%)%s*$"))
+
+(fn M.split-messages [buf]
+  "Split buf into complete swank messages (6 hex digit length header, then
+  the payload). Returns the messages and the unconsumed rest of buf."
+  (var rest buf)
+  (var done? false)
+  (let [msgs []]
+    (while (not done?)
+      (let [len (tonumber (string.sub rest 1 6) 16)]
+        (if (and len (>= (length rest) (+ 6 len)))
+          (do
+            (table.insert msgs (string.sub rest 7 (+ 6 len)))
+            (set rest (string.sub rest (+ 7 len))))
+          (set done? true))))
+    (values msgs rest)))
+
 (fn M.send [conn msg cb]
-  "Send a message to the given connection, call the callback when a response is received."
+  "Send a message to the given connection, call the callback when the
+  :return with the same id is received."
   ; (log.dbg "send" msg)
-  (table.insert conn.queue 1 (or cb false))
+  (let [(_ id) (M.message-id msg)]
+    (when (and id cb)
+      (tset conn.callbacks id cb)))
   (conn.sock:write (trn.encode msg))
   nil)
 
@@ -21,21 +43,32 @@
   * opts.on-failure: Function to call after a failed connection with the error.
   * opts.on-success: Function to call on a successful connection.
   * opts.on-error: Function to call when we receive an error (passed as argument) or a nil response.
+  * opts.on-event: Function to call with messages that are not a :return,
+    such as :debug or :write-string.
   Returns a connection table containing a `destroy` function."
 
   (var conn
-    {:decode trn.decode
-     :queue []})
+    {:callbacks {}
+     :buf ""})
+
+  (fn dispatch [msg]
+    ; (log.dbg "receive" msg)
+    (let [(kind id) (M.message-id msg)
+          cb (and (= ":return" kind) (. conn.callbacks id))]
+      (if cb
+        (do
+          (tset conn.callbacks id nil)
+          (cb msg))
+        (when (and (not= ":return" kind) opts.on-event)
+          (opts.on-event msg)))))
 
   (fn handle-message [err chunk]
     (if (or err (not chunk))
       (opts.on-error err)
-      (->> (conn.decode chunk)
-           ((fn [msg]
-              ; (log.dbg "receive" msg)
-              (let [cb (table.remove conn.queue)]
-                (when cb
-                  (cb msg))))))))
+      (let [(msgs rest) (M.split-messages (.. conn.buf chunk))]
+        (set conn.buf rest)
+        (each [_ msg (ipairs msgs)]
+          (dispatch msg)))))
 
   (set conn
        (core.merge

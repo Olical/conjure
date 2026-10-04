@@ -7,29 +7,64 @@ local client = autoload("conjure.client")
 local net = autoload("conjure.net")
 local trn = autoload("conjure.remote.transport.swank")
 local M = define("conjure.remote.swank")
+M["message-id"] = function(msg)
+  return string.match(msg, "^%((:[%w-]+) .* (%d+)%)%s*$")
+end
+M["split-messages"] = function(buf)
+  local rest = buf
+  local done_3f = false
+  local msgs = {}
+  while not done_3f do
+    local len = tonumber(string.sub(rest, 1, 6), 16)
+    if (len and (#rest >= (6 + len))) then
+      table.insert(msgs, string.sub(rest, 7, (6 + len)))
+      rest = string.sub(rest, (7 + len))
+    else
+      done_3f = true
+    end
+  end
+  return msgs, rest
+end
 M.send = function(conn, msg, cb)
-  table.insert(conn.queue, 1, (cb or false))
+  do
+    local _, id = M["message-id"](msg)
+    if (id and cb) then
+      conn.callbacks[id] = cb
+    else
+    end
+  end
   conn.sock:write(trn.encode(msg))
   return nil
 end
 M.connect = function(opts)
-  local conn = {decode = trn.decode, queue = {}}
+  local conn = {callbacks = {}, buf = ""}
+  local function dispatch(msg)
+    local kind, id = M["message-id"](msg)
+    local cb = ((":return" == kind) and conn.callbacks[id])
+    if cb then
+      conn.callbacks[id] = nil
+      return cb(msg)
+    else
+      if ((":return" ~= kind) and opts["on-event"]) then
+        return opts["on-event"](msg)
+      else
+        return nil
+      end
+    end
+  end
   local function handle_message(err, chunk)
     if (err or not chunk) then
       return opts["on-error"](err)
     else
-      local function _2_(msg)
-        local cb = table.remove(conn.queue)
-        if cb then
-          return cb(msg)
-        else
-          return nil
-        end
+      local msgs, rest = M["split-messages"]((conn.buf .. chunk))
+      conn.buf = rest
+      for _, msg in ipairs(msgs) do
+        dispatch(msg)
       end
-      return _2_(conn.decode(chunk))
+      return nil
     end
   end
-  local function _5_(err)
+  local function _7_(err)
     if err then
       return opts["on-failure"](err)
     else
@@ -37,7 +72,7 @@ M.connect = function(opts)
       return opts["on-success"]()
     end
   end
-  conn = core.merge(conn, net.connect({host = opts.host, port = opts.port, cb = client["schedule-wrap"](_5_)}))
+  conn = core.merge(conn, net.connect({host = opts.host, port = opts.port, cb = client["schedule-wrap"](_7_)}))
   return conn
 end
 return M

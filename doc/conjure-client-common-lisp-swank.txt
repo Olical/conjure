@@ -41,6 +41,12 @@ configuration options relevant to these mappings.
 
 <localleader>cd          Disconnect from the REPL.
 
+<localleader>dr          Invoke a restart of the debugger by number. When an
+                         evaluation signals an unhandled condition or calls
+                         `(break)`, the log shows the condition, the numbered
+                         restarts and the backtrace. Other evaluations keep
+                         working while the debugger waits.
+
 ==============================================================================
 CONFIGURATION                 *conjure-client-common-lisp-swank-configuration*
 
@@ -76,5 +82,11 @@ All configuration can be set as described in |conjure-configuration|.
                      `false`
 
             Default: `true`
+
+                   *g:conjure#client#common_lisp#swank#mapping#invoke_restart*
+`g:conjure#client#common_lisp#swank#mapping#invoke_restart`
+            Prompt for a restart number and invoke it in the innermost
+            debugger level.
+            Default: `"dr"`
 
 vim:tw=78:sw=2:ts=2:ft=help:norl:et:listchars=

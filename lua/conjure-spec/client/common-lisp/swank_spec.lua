@@ -149,6 +149,33 @@ local function _3_()
     end
     return it("returns completions dots dotimes when connected with tree sitter results dots and completions enabled", _21_)
   end
-  return describe("config", _18_)
+  describe("config", _18_)
+  local function _23_()
+    local function _24_()
+      local logged = {}
+      local orig_append = mock_log.append
+      local function _25_(lines)
+        return table.insert(logged, lines)
+      end
+      mock_log.append = _25_
+      swank.connect({})
+      swank["handle-event"](("(:debug 42 1 (\"break\" \"   [Condition of type SIMPLE-CONDITION]\" nil)" .. " ((\"CONTINUE\" \"Return from BREAK.\") (\"ABORT\" \"abort (#<THREAD \\\"worker\\\">)\"))" .. " ((0 \"(F 3)\") (1 \"(EVAL (F 3))\" (:restartable t))) (42))"))
+      swank["invoke-restart"](0)
+      swank.disconnect()
+      mock_log.append = orig_append
+      assert.same({"; Debugger level 1: break", ";    [Condition of type SIMPLE-CONDITION]", "; Restarts:", ";  0: [CONTINUE] Return from BREAK.", ";  1: [ABORT] abort (#<THREAD \"worker\">)", "; Backtrace:", ";  0: (F 3)", ";  1: (EVAL (F 3))"}, logged[1])
+      return assert["has-substring"]("%(:emacs%-rex %(swank:invoke%-nth%-restart%-for%-emacs 1 0%) \"%*package%*\" 42 %d+%)", a["get-in"](mock_remote["send-calls"], {2, "msg"}))
+    end
+    it("logs the condition, restarts and backtrace, then invokes a restart by number", _24_)
+    local function _26_()
+      swank.connect({})
+      swank["handle-event"]("(:debug-return 42 1 nil)")
+      swank["invoke-restart"](0)
+      swank.disconnect()
+      return assert.are.equal(1, #mock_remote["send-calls"])
+    end
+    return it("does nothing but log when there is no debugger to answer", _26_)
+  end
+  return describe("debugger", _23_)
 end
 return describe("conjure.client.common-lisp.swank", _3_)
