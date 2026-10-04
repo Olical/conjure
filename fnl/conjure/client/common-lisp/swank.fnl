@@ -314,8 +314,14 @@
 
 (fn M.hyperspec [sym]
   "Open the local HyperSpec page for sym with vim.ui.open."
-  (if (not (config.get-in [:client :common_lisp :swank :hyperspec_root]))
+  (local root (config.get-in [:client :common_lisp :swank :hyperspec_root]))
+  (if
+    (not root)
     (log.append ["; Set g:conjure#client#common_lisp#swank#hyperspec_root to use the HyperSpec"])
+
+    (core.empty? (hyperspec-index (vim.fn.expand root)))
+    (log.append [(.. "; No Data/Map_Sym.txt under " root)])
+
     (let [file (M.hyperspec-file sym)]
       (if file
         (do

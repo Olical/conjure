@@ -93,7 +93,7 @@ All configuration can be set as described in |conjure-configuration|.
             that file and the page is opened with |vim.ui.open()|.
 
             Example value:
-                     `"~/.local/share/hyperspec/HyperSpec"`
+                     `"~/localdocs/hyperspec"`
 
             Default: unset
 

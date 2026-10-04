@@ -307,8 +307,11 @@ M["hyperspec-file"] = function(sym)
   end
 end
 M.hyperspec = function(sym)
-  if not config["get-in"]({"client", "common_lisp", "swank", "hyperspec_root"}) then
+  local root = config["get-in"]({"client", "common_lisp", "swank", "hyperspec_root"})
+  if not root then
     return log.append({"; Set g:conjure#client#common_lisp#swank#hyperspec_root to use the HyperSpec"})
+  elseif core["empty?"](hyperspec_index(vim.fn.expand(root))) then
+    return log.append({("; No Data/Map_Sym.txt under " .. root)})
   else
     local file = M["hyperspec-file"](sym)
     if file then
