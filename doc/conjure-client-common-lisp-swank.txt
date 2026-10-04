@@ -55,6 +55,9 @@ configuration options relevant to these mappings.
                          buffer.
 
 <localleader>sc          Remove all stickers from the buffer.
+<localleader>hs          Open the local HyperSpec page for the symbol under
+                         the cursor. Needs
+                         |g:conjure#client#common_lisp#swank#hyperspec_root|.
 
 ==============================================================================
 CONFIGURATION                 *conjure-client-common-lisp-swank-configuration*
@@ -111,5 +114,20 @@ All configuration can be set as described in |conjure-configuration|.
 `g:conjure#client#common_lisp#swank#mapping#sticker_clear`
             Remove all stickers from the buffer.
             Default: `"sc"`
+                        *g:conjure#client#common_lisp#swank#mapping#hyperspec*
+`g:conjure#client#common_lisp#swank#mapping#hyperspec`
+            Open the local HyperSpec page for the symbol under the cursor.
+            Default: `"hs"`
+
+                          *g:conjure#client#common_lisp#swank#hyperspec_root*
+`g:conjure#client#common_lisp#swank#hyperspec_root`
+            Directory of a local copy of the Common Lisp HyperSpec, the one
+            that contains `Data/Map_Sym.txt`. Symbols are resolved through
+            that file and the page is opened with |vim.ui.open()|.
+
+            Example value:
+                     `"~/localdocs/hyperspec"`
+
+            Default: unset
 
 vim:tw=78:sw=2:ts=2:ft=help:norl:et:listchars=

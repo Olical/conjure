@@ -248,3 +248,18 @@
             (let [out (swank.instrument-stickers 0 "(* 2 3)" {:start [1 0] :end [1 6]})]
               (vim.cmd "bwipeout!")
               (assert.are.equal "(* 2 3)" out))))))))
+    (describe "hyperspec"
+      (fn []
+        (it "resolves symbols through Data/Map_Sym.txt under hyperspec_root"
+          (fn []
+            (let [root (vim.fn.tempname)]
+              (vim.fn.mkdir (.. root "/Data") "p")
+              (vim.fn.writefile ["DEFUN" "../Body/m_defun.htm"
+                                 "CAR" "../Body/f_car_c.htm"]
+                                (.. root "/Data/Map_Sym.txt"))
+              (config.merge {:client {:common_lisp {:swank {:hyperspec_root root}}}}
+                            {:overwrite? true})
+              (assert.are.equal (.. root "/Body/m_defun.htm") (swank.hyperspec-file "defun"))
+              (assert.are.equal (.. root "/Body/f_car_c.htm") (swank.hyperspec-file "cl:car"))
+              (assert.is_nil (swank.hyperspec-file "no-such-symbol"))
+              (vim.fn.delete root "rf"))))))))
