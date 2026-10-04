@@ -41,6 +41,13 @@ configuration options relevant to these mappings.
 
 <localleader>cd          Disconnect from the REPL.
 
+<localleader>tt          Toggle `trace` on the function under the cursor
+                         (`swank:swank-toggle-trace`). Trace output appears
+                         in the log with the output of the evaluation that
+                         called the function.
+
+<localleader>ta          Untrace all functions (`swank:untrace-all`).
+
 ==============================================================================
 CONFIGURATION                 *conjure-client-common-lisp-swank-configuration*
 
@@ -76,5 +83,15 @@ All configuration can be set as described in |conjure-configuration|.
                      `false`
 
             Default: `true`
+
+                            *g:conjure#client#common_lisp#swank#mapping#trace*
+`g:conjure#client#common_lisp#swank#mapping#trace`
+            Toggle tracing of the function under the cursor.
+            Default: `"tt"`
+
+                      *g:conjure#client#common_lisp#swank#mapping#untrace_all*
+`g:conjure#client#common_lisp#swank#mapping#untrace_all`
+            Untrace all functions.
+            Default: `"ta"`
 
 vim:tw=78:sw=2:ts=2:ft=help:norl:et:listchars=

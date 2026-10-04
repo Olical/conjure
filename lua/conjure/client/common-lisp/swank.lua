@@ -40,7 +40,7 @@ M.context = function(_code)
 end
 config.merge({client = {common_lisp = {swank = {connection = {default_host = "127.0.0.1", default_port = "4005"}, enable_completions = true}}}})
 if config["get-in"]({"mapping", "enable_defaults"}) then
-  config.merge({client = {common_lisp = {swank = {mapping = {connect = "cc", disconnect = "cd"}}}}})
+  config.merge({client = {common_lisp = {swank = {mapping = {connect = "cc", disconnect = "cd", trace = "tt", untrace_all = "ta"}}}}})
 else
 end
 local state
@@ -261,7 +261,7 @@ M["eval-str"] = function(opts)
         return nil
       end
     end
-    return send(_30_, _32_, _34_)
+    return send(("(let ((*trace-output* *standard-output*)) " .. _30_ .. ")"), _32_, _34_)
   else
     return nil
   end
@@ -273,16 +273,31 @@ M["doc-str"] = function(opts)
   end
   return M["eval-str"](core.update(opts, "code", _39_))
 end
+M["toggle-trace"] = function(name)
+  if not core["empty?"](name) then
+    return M["eval-str"]({origin = "custom", context = M.context(), code = ("(swank:swank-toggle-trace \"" .. escape_string(name) .. "\")")})
+  else
+    return nil
+  end
+end
+M["untrace-all"] = function()
+  return M["eval-str"]({origin = "custom", code = "(swank:untrace-all)"})
+end
 M["eval-file"] = function(opts)
   try_ensure_conn()
   return M["eval-str"](core.assoc(opts, "code", ("(load \"" .. opts["file-path"] .. "\")")))
 end
 M["on-filetype"] = function()
   mapping.buf("CommonLispDisconnect", config["get-in"]({"client", "common_lisp", "swank", "mapping", "disconnect"}), M.disconnect, {desc = "Disconnect from the REPL"})
-  local function _40_()
+  local function _41_()
     return M.connect({})
   end
-  return mapping.buf("CommonLispConnect", config["get-in"]({"client", "common_lisp", "swank", "mapping", "connect"}), _40_, {desc = "Connect to a REPL"})
+  mapping.buf("CommonLispConnect", config["get-in"]({"client", "common_lisp", "swank", "mapping", "connect"}), _41_, {desc = "Connect to a REPL"})
+  local function _42_()
+    return M["toggle-trace"](vim.fn.expand("<cword>"))
+  end
+  mapping.buf("CommonLispTrace", config["get-in"]({"client", "common_lisp", "swank", "mapping", "trace"}), _42_, {desc = "Toggle tracing of the function under the cursor"})
+  return mapping.buf("CommonLispUntraceAll", config["get-in"]({"client", "common_lisp", "swank", "mapping", "untrace_all"}), M["untrace-all"], {desc = "Untrace all functions"})
 end
 M["on-load"] = function()
   if completions_enabled_3f() then
@@ -308,13 +323,13 @@ local function build_completions(opts)
   if connected_3f() then
     local code = build_completions_code(opts.prefix, opts.context)
     local result_fn
-    local function _42_(results)
+    local function _44_(results)
       local parsed_results = format_for_cmpl(results)
       local all_cmpl = core.concat(static_completions, parsed_results)
       local cmpl_list = util["ordered-distinct"](all_cmpl)
       return opts.cb(cmpl_list)
     end
-    result_fn = _42_
+    result_fn = _44_
     core.assoc(opts, "code", code)
     core.assoc(opts, "on-result", result_fn)
     core.assoc(opts, "passive?", true)
