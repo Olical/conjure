@@ -2,6 +2,7 @@
 (local core (autoload :conjure.nfnl.core))
 (local client (autoload :conjure.client))
 (local config (autoload :conjure.config))
+(local extract (autoload :conjure.extract))
 (local log (autoload :conjure.log))
 (local mapping (autoload :conjure.mapping))
 (local remote (autoload :conjure.remote.swank))
@@ -53,7 +54,10 @@
     {:common_lisp
      {:swank
       {:mapping {:connect "cc"
-                 :disconnect "cd"}}}}}))
+                 :disconnect "cd"
+                 :sticker_toggle "ss"
+                 :sticker_list "sl"
+                 :sticker_clear "sc"}}}}}))
 
 (local state (client.new-state
                   #(do
@@ -261,15 +265,179 @@
   (when (result? received)
     (unpack (parse-separated-list (inner-results received)))))
 
+;; ------------ stickers
+;; A sticker marks a form with an extmark. When an evaluation contains the
+;; form, the form is wrapped so that every pass pushes its values onto the
+;; plist of a keyword in the Lisp image. The latest values show as virtual
+;; text and <localleader>sl lists every pass.
+
+(local sticker-ns (vim.api.nvim_create_namespace "conjure-common-lisp-stickers"))
+
+(fn sticker-key [id]
+  (.. ":conjure-sticker-" (vim.fn.getpid) "-" id))
+
+(fn stickers [buf]
+  "[{:id :row :col :end-row :end-col}] for every sticker in buf."
+  (core.map
+    (fn [[id row col details]]
+      {:id id :row row :col col :end-row details.end_row :end-col details.end_col})
+    (vim.api.nvim_buf_get_extmarks buf sticker-ns 0 -1 {:details true})))
+
+(fn set-sticker [buf s label]
+  (vim.api.nvim_buf_set_extmark
+    buf sticker-ns s.row s.col
+    {:id s.id
+     :end_row s.end-row
+     :end_col s.end-col
+     :hl_group :Underlined
+     :virt_text [[label :Comment]]
+     :virt_text_pos :eol}))
+
+(fn M.instrument-stickers [buf code range]
+  "Wrap each sticker inside the evaluated range so it records its values.
+  code must be the buffer text that starts at range.start."
+  (let [lines (vim.api.nvim_buf_get_lines buf 0 -1 false)
+        offset (fn [row col]
+                 (var o col)
+                 (for [r 1 row]
+                   (set o (+ o (length (. lines r)) 1)))
+                 o)
+        base (offset (- (core.get-in range [:start 1]) 1) (core.get-in range [:start 2]))
+        found (core.filter
+                (fn [s]
+                  (and (>= s.start 0)
+                       (<= s.end (length code))
+                       (= (string.sub code (+ s.start 1) s.end)
+                          (table.concat
+                            (vim.api.nvim_buf_get_text buf s.row s.col s.end-row s.end-col {})
+                            "\n"))))
+                (core.map
+                  (fn [s]
+                    (core.assoc s
+                                :start (- (offset s.row s.col) base)
+                                :end (- (offset s.end-row s.end-col) base)))
+                  (stickers buf)))]
+    ;; Splice from the last start backwards. Wrapping a nested sticker grows
+    ;; every sticker that encloses it.
+    (table.sort found #(> $1.start $2.start))
+    (var out code)
+    (each [i s (ipairs found)]
+      (let [label (+ 7000000 s.id)
+            pre (.. "(let ((#" label "=#:v (multiple-value-list ")
+            post (.. "))) (push #" label "# (get " (sticker-key s.id) " :values)) (values-list #" label "#))")]
+        (set out (.. (string.sub out 1 s.start) pre
+                      (string.sub out (+ s.start 1) s.end) post
+                      (string.sub out (+ s.end 1))))
+        (for [j (+ i 1) (length found)]
+          (let [outer (. found j)]
+            (when (>= outer.end s.end)
+              (set outer.end (+ outer.end (length pre) (length post))))))))
+    out))
+
+(fn sticker-values-code [buf all?]
+  "Lisp code that returns a list of \"id count values\" strings, one per
+  sticker: the latest pass, or every pass when all? is true."
+  (.. "(list "
+      (table.concat
+        (core.map
+          (fn [s]
+            (.. "(let ((v (reverse (get " (sticker-key s.id) " :values))))"
+                " (format nil \"~D ~D ~A\" " s.id " (length v)"
+                (if all?
+                  " (format nil \"~{~{~S~^ ~}~^ | ~}\" v)"
+                  " (format nil \"~{~S~^ ~}\" (car (last v)))")
+                "))"))
+          (stickers buf))
+        " ")
+      ")"))
+
+(fn each-sticker-result [result f]
+  (each [_ entry (ipairs (parse-separated-list result))]
+    (let [(id n vals) (string.match entry "^(%d+) (%d+) ?(.*)$")]
+      (when id
+        (f (tonumber id) (tonumber n) vals)))))
+
+(fn M.refresh-stickers [buf]
+  "Show the latest recorded values of each sticker as virtual text."
+  (when (not (core.empty? (stickers buf)))
+    (M.eval-str
+      {:origin :custom
+       :passive? true
+       :code (sticker-values-code buf false)
+       :on-result
+       (fn [result]
+         (let [by-id (core.reduce (fn [acc s] (core.assoc acc s.id s)) {} (stickers buf))]
+           (each-sticker-result
+             result
+             (fn [id n vals]
+               (let [s (. by-id id)]
+                 (when s
+                   (set-sticker buf s (if (= 0 n)
+                                        "=> (no value yet)"
+                                        (.. "=> " vals " (" n "x)")))))))))})))
+
+(fn M.toggle-sticker []
+  "Place a sticker on the form under the cursor, or remove the one there."
+  (let [form (extract.form {})
+        buf (vim.api.nvim_get_current_buf)]
+    (when form
+      (let [row (- (core.get-in form [:range :start 1]) 1)
+            col (core.get-in form [:range :start 2])
+            here (core.filter #(and (= row $1.row) (= col $1.col)) (stickers buf))]
+        (if (core.empty? here)
+          (let [lines (text.split-lines form.content)
+                end-row (+ row (length lines) -1)
+                end-col (+ (if (= 1 (length lines)) col 0) (length (core.last lines)))]
+            (vim.api.nvim_buf_set_extmark
+              buf sticker-ns row col
+              {:end_row end-row
+               :end_col end-col
+               :hl_group :Underlined
+               :virt_text [["=> (no value yet)" :Comment]]
+               :virt_text_pos :eol}))
+          (vim.api.nvim_buf_del_extmark buf sticker-ns (. here 1 :id)))))))
+
+(fn M.clear-stickers []
+  (vim.api.nvim_buf_clear_namespace 0 sticker-ns 0 -1))
+
+(fn M.list-stickers []
+  "Log every recorded pass of each sticker in the current buffer."
+  (let [buf (vim.api.nvim_get_current_buf)
+        by-id (core.reduce (fn [acc s] (core.assoc acc s.id s)) {} (stickers buf))]
+    (if (core.empty? by-id)
+      (log.append ["; No stickers in this buffer"])
+      (M.eval-str
+        {:origin :custom
+         :passive? true
+         :code (sticker-values-code buf true)
+         :on-result
+         (fn [result]
+           (let [lines ["; Stickers"]]
+             (each-sticker-result
+               result
+               (fn [id n vals]
+                 (let [s (. by-id id)]
+                   (when s
+                     (table.insert
+                       lines
+                       (.. "; line " (+ s.row 1) " "
+                           (table.concat (vim.api.nvim_buf_get_text buf s.row s.col s.end-row s.end-col {}) " ")))
+                     (table.insert lines (.. ";   " n " pass(es): " vals))))))
+             (log.append lines {:break? true})))}))))
+
 (fn M.eval-str [opts]
   (log.dbg (.. "eval-str() called with: " (core.pr-str opts)))
   (try-ensure-conn)
 
   (when (not (core.empty? opts.code))
+    (local buf (vim.api.nvim_get_current_buf))
+    (local code (if opts.range
+                  (M.instrument-stickers buf opts.code opts.range)
+                  opts.code))
     (send
       (if (= :buf opts.origin)
-        (.. "(list " opts.code ")")
-        opts.code)
+        (.. "(list " code ")")
+        code)
       (when (not (core.empty? opts.context))
         opts.context)
       (fn [msg] ;; handle results from Swank server
@@ -280,7 +448,8 @@
               (opts.on-result result))
 
             (when (not opts.passive?) ;; log results when not true
-              (log.append (text.split-lines result)))))))))
+              (log.append (text.split-lines result))
+              (M.refresh-stickers buf))))))))
 
 (fn M.doc-str [opts]
   (try-ensure-conn)
@@ -302,7 +471,25 @@
     :CommonLispConnect
     (config.get-in [:client :common_lisp :swank :mapping :connect])
     #(M.connect {})
-    {:desc "Connect to a REPL"}))
+    {:desc "Connect to a REPL"})
+
+  (mapping.buf
+    :CommonLispStickerToggle
+    (config.get-in [:client :common_lisp :swank :mapping :sticker_toggle])
+    M.toggle-sticker
+    {:desc "Toggle a sticker on the current form"})
+
+  (mapping.buf
+    :CommonLispStickerList
+    (config.get-in [:client :common_lisp :swank :mapping :sticker_list])
+    M.list-stickers
+    {:desc "Log every value recorded by the stickers"})
+
+  (mapping.buf
+    :CommonLispStickerClear
+    (config.get-in [:client :common_lisp :swank :mapping :sticker_clear])
+    M.clear-stickers
+    {:desc "Remove all stickers from the buffer"}))
 
 (fn M.on-load []
   (when (completions-enabled?) 

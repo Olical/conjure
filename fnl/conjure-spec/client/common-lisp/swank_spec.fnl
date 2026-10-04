@@ -177,4 +177,38 @@
                (format-swank-return "(\"dotimes\") \"dot\""))
               (swank.disconnect)
 
-              (assert.same ["dots" "dotimes"] (. completion-cb-calls 1)))))))))
+              (assert.same ["dots" "dotimes"] (. completion-cb-calls 1)))))))
+
+    (describe "stickers"
+      (fn []
+        (fn rec [id form]
+          (let [label (+ 7000000 id)]
+            (.. "(let ((#" label "=#:v (multiple-value-list " form "))) (push #" label
+                "# (get :conjure-sticker-" (vim.fn.getpid) "-" id " :values)) (values-list #"
+                label "#))")))
+
+        (it "wraps stickered forms, including nested ones, in the evaluated code"
+          (fn []
+            (vim.cmd "new")
+            (vim.api.nvim_buf_set_lines 0 0 -1 false ["(defun f (x)" "  (+ 1 (* x x)))"])
+            (vim.api.nvim_win_set_cursor 0 [2 9])
+            (swank.toggle-sticker)
+            (vim.api.nvim_win_set_cursor 0 [2 3])
+            (swank.toggle-sticker)
+            (let [code "(defun f (x)\n  (+ 1 (* x x)))"
+                  out (swank.instrument-stickers 0 code {:start [1 0] :end [2 15]})]
+              (vim.cmd "bwipeout!")
+              (assert.are.equal
+                (.. "(defun f (x)\n  " (rec 2 (.. "(+ 1 " (rec 1 "(* x x)") ")")) ")")
+                out))))
+
+        (it "removes a sticker when toggled again and leaves code alone"
+          (fn []
+            (vim.cmd "new")
+            (vim.api.nvim_buf_set_lines 0 0 -1 false ["(* 2 3)"])
+            (vim.api.nvim_win_set_cursor 0 [1 1])
+            (swank.toggle-sticker)
+            (swank.toggle-sticker)
+            (let [out (swank.instrument-stickers 0 "(* 2 3)" {:start [1 0] :end [1 6]})]
+              (vim.cmd "bwipeout!")
+              (assert.are.equal "(* 2 3)" out))))))))

@@ -41,6 +41,16 @@ configuration options relevant to these mappings.
 
 <localleader>cd          Disconnect from the REPL.
 
+<localleader>ss          Toggle a sticker on the form under the cursor. When
+                         an evaluation contains a stickered form, every pass
+                         through it records the values it returns. The
+                         latest values show as virtual text after the form.
+
+<localleader>sl          Log every value recorded by the stickers in the
+                         buffer.
+
+<localleader>sc          Remove all stickers from the buffer.
+
 ==============================================================================
 CONFIGURATION                 *conjure-client-common-lisp-swank-configuration*
 
@@ -76,5 +86,20 @@ All configuration can be set as described in |conjure-configuration|.
                      `false`
 
             Default: `true`
+
+                   *g:conjure#client#common_lisp#swank#mapping#sticker_toggle*
+`g:conjure#client#common_lisp#swank#mapping#sticker_toggle`
+            Toggle a sticker on the current form.
+            Default: `"ss"`
+
+                     *g:conjure#client#common_lisp#swank#mapping#sticker_list*
+`g:conjure#client#common_lisp#swank#mapping#sticker_list`
+            Log every value recorded by the stickers.
+            Default: `"sl"`
+
+                    *g:conjure#client#common_lisp#swank#mapping#sticker_clear*
+`g:conjure#client#common_lisp#swank#mapping#sticker_clear`
+            Remove all stickers from the buffer.
+            Default: `"sc"`
 
 vim:tw=78:sw=2:ts=2:ft=help:norl:et:listchars=
