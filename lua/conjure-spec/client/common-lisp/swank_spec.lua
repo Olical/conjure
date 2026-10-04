@@ -152,26 +152,20 @@ local function _3_()
   describe("config", _18_)
   local function _23_()
     local function _24_()
-      local logged = {}
-      local orig_append = mock_log.append
-      local function _25_(lines)
-        return table.insert(logged, lines)
-      end
-      mock_log.append = _25_
-      vim.cmd("new")
-      vim.api.nvim_buf_set_lines(0, 0, -1, false, {"(when a b)"})
-      vim.api.nvim_win_set_cursor(0, {1, 1})
       swank.connect({})
-      swank.macroexpand("swank-macroexpand-1")
-      assert["has-substring"]("%(swank:swank%-macroexpand%-1 \\\"%(when a b%)\\\"%)", a["get-in"](mock_remote["send-calls"], {2, "msg"}))
-      a["get-in"](mock_remote["send-calls"], {2, "cb"})("(:return (:ok (\"\" \"\\\"(IF A\n    B)\\\"\")) 2)")
+      swank["toggle-trace"]("sq")
       swank.disconnect()
-      vim.cmd("bwipeout!")
-      mock_log.append = orig_append
-      return assert.same({"(IF A", "    B)"}, logged[1])
+      return assert["has-substring"]("%(swank:swank%-toggle%-trace \\\"sq\\\"%)", a["get-in"](mock_remote["send-calls"], {2, "msg"}))
     end
-    return it("sends the current form to swank-macroexpand-1 and logs the expansion", _24_)
+    it("toggles trace through swank", _24_)
+    local function _25_()
+      swank.connect({})
+      swank["eval-str"]({code = "(sq 5)"})
+      swank.disconnect()
+      return assert["has-substring"]("%(let %(%(%*trace%-output%* %*standard%-output%*%)%) %(sq 5%)%)", a["get-in"](mock_remote["send-calls"], {2, "msg"}))
+    end
+    return it("binds *trace-output* to the captured stdout of every eval", _25_)
   end
-  return describe("macroexpand", _23_)
+  return describe("trace", _23_)
 end
 return describe("conjure.client.common-lisp.swank", _3_)

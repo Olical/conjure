@@ -5,7 +5,6 @@ local define = _local_1_.define
 local core = autoload("conjure.nfnl.core")
 local client = autoload("conjure.client")
 local config = autoload("conjure.config")
-local extract = autoload("conjure.extract")
 local log = autoload("conjure.log")
 local mapping = autoload("conjure.mapping")
 local remote = autoload("conjure.remote.swank")
@@ -41,7 +40,7 @@ M.context = function(_code)
 end
 config.merge({client = {common_lisp = {swank = {connection = {default_host = "127.0.0.1", default_port = "4005"}, enable_completions = true}}}})
 if config["get-in"]({"mapping", "enable_defaults"}) then
-  config.merge({client = {common_lisp = {swank = {mapping = {connect = "cc", disconnect = "cd", macroexpand_1 = "m1", macroexpand_all = "ma"}}}}})
+  config.merge({client = {common_lisp = {swank = {mapping = {connect = "cc", disconnect = "cd", trace = "tt", untrace_all = "ta"}}}}})
 else
 end
 local state
@@ -262,7 +261,7 @@ M["eval-str"] = function(opts)
         return nil
       end
     end
-    return send(_30_, _32_, _34_)
+    return send(("(let ((*trace-output* *standard-output*)) " .. _30_ .. ")"), _32_, _34_)
   else
     return nil
   end
@@ -274,19 +273,15 @@ M["doc-str"] = function(opts)
   end
   return M["eval-str"](core.update(opts, "code", _39_))
 end
-local function unquote_lisp_string(s)
-  return string.gsub(string.sub(s, 2, -2), "\\(.)", "%1")
-end
-M.macroexpand = function(swank_fn)
-  local form = extract.form({})
-  if form then
-    local function _40_(result)
-      return log.append(text["split-lines"](unquote_lisp_string(result)), {["break?"] = true})
-    end
-    return M["eval-str"]({origin = "custom", ["passive?"] = true, context = M.context(), code = ("(swank:" .. swank_fn .. " \"" .. escape_string(form.content) .. "\")"), ["on-result"] = _40_})
+M["toggle-trace"] = function(name)
+  if not core["empty?"](name) then
+    return M["eval-str"]({origin = "custom", context = M.context(), code = ("(swank:swank-toggle-trace \"" .. escape_string(name) .. "\")")})
   else
     return nil
   end
+end
+M["untrace-all"] = function()
+  return M["eval-str"]({origin = "custom", code = "(swank:untrace-all)"})
 end
 M["eval-file"] = function(opts)
   try_ensure_conn()
@@ -294,18 +289,15 @@ M["eval-file"] = function(opts)
 end
 M["on-filetype"] = function()
   mapping.buf("CommonLispDisconnect", config["get-in"]({"client", "common_lisp", "swank", "mapping", "disconnect"}), M.disconnect, {desc = "Disconnect from the REPL"})
-  local function _42_()
+  local function _41_()
     return M.connect({})
   end
-  mapping.buf("CommonLispConnect", config["get-in"]({"client", "common_lisp", "swank", "mapping", "connect"}), _42_, {desc = "Connect to a REPL"})
-  local function _43_()
-    return M.macroexpand("swank-macroexpand-1")
+  mapping.buf("CommonLispConnect", config["get-in"]({"client", "common_lisp", "swank", "mapping", "connect"}), _41_, {desc = "Connect to a REPL"})
+  local function _42_()
+    return M["toggle-trace"](vim.fn.expand("<cword>"))
   end
-  mapping.buf("CommonLispMacroexpand1", config["get-in"]({"client", "common_lisp", "swank", "mapping", "macroexpand_1"}), _43_, {desc = "Macroexpand the current form once"})
-  local function _44_()
-    return M.macroexpand("swank-macroexpand-all")
-  end
-  return mapping.buf("CommonLispMacroexpandAll", config["get-in"]({"client", "common_lisp", "swank", "mapping", "macroexpand_all"}), _44_, {desc = "Fully macroexpand the current form"})
+  mapping.buf("CommonLispTrace", config["get-in"]({"client", "common_lisp", "swank", "mapping", "trace"}), _42_, {desc = "Toggle tracing of the function under the cursor"})
+  return mapping.buf("CommonLispUntraceAll", config["get-in"]({"client", "common_lisp", "swank", "mapping", "untrace_all"}), M["untrace-all"], {desc = "Untrace all functions"})
 end
 M["on-load"] = function()
   if completions_enabled_3f() then
@@ -331,13 +323,13 @@ local function build_completions(opts)
   if connected_3f() then
     local code = build_completions_code(opts.prefix, opts.context)
     local result_fn
-    local function _46_(results)
+    local function _44_(results)
       local parsed_results = format_for_cmpl(results)
       local all_cmpl = core.concat(static_completions, parsed_results)
       local cmpl_list = util["ordered-distinct"](all_cmpl)
       return opts.cb(cmpl_list)
     end
-    result_fn = _46_
+    result_fn = _44_
     core.assoc(opts, "code", code)
     core.assoc(opts, "on-result", result_fn)
     core.assoc(opts, "passive?", true)
