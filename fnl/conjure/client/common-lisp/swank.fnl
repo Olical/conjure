@@ -55,13 +55,13 @@
      {:swank
       {:mapping {:connect "cc"
                  :disconnect "cd"
-                 :invoke_restart "dr"}}}}}))
+                 :invoke_restart "dr"
                  :sticker_toggle "ss"
                  :sticker_list "sl"
-                 :sticker_clear "sc"}}}}}))
-                 :hyperspec "hs"}}}}}))
+                 :sticker_clear "sc"
+                 :hyperspec "hs"
                  :macroexpand_1 "m1"
-                 :macroexpand_all "ma"}}}}}))
+                 :macroexpand_all "ma"
                  :trace "tt"
                  :untrace_all "ta"}}}}}))
 
@@ -445,15 +445,12 @@
                   (M.instrument-stickers buf opts.code opts.range)
                   opts.code))
     (send
-      (if (= :buf opts.origin)
-        (.. "(list " code ")")
-        code)
       ;; Swank binds *trace-output* to a stream Conjure never reads, so route
       ;; TRACE output into the captured stdout of this evaluation.
       (.. "(let ((*trace-output* *standard-output*)) "
           (if (= :buf opts.origin)
-            (.. "(list " opts.code ")")
-            opts.code)
+            (.. "(list " code ")")
+            code)
           ")")
       (when (not (core.empty? opts.context))
         opts.context)
@@ -641,7 +638,9 @@
     :CommonLispInvokeRestart
     (config.get-in [:client :common_lisp :swank :mapping :invoke_restart])
     #(M.invoke-restart (tonumber (vim.fn.input "Restart: ")))
-    {:desc "Invoke a debugger restart by number"}))
+    {:desc "Invoke a debugger restart by number"})
+
+  (mapping.buf
     :CommonLispStickerToggle
     (config.get-in [:client :common_lisp :swank :mapping :sticker_toggle])
     M.toggle-sticker
@@ -657,11 +656,15 @@
     :CommonLispStickerClear
     (config.get-in [:client :common_lisp :swank :mapping :sticker_clear])
     M.clear-stickers
-    {:desc "Remove all stickers from the buffer"}))
+    {:desc "Remove all stickers from the buffer"})
+
+  (mapping.buf
     :CommonLispHyperSpec
     (config.get-in [:client :common_lisp :swank :mapping :hyperspec])
     #(M.hyperspec (vim.fn.expand "<cword>"))
-    {:desc "Open the local HyperSpec page for the symbol under the cursor"}))
+    {:desc "Open the local HyperSpec page for the symbol under the cursor"})
+
+  (mapping.buf
     :CommonLispMacroexpand1
     (config.get-in [:client :common_lisp :swank :mapping :macroexpand_1])
     #(M.macroexpand :swank-macroexpand-1)
@@ -671,7 +674,9 @@
     :CommonLispMacroexpandAll
     (config.get-in [:client :common_lisp :swank :mapping :macroexpand_all])
     #(M.macroexpand :swank-macroexpand-all)
-    {:desc "Fully macroexpand the current form"}))
+    {:desc "Fully macroexpand the current form"})
+
+  (mapping.buf
     :CommonLispTrace
     (config.get-in [:client :common_lisp :swank :mapping :trace])
     #(M.toggle-trace (vim.fn.expand "<cword>"))

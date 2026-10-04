@@ -182,9 +182,6 @@
     (describe "debugger"
       (fn []
         (it "logs the condition, restarts and backtrace, then invokes a restart by number"
-    (describe "macroexpand"
-      (fn []
-        (it "sends the current form to swank-macroexpand-1 and logs the expansion"
           (fn []
             (let [logged []
                   orig-append mock-log.append]
@@ -217,7 +214,8 @@
             (swank.handle-event "(:debug-return 42 1 nil)")
             (swank.invoke-restart 0)
             (swank.disconnect)
-            (assert.are.equal 1 (length mock-remote.send-calls))))))))
+            (assert.are.equal 1 (length mock-remote.send-calls))))))
+
     (describe "stickers"
       (fn []
         (fn rec [id form]
@@ -250,7 +248,8 @@
             (swank.toggle-sticker)
             (let [out (swank.instrument-stickers 0 "(* 2 3)" {:start [1 0] :end [1 6]})]
               (vim.cmd "bwipeout!")
-              (assert.are.equal "(* 2 3)" out))))))))
+              (assert.are.equal "(* 2 3)" out))))))
+
     (describe "hyperspec"
       (fn []
         (it "resolves symbols through Data/Map_Sym.txt under hyperspec_root"
@@ -265,7 +264,15 @@
               (assert.are.equal (.. root "/Body/m_defun.htm") (swank.hyperspec-file "defun"))
               (assert.are.equal (.. root "/Body/f_car_c.htm") (swank.hyperspec-file "cl:car"))
               (assert.is_nil (swank.hyperspec-file "no-such-symbol"))
-              (vim.fn.delete root "rf"))))))))
+              (vim.fn.delete root "rf"))))))
+
+    (describe "macroexpand"
+      (fn []
+        (it "sends the current form to swank-macroexpand-1 and logs the expansion"
+          (fn []
+            (let [logged []
+                  orig-append mock-log.append]
+              (set mock-log.append (fn [lines] (table.insert logged lines)))
               (vim.cmd "new")
               (vim.api.nvim_buf_set_lines 0 0 -1 false ["(when a b)"])
               (vim.api.nvim_win_set_cursor 0 [1 1])
@@ -279,7 +286,8 @@
               (swank.disconnect)
               (vim.cmd "bwipeout!")
               (set mock-log.append orig-append)
-              (assert.same ["(IF A" "    B)"] (. logged 1)))))))))
+              (assert.same ["(IF A" "    B)"] (. logged 1)))))))
+
     (describe "trace"
       (fn []
         (it "toggles trace through swank"
