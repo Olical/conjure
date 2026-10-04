@@ -40,7 +40,7 @@ M.context = function(_code)
 end
 config.merge({client = {common_lisp = {swank = {connection = {default_host = "127.0.0.1", default_port = "4005"}, enable_completions = true}}}})
 if config["get-in"]({"mapping", "enable_defaults"}) then
-  config.merge({client = {common_lisp = {swank = {mapping = {connect = "cc", disconnect = "cd"}}}}})
+  config.merge({client = {common_lisp = {swank = {mapping = {connect = "cc", disconnect = "cd", hyperspec = "hs"}}}}})
 else
 end
 local state
@@ -273,16 +273,69 @@ M["doc-str"] = function(opts)
   end
   return M["eval-str"](core.update(opts, "code", _39_))
 end
+local hyperspec_indexes = {}
+local function hyperspec_index(root)
+  local or_40_ = hyperspec_indexes[root]
+  if not or_40_ then
+    local file = (root .. "/Data/Map_Sym.txt")
+    local index = {}
+    if (1 == vim.fn.filereadable(file)) then
+      local lines = vim.fn.readfile(file)
+      for i = 1, (#lines - 1), 2 do
+        index[lines[i]] = (string.gsub(lines[(i + 1)], "^%.%./", ""))
+      end
+    else
+    end
+    hyperspec_indexes[root] = index
+    or_40_ = index
+  end
+  return or_40_
+end
+M["hyperspec-file"] = function(sym)
+  local root = config["get-in"]({"client", "common_lisp", "swank", "hyperspec_root"})
+  if (root and not core["empty?"](sym)) then
+    local root0 = vim.fn.expand(root)
+    local name = string.upper((string.gsub(sym, "^.*:", "")))
+    local page = hyperspec_index(root0)[name]
+    if page then
+      return (root0 .. "/" .. page)
+    else
+      return nil
+    end
+  else
+    return nil
+  end
+end
+M.hyperspec = function(sym)
+  local root = config["get-in"]({"client", "common_lisp", "swank", "hyperspec_root"})
+  if not root then
+    return log.append({"; Set g:conjure#client#common_lisp#swank#hyperspec_root to use the HyperSpec"})
+  elseif core["empty?"](hyperspec_index(vim.fn.expand(root))) then
+    return log.append({("; No Data/Map_Sym.txt under " .. root)})
+  else
+    local file = M["hyperspec-file"](sym)
+    if file then
+      log.append({("; " .. file)})
+      return vim.ui.open(file)
+    else
+      return log.append({("; No HyperSpec entry for " .. tostring(sym))})
+    end
+  end
+end
 M["eval-file"] = function(opts)
   try_ensure_conn()
   return M["eval-str"](core.assoc(opts, "code", ("(load \"" .. opts["file-path"] .. "\")")))
 end
 M["on-filetype"] = function()
   mapping.buf("CommonLispDisconnect", config["get-in"]({"client", "common_lisp", "swank", "mapping", "disconnect"}), M.disconnect, {desc = "Disconnect from the REPL"})
-  local function _40_()
+  local function _47_()
     return M.connect({})
   end
-  return mapping.buf("CommonLispConnect", config["get-in"]({"client", "common_lisp", "swank", "mapping", "connect"}), _40_, {desc = "Connect to a REPL"})
+  mapping.buf("CommonLispConnect", config["get-in"]({"client", "common_lisp", "swank", "mapping", "connect"}), _47_, {desc = "Connect to a REPL"})
+  local function _48_()
+    return M.hyperspec(vim.fn.expand("<cword>"))
+  end
+  return mapping.buf("CommonLispHyperSpec", config["get-in"]({"client", "common_lisp", "swank", "mapping", "hyperspec"}), _48_, {desc = "Open the local HyperSpec page for the symbol under the cursor"})
 end
 M["on-load"] = function()
   if completions_enabled_3f() then
@@ -308,13 +361,13 @@ local function build_completions(opts)
   if connected_3f() then
     local code = build_completions_code(opts.prefix, opts.context)
     local result_fn
-    local function _42_(results)
+    local function _50_(results)
       local parsed_results = format_for_cmpl(results)
       local all_cmpl = core.concat(static_completions, parsed_results)
       local cmpl_list = util["ordered-distinct"](all_cmpl)
       return opts.cb(cmpl_list)
     end
-    result_fn = _42_
+    result_fn = _50_
     core.assoc(opts, "code", code)
     core.assoc(opts, "on-result", result_fn)
     core.assoc(opts, "passive?", true)

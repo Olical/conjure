@@ -149,6 +149,20 @@ local function _3_()
     end
     return it("returns completions dots dotimes when connected with tree sitter results dots and completions enabled", _21_)
   end
-  return describe("config", _18_)
+  describe("config", _18_)
+  local function _23_()
+    local function _24_()
+      local root = vim.fn.tempname()
+      vim.fn.mkdir((root .. "/Data"), "p")
+      vim.fn.writefile({"DEFUN", "../Body/m_defun.htm", "CAR", "../Body/f_car_c.htm"}, (root .. "/Data/Map_Sym.txt"))
+      config.merge({client = {common_lisp = {swank = {hyperspec_root = root}}}}, {["overwrite?"] = true})
+      assert.are.equal((root .. "/Body/m_defun.htm"), swank["hyperspec-file"]("defun"))
+      assert.are.equal((root .. "/Body/f_car_c.htm"), swank["hyperspec-file"]("cl:car"))
+      assert.is_nil(swank["hyperspec-file"]("no-such-symbol"))
+      return vim.fn.delete(root, "rf")
+    end
+    return it("resolves symbols through Data/Map_Sym.txt under hyperspec_root", _24_)
+  end
+  return describe("hyperspec", _23_)
 end
 return describe("conjure.client.common-lisp.swank", _3_)
