@@ -177,4 +177,24 @@
                (format-swank-return "(\"dotimes\") \"dot\""))
               (swank.disconnect)
 
-              (assert.same ["dots" "dotimes"] (. completion-cb-calls 1)))))))))
+              (assert.same ["dots" "dotimes"] (. completion-cb-calls 1)))))))
+
+    (describe "trace"
+      (fn []
+        (it "toggles trace through swank"
+          (fn []
+            (swank.connect {})
+            (swank.toggle-trace "sq")
+            (swank.disconnect)
+            (assert.has-substring
+              "%(swank:swank%-toggle%-trace \\\"sq\\\"%)"
+              (a.get-in mock-remote.send-calls [2 :msg]))))
+
+        (it "binds *trace-output* to the captured stdout of every eval"
+          (fn []
+            (swank.connect {})
+            (swank.eval-str {:code "(sq 5)"})
+            (swank.disconnect)
+            (assert.has-substring
+              "%(let %(%(%*trace%-output%* %*standard%-output%*%)%) %(sq 5%)%)"
+              (a.get-in mock-remote.send-calls [2 :msg]))))))))

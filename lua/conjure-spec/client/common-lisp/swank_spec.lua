@@ -149,6 +149,23 @@ local function _3_()
     end
     return it("returns completions dots dotimes when connected with tree sitter results dots and completions enabled", _21_)
   end
-  return describe("config", _18_)
+  describe("config", _18_)
+  local function _23_()
+    local function _24_()
+      swank.connect({})
+      swank["toggle-trace"]("sq")
+      swank.disconnect()
+      return assert["has-substring"]("%(swank:swank%-toggle%-trace \\\"sq\\\"%)", a["get-in"](mock_remote["send-calls"], {2, "msg"}))
+    end
+    it("toggles trace through swank", _24_)
+    local function _25_()
+      swank.connect({})
+      swank["eval-str"]({code = "(sq 5)"})
+      swank.disconnect()
+      return assert["has-substring"]("%(let %(%(%*trace%-output%* %*standard%-output%*%)%) %(sq 5%)%)", a["get-in"](mock_remote["send-calls"], {2, "msg"}))
+    end
+    return it("binds *trace-output* to the captured stdout of every eval", _25_)
+  end
+  return describe("trace", _23_)
 end
 return describe("conjure.client.common-lisp.swank", _3_)

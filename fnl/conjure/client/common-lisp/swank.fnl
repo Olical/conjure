@@ -53,7 +53,9 @@
     {:common_lisp
      {:swank
       {:mapping {:connect "cc"
-                 :disconnect "cd"}}}}}))
+                 :disconnect "cd"
+                 :trace "tt"
+                 :untrace_all "ta"}}}}}))
 
 (local state (client.new-state
                   #(do
@@ -267,9 +269,13 @@
 
   (when (not (core.empty? opts.code))
     (send
-      (if (= :buf opts.origin)
-        (.. "(list " opts.code ")")
-        opts.code)
+      ;; Swank binds *trace-output* to a stream Conjure never reads, so route
+      ;; TRACE output into the captured stdout of this evaluation.
+      (.. "(let ((*trace-output* *standard-output*)) "
+          (if (= :buf opts.origin)
+            (.. "(list " opts.code ")")
+            opts.code)
+          ")")
       (when (not (core.empty? opts.context))
         opts.context)
       (fn [msg] ;; handle results from Swank server
@@ -285,6 +291,19 @@
 (fn M.doc-str [opts]
   (try-ensure-conn)
   (M.eval-str (core.update opts :code #(.. "(describe '" $1 ")"))))
+
+(fn M.toggle-trace [name]
+  "Toggle TRACE on the function called name."
+  (when (not (core.empty? name))
+    (M.eval-str
+      {:origin :custom
+       :context (M.context)
+       :code (.. "(swank:swank-toggle-trace \"" (escape-string name) "\")")})))
+
+(fn M.untrace-all []
+  (M.eval-str
+    {:origin :custom
+     :code "(swank:untrace-all)"}))
 
 (fn M.eval-file [opts]
   (try-ensure-conn)
@@ -302,7 +321,19 @@
     :CommonLispConnect
     (config.get-in [:client :common_lisp :swank :mapping :connect])
     #(M.connect {})
-    {:desc "Connect to a REPL"}))
+    {:desc "Connect to a REPL"})
+
+  (mapping.buf
+    :CommonLispTrace
+    (config.get-in [:client :common_lisp :swank :mapping :trace])
+    #(M.toggle-trace (vim.fn.expand "<cword>"))
+    {:desc "Toggle tracing of the function under the cursor"})
+
+  (mapping.buf
+    :CommonLispUntraceAll
+    (config.get-in [:client :common_lisp :swank :mapping :untrace_all])
+    M.untrace-all
+    {:desc "Untrace all functions"}))
 
 (fn M.on-load []
   (when (completions-enabled?) 
