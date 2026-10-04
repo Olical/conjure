@@ -152,17 +152,26 @@ local function _3_()
   describe("config", _18_)
   local function _23_()
     local function _24_()
-      local root = vim.fn.tempname()
-      vim.fn.mkdir((root .. "/Data"), "p")
-      vim.fn.writefile({"DEFUN", "../Body/m_defun.htm", "CAR", "../Body/f_car_c.htm"}, (root .. "/Data/Map_Sym.txt"))
-      config.merge({client = {common_lisp = {swank = {hyperspec_root = root}}}}, {["overwrite?"] = true})
-      assert.are.equal((root .. "/Body/m_defun.htm"), swank["hyperspec-file"]("defun"))
-      assert.are.equal((root .. "/Body/f_car_c.htm"), swank["hyperspec-file"]("cl:car"))
-      assert.is_nil(swank["hyperspec-file"]("no-such-symbol"))
-      return vim.fn.delete(root, "rf")
+      local logged = {}
+      local orig_append = mock_log.append
+      local function _25_(lines)
+        return table.insert(logged, lines)
+      end
+      mock_log.append = _25_
+      vim.cmd("new")
+      vim.api.nvim_buf_set_lines(0, 0, -1, false, {"(when a b)"})
+      vim.api.nvim_win_set_cursor(0, {1, 1})
+      swank.connect({})
+      swank.macroexpand("swank-macroexpand-1")
+      assert["has-substring"]("%(swank:swank%-macroexpand%-1 \\\"%(when a b%)\\\"%)", a["get-in"](mock_remote["send-calls"], {2, "msg"}))
+      a["get-in"](mock_remote["send-calls"], {2, "cb"})("(:return (:ok (\"\" \"\\\"(IF A\n    B)\\\"\")) 2)")
+      swank.disconnect()
+      vim.cmd("bwipeout!")
+      mock_log.append = orig_append
+      return assert.same({"(IF A", "    B)"}, logged[1])
     end
-    return it("resolves symbols through Data/Map_Sym.txt under hyperspec_root", _24_)
+    return it("sends the current form to swank-macroexpand-1 and logs the expansion", _24_)
   end
-  return describe("hyperspec", _23_)
+  return describe("macroexpand", _23_)
 end
 return describe("conjure.client.common-lisp.swank", _3_)

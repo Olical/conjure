@@ -58,6 +58,13 @@ configuration options relevant to these mappings.
 <localleader>hs          Open the local HyperSpec page for the symbol under
                          the cursor. Needs
                          |g:conjure#client#common_lisp#swank#hyperspec_root|.
+<localleader>m1          Macroexpand the form under the cursor once
+                         (`swank:swank-macroexpand-1`) and show the result
+                         in the log.
+
+<localleader>ma          Fully macroexpand the form under the cursor
+                         (`swank:swank-macroexpand-all`) and show the result
+                         in the log.
 
 ==============================================================================
 CONFIGURATION                 *conjure-client-common-lisp-swank-configuration*
@@ -129,5 +136,14 @@ All configuration can be set as described in |conjure-configuration|.
                      `"~/localdocs/hyperspec"`
 
             Default: unset
+                    *g:conjure#client#common_lisp#swank#mapping#macroexpand_1*
+`g:conjure#client#common_lisp#swank#mapping#macroexpand_1`
+            Macroexpand the current form once.
+            Default: `"m1"`
+
+                  *g:conjure#client#common_lisp#swank#mapping#macroexpand_all*
+`g:conjure#client#common_lisp#swank#mapping#macroexpand_all`
+            Fully macroexpand the current form.
+            Default: `"ma"`
 
 vim:tw=78:sw=2:ts=2:ft=help:norl:et:listchars=

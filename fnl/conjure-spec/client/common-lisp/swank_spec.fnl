@@ -182,6 +182,9 @@
     (describe "debugger"
       (fn []
         (it "logs the condition, restarts and backtrace, then invokes a restart by number"
+    (describe "macroexpand"
+      (fn []
+        (it "sends the current form to swank-macroexpand-1 and logs the expansion"
           (fn []
             (let [logged []
                   orig-append mock-log.append]
@@ -263,3 +266,17 @@
               (assert.are.equal (.. root "/Body/f_car_c.htm") (swank.hyperspec-file "cl:car"))
               (assert.is_nil (swank.hyperspec-file "no-such-symbol"))
               (vim.fn.delete root "rf"))))))))
+              (vim.cmd "new")
+              (vim.api.nvim_buf_set_lines 0 0 -1 false ["(when a b)"])
+              (vim.api.nvim_win_set_cursor 0 [1 1])
+              (swank.connect {})
+              (swank.macroexpand :swank-macroexpand-1)
+              (assert.has-substring
+                "%(swank:swank%-macroexpand%-1 \\\"%(when a b%)\\\"%)"
+                (a.get-in mock-remote.send-calls [2 :msg]))
+              ((a.get-in mock-remote.send-calls [2 :cb])
+               "(:return (:ok (\"\" \"\\\"(IF A\n    B)\\\"\")) 2)")
+              (swank.disconnect)
+              (vim.cmd "bwipeout!")
+              (set mock-log.append orig-append)
+              (assert.same ["(IF A" "    B)"] (. logged 1)))))))))

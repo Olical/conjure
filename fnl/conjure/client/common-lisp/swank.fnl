@@ -60,6 +60,8 @@
                  :sticker_list "sl"
                  :sticker_clear "sc"}}}}}))
                  :hyperspec "hs"}}}}}))
+                 :macroexpand_1 "m1"
+                 :macroexpand_all "ma"}}}}}))
 
 (local state (client.new-state
                   #(do
@@ -575,6 +577,26 @@
           (log.append [(.. "; " file)])
           (vim.ui.open file))
         (log.append [(.. "; No HyperSpec entry for " (tostring sym))])))))
+(fn unquote-lisp-string [s]
+  "Turn a printed Lisp string such as \"(IF A\\n B)\" back into its contents."
+  (-> (string.sub s 2 -2)
+      (string.gsub "\\(.)" "%1")))
+
+(fn M.macroexpand [swank-fn]
+  "Expand the form under the cursor with swank-fn (e.g. swank-macroexpand-1)
+  and append the expansion to the log."
+  (let [form (extract.form {})]
+    (when form
+      (M.eval-str
+        {:origin :custom
+         :passive? true
+         :context (M.context)
+         :code (.. "(swank:" swank-fn " \"" (escape-string form.content) "\")")
+         :on-result
+         (fn [result]
+           (log.append
+             (text.split-lines (unquote-lisp-string result))
+             {:break? true}))}))))
 
 (fn M.eval-file [opts]
   (try-ensure-conn)
@@ -619,6 +641,16 @@
     (config.get-in [:client :common_lisp :swank :mapping :hyperspec])
     #(M.hyperspec (vim.fn.expand "<cword>"))
     {:desc "Open the local HyperSpec page for the symbol under the cursor"}))
+    :CommonLispMacroexpand1
+    (config.get-in [:client :common_lisp :swank :mapping :macroexpand_1])
+    #(M.macroexpand :swank-macroexpand-1)
+    {:desc "Macroexpand the current form once"})
+
+  (mapping.buf
+    :CommonLispMacroexpandAll
+    (config.get-in [:client :common_lisp :swank :mapping :macroexpand_all])
+    #(M.macroexpand :swank-macroexpand-all)
+    {:desc "Fully macroexpand the current form"}))
 
 (fn M.on-load []
   (when (completions-enabled?) 
