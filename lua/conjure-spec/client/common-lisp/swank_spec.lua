@@ -151,31 +151,35 @@ local function _3_()
   end
   describe("config", _18_)
   local function _23_()
+    local function rec(id, form)
+      local label = (7000000 + id)
+      return ("(let ((#" .. label .. "=#:v (multiple-value-list " .. form .. "))) (push #" .. label .. "# (get :conjure-sticker-" .. vim.fn.getpid() .. "-" .. id .. " :values)) (values-list #" .. label .. "#))")
+    end
     local function _24_()
-      local logged = {}
-      local orig_append = mock_log.append
-      local function _25_(lines)
-        return table.insert(logged, lines)
-      end
-      mock_log.append = _25_
-      swank.connect({})
-      swank["handle-event"](("(:debug 42 1 (\"break\" \"   [Condition of type SIMPLE-CONDITION]\" nil)" .. " ((\"CONTINUE\" \"Return from BREAK.\") (\"ABORT\" \"abort (#<THREAD \\\"worker\\\">)\"))" .. " ((0 \"(F 3)\") (1 \"(EVAL (F 3))\" (:restartable t))) (42))"))
-      swank["invoke-restart"](0)
-      swank.disconnect()
-      mock_log.append = orig_append
-      assert.same({"; Debugger level 1: break", ";    [Condition of type SIMPLE-CONDITION]", "; Restarts:", ";  0: [CONTINUE] Return from BREAK.", ";  1: [ABORT] abort (#<THREAD \"worker\">)", "; Backtrace:", ";  0: (F 3)", ";  1: (EVAL (F 3))"}, logged[1])
-      return assert["has-substring"]("%(:emacs%-rex %(swank:invoke%-nth%-restart%-for%-emacs 1 0%) \"%*package%*\" 42 %d+%)", a["get-in"](mock_remote["send-calls"], {2, "msg"}))
+      vim.cmd("new")
+      vim.api.nvim_buf_set_lines(0, 0, -1, false, {"(defun f (x)", "  (+ 1 (* x x)))"})
+      vim.api.nvim_win_set_cursor(0, {2, 9})
+      swank["toggle-sticker"]()
+      vim.api.nvim_win_set_cursor(0, {2, 3})
+      swank["toggle-sticker"]()
+      local code = "(defun f (x)\n  (+ 1 (* x x)))"
+      local out = swank["instrument-stickers"](0, code, {start = {1, 0}, ["end"] = {2, 15}})
+      vim.cmd("bwipeout!")
+      return assert.are.equal(("(defun f (x)\n  " .. rec(2, ("(+ 1 " .. rec(1, "(* x x)") .. ")")) .. ")"), out)
     end
-    it("logs the condition, restarts and backtrace, then invokes a restart by number", _24_)
-    local function _26_()
-      swank.connect({})
-      swank["handle-event"]("(:debug-return 42 1 nil)")
-      swank["invoke-restart"](0)
-      swank.disconnect()
-      return assert.are.equal(1, #mock_remote["send-calls"])
+    it("wraps stickered forms, including nested ones, in the evaluated code", _24_)
+    local function _25_()
+      vim.cmd("new")
+      vim.api.nvim_buf_set_lines(0, 0, -1, false, {"(* 2 3)"})
+      vim.api.nvim_win_set_cursor(0, {1, 1})
+      swank["toggle-sticker"]()
+      swank["toggle-sticker"]()
+      local out = swank["instrument-stickers"](0, "(* 2 3)", {start = {1, 0}, ["end"] = {1, 6}})
+      vim.cmd("bwipeout!")
+      return assert.are.equal("(* 2 3)", out)
     end
-    return it("does nothing but log when there is no debugger to answer", _26_)
+    return it("removes a sticker when toggled again and leaves code alone", _25_)
   end
-  return describe("debugger", _23_)
+  return describe("stickers", _23_)
 end
 return describe("conjure.client.common-lisp.swank", _3_)
