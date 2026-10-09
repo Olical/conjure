@@ -746,7 +746,7 @@ M.piggieback = function(code)
   end
   return try_ensure_conn(_143_)
 end
-local function clojure__3evim_completion(_145_)
+M["clojure->vim-completion"] = function(_145_)
   local word = _145_.candidate
   local kind = _145_.type
   local ns = _145_.ns
@@ -767,7 +767,7 @@ local function clojure__3evim_completion(_145_)
   end
   local _149_
   if not core["empty?"](kind) then
-    _149_ = string.upper(string.sub(kind, 1, 1))
+    _149_ = kind
   else
     _149_ = nil
   end
@@ -823,7 +823,7 @@ M.completions = function(opts)
       _155_ = nil
     end
     local function _161_(msgs)
-      return opts.cb(core.map(clojure__3evim_completion, core.get(core.last(msgs), "completions")))
+      return opts.cb(core.map(M["clojure->vim-completion"], core.get(core.last(msgs), "completions")))
     end
     return server.send(_155_, nrepl["with-all-msgs-fn"](_161_))
   end

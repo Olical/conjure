@@ -20,4 +20,34 @@
             (assert.are.equals "foo" (action.extract-test-name-from-form "(   deftest  foo  (+ 10 20))"))))
         (it "deftest form with metadata"
           (fn []
-            (assert.are.equals "foo" (action.extract-test-name-from-form "(deftest ^:kaocha/skip foo :xyz)"))))))))
+            (assert.are.equals "foo" (action.extract-test-name-from-form "(deftest ^:kaocha/skip foo :xyz)"))))))
+
+    (describe "clojure->vim-completion"
+      (fn []
+        (it "uses the full nREPL type as the kind"
+          (fn []
+            (each [_ t (ipairs [:function :macro :special-form :var :local
+                                :namespace :class :keyword :resource :method
+                                :static-method :field :static-field :data-reader])]
+              (assert.are.equals
+                t
+                (. (action.clojure->vim-completion {:candidate "x" :type t}) :kind)))))
+
+        (it "has no kind when the type is missing or empty"
+          (fn []
+            (assert.is_nil (. (action.clojure->vim-completion {:candidate "x"}) :kind))
+            (assert.is_nil (. (action.clojure->vim-completion {:candidate "x" :type ""}) :kind))))
+
+        (it "builds the menu and info from the other fields"
+          (fn []
+            (assert.same
+              {:word "map"
+               :menu "clojure.core ([f coll]) ([f c1 c2])"
+               :info "Returns a lazy sequence."
+               :kind "function"}
+              (action.clojure->vim-completion
+                {:candidate "map"
+                 :type "function"
+                 :ns "clojure.core"
+                 :doc "Returns a lazy sequence."
+                 :arglists ["([f coll])" "([f c1 c2])"]}))))))))

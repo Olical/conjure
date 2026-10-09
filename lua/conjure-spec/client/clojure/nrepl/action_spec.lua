@@ -24,6 +24,25 @@ local function _2_()
     end
     return it("deftest form with metadata", _7_)
   end
-  return describe("extract-test-name-from-form", _3_)
+  describe("extract-test-name-from-form", _3_)
+  local function _8_()
+    local function _9_()
+      for _, t in ipairs({"function", "macro", "special-form", "var", "local", "namespace", "class", "keyword", "resource", "method", "static-method", "field", "static-field", "data-reader"}) do
+        assert.are.equals(t, action["clojure->vim-completion"]({candidate = "x", type = t}).kind)
+      end
+      return nil
+    end
+    it("uses the full nREPL type as the kind", _9_)
+    local function _10_()
+      assert.is_nil(action["clojure->vim-completion"]({candidate = "x"}).kind)
+      return assert.is_nil(action["clojure->vim-completion"]({candidate = "x", type = ""}).kind)
+    end
+    it("has no kind when the type is missing or empty", _10_)
+    local function _11_()
+      return assert.same({word = "map", menu = "clojure.core ([f coll]) ([f c1 c2])", info = "Returns a lazy sequence.", kind = "function"}, action["clojure->vim-completion"]({candidate = "map", type = "function", ns = "clojure.core", doc = "Returns a lazy sequence.", arglists = {"([f coll])", "([f c1 c2])"}}))
+    end
+    return it("builds the menu and info from the other fields", _11_)
+  end
+  return describe("clojure->vim-completion", _8_)
 end
 return describe("client.clojure.nrepl.action", _2_)

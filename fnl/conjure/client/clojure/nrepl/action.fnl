@@ -652,11 +652,11 @@
             ui.display-result)
           (M.passive-ns-require))))))
 
-(fn clojure->vim-completion [{:candidate word
-                              :type kind
-                              : ns
-                              :doc info
-                              : arglists}]
+(fn M.clojure->vim-completion [{:candidate word
+                                :type kind
+                                : ns
+                                :doc info
+                                : arglists}]
   {:word word
    :menu (str.join
            " "
@@ -666,8 +666,7 @@
    :info (when (= :string (type info))
            info)
    :kind (when (not (core.empty? kind))
-           (string.upper
-             (string.sub kind 1 1)))})
+           kind)})
 
 (fn extract-completion-context [prefix]
   (let [root-form (extract.form {:root? true})]
@@ -722,7 +721,7 @@
         (nrepl.with-all-msgs-fn
           (fn [msgs]
             (->> (core.get (core.last msgs) :completions)
-                 (core.map clojure->vim-completion)
+                 (core.map M.clojure->vim-completion)
                  (opts.cb))))))
     {:silent? true
      :else opts.cb}))
