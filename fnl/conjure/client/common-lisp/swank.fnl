@@ -52,7 +52,8 @@
     {:common_lisp
      {:swank
       {:mapping {:connect "cc"
-                 :disconnect "cd"}}}}}))
+                 :disconnect "cd"
+                 :invoke_restart "dr"}}}}}))
 
 (local state (client.new-state
                   #(do
@@ -96,21 +97,23 @@
       (replace "\\" "\\\\")
       (replace "\"" "\\\"")))
 
-(fn send [msg context cb]
-  (log.dbg (.. "swank.send called with msg: " (core.pr-str msg) ", context: " (core.pr-str context)))
+(fn send-rex [form context thread cb]
+  "Send an :emacs-rex request for form. The trailing eval-id marries the
+  :return that swank sends back to cb, asynchronously."
   (with-conn-or-warn
     (fn [conn]
       (let [eval-id (core.get (core.update (state) :eval-id core.inc) :eval-id)]
-        ;; TODO: the 'eval-id' at the end is indicating the expression given
-        ;; this is so the results that return can be married up to the
-        ;; expression that is sent, asynchronously.
         (remote.send
           conn
           (str.join
-            ["(:emacs-rex (swank:eval-and-grab-output \""
-             (escape-string msg)
-             "\") \"" (or context "*package*") "\" t " eval-id ")"])
+            ["(:emacs-rex " form " \"" (or context "*package*") "\" " thread " " eval-id ")"])
           cb)))))
+
+(fn send [msg context cb]
+  (log.dbg (.. "swank.send called with msg: " (core.pr-str msg) ", context: " (core.pr-str context)))
+  (send-rex
+    (.. "(swank:eval-and-grab-output \"" (escape-string msg) "\")")
+    context "t" cb))
 
 (fn M.connect [opts]
   (log.dbg (.. "connect called with: " (core.pr-str opts)))
@@ -140,7 +143,9 @@
          (fn [err]
            (if err
              (display-conn-status err)
-             (M.disconnect)))}))
+             (M.disconnect)))
+
+         :on-event #(M.handle-event $1)}))
 
     (send ":ok" (fn [_]))))
 
@@ -285,6 +290,80 @@
   (try-ensure-conn)
   (M.eval-str (core.update opts :code #(.. "(describe '" $1 ")"))))
 
+(fn split-list [s]
+  "Top-level elements of the Lisp list printed in s, as strings.
+  (split-list \"(:a (b \\\"c d\\\") 1)\") => [\":a\" \"(b \\\"c d\\\")\" \"1\"]"
+  (let [items []
+        cur []]
+    (var depth 0)
+    (var in-str? false)
+    (var esc? false)
+    (fn flush []
+      (when (> (length cur) 0)
+        (table.insert items (table.concat cur))
+        (for [i (length cur) 1 -1] (tset cur i nil))))
+    (for [i 1 (length s)]
+      (let [c (string.sub s i i)]
+        (if
+          in-str? (do
+                    (table.insert cur c)
+                    (if esc? (set esc? false)
+                        (= c "\\") (set esc? true)
+                        (= c "\"") (set in-str? false)))
+          (and (= depth 0) (= c "(")) (set depth 1)
+          (and (= depth 1) (= c ")")) (do (flush) (set depth 0))
+          (and (= depth 1) (or (= c " ") (= c "\n"))) (flush)
+          (> depth 0) (do
+                        (table.insert cur c)
+                        (if (= c "\"") (set in-str? true)
+                            (= c "(") (set depth (+ depth 1))
+                            (= c ")") (set depth (- depth 1)))))))
+    items))
+
+(fn append-commented [lines s]
+  (each [_ line (ipairs (text.prefixed-lines s M.comment-prefix))]
+    (table.insert lines line))
+  lines)
+
+(fn show-debugger [[thread level condition restarts frames]]
+  (core.assoc (state) :debug {:thread thread :level level})
+  (let [[msg kind] (parse-separated-list condition)
+        rs (parse-separated-list restarts)
+        lines (append-commented [] (.. "Debugger level " level ": " msg))]
+    (append-commented lines kind)
+    (table.insert lines "; Restarts:")
+    (for [i 1 (length rs) 2]
+      (append-commented
+        lines
+        (.. " " (math.floor (/ (- i 1) 2)) ": [" (. rs i) "] " (. rs (+ i 1)))))
+    (table.insert lines "; Backtrace:")
+    (each [i frame (ipairs (parse-separated-list frames))]
+      (append-commented lines (.. " " (- i 1) ": " frame)))
+    (log.append lines {:break? true})))
+
+(fn M.handle-event [msg]
+  "Handle a swank message that is not the :return of a request."
+  (let [[kind & args] (split-list msg)]
+    (match kind
+      ":write-string" (display-stdout (core.first (parse-separated-list (core.first args))))
+      ":debug" (show-debugger args)
+      ":debug-return" (let [level (tonumber (. args 2))]
+                        (core.assoc (state) :debug
+                                    (when (> level 1)
+                                      {:thread (. args 1) :level (- level 1)}))
+                        (log.append [(.. "; Left debugger level " level)]))
+      ":ping" (with-conn-or-warn
+                #(remote.send $1 (.. "(:emacs-pong " (. args 1) " " (. args 2) ")"))))))
+
+(fn M.invoke-restart [n]
+  "Invoke restart number n of the innermost debugger level."
+  (let [dbg (state :debug)]
+    (if (and dbg n)
+      (send-rex
+        (.. "(swank:invoke-nth-restart-for-emacs " dbg.level " " n ")")
+        nil dbg.thread (fn [_]))
+      (log.append ["; Not in the debugger"]))))
+
 (fn M.eval-file [opts]
   (try-ensure-conn)
   (M.eval-str
@@ -301,7 +380,13 @@
     :CommonLispConnect
     (config.get-in [:client :common_lisp :swank :mapping :connect])
     #(M.connect {})
-    {:desc "Connect to a REPL"}))
+    {:desc "Connect to a REPL"})
+
+  (mapping.buf
+    :CommonLispInvokeRestart
+    (config.get-in [:client :common_lisp :swank :mapping :invoke_restart])
+    #(M.invoke-restart (tonumber (vim.fn.input "Restart: ")))
+    {:desc "Invoke a debugger restart by number"}))
 
 (fn M.on-load []
   (when (completions-enabled?) 

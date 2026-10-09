@@ -240,4 +240,41 @@
                (format-swank-return "\"dotimes\" \"\""))
               (swank.disconnect)
 
-              (assert.same ["dots" "dotimes"] (. completion-cb-calls 1)))))))))
+              (assert.same ["dots" "dotimes"] (. completion-cb-calls 1)))))))
+
+    (describe "debugger"
+      (fn []
+        (it "logs the condition, restarts and backtrace, then invokes a restart by number"
+          (fn []
+            (let [logged []
+                  orig-append mock-log.append]
+              (set mock-log.append (fn [lines] (table.insert logged lines)))
+              (swank.connect {})
+              (swank.handle-event
+                (.. "(:debug 42 1 (\"break\" \"   [Condition of type SIMPLE-CONDITION]\" nil)"
+                    " ((\"CONTINUE\" \"Return from BREAK.\") (\"ABORT\" \"abort (#<THREAD \\\"worker\\\">)\"))"
+                    " ((0 \"(F 3)\") (1 \"(EVAL (F 3))\" (:restartable t))) (42))"))
+              (swank.invoke-restart 0)
+              (swank.disconnect)
+              (set mock-log.append orig-append)
+              (assert.same
+                ["; Debugger level 1: break"
+                 ";    [Condition of type SIMPLE-CONDITION]"
+                 "; Restarts:"
+                 ";  0: [CONTINUE] Return from BREAK."
+                 ";  1: [ABORT] abort (#<THREAD \"worker\">)"
+                 "; Backtrace:"
+                 ";  0: (F 3)"
+                 ";  1: (EVAL (F 3))"]
+                (. logged 1))
+              (assert.has-substring
+                "%(:emacs%-rex %(swank:invoke%-nth%-restart%-for%-emacs 1 0%) \"%*package%*\" 42 %d+%)"
+                (a.get-in mock-remote.send-calls [2 :msg])))))
+
+        (it "does nothing but log when there is no debugger to answer"
+          (fn []
+            (swank.connect {})
+            (swank.handle-event "(:debug-return 42 1 nil)")
+            (swank.invoke-restart 0)
+            (swank.disconnect)
+            (assert.are.equal 1 (length mock-remote.send-calls))))))))
