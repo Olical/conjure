@@ -48,7 +48,7 @@ local function _3_()
       mock_tsc["set-mock-completions"]({})
       swank.connect({})
       swank.completions({prefix = "def", cb = completion_cb})
-      a["get-in"](mock_remote["send-calls"], {2, "cb"})(format_swank_return("(\"defun\") \"def\""))
+      a["get-in"](mock_remote["send-calls"], {2, "cb"})(format_swank_return("\"defun\" \"\""))
       swank.disconnect()
       assert["has-substring"]("swank:simple%-completions \\\"def\\\"", a["get-in"](mock_remote["send-calls"], {2, "msg"}))
       return assert.same({"defun"}, completion_cb_calls[1])
@@ -64,7 +64,7 @@ local function _3_()
       mock_tsc["set-mock-completions"]({"some"})
       swank.connect({})
       swank.completions({prefix = nil, cb = completion_cb})
-      a["get-in"](mock_remote["send-calls"], {2, "cb"})(format_swank_return("(\"something\") \"\""))
+      a["get-in"](mock_remote["send-calls"], {2, "cb"})(format_swank_return("\"something\" \"\""))
       swank.disconnect()
       assert["has-substring"]("swank:simple%-completions nil", a["get-in"](mock_remote["send-calls"], {2, "msg"}))
       return assert.same({"some", "something"}, completion_cb_calls[1])
@@ -80,7 +80,7 @@ local function _3_()
       mock_tsc["set-mock-completions"]({"defunct"})
       swank.connect({})
       swank.completions({prefix = "def", cb = completion_cb})
-      a["get-in"](mock_remote["send-calls"], {2, "cb"})(format_swank_return("(\"defun\") \"def\""))
+      a["get-in"](mock_remote["send-calls"], {2, "cb"})(format_swank_return("\"defun\" \"\""))
       swank.disconnect()
       return assert.same({"defunct", "defun"}, completion_cb_calls[1])
     end
@@ -108,22 +108,67 @@ local function _3_()
       mock_tsc["set-mock-completions"]({"symbol"})
       swank.connect({})
       swank.completions({prefix = "s", cb = completion_cb})
-      a["get-in"](mock_remote["send-calls"], {2, "cb"})(format_swank_return("(\"symbol\") \"s\""))
+      a["get-in"](mock_remote["send-calls"], {2, "cb"})(format_swank_return("\"symbol\" \"\""))
       swank.disconnect()
       return assert.same({"symbol"}, completion_cb_calls[1])
     end
-    return it("returns symbol when connected and swank completions returns symbol and treesitter completions returns symbol", _16_)
+    it("returns symbol when connected and swank completions returns symbol and treesitter completions returns symbol", _16_)
+    local function _18_()
+      mock_tsc["set-mock-completions"]({})
+      swank.connect({})
+      local function _19_()
+      end
+      swank.completions({prefix = "de", context = "my-pkg", cb = _19_})
+      swank.disconnect()
+      local msg = a["get-in"](mock_remote["send-calls"], {2, "msg"})
+      assert["has-substring"]("swank:simple%-completions \\\"de\\\" \\\"my%-pkg\\\"", msg)
+      return assert["has-substring"]("\"COMMON%-LISP%-USER\" t", msg)
+    end
+    it("evaluates the completion request in COMMON-LISP-USER with the buffer package as the argument", _18_)
+    local function _20_()
+      local completion_cb_calls = {}
+      local completion_cb
+      local function _21_(res)
+        return table.insert(completion_cb_calls, res)
+      end
+      completion_cb = _21_
+      mock_tsc["set-mock-completions"]({"decf", "defunct"})
+      swank.connect({})
+      swank.completions({prefix = "de", cb = completion_cb})
+      a["get-in"](mock_remote["send-calls"], {2, "cb"})(format_swank_return("\"debug\" \"---------\" \"decf\" \"-f---m---\""))
+      swank.disconnect()
+      return assert.same({{word = "decf", kind = "macro"}, "defunct", "debug"}, completion_cb_calls[1])
+    end
+    return it("merges classified swank completions with treesitter completions by word", _20_)
   end
   describe("completions", _5_)
-  local function _18_()
-    local function _19_()
+  local function _22_()
+    local function _23_()
+      return assert.same({"debug", "foo", {word = "decf", kind = "macro"}}, swank["parse-completions"]("(\"debug\" \"---------\" \"foo\" \"\" \"decf\" \"-f---m---\")"))
+    end
+    it("pairs each name with the kind from its flags", _23_)
+    local function _24_()
+      return assert.same({}, swank["parse-completions"]("NIL"))
+    end
+    it("returns nothing for NIL", _24_)
+    local function _25_()
+      for flags, kind in pairs({["b--------"] = "variable", ["-f-------"] = "function", ["-fg------"] = "generic-function", ["---c-----"] = "class", ["----t----"] = "type", ["-f-ct----"] = "function", ["-f---m---"] = "macro", ["-f----s--"] = "special-operator", ["-------p-"] = "package", ["-f------a"] = "accessor"}) do
+        assert.same({{word = "x", kind = kind}}, swank["parse-completions"](("(\"x\" \"" .. flags .. "\")")))
+      end
+      return nil
+    end
+    return it("picks the most specific kind from the flags", _25_)
+  end
+  describe("parse-completions", _22_)
+  local function _26_()
+    local function _27_()
       config.merge({client = {common_lisp = {swank = {enable_completions = false}}}}, {["overwrite?"] = true})
       local completion_cb_calls = {}
       local completion_cb
-      local function _20_(res)
+      local function _28_(res)
         return table.insert(completion_cb_calls, res)
       end
-      completion_cb = _20_
+      completion_cb = _28_
       mock_tsc["set-mock-completions"]({"something"})
       swank.connect({})
       swank.completions({prefix = "s", cb = completion_cb})
@@ -131,24 +176,24 @@ local function _3_()
       assert.are.equal(1, #mock_remote["send-calls"])
       return assert.same({}, completion_cb_calls[1])
     end
-    it("returns no completions when connected and completions disabled", _19_)
-    local function _21_()
+    it("returns no completions when connected and completions disabled", _27_)
+    local function _29_()
       config.merge({client = {common_lisp = {swank = {enable_completions = true}}}}, {["overwrite?"] = true})
       local completion_cb_calls = {}
       local completion_cb
-      local function _22_(res)
+      local function _30_(res)
         return table.insert(completion_cb_calls, res)
       end
-      completion_cb = _22_
+      completion_cb = _30_
       mock_tsc["set-mock-completions"]({"dots"})
       swank.connect({})
       swank.completions({prefix = "dot", cb = completion_cb})
-      a["get-in"](mock_remote["send-calls"], {2, "cb"})(format_swank_return("(\"dotimes\") \"dot\""))
+      a["get-in"](mock_remote["send-calls"], {2, "cb"})(format_swank_return("\"dotimes\" \"\""))
       swank.disconnect()
       return assert.same({"dots", "dotimes"}, completion_cb_calls[1])
     end
-    return it("returns completions dots dotimes when connected with tree sitter results dots and completions enabled", _21_)
+    return it("returns completions dots dotimes when connected with tree sitter results dots and completions enabled", _29_)
   end
-  return describe("config", _18_)
+  return describe("config", _26_)
 end
 return describe("conjure.client.common-lisp.swank", _3_)

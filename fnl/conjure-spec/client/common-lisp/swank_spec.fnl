@@ -53,7 +53,7 @@
                 {:prefix "def"
                  :cb completion-cb})
               ((a.get-in mock-remote.send-calls [2 :cb]) 
-               (format-swank-return "(\"defun\") \"def\""))
+               (format-swank-return "\"defun\" \"\""))
               (swank.disconnect)
 
               (assert.has-substring 
@@ -75,7 +75,7 @@
                 {:prefix nil
                  :cb completion-cb})
               ((a.get-in mock-remote.send-calls [2 :cb]) 
-               (format-swank-return "(\"something\") \"\""))
+               (format-swank-return "\"something\" \"\""))
               (swank.disconnect)
 
               (assert.has-substring 
@@ -98,7 +98,7 @@
                 {:prefix "def"
                  :cb completion-cb})
               ((a.get-in mock-remote.send-calls [2 :cb]) 
-               (format-swank-return "(\"defun\") \"def\""))
+               (format-swank-return "\"defun\" \"\""))
               (swank.disconnect)
 
               (assert.same ["defunct" "defun"] (. completion-cb-calls 1)))))
@@ -131,10 +131,73 @@
                 {:prefix "s"
                  :cb completion-cb})
               ((a.get-in mock-remote.send-calls [2 :cb]) 
-               (format-swank-return "(\"symbol\") \"s\""))
+               (format-swank-return "\"symbol\" \"\""))
               (swank.disconnect)
 
-              (assert.same ["symbol"] (. completion-cb-calls 1)))))))
+              (assert.same ["symbol"] (. completion-cb-calls 1)))))
+
+        (it "evaluates the completion request in COMMON-LISP-USER with the buffer package as the argument"
+          (fn []
+            (mock-tsc.set-mock-completions [])
+            (swank.connect {})
+            (swank.completions
+              {:prefix "de"
+               :context "my-pkg"
+               :cb (fn [])})
+            (swank.disconnect)
+
+            (let [msg (a.get-in mock-remote.send-calls [2 :msg])]
+              (assert.has-substring "swank:simple%-completions \\\"de\\\" \\\"my%-pkg\\\"" msg)
+              (assert.has-substring "\"COMMON%-LISP%-USER\" t" msg))))
+
+        (it "merges classified swank completions with treesitter completions by word"
+          (fn []
+            (let [completion-cb-calls []
+                  completion-cb
+                  (fn [res]
+                    (table.insert completion-cb-calls res))]
+              (mock-tsc.set-mock-completions ["decf" "defunct"])
+
+              (swank.connect {})
+              (swank.completions
+                {:prefix "de"
+                 :cb completion-cb})
+              ((a.get-in mock-remote.send-calls [2 :cb])
+               (format-swank-return "\"debug\" \"---------\" \"decf\" \"-f---m---\""))
+              (swank.disconnect)
+
+              (assert.same
+                [{:word "decf" :kind "macro"} "defunct" "debug"]
+                (. completion-cb-calls 1)))))))
+
+    (describe "parse-completions"
+      (fn []
+        (it "pairs each name with the kind from its flags"
+          (fn []
+            (assert.same
+              ["debug" "foo" {:word "decf" :kind "macro"}]
+              (swank.parse-completions
+                "(\"debug\" \"---------\" \"foo\" \"\" \"decf\" \"-f---m---\")"))))
+
+        (it "returns nothing for NIL"
+          (fn []
+            (assert.same [] (swank.parse-completions "NIL"))))
+
+        (it "picks the most specific kind from the flags"
+          (fn []
+            (each [flags kind (pairs {"b--------" "variable"
+                                      "-f-------" "function"
+                                      "-fg------" "generic-function"
+                                      "---c-----" "class"
+                                      "----t----" "type"
+                                      "-f-ct----" "function"
+                                      "-f---m---" "macro"
+                                      "-f----s--" "special-operator"
+                                      "-------p-" "package"
+                                      "-f------a" "accessor"})]
+              (assert.same [{:word "x" :kind kind}]
+                           (swank.parse-completions
+                             (.. "(\"x\" \"" flags "\")"))))))))
 
     (describe "config"
       (fn []
@@ -174,7 +237,7 @@
                 {:prefix "dot"
                  :cb completion-cb})
               ((a.get-in mock-remote.send-calls [2 :cb]) 
-               (format-swank-return "(\"dotimes\") \"dot\""))
+               (format-swank-return "\"dotimes\" \"\""))
               (swank.disconnect)
 
               (assert.same ["dots" "dotimes"] (. completion-cb-calls 1)))))))))

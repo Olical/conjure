@@ -12,7 +12,6 @@ local str = autoload("conjure.nfnl.string")
 local text = autoload("conjure.text")
 local ts = autoload("conjure.tree-sitter")
 local cmpl = autoload("conjure.client.common-lisp.completions")
-local util = autoload("conjure.util")
 local M = define("conjure.client.common-lisp.swank")
 M["buf-suffix"] = ".lisp"
 M["comment-prefix"] = "; "
@@ -295,12 +294,77 @@ M["on-exit"] = function()
   return M.disconnect()
 end
 local function build_completions_code(prefix, context)
-  return ("(swank:simple-completions " .. core["pr-str"](prefix) .. " " .. core["pr-str"](context) .. ")")
+  return ("(let ((r (swank:simple-completions " .. core["pr-str"](prefix) .. " " .. core["pr-str"](context) .. ")))" .. " (loop for e in (if (stringp (second r)) (mapcar #'list (first r)) r)" .. " append (list (first e) (or (second e) \"\"))))")
 end
-local function format_for_cmpl(rs)
-  local cmpls = parse_separated_list(rs)
-  table.remove(cmpls)
-  return cmpls
+local kind_by_flag = {{"s", "special-operator"}, {"m", "macro"}, {"g", "generic-function"}, {"a", "accessor"}, {"f", "function"}, {"c", "class"}, {"t", "type"}, {"b", "variable"}, {"p", "package"}}
+local function flags__3ekind(flags)
+  local kind = nil
+  for _, _42_ in ipairs(kind_by_flag) do
+    local flag = _42_[1]
+    local flag_kind = _42_[2]
+    if kind then break end
+    if string.find(flags, flag, 1, true) then
+      kind = flag_kind
+    else
+      kind = nil
+    end
+  end
+  return kind
+end
+M["parse-completions"] = function(result)
+  local strs = parse_separated_list(result)
+  local tbl_26_ = {}
+  local i_27_ = 0
+  for i = 1, #strs, 2 do
+    local val_28_
+    do
+      local word = strs[i]
+      local kind = flags__3ekind((strs[(i + 1)] or ""))
+      if kind then
+        val_28_ = {word = word, kind = kind}
+      else
+        val_28_ = word
+      end
+    end
+    if (nil ~= val_28_) then
+      i_27_ = (i_27_ + 1)
+      tbl_26_[i_27_] = val_28_
+    else
+    end
+  end
+  return tbl_26_
+end
+local function completion_word(completion)
+  if ("string" == type(completion)) then
+    return completion
+  else
+    return completion.word
+  end
+end
+local function merge_completions(static_completions, swank_completions)
+  local swank_by_word
+  do
+    local tbl_21_ = {}
+    for _, c in ipairs(swank_completions) do
+      local k_22_, v_23_ = completion_word(c), c
+      if ((k_22_ ~= nil) and (v_23_ ~= nil)) then
+        tbl_21_[k_22_] = v_23_
+      else
+      end
+    end
+    swank_by_word = tbl_21_
+  end
+  local seen = {}
+  local merged = {}
+  for _, c in ipairs(core.concat(static_completions, swank_completions)) do
+    local word = completion_word(c)
+    if not seen[word] then
+      seen[word] = true
+      table.insert(merged, (swank_by_word[word] or c))
+    else
+    end
+  end
+  return merged
 end
 local function build_completions(opts)
   local prefix = (opts.prefix or "")
@@ -308,14 +372,13 @@ local function build_completions(opts)
   if connected_3f() then
     local code = build_completions_code(opts.prefix, opts.context)
     local result_fn
-    local function _42_(results)
-      local parsed_results = format_for_cmpl(results)
-      local all_cmpl = core.concat(static_completions, parsed_results)
-      local cmpl_list = util["ordered-distinct"](all_cmpl)
+    local function _49_(results)
+      local cmpl_list = merge_completions(static_completions, M["parse-completions"](results))
       return opts.cb(cmpl_list)
     end
-    result_fn = _42_
+    result_fn = _49_
     core.assoc(opts, "code", code)
+    core.assoc(opts, "context", "COMMON-LISP-USER")
     core.assoc(opts, "on-result", result_fn)
     core.assoc(opts, "passive?", true)
     return M["eval-str"](opts)

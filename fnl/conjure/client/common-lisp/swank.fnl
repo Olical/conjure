@@ -9,7 +9,6 @@
 (local text (autoload :conjure.text))
 (local ts (autoload :conjure.tree-sitter))
 (local cmpl (autoload :conjure.client.common-lisp.completions))
-(local util (autoload :conjure.util))
 
 (local M (define :conjure.client.common-lisp.swank))
 
@@ -312,15 +311,59 @@
 (fn M.on-exit []
   (M.disconnect))
 
-(fn build-completions-code 
+(fn build-completions-code
   [prefix context]
-  (.. "(swank:simple-completions " (core.pr-str prefix) " " (core.pr-str context) ")"))
+  "SLIME 2.30 and older return (names common-prefix), 2.31 and newer return
+  ((name flags qualified-name) ...). Both are flattened to (name flags ...) in
+  Lisp so parse-separated-list can read them."
+  (.. "(let ((r (swank:simple-completions " (core.pr-str prefix) " " (core.pr-str context) ")))"
+      " (loop for e in (if (stringp (second r)) (mapcar #'list (first r)) r)"
+      " append (list (first e) (or (second e) \"\"))))"))
 
-(fn format-for-cmpl
-  [rs]
-  (let [cmpls (parse-separated-list rs)]
-    (table.remove cmpls) ; last result is prefix
-    cmpls))
+;; Flags come from swank's symbol-classification-string, most specific first.
+(local kind-by-flag
+  [["s" "special-operator"]
+   ["m" "macro"]
+   ["g" "generic-function"]
+   ["a" "accessor"]
+   ["f" "function"]
+   ["c" "class"]
+   ["t" "type"]
+   ["b" "variable"]
+   ["p" "package"]])
+
+(fn flags->kind [flags]
+  (accumulate [kind nil
+               _ [flag flag-kind] (ipairs kind-by-flag)
+               &until kind]
+    (when (string.find flags flag 1 true)
+      flag-kind)))
+
+(fn M.parse-completions [result]
+  (let [strs (parse-separated-list result)]
+    (fcollect [i 1 (length strs) 2]
+      (let [word (. strs i)
+            kind (flags->kind (or (. strs (+ i 1)) ""))]
+        (if kind
+          {:word word :kind kind}
+          word)))))
+
+(fn completion-word [completion]
+  (if (= :string (type completion))
+    completion
+    completion.word))
+
+(fn merge-completions [static-completions swank-completions]
+  (let [swank-by-word (collect [_ c (ipairs swank-completions)]
+                        (completion-word c) c)
+        seen {}
+        merged []]
+    (each [_ c (ipairs (core.concat static-completions swank-completions))]
+      (let [word (completion-word c)]
+        (when (not (. seen word))
+          (tset seen word true)
+          (table.insert merged (or (. swank-by-word word) c)))))
+    merged))
 
 ;; completions - partially copied from client/fennel/aniseed.fnl.
 (fn build-completions [opts]
@@ -330,15 +373,17 @@
      (let [code (build-completions-code opts.prefix opts.context)
            result-fn
            (fn [results]
-             (let [parsed-results (format-for-cmpl results)
-                   all-cmpl (core.concat static-completions parsed-results)
-                   cmpl-list (util.ordered-distinct all-cmpl)]
+             (let [cmpl-list (merge-completions
+                               static-completions
+                               (M.parse-completions results))]
                ;(log.append [(.. "; in completions()'s result-fn, called with: " (core.pr-str results))] )
                ;(log.append [(..  "; in completions()'s result-fn, calling opts.cb with " (core.pr-str cmpl-list))])
                (opts.cb cmpl-list) ; return the list of completions
                ))
            ]
        (core.assoc opts :code code)
+       ;; The buffer's package might not use CL, the code above needs it.
+       (core.assoc opts :context "COMMON-LISP-USER")
        (core.assoc opts :on-result result-fn)
        (core.assoc opts :passive? true)
        (M.eval-str opts))
