@@ -86,3 +86,38 @@
         (let [first-win log.state.hud.id]
           (client.with-filetype :fennel log.show-hud)
           (assert.are.equals first-win log.state.hud.id))))))
+
+(describe "open_before_first_eval"
+  (fn []
+    (fn hud-open? []
+      (let [win log.state.hud.id]
+        (and (= :number (type win))
+             (vim.api.nvim_win_is_valid win))))
+
+    (fn append-line []
+      (client.with-filetype :fennel #(log.immediate-append ["; hello"] {})))
+
+    (before_each
+      (fn []
+        (log.close-hud)
+        (set log.state.hud.eval-seen? false)
+        (config.assoc-in [:log :hud :enabled] true)
+        (config.assoc-in [:log :hud :open_before_first_eval] true)))
+
+    (it "opens the HUD before any eval by default"
+      (fn []
+        (append-line)
+        (assert.is_true (hud-open?))))
+
+    (it "keeps the HUD closed before the first eval when disabled"
+      (fn []
+        (config.assoc-in [:log :hud :open_before_first_eval] false)
+        (append-line)
+        (assert.is_false (hud-open?))))
+
+    (it "opens the HUD after the first eval when disabled"
+      (fn []
+        (config.assoc-in [:log :hud :open_before_first_eval] false)
+        (log.mark-eval-seen!)
+        (append-line)
+        (assert.is_true (hud-open?))))))

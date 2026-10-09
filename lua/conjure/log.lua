@@ -14,7 +14,7 @@ local timer = autoload("conjure.timer")
 local sponsors = require("conjure.sponsors")
 local vim = _G.vim
 local M = define("conjure.log")
-M.state = (M.state or {["last-open-cmd"] = "vsplit", buffers = {}, hud = {id = nil, timer = nil, ["created-at-ms"] = 0, ["low-priority-spam"] = {streak = 0, ["help-displayed?"] = false}}, ["jump-to-latest"] = {mark = nil, ns = vim.api.nvim_create_namespace("conjure_log_jump_to_latest")}})
+M.state = (M.state or {["last-open-cmd"] = "vsplit", buffers = {}, hud = {id = nil, timer = nil, ["created-at-ms"] = 0, ["low-priority-spam"] = {streak = 0, ["help-displayed?"] = false}, ["eval-seen?"] = false}, ["jump-to-latest"] = {mark = nil, ns = vim.api.nvim_create_namespace("conjure_log_jump_to_latest")}})
 local function _break()
   return str.join({client.get("comment-prefix"), string.rep("-", config["get-in"]({"log", "break_length"}))})
 end
@@ -224,8 +224,12 @@ local function _28_(opts)
   end
 end
 hook.define("display-hud", _28_)
+M["mark-eval-seen!"] = function()
+  M.state.hud["eval-seen?"] = true
+  return nil
+end
 local function display_hud(opts)
-  if (config["get-in"]({"log", "hud", "enabled"}) and not current_window_floating_3f() and (not config["get-in"]({"log", "hud", "ignore_low_priority"}) or (config["get-in"]({"log", "hud", "ignore_low_priority"}) and not core.get(opts, "low-priority?")))) then
+  if (config["get-in"]({"log", "hud", "enabled"}) and (config["get-in"]({"log", "hud", "open_before_first_eval"}) or M.state.hud["eval-seen?"]) and not current_window_floating_3f() and (not config["get-in"]({"log", "hud", "ignore_low_priority"}) or (config["get-in"]({"log", "hud", "ignore_low_priority"}) and not core.get(opts, "low-priority?")))) then
     M["clear-close-hud-passive-timer"]()
     return hook.exec("display-hud", opts)
   else

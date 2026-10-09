@@ -88,6 +88,7 @@ local function client_exec_fn(action, f_name, base_opts)
     opts0.preview = preview(opts0)
     client["optional-call"]("modify-client-exec-fn-opts", action, f_name, opts0)
     if not opts0["passive?"] then
+      log["mark-eval-seen!"]()
       display_request(opts0)
     else
     end

@@ -133,6 +133,7 @@
           :border :single
           :anchor :NE
           :ignore_low_priority false
+          :open_before_first_eval true
           :open_when :last-log-line-not-visible}
     :botright false
     :jump_to_latest {:enabled false

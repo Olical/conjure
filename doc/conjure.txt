@@ -725,6 +725,16 @@ configure the ones you care about one at a time you can set:
 <
             Default: `false`
 
+                                    *g:conjure#log#hud#open_before_first_eval*
+`g:conjure#log#hud#open_before_first_eval`
+            Allow the HUD to open before your first evaluation of the session.
+            Set this to `false` if the messages Conjure logs while it starts
+            or connects to a REPL, such as the connection status, should not
+            open the HUD. These messages are still written to the log. After
+            your first evaluation the HUD behaves as normal. You can open
+            the HUD at any time with |g:conjure#mapping#log_hud|.
+            Default: `true`
+
                                                  *g:conjure#log#hud#open_when*
 `g:conjure#log#hud#open_when`
             Decide when the HUD will open. By default we open when the last

@@ -111,6 +111,7 @@
       (client.optional-call :modify-client-exec-fn-opts action f-name opts)
 
       (when (not opts.passive?)
+        (log.mark-eval-seen!)
         (display-request opts))
 
       (when opts.jumping?
