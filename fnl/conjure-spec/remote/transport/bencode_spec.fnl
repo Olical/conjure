@@ -38,6 +38,21 @@
               (assert-buffer bs "")
               (assert-stack-empty bs))))))
 
+    (describe "dict key ordering"
+      (fn []
+        (it "encodes dict keys in sorted order"
+          (fn []
+            (assert.are.equals
+              "d11:client-name7:conjure2:id3:abc2:op5:clonee"
+              (bencode.encode {:op "clone" :id "abc" :client-name "conjure"}))))
+        (it "sorts nested dicts and many keys"
+          (fn []
+            (assert.are.equals
+              "d1:ai1e1:bi2e1:cd1:xi0e1:yi0e1:zi0ee1:di4e1:ei5e1:fi6e1:gi7e1:hi8ee"
+              (bencode.encode {:h 8 :g 7 :f 6 :e 5 :d 4
+                               :c {:z 0 :y 0 :x 0}
+                               :b 2 :a 1}))))))
+
     (describe "multiple-values"
       (fn []
         (let [bs (bencode.new)

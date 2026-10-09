@@ -169,14 +169,15 @@ M.encode = function(x)
     if is_list_3f(x) then
       return wrap("l", "e", table.concat(core.map(M.encode, core.vals(x))))
     else
-      table.sort(x)
-      local function _26_(_25_)
-        local k = _25_[1]
-        local v = _25_[2]
+      local ks = core.keys(x)
+      for _, k in ipairs(ks) do
         assert((type(k) == "string"), "bencode: dict key not string")
-        return (M.encode(k) .. M.encode(v))
       end
-      return wrap("d", "e", table.concat(core["map-indexed"](_26_, x)))
+      table.sort(ks)
+      local function _25_(k)
+        return (M.encode(k) .. M.encode(x[k]))
+      end
+      return wrap("d", "e", table.concat(core.map(_25_, ks)))
     end
   else
     local _ = case_24_

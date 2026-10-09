@@ -126,13 +126,12 @@
               (->> x (wrap :i :e)))
     :table (if (is-list? x)
                (->> (core.vals x) (core.map M.encode) (table.concat) (wrap :l :e))
-               (do
-                 (table.sort x)
-                 (->> x
-                      (core.map-indexed (fn [[k v]]
-                                          (assert (= (type k) :string)
-                                                  "bencode: dict key not string")
-                                          (.. (M.encode k) (M.encode v))))
+               (let [ks (core.keys x)]
+                 (each [_ k (ipairs ks)]
+                   (assert (= (type k) :string) "bencode: dict key not string"))
+                 (table.sort ks)
+                 (->> ks
+                      (core.map (fn [k] (.. (M.encode k) (M.encode (. x k)))))
                       (table.concat)
                       (wrap :d :e))))
     _ (error (.. "bencode: unsupported type " (type x)))))
