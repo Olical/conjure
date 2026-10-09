@@ -5,6 +5,7 @@ local define = _local_1_.define
 local core = autoload("conjure.nfnl.core")
 local client = autoload("conjure.client")
 local config = autoload("conjure.config")
+local extract = autoload("conjure.extract")
 local log = autoload("conjure.log")
 local mapping = autoload("conjure.mapping")
 local remote = autoload("conjure.remote.swank")
@@ -39,7 +40,7 @@ M.context = function(_code)
 end
 config.merge({client = {common_lisp = {swank = {connection = {default_host = "127.0.0.1", default_port = "4005"}, enable_completions = true}}}})
 if config["get-in"]({"mapping", "enable_defaults"}) then
-  config.merge({client = {common_lisp = {swank = {mapping = {connect = "cc", disconnect = "cd", invoke_restart = "dr"}}}}})
+  config.merge({client = {common_lisp = {swank = {mapping = {connect = "cc", disconnect = "cd", invoke_restart = "dr", macroexpand_1 = "m1", macroexpand_all = "ma"}}}}})
 else
 end
 local state
@@ -396,20 +397,42 @@ M["invoke-restart"] = function(n)
     return log.append({"; Not in the debugger"})
   end
 end
+local function unquote_lisp_string(s)
+  return string.gsub(string.sub(s, 2, -2), "\\(.)", "%1")
+end
+M.macroexpand = function(swank_fn)
+  local form = extract.form({})
+  if form then
+    local function _53_(result)
+      return log.append(text["split-lines"](unquote_lisp_string(result)), {["break?"] = true})
+    end
+    return M["eval-str"]({origin = "custom", ["passive?"] = true, context = M.context(), code = ("(swank:" .. swank_fn .. " \"" .. escape_string(form.content) .. "\")"), ["on-result"] = _53_})
+  else
+    return nil
+  end
+end
 M["eval-file"] = function(opts)
   try_ensure_conn()
   return M["eval-str"](core.assoc(opts, "code", ("(load \"" .. opts["file-path"] .. "\")")))
 end
 M["on-filetype"] = function()
   mapping.buf("CommonLispDisconnect", config["get-in"]({"client", "common_lisp", "swank", "mapping", "disconnect"}), M.disconnect, {desc = "Disconnect from the REPL"})
-  local function _53_()
+  local function _55_()
     return M.connect({})
   end
-  mapping.buf("CommonLispConnect", config["get-in"]({"client", "common_lisp", "swank", "mapping", "connect"}), _53_, {desc = "Connect to a REPL"})
-  local function _54_()
+  mapping.buf("CommonLispConnect", config["get-in"]({"client", "common_lisp", "swank", "mapping", "connect"}), _55_, {desc = "Connect to a REPL"})
+  local function _56_()
     return M["invoke-restart"](tonumber(vim.fn.input("Restart: ")))
   end
-  return mapping.buf("CommonLispInvokeRestart", config["get-in"]({"client", "common_lisp", "swank", "mapping", "invoke_restart"}), _54_, {desc = "Invoke a debugger restart by number"})
+  mapping.buf("CommonLispInvokeRestart", config["get-in"]({"client", "common_lisp", "swank", "mapping", "invoke_restart"}), _56_, {desc = "Invoke a debugger restart by number"})
+  local function _57_()
+    return M.macroexpand("swank-macroexpand-1")
+  end
+  mapping.buf("CommonLispMacroexpand1", config["get-in"]({"client", "common_lisp", "swank", "mapping", "macroexpand_1"}), _57_, {desc = "Macroexpand the current form once"})
+  local function _58_()
+    return M.macroexpand("swank-macroexpand-all")
+  end
+  return mapping.buf("CommonLispMacroexpandAll", config["get-in"]({"client", "common_lisp", "swank", "mapping", "macroexpand_all"}), _58_, {desc = "Fully macroexpand the current form"})
 end
 M["on-load"] = function()
   if completions_enabled_3f() then
@@ -427,9 +450,9 @@ end
 local kind_by_flag = {{"s", "special-operator"}, {"m", "macro"}, {"g", "generic-function"}, {"a", "accessor"}, {"f", "function"}, {"c", "class"}, {"t", "type"}, {"b", "variable"}, {"p", "package"}}
 local function flags__3ekind(flags)
   local kind = nil
-  for _, _56_ in ipairs(kind_by_flag) do
-    local flag = _56_[1]
-    local flag_kind = _56_[2]
+  for _, _60_ in ipairs(kind_by_flag) do
+    local flag = _60_[1]
+    local flag_kind = _60_[2]
     if kind then break end
     if string.find(flags, flag, 1, true) then
       kind = flag_kind
@@ -500,11 +523,11 @@ local function build_completions(opts)
   if connected_3f() then
     local code = build_completions_code(opts.prefix, opts.context)
     local result_fn
-    local function _63_(results)
+    local function _67_(results)
       local cmpl_list = merge_completions(static_completions, M["parse-completions"](results))
       return opts.cb(cmpl_list)
     end
-    result_fn = _63_
+    result_fn = _67_
     core.assoc(opts, "code", code)
     core.assoc(opts, "context", "COMMON-LISP-USER")
     core.assoc(opts, "on-result", result_fn)

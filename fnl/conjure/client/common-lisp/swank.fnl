@@ -2,6 +2,7 @@
 (local core (autoload :conjure.nfnl.core))
 (local client (autoload :conjure.client))
 (local config (autoload :conjure.config))
+(local extract (autoload :conjure.extract))
 (local log (autoload :conjure.log))
 (local mapping (autoload :conjure.mapping))
 (local remote (autoload :conjure.remote.swank))
@@ -53,7 +54,9 @@
      {:swank
       {:mapping {:connect "cc"
                  :disconnect "cd"
-                 :invoke_restart "dr"}}}}}))
+                 :invoke_restart "dr"
+                 :macroexpand_1 "m1"
+                 :macroexpand_all "ma"}}}}}))
 
 (local state (client.new-state
                   #(do
@@ -364,6 +367,27 @@
         nil dbg.thread (fn [_]))
       (log.append ["; Not in the debugger"]))))
 
+(fn unquote-lisp-string [s]
+  "Turn a printed Lisp string such as \"(IF A\\n B)\" back into its contents."
+  (-> (string.sub s 2 -2)
+      (string.gsub "\\(.)" "%1")))
+
+(fn M.macroexpand [swank-fn]
+  "Expand the form under the cursor with swank-fn (e.g. swank-macroexpand-1)
+  and append the expansion to the log."
+  (let [form (extract.form {})]
+    (when form
+      (M.eval-str
+        {:origin :custom
+         :passive? true
+         :context (M.context)
+         :code (.. "(swank:" swank-fn " \"" (escape-string form.content) "\")")
+         :on-result
+         (fn [result]
+           (log.append
+             (text.split-lines (unquote-lisp-string result))
+             {:break? true}))}))))
+
 (fn M.eval-file [opts]
   (try-ensure-conn)
   (M.eval-str
@@ -386,7 +410,19 @@
     :CommonLispInvokeRestart
     (config.get-in [:client :common_lisp :swank :mapping :invoke_restart])
     #(M.invoke-restart (tonumber (vim.fn.input "Restart: ")))
-    {:desc "Invoke a debugger restart by number"}))
+    {:desc "Invoke a debugger restart by number"})
+
+  (mapping.buf
+    :CommonLispMacroexpand1
+    (config.get-in [:client :common_lisp :swank :mapping :macroexpand_1])
+    #(M.macroexpand :swank-macroexpand-1)
+    {:desc "Macroexpand the current form once"})
+
+  (mapping.buf
+    :CommonLispMacroexpandAll
+    (config.get-in [:client :common_lisp :swank :mapping :macroexpand_all])
+    #(M.macroexpand :swank-macroexpand-all)
+    {:desc "Fully macroexpand the current form"}))
 
 (fn M.on-load []
   (when (completions-enabled?) 

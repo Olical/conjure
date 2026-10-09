@@ -221,6 +221,29 @@ local function _3_()
     end
     return it("does nothing but log when there is no debugger to answer", _34_)
   end
-  return describe("debugger", _31_)
+  describe("debugger", _31_)
+  local function _35_()
+    local function _36_()
+      local logged = {}
+      local orig_append = mock_log.append
+      local function _37_(lines)
+        return table.insert(logged, lines)
+      end
+      mock_log.append = _37_
+      vim.cmd("new")
+      vim.api.nvim_buf_set_lines(0, 0, -1, false, {"(when a b)"})
+      vim.api.nvim_win_set_cursor(0, {1, 1})
+      swank.connect({})
+      swank.macroexpand("swank-macroexpand-1")
+      assert["has-substring"]("%(swank:swank%-macroexpand%-1 \\\"%(when a b%)\\\"%)", a["get-in"](mock_remote["send-calls"], {2, "msg"}))
+      a["get-in"](mock_remote["send-calls"], {2, "cb"})("(:return (:ok (\"\" \"\\\"(IF A\n    B)\\\"\")) 2)")
+      swank.disconnect()
+      vim.cmd("bwipeout!")
+      mock_log.append = orig_append
+      return assert.same({"(IF A", "    B)"}, logged[1])
+    end
+    return it("sends the current form to swank-macroexpand-1 and logs the expansion", _36_)
+  end
+  return describe("macroexpand", _35_)
 end
 return describe("conjure.client.common-lisp.swank", _3_)
