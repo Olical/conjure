@@ -490,6 +490,12 @@ configure the ones you care about one at a time you can set:
             Opens the log in the current window.
             Default: `"le"`
 
+                                                   *g:conjure#mapping#log_hud*
+`g:conjure#mapping#log_hud`
+            Opens the log in the HUD, even if `g:conjure#log#hud#enabled`
+            is `false`. It closes again when you move the cursor.
+            Default: `"lh"`
+
                                                 *g:conjure#mapping#log_toggle*
 `g:conjure#mapping#log_toggle`
             Toggles open or closed the log, using the last used log open

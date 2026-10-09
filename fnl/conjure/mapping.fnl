@@ -89,6 +89,11 @@
     {:desc "Open log in new buffer"})
 
   (M.buf
+    :LogHud (cfg :log_hud)
+    (util.wrap-require-fn-call :conjure.log :show-hud)
+    {:desc "Open log in the HUD"})
+
+  (M.buf
     :LogToggle (cfg :log_toggle)
     (util.wrap-require-fn-call :conjure.log :toggle)
     {:desc "Toggle log buffer"})

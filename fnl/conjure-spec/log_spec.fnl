@@ -55,3 +55,34 @@
             (client.with-filetype :fennel
               #(assert.is_true
                  (log.log-buf? (.. "conjure-log-" (vim.fn.getpid) ".fnl"))))))))))
+
+(describe "show-hud"
+  (fn []
+    (fn hud-floating? []
+      (let [win log.state.hud.id]
+        (and (= :number (type win))
+             (vim.api.nvim_win_is_valid win)
+             (not= "" (. (vim.api.nvim_win_get_config win) :relative)))))
+
+    (before_each
+      (fn []
+        (log.close-hud)
+        (config.assoc-in [:log :hud :enabled] true)))
+
+    (it "opens the HUD"
+      (fn []
+        (client.with-filetype :fennel log.show-hud)
+        (assert.is_true (hud-floating?))))
+
+    (it "opens the HUD even when the automatic HUD is disabled"
+      (fn []
+        (config.assoc-in [:log :hud :enabled] false)
+        (client.with-filetype :fennel log.show-hud)
+        (assert.is_true (hud-floating?))))
+
+    (it "reuses the open HUD window"
+      (fn []
+        (client.with-filetype :fennel log.show-hud)
+        (let [first-win log.state.hud.id]
+          (client.with-filetype :fennel log.show-hud)
+          (assert.are.equals first-win log.state.hud.id))))))

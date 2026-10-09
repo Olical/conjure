@@ -259,6 +259,10 @@
     (M.clear-close-hud-passive-timer)
     (hook.exec :display-hud opts)))
 
+(fn M.show-hud []
+  (M.clear-close-hud-passive-timer)
+  (hook.exec :display-hud {}))
+
 (fn win-visible? [win]
   (= (vim.fn.tabpagenr)
      (core.first (vim.fn.win_id2tabwin win))))

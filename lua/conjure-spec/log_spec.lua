@@ -70,4 +70,34 @@ local function _2_()
   end
   return describe("linked_to_client_state enabled but no state key set", _15_)
 end
-return describe("log-buf?", _2_)
+describe("log-buf?", _2_)
+local function _19_()
+  local function hud_floating_3f()
+    local win = log.state.hud.id
+    return (("number" == type(win)) and vim.api.nvim_win_is_valid(win) and ("" ~= vim.api.nvim_win_get_config(win).relative))
+  end
+  local function _20_()
+    log["close-hud"]()
+    return config["assoc-in"]({"log", "hud", "enabled"}, true)
+  end
+  before_each(_20_)
+  local function _21_()
+    client["with-filetype"]("fennel", log["show-hud"])
+    return assert.is_true(hud_floating_3f())
+  end
+  it("opens the HUD", _21_)
+  local function _22_()
+    config["assoc-in"]({"log", "hud", "enabled"}, false)
+    client["with-filetype"]("fennel", log["show-hud"])
+    return assert.is_true(hud_floating_3f())
+  end
+  it("opens the HUD even when the automatic HUD is disabled", _22_)
+  local function _23_()
+    client["with-filetype"]("fennel", log["show-hud"])
+    local first_win = log.state.hud.id
+    client["with-filetype"]("fennel", log["show-hud"])
+    return assert.are.equals(first_win, log.state.hud.id)
+  end
+  return it("reuses the open HUD window", _23_)
+end
+return describe("show-hud", _19_)

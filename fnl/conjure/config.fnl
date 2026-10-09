@@ -164,6 +164,7 @@
       :log_vsplit "lv"
       :log_tab "lt"
       :log_buf "le"
+      :log_hud "lh"
       :log_toggle "lg"
       :log_close_visible "lq"
       :log_reset_soft "lr"

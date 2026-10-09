@@ -232,6 +232,10 @@ local function display_hud(opts)
     return nil
   end
 end
+M["show-hud"] = function()
+  M["clear-close-hud-passive-timer"]()
+  return hook.exec("display-hud", {})
+end
 local function win_visible_3f(win)
   return (vim.fn.tabpagenr() == core.first(vim.fn.win_id2tabwin(win)))
 end
