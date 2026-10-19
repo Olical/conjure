@@ -137,6 +137,9 @@ options relevant to these mappings.
                          execute this from anywhere in the form much like
                          evaluating the root form under the cursor.
 
+<localleader>ts          Set the active test-runner by selecting from the
+                         list of available test-runners.
+
 <localleader>rr          Refresh all changed namespaces.
 
 <localleader>ra          Refresh all namespaces, even unchanged.
@@ -329,8 +332,10 @@ All configuration can be set as described in |conjure-configuration|.
 
                       *g:conjure#client#clojure#nrepl#test#current_form_names*
 `g:conjure#client#clojure#nrepl#test#current_form_names`
-            List of keywords that are used to decide if the
-            current root form is a test that should be ran.
+            List of symbols that are used to decide if the
+            current root form is a test that should be run.
+            Symbols configured here are concatenated with any
+            configured for the currently active test runner.
             Default: `["deftest"]`
 
                       *g:conjure#client#clojure#nrepl#test#pretty_print_test_failures*
@@ -346,6 +351,7 @@ All configuration can be set as described in |conjure-configuration|.
              * `"clojure"`
              * `"clojurescript" (cljs.test instead of clojure.test)`
              * `"kaocha"`
+             * "lazytest"
             More can be added through contributions where required.
             Default: `"clojure"`
 
