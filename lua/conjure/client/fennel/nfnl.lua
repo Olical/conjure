@@ -43,8 +43,9 @@ M["repl-for-path"] = function(path)
     end
     local _7_
     do
-      local config_map = nfnl_config["find-and-load"](fs["file-name-root"](path))
-      _7_ = (config_map.cfg or nfnl_config["cfg-fn"]({}, {["root-dir"] = fs["file-name-root"](path)}))
+      local dir = fs.basename(path)
+      local config_map = nfnl_config["find-and-load"](dir)
+      _7_ = (config_map.cfg or nfnl_config["cfg-fn"]({}, {["root-dir"] = dir}))
     end
     r = repl.new({["on-error"] = _6_, cfg = _7_})
     M.repls[path] = r
@@ -69,12 +70,19 @@ M["module-path"] = function(path)
   end
 end
 --[[ (M.module-path "~/repos/Olical/conjure/fnl/conjure/client/fennel/nfnl.fnl") ]]
+local function whole_file_origin_3f(origin)
+  return (("buf" == origin) or ("file" == origin))
+end
 M["eval-str"] = function(opts)
+  if whole_file_origin_3f(opts.origin) then
+    core["clear-table!"](fennel["macro-loaded"])
+  else
+  end
   local repl0 = M["repl-for-path"](opts["file-path"])
   local results = repl0((opts.code .. "\n"))
   local result_strs = core.map(fennel.view, results)
   local mod_path = M["module-path"](opts["file-path"])
-  if (mod_path and (("buf" == opts.origin) or ("file" == opts.origin)) and core["table?"](core.last(results))) then
+  if (mod_path and whole_file_origin_3f(opts.origin) and core["table?"](core.last(results))) then
     local mod = core.get(package.loaded, mod_path)
     package.loaded[mod_path] = core["merge!"](mod, core.last(results))
   else

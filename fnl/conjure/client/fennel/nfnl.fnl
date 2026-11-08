@@ -50,9 +50,10 @@
                      (str.trim)
                      (text.prefixed-lines "; ")
                      (log.append)))
-               :cfg (let [config-map (nfnl-config.find-and-load (fs.file-name-root path))]
+               :cfg (let [dir (fs.basename path)
+                          config-map (nfnl-config.find-and-load dir)]
                       (or config-map.cfg
-                          (nfnl-config.cfg-fn {} {:root-dir (fs.file-name-root path)})))})]
+                          (nfnl-config.cfg-fn {} {:root-dir dir})))})]
       (tset M.repls path r)
       r)))
 
@@ -71,8 +72,17 @@
 (comment
   (M.module-path "~/repos/Olical/conjure/fnl/conjure/client/fennel/nfnl.fnl"))
 
+(fn whole-file-origin? [origin]
+  (or (= :buf origin) (= :file origin)))
+
 (fn M.eval-str [opts]
   "Client function, called by Conjure when evaluating a string."
+  ;; Conjure's embedded Fennel has its own macro cache which the user's nfnl
+  ;; never clears when they save a macro file, so we clear it on every whole
+  ;; file evaluation to pick up macro changes from disk.
+  (when (whole-file-origin? opts.origin)
+    (core.clear-table! fennel.macro-loaded))
+
   (let [repl (M.repl-for-path opts.file-path)
         results (repl (.. opts.code "\n"))
         result-strs (core.map fennel.view results)
@@ -81,7 +91,7 @@
     ;; When we evaluate a whole file and it ends in a table, we merge that table into the loaded module.
     ;; This allows you to reload a module with ef or eb.
     (when (and mod-path
-               (or (= :buf opts.origin) (= :file opts.origin))
+               (whole-file-origin? opts.origin)
                (core.table? (core.last results)))
       (let [mod (core.get package.loaded mod-path)]
         (tset package.loaded mod-path (core.merge! mod (core.last results)))))
