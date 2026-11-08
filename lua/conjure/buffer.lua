@@ -24,6 +24,7 @@ M["upsert-hidden"] = function(buf_name, new_buf_fn)
       buf0 = buf
     else
       local buf1 = vim.fn.bufadd(buf_name)
+      vim.api.nvim_buf_set_option(buf1, "swapfile", false)
       vim.fn.bufload(buf1)
       buf0 = buf1
     end

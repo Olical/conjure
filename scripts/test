@@ -7,5 +7,7 @@ XDG_DATA_HOME=$(pwd)/.test/data
 XDG_STATE_HOME=$(pwd)/.test/state
 export XDG_CONFIG_HOME XDG_DATA_HOME XDG_STATE_HOME
 
+mkdir -p "$XDG_STATE_HOME/nvim/swap"
+
 printf 'Starting...\n'
 nvim --headless -c 'PlenaryBustedDirectory lua/conjure-spec' 2>&1 | sed 's/Starting\.\.\.//'

@@ -26,6 +26,9 @@
       (let [buf (if loaded?
                   buf
                   (let [buf (vim.fn.bufadd buf-name)]
+                    ;; bufload opens a swap file (creating the swap directory)
+                    ;; unless swapfile is already off.
+                    (vim.api.nvim_buf_set_option buf :swapfile false)
                     (vim.fn.bufload buf)
                     buf))]
         (vim.api.nvim_buf_set_option buf :buftype :nofile)
