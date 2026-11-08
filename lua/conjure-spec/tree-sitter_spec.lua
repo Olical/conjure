@@ -130,6 +130,29 @@ local function _3_()
     end
     return it("returns true when treesitter is not present", _34_)
   end
-  return describe("valid-str?", _4_)
+  describe("valid-str?", _4_)
+  local function _35_()
+    local function _36_()
+      local saved_get_node = vim.treesitter.get_node
+      local document
+      local function _37_()
+        return nil
+      end
+      local function _38_(_, ...)
+        return {...}
+      end
+      document = {parent = _37_, named_descendant_for_range = _38_}
+      local function _39_()
+        return document
+      end
+      vim.treesitter["get_node"] = _39_
+      vim.api.nvim_win_set_cursor(0, {1, 0})
+      local range = ts["get-node-at-cursor"]()
+      vim.treesitter["get_node"] = saved_get_node
+      return assert.same({0, 0, 0, 1}, range)
+    end
+    return it("looks one column wider when get_node returns the whole document", _36_)
+  end
+  return describe("get-node-at-cursor", _35_)
 end
 return describe("conjure.tree-sitter", _3_)

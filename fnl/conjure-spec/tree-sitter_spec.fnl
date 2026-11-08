@@ -75,4 +75,17 @@
         (it "returns true when treesitter is not present"
             (fn []
               (tset vim.treesitter :get_parser nil)
-              (assert.is_true (ts.valid-str? :some-lang "(some bad code"))))))))
+              (assert.is_true (ts.valid-str? :some-lang "(some bad code"))))))
+
+    (describe "get-node-at-cursor"
+      (fn []
+        (it "looks one column wider when get_node returns the whole document"
+          (fn []
+            (let [saved-get-node vim.treesitter.get_node
+                  document {:parent (fn [] nil)
+                            :named_descendant_for_range (fn [_ ...] [...])}]
+              (tset vim.treesitter :get_node (fn [] document))
+              (vim.api.nvim_win_set_cursor 0 [1 0])
+              (let [range (ts.get-node-at-cursor)]
+                (tset vim.treesitter :get_node saved-get-node)
+                (assert.same [0 0 0 1] range)))))))))

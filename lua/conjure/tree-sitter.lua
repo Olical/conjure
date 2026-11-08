@@ -68,9 +68,21 @@ M["node->table"] = function(node)
     return nil
   end
 end
+M["get-node-at-cursor"] = function()
+  local node = vim.treesitter.get_node()
+  if (node and M["document?"](node)) then
+    local _let_11_ = vim.api.nvim_win_get_cursor(0)
+    local row = _let_11_[1]
+    local col = _let_11_[2]
+    local row0 = a.dec(row)
+    return node:named_descendant_for_range(row0, col, row0, a.inc(col))
+  else
+    return node
+  end
+end
 M["get-root"] = function(node)
   M["parse!"]()
-  local node0 = (node or vim.treesitter.get_node())
+  local node0 = (node or M["get-node-at-cursor"]())
   local parent_node = M.parent(node0)
   if M["document?"](node0) then
     return nil
@@ -98,7 +110,7 @@ M["sym?"] = function(node)
 end
 M["get-leaf"] = function(node)
   M["parse!"]()
-  local node0 = (node or vim.treesitter.get_node())
+  local node0 = (node or M["get-node-at-cursor"]())
   if (M["leaf?"](node0) or M["sym?"](node0)) then
     local node1 = node0
     while M["sym?"](M.parent(node1)) do
@@ -112,43 +124,43 @@ end
 M["node-surrounded-by-form-pair-chars?"] = function(node, extra_pairs)
   local node_str = M["node->str"](node)
   local first_and_last_chars = text["first-and-last-chars"](node_str)
-  local function fn_16_(arg_15_)
-    local start = arg_15_[1]
-    local _end = arg_15_[2]
+  local function _18_(_17_)
+    local start = _17_[1]
+    local _end = _17_[2]
     return (first_and_last_chars == (start .. _end))
   end
-  local or_17_ = a.some(fn_16_, config["get-in"]({"extract", "form_pairs"}))
-  if not or_17_ then
-    local function fn_19_(arg_18_)
-      local start = arg_18_[1]
-      local _end = arg_18_[2]
+  local or_19_ = a.some(_18_, config["get-in"]({"extract", "form_pairs"}))
+  if not or_19_ then
+    local function _21_(_20_)
+      local start = _20_[1]
+      local _end = _20_[2]
       return (vim.startswith(node_str, start) and vim.endswith(node_str, _end))
     end
-    or_17_ = a.some(fn_19_, extra_pairs)
+    or_19_ = a.some(_21_, extra_pairs)
   end
-  return (or_17_ or false)
+  return (or_19_ or false)
 end
 M["node-prefixed-by-chars?"] = function(node, prefixes)
   local node_str = M["node->str"](node)
-  local function fn_20_(prefix)
+  local function _22_(prefix)
     return vim.startswith(node_str, prefix)
   end
-  return (a.some(fn_20_, prefixes) or false)
+  return (a.some(_22_, prefixes) or false)
 end
 M["get-form"] = function(node)
   if not node then
     M["parse!"]()
   else
   end
-  local node0 = (node or vim.treesitter.get_node())
+  local node0 = (node or M["get-node-at-cursor"]())
   if M["document?"](node0) then
     return nil
   elseif (M["leaf?"](node0) or (false == client["optional-call"]("form-node?", node0))) then
     return M["get-form"](M.parent(node0))
   else
-    local _let_22_ = (client["optional-call"]("get-form-modifier", node0) or {})
-    local modifier = _let_22_.modifier
-    local res = _let_22_
+    local _let_24_ = (client["optional-call"]("get-form-modifier", node0) or {})
+    local modifier = _let_24_.modifier
+    local res = _let_24_
     if (not modifier or ("none" == modifier)) then
       return node0
     elseif ("parent" == modifier) then
@@ -166,22 +178,22 @@ end
 M["add-language"] = function(lang)
   local add
   do
-    local case_25_ = vim.treesitter
-    if ((_G.type(case_25_) == "table") and ((_G.type(case_25_.language) == "table") and (nil ~= case_25_.language.add))) then
-      local f = case_25_.language.add
+    local case_27_ = vim.treesitter
+    if ((_G.type(case_27_) == "table") and ((_G.type(case_27_.language) == "table") and (nil ~= case_27_.language.add))) then
+      local f = case_27_.language.add
       add = f
-    elseif ((_G.type(case_25_) == "table") and ((_G.type(case_25_.language) == "table") and (nil ~= case_25_.language.require_language))) then
-      local f = case_25_.language.require_language
-      local function fn_26_(...)
+    elseif ((_G.type(case_27_) == "table") and ((_G.type(case_27_.language) == "table") and (nil ~= case_27_.language.require_language))) then
+      local f = case_27_.language.require_language
+      local function _28_(...)
         return pcall(f, ...)
       end
-      add = fn_26_
-    elseif ((_G.type(case_25_) == "table") and (nil ~= case_25_.require_language)) then
-      local f = case_25_.require_language
-      local function fn_27_(...)
+      add = _28_
+    elseif ((_G.type(case_27_) == "table") and (nil ~= case_27_.require_language)) then
+      local f = case_27_.require_language
+      local function _29_(...)
         return pcall(f, ...)
       end
-      add = fn_27_
+      add = _29_
     else
       add = nil
     end

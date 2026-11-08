@@ -69,11 +69,25 @@
 
     nil))
 
+(fn M.get-node-at-cursor []
+  "The named node under the cursor, like vim.treesitter.get_node.
+
+  Some grammars give the document a zero width first child, such as
+  tree-sitter-r's `_start`, which makes get_node return the document itself
+  at (0, 0). So when we get the document we look one column wider to find the
+  real node."
+  (let [node (vim.treesitter.get_node)]
+    (if (and node (M.document? node))
+      (let [[row col] (vim.api.nvim_win_get_cursor 0)
+            row (a.dec row)]
+        (node:named_descendant_for_range row col row (a.inc col)))
+      node)))
+
 (fn M.get-root [node]
   "Get the root node below the entire document."
   (M.parse!)
 
-  (let [node (or node (vim.treesitter.get_node))
+  (let [node (or node (M.get-node-at-cursor))
         parent-node (M.parent node)]
     (if
       (M.document? node) nil
@@ -100,7 +114,7 @@
   "Return the leaf node under the cursor or nothing at all."
   (M.parse!)
 
-  (let [node (or node (vim.treesitter.get_node))]
+  (let [node (or node (M.get-node-at-cursor))]
     (when (or (M.leaf? node) (M.sym? node))
       (var node node)
       (while (M.sym? (M.parent node))
@@ -141,7 +155,7 @@
   (when (not node)
     (M.parse!))
 
-  (let [node (or node (vim.treesitter.get_node))]
+  (let [node (or node (M.get-node-at-cursor))]
     (if
       ;; If we're already at the root then we're not in a form.
       (M.document? node)
