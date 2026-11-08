@@ -56,7 +56,9 @@
                  :disconnect "cd"
                  :invoke_restart "dr"
                  :macroexpand_1 "m1"
-                 :macroexpand_all "ma"}}}}}))
+                 :macroexpand_all "ma"
+                 :trace "tt"
+                 :untrace_all "ta"}}}}}))
 
 (local state (client.new-state
                   #(do
@@ -274,9 +276,15 @@
 
   (when (not (core.empty? opts.code))
     (send
-      (if (= :buf opts.origin)
-        (.. "(list " opts.code ")")
-        opts.code)
+      ;; Swank binds *trace-output* to a stream Conjure never reads, so route
+      ;; TRACE output into the captured stdout of this evaluation. The cl:
+      ;; prefixes keep this working in packages that do not use CL, and the
+      ;; newline keeps a trailing ; comment from eating the closing parens.
+      (.. "(cl:let ((cl:*trace-output* cl:*standard-output*)) "
+          (if (= :buf opts.origin)
+            (.. "(cl:list " opts.code "\n)")
+            opts.code)
+          "\n)")
       (when (not (core.empty? opts.context))
         opts.context)
       (fn [msg] ;; handle results from Swank server
@@ -388,6 +396,19 @@
              (text.split-lines (unquote-lisp-string result))
              {:break? true}))}))))
 
+(fn M.toggle-trace [name]
+  "Toggle TRACE on the function called name."
+  (when (not (core.empty? name))
+    (M.eval-str
+      {:origin :custom
+       :context (M.context)
+       :code (.. "(swank:swank-toggle-trace \"" (escape-string name) "\")")})))
+
+(fn M.untrace-all []
+  (M.eval-str
+    {:origin :custom
+     :code "(swank:untrace-all)"}))
+
 (fn M.eval-file [opts]
   (try-ensure-conn)
   (M.eval-str
@@ -422,7 +443,19 @@
     :CommonLispMacroexpandAll
     (config.get-in [:client :common_lisp :swank :mapping :macroexpand_all])
     #(M.macroexpand :swank-macroexpand-all)
-    {:desc "Fully macroexpand the current form"}))
+    {:desc "Fully macroexpand the current form"})
+
+  (mapping.buf
+    :CommonLispTrace
+    (config.get-in [:client :common_lisp :swank :mapping :trace])
+    #(M.toggle-trace (vim.fn.expand "<cword>"))
+    {:desc "Toggle tracing of the function under the cursor"})
+
+  (mapping.buf
+    :CommonLispUntraceAll
+    (config.get-in [:client :common_lisp :swank :mapping :untrace_all])
+    M.untrace-all
+    {:desc "Untrace all functions"}))
 
 (fn M.on-load []
   (when (completions-enabled?) 

@@ -244,6 +244,30 @@ local function _3_()
     end
     return it("sends the current form to swank-macroexpand-1 and logs the expansion", _36_)
   end
-  return describe("macroexpand", _35_)
+  describe("macroexpand", _35_)
+  local function _38_()
+    local function _39_()
+      swank.connect({})
+      swank["toggle-trace"]("sq")
+      swank.disconnect()
+      return assert["has-substring"]("%(swank:swank%-toggle%-trace \\\"sq\\\"%)", a["get-in"](mock_remote["send-calls"], {2, "msg"}))
+    end
+    it("toggles trace through swank", _39_)
+    local function _40_()
+      swank.connect({})
+      swank["eval-str"]({code = "(sq 5)"})
+      swank.disconnect()
+      return assert["has-substring"]("%(cl:let %(%(cl:%*trace%-output%* cl:%*standard%-output%*%)%) %(sq 5%)\n%)", a["get-in"](mock_remote["send-calls"], {2, "msg"}))
+    end
+    it("binds *trace-output* to the captured stdout of every eval", _40_)
+    local function _41_()
+      swank.connect({})
+      swank["eval-str"]({origin = "buf", code = "(+ 1 2) ; hi"})
+      swank.disconnect()
+      return assert["has-substring"]("%(cl:list %(%+ 1 2%) ; hi\n%)\n%)", a["get-in"](mock_remote["send-calls"], {2, "msg"}))
+    end
+    return it("survives a trailing comment in the evaluated code", _41_)
+  end
+  return describe("trace", _38_)
 end
 return describe("conjure.client.common-lisp.swank", _3_)

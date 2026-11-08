@@ -40,7 +40,7 @@ M.context = function(_code)
 end
 config.merge({client = {common_lisp = {swank = {connection = {default_host = "127.0.0.1", default_port = "4005"}, enable_completions = true}}}})
 if config["get-in"]({"mapping", "enable_defaults"}) then
-  config.merge({client = {common_lisp = {swank = {mapping = {connect = "cc", disconnect = "cd", invoke_restart = "dr", macroexpand_1 = "m1", macroexpand_all = "ma"}}}}})
+  config.merge({client = {common_lisp = {swank = {mapping = {connect = "cc", disconnect = "cd", invoke_restart = "dr", macroexpand_1 = "m1", macroexpand_all = "ma", trace = "tt", untrace_all = "ta"}}}}})
 else
 end
 local state
@@ -240,7 +240,7 @@ M["eval-str"] = function(opts)
   if not core["empty?"](opts.code) then
     local _31_
     if ("buf" == opts.origin) then
-      _31_ = ("(list " .. opts.code .. ")")
+      _31_ = ("(cl:list " .. opts.code .. "\n)")
     else
       _31_ = opts.code
     end
@@ -267,7 +267,7 @@ M["eval-str"] = function(opts)
         return nil
       end
     end
-    return send(_31_, _33_, _35_)
+    return send(("(cl:let ((cl:*trace-output* cl:*standard-output*)) " .. _31_ .. "\n)"), _33_, _35_)
   else
     return nil
   end
@@ -411,28 +411,43 @@ M.macroexpand = function(swank_fn)
     return nil
   end
 end
+M["toggle-trace"] = function(name)
+  if not core["empty?"](name) then
+    return M["eval-str"]({origin = "custom", context = M.context(), code = ("(swank:swank-toggle-trace \"" .. escape_string(name) .. "\")")})
+  else
+    return nil
+  end
+end
+M["untrace-all"] = function()
+  return M["eval-str"]({origin = "custom", code = "(swank:untrace-all)"})
+end
 M["eval-file"] = function(opts)
   try_ensure_conn()
   return M["eval-str"](core.assoc(opts, "code", ("(load \"" .. opts["file-path"] .. "\")")))
 end
 M["on-filetype"] = function()
   mapping.buf("CommonLispDisconnect", config["get-in"]({"client", "common_lisp", "swank", "mapping", "disconnect"}), M.disconnect, {desc = "Disconnect from the REPL"})
-  local function _55_()
+  local function _56_()
     return M.connect({})
   end
-  mapping.buf("CommonLispConnect", config["get-in"]({"client", "common_lisp", "swank", "mapping", "connect"}), _55_, {desc = "Connect to a REPL"})
-  local function _56_()
+  mapping.buf("CommonLispConnect", config["get-in"]({"client", "common_lisp", "swank", "mapping", "connect"}), _56_, {desc = "Connect to a REPL"})
+  local function _57_()
     return M["invoke-restart"](tonumber(vim.fn.input("Restart: ")))
   end
-  mapping.buf("CommonLispInvokeRestart", config["get-in"]({"client", "common_lisp", "swank", "mapping", "invoke_restart"}), _56_, {desc = "Invoke a debugger restart by number"})
-  local function _57_()
+  mapping.buf("CommonLispInvokeRestart", config["get-in"]({"client", "common_lisp", "swank", "mapping", "invoke_restart"}), _57_, {desc = "Invoke a debugger restart by number"})
+  local function _58_()
     return M.macroexpand("swank-macroexpand-1")
   end
-  mapping.buf("CommonLispMacroexpand1", config["get-in"]({"client", "common_lisp", "swank", "mapping", "macroexpand_1"}), _57_, {desc = "Macroexpand the current form once"})
-  local function _58_()
+  mapping.buf("CommonLispMacroexpand1", config["get-in"]({"client", "common_lisp", "swank", "mapping", "macroexpand_1"}), _58_, {desc = "Macroexpand the current form once"})
+  local function _59_()
     return M.macroexpand("swank-macroexpand-all")
   end
-  return mapping.buf("CommonLispMacroexpandAll", config["get-in"]({"client", "common_lisp", "swank", "mapping", "macroexpand_all"}), _58_, {desc = "Fully macroexpand the current form"})
+  mapping.buf("CommonLispMacroexpandAll", config["get-in"]({"client", "common_lisp", "swank", "mapping", "macroexpand_all"}), _59_, {desc = "Fully macroexpand the current form"})
+  local function _60_()
+    return M["toggle-trace"](vim.fn.expand("<cword>"))
+  end
+  mapping.buf("CommonLispTrace", config["get-in"]({"client", "common_lisp", "swank", "mapping", "trace"}), _60_, {desc = "Toggle tracing of the function under the cursor"})
+  return mapping.buf("CommonLispUntraceAll", config["get-in"]({"client", "common_lisp", "swank", "mapping", "untrace_all"}), M["untrace-all"], {desc = "Untrace all functions"})
 end
 M["on-load"] = function()
   if completions_enabled_3f() then
@@ -450,9 +465,9 @@ end
 local kind_by_flag = {{"s", "special-operator"}, {"m", "macro"}, {"g", "generic-function"}, {"a", "accessor"}, {"f", "function"}, {"c", "class"}, {"t", "type"}, {"b", "variable"}, {"p", "package"}}
 local function flags__3ekind(flags)
   local kind = nil
-  for _, _60_ in ipairs(kind_by_flag) do
-    local flag = _60_[1]
-    local flag_kind = _60_[2]
+  for _, _62_ in ipairs(kind_by_flag) do
+    local flag = _62_[1]
+    local flag_kind = _62_[2]
     if kind then break end
     if string.find(flags, flag, 1, true) then
       kind = flag_kind
@@ -523,11 +538,11 @@ local function build_completions(opts)
   if connected_3f() then
     local code = build_completions_code(opts.prefix, opts.context)
     local result_fn
-    local function _67_(results)
+    local function _69_(results)
       local cmpl_list = merge_completions(static_completions, M["parse-completions"](results))
       return opts.cb(cmpl_list)
     end
-    result_fn = _67_
+    result_fn = _69_
     core.assoc(opts, "code", code)
     core.assoc(opts, "context", "COMMON-LISP-USER")
     core.assoc(opts, "on-result", result_fn)
