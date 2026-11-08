@@ -341,7 +341,7 @@ M.interrupt = function()
       local function _67_(msg)
         return ("eval" == msg.msg.op)
       end
-      msgs = core.filter(_67_, core.vals(conn.msgs))
+      msgs = core.filter(_67_, core.vals(conn.state.msgs))
       local order_66
       local function _69_(_68_)
         local id = _68_.id

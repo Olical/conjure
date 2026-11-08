@@ -4,6 +4,10 @@ local describe = _local_1_.describe
 local it = _local_1_.it
 local assert = require("luassert.assert")
 local action = require("conjure.client.clojure.nrepl.action")
+local state = require("conjure.client.clojure.nrepl.state")
+local core = require("conjure.nfnl.core")
+local log = require("conjure.log")
+require("conjure.client.clojure.nrepl")
 local function _2_()
   local function _3_()
     vim.g["conjure#client#clojure#nrepl#test#current_form_names"] = {"deftest"}
@@ -43,6 +47,64 @@ local function _2_()
     end
     return it("builds the menu and info from the other fields", _11_)
   end
-  return describe("clojure->vim-completion", _8_)
+  describe("clojure->vim-completion", _8_)
+  local function _12_()
+    local current_session = "c0ffee00-0000-4000-8000-000000000001"
+    local eval_session = "e7a10000-0000-4000-8000-000000000002"
+    local other_session = "07e40000-0000-4000-8000-000000000003"
+    local function pending_msg(id, op, session, sent_at, code)
+      return {msg = {id = id, op = op, session = session, code = code}, ["sent-at"] = sent_at}
+    end
+    local function interrupt_with_pending_msgs(pending_msgs)
+      local sent = {}
+      local logged = {}
+      local original_append = log.append
+      local conn
+      local function _13_(msg, cb)
+        table.insert(sent, msg)
+        if ("eval" == msg.op) then
+          return cb({value = "clj", status = {done = true}})
+        else
+          return nil
+        end
+      end
+      conn = {["ready?"] = true, session = current_session, state = {msgs = pending_msgs}, send = _13_}
+      local function _15_(lines)
+        for _, line in ipairs(lines) do
+          table.insert(logged, line)
+        end
+        return nil
+      end
+      log.append = _15_
+      core.assoc(state.get(), "conn", conn)
+      action.interrupt()
+      core.assoc(state.get(), "conn", nil)
+      log.append = original_append
+      local function _16_(_241)
+        return core["select-keys"](_241, {"op", "interrupt-id", "session"})
+      end
+      local function _17_(_241)
+        return ("interrupt" == _241.op)
+      end
+      return {interrupts = core.map(_16_, core.filter(_17_, sent)), logged = logged}
+    end
+    local function _18_()
+      local _let_19_ = interrupt_with_pending_msgs({["eval-new"] = pending_msg("eval-new", "eval", other_session, 200, "(new)"), ["eval-old"] = pending_msg("eval-old", "eval", eval_session, 100, "(Thread/sleep 20000)"), describe = pending_msg("describe", "describe", current_session, 50)})
+      local interrupts = _let_19_.interrupts
+      local logged = _let_19_.logged
+      assert.same({{op = "interrupt", ["interrupt-id"] = "eval-old", session = eval_session}}, interrupts)
+      return assert.same({"; Interrupted: (Thread/sleep 20000)"}, logged)
+    end
+    it("targets the oldest pending eval with its id and session", _18_)
+    local function _20_()
+      local _let_21_ = interrupt_with_pending_msgs({})
+      local interrupts = _let_21_.interrupts
+      local logged = _let_21_.logged
+      assert.same({{op = "interrupt", session = current_session}}, interrupts)
+      return assert.is_truthy(string.find(core.first(logged), "^; Interrupted: session: "))
+    end
+    return it("interrupts the current session without an interrupt-id when no eval is pending", _20_)
+  end
+  return describe("interrupt", _12_)
 end
 return describe("client.clojure.nrepl.action", _2_)

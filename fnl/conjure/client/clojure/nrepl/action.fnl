@@ -262,7 +262,7 @@
     (fn []
       (server.with-conn-or-warn
         (fn [conn]
-          (let [msgs (->> (core.vals conn.msgs)
+          (let [msgs (->> (core.vals conn.state.msgs)
                           (core.filter
                             (fn [msg]
                               (= :eval msg.msg.op))))
