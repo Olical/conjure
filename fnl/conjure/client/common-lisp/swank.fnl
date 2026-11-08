@@ -56,7 +56,8 @@
                  :disconnect "cd"
                  :invoke_restart "dr"
                  :macroexpand_1 "m1"
-                 :macroexpand_all "ma"}}}}}))
+                 :macroexpand_all "ma"
+                 :hyperspec "hs"}}}}}))
 
 (local state (client.new-state
                   #(do
@@ -388,6 +389,51 @@
              (text.split-lines (unquote-lisp-string result))
              {:break? true}))}))))
 
+(local hyperspec-indexes {})
+
+(fn hyperspec-index [root]
+  "Symbol name -> page path table, read once per root from Data/Map_Sym.txt,
+  which alternates symbol lines and ../Body/page.htm lines. An empty index is
+  not cached, so a root that gets its files later starts working without a
+  restart."
+  (or (. hyperspec-indexes root)
+      (let [file (.. root "/Data/Map_Sym.txt")
+            index {}]
+        (when (= 1 (vim.fn.filereadable file))
+          (let [lines (vim.fn.readfile file)]
+            (for [i 1 (- (length lines) 1) 2]
+              (tset index (. lines i) (pick-values 1 (string.gsub (. lines (+ i 1)) "^%.%./" ""))))))
+        (when (not (core.empty? index))
+          (tset hyperspec-indexes root index))
+        index)))
+
+(fn M.hyperspec-file [sym]
+  "Path of the local HyperSpec page for sym, or nil."
+  (let [root (config.get-in [:client :common_lisp :swank :hyperspec_root])]
+    (when (and root (not (core.empty? sym)))
+      (let [root (vim.fn.expand root)
+            name (string.upper (pick-values 1 (string.gsub sym "^.*:" "")))
+            page (. (hyperspec-index root) name)]
+        (when page
+          (.. root "/" page))))))
+
+(fn M.hyperspec [sym]
+  "Open the local HyperSpec page for sym with vim.ui.open."
+  (local root (config.get-in [:client :common_lisp :swank :hyperspec_root]))
+  (if
+    (not root)
+    (log.append ["; Set g:conjure#client#common_lisp#swank#hyperspec_root to use the HyperSpec"])
+
+    (core.empty? (hyperspec-index (vim.fn.expand root)))
+    (log.append [(.. "; No Data/Map_Sym.txt under " root)])
+
+    (let [file (M.hyperspec-file sym)]
+      (if file
+        (do
+          (log.append [(.. "; " file)])
+          (vim.ui.open file))
+        (log.append [(.. "; No HyperSpec entry for " (tostring sym))])))))
+
 (fn M.eval-file [opts]
   (try-ensure-conn)
   (M.eval-str
@@ -422,7 +468,13 @@
     :CommonLispMacroexpandAll
     (config.get-in [:client :common_lisp :swank :mapping :macroexpand_all])
     #(M.macroexpand :swank-macroexpand-all)
-    {:desc "Fully macroexpand the current form"}))
+    {:desc "Fully macroexpand the current form"})
+
+  (mapping.buf
+    :CommonLispHyperSpec
+    (config.get-in [:client :common_lisp :swank :mapping :hyperspec])
+    #(M.hyperspec (core.get (extract.word) :content))
+    {:desc "Open the local HyperSpec page for the symbol under the cursor"}))
 
 (fn M.on-load []
   (when (completions-enabled?) 

@@ -40,7 +40,7 @@ M.context = function(_code)
 end
 config.merge({client = {common_lisp = {swank = {connection = {default_host = "127.0.0.1", default_port = "4005"}, enable_completions = true}}}})
 if config["get-in"]({"mapping", "enable_defaults"}) then
-  config.merge({client = {common_lisp = {swank = {mapping = {connect = "cc", disconnect = "cd", invoke_restart = "dr", macroexpand_1 = "m1", macroexpand_all = "ma"}}}}})
+  config.merge({client = {common_lisp = {swank = {mapping = {connect = "cc", disconnect = "cd", invoke_restart = "dr", macroexpand_1 = "m1", macroexpand_all = "ma", hyperspec = "hs"}}}}})
 else
 end
 local state
@@ -411,28 +411,84 @@ M.macroexpand = function(swank_fn)
     return nil
   end
 end
+local hyperspec_indexes = {}
+local function hyperspec_index(root)
+  local or_55_ = hyperspec_indexes[root]
+  if not or_55_ then
+    local file = (root .. "/Data/Map_Sym.txt")
+    local index = {}
+    if (1 == vim.fn.filereadable(file)) then
+      local lines = vim.fn.readfile(file)
+      for i = 1, (#lines - 1), 2 do
+        index[lines[i]] = (string.gsub(lines[(i + 1)], "^%.%./", ""))
+      end
+    else
+    end
+    if not core["empty?"](index) then
+      hyperspec_indexes[root] = index
+    else
+    end
+    or_55_ = index
+  end
+  return or_55_
+end
+M["hyperspec-file"] = function(sym)
+  local root = config["get-in"]({"client", "common_lisp", "swank", "hyperspec_root"})
+  if (root and not core["empty?"](sym)) then
+    local root0 = vim.fn.expand(root)
+    local name = string.upper((string.gsub(sym, "^.*:", "")))
+    local page = hyperspec_index(root0)[name]
+    if page then
+      return (root0 .. "/" .. page)
+    else
+      return nil
+    end
+  else
+    return nil
+  end
+end
+M.hyperspec = function(sym)
+  local root = config["get-in"]({"client", "common_lisp", "swank", "hyperspec_root"})
+  if not root then
+    return log.append({"; Set g:conjure#client#common_lisp#swank#hyperspec_root to use the HyperSpec"})
+  elseif core["empty?"](hyperspec_index(vim.fn.expand(root))) then
+    return log.append({("; No Data/Map_Sym.txt under " .. root)})
+  else
+    local file = M["hyperspec-file"](sym)
+    if file then
+      log.append({("; " .. file)})
+      return vim.ui.open(file)
+    else
+      return log.append({("; No HyperSpec entry for " .. tostring(sym))})
+    end
+  end
+end
 M["eval-file"] = function(opts)
   try_ensure_conn()
   return M["eval-str"](core.assoc(opts, "code", ("(load \"" .. opts["file-path"] .. "\")")))
 end
 M["on-filetype"] = function()
   mapping.buf("CommonLispDisconnect", config["get-in"]({"client", "common_lisp", "swank", "mapping", "disconnect"}), M.disconnect, {desc = "Disconnect from the REPL"})
-  local function _55_()
+  local function _63_()
     return M.connect({})
   end
-  mapping.buf("CommonLispConnect", config["get-in"]({"client", "common_lisp", "swank", "mapping", "connect"}), _55_, {desc = "Connect to a REPL"})
-  local function _56_()
+  mapping.buf("CommonLispConnect", config["get-in"]({"client", "common_lisp", "swank", "mapping", "connect"}), _63_, {desc = "Connect to a REPL"})
+  local function _64_()
     return M["invoke-restart"](tonumber(vim.fn.input("Restart: ")))
   end
-  mapping.buf("CommonLispInvokeRestart", config["get-in"]({"client", "common_lisp", "swank", "mapping", "invoke_restart"}), _56_, {desc = "Invoke a debugger restart by number"})
-  local function _57_()
+  mapping.buf("CommonLispInvokeRestart", config["get-in"]({"client", "common_lisp", "swank", "mapping", "invoke_restart"}), _64_, {desc = "Invoke a debugger restart by number"})
+  local function _65_()
     return M.macroexpand("swank-macroexpand-1")
   end
-  mapping.buf("CommonLispMacroexpand1", config["get-in"]({"client", "common_lisp", "swank", "mapping", "macroexpand_1"}), _57_, {desc = "Macroexpand the current form once"})
-  local function _58_()
+  mapping.buf("CommonLispMacroexpand1", config["get-in"]({"client", "common_lisp", "swank", "mapping", "macroexpand_1"}), _65_, {desc = "Macroexpand the current form once"})
+  local function _66_()
     return M.macroexpand("swank-macroexpand-all")
   end
-  return mapping.buf("CommonLispMacroexpandAll", config["get-in"]({"client", "common_lisp", "swank", "mapping", "macroexpand_all"}), _58_, {desc = "Fully macroexpand the current form"})
+  mapping.buf("CommonLispMacroexpandAll", config["get-in"]({"client", "common_lisp", "swank", "mapping", "macroexpand_all"}), _66_, {desc = "Fully macroexpand the current form"})
+  local function _67_()
+    return M.hyperspec(core.get(extract.word(), "content"))
+  end
+  return mapping.buf("CommonLispHyperSpec", config["get-in"]({"client", "common_lisp", "swank", "mapping", "hyperspec"}), _67_, {desc = "Open the local HyperSpec page for the symbol under the cursor"})
 end
 M["on-load"] = function()
   if completions_enabled_3f() then
@@ -450,9 +506,9 @@ end
 local kind_by_flag = {{"s", "special-operator"}, {"m", "macro"}, {"g", "generic-function"}, {"a", "accessor"}, {"f", "function"}, {"c", "class"}, {"t", "type"}, {"b", "variable"}, {"p", "package"}}
 local function flags__3ekind(flags)
   local kind = nil
-  for _, _60_ in ipairs(kind_by_flag) do
-    local flag = _60_[1]
-    local flag_kind = _60_[2]
+  for _, _69_ in ipairs(kind_by_flag) do
+    local flag = _69_[1]
+    local flag_kind = _69_[2]
     if kind then break end
     if string.find(flags, flag, 1, true) then
       kind = flag_kind
@@ -523,11 +579,11 @@ local function build_completions(opts)
   if connected_3f() then
     local code = build_completions_code(opts.prefix, opts.context)
     local result_fn
-    local function _67_(results)
+    local function _76_(results)
       local cmpl_list = merge_completions(static_completions, M["parse-completions"](results))
       return opts.cb(cmpl_list)
     end
-    result_fn = _67_
+    result_fn = _76_
     core.assoc(opts, "code", code)
     core.assoc(opts, "context", "COMMON-LISP-USER")
     core.assoc(opts, "on-result", result_fn)

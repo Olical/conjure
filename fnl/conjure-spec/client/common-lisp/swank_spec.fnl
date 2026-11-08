@@ -299,4 +299,32 @@
               (swank.disconnect)
               (vim.cmd "bwipeout!")
               (set mock-log.append orig-append)
-              (assert.same ["(IF A" "    B)"] (. logged 1)))))))))
+              (assert.same ["(IF A" "    B)"] (. logged 1)))))))
+
+    (describe "hyperspec"
+      (fn []
+        (it "resolves symbols through Data/Map_Sym.txt under hyperspec_root"
+          (fn []
+            (let [root (vim.fn.tempname)]
+              (vim.fn.mkdir (.. root "/Data") "p")
+              (vim.fn.writefile ["DEFUN" "../Body/m_defun.htm"
+                                 "CAR" "../Body/f_car_c.htm"]
+                                (.. root "/Data/Map_Sym.txt"))
+              (config.merge {:client {:common_lisp {:swank {:hyperspec_root root}}}}
+                            {:overwrite? true})
+              (assert.are.equal (.. root "/Body/m_defun.htm") (swank.hyperspec-file "defun"))
+              (assert.are.equal (.. root "/Body/f_car_c.htm") (swank.hyperspec-file "cl:car"))
+              (assert.is_nil (swank.hyperspec-file "no-such-symbol"))
+              (vim.fn.delete root "rf"))))
+
+        (it "does not cache a missing Data/Map_Sym.txt"
+          (fn []
+            (let [root (vim.fn.tempname)]
+              (vim.fn.mkdir (.. root "/Data") "p")
+              (config.merge {:client {:common_lisp {:swank {:hyperspec_root root}}}}
+                            {:overwrite? true})
+              (assert.is_nil (swank.hyperspec-file "car"))
+              (vim.fn.writefile ["CAR" "../Body/f_car_c.htm"]
+                                (.. root "/Data/Map_Sym.txt"))
+              (assert.are.equal (.. root "/Body/f_car_c.htm") (swank.hyperspec-file "car"))
+              (vim.fn.delete root "rf"))))))))
