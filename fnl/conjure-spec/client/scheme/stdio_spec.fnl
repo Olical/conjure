@@ -31,7 +31,19 @@
         (it "preserves numeric MIT Scheme values"
           (fn []
             (assert.same ["42"]
-              (scheme.format-msg {:out ";Value: 42"}))))))
+              (scheme.format-msg {:out ";Value: 42"}))))
+
+        (it "treats displayed text that looks like a value as output"
+          (fn []
+            (assert.same ["; (out) ;Value: 3" "; (out) ;Unspecified return value"]
+              (scheme.format-msg
+                (scheme.unbatch [{:out "\n;Value: 3\n;Unspecified return value\n\n1 ]=> "}])))))
+
+        (it "only treats a prompt at the end of the output as the prompt"
+          (fn []
+            (let [prompt (config.get-in [:client :scheme :stdio :prompt_pattern])]
+              (assert.is_nil (string.find "shown 2 ]=> here\n" prompt))
+              (assert.is_truthy (string.find ";Value: 42\n\n1 ]=> " prompt)))))))
 
     (it "preserves Chez numeric output with value prefixes disabled"
       (fn []

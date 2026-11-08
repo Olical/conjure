@@ -13,7 +13,7 @@
 (local M (define :conjure.client.scheme.stdio))
 
 ;; Match "]=> " or "error> "; the level number can arrive in an earlier read.
-(local default-prompt-pattern "[%]e][=r]r?o?r?> ")
+(local default-prompt-pattern "[%]e][=r]r?o?r?> $")
 
 (config.merge
   {:client
@@ -64,23 +64,34 @@
     (string.gsub out (.. "%s*%d* ?" default-prompt-pattern) "")
     out))
 
+(fn last-non-blank-index [lines]
+  (var found nil)
+  (each [i line (ipairs lines)]
+    (when (not (str.blank? line))
+      (set found i)))
+  found)
+
 (fn M.format-msg [msg]
-  (->> (-> msg
-           (core.get :out)
-           (strip-default-prompt)
-           (string.gsub "^%s*" "")
-           (str.split "\n"))
-       (core.map
-         (fn [line]
-           (if
-             (not (cfg [:value_prefix_pattern]))
-             line
+  (let [lines (-> msg
+                  (core.get :out)
+                  (strip-default-prompt)
+                  (string.gsub "^%s*" "")
+                  (str.split "\n"))
+        ;; The REPL output may contain multiple matches, only the last line can contain the value itself.
+        value-index (last-non-blank-index lines)]
+    (->> lines
+         (core.map-indexed
+           (fn [[i line]]
+             (if
+               (not (cfg [:value_prefix_pattern]))
+               line
 
-             (string.match line (cfg [:value_prefix_pattern]))
-             (string.gsub line (cfg [:value_prefix_pattern]) "")
+               (and (= i value-index)
+                    (string.match line (cfg [:value_prefix_pattern])))
+               (string.gsub line (cfg [:value_prefix_pattern]) "")
 
-             (.. M.comment-prefix "(out) " line))))
-       (core.filter #(not (str.blank? $1)))))
+               (.. M.comment-prefix "(out) " line))))
+         (core.filter #(not (str.blank? $1))))))
 
 (fn M.eval-str [opts]
   (with-repl-or-warn

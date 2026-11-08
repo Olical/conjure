@@ -79,7 +79,7 @@ All configuration can be set as described in |conjure-configuration|.
             Conjure that the previous evaluation is complete and we're ready
             to submit more code as well as collect all output prior to the
             marker as the result.
-            Default: `"[%]e][=r]r?o?r?> "`
+            Default: `"[%]e][=r]r?o?r?> $"`
 
                           *g:conjure#client#scheme#stdio#value_prefix_pattern*
 `g:conjure#client#scheme#stdio#value_prefix_pattern`
