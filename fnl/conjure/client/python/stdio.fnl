@@ -17,7 +17,7 @@
    {:python
     {:stdio
      {:command "python3 -iq"
-      :prompt_pattern ">>> "
+      :prompt_pattern ">>> $"
       :delay_stderr_ms 10
       :auto_set_file true}}}})
 
@@ -123,20 +123,27 @@
     opts.file-path
     "<conjure>"))
 
-(fn get-file-str [opts]
+(fn decoded-file-path-str [opts]
+  (.. "base64.b64decode('" (b64.encode (source-file-path opts)) "').decode()"))
+
+;; Everything we send must fit on one line: the REPL prints a prompt for every
+;; line it reads and the stdio remote completes an eval on the first prompt.
+(fn set-file-prefix [opts]
   (if (cfg [:auto_set_file])
-    (.. "__file__ = base64.b64decode('" (b64.encode (source-file-path opts)) "').decode()\n")
+    (.. "__file__ = " (decoded-file-path-str opts) "; ")
     ""))
 
 (fn get-exec-str [opts]
-  (.. (get-file-str opts)
-      "exec(compile(base64.b64decode('" (b64.encode opts.code) "'), __file__, 'exec'))\n"))
+  (.. (set-file-prefix opts)
+      "exec(compile(base64.b64decode('" (b64.encode opts.code) "'), "
+      (if (cfg [:auto_set_file]) "__file__" (decoded-file-path-str opts))
+      ", 'exec'))\n"))
 
 (fn M.prep-code [opts]
   (let [s opts.code
         python-expr (M.str-is-python-expr? s)]
     (if python-expr
-      (.. (get-file-str opts) s "\n")
+      (.. (set-file-prefix opts) s "\n")
       (get-exec-str opts))))
 
 ; If, after pressing newline, the python interpreter expects more
@@ -257,6 +264,7 @@
         (state) :repl
         (stdio.start
           {:prompt-pattern (cfg [:prompt_pattern])
+           :await-initial-prompt? true
            :cmd (cfg [:command])
            :delay-stderr-ms (cfg [:delay_stderr_ms])
 

@@ -43,6 +43,9 @@
   through this stdio medium, so it's a best effort.
   * opts.prompt-pattern: Identify result boundaries such as '> '.
   * opts.preserve-prompt?: Keep prompts in responses for clients that strip them after batching.
+  * opts.await-initial-prompt?: Hold back the first send until the prompt printed on startup arrives,
+                                for REPLs that always print one. Otherwise that prompt can complete
+                                the first send before its output arrives.
   * opts.cmd: Command to run to start the REPL.
   * opts.args: Arguments to pass to the REPL.
   * opts.on-error: Called with an error string when we receive a true error from the process.
@@ -65,7 +68,7 @@
             stdout (uv.new_pipe false)
             stderr (uv.new_pipe false)
             repl {:queue []
-                  :current nil}]
+                  :current (when opts.await-initial-prompt? {})}]
 
         (fn destroy []
           ;; https://teukka.tech/vimloop.html

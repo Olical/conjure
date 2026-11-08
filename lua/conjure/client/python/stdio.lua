@@ -13,7 +13,7 @@ local log = autoload("conjure.log")
 local b64 = autoload("conjure.remote.transport.base64")
 local ts = autoload("conjure.tree-sitter")
 local M = define("conjure.client.python.stdio")
-config.merge({client = {python = {stdio = {command = "python3 -iq", prompt_pattern = ">>> ", delay_stderr_ms = 10, auto_set_file = true}}}})
+config.merge({client = {python = {stdio = {command = "python3 -iq", prompt_pattern = ">>> $", delay_stderr_ms = 10, auto_set_file = true}}}})
 if config["get-in"]({"mapping", "enable_defaults"}) then
   config.merge({client = {python = {stdio = {mapping = {start = "cs", stop = "cS", interrupt = "ei"}}}}})
 else
@@ -86,21 +86,30 @@ local function source_file_path(opts)
     return "<conjure>"
   end
 end
-local function get_file_str(opts)
+local function decoded_file_path_str(opts)
+  return ("base64.b64decode('" .. b64.encode(source_file_path(opts)) .. "').decode()")
+end
+local function set_file_prefix(opts)
   if cfg({"auto_set_file"}) then
-    return ("__file__ = base64.b64decode('" .. b64.encode(source_file_path(opts)) .. "').decode()\n")
+    return ("__file__ = " .. decoded_file_path_str(opts) .. "; ")
   else
     return ""
   end
 end
 local function get_exec_str(opts)
-  return (get_file_str(opts) .. "exec(compile(base64.b64decode('" .. b64.encode(opts.code) .. "'), __file__, 'exec'))\n")
+  local _10_
+  if cfg({"auto_set_file"}) then
+    _10_ = "__file__"
+  else
+    _10_ = decoded_file_path_str(opts)
+  end
+  return (set_file_prefix(opts) .. "exec(compile(base64.b64decode('" .. b64.encode(opts.code) .. "'), " .. _10_ .. ", 'exec'))\n")
 end
 M["prep-code"] = function(opts)
   local s = opts.code
   local python_expr = M["str-is-python-expr?"](s)
   if python_expr then
-    return (get_file_str(opts) .. s .. "\n")
+    return (set_file_prefix(opts) .. s .. "\n")
   else
     return get_exec_str(opts)
   end
@@ -110,19 +119,19 @@ local function is_dots_3f(s)
 end
 M["format-msg"] = function(msg)
   log.dbg(("python.stdio.format-msg: msg:'" .. core.str(msg) .. "'"))
-  local function _11_(_241)
+  local function _13_(_241)
     return not is_dots_3f(_241)
   end
-  local function _12_(_241)
+  local function _14_(_241)
     return ("" ~= _241)
   end
-  return core.filter(_11_, core.filter(_12_, text["split-lines"](msg)))
+  return core.filter(_13_, core.filter(_14_, text["split-lines"](msg)))
 end
 local function get_console_output_msgs(msgs)
-  local function _13_(_241)
+  local function _15_(_241)
     return (M["comment-prefix"] .. "(out) " .. _241)
   end
-  return core.map(_13_, core.butlast(msgs))
+  return core.map(_15_, core.butlast(msgs))
 end
 local function get_expression_result(msgs)
   local result = core.last(msgs)
@@ -134,10 +143,10 @@ local function get_expression_result(msgs)
 end
 M.unbatch = function(msgs)
   log.dbg(("python.stdio.unbatch: msgs:'" .. core.str(msgs) .. "'"))
-  local function _15_(_241)
+  local function _17_(_241)
     return (core.get(_241, "out") or core.get(_241, "err"))
   end
-  return str.join("", core.map(_15_, msgs))
+  return str.join("", core.map(_17_, msgs))
 end
 local function log_repl_output(msgs)
   log.dbg(("python.stdio.log-repl-output: msgs:'" .. core.str(msgs) .. "'"))
@@ -158,8 +167,8 @@ local function log_repl_output(msgs)
 end
 M["eval-str"] = function(opts)
   log.dbg(("python.stdio.eval-str opts:'" .. core.str(opts) .. "'"))
-  local function _18_(repl)
-    local function _19_(msgs)
+  local function _20_(repl)
+    local function _21_(msgs)
       log_repl_output(msgs)
       if opts["on-result"] then
         local msgs0 = M["format-msg"](M.unbatch(msgs))
@@ -169,9 +178,9 @@ M["eval-str"] = function(opts)
         return nil
       end
     end
-    return repl.send(M["prep-code"](opts), _19_, {["batch?"] = true})
+    return repl.send(M["prep-code"](opts), _21_, {["batch?"] = true})
   end
-  return with_repl_or_warn(_18_)
+  return with_repl_or_warn(_20_)
 end
 M["eval-file"] = function(opts)
   return M["eval-str"](core.assoc(opts, "code", core.slurp(opts["file-path"])))
@@ -208,24 +217,24 @@ M.start = function()
     if not ts["add-language"]("python") then
       return log.append({(M["comment-prefix"] .. "(error) The python client requires a python treesitter parser in order to function."), (M["comment-prefix"] .. "(error) See https://github.com/nvim-treesitter/nvim-treesitter"), (M["comment-prefix"] .. "(error) for installation instructions.")})
     else
-      local function _23_()
+      local function _25_()
         display_repl_status("started")
-        local function _24_(repl)
-          local function _25_(msgs)
+        local function _26_(repl)
+          local function _27_(msgs)
             return nil
           end
-          repl.send("import base64\n", _25_, nil)
-          local function _26_(msgs)
+          repl.send("import base64\n", _27_, nil)
+          local function _28_(msgs)
             return nil
           end
-          return repl.send(M["prep-code"]({code = M["initialise-repl-code"]}), _26_, nil)
+          return repl.send(M["prep-code"]({code = M["initialise-repl-code"]}), _28_, nil)
         end
-        return with_repl_or_warn(_24_)
+        return with_repl_or_warn(_26_)
       end
-      local function _27_(err)
+      local function _29_(err)
         return display_repl_status(err)
       end
-      local function _28_(code, signal)
+      local function _30_(code, signal)
         if (("number" == type(code)) and (code > 0)) then
           log.append({(M["comment-prefix"] .. "process exited with code " .. code)})
         else
@@ -236,10 +245,10 @@ M.start = function()
         end
         return M.stop()
       end
-      local function _31_(msg)
+      local function _33_(msg)
         return log.dbg(M["format-msg"](M.unbatch({msg})), {["join-first?"] = true})
       end
-      return core.assoc(state(), "repl", stdio.start({["prompt-pattern"] = cfg({"prompt_pattern"}), cmd = cfg({"command"}), ["delay-stderr-ms"] = cfg({"delay_stderr_ms"}), ["on-success"] = _23_, ["on-error"] = _27_, ["on-exit"] = _28_, ["on-stray-output"] = _31_}))
+      return core.assoc(state(), "repl", stdio.start({["prompt-pattern"] = cfg({"prompt_pattern"}), ["await-initial-prompt?"] = true, cmd = cfg({"command"}), ["delay-stderr-ms"] = cfg({"delay_stderr_ms"}), ["on-success"] = _25_, ["on-error"] = _29_, ["on-exit"] = _30_, ["on-stray-output"] = _33_}))
     end
   end
 end
@@ -247,27 +256,27 @@ M["on-exit"] = function()
   return M.stop()
 end
 M.interrupt = function()
-  local function _34_(repl)
+  local function _36_(repl)
     log.append({(M["comment-prefix"] .. " Sending interrupt signal.")}, {["break?"] = true})
     return repl["send-signal"]("sigint")
   end
-  return with_repl_or_warn(_34_)
+  return with_repl_or_warn(_36_)
 end
 M["on-load"] = function()
   return M.start()
 end
 M["on-filetype"] = function()
-  local function _35_()
+  local function _37_()
     return M.start()
   end
-  mapping.buf("PythonStart", cfg({"mapping", "start"}), _35_, {desc = "Start the Python REPL"})
-  local function _36_()
+  mapping.buf("PythonStart", cfg({"mapping", "start"}), _37_, {desc = "Start the Python REPL"})
+  local function _38_()
     return M.stop()
   end
-  mapping.buf("PythonStop", cfg({"mapping", "stop"}), _36_, {desc = "Stop the Python REPL"})
-  local function _37_()
+  mapping.buf("PythonStop", cfg({"mapping", "stop"}), _38_, {desc = "Stop the Python REPL"})
+  local function _39_()
     return M.interrupt()
   end
-  return mapping.buf("PythonInterrupt", cfg({"mapping", "interrupt"}), _37_, {desc = "Interrupt the current evaluation"})
+  return mapping.buf("PythonInterrupt", cfg({"mapping", "interrupt"}), _39_, {desc = "Interrupt the current evaluation"})
 end
 return M

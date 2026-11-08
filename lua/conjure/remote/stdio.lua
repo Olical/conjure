@@ -53,37 +53,44 @@ M.start = function(opts)
     local stdin = uv.new_pipe(false)
     local stdout = uv.new_pipe(false)
     local stderr = uv.new_pipe(false)
-    local repl = {queue = {}, current = nil}
+    local repl
+    local _9_
+    if opts["await-initial-prompt?"] then
+      _9_ = {}
+    else
+      _9_ = nil
+    end
+    repl = {queue = {}, current = _9_}
     local function destroy()
-      local function _9_()
-        return stdout:read_stop()
-      end
-      pcall(_9_)
-      local function _10_()
-        return stderr:read_stop()
-      end
-      pcall(_10_)
       local function _11_()
-        return stdout:close()
+        return stdout:read_stop()
       end
       pcall(_11_)
       local function _12_()
-        return stderr:close()
+        return stderr:read_stop()
       end
       pcall(_12_)
       local function _13_()
-        return stdin:close()
+        return stdout:close()
       end
       pcall(_13_)
+      local function _14_()
+        return stderr:close()
+      end
+      pcall(_14_)
+      local function _15_()
+        return stdin:close()
+      end
+      pcall(_15_)
       if repl.handle then
-        local function _14_()
+        local function _16_()
           return uv.process_kill(repl.handle, "sigterm")
         end
-        pcall(_14_)
-        local function _15_()
+        pcall(_16_)
+        local function _17_()
           return repl.handle:close()
         end
-        pcall(_15_)
+        pcall(_17_)
       else
       end
       return nil
@@ -113,16 +120,16 @@ M.start = function(opts)
           local done_3f, result = parse_prompt(chunk, opts["prompt-pattern"])
           local cb = core["get-in"](repl, {"current", "cb"}, opts["on-stray-output"])
           if cb then
-            local function _18_()
-              local _19_
+            local function _20_()
+              local _21_
               if opts["preserve-prompt?"] then
-                _19_ = chunk
+                _21_ = chunk
               else
-                _19_ = result
+                _21_ = result
               end
-              return cb({[source] = _19_, ["done?"] = done_3f})
+              return cb({[source] = _21_, ["done?"] = done_3f})
             end
-            pcall(_18_)
+            pcall(_20_)
           else
           end
           if done_3f then
@@ -141,19 +148,19 @@ M.start = function(opts)
     end
     local function on_stderr(err, chunk)
       if opts["delay-stderr-ms"] then
-        local function _25_()
+        local function _27_()
           return on_message("err", err, chunk)
         end
-        return vim.defer_fn(_25_, opts["delay-stderr-ms"])
+        return vim.defer_fn(_27_, opts["delay-stderr-ms"])
       else
         return on_message("err", err, chunk)
       end
     end
     local function send(code, cb, opts0)
-      local _27_
+      local _29_
       if core.get(opts0, "batch?") then
         local msgs = {}
-        local function _29_(msg)
+        local function _31_(msg)
           table.insert(msgs, msg)
           if msg["done?"] then
             return cb(msgs)
@@ -161,11 +168,11 @@ M.start = function(opts)
             return nil
           end
         end
-        _27_ = _29_
+        _29_ = _31_
       else
-        _27_ = cb
+        _29_ = cb
       end
-      table.insert(repl.queue, {code = code, cb = _27_})
+      table.insert(repl.queue, {code = code, cb = _29_})
       next_in_queue()
       return nil
     end
@@ -181,16 +188,16 @@ M.start = function(opts)
     if handle then
       stdout:read_start(client["schedule-wrap"](on_stdout))
       stderr:read_start(client["schedule-wrap"](on_stderr))
-      local function _32_()
+      local function _34_()
         return opts["on-success"]()
       end
-      client.schedule(_32_)
+      client.schedule(_34_)
       return core["merge!"](repl, {handle = handle, pid = pid_or_err, send = send, ["immediate-send"] = immediate_send, opts = opts, ["send-signal"] = send_signal, destroy = destroy})
     else
-      local function _33_()
+      local function _35_()
         return opts["on-error"](pid_or_err)
       end
-      client.schedule(_33_)
+      client.schedule(_35_)
       return destroy()
     end
   end

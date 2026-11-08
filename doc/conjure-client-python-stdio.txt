@@ -86,7 +86,7 @@ All configuration can be set as described in |conjure-configuration|.
             Conjure that the previous evaluation is complete and we're ready
             to submit more code as well as collect all output prior to the
             marker as the result.
-            Default: `">>> "`
+            Default: `">>> $"`
 
                                *g:conjure#client#python#stdio#auto_set_file*
 `g:conjure#client#python#stdio#auto_set_file`
