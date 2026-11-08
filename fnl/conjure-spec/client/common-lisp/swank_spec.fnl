@@ -299,4 +299,86 @@
               (swank.disconnect)
               (vim.cmd "bwipeout!")
               (set mock-log.append orig-append)
-              (assert.same ["(IF A" "    B)"] (. logged 1)))))))))
+              (assert.same ["(IF A" "    B)"] (. logged 1)))))))
+
+    (describe "stickers"
+      (fn []
+        (fn key [buf id]
+          (.. ":conjure-sticker-" (vim.fn.getpid) "-" buf "-" id))
+
+        (fn key-pat [buf id]
+          "key as a Lua pattern: the dashes need escaping."
+          (pick-values 1 (string.gsub (key buf id) "%-" "%%-")))
+
+        (fn rec [buf id form]
+          (let [label (+ 7000000 id)]
+            (.. "(cl:let ((#" label "=#:v (cl:multiple-value-list " form "))) (cl:push #" label
+                "# (cl:get " (key buf id) " :values)) (cl:values-list #"
+                label "#))")))
+
+        (fn new-buf [lines]
+          (vim.cmd "new")
+          (vim.api.nvim_buf_set_lines 0 0 -1 false lines)
+          (vim.api.nvim_get_current_buf))
+
+        (it "wraps stickered forms, including nested ones, in the evaluated code"
+          (fn []
+            (let [buf (new-buf ["(defun f (x)" "  (+ 1 (* x x)))"])]
+              (vim.api.nvim_win_set_cursor 0 [2 9])
+              (swank.toggle-sticker)
+              (vim.api.nvim_win_set_cursor 0 [2 3])
+              (swank.toggle-sticker)
+              (let [code "(defun f (x)\n  (+ 1 (* x x)))"
+                    out (swank.instrument-stickers buf code {:start [1 0] :end [2 15]})]
+                (vim.cmd "bwipeout!")
+                (assert.are.equal
+                  (.. "(defun f (x)\n  " (rec buf 2 (.. "(+ 1 " (rec buf 1 "(* x x)") ")")) ")")
+                  out)))))
+
+        (it "keys the recorded values by buffer as well as sticker id"
+          (fn []
+            (let [buf1 (new-buf ["(* 2 3)"])]
+              (vim.api.nvim_win_set_cursor 0 [1 1])
+              (swank.toggle-sticker)
+              (let [buf2 (new-buf ["(* 2 3)"])]
+                (vim.api.nvim_win_set_cursor 0 [1 1])
+                (swank.toggle-sticker)
+                (let [out1 (swank.instrument-stickers buf1 "(* 2 3)" {:start [1 0] :end [1 6]})
+                      out2 (swank.instrument-stickers buf2 "(* 2 3)" {:start [1 0] :end [1 6]})]
+                  (vim.cmd "bwipeout!")
+                  (vim.cmd "bwipeout!")
+                  (assert.are.equal (rec buf1 1 "(* 2 3)") out1)
+                  (assert.are.equal (rec buf2 1 "(* 2 3)") out2)
+                  (assert.are_not.equal out1 out2))))))
+
+        (it "removes a sticker when toggled again, leaves code alone and forgets its values"
+          (fn []
+            (swank.connect {})
+            (let [buf (new-buf ["(* 2 3)"])]
+              (vim.api.nvim_win_set_cursor 0 [1 1])
+              (swank.toggle-sticker)
+              (swank.toggle-sticker)
+              (let [out (swank.instrument-stickers buf "(* 2 3)" {:start [1 0] :end [1 6]})]
+                (vim.cmd "bwipeout!")
+                (swank.disconnect)
+                (assert.are.equal "(* 2 3)" out)
+                (assert.has-substring
+                  (.. "%(remprop " (key-pat buf 1) " :values%)")
+                  (a.get-in mock-remote.send-calls [2 :msg]))))))
+
+        (it "forgets every recorded value when the stickers are cleared"
+          (fn []
+            (swank.connect {})
+            (let [buf (new-buf ["(* 2 3)" "(+ 1 1)"])]
+              (vim.api.nvim_win_set_cursor 0 [1 1])
+              (swank.toggle-sticker)
+              (vim.api.nvim_win_set_cursor 0 [2 1])
+              (swank.toggle-sticker)
+              (swank.clear-stickers)
+              (let [left (vim.api.nvim_buf_get_extmarks buf -1 0 -1 {})]
+                (vim.cmd "bwipeout!")
+                (swank.disconnect)
+                (assert.same [] left)
+                (assert.has-substring
+                  (.. "%(remprop " (key-pat buf 1) " :values%) %(remprop " (key-pat buf 2) " :values%)")
+                  (a.get-in mock-remote.send-calls [2 :msg]))))))))))
