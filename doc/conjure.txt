@@ -211,17 +211,22 @@ set these with normal VimL `let` expressions. Here's the full list of options
 available in the core plugin. Each language client also has its own set of
 mappings and settings you can alter.
 
-You can also set buffer local overrides via Lua, useful for per-filetype
-configuration in a `FileType` autocmd (must be set before `BufEnter`):
+You can also set buffer local overrides, useful for per-filetype
+configuration in a `FileType` autocmd. Conjure sets up its mappings in its own
+`FileType` autocmd, so yours must be defined before Conjure loads (in your
+`init.lua` or `init.vim`) or in an `ftplugin` file, or it will run too late:
 >
-    vim.b["conjure#mapping#doc_word"] = false
-
     vim.api.nvim_create_autocmd("FileType", {
       pattern = "lua",
       callback = function()
         vim.b["conjure#mapping#doc_word"] = false
       end,
     })
+<
+Vim script doesn't allow `#` in `b:` variable names written the usual way
+(`E461: Illegal variable name`), use the dictionary form instead:
+>
+    autocmd FileType lua let b:['conjure#mapping#doc_word'] = v:false
 <
 
 As an example, we can change the default prefix from `<localleader>` to `,c`

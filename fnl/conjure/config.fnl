@@ -7,15 +7,22 @@
 (fn ks->var [ks]
   (.. "conjure#" (str.join "#" ks)))
 
+(fn buf-or-global-var [key]
+  "A `false` buffer local value must still win over the global one, it's how
+  users disable a mapping for a single buffer."
+  (let [buf-val (core.get vim.b key)]
+    (if (core.nil? buf-val)
+      (core.get vim.g key)
+      buf-val)))
+
 (fn M.get-in [ks]
   (let [key (ks->var ks)
         key-hy (string.gsub key "_" "-")
         hy-val (when (not= key key-hy)
-                 (or (core.get vim.b key-hy)
-                     (core.get vim.g key-hy)))
-        v (or hy-val
-              (core.get vim.b key)
-              (core.get vim.g key))]
+                 (buf-or-global-var key-hy))
+        v (if (core.nil? hy-val)
+            (buf-or-global-var key)
+            hy-val)]
     (when (not (core.nil? hy-val))
       (vim.notify_once
         (.. "conjure: '" key-hy "' is deprecated; rename to '" key "' (use underscores, not hyphens)")

@@ -8,7 +8,16 @@
     (it "takes a table of keys and fetches the config value from vim.b or vim.g variables."
       (fn []
         (assert.is_true (config.get-in [:client_on_load]))
-        (assert.same :conjure.client.clojure.nrepl (config.get-in [:filetype :clojure]))))))
+        (assert.same :conjure.client.clojure.nrepl (config.get-in [:filetype :clojure]))))
+
+    (it "lets a buffer local false override a truthy global value"
+      (fn []
+        (core.assoc vim.g "conjure#buf_override#key" ["K"])
+        (core.assoc vim.b "conjure#buf_override#key" false)
+        (let [result (config.get-in [:buf_override :key])]
+          (core.assoc vim.g "conjure#buf_override#key" nil)
+          (core.assoc vim.b "conjure#buf_override#key" nil)
+          (assert.is_false result))))))
 
 (describe "filetypes"
   (fn []
